@@ -37,9 +37,7 @@ let ArtworkType = new GraphQLObjectType({
     },
     artist: {
       type: Artist.type,
-      resolve: ({ artist }) => {
-        return artsy(['artist', artist.id])
-      }
+      resolve: ({ artist }) => artsy(`artist/${artist.id}`)
     },
     dimensions: {
       type: new GraphQLObjectType({
@@ -66,9 +64,7 @@ let Artwork = {
       description: 'The slug or ID of the Artwork'
     }
   },
-  resolve: (root, { id }) => {
-    return artsy(['artwork', id])
-  }
+  resolve: (root, { id }) => artsy(`artwork/${id}`)
 };
 
 export default Artwork;

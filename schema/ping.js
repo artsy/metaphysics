@@ -17,7 +17,7 @@ let PingType = new GraphQLObjectType({
 
 let Ping = {
   type: PingType,
-  resolve: () => artsy(['system', 'ping'])
+  resolve: () => artsy('system/ping')
 };
 
 export default Ping;
