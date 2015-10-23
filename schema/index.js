@@ -1,6 +1,7 @@
 import Ping from './ping';
 import Artwork from './artwork';
 import Artist from './artist';
+import PartnerShow from './partner_show';
 import {
   GraphQLSchema,
   GraphQLObjectType
@@ -12,7 +13,8 @@ let schema = new GraphQLSchema({
     fields: {
       ping: Ping,
       artwork: Artwork,
-      artist: Artist
+      artist: Artist,
+      partner_show: PartnerShow
     }
   })
 });
