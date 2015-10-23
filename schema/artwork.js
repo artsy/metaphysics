@@ -7,7 +7,8 @@ import {
   GraphQLBoolean,
   GraphQLString,
   GraphQLNonNull,
-  GraphQLList
+  GraphQLList,
+  GraphQLInt
 } from 'graphql';
 
 let ArtworkType = new GraphQLObjectType({
@@ -50,7 +51,14 @@ let ArtworkType = new GraphQLObjectType({
     },
     images: {
       type: new GraphQLList(Image.type),
-      resolve: ({ images }) => images
+      args: {
+        size: {
+          type: GraphQLInt
+        }
+      },
+      resolve: ({ images }, { size }) => {
+        return size ? _.take(images, size) : images;
+      }
     }
   })
 });

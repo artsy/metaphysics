@@ -67,6 +67,9 @@ let ArtistType = new GraphQLObjectType({
         solo_show: {
           type: GraphQLBoolean
         },
+        top_tier: {
+          type: GraphQLBoolean
+        },
         sort: {
           type: new GraphQLEnumType({
             name: 'PartnerShowSorts',
