@@ -1,5 +1,7 @@
+import _ from 'lodash';
 import artsy from '../lib/artsy';
 import Artwork from './artwork';
+import PartnerShow from './partner_show';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -49,12 +51,42 @@ let ArtistType = new GraphQLObjectType({
           })
         }
       },
-      resolve: ({ id }, { size, sort }) => {
-        return artsy(['artist', id, 'artworks'], {
-          published: true,
-          size: size,
-          sort: sort
-        });
+      resolve: ({ id }, options) => {
+        return artsy(`artist/${id}/artworks`, _.defaults(options, {
+          published: true
+        }));
+      }
+    },
+    partner_shows: {
+      type: new GraphQLList(PartnerShow.type),
+      args: {
+        size: {
+          type: GraphQLInt,
+          description: 'The number of PartnerShows to return'
+        },
+        solo_show: {
+          type: GraphQLBoolean
+        },
+        sort: {
+          type: new GraphQLEnumType({
+            name: 'PartnerShowSorts',
+            values: {
+              'end_at_asc': { value: 'end_at' },
+              'end_at_desc': { value: '-end_at' },
+              'start_at_asc': { value: 'start_at' },
+              'start_at_desc': { value: '-start_at' },
+              'publish_at_asc': { value: 'publish_at' },
+              'publish_at_desc': { value: '-publish_at' }
+            }
+          })
+        }
+      },
+      resolve: ({ id }, options) => {
+        return artsy(`related/shows`, _.defaults(options, {
+          artist_id: id,
+          displayable: true,
+          sort: '-end_at'
+        }));
       }
     }
   })
@@ -69,7 +101,7 @@ let Artist = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  resolve: (root, { id }) => artsy(['artist', id])
+  resolve: (root, { id }) => artsy(`artist/${id}`)
 };
 
 export default Artist;
