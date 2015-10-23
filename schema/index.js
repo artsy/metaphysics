@@ -1,6 +1,6 @@
-import Ping from './schema/ping';
-import Artwork from './schema/artwork';
-import Artist from './schema/artist';
+import Ping from './ping';
+import Artwork from './artwork';
+import Artist from './artist';
 import {
   GraphQLSchema,
   GraphQLObjectType
