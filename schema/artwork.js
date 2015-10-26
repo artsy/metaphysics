@@ -17,6 +17,10 @@ let ArtworkType = new GraphQLObjectType({
     id: {
       type: GraphQLString
     },
+    href: {
+      type: GraphQLString,
+      resolve: (artwork) => `/artwork/${artwork.id}`
+    },
     title: {
       type: GraphQLString
     },
