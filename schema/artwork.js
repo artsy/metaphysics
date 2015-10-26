@@ -7,17 +7,28 @@ import {
   GraphQLBoolean,
   GraphQLString,
   GraphQLNonNull,
-  GraphQLList
+  GraphQLList,
+  GraphQLInt
 } from 'graphql';
 
 let ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
   fields: () => ({
-    id: { type: GraphQLString },
-    title: { type: GraphQLString },
-    category: { type: GraphQLString },
-    medium: { type: GraphQLString },
-    date: { type: GraphQLString },
+    id: {
+      type: GraphQLString
+    },
+    title: {
+      type: GraphQLString
+    },
+    category: {
+      type: GraphQLString
+    },
+    medium: {
+      type: GraphQLString
+    },
+    date: {
+      type: GraphQLString
+    },
     is_contactable: {
       type: GraphQLBoolean,
       description: 'Are we able to display a contact form on artwork pages?',
@@ -27,9 +38,7 @@ let ArtworkType = new GraphQLObjectType({
     },
     artist: {
       type: Artist.type,
-      resolve: ({ artist }) => {
-        return artsy(['artist', artist.id])
-      }
+      resolve: ({ artist }) => artsy(`artist/${artist.id}`)
     },
     dimensions: {
       type: new GraphQLObjectType({
@@ -42,7 +51,14 @@ let ArtworkType = new GraphQLObjectType({
     },
     images: {
       type: new GraphQLList(Image.type),
-      resolve: ({ images }) => images
+      args: {
+        size: {
+          type: GraphQLInt
+        }
+      },
+      resolve: ({ images }, { size }) => {
+        return size ? _.take(images, size) : images;
+      }
     }
   })
 });
@@ -52,13 +68,11 @@ let Artwork = {
   description: 'An Artwork',
   args: {
     id: {
-      description: 'The slug or ID of the Artwork',
-      type: new GraphQLNonNull(GraphQLString)
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The slug or ID of the Artwork'
     }
   },
-  resolve: (root, { id }) => {
-    return artsy(['artwork', id])
-  }
+  resolve: (root, { id }) => artsy(`artwork/${id}`)
 };
 
 export default Artwork;
