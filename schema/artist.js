@@ -18,6 +18,10 @@ let ArtistType = new GraphQLObjectType({
     id: {
       type: GraphQLString
     },
+    href: {
+      type: GraphQLString,
+      resolve: (artist) => `/artist/${artist.id}`
+    },
     sortable_id: {
       type: GraphQLString,
       description: 'Use this attribute to sort by when sorting a collection of Artists'

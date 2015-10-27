@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import qs from 'querystring';
 import artsy from '../lib/artsy';
 import {
   GraphQLObjectType,
@@ -8,15 +9,23 @@ import {
   GraphQLInt
 } from 'graphql';
 
-let ResizedImageUrl = (image, options) => {
+let { GEMINI_ENDPOINT } = process.env;
+
+export let ResizedImageUrl = (image, options) => {
   let factor = _.min(_.map(options, (value, attr) => {
     return value / image[`original_${attr}`];
   }));
 
   let width = Math.floor(image.original_width * factor);
   let height = Math.floor(image.original_height * factor);
-
-  let url = `http://some_caching_resizing_cdn.com/${width}/${height}/${encodeURIComponent(image.image_url.replace(':version', 'original'))}`;
+  let src = image.image_url.replace(':version', 'large');
+  let url = `${GEMINI_ENDPOINT}/?${qs.stringify({
+    resize_to: 'fit',
+    height: height,
+    width: width,
+    quality: 95,
+    src: src
+  })}`;
 
   return {
     factor,

@@ -1,0 +1,5 @@
+--require should
+--ui bdd
+--timeout 30000
+--compilers js:babel/register
+--recursive
