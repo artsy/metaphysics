@@ -11,7 +11,7 @@ import {
 
 let { GEMINI_ENDPOINT } = process.env;
 
-let ResizedImageUrl = (image, options) => {
+export let ResizedImageUrl = (image, options) => {
   let factor = _.min(_.map(options, (value, attr) => {
     return value / image[`original_${attr}`];
   }));
