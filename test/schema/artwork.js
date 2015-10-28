@@ -13,12 +13,12 @@ let artwork = {
 describe('Artwork', () => {
   describe('ArtworkPredicates.is_contactable', () => {
     it('sets an artwork as contactable if it meets requirements', () => {
-      ArtworkPredicates.is_contactable(artwork, []).should.eql(true);
+      ArtworkPredicates.is_contactable(artwork, []).should.be.true();
     });
 
     it('sets an artwork as not contactable if it has related sales', () => {
       ArtworkPredicates.is_contactable(artwork, [{id: 'another auction by cab'}])
-        .should.eql(false);
+        .should.be.false();
     });
   });
 });
