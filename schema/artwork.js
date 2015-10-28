@@ -15,6 +15,12 @@ import {
   GraphQLInt
 } from 'graphql';
 
+export let ArtworkPredicates = {
+  is_contactable: (artwork, relatedSales) => {
+    return artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !relatedSales.length
+  }
+}
+
 let fetchRelatedSales = ({ id }, options) => {
   options = qs.stringify(_.defaults(options, {
     active: true,
@@ -52,7 +58,7 @@ let ArtworkType = new GraphQLObjectType({
         return new Promise((resolve) => {
           fetchRelatedSales({id: artwork.id }, {})
             .then((relatedSales) => {
-              resolve(artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !relatedSales.length)
+              resolve(ArtworkPredicates.is_contactable(artwork, relatedSales))
             })
         })
       }
