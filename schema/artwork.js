@@ -15,6 +15,8 @@ import {
   GraphQLInt
 } from 'graphql';
 
+import artsyLoader from '../lib/artsy_loader';
+
 export let ArtworkPredicates = {
   is_contactable: (artwork, relatedSales) => {
     return artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !relatedSales.length
@@ -27,7 +29,7 @@ let fetchRelatedSales = ({ id }, options) => {
     active: true,
     'artwork[]': id
   }));
-  return artsy(`related/sales?${options}`);
+  return artsyLoader(`related/sales?${options}`);
 };
 
 let ArtworkType = new GraphQLObjectType({
@@ -66,7 +68,7 @@ let ArtworkType = new GraphQLObjectType({
     },
     artist: {
       type: Artist.type,
-      resolve: ({ artist }) => artsy(`artist/${artist.id}`)
+      resolve: ({ artist }) => artsyLoader(`artist/${artist.id}`)
     },
     dimensions: {
       type: new GraphQLObjectType({
@@ -104,7 +106,7 @@ let Artwork = {
       description: 'The slug or ID of the Artwork'
     }
   },
-  resolve: (root, { id }) => artsy(`artwork/${id}`)
+  resolve: (root, { id }) => artsyLoader(`artwork/${id}`)
 };
 
 export default Artwork;

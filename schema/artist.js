@@ -12,6 +12,8 @@ import {
   GraphQLEnumType
 } from 'graphql';
 
+import artsyLoader from '../lib/artsy_loader'
+
 let ArtistType = new GraphQLObjectType({
   name: 'Artist',
   fields: () => ({
@@ -83,7 +85,7 @@ let ArtistType = new GraphQLObjectType({
         }
       },
       resolve: ({ id }, options) => {
-        return artsy(`artist/${id}/artworks`, _.defaults(options, {
+        return artsyLoader(`artist/${id}/artworks`, _.defaults(options, {
           published: true
         }));
       }
@@ -116,7 +118,7 @@ let ArtistType = new GraphQLObjectType({
         }
       },
       resolve: ({ id }, options) => {
-        return artsy(`related/shows`, _.defaults(options, {
+        return artsyLoader(`related/shows`, _.defaults(options, {
           artist_id: id,
           displayable: true,
           sort: '-end_at'
@@ -135,7 +137,7 @@ let Artist = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  resolve: (root, { id }) => artsy(`artist/${id}`)
+  resolve: (root, { id }) => artsyLoader(`artist/${id}`)
 };
 
 export default Artist;
