@@ -15,6 +15,14 @@ import {
   GraphQLInt
 } from 'graphql';
 
+let fetchRelatedSales = ({ id }, options) => {
+  options = qs.stringify(_.defaults(options, {
+    active: true,
+    'artwork[]': id
+  }));
+  return artsy(`related/sales?${options}`);
+};
+
 let ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
   fields: () => ({
@@ -41,7 +49,12 @@ let ArtworkType = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'Are we able to display a contact form on artwork pages?',
       resolve: (artwork) => {
-        return artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !artwork.sales;
+        return new Promise((resolve) => {
+          fetchRelatedSales({id: artwork.id }, {})
+            .then((relatedSales) => {
+              resolve(artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !relatedSales.length)
+            })
+        })
       }
     },
     artist: {
@@ -70,13 +83,7 @@ let ArtworkType = new GraphQLObjectType({
     },
     sales: {
       type: new GraphQLList(Sale.type),
-      resolve: ({ id }, options) => {
-        options = qs.stringify(_.defaults(options, {
-          active: true,
-          'artwork[]': id
-        }));
-        return artsy(`related/sales?${options}`);
-      }
+      resolve: fetchRelatedSales
     }
   })
 });
