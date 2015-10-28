@@ -29,8 +29,35 @@ let ArtistType = new GraphQLObjectType({
     name: {
       type: GraphQLString
     },
-    birthday: {
+    years: {
       type: GraphQLString
+    },
+    nationality: {
+      type: GraphQLString
+    },
+    is_shareable: {
+      type: GraphQLBoolean,
+      resolve: (artist) => artist.published_artworks_count > 0
+    },
+    counts: {
+      type: new GraphQLObjectType({
+        name: 'counts',
+        fields: {
+          artworks: {
+            type: GraphQLInt,
+            resolve: ({ published_artworks_count }) => published_artworks_count
+          },
+          follows: {
+            type: GraphQLInt,
+            resolve: ({ follow_count }) => follow_count
+          },
+          auction_lots: {
+            type: GraphQLInt,
+            resolve: ({ auction_lots_count }) => auction_lots_count
+          }
+        }
+      }),
+      resolve: (artist) => artist
     },
     artworks: {
       type: new GraphQLList(Artwork.type),
