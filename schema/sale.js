@@ -2,6 +2,7 @@ import _ from 'lodash';
 import artsy from '../lib/artsy';
 import {
   GraphQLString,
+  GraphQLObjectType,
   GraphQLNonNull,
 } from 'graphql';
 
