@@ -20,6 +20,7 @@
     "lodash": "^3.10.1",
     "querystring": "^0.2.0",
     "react": "^0.14.0",
+    "redis": "^2.2.5",
     "request": "^2.65.0"
   },
   "devDependencies": {
