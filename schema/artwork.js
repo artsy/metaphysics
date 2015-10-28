@@ -1,7 +1,11 @@
 import _ from 'lodash';
+import qs from 'querystring';
+
 import artsy from '../lib/artsy';
 import Artist from './artist';
 import Image from './image';
+import Sale from './sale';
+
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -37,7 +41,7 @@ let ArtworkType = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'Are we able to display a contact form on artwork pages?',
       resolve: (artwork) => {
-        return artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable;
+        return artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !artwork.sales;
       }
     },
     artist: {
@@ -62,6 +66,16 @@ let ArtworkType = new GraphQLObjectType({
       },
       resolve: ({ images }, { size }) => {
         return size ? _.take(images, size) : images;
+      }
+    },
+    sales: {
+      type: new GraphQLList(Sale.type),
+      resolve: ({ id }, options) => {
+        options = qs.stringify(_.defaults(options, {
+          active: true,
+          'artwork[]': id
+        }));
+        return artsy(`related/sales?${options}`);
       }
     }
   })
