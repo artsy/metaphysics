@@ -23,6 +23,7 @@ export let ArtworkPredicates = {
 
 let fetchRelatedSales = ({ id }, options) => {
   options = qs.stringify(_.defaults(options, {
+    size: 1,
     active: true,
     'artwork[]': id
   }));
