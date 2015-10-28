@@ -1,14 +1,8 @@
 import _ from 'lodash';
 import artsy from '../lib/artsy';
-import Artist from './artist';
-import Image from './image';
 import {
-  GraphQLObjectType,
-  GraphQLBoolean,
   GraphQLString,
   GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt
 } from 'graphql';
 
 let SaleType = new GraphQLObjectType({
