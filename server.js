@@ -8,10 +8,12 @@ import { artsyLoader } from './lib/artsy_loader';
 let app = express();
 let port = process.env.PORT || 3000;
 
-let clearArtsyLoader = (req, res, next) => {
-  artsyLoader.clearAll();
-  next();
-};
+app.get('/favicon.ico', (req, res) => {
+  res
+    .status(200)
+    .set({ 'Content-Type': 'image/x-icon' })
+    .end();
+});
 
 app.all('/graphql', (req, res) => res.redirect('/'));
 app.use('/', clearArtsyLoader, graphqlHTTP({
