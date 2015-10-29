@@ -1,14 +1,18 @@
-import _ from 'lodash';
-import artsy from '../lib/artsy';
+import gravity from '../lib/loaders/gravity';
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
+  GraphQLInt
 } from 'graphql';
 
 let SaleType = new GraphQLObjectType({
   name: 'Sale',
   fields: () => ({
+    cached: {
+      type: GraphQLInt,
+      resolve: ({ cached }) => new Date().getTime() - cached
+    },
     id: {
       type: GraphQLString
     },
@@ -33,7 +37,7 @@ let Sale = {
       description: 'The slug or ID of the Sale'
     }
   },
-  resolve: (root, { id }) => artsy(`sale/${id}`)
+  resolve: (root, { id }) => gravity(`sale/${id}`)
 };
 
 export default Sale;

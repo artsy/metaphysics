@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import artsy from '../lib/artsy';
 import Artwork from './artwork';
 import PartnerShow from './partner_show';
+import gravity from '../lib/loaders/gravity';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -15,6 +15,10 @@ import {
 let ArtistType = new GraphQLObjectType({
   name: 'Artist',
   fields: () => ({
+    cached: {
+      type: GraphQLInt,
+      resolve: ({ cached }) => new Date().getTime() - cached
+    },
     id: {
       type: GraphQLString
     },
@@ -29,8 +33,35 @@ let ArtistType = new GraphQLObjectType({
     name: {
       type: GraphQLString
     },
-    birthday: {
+    years: {
       type: GraphQLString
+    },
+    nationality: {
+      type: GraphQLString
+    },
+    is_shareable: {
+      type: GraphQLBoolean,
+      resolve: (artist) => artist.published_artworks_count > 0
+    },
+    counts: {
+      type: new GraphQLObjectType({
+        name: 'counts',
+        fields: {
+          artworks: {
+            type: GraphQLInt,
+            resolve: ({ published_artworks_count }) => published_artworks_count
+          },
+          follows: {
+            type: GraphQLInt,
+            resolve: ({ follow_count }) => follow_count
+          },
+          auction_lots: {
+            type: GraphQLInt,
+            resolve: ({ auction_lots_count }) => auction_lots_count
+          }
+        }
+      }),
+      resolve: (artist) => artist
     },
     artworks: {
       type: new GraphQLList(Artwork.type),
@@ -56,7 +87,7 @@ let ArtistType = new GraphQLObjectType({
         }
       },
       resolve: ({ id }, options) => {
-        return artsy(`artist/${id}/artworks`, _.defaults(options, {
+        return gravity(`artist/${id}/artworks`, _.defaults(options, {
           published: true
         }));
       }
@@ -89,7 +120,7 @@ let ArtistType = new GraphQLObjectType({
         }
       },
       resolve: ({ id }, options) => {
-        return artsy(`related/shows`, _.defaults(options, {
+        return gravity(`related/shows`, _.defaults(options, {
           artist_id: id,
           displayable: true,
           sort: '-end_at'
@@ -108,7 +139,7 @@ let Artist = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  resolve: (root, { id }) => artsy(`artist/${id}`)
+  resolve: (root, { id }) => gravity(`artist/${id}`)
 };
 
 export default Artist;

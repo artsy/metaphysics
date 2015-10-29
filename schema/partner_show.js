@@ -1,4 +1,4 @@
-import artsy from '../lib/artsy';
+import gravity from '../lib/loaders/gravity';
 import Artist from './artist';
 import Image from './image';
 import {
@@ -12,6 +12,10 @@ import {
 let PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
   fields: () => ({
+    cached: {
+      type: GraphQLInt,
+      resolve: ({ cached }) => new Date().getTime() - cached
+    },
     id: {
       type: GraphQLString
     },
@@ -35,7 +39,7 @@ let PartnerShowType = new GraphQLObjectType({
           description: 'Number of images to return'
         }
       },
-      resolve: ({ id }, options) => artsy(`partner_show/${id}/images`, options)
+      resolve: ({ id }, options) => gravity(`partner_show/${id}/images`, options)
     }
   })
 });
@@ -50,7 +54,7 @@ let PartnerShow = {
     }
   },
   resolve: (root, { id }) => {
-    return artsy(`show/${id}`)
+    return gravity(`show/${id}`)
   }
 };
 

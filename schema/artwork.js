@@ -1,11 +1,9 @@
 import _ from 'lodash';
-import qs from 'querystring';
-
-import artsy from '../lib/artsy';
+import qs from 'qs';
 import Artist from './artist';
 import Image from './image';
 import Sale from './sale';
-
+import gravity from '../lib/loaders/gravity';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -16,23 +14,18 @@ import {
 } from 'graphql';
 
 export let ArtworkPredicates = {
-  is_contactable: (artwork, relatedSales) => {
-    return artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !relatedSales.length
+  is_contactable: (artwork, sales) => {
+    return artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !sales.length
   }
-}
-
-let fetchRelatedSales = ({ id }, options) => {
-  options = qs.stringify(_.defaults(options, {
-    size: 1,
-    active: true,
-    'artwork[]': id
-  }));
-  return artsy(`related/sales?${options}`);
 };
 
 let ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
   fields: () => ({
+    cached: {
+      type: GraphQLInt,
+      resolve: ({ cached }) => new Date().getTime() - cached
+    },
     id: {
       type: GraphQLString
     },
@@ -56,17 +49,17 @@ let ArtworkType = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'Are we able to display a contact form on artwork pages?',
       resolve: (artwork) => {
-        return new Promise((resolve) => {
-          fetchRelatedSales({id: artwork.id }, {})
-            .then((relatedSales) => {
-              resolve(ArtworkPredicates.is_contactable(artwork, relatedSales))
-            })
-        })
+        return new Promise(resolve => {
+          gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
+            .then(sales => {
+              resolve(ArtworkPredicates.is_contactable(artwork, sales))
+            });
+        });
       }
     },
     artist: {
       type: Artist.type,
-      resolve: ({ artist }) => artsy(`artist/${artist.id}`)
+      resolve: ({ artist }) => gravity(`artist/${artist.id}`)
     },
     dimensions: {
       type: new GraphQLObjectType({
@@ -90,7 +83,16 @@ let ArtworkType = new GraphQLObjectType({
     },
     sales: {
       type: new GraphQLList(Sale.type),
-      resolve: fetchRelatedSales
+      args: {
+        size: {
+          type: GraphQLInt
+        }
+      },
+      resolve: ({ id }, options) => gravity(`related/sales`, _.defaults(options, {
+        size: 1,
+        active: true,
+        artwork: [id]
+      }))
     }
   })
 });
@@ -104,7 +106,7 @@ let Artwork = {
       description: 'The slug or ID of the Artwork'
     }
   },
-  resolve: (root, { id }) => artsy(`artwork/${id}`)
+  resolve: (root, { id }) => gravity(`artwork/${id}`)
 };
 
 export default Artwork;

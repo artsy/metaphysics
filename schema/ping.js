@@ -1,4 +1,4 @@
-import artsy from '../lib/artsy';
+import gravity from '../lib/apis/gravity'; // Uncached
 import {
   GraphQLObjectType,
   GraphQLString
@@ -17,7 +17,7 @@ let PingType = new GraphQLObjectType({
 
 let Ping = {
   type: PingType,
-  resolve: () => artsy('system/ping')
+  resolve: () => gravity('system/ping')
 };
 
 export default Ping;
