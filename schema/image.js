@@ -1,6 +1,5 @@
 import _ from 'lodash';
-import qs from 'querystring';
-import artsy from '../lib/artsy';
+import qs from 'qs';
 import {
   GraphQLObjectType,
   GraphQLString,

@@ -3,7 +3,7 @@ import express from 'express';
 import graphqlHTTP from 'express-graphql';
 import schema from './schema';
 
-import { artsyLoader } from './lib/artsy_loader';
+import { gravityLoader } from './lib/loaders/gravity';
 
 let app = express();
 let port = process.env.PORT || 3000;
@@ -20,7 +20,7 @@ app.all('/graphql', (req, res) => res.redirect('/'));
 app.use('/', graphqlHTTP((req) => {
   console.log('-----------');
 
-  artsyLoader.clearAll();
+  gravityLoader.clearAll();
 
   return {
     schema: schema,

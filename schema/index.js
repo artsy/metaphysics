@@ -3,7 +3,6 @@ import Artwork from './artwork';
 import Artist from './artist';
 import PartnerShow from './partner_show';
 import Sale from './sale';
-import artsyLoader from '../lib/artsy_loader';
 import {
   GraphQLSchema,
   GraphQLObjectType

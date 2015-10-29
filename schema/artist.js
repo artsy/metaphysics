@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import artsy from '../lib/artsy';
 import Artwork from './artwork';
 import PartnerShow from './partner_show';
+import gravity from '../lib/loaders/gravity';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -11,8 +11,6 @@ import {
   GraphQLInt,
   GraphQLEnumType
 } from 'graphql';
-
-import artsyLoader from '../lib/artsy_loader'
 
 let ArtistType = new GraphQLObjectType({
   name: 'Artist',
@@ -85,7 +83,7 @@ let ArtistType = new GraphQLObjectType({
         }
       },
       resolve: ({ id }, options) => {
-        return artsyLoader(`artist/${id}/artworks`, _.defaults(options, {
+        return gravity(`artist/${id}/artworks`, _.defaults(options, {
           published: true
         }));
       }
@@ -118,7 +116,7 @@ let ArtistType = new GraphQLObjectType({
         }
       },
       resolve: ({ id }, options) => {
-        return artsyLoader(`related/shows`, _.defaults(options, {
+        return gravity(`related/shows`, _.defaults(options, {
           artist_id: id,
           displayable: true,
           sort: '-end_at'
@@ -137,7 +135,7 @@ let Artist = {
       type: new GraphQLNonNull(GraphQLString)
     }
   },
-  resolve: (root, { id }) => artsyLoader(`artist/${id}`)
+  resolve: (root, { id }) => gravity(`artist/${id}`)
 };
 
 export default Artist;

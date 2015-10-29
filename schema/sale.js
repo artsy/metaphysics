@@ -1,5 +1,4 @@
-import _ from 'lodash';
-import artsy from '../lib/artsy';
+import gravity from '../lib/loaders/gravity';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -33,7 +32,7 @@ let Sale = {
       description: 'The slug or ID of the Sale'
     }
   },
-  resolve: (root, { id }) => artsy(`sale/${id}`)
+  resolve: (root, { id }) => gravity(`sale/${id}`)
 };
 
 export default Sale;
