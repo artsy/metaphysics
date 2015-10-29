@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "DEBUG=info,error foreman start -f Procfile.dev",
-    "test": "foreman run mocha test -e .env.test"
+    "test": "foreman run mocha test -e .env.test",
+    "spec": "foreman run mocha -e .env.test"
   },
   "author": "",
   "license": "ISC",
@@ -27,8 +28,11 @@
     "request": "^2.65.0"
   },
   "devDependencies": {
+    "babel-plugin-rewire": "^0.1.22",
+    "fakeredis": "^0.3.4",
     "mocha": "^2.3.3",
     "nodemon": "^1.7.3",
-    "should": "^7.1.1"
+    "should": "^7.1.1",
+    "sinon": "^1.17.2"
   }
 }
