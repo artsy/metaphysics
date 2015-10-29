@@ -16,9 +16,16 @@ app.get('/favicon.ico', (req, res) => {
 });
 
 app.all('/graphql', (req, res) => res.redirect('/'));
-app.use('/', clearArtsyLoader, graphqlHTTP({
-  schema: schema,
-  graphiql: true
+
+app.use('/', graphqlHTTP((req) => {
+  console.log('-----------');
+
+  artsyLoader.clearAll();
+
+  return {
+    schema: schema,
+    graphiql: true
+  }
 }));
 
 app.listen(port, () => console.log(`Listening on ${port}`));
