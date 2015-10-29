@@ -1,8 +1,9 @@
 import path from 'path';
+import debug from 'debug';
+import morgan from 'morgan';
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
 import schema from './schema';
-
 import { gravityLoader } from './lib/loaders/gravity';
 
 let app = express();
@@ -17,9 +18,7 @@ app.get('/favicon.ico', (req, res) => {
 
 app.all('/graphql', (req, res) => res.redirect('/'));
 
-app.use('/', graphqlHTTP((req) => {
-  console.log('-----------');
-
+app.use('/', morgan('combined'), graphqlHTTP((req) => {
   gravityLoader.clearAll();
 
   return {
@@ -28,4 +27,4 @@ app.use('/', graphqlHTTP((req) => {
   }
 }));
 
-app.listen(port, () => console.log(`Listening on ${port}`));
+app.listen(port, () => debug('info')(`Listening on ${port}`));
