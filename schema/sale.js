@@ -3,11 +3,16 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
+  GraphQLInt
 } from 'graphql';
 
 let SaleType = new GraphQLObjectType({
   name: 'Sale',
   fields: () => ({
+    cached: {
+      type: GraphQLInt,
+      resolve: ({ cached }) => new Date().getTime() - cached
+    },
     id: {
       type: GraphQLString
     },

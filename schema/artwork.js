@@ -22,6 +22,10 @@ export let ArtworkPredicates = {
 let ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
   fields: () => ({
+    cached: {
+      type: GraphQLInt,
+      resolve: ({ cached }) => new Date().getTime() - cached
+    },
     id: {
       type: GraphQLString
     },

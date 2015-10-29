@@ -12,6 +12,10 @@ import {
 let PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
   fields: () => ({
+    cached: {
+      type: GraphQLInt,
+      resolve: ({ cached }) => new Date().getTime() - cached
+    },
     id: {
       type: GraphQLString
     },

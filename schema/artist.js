@@ -15,6 +15,10 @@ import {
 let ArtistType = new GraphQLObjectType({
   name: 'Artist',
   fields: () => ({
+    cached: {
+      type: GraphQLInt,
+      resolve: ({ cached }) => new Date().getTime() - cached
+    },
     id: {
       type: GraphQLString
     },
