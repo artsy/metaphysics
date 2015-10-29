@@ -1,2 +1,2 @@
 web: node_modules/.bin/nodemon index.js
-redis: redis-server
+redis: redis-server redis.conf
