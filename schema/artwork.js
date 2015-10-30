@@ -16,8 +16,11 @@ import {
 export let ArtworkPredicates = {
   is_contactable: (artwork, sales) => {
     return artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !sales.length
+  },
+  is_in_auction: (artwork, relatedSales) => {
+    return _.any(relatedSales, 'is_auction')
   }
-};
+}
 
 let ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
@@ -57,6 +60,18 @@ let ArtworkType = new GraphQLObjectType({
         });
       }
     },
+    is_in_auction: {
+      type: GraphQLBoolean,
+      description: 'Is this artwork part of an auction?',
+      resolve: (artwork) => {
+        return new Promise((resolve) => {
+          fetchRelatedSales({id: artwork.id}, {})
+            .then((relatedSales) => {
+              resolve(ArtworkPredicates.is_in_auction(artwork, relatedSales))
+            })
+        })
+      }
+    },
     artist: {
       type: Artist.type,
       resolve: ({ artist }) => gravity(`artist/${artist.id}`)
@@ -79,6 +94,20 @@ let ArtworkType = new GraphQLObjectType({
       },
       resolve: ({ images }, { size }) => {
         return size ? _.take(images, size) : images;
+      }
+    },
+    display_price: {
+      type: GraphQLString,
+      resolve: (artwork) => {
+        if(artwork.availability == 'for sale' && artwork.price_hidden){
+          return 'Contact for Price';
+        }else if(artwork.price){
+          return artwork.price;
+        }else if (artwork.sale_message && artwork.sale_message != 'Sold'){
+          return artwork.sale_message;
+        }else{
+          return '';
+        }
       }
     },
     sales: {
