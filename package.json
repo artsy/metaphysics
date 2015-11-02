@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "DEBUG=info,error foreman start -f Procfile.dev",
-    "test": "foreman run mocha test -e .env.test",
-    "spec": "foreman run mocha -e .env.test"
+    "test": "DEBUG=info,error foreman run mocha test -e .env.test",
+    "spec": "DEBUG=info,error foreman run mocha -e .env.test"
   },
   "author": "",
   "license": "ISC",
