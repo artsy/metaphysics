@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import qs from 'qs';
-import Artist from './artist';
 import Image from './image';
 import Sale from './sale';
 import gravity from '../lib/loaders/gravity';
@@ -21,80 +20,84 @@ export let ArtworkPredicates = {
 
 let ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
-  fields: () => ({
-    cached: {
-      type: GraphQLInt,
-      resolve: ({ cached }) => new Date().getTime() - cached
-    },
-    id: {
-      type: GraphQLString
-    },
-    href: {
-      type: GraphQLString,
-      resolve: (artwork) => `/artwork/${artwork.id}`
-    },
-    title: {
-      type: GraphQLString
-    },
-    category: {
-      type: GraphQLString
-    },
-    medium: {
-      type: GraphQLString
-    },
-    date: {
-      type: GraphQLString
-    },
-    is_contactable: {
-      type: GraphQLBoolean,
-      description: 'Are we able to display a contact form on artwork pages?',
-      resolve: (artwork) => {
-        return new Promise(resolve => {
-          gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
-            .then(sales => {
-              resolve(ArtworkPredicates.is_contactable(artwork, sales))
-            });
-        });
-      }
-    },
-    artist: {
-      type: Artist.type,
-      resolve: ({ artist }) => gravity(`artist/${artist.id}`)
-    },
-    dimensions: {
-      type: new GraphQLObjectType({
-        name: 'dimensions',
-        fields: {
-          in: { type: GraphQLString },
-          cm: { type: GraphQLString }
-        }
-      })
-    },
-    images: {
-      type: new GraphQLList(Image.type),
-      args: {
-        size: {
-          type: GraphQLInt
+  fields: () => {
+    let Artist = require('./artist');
+
+    return {
+      cached: {
+        type: GraphQLInt,
+        resolve: ({ cached }) => new Date().getTime() - cached
+      },
+      id: {
+        type: GraphQLString
+      },
+      href: {
+        type: GraphQLString,
+        resolve: (artwork) => `/artwork/${artwork.id}`
+      },
+      title: {
+        type: GraphQLString
+      },
+      category: {
+        type: GraphQLString
+      },
+      medium: {
+        type: GraphQLString
+      },
+      date: {
+        type: GraphQLString
+      },
+      is_contactable: {
+        type: GraphQLBoolean,
+        description: 'Are we able to display a contact form on artwork pages?',
+        resolve: (artwork) => {
+          return new Promise(resolve => {
+            gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
+              .then(sales => {
+                resolve(ArtworkPredicates.is_contactable(artwork, sales))
+              });
+          });
         }
       },
-      resolve: ({ images }, { size }) => {
-        return size ? _.take(images, size) : images;
-      }
-    },
-    sales: {
-      type: new GraphQLList(Sale.type),
-      args: {
-        size: {
-          type: GraphQLInt
+      artist: {
+        type: Artist.type,
+        resolve: ({ artist }) => gravity(`artist/${artist.id}`)
+      },
+      dimensions: {
+        type: new GraphQLObjectType({
+          name: 'dimensions',
+          fields: {
+            in: { type: GraphQLString },
+            cm: { type: GraphQLString }
+          }
+        })
+      },
+      images: {
+        type: new GraphQLList(Image.type),
+        args: {
+          size: {
+            type: GraphQLInt
+          }
+        },
+        resolve: ({ images }, { size }) => {
+          return size ? _.take(images, size) : images;
         }
       },
-      resolve: ({ id }, options) => gravity(`related/sales`, _.defaults(options, {
-        size: 1,
-        active: true,
-        artwork: [id]
-      }))
+      sales: {
+        type: new GraphQLList(Sale.type),
+        args: {
+          size: {
+            type: GraphQLInt
+          }
+        },
+        resolve: ({ id }, options) => gravity(`related/sales`, _.defaults(options, {
+          size: 1,
+          active: true,
+          artwork: [id]
+        }))
+      }
     }
-  })
+  }
 });
 
 let Artwork = {
