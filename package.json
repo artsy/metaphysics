@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "DEBUG=info,error foreman start -f Procfile.dev",
-    "test": "DEBUG=info,error foreman run mocha test -e .env.test",
-    "spec": "DEBUG=info,error foreman run mocha -e .env.test"
+    "dev": "DEBUG=info,error nf start -f Procfile.dev",
+    "test": "DEBUG=info,error nf run mocha test -e .env.test",
+    "spec": "DEBUG=info,error nf run mocha -e .env.test"
   },
   "author": "",
   "license": "ISC",
@@ -30,6 +30,7 @@
   "devDependencies": {
     "babel-plugin-rewire": "^0.1.22",
     "fakeredis": "^0.3.4",
+    "foreman": "^1.4.1",
     "mocha": "^2.3.3",
     "nodemon": "^1.7.3",
     "should": "^7.1.1",
