@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "DEBUG=info,error nf start -f Procfile.dev",
-    "test": "DEBUG=info,error nf run mocha test -e .env.test",
-    "spec": "DEBUG=info,error nf run mocha -e .env.test"
+    "dev": "DEBUG=info,error nf start --procfile Procfile.dev",
+    "test": "DEBUG=info,error nf run mocha test --env .env.test",
+    "spec": "DEBUG=info,error nf run mocha --env .env.test"
   },
   "author": "",
   "license": "ISC",
