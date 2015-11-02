@@ -34,30 +34,75 @@ export let ResizedImageUrl = (image, options) => {
   };
 };
 
+export let VersionedImageUrl = (image, { version }) => {
+  return image.image_url.replace(':version', version);
+};
+
 let ResizedImageUrlType = new GraphQLObjectType({
   name: 'ResizedImageUrl',
   fields: {
-    factor: { type: GraphQLFloat },
-    width: { type: GraphQLInt },
-    height: { type: GraphQLInt },
-    url: { type: GraphQLString }
+    factor: {
+      type: GraphQLFloat
+    },
+    width: {
+      type: GraphQLInt
+    },
+    height: {
+      type: GraphQLInt
+    },
+    url: {
+      type: GraphQLString
+    }
   }
 });
 
 let ImageType = new GraphQLObjectType({
   name: 'Image',
   fields: () => ({
-    id: { type: GraphQLString },
-    width: { type: GraphQLInt, resolve: ({ original_width }) => original_width },
-    height: { type: GraphQLInt, resolve: ({ original_height }) => original_height },
-    aspect_ratio: { type: GraphQLFloat },
+    id: {
+      type: GraphQLString
+    },
+    href: {
+      type: GraphQLString
+    },
+    width: {
+      type: GraphQLInt,
+      resolve: ({ original_width }) => original_width
+    },
+    height: {
+      type: GraphQLInt,
+      resolve: ({ original_height }) => original_height
+    },
+    aspect_ratio: {
+      type: GraphQLFloat
+    },
+    versions: {
+      type: new GraphQLList(GraphQLString),
+      resolve: ({ image_versions }) => image_versions
+    },
     url: {
       args: {
-        width: { type: GraphQLInt },
-        height: { type: GraphQLInt }
+        version: {
+          type: GraphQLString
+        }
+      },
+      type: GraphQLString,
+      resolve: VersionedImageUrl
+    },
+    resized: {
+      args: {
+        width: {
+          type: GraphQLInt
+        },
+        height: {
+          type: GraphQLInt
+        },
+        version: {
+          type: GraphQLString
+        }
       },
       type: ResizedImageUrlType,
-      resolve: (image, options) => ResizedImageUrl(image, options)
+      resolve: ResizedImageUrl
     }
   })
 });
