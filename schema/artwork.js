@@ -51,6 +51,12 @@ let ArtworkType = new GraphQLObjectType({
       date: {
         type: GraphQLString
       },
+      partner:{
+        type: Partner.type,
+        resolve: (artwork) => {
+          return artwork.partner
+        }
+      },
       is_contactable: {
         type: GraphQLBoolean,
         description: 'Are we able to display a contact form on artwork pages?',
