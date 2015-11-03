@@ -3,9 +3,9 @@ import gravity from '../../../lib/apis/gravity';
 
 describe('APIs', () => {
   describe('gravity', () => {
-    before(() => gravity.__Rewire__('ARTSY_XAPP_TOKEN', 'secret'));
+    before(() => gravity.__Rewire__('GRAVITY_XAPP_TOKEN', 'secret'));
 
-    after(() => gravity.__ResetDependency__('ARTSY_XAPP_TOKEN'));
+    after(() => gravity.__ResetDependency__('GRAVITY_XAPP_TOKEN'));
 
     afterEach(() => {
       gravity.__ResetDependency__('request');

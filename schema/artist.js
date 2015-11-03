@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import Image from './image';
 import ArtistCarousel from './artist/carousel';
+import ArtistStatuses from './artist/statuses';
 import gravity from '../lib/loaders/gravity';
 import {
   GraphQLObjectType,
@@ -102,6 +103,8 @@ let ArtistType = new GraphQLObjectType({
       },
 
       carousel: ArtistCarousel,
+
+      statuses: ArtistStatuses,
 
       partner_shows: {
         type: new GraphQLList(PartnerShow.type),
