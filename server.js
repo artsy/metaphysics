@@ -4,7 +4,7 @@ import morgan from 'morgan';
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
 import schema from './schema';
-import { gravityLoader } from './lib/loaders/gravity';
+import loaders from './lib/loaders';
 
 const {
   PORT,
@@ -33,7 +33,7 @@ app.get('/favicon.ico', (req, res) => {
 app.all('/graphql', (req, res) => res.redirect('/'));
 
 app.use('/', morgan('combined'), graphqlHTTP((req) => {
-  gravityLoader.clearAll();
+  loaders.clearAll();
 
   return {
     schema: schema,
