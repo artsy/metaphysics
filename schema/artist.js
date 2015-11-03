@@ -92,6 +92,15 @@ let ArtistType = new GraphQLObjectType({
         }));
       }
     },
+    related_artists: {
+      type: new GraphQLList(Artist.type),
+      resolve: (artwork, options) => {
+        return gravity(`related/layer/main/artists`, _.defaults(options, {
+          'artist[]': artwork.id,
+          exclude_artists_without_artworks: true
+        }));
+      }
+    },
     partner_shows: {
       type: new GraphQLList(PartnerShow.type),
       args: {

@@ -3,6 +3,7 @@ import qs from 'qs';
 import Artist from './artist';
 import Image from './image';
 import Sale from './sale';
+import Partner from './partner';
 import gravity from '../lib/loaders/gravity';
 import {
   GraphQLObjectType,
@@ -48,12 +49,18 @@ let ArtworkType = new GraphQLObjectType({
     date: {
       type: GraphQLString
     },
+    partner:{
+      type: Partner.type,
+      resolve: (artwork) => {
+        return artwork.partner
+      }
+    },
     is_contactable: {
       type: GraphQLBoolean,
       description: 'Are we able to display a contact form on artwork pages?',
       resolve: (artwork) => {
         return new Promise(resolve => {
-          gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
+          gravity(`related/sales`, { size: 1, active: true, artwork: [artwork.id] })
             .then(sales => {
               resolve(ArtworkPredicates.is_contactable(artwork, sales))
             });
@@ -64,12 +71,12 @@ let ArtworkType = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: 'Is this artwork part of an auction?',
       resolve: (artwork) => {
-        return new Promise((resolve) => {
-          fetchRelatedSales({id: artwork.id}, {})
-            .then((relatedSales) => {
-              resolve(ArtworkPredicates.is_in_auction(artwork, relatedSales))
-            })
-        })
+        return new Promise(resolve => {
+          gravity(`related/sales`, { size: 1, active: true, artwork: [artwork.id] })
+            .then(sales => {
+              resolve(ArtworkPredicates.is_in_auction(artwork, sales))
+            });
+        });
       }
     },
     artist: {
