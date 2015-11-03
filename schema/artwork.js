@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import qs from 'qs';
-import Artist from './artist';
 import Image from './image';
 import Sale from './sale';
 import Partner from './partner';
@@ -18,119 +17,103 @@ export let ArtworkPredicates = {
   is_contactable: (artwork, sales) => {
     return artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !sales.length
   },
-  is_in_auction: (artwork, relatedSales) => {
-    return _.any(relatedSales, 'is_auction')
+  is_in_auction: (artwork, sales) => {
+    return _.any(sales, 'is_auction')
   }
 }
 
 let ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
-  fields: () => ({
-    cached: {
-      type: GraphQLInt,
-      resolve: ({ cached }) => new Date().getTime() - cached
-    },
-    id: {
-      type: GraphQLString
-    },
-    href: {
-      type: GraphQLString,
-      resolve: (artwork) => `/artwork/${artwork.id}`
-    },
-    title: {
-      type: GraphQLString
-    },
-    category: {
-      type: GraphQLString
-    },
-    medium: {
-      type: GraphQLString
-    },
-    date: {
-      type: GraphQLString
-    },
-    partner:{
-      type: Partner.type,
-      resolve: (artwork) => {
-        return artwork.partner
-      }
-    },
-    is_contactable: {
-      type: GraphQLBoolean,
-      description: 'Are we able to display a contact form on artwork pages?',
-      resolve: (artwork) => {
-        return new Promise(resolve => {
-          gravity(`related/sales`, { size: 1, active: true, artwork: [artwork.id] })
-            .then(sales => {
-              resolve(ArtworkPredicates.is_contactable(artwork, sales))
-            });
-        });
-      }
-    },
-    is_in_auction: {
-      type: GraphQLBoolean,
-      description: 'Is this artwork part of an auction?',
-      resolve: (artwork) => {
-        return new Promise(resolve => {
-          gravity(`related/sales`, { size: 1, active: true, artwork: [artwork.id] })
-            .then(sales => {
-              resolve(ArtworkPredicates.is_in_auction(artwork, sales))
-            });
-        });
-      }
-    },
-    artist: {
-      type: Artist.type,
-      resolve: ({ artist }) => gravity(`artist/${artist.id}`)
-    },
-    dimensions: {
-      type: new GraphQLObjectType({
-        name: 'dimensions',
-        fields: {
-          in: { type: GraphQLString },
-          cm: { type: GraphQLString }
-        }
-      })
-    },
-    images: {
-      type: new GraphQLList(Image.type),
-      args: {
-        size: {
-          type: GraphQLInt
+  fields: () => {
+    let Artist = require('./artist');
+
+    return {
+      cached: {
+        type: GraphQLInt,
+        resolve: ({ cached }) => new Date().getTime() - cached
+      },
+      id: {
+        type: GraphQLString
+      },
+      href: {
+        type: GraphQLString,
+        resolve: (artwork) => `/artwork/${artwork.id}`
+      },
+      title: {
+        type: GraphQLString
+      },
+      category: {
+        type: GraphQLString
+      },
+      medium: {
+        type: GraphQLString
+      },
+      date: {
+        type: GraphQLString
+      },
+      is_contactable: {
+        type: GraphQLBoolean,
+        description: 'Are we able to display a contact form on artwork pages?',
+        resolve: (artwork) => {
+          return new Promise(resolve => {
+            gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
+              .then(sales => {
+                resolve(ArtworkPredicates.is_contactable(artwork, sales))
+              });
+          });
         }
       },
-      resolve: ({ images }, { size }) => {
-        return size ? _.take(images, size) : images;
-      }
-    },
-    display_price: {
-      type: GraphQLString,
-      resolve: (artwork) => {
-        if(artwork.availability == 'for sale' && artwork.price_hidden){
-          return 'Contact for Price';
-        }else if(artwork.price){
-          return artwork.price;
-        }else if (artwork.sale_message && artwork.sale_message != 'Sold'){
-          return artwork.sale_message;
-        }else{
-          return '';
-        }
-      }
-    },
-    sales: {
-      type: new GraphQLList(Sale.type),
-      args: {
-        size: {
-          type: GraphQLInt
+      is_in_auction: {
+        type: GraphQLBoolean,
+        description: 'Is this artwork part of an auction?',
+        resolve: (artwork) => {
+          return new Promise(resolve => {
+            gravity(`related/sales`, { size: 1, active: true, artwork: [artwork.id] })
+              .then(sales => {
+                resolve(ArtworkPredicates.is_in_auction(artwork, sales))
+              });
+          });
         }
       },
-      resolve: ({ id }, options) => gravity(`related/sales`, _.defaults(options, {
-        size: 1,
-        active: true,
-        artwork: [id]
-      }))
+      artist: {
+        type: Artist.type,
+        resolve: ({ artist }) => gravity(`artist/${artist.id}`)
+      },
+      dimensions: {
+        type: new GraphQLObjectType({
+          name: 'dimensions',
+          fields: {
+            in: { type: GraphQLString },
+            cm: { type: GraphQLString }
+          }
+        })
+      },
+      images: {
+        type: new GraphQLList(Image.type),
+        args: {
+          size: {
+            type: GraphQLInt
+          }
+        },
+        resolve: ({ images }, { size }) => {
+          return size ? _.take(images, size) : images;
+        }
+      },
+      sales: {
+        type: new GraphQLList(Sale.type),
+        args: {
+          size: {
+            type: GraphQLInt
+          }
+        },
+        resolve: ({ id }, options) => gravity(`related/sales`, _.defaults(options, {
+          size: 1,
+          active: true,
+          artwork: [id]
+        }))
+      }
     }
-  })
+  }
 });
 
 let Artwork = {
