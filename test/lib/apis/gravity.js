@@ -3,17 +3,19 @@ import gravity from '../../../lib/apis/gravity';
 
 describe('APIs', () => {
   describe('gravity', () => {
+    let fetch = gravity.__get__('fetch');
+
     before(() => gravity.__Rewire__('GRAVITY_XAPP_TOKEN', 'secret'));
 
     after(() => gravity.__ResetDependency__('GRAVITY_XAPP_TOKEN'));
 
     afterEach(() => {
-      gravity.__ResetDependency__('request');
+      fetch.__ResetDependency__('request');
     });
 
     it('makes a correct request to Gravity', (done) => {
       let request = sinon.stub().yields(null, {});
-      gravity.__Rewire__('request', request);
+      fetch.__Rewire__('request', request);
 
       gravity('foo/bar')
         .then(data => {
@@ -25,8 +27,8 @@ describe('APIs', () => {
     });
 
     it('resolves when there is a successful JSON response', (done) => {
-      let request = sinon.stub().yields(null, { body: { foo: 'bar' } });
-      gravity.__Rewire__('request', request);
+      let request = sinon.stub().yields(null, { statusCode: 200, body: { foo: 'bar' } });
+      fetch.__Rewire__('request', request);
 
       gravity('foo/bar')
         .then(data => {
@@ -37,8 +39,8 @@ describe('APIs', () => {
     });
 
     it('tries to parse the response when there is a String and resolves with it', (done) => {
-      let request = sinon.stub().yields(null, { body: JSON.stringify({ foo: 'bar' }) });
-      gravity.__Rewire__('request', request);
+      let request = sinon.stub().yields(null, { statusCode: 200, body: JSON.stringify({ foo: 'bar' }) });
+      fetch.__Rewire__('request', request);
 
       gravity('foo/bar')
         .then(data => {
@@ -48,9 +50,9 @@ describe('APIs', () => {
         .catch(done);
     });
 
-    it('rejects API errors', (done) => {
+    it('rejects request errors', (done) => {
       let request = sinon.stub().yields(new Error('bad'));
-      gravity.__Rewire__('request', request);
+      fetch.__Rewire__('request', request);
 
       gravity('foo/bar')
         .then(() => {
@@ -62,9 +64,23 @@ describe('APIs', () => {
         });
     });
 
+    it('rejects API errors', (done) => {
+      let request = sinon.stub().yields(null, { statusCode: 401, body: 'Unauthorized' });
+      fetch.__Rewire__('request', request);
+
+      gravity('foo/bar')
+        .then(() => {
+          true.should.be.false(); // Doesn't execute
+        })
+        .catch((err) => {
+          err.should.equal('Unauthorized');
+          done()
+        });
+    });
+
     it('rejects parse errors', (done) => {
-      let request = sinon.stub().yields(null, { body: 'not json'});
-      gravity.__Rewire__('request', request);
+      let request = sinon.stub().yields(null, { statusCode: 200, body: 'not json' });
+      fetch.__Rewire__('request', request);
 
       gravity('foo/bar')
         .catch((err) => {
