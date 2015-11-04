@@ -102,6 +102,16 @@ let ArtistType = new GraphQLObjectType({
         resolve: (artist) => artist
       },
 
+      artists: {
+        type: new GraphQLList(Artist.type),
+        resolve: (artwork, options) => {
+          return gravity(`related/layer/main/artists`, {
+            exclude_artists_without_artworks: true,
+            artist: [artwork.id]
+          })
+        }
+      },
+
       carousel: ArtistCarousel,
 
       statuses: ArtistStatuses,
