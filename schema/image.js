@@ -17,7 +17,7 @@ export let ResizedImageUrl = (image, options) => {
 
   let width = Math.floor(image.original_width * factor);
   let height = Math.floor(image.original_height * factor);
-  let src = image.image_url.replace(':version', 'large');
+  let src = image.image_url.replace(':version', (options.version || 'large'));
   let url = `${GEMINI_ENDPOINT}/?${qs.stringify({
     resize_to: 'fit',
     height: height,
