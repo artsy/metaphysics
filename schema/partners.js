@@ -2,20 +2,19 @@ import gravity from '../lib/loaders/gravity';
 import Partner from './partner';
 import {
   GraphQLString,
-  GraphQLList,
-  GraphQLNonNull
+  GraphQLList
 } from 'graphql'
 
 let Partners = {
   type: new GraphQLList(Partner.type),
   description: 'A list of Partners',
   args: {
-    ids: {
-      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
-      description: 'The slug or ID of the Partner'
+    near: {
+      type: GraphQLString,
+      description: 'Coordinates to find partners closest to'
     }
   },
-  resolve: (root, { ids }) => Promise.all(ids.map(id => gravity(`partner/${id}`)))
+  resolve: (root, options) => gravity('partners', options)
 };
 
 export default Partners;
