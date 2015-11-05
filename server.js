@@ -1,4 +1,5 @@
 import xapp from 'artsy-xapp';
+import cors from 'cors';
 import debug from 'debug';
 import morgan from 'morgan';
 import express from 'express';
@@ -32,7 +33,7 @@ app.get('/favicon.ico', (req, res) => {
 
 app.all('/graphql', (req, res) => res.redirect('/'));
 
-app.use('/', morgan('combined'), graphqlHTTP((req) => {
+app.use('/', cors(), morgan('combined'), graphqlHTTP((req) => {
   loaders.clearAll();
 
   return {
