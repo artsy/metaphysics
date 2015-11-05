@@ -2,10 +2,13 @@ import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import Profile from './profile';
+import Location from './location';
 import {
   GraphQLString,
   GraphQLObjectType,
-  GraphQLNonNull
+  GraphQLNonNull,
+  GraphQLInt,
+  GraphQLList
 } from 'graphql';
 
 let PartnerType = new GraphQLObjectType({
@@ -28,6 +31,15 @@ let PartnerType = new GraphQLObjectType({
     profile: {
       type: Profile.type,
       resolve: ({ default_profile_id }) => gravity(`profile/${default_profile_id}`)
+    },
+    locations: {
+      type: new GraphQLList(Location.type),
+      args: {
+        size: {
+          type: GraphQLInt
+        }
+      },
+      resolve: ({ id }, options) => gravity(`partner/${id}/locations`, options)
     }
   })
 });
