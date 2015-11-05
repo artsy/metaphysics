@@ -24,6 +24,10 @@ let PartnerType = new GraphQLObjectType({
     type: {
       type: GraphQLString
     },
+    href: {
+      type: GraphQLString,
+      resolve: ({ default_profile_id }) => `/${default_profile_id}`
+    },
     initials: {
       type: GraphQLString,
       resolve: ({ name }) => _.take(name.replace(/[^A-Z]/g, ''), 3).join('')
