@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import qs from 'qs';
+import cached from './fields/cached';
 import Image from './image';
 import Sale from './sale';
 import Partner from './partner';
@@ -28,10 +29,7 @@ let ArtworkType = new GraphQLObjectType({
     let Artist = require('./artist');
 
     return {
-      cached: {
-        type: GraphQLInt,
-        resolve: ({ cached }) => new Date().getTime() - cached
-      },
+      cached: cached,
       id: {
         type: GraphQLString
       },

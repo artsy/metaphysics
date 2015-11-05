@@ -1,4 +1,5 @@
 import gravity from '../lib/loaders/gravity';
+import cached from './fields/cached';
 import Artist from './artist';
 import Image from './image';
 import {
@@ -12,10 +13,7 @@ import {
 let PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
   fields: () => ({
-    cached: {
-      type: GraphQLInt,
-      resolve: ({ cached }) => new Date().getTime() - cached
-    },
+    cached: cached,
     id: {
       type: GraphQLString
     },
