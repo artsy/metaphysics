@@ -3,6 +3,7 @@ import Artwork from './artwork';
 import Artist from './artist';
 import Profile from './profile';
 import Partner from './partner';
+import Partners from './partners';
 import PartnerShow from './partner_show';
 import Sale from './sale';
 import {
@@ -19,6 +20,7 @@ let schema = new GraphQLSchema({
       artist: Artist,
       profile: Profile,
       partner: Partner,
+      partners: Partners,
       partner_show: PartnerShow,
       sale: Sale
     }
