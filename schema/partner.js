@@ -1,18 +1,17 @@
+import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
+import cached from './fields/cached';
+import Profile from './profile';
 import {
   GraphQLString,
   GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLInt
+  GraphQLNonNull
 } from 'graphql';
 
 let PartnerType = new GraphQLObjectType({
   name: 'Partner',
   fields: () => ({
-    cached: {
-      type: GraphQLInt,
-      resolve: ({ cached }) => new Date().getTime() - cached
-    },
+    cached: cached,
     id: {
       type: GraphQLString
     },
@@ -22,8 +21,13 @@ let PartnerType = new GraphQLObjectType({
     type: {
       type: GraphQLString
     },
-    default_profile_id: {
-      type: GraphQLString
+    initials: {
+      type: GraphQLString,
+      resolve: ({ name }) => _.take(name.replace(/[^A-Z]/g, ''), 3).join('')
+    },
+    profile: {
+      type: Profile.type,
+      resolve: ({ default_profile_id }) => gravity(`profile/${default_profile_id}`)
     }
   })
 });

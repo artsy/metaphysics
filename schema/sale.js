@@ -1,4 +1,5 @@
 import gravity from '../lib/loaders/gravity';
+import cached from './fields/cached';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -9,10 +10,7 @@ import {
 let SaleType = new GraphQLObjectType({
   name: 'Sale',
   fields: () => ({
-    cached: {
-      type: GraphQLInt,
-      resolve: ({ cached }) => new Date().getTime() - cached
-    },
+    cached: cached,
     id: {
       type: GraphQLString
     },
