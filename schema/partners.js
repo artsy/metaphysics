@@ -12,6 +12,14 @@ let Partners = {
     near: {
       type: GraphQLString,
       description: 'Coordinates to find partners closest to'
+    },
+    partner_categories: {
+      type: new GraphQLList(GraphQLString),
+      description: 'Only return partners of the specified partner categories. Accepts list of slugs.'
+    },
+    type: {
+      type: new GraphQLList(GraphQLString),
+      description: 'Only return partners of the specified _type(s).'
     }
   },
   resolve: (root, options) => gravity('partners', options)
