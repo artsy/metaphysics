@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import Partner from './partner';
@@ -5,7 +6,8 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLList
+  GraphQLList,
+  GraphQLInt
 } from 'graphql';
 
 let PartnerCategoryType = new GraphQLObjectType({
@@ -23,9 +25,14 @@ let PartnerCategoryType = new GraphQLObjectType({
     },
     partners: {
       type: new GraphQLList(Partner.type),
-      resolve: ({ id }) => gravity('partners', {
+      args: {
+        size: {
+          type: GraphQLInt
+        }
+      },
+      resolve: ({ id }, options) => gravity('partners', _.defaults(options, {
         partner_categories: [id]
-      })
+      }))
     }
   })
 });
