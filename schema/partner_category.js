@@ -4,7 +4,8 @@ import Partner from './partner';
 import {
   GraphQLString,
   GraphQLObjectType,
-  GraphQLNonNull
+  GraphQLNonNull,
+  GraphQLList
 } from 'graphql';
 
 let PartnerCategoryType = new GraphQLObjectType({
@@ -21,7 +22,7 @@ let PartnerCategoryType = new GraphQLObjectType({
       type: GraphQLString
     },
     partners: {
-      type: Partner.type,
+      type: new GraphQLList(Partner.type),
       resolve: ({ id }) => gravity('partners', {
         partner_categories: [id]
       })
