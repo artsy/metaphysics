@@ -83,7 +83,7 @@ describe('ArtistCarousel type', () => {
                  resized: {
                    height: 199,
                    width: 300,
-                   url: "https://gemini.cloudfront.test/?resize_to=fit&height=199&width=300&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg"
+                   url: "https://i.embed.ly.test/1/display/resize?grow=false&url=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=300&height=199&key=xxx_embedly_key_xxx&quality=95"
                  }
                }
              ]
