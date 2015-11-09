@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import gemini from './proxies/gemini';
+import proxy from './proxies';
 import {
   GraphQLObjectType,
   GraphQLFloat,
@@ -15,7 +15,7 @@ export let CroppedImageUrl = (image, options) => {
 
   let { width, height } = options;
   let src = image.image_url.replace(':version', options.version);
-  let url = gemini(src, 'crop', width, height);
+  let url = proxy(src, 'crop', width, height);
 
   return {
     width,

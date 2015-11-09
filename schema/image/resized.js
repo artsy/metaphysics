@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import gemini from './proxies/gemini';
+import proxy from './proxies';
 import {
   GraphQLObjectType,
   GraphQLFloat,
@@ -23,7 +23,7 @@ export let ResizedImageUrl = (image, options) => {
   }
 
   let src = image.image_url.replace(':version', options.version);
-  let url = gemini(src, 'fit', (width || options.width), (height || options.height));
+  let url = proxy(src, 'resize', (width || options.width), (height || options.height));
 
   return {
     factor,
