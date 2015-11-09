@@ -23,8 +23,8 @@ describe('Image', () => {
       let resized = ResizedImageUrl({ image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg' }, { width: 500, height: 500 });
       resized.should.eql({
         factor: Infinity,
-        width: undefined,
-        height: undefined,
+        width: null,
+        height: null,
         url: 'https://i.embed.ly.test/1/display/resize?grow=false&url=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=500&height=500&key=xxx_embedly_key_xxx&quality=95'
       });
     });

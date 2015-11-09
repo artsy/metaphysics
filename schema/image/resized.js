@@ -17,9 +17,12 @@ export let ResizedImageUrl = (image, options) => {
     return value / image[`original_${attr}`];
   }));
 
+  let width = null;
+  let height = null;
+
   if (_.isFinite(factor)) {
-    var width = Math.floor(image.original_width * factor);
-    var height = Math.floor(image.original_height * factor);
+    width = Math.floor(image.original_width * factor);
+    height = Math.floor(image.original_height * factor);
   }
 
   let src = image.image_url.replace(':version', options.version);
