@@ -20,7 +20,11 @@ let port = PORT || 3000;
 
 app.use(newrelic);
 
-xapp.on('error', debug('error'));
+xapp.on('error', (err) => {
+  debug('error')(err);
+  process.exit;
+});
+
 xapp.init({
   url: GRAVITY_API_URL,
   id: GRAVITY_ID,
