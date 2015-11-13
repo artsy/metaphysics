@@ -104,11 +104,17 @@ let ArtistType = new GraphQLObjectType({
 
       artists: {
         type: new GraphQLList(Artist.type),
-        resolve: (artwork, options) => {
-          return gravity(`related/layer/main/artists`, {
+        args: {
+          size: {
+            type: GraphQLInt,
+            description: 'The number of Artists to return'
+          }
+        },
+        resolve: (artist, options) => {
+          return gravity(`related/layer/main/artists`, _.defaults(options, {
             exclude_artists_without_artworks: true,
-            artist: [artwork.id]
-          })
+            artist: [artist.id]
+          }));
         }
       },
 
