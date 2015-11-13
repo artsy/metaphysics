@@ -18,14 +18,12 @@ describe('Artist type', () => {
     Artist.__ResetDependency__('gravity');
   });
 
-  it('fetches an artist by ID', (done) => {
-    graphql(schema, '{ artist(id: "foo-bar") { id, name } }')
+  it('fetches an artist by ID', () => {
+    return graphql(schema, '{ artist(id: "foo-bar") { id, name } }')
       .then(({ data }) => {
         Artist.__get__('gravity').args[0][0].should.equal('artist/foo-bar');
         data.artist.id.should.equal('foo-bar');
         data.artist.name.should.equal('Foo Bar');
-        done();
-      })
-      .catch(done);
+      });
   });
 });
