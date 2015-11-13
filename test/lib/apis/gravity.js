@@ -13,80 +13,57 @@ describe('APIs', () => {
       fetch.__ResetDependency__('request');
     });
 
-    it('makes a correct request to Gravity', (done) => {
-      let request = sinon.stub().yields(null, {});
+    it('makes a correct request to Gravity', () => {
+      let request = sinon.stub().yields(null, { statusCode: 200, body: {} });
       fetch.__Rewire__('request', request);
 
-      gravity('foo/bar')
-        .then(data => {
-          request.args[0][0].should.equal('https://api.artsy.test/api/v1/foo/bar');
-          request.args[0][1].should.eql({ headers: { 'X-XAPP-TOKEN': 'secret' }, method: 'GET' });
-        })
-        .then(done)
-        .catch(done);
+      return gravity('foo/bar').then(data => {
+        request.args[0][0].should.equal('https://api.artsy.test/api/v1/foo/bar');
+        request.args[0][1].should.eql({
+          headers: { 'X-XAPP-TOKEN': 'secret' },
+          method: 'GET',
+          timeout: 5000
+        });
+      });
     });
 
-    it('resolves when there is a successful JSON response', (done) => {
+    it('resolves when there is a successful JSON response', () => {
       let request = sinon.stub().yields(null, { statusCode: 200, body: { foo: 'bar' } });
       fetch.__Rewire__('request', request);
 
-      gravity('foo/bar')
-        .then(data => {
-          data.foo.should.equal('bar');
-        })
-        .then(done)
-        .catch(done);
+      return gravity('foo/bar').then(data => {
+        data.foo.should.equal('bar');
+      });
     });
 
-    it('tries to parse the response when there is a String and resolves with it', (done) => {
+    it('tries to parse the response when there is a String and resolves with it', () => {
       let request = sinon.stub().yields(null, { statusCode: 200, body: JSON.stringify({ foo: 'bar' }) });
       fetch.__Rewire__('request', request);
 
-      gravity('foo/bar')
-        .then(data => {
-          data.foo.should.equal('bar');
-        })
-        .then(done)
-        .catch(done);
+      return gravity('foo/bar').then(data => {
+        data.foo.should.equal('bar');
+      });
     });
 
-    it('rejects request errors', (done) => {
+    it('rejects request errors', () => {
       let request = sinon.stub().yields(new Error('bad'));
       fetch.__Rewire__('request', request);
 
-      gravity('foo/bar')
-        .then(() => {
-          true.should.be.false(); // Doesn't execute
-        })
-        .catch((err) => {
-          err.message.should.equal('bad');
-          done()
-        });
+      return gravity('foo/bar').should.be.rejectedWith('bad');
     });
 
-    it('rejects API errors', (done) => {
+    it('rejects API errors', () => {
       let request = sinon.stub().yields(null, { statusCode: 401, body: 'Unauthorized' });
       fetch.__Rewire__('request', request);
 
-      gravity('foo/bar')
-        .then(() => {
-          true.should.be.false(); // Doesn't execute
-        })
-        .catch((err) => {
-          err.should.equal('Unauthorized');
-          done()
-        });
+      return gravity('foo/bar').should.be.rejectedWith('Unauthorized');
     });
 
-    it('rejects parse errors', (done) => {
+    it('rejects parse errors', () => {
       let request = sinon.stub().yields(null, { statusCode: 200, body: 'not json' });
       fetch.__Rewire__('request', request);
 
-      gravity('foo/bar')
-        .catch((err) => {
-          err.message.should.equal('Unexpected token o');
-          done()
-        });
+      return gravity('foo/bar').should.be.rejectedWith('Unexpected token o');
     });
   });
 });

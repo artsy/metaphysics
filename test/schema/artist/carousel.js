@@ -48,7 +48,7 @@ describe('ArtistCarousel type', () => {
       ArtistCarousel.__ResetDependency__('gravity');
     });
 
-    it('fetches an artist by ID', (done) => {
+    it('fetches an artist by ID', () => {
       let gravity = ArtistCarousel.__get__('gravity');
       let query = `
         {
@@ -68,7 +68,7 @@ describe('ArtistCarousel type', () => {
         }
       `;
 
-      graphql(schema, query)
+      return graphql(schema, query)
         .then(({ data }) => {
           gravity.args[0][0].should.equal('related/shows');
           gravity.args[0][1].should.eql({ artist_id: 'foo-bar', sort: '-end_at', displayable: true, solo_show: true, top_tier: true });
@@ -88,9 +88,7 @@ describe('ArtistCarousel type', () => {
                }
              ]
            });
-          done();
         })
-        .catch(done);
     });
   });
 });
