@@ -1,3 +1,4 @@
+import newrelic from 'artsy-newrelic';
 import xapp from 'artsy-xapp';
 import cors from 'cors';
 import debug from 'debug';
@@ -16,6 +17,8 @@ const {
 
 let app = express();
 let port = PORT || 3000;
+
+app.use(newrelic);
 
 xapp.on('error', debug('error'));
 xapp.init({
