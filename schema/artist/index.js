@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import Image from './image';
-import ArtistCarousel from './artist/carousel';
-import ArtistStatuses from './artist/statuses';
-import gravity from '../lib/loaders/gravity';
+import Image from '../image';
+import ArtistCarousel from './carousel';
+import ArtistStatuses from './statuses';
+import gravity from '../../lib/loaders/gravity';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -16,8 +16,8 @@ import {
 let ArtistType = new GraphQLObjectType({
   name: 'Artist',
   fields: () => {
-    let Artwork = require('./artwork').default;
-    let PartnerShow = require('./partner_show');
+    let Artwork = require('../artwork').default;
+    let PartnerShow = require('../partner_show');
 
     return {
       cached: {
