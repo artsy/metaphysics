@@ -4,26 +4,36 @@ import httpLoader from '../../../lib/loaders/http';
 
 describe('Loaders', () => {
   describe('http', () => {
-    it('accepts an API function and returns a generic data loader for making cached HTTP requests', () => {
-      let api = sinon.stub().returns(Promise.resolve({ ok: true }));
-      let loader = httpLoader(api);
+    describe('error', () => {
+      it('propagates the error through rejection if the API rejects', () => {
+        let api = sinon.stub().returns(Promise.reject(new Error('Something went wrong')));
+        let loader = httpLoader(api);
+        return loader.load('/foo/bar').should.be.rejectedWith('Something went wrong');
+      });
+    });
 
-      return loader.load('/my/cached/request')
-        .then(data => {
-          return Promise.all([
-            Promise.resolve(data),
-            loader.load('/my/cached/request'),
-            cache.get('/my/cached/request')
-          ]);
-        })
-        .then(([data, memoized, cached]) => {
-          api.callCount.should.equal(1);
-          api.args[0][0].should.equal('/my/cached/request');
+    describe('success', () => {
+      it('accepts an API function and returns a generic data loader for making cached HTTP requests', () => {
+        let api = sinon.stub().returns(Promise.resolve({ ok: true }));
+        let loader = httpLoader(api);
 
-          data.ok.should.be.true();
-          memoized.ok.should.be.true();
-          cached.ok.should.be.true();
-        });
+        return loader.load('/my/cached/request')
+          .then(data => {
+            return Promise.all([
+              Promise.resolve(data),
+              loader.load('/my/cached/request'),
+              cache.get('/my/cached/request')
+            ]);
+          })
+          .then(([data, memoized, cached]) => {
+            api.callCount.should.equal(1);
+            api.args[0][0].should.equal('/my/cached/request');
+
+            data.ok.should.be.true();
+            memoized.ok.should.be.true();
+            cached.ok.should.be.true();
+          });
+      });
     });
   });
 });
