@@ -2,6 +2,7 @@ import Ping from './ping';
 import Artwork from './artwork';
 import Artist from './artist';
 import Artists from './artists';
+import OrderedSets from './ordered_sets';
 import Profile from './profile';
 import Partner from './partner';
 import Partners from './partners';
@@ -23,6 +24,7 @@ let schema = new GraphQLSchema({
       artist: Artist,
       artists: Artists,
       profile: Profile,
+      ordered_sets: OrderedSets,
       partner: Partner,
       partners: Partners,
       partner_category: PartnerCategory,
