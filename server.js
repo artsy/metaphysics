@@ -22,7 +22,7 @@ let port = PORT || 3000;
 
 app.use(newrelic);
 
-if(NODE_ENV == 'production'){
+if (NODE_ENV == 'production') {
   app.set('forceSSLOptions', { trustXFPHeader: true }).use(forceSSL);
 }
 
