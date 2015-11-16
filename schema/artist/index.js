@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import Image from './image';
-import ArtistCarousel from './artist/carousel';
-import ArtistStatuses from './artist/statuses';
-import gravity from '../lib/loaders/gravity';
+import Image from '../image';
+import ArtistCarousel from './carousel';
+import ArtistStatuses from './statuses';
+import gravity from '../../lib/loaders/gravity';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -16,8 +16,8 @@ import {
 let ArtistType = new GraphQLObjectType({
   name: 'Artist',
   fields: () => {
-    let Artwork = require('./artwork').default;
-    let PartnerShow = require('./partner_show');
+    let Artwork = require('../artwork').default;
+    let PartnerShow = require('../partner_show');
 
     return {
       cached: {
@@ -104,11 +104,17 @@ let ArtistType = new GraphQLObjectType({
 
       artists: {
         type: new GraphQLList(Artist.type),
-        resolve: (artwork, options) => {
-          return gravity(`related/layer/main/artists`, {
+        args: {
+          size: {
+            type: GraphQLInt,
+            description: 'The number of Artists to return'
+          }
+        },
+        resolve: (artist, options) => {
+          return gravity(`related/layer/main/artists`, _.defaults(options, {
             exclude_artists_without_artworks: true,
-            artist: [artwork.id]
-          })
+            artist: [artist.id]
+          }));
         }
       },
 
