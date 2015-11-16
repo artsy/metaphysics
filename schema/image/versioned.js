@@ -1,5 +1,9 @@
 import { GraphQLString } from 'graphql';
 
+export let VersionedImageUrl = ({ image_url }, { version }) => {
+  if (!!image_url) return image_url.replace(':version', version);
+};
+
 export default {
   args: {
     version: {
@@ -7,7 +11,5 @@ export default {
     }
   },
   type: GraphQLString,
-  resolve: ({ image_url }, { version }) => {
-    return image_url.replace(':version', version);
-  }
+  resolve: VersionedImageUrl
 };
