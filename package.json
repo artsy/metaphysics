@@ -27,7 +27,8 @@
     "qs": "^5.2.0",
     "react": "^0.14.0",
     "redis": "^2.2.5",
-    "request": "^2.65.0"
+    "request": "^2.65.0",
+    "url": "^0.11.0"
   },
   "devDependencies": {
     "babel-plugin-rewire": "^0.1.22",
