@@ -4,6 +4,8 @@ import cors from 'cors';
 import debug from 'debug';
 import morgan from 'morgan';
 import express from 'express';
+import { parse } from 'url';
+import { METAPHYSICS_URL } from './config'
 import graphqlHTTP from 'express-graphql';
 import schema from './schema';
 import loaders from './lib/loaders';
@@ -19,6 +21,15 @@ let app = express();
 let port = PORT || 3000;
 
 app.use(newrelic);
+
+app.use((req, res, next) => {
+  let protocol = req.get('X-Forwarded-Proto') || req.protocol;
+  if(protocol != 'https' && parse(METAPHYSICS_URL).protocol == 'https:'){
+    return res.redirect(301, METAPHYSICS_URL + req.url);
+  } else {
+    return next();
+  }
+});
 
 xapp.on('error', (err) => {
   debug('error')(err);
