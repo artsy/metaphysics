@@ -4,12 +4,14 @@ import cors from 'cors';
 import debug from 'debug';
 import morgan from 'morgan';
 import express from 'express';
+import forceSSL from 'express-force-ssl';
 import graphqlHTTP from 'express-graphql';
 import schema from './schema';
 import loaders from './lib/loaders';
 
 const {
   PORT,
+  NODE_ENV,
   GRAVITY_API_URL,
   GRAVITY_ID,
   GRAVITY_SECRET
@@ -19,6 +21,10 @@ let app = express();
 let port = PORT || 3000;
 
 app.use(newrelic);
+
+if(NODE_ENV == 'production'){
+  app.set('forceSSLOptions', { trustXFPHeader: true }).use(forceSSL);
+}
 
 xapp.on('error', (err) => {
   debug('error')(err);
