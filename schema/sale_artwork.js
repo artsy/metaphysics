@@ -21,7 +21,7 @@ let SaleArtworkType = new GraphQLObjectType({
     return {
       cached: cached,
       id: {
-        type: GraphQLString
+        type: GraphQLInt
       },
       position: {
         type: GraphQLString
