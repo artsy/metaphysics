@@ -4,26 +4,47 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLList
 } from 'graphql';
 
 let SaleType = new GraphQLObjectType({
   name: 'Sale',
-  fields: () => ({
-    cached: cached,
-    id: {
-      type: GraphQLString
-    },
-    name: {
-      type: GraphQLString
-    },
-    description: {
-      type: GraphQLString
-    },
-    sale_type: {
-      type: GraphQLString
+  fields: () => {
+    let SaleArtwork = require('./sale_artwork');
+
+    return {
+      cached: cached,
+      id: {
+        type: GraphQLString
+      },
+      name: {
+        type: GraphQLString
+      },
+      description: {
+        type: GraphQLString
+      },
+      sale_type: {
+        type: GraphQLString
+      },
+      is_auction: {
+        type: GraphQLString
+      },
+      start_at: {
+        type: GraphQLString
+      },
+      end_at: {
+        type: GraphQLString
+      },
+      currency: {
+        type: GraphQLString
+      },
+      sale_artworks: {
+        type: new GraphQLList(SaleArtwork.type),
+        resolve: ({ id }, options) => gravity(`sale/${id}/sale_artworks`, options)
+      }
     }
-  })
+  }
 });
 
 let Sale = {
