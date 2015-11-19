@@ -4,6 +4,7 @@ import Profile from './profile';
 import {
   GraphQLObjectType,
   GraphQLString,
+  GraphQLBoolean,
   GraphQLNonNull
 } from 'graphql';
 
@@ -20,6 +21,29 @@ let FairType = new GraphQLObjectType({
         let id = default_profile_id || organizer && organizer.profile_id;
         return gravity(`profile/${id}`)
       }
+    },
+    has_full_feature: {
+      type: GraphQLBoolean
+    },
+    href: {
+      type: GraphQLString,
+      resolve: ({ default_profile_id, organizer }) => 
+        {
+          let id = default_profile_id || organizer && organizer.profile_id;
+          return `/${id}`
+        }
+    },
+    start_at: {
+      type: GraphQLString
+    },
+    end_at: {
+      type: GraphQLString
+    },
+    name: {
+      type: GraphQLString
+    },
+    published: {
+      type: GraphQLBoolean
     },
     organizer: {
       type: new GraphQLObjectType({

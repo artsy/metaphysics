@@ -33,6 +33,9 @@ let ImageType = new GraphQLObjectType({
       type: new GraphQLList(GraphQLString),
       resolve: ({ image_versions }) => image_versions
     },
+    caption: {
+      type: GraphQLString
+    },
     url: VersionedUrl,
     cropped: CroppedUrl,
     resized: ResizedUrl

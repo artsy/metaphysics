@@ -27,6 +27,18 @@ let PartnerShowType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: (partnerShow) => `/show/${partnerShow.id}`
     },
+    description: {
+      type: GraphQLString
+    },
+    displayable: {
+      type: GraphQLBoolean
+    },
+    start_at: {
+      type: GraphQLString
+    },
+    end_at: {
+      type: GraphQLString
+    },
     name: {
       type: GraphQLString,
       description: 'The exhibition title'
