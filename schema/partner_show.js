@@ -1,13 +1,19 @@
+import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import Artist from './artist';
+import Partner from './partner';
+import Fair from './fair';
+import Artwork from './artwork';
+import Location from './location';
 import Image from './image';
 import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
-  GraphQLInt
+  GraphQLInt,
+  GraphQLBoolean
 } from 'graphql';
 
 let PartnerShowType = new GraphQLObjectType({
@@ -29,12 +35,40 @@ let PartnerShowType = new GraphQLObjectType({
       type: new GraphQLList(Artist.type),
       resolve: ({ artists }) => artists
     },
+    partner: {
+      type: Partner.type,
+      resolve: ({ partner }) => partner
+    },
+    fair: {
+      type: Fair.type,
+      resolve: ({ fair }) => fair
+    },
+    location: {
+      type: Location.type,
+      resolve: ({ location, fair_location }) => location || fair_location
+    },
+    artworks: {
+      type: new GraphQLList(Artwork.type),
+      args: {
+        size: {
+          type: GraphQLInt,
+          description: 'Number of artworks to return'
+        }
+      },
+      resolve: (show, options) => gravity(`partner/${show.partner.id}/show/${show.id}/artworks`, _.defaults(options, {
+        published: true
+      }))
+    },
     images: {
       type: new GraphQLList(Image.type),
       args: {
         size: {
           type: GraphQLInt,
           description: 'Number of images to return'
+        },
+        default: {
+          type: GraphQLBoolean,
+          description: 'Pass true/false to include cover or not'
         }
       },
       resolve: ({ id }, options) => gravity(`partner_show/${id}/images`, options)
