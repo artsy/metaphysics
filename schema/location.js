@@ -26,6 +26,9 @@ let LocationType = new GraphQLObjectType({
           lng: { type: GraphQLFloat }
         }
       })
+    },
+    display: {
+      type: GraphQLString
     }
   })
 });
