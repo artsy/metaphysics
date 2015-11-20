@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
+import date from './fields/date';
 import Artist from './artist';
 import Partner from './partner';
 import Fair from './fair';
@@ -33,12 +34,8 @@ let PartnerShowType = new GraphQLObjectType({
     displayable: {
       type: GraphQLBoolean
     },
-    start_at: {
-      type: GraphQLString
-    },
-    end_at: {
-      type: GraphQLString
-    },
+    start_at: date,
+    end_at: date,
     name: {
       type: GraphQLString,
       description: 'The exhibition title'
