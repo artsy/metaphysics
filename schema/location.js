@@ -42,6 +42,9 @@ let LocationType = new GraphQLObjectType({
     postal_code: {
       type: GraphQLString
     },
+    state: {
+      type: GraphQLString
+    },
     day_schedules: {
       type: new GraphQLList(DayScheduleType),
       resolve: ({ day_schedules }) => day_schedules
