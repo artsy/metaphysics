@@ -1,5 +1,6 @@
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
+import date from './fields/date';
 import Profile from './profile';
 import {
   GraphQLObjectType,
@@ -32,12 +33,8 @@ let FairType = new GraphQLObjectType({
         return `/${id}`;
       }
     },
-    start_at: {
-      type: GraphQLString
-    },
-    end_at: {
-      type: GraphQLString
-    },
+    start_at: date,
+    end_at: date,
     name: {
       type: GraphQLString
     },
