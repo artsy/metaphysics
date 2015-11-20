@@ -8,7 +8,8 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLInt,
-  GraphQLList
+  GraphQLList,
+  GraphQLBoolean
 } from 'graphql';
 
 let PartnerType = new GraphQLObjectType({
@@ -28,9 +29,16 @@ let PartnerType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: ({ default_profile_id }) => `/${default_profile_id}`
     },
+    isLinkable: {
+      type: GraphQLBoolean,
+      resolve: ({ default_profile_id, default_profile_public}) => default_profile_id && default_profile_public
+    },
     initials: {
       type: GraphQLString,
       resolve: ({ name }) => _.take(name.replace(/[^A-Z]/g, ''), 3).join('')
+    },
+    default_profile_id: {
+      type: GraphQLString
     },
     profile: {
       type: Profile.type,

@@ -1,8 +1,11 @@
 import cached from './fields/cached';
+import DayScheduleType from './day_schedule';
 import {
   GraphQLString,
   GraphQLObjectType,
-  GraphQLFloat
+  GraphQLFloat,
+  GraphQLInt,
+  GraphQLList
 } from 'graphql';
 
 let LocationType = new GraphQLObjectType({
@@ -26,6 +29,19 @@ let LocationType = new GraphQLObjectType({
           lng: { type: GraphQLFloat }
         }
       })
+    },
+    display: {
+      type: GraphQLString
+    },
+    address: {
+      type: GraphQLString
+    },
+    address_2: {
+      type: GraphQLString
+    },
+    day_schedules: {
+      type: new GraphQLList(DayScheduleType),
+      resolve: ({ day_schedules }) => day_schedules
     }
   })
 });
