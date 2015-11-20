@@ -59,6 +59,9 @@ let PartnerShowType = new GraphQLObjectType({
       type: Location.type,
       resolve: ({ location, fair_location }) => location || fair_location
     },
+    status: {
+      type: GraphQLString
+    },
     artworks: {
       type: new GraphQLList(Artwork.type),
       args: {
@@ -70,6 +73,10 @@ let PartnerShowType = new GraphQLObjectType({
       resolve: (show, options) => gravity(`partner/${show.partner.id}/show/${show.id}/artworks`, _.defaults(options, {
         published: true
       }))
+    },
+    cover_image: {
+      type: Image.type,
+      resolve: ({ id }, options) => gravity(`partner_show/${id}/default_image`, options)
     },
     images: {
       type: new GraphQLList(Image.type),
