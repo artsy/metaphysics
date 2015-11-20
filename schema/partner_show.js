@@ -28,11 +28,17 @@ let PartnerShowType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: (partnerShow) => `/show/${partnerShow.id}`
     },
+    name: {
+      type: GraphQLString
+    },
     description: {
       type: GraphQLString
     },
     displayable: {
       type: GraphQLBoolean
+    },
+    press_release: {
+      type: GraphQLString
     },
     start_at: date,
     end_at: date,
