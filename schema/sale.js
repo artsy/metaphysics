@@ -1,5 +1,6 @@
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
+import date from './fields/date';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -30,12 +31,8 @@ let SaleType = new GraphQLObjectType({
       is_auction: {
         type: GraphQLString
       },
-      start_at: {
-        type: GraphQLString
-      },
-      end_at: {
-        type: GraphQLString
-      },
+      start_at: date,
+      end_at: date,
       currency: {
         type: GraphQLString
       },
