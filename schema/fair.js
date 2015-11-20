@@ -19,7 +19,7 @@ let FairType = new GraphQLObjectType({
       type: Profile.type,
       resolve: ({ default_profile_id, organizer }) => {
         let id = default_profile_id || organizer && organizer.profile_id;
-        return gravity(`profile/${id}`)
+        return gravity(`profile/${id}`);
       }
     },
     has_full_feature: {
@@ -27,11 +27,10 @@ let FairType = new GraphQLObjectType({
     },
     href: {
       type: GraphQLString,
-      resolve: ({ default_profile_id, organizer }) => 
-        {
-          let id = default_profile_id || organizer && organizer.profile_id;
-          return `/${id}`
-        }
+      resolve: ({ default_profile_id, organizer }) => {
+        let id = default_profile_id || organizer && organizer.profile_id;
+        return `/${id}`;
+      }
     },
     start_at: {
       type: GraphQLString
@@ -49,7 +48,9 @@ let FairType = new GraphQLObjectType({
       type: new GraphQLObjectType({
         name: 'organizer',
         fields: {
-          profile_id: { type: GraphQLString }
+          profile_id: {
+            type: GraphQLString
+          }
         }
       })
     }
