@@ -9,7 +9,7 @@
     "spec": "DEBUG=info,error nf run mocha --env .env.test"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "artsy-newrelic": "^1.0.0",
     "artsy-xapp": "^1.0.4",
