@@ -22,6 +22,10 @@ let ProfileType = new GraphQLObjectType({
     image: {
       type: Image.type,
       resolve: ({ cover_image }) => cover_image
+    },
+    href: {
+      type: GraphQLString,
+      resolve: ({ id }) => `/${id}`
     }
   })
 });
