@@ -8,11 +8,11 @@ export default {
       type: GraphQLString
     }
   },
-  resolve: (show, { format }, { fieldName }) => {
+  resolve: (obj, { format }, { fieldName }) => {
     if (!format) {
-      return show[fieldName];
+      return obj[fieldName];
     } else {
-      return moment.utc(show[fieldName]).format(format);
+      return moment.utc(obj[fieldName]).format(format);
     };
   }
 };
