@@ -12,7 +12,7 @@ export default {
     if (!format) {
       return show[fieldName];
     } else {
-      return moment(show[fieldName]).format(format);
+      return moment.utc(show[fieldName]).format(format);
     };
   }
 };

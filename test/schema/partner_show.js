@@ -40,7 +40,7 @@ describe('PartnerShow type', () => {
         data.should.eql({
           partner_show: {
             id: 'new-museum-1-2015-triennial-surround-audience',
-            start_at: 'Wednesday, February 25th 2015, 7:00:00 am',
+            start_at: 'Wednesday, February 25th 2015, 12:00:00 pm',
             end_at: '2015'
           }
         });
