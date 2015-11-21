@@ -10,6 +10,7 @@ import Partners from './partners';
 import PartnerCategory from './partner_category';
 import PartnerCategories from './partner_categories';
 import PartnerShow from './partner_show';
+import PartnerShows from './partner_shows';
 import Sale from './sale';
 import {
   GraphQLSchema,
@@ -32,6 +33,7 @@ let schema = new GraphQLSchema({
       partner_category: PartnerCategory,
       partner_categories: PartnerCategories,
       partner_show: PartnerShow,
+      partner_shows: PartnerShows,
       sale: Sale
     }
   })
