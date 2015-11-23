@@ -1,5 +1,7 @@
 import _ from 'lodash';
 import Image from '../image';
+import ArtworkSorts from '../sorts/artwork_sorts'
+import PartnerShowSorts from '../sorts/partner_show_sorts'
 import ArtistCarousel from './carousel';
 import ArtistStatuses from './statuses';
 import gravity from '../../lib/loaders/gravity';
@@ -75,21 +77,7 @@ let ArtistType = new GraphQLObjectType({
             type: GraphQLInt,
             description: 'The number of Artworks to return'
           },
-          sort: {
-            type: new GraphQLEnumType({
-              name: 'ArtworkSorts',
-              values: {
-                'title_asc': { value: 'title' },
-                'title_desc': { value: '-title' },
-                'created_at_asc': { value: 'created_at' },
-                'created_at_desc': { value: '-created_at' },
-                'iconicity_desc': { value: '-iconicity' },
-                'merchandisability_desc': { value: '-merchandisability' },
-                'published_at_asc': { value: 'published_at' },
-                'published_at_desc': { value: '-published_at' }
-              }
-            })
-          }
+          sort: ArtworkSorts,
         },
         resolve: ({ id }, options) => {
           return gravity(`artist/${id}/artworks`, _.defaults(options, {
@@ -135,19 +123,7 @@ let ArtistType = new GraphQLObjectType({
           top_tier: {
             type: GraphQLBoolean
           },
-          sort: {
-            type: new GraphQLEnumType({
-              name: 'PartnerShowSorts',
-              values: {
-                'end_at_asc': { value: 'end_at' },
-                'end_at_desc': { value: '-end_at' },
-                'start_at_asc': { value: 'start_at' },
-                'start_at_desc': { value: '-start_at' },
-                'publish_at_asc': { value: 'publish_at' },
-                'publish_at_desc': { value: '-publish_at' }
-              }
-            })
-          }
+          sort: PartnerShowSorts
         },
         resolve: ({ id }, options) => {
           return gravity('related/shows', _.defaults(options, {
