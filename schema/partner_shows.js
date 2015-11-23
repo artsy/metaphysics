@@ -31,7 +31,7 @@ let PartnerShows = {
       type: Near
     },
     displayable: {
-      type: GraphQLString,
+      type: GraphQLBoolean,
       defaultValue: true
     }
   },

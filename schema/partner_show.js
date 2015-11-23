@@ -71,11 +71,13 @@ let PartnerShowType = new GraphQLObjectType({
         size: {
           type: GraphQLInt,
           description: 'Number of artworks to return'
+        },
+        published: {
+          type: GraphQLBoolean,
+          defaultValue: true
         }
       },
-      resolve: (show, options) => gravity(`partner/${show.partner.id}/show/${show.id}/artworks`, _.defaults(options, {
-        published: true
-      }))
+      resolve: (show, options) => gravity(`partner/${show.partner.id}/show/${show.id}/artworks`, options)
     },
     cover_image: {
       type: Image.type,
