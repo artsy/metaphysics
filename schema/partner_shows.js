@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import PartnerShowSorts from './sorts/partner_show_sorts';
+import EventStatus from './fields/event_status';
 import PartnerShow from './partner_show';
 import {
   GraphQLString,
@@ -18,9 +19,7 @@ let PartnerShows = {
       type: GraphQLInt
     },
     sort: PartnerShowSorts,
-    status: {
-      type: GraphQLString
-    },
+    status: EventStatus,
     fair_id: {
       type: GraphQLString
     },
