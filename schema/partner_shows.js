@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import PartnerShowSorts from './sorts/partner_show_sorts';
-import EventStatus from './fields/event_status';
+import EventStatus from './input_fields/event_status';
+import Near from './input_fields/near';
 import PartnerShow from './partner_show';
 import {
   GraphQLString,
@@ -27,13 +28,22 @@ let PartnerShows = {
       type: GraphQLString
     },
     near: {
+      type: Near
+    },
+    displayable: {
       type: GraphQLString,
-      description: 'Coordinates to find shows closest to'
+      defaultValue: true
     }
   },
-  resolve: (root, options) => gravity('shows', _.defaults(options, {
-    displayable: true
-  }))
+  resolve: (root, options) => {
+    if (options.near) {
+      options = _.assign(options, {
+        near: `${options.near.lat},${options.near.lng}`,
+        max_distance: options.near.max_distance
+      });
+    }
+    return gravity('shows', options);
+  }
 };
 
 export default PartnerShows;
