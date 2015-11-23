@@ -1,10 +1,13 @@
+import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
+import PartnerShowSorts from './sorts/partner_show_sorts';
 import PartnerShow from './partner_show';
 import {
   GraphQLString,
   GraphQLList,
   GraphQLInt,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLEnumType
 } from 'graphql'
 
 let PartnerShows = {
@@ -14,12 +17,7 @@ let PartnerShows = {
     size: {
       type: GraphQLInt
     },
-    sort: {
-      type: GraphQLString
-    },
-    displayable: {
-      type: GraphQLBoolean
-    },
+    sort: PartnerShowSorts,
     status: {
       type: GraphQLString
     },
@@ -34,7 +32,9 @@ let PartnerShows = {
       description: 'Coordinates to find shows closest to'
     }
   },
-  resolve: (root, options) => gravity('shows', options)
+  resolve: (root, options) => gravity('shows', _.defaults(options, {
+    displayable: true
+  }))
 };
 
 export default PartnerShows;
