@@ -6,7 +6,8 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLList
+  GraphQLList,
+  GraphQLBoolean
 } from 'graphql';
 
 let OrderedSetType = new GraphQLObjectType({
@@ -50,11 +51,13 @@ let OrderedSets = {
     key: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'Key to the OrderedSet or group of OrderedSets'
+    },
+    public: {
+      type: GraphQLBoolean,
+      defaultValue: true
     }
   },
-  resolve: (root, options) => gravity('sets', _.defaults(options, {
-    public: true
-  }))
+  resolve: (root, options) => gravity('sets', options)
 };
 
 export default OrderedSets;

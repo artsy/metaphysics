@@ -78,29 +78,31 @@ let ArtistType = new GraphQLObjectType({
             description: 'The number of Artworks to return'
           },
           sort: ArtworkSorts,
+          published: {
+            type: GraphQLBoolean,
+            defaultValue: true
+          }
         },
-        resolve: ({ id }, options) => {
-          return gravity(`artist/${id}/artworks`, _.defaults(options, {
-            published: true
-          }));
-        }
+        resolve: ({ id }, options) => gravity(`artist/${id}/artworks`, options)
       },
       image: {
         type: Image.type,
         resolve: (artist) => artist
       },
-
       artists: {
         type: new GraphQLList(Artist.type),
         args: {
           size: {
             type: GraphQLInt,
             description: 'The number of Artists to return'
+          },
+          exclude_artists_without_artworks: {
+            type: GraphQLBoolean,
+            defaultValue: true
           }
         },
         resolve: (artist, options) => {
           return gravity(`related/layer/main/artists`, _.defaults(options, {
-            exclude_artists_without_artworks: true,
             artist: [artist.id]
           }));
         }
