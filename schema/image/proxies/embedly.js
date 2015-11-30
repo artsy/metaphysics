@@ -1,5 +1,4 @@
 import qs from 'qs';
-
 const {
   EMBEDLY_KEY,
   EMBEDLY_ENDPOINT

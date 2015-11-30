@@ -2,6 +2,7 @@ import _ from 'lodash';
 import qs from 'qs';
 import cached from './fields/cached';
 import Image from './image';
+import Artist from './artist';
 import Artwork from './artwork';
 import gravity from '../lib/loaders/gravity';
 import {
@@ -16,8 +17,6 @@ import {
 let SaleArtworkType = new GraphQLObjectType({
   name: 'SaleArtwork',
   fields: () => {
-    let Artist = require('./artist');
-
     return {
       cached: cached,
       id: {

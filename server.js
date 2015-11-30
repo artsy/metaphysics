@@ -8,7 +8,7 @@ import forceSSL from 'express-force-ssl';
 import graphqlHTTP from 'express-graphql';
 import schema from './schema';
 import loaders from './lib/loaders';
-
+import config from './config';
 const {
   PORT,
   NODE_ENV,
@@ -35,7 +35,7 @@ xapp.init({
   url: GRAVITY_API_URL,
   id: GRAVITY_ID,
   secret: GRAVITY_SECRET
-}, () => require('./config').GRAVITY_XAPP_TOKEN = xapp.token);
+}, () => config.GRAVITY_XAPP_TOKEN = xapp.token);
 
 app.get('/favicon.ico', (req, res) => {
   res

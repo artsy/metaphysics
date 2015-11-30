@@ -1,6 +1,7 @@
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import date from './fields/date';
+import SaleArtwork from './sale_artwork';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -12,8 +13,6 @@ import {
 let SaleType = new GraphQLObjectType({
   name: 'Sale',
   fields: () => {
-    let SaleArtwork = require('./sale_artwork');
-
     return {
       cached: cached,
       id: {

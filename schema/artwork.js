@@ -4,6 +4,7 @@ import cached from './fields/cached';
 import Image from './image';
 import Sale from './sale';
 import Partner from './partner';
+import Artist from './artist';
 import gravity from '../lib/loaders/gravity';
 import {
   GraphQLObjectType,
@@ -26,7 +27,6 @@ export let ArtworkPredicates = {
 let ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
   fields: () => {
-    let Artist = require('./artist');
 
     return {
       cached: cached,
