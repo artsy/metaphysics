@@ -1,9 +1,11 @@
 const { RESIZING_SERVICE } = process.env;
+import gemini from './gemini';
+import embedly from './embedly';
 
 module.exports = function() {
   if (RESIZING_SERVICE === 'gemini') {
-    return require('./gemini').apply(null, arguments);
+    return gemini.apply(null, arguments);
   } else {
-    return require('./embedly').apply(null, arguments);
+    return embedly.apply(null, arguments);
   }
 };

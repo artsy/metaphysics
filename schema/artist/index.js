@@ -1,5 +1,7 @@
 import _ from 'lodash';
 import Image from '../image';
+import Artwork from '../artwork';
+import PartnerShow from '../partner_show';
 import ArtworkSorts from '../sorts/artwork_sorts'
 import PartnerShowSorts from '../sorts/partner_show_sorts'
 import ArtistCarousel from './carousel';
@@ -18,9 +20,6 @@ import {
 let ArtistType = new GraphQLObjectType({
   name: 'Artist',
   fields: () => {
-    let Artwork = require('../artwork').default;
-    let PartnerShow = require('../partner_show');
-
     return {
       cached: {
         type: GraphQLInt,

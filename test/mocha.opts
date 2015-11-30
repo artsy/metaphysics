@@ -2,5 +2,5 @@
 --require should-promised
 --ui bdd
 --timeout 30000
---compilers js:babel/register
+--compilers js:babel-core/register
 --recursive

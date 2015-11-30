@@ -1,5 +1,4 @@
 import qs from 'qs';
-
 const { GEMINI_ENDPOINT } = process.env;
 
 export default (src, mode, width, height) => {
