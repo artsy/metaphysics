@@ -83,6 +83,10 @@ let ArtworkType = new GraphQLObjectType({
           }
         })
       },
+      image: {
+        type: Image.type,
+        resolve: ({ images }) => _.findWhere(images, { is_default: true }) || _.first(images)
+      },
       images: {
         type: new GraphQLList(Image.type),
         args: {
