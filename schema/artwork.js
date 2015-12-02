@@ -60,7 +60,7 @@ let ArtworkType = new GraphQLObjectType({
         description: 'Are we able to display a contact form on artwork pages?',
         resolve: (artwork) => {
           return new Promise(resolve => {
-            gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
+            gravity(`related/sales`, { size: 1, active: true, artwork: [artwork.id] })
               .then(sales => {
                 resolve(ArtworkPredicates.is_contactable(artwork, sales))
               });
@@ -91,6 +91,16 @@ let ArtworkType = new GraphQLObjectType({
             cm: { type: GraphQLString }
           }
         })
+      },
+      default_image: {
+        type: Image.type,
+        resolve: ({ images }) => {
+          let image = _.findWhere(images, { is_default: true })
+          if (image === undefined) {
+            image = images[0];
+          }
+          return image;
+        }
       },
       images: {
         type: new GraphQLList(Image.type),
