@@ -15,19 +15,9 @@ import {
   GraphQLInt
 } from 'graphql';
 
-export let ArtworkPredicates = {
-  is_contactable: (artwork, sales) => {
-    return artwork.forsale && !_.isEmpty(artwork.partner) && !artwork.acquireable && !sales.length
-  },
-  is_in_auction: (artwork, sales) => {
-    return _.any(sales, 'is_auction')
-  }
-}
-
 let ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
   fields: () => {
-
     return {
       cached: cached,
       id: {
@@ -35,7 +25,7 @@ let ArtworkType = new GraphQLObjectType({
       },
       href: {
         type: GraphQLString,
-        resolve: (artwork) => `/artwork/${artwork.id}`
+        resolve: ({ id }) => `/artwork/${id}`
       },
       title: {
         type: GraphQLString
@@ -51,32 +41,29 @@ let ArtworkType = new GraphQLObjectType({
       },
       partner:{
         type: Partner.type,
-        resolve: (artwork) => {
-          return artwork.partner
-        }
+        resolve: ({ partner }) => partner
       },
       is_contactable: {
         type: GraphQLBoolean,
         description: 'Are we able to display a contact form on artwork pages?',
         resolve: (artwork) => {
-          return new Promise(resolve => {
-            gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
-              .then(sales => {
-                resolve(ArtworkPredicates.is_contactable(artwork, sales))
-              });
-          });
+          return gravity('related/sales', { size: 1, active: true, artwork: [artwork.id] })
+            .then(sales => {
+              return (
+                artwork.forsale &&
+                !_.isEmpty(artwork.partner) &&
+                !artwork.acquireable &&
+                !sales.length
+              );
+            });
         }
       },
       is_in_auction: {
         type: GraphQLBoolean,
         description: 'Is this artwork part of an auction?',
-        resolve: (artwork) => {
-          return new Promise(resolve => {
-            gravity(`related/sales`, { size: 1, active: true, artwork: [artwork.id] })
-              .then(sales => {
-                resolve(ArtworkPredicates.is_in_auction(artwork, sales))
-              });
-          });
+        resolve: ({ id }) => {
+          return gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
+            .then(sales => _.any(sales, 'is_auction'));
         }
       },
       artist: {
@@ -87,10 +74,18 @@ let ArtworkType = new GraphQLObjectType({
         type: new GraphQLObjectType({
           name: 'dimensions',
           fields: {
-            in: { type: GraphQLString },
-            cm: { type: GraphQLString }
+            in: {
+              type: GraphQLString
+            },
+            cm: {
+              type: GraphQLString
+            }
           }
         })
+      },
+      image: {
+        type: Image.type,
+        resolve: ({ images }) => _.findWhere(images, { is_default: true }) || _.first(images)
       },
       images: {
         type: new GraphQLList(Image.type),
@@ -107,14 +102,15 @@ let ArtworkType = new GraphQLObjectType({
         type: new GraphQLList(Sale.type),
         args: {
           size: {
-            type: GraphQLInt
+            type: GraphQLInt,
+            defaultValue: 1
+          },
+          active: {
+            type: GraphQLBoolean,
+            defaultValue: true
           }
         },
-        resolve: ({ id }, options) => gravity(`related/sales`, _.defaults(options, {
-          size: 1,
-          active: true,
-          artwork: [id]
-        }))
+        resolve: ({ id }, options) => gravity('related/sales', _.defaults(options, { artwork: [id] }))
       }
     }
   }
