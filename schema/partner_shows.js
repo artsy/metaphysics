@@ -33,6 +33,9 @@ let PartnerShows = {
     displayable: {
       type: GraphQLBoolean,
       defaultValue: true
+    },
+    featured: {
+      type: GraphQLBoolean
     }
   },
   resolve: (root, options) => {
