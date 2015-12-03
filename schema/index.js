@@ -1,4 +1,6 @@
 import Ping from './ping';
+import Article from './article';
+import Articles from './articles';
 import Artwork from './artwork';
 import Artist from './artist';
 import Artists from './artists';
@@ -23,6 +25,8 @@ let schema = new GraphQLSchema({
     name: 'RootQueryType',
     fields: {
       ping: Ping,
+      article: Article,
+      articles: Articles,
       artwork: Artwork,
       artist: Artist,
       artists: Artists,
