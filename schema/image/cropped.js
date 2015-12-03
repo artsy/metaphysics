@@ -14,9 +14,16 @@ export let CroppedImageUrl = (image, options) => {
   });
 
   let { width, height } = options;
-  let src = image.image_url.replace(':version', options.version);
-  let url = proxy(src, 'crop', width, height);
+  let src = null;
 
+  if (image.image_url) {
+    src = image.image_url.replace(':version', options.version);
+  }
+  else {
+    src = image;
+  }
+
+  let url = proxy(src, 'crop', width, height);
   return {
     width,
     height,
