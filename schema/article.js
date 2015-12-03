@@ -29,6 +29,13 @@ let ArticleType = new GraphQLObjectType({
     thumbnail_image: {
       type: Image.type,
       resolve: ({ thumbnail_image }) => thumbnail_image
+    },
+    slug: {
+      type: GraphQLString
+    },
+    href: {
+      type: GraphQLString,
+      resolve: ({ slug }) => `/article/${slug}`
     }
   })
 });
