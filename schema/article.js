@@ -2,6 +2,7 @@ import _ from 'lodash';
 import positron from '../lib/loaders/positron';
 import cached from './fields/cached';
 import AuthorType from './author';
+import Image from './image'
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -24,6 +25,10 @@ let ArticleType = new GraphQLObjectType({
     author: {
       type: AuthorType,
       resolve: ({ author }) => author
+    },
+    thumbnail_image: {
+      type: Image.type,
+      resolve: ({ thumbnail_image }) => thumbnail_image
     }
   })
 });
