@@ -21,6 +21,9 @@ let PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
   fields: () => ({
     cached: cached,
+    _id: {
+      type: GraphQLString
+    },
     id: {
       type: GraphQLString
     },

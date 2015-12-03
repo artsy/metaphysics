@@ -14,6 +14,10 @@ let AuthorType = new GraphQLObjectType({
     },
     profile_handle: {
       type: GraphQLString
+    },
+    href: {
+      type: GraphQLString,
+      resolve: ({ profile_handle }) => `/${profile_handle}`
     }
   }
 });
