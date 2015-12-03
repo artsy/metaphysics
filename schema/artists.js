@@ -4,7 +4,6 @@ import ArtistSorts from './sorts/artist_sorts'
 import {
   GraphQLList,
   GraphQLInt,
-  GraphQLEnumType
 } from 'graphql'
 
 let Artists = {
