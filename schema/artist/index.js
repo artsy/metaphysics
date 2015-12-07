@@ -42,6 +42,9 @@ let ArtistType = new GraphQLObjectType({
       years: {
         type: GraphQLString
       },
+      public: {
+        type: GraphQLBoolean
+      },
       nationality: {
         type: GraphQLString
       },
