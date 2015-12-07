@@ -47,6 +47,9 @@ let PartnerType = new GraphQLObjectType({
       type: Profile.type,
       resolve: ({ default_profile_id }) => gravity(`profile/${default_profile_id}`)
     },
+    type: {
+      type: GraphQLString
+    },
     locations: {
       type: new GraphQLList(Location.type),
       args: {

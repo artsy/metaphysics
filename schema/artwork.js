@@ -41,7 +41,7 @@ let ArtworkType = new GraphQLObjectType({
       },
       partner:{
         type: Partner.type,
-        resolve: ({ partner }) => partner
+        resolve: ({ partner }) => gravity(`partner/${partner.id}`)
       },
       is_contactable: {
         type: GraphQLBoolean,
@@ -72,6 +72,24 @@ let ArtworkType = new GraphQLObjectType({
       artist: {
         type: Artist.type,
         resolve: ({ artist }) => gravity(`artist/${artist.id}`)
+      },
+      contact_label: {
+        type: GraphQLString,
+        resolve: ({ partner }) => {
+          if (partner.type == 'Gallery') {
+            return 'Gallery';
+          } else {
+            return 'Seller';
+          }
+        }
+      },
+      artists: {
+        type: new GraphQLList(Artist.type),
+        resolve: ({ artists }) => {
+          return Promise.all(
+            artists.map(artist => gravity(`/artist/${artist.id}`))
+          );
+        }
       },
       dimensions: {
         type: new GraphQLObjectType({
