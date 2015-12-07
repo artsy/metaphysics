@@ -66,6 +66,9 @@ let ArtworkType = new GraphQLObjectType({
             .then(sales => _.any(sales, 'is_auction'));
         }
       },
+      sale_message: {
+        type: GraphQLString
+      },
       artist: {
         type: Artist.type,
         resolve: ({ artist }) => gravity(`artist/${artist.id}`)

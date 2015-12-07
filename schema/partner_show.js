@@ -2,6 +2,7 @@ import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import date from './fields/date';
+import markdown from './fields/markdown';
 import Artist from './artist';
 import Partner from './partner';
 import Fair from './fair';
@@ -40,9 +41,7 @@ let PartnerShowType = new GraphQLObjectType({
     displayable: {
       type: GraphQLBoolean
     },
-    press_release: {
-      type: GraphQLString
-    },
+    press_release: markdown,
     start_at: date,
     end_at: date,
     name: {
