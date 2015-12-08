@@ -23,6 +23,9 @@ let ArtworkType = new GraphQLObjectType({
       id: {
         type: GraphQLString
       },
+      _id: {
+        type: GraphQLString
+      },
       href: {
         type: GraphQLString,
         resolve: ({ id }) => `/artwork/${id}`
@@ -38,6 +41,9 @@ let ArtworkType = new GraphQLObjectType({
       },
       date: {
         type: GraphQLString
+      },
+      can_share_image: {
+        type: GraphQLBoolean
       },
       partner:{
         type: Partner.type,
