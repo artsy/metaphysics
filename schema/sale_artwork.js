@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import qs from 'qs';
 import cached from './fields/cached';
+import date from './fields/date';
 import Image from './image';
 import Artist from './artist';
 import Artwork from './artwork';
@@ -19,8 +20,14 @@ let SaleArtworkType = new GraphQLObjectType({
   fields: () => {
     return {
       cached: cached,
+      _id: {
+        type: GraphQLString
+      },
       id: {
-        type: GraphQLInt
+        type: GraphQLString
+      },
+      sale_id: {
+        type: GraphQLString
       },
       position: {
         type: GraphQLInt
@@ -28,17 +35,28 @@ let SaleArtworkType = new GraphQLObjectType({
       lot_number: {
         type: GraphQLString
       },
+      bidder_positions_count: {
+        type: GraphQLInt
+      },
       reserve_status: {
         type: GraphQLString
       },
-      date: {
+      opening_bid_cents: {
         type: GraphQLString
       },
-      display_opening_bid_dollars: {
+      minimum_next_bid_cents: {
         type: GraphQLString
       },
-      display_minimum_next_bid_dollars: {
-        type: GraphQLString
+      highest_bid: {
+        type: new GraphQLObjectType({
+          name: 'highest_bid',
+          fields: {
+            created_at: date,
+            amount_cents: {
+              type: GraphQLString
+            }
+          }
+        })
       },
       artwork: {
         type: Artwork.type,
