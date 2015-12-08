@@ -3,6 +3,11 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
+  "repository": "https://github.com/artsy/metaphysics",
+  "engines": {
+    "node": ">=5.1.1",
+    "npm": "3.x.x"
+  },
   "scripts": {
     "dev": "DEBUG=info,error nf start --procfile Procfile.dev",
     "test": "DEBUG=info,error nf run mocha test --env .env.test",
