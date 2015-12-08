@@ -30,3 +30,9 @@ after setting up your `.env` file based on our example `.env.test`.
 PRs merged to master are deployed to staging via Semaphore.
 
 We then use the heroku [pipelines](https://blog.heroku.com/archives/2013/7/10/heroku-pipelines-beta) to deploy to production when happy with staging.
+
+Add the staging instance as a git remote named `staging`, then promote using the command:
+
+``` sh
+$ heroku pipelines:promote -r staging
+```
