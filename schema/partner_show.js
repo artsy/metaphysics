@@ -9,6 +9,7 @@ import Fair from './fair';
 import Artwork from './artwork';
 import Location from './location';
 import Image from './image';
+import PartnerShowEventType from './partner_show_event'
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -66,6 +67,10 @@ let PartnerShowType = new GraphQLObjectType({
     },
     status: {
       type: GraphQLString
+    },
+    events: {
+      type: new GraphQLList(PartnerShowEventType),
+      resolve: ({ events }) => events
     },
     artworks: {
       type: new GraphQLList(Artwork.type),
