@@ -14,7 +14,14 @@ let PartnerShowEventType = new GraphQLObjectType({
       type: GraphQLString
     },
     event_type: {
-      type: GraphQLString
+      type: GraphQLString,
+      resolve: ({ event_type }) => {
+        if (event_type == 'Other') {
+          return 'Event';
+        } else {
+          return event_type;
+        }
+      }
     },
     start_at: date,
     end_at: date
