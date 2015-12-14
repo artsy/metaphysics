@@ -82,6 +82,9 @@ let PartnerShowType = new GraphQLObjectType({
         published: {
           type: GraphQLBoolean,
           defaultValue: true
+        },
+        page: {
+          type: GraphQLInt
         }
       },
       resolve: (show, options) => gravity(`partner/${show.partner.id}/show/${show.id}/artworks`, options)
