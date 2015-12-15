@@ -103,6 +103,9 @@ let PartnerShowType = new GraphQLObjectType({
         default: {
           type: GraphQLBoolean,
           description: 'Pass true/false to include cover or not'
+        },
+        page: {
+          type: GraphQLInt
         }
       },
       resolve: ({ id }, options) => gravity(`partner_show/${id}/images`, options)
