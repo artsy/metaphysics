@@ -39,24 +39,24 @@ let SaleArtworkType = new GraphQLObjectType({
         type: GraphQLInt
       },
       reserve_status: {
-        type: GraphQLString
+        type: GraphQLInt
       },
       low_estimate_cents: {
-        type: GraphQLString
+        type: GraphQLInt
       },
       high_estimate_cents: {
-        type: GraphQLString
+        type: GraphQLInt
       },
       opening_bid_cents: {
-        type: GraphQLString
+        type: GraphQLInt
+      },
+      minimum_next_bid_cents: {
+        type: GraphQLInt
       },
       currency: {
         type: GraphQLString
       },
       symbol: {
-        type: GraphQLString
-      },
-      minimum_next_bid_cents: {
         type: GraphQLString
       },
       highest_bid: {
