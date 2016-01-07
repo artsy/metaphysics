@@ -32,7 +32,7 @@ let PartnerType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: ({ default_profile_id }) => `/${default_profile_id}`
     },
-    isLinkable: {
+    is_linkable: {
       type: GraphQLBoolean,
       resolve: ({ default_profile_id, default_profile_public}) => default_profile_id && default_profile_public
     },
