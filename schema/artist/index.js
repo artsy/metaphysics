@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import { defaults } from 'lodash';
+import cached from '../fields/cached';
+import initials from '../fields/initials';
 import Image from '../image';
 import Artwork from '../artwork';
 import PartnerShow from '../partner_show';
@@ -20,10 +22,7 @@ const ArtistType = new GraphQLObjectType({
   name: 'Artist',
   fields: () => {
     return {
-      cached: {
-        type: GraphQLInt,
-        resolve: ({ cached }) => new Date().getTime() - cached,
-      },
+      cached,
       id: {
         type: GraphQLString,
       },
@@ -38,6 +37,7 @@ const ArtistType = new GraphQLObjectType({
       name: {
         type: GraphQLString,
       },
+      initials: initials('name'),
       years: {
         type: GraphQLString,
       },
@@ -103,7 +103,7 @@ const ArtistType = new GraphQLObjectType({
           },
         },
         resolve: (artist, options) => {
-          return gravity(`related/layer/main/artists`, _.defaults(options, {
+          return gravity(`related/layer/main/artists`, defaults(options, {
             artist: [artist.id],
           }));
         },
@@ -129,7 +129,7 @@ const ArtistType = new GraphQLObjectType({
           sort: PartnerShowSorts,
         },
         resolve: ({ id }, options) => {
-          return gravity('related/shows', _.defaults(options, {
+          return gravity('related/shows', defaults(options, {
             artist_id: id,
             displayable: true,
             sort: '-end_at',

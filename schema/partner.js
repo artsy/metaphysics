@@ -1,6 +1,6 @@
-import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
+import initials from './fields/initials';
 import Profile from './profile';
 import Location from './location';
 import {
@@ -38,10 +38,7 @@ const PartnerType = new GraphQLObjectType({
         return default_profile_id && default_profile_public;
       },
     },
-    initials: {
-      type: GraphQLString,
-      resolve: ({ name }) => _.take(name.replace(/[^A-Z]/g, ''), 3).join(''),
-    },
+    initials: initials('name'),
     default_profile_id: {
       type: GraphQLString,
     },

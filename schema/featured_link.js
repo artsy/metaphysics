@@ -1,3 +1,4 @@
+import initials from './fields/initials';
 import Image from './image';
 import {
   GraphQLString,
@@ -15,6 +16,7 @@ const FeaturedLinkType = new GraphQLObjectType({
     title: {
       type: GraphQLString,
     },
+    initials: initials('title'),
     subtitle: {
       type: GraphQLString,
     },
