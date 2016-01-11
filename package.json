@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "DEBUG=info,error nf start --procfile Procfile.dev",
-    "test": "DEBUG=info,error nf run mocha test --env .env.test",
+    "test": "npm run lint && DEBUG=info,error nf run mocha test --env .env.test",
     "spec": "DEBUG=info,error nf run mocha --env .env.test",
     "lint": "eslint . --fix"
   },
