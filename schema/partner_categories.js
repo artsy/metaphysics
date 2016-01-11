@@ -1,20 +1,19 @@
 import gravity from '../lib/loaders/gravity';
 import PartnerCategory from './partner_category';
 import {
-  GraphQLString,
   GraphQLList,
-  GraphQLInt
-} from 'graphql'
+  GraphQLInt,
+} from 'graphql';
 
-let PartnerCategories = {
+const PartnerCategories = {
   type: new GraphQLList(PartnerCategory.type),
   description: 'A list of PartnerCategories',
   args: {
     size: {
-      type: GraphQLInt
-    }
+      type: GraphQLInt,
+    },
   },
-  resolve: (root, options) => gravity('partner_categories', options)
+  resolve: (root, options) => gravity('partner_categories', options),
 };
 
 export default PartnerCategories;

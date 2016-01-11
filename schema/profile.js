@@ -5,41 +5,40 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLInt
 } from 'graphql';
 
-let ProfileType = new GraphQLObjectType({
+const ProfileType = new GraphQLObjectType({
   name: 'Profile',
   fields: () => ({
-    cached: cached,
+    cached,
     id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     name: {
       type: GraphQLString,
-      resolve: ({ owner }) => owner.name
+      resolve: ({ owner }) => owner.name,
     },
     image: {
       type: Image.type,
-      resolve: ({ cover_image }) => cover_image
+      resolve: ({ cover_image }) => cover_image,
     },
     href: {
       type: GraphQLString,
-      resolve: ({ id }) => `/${id}`
-    }
-  })
+      resolve: ({ id }) => `/${id}`,
+    },
+  }),
 });
 
-let Profile = {
+const Profile = {
   type: ProfileType,
   description: 'A Profile',
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Profile'
-    }
+      description: 'The slug or ID of the Profile',
+    },
   },
-  resolve: (root, { id }) => gravity(`profile/${id}`)
+  resolve: (root, { id }) => gravity(`profile/${id}`),
 };
 
 export default Profile;

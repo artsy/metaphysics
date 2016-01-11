@@ -11,7 +11,8 @@
   "scripts": {
     "dev": "DEBUG=info,error nf start --procfile Procfile.dev",
     "test": "DEBUG=info,error nf run mocha test --env .env.test",
-    "spec": "DEBUG=info,error nf run mocha --env .env.test"
+    "spec": "DEBUG=info,error nf run mocha --env .env.test",
+    "lint": "eslint . --fix"
   },
   "author": "",
   "license": "ISC",
@@ -41,6 +42,9 @@
   },
   "devDependencies": {
     "babel-plugin-rewire": "1.0.0-beta-2",
+    "eslint": "^1.10.3",
+    "eslint-config-airbnb": "^3.1.0",
+    "eslint-plugin-react": "^3.14.0",
     "foreman": "^1.4.1",
     "mocha": "^2.3.3",
     "nodemon": "^1.7.3",

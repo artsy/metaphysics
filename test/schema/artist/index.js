@@ -3,13 +3,13 @@ import { graphql } from 'graphql';
 import schema from '../../../schema';
 
 describe('Artist type', () => {
-  let Artist = schema.__get__('Artist');
+  const Artist = schema.__get__('Artist');
 
   beforeEach(() => {
     Artist.__Rewire__('gravity', sinon.stub().returns(
       Promise.resolve({
         id: 'foo-bar',
-        name: 'Foo Bar'
+        name: 'Foo Bar',
       })
     ));
   });

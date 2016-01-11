@@ -3,10 +3,10 @@ import { graphql } from 'graphql';
 import schema from '../../schema';
 
 describe('OrderedSets type', () => {
-  let OrderedSets = schema.__get__('OrderedSets');
+  const OrderedSets = schema.__get__('OrderedSets');
 
   beforeEach(() => {
-    let gravity = sinon.stub();
+    const gravity = sinon.stub();
 
     gravity
       // OrderedSets
@@ -16,12 +16,12 @@ describe('OrderedSets type', () => {
         item_type: 'Gene',
         key: 'artists:featured-genes',
         name: 'Featured Genes',
-        description: 'These Genes are featured'
+        description: 'These Genes are featured',
       }]))
       // GeneItems
       .onCall(1)
       .returns(Promise.resolve([{
-        name: 'Painting'
+        name: 'Painting',
       }]));
 
     OrderedSets.__Rewire__('gravity', gravity);
@@ -32,7 +32,7 @@ describe('OrderedSets type', () => {
   });
 
   it('fetches sets by key', () => {
-    let query = `
+    const query = `
       {
         ordered_sets(key: "artists:featured-genes") {
           id
@@ -51,11 +51,11 @@ describe('OrderedSets type', () => {
       .then(({ data }) => {
         OrderedSets.__get__('gravity').args[0].should.eql([
           'sets',
-          { key: 'artists:featured-genes', public: true }
+          { key: 'artists:featured-genes', public: true },
         ]);
 
         OrderedSets.__get__('gravity').args[1].should.eql([
-          'set/52dd3c2e4b8480091700027f/items'
+          'set/52dd3c2e4b8480091700027f/items',
         ]);
 
         data.should.eql({
@@ -64,9 +64,9 @@ describe('OrderedSets type', () => {
             name: 'Featured Genes',
             description: 'These Genes are featured',
             genes: [{
-              name: 'Painting'
-            }]
-          }]
+              name: 'Painting',
+            }],
+          }],
         });
       });
   });

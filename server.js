@@ -14,27 +14,27 @@ const {
   NODE_ENV,
   GRAVITY_API_URL,
   GRAVITY_ID,
-  GRAVITY_SECRET
-} = process.env
+  GRAVITY_SECRET,
+} = process.env;
 
-let app = express();
-let port = PORT || 3000;
+const app = express();
+const port = PORT || 3000;
 
 app.use(newrelic);
 
-if (NODE_ENV == 'production') {
+if (NODE_ENV === 'production') {
   app.set('forceSSLOptions', { trustXFPHeader: true }).use(forceSSL);
 }
 
 xapp.on('error', (err) => {
   debug('error')(err);
-  process.exit;
+  process.exit();
 });
 
 xapp.init({
   url: GRAVITY_API_URL,
   id: GRAVITY_ID,
-  secret: GRAVITY_SECRET
+  secret: GRAVITY_SECRET,
 }, () => config.GRAVITY_XAPP_TOKEN = xapp.token);
 
 app.get('/favicon.ico', (req, res) => {
@@ -46,13 +46,13 @@ app.get('/favicon.ico', (req, res) => {
 
 app.all('/graphql', (req, res) => res.redirect('/'));
 
-app.use('/', cors(), morgan('combined'), graphqlHTTP((req) => {
+app.use('/', cors(), morgan('combined'), graphqlHTTP(() => {
   loaders.clearAll();
 
   return {
-    schema: schema,
-    graphiql: true
-  }
+    schema,
+    graphiql: true,
+  };
 }));
 
 app.listen(port, () => debug('info')(`Listening on ${port}`));

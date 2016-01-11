@@ -4,16 +4,16 @@ import {
   GraphQLObjectType,
   GraphQLFloat,
   GraphQLInt,
-  GraphQLString
+  GraphQLString,
 } from 'graphql';
 
-export let ResizedImageUrl = (image, options) => {
-  options = _.defaults(options, {
-    version: 'large'
+export const resizedImageUrl = (image, options) => {
+  const opts = _.defaults(options, {
+    version: 'large',
   });
 
-  let desired = _.pick(options, 'width', 'height');
-  let factor = _.min(_.map(desired, (value, attr) => {
+  const desired = _.pick(opts, 'width', 'height');
+  const factor = _.min(_.map(desired, (value, attr) => {
     return value / image[`original_${attr}`];
   }));
 
@@ -25,47 +25,47 @@ export let ResizedImageUrl = (image, options) => {
     height = Math.floor(image.original_height * factor);
   }
 
-  let src = image.image_url.replace(':version', options.version);
-  let url = proxy(src, 'resize', (width || options.width), (height || options.height));
+  const src = image.image_url.replace(':version', opts.version);
+  const url = proxy(src, 'resize', (width || opts.width), (height || opts.height));
 
   return {
     factor,
     width,
     height,
-    url
+    url,
   };
 };
 
-let ResizedImageUrlType = new GraphQLObjectType({
+const ResizedImageUrlType = new GraphQLObjectType({
   name: 'ResizedImageUrl',
   fields: {
     factor: {
-      type: GraphQLFloat
+      type: GraphQLFloat,
     },
     width: {
-      type: GraphQLInt
+      type: GraphQLInt,
     },
     height: {
-      type: GraphQLInt
+      type: GraphQLInt,
     },
     url: {
-      type: GraphQLString
-    }
-  }
+      type: GraphQLString,
+    },
+  },
 });
 
 export default {
   args: {
     width: {
-      type: GraphQLInt
+      type: GraphQLInt,
     },
     height: {
-      type: GraphQLInt
+      type: GraphQLInt,
     },
     version: {
-      type: GraphQLString
-    }
+      type: GraphQLString,
+    },
   },
   type: ResizedImageUrlType,
-  resolve: ResizedImageUrl
+  resolve: resizedImageUrl,
 };

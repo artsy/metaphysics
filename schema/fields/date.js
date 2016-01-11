@@ -5,14 +5,11 @@ export default {
   type: GraphQLString,
   args: {
     format: {
-      type: GraphQLString
-    }
+      type: GraphQLString,
+    },
   },
   resolve: (obj, { format }, { fieldName }) => {
-    if (!format) {
-      return obj[fieldName];
-    } else {
-      return moment.utc(obj[fieldName]).format(format);
-    };
-  }
+    if (!format) return obj[fieldName];
+    return moment.utc(obj[fieldName]).format(format);
+  },
 };

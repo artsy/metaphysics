@@ -1,25 +1,25 @@
 import {
   GraphQLString,
-  GraphQLObjectType
+  GraphQLObjectType,
 } from 'graphql';
 
-let AuthorType = new GraphQLObjectType({
+const AuthorType = new GraphQLObjectType({
   name: 'Author',
   fields: {
     id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     name: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     profile_handle: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     href: {
       type: GraphQLString,
-      resolve: ({ profile_handle }) => `/${profile_handle}`
-    }
-  }
+      resolve: ({ profile_handle }) => `/${profile_handle}`,
+    },
+  },
 });
 
 export default AuthorType;

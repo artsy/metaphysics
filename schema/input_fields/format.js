@@ -4,7 +4,9 @@ export default {
   type: new GraphQLEnumType({
     name: 'Format',
     values: {
-      'markdown': { value: 'markdown' }
-    }
-  })
+      markdown: {
+        value: 'markdown',
+      },
+    },
+  }),
 };

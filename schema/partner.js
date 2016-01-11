@@ -9,69 +9,68 @@ import {
   GraphQLNonNull,
   GraphQLInt,
   GraphQLList,
-  GraphQLBoolean
+  GraphQLBoolean,
 } from 'graphql';
 
-let PartnerType = new GraphQLObjectType({
+const PartnerType = new GraphQLObjectType({
   name: 'Partner',
   fields: () => ({
-    cached: cached,
+    cached,
     _id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     name: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     type: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     href: {
       type: GraphQLString,
-      resolve: ({ default_profile_id }) => `/${default_profile_id}`
+      resolve: ({ default_profile_id }) => `/${default_profile_id}`,
     },
     is_linkable: {
       type: GraphQLBoolean,
-      resolve: ({ default_profile_id, default_profile_public}) => default_profile_id && default_profile_public
+      resolve: ({ default_profile_id, default_profile_public }) => {
+        return default_profile_id && default_profile_public;
+      },
     },
     initials: {
       type: GraphQLString,
-      resolve: ({ name }) => _.take(name.replace(/[^A-Z]/g, ''), 3).join('')
+      resolve: ({ name }) => _.take(name.replace(/[^A-Z]/g, ''), 3).join(''),
     },
     default_profile_id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     profile: {
       type: Profile.type,
-      resolve: ({ default_profile_id }) => gravity(`profile/${default_profile_id}`)
-    },
-    type: {
-      type: GraphQLString
+      resolve: ({ default_profile_id }) => gravity(`profile/${default_profile_id}`),
     },
     locations: {
       type: new GraphQLList(Location.type),
       args: {
         size: {
-          type: GraphQLInt
-        }
+          type: GraphQLInt,
+        },
       },
-      resolve: ({ id }, options) => gravity(`partner/${id}/locations`, options)
-    }
-  })
+      resolve: ({ id }, options) => gravity(`partner/${id}/locations`, options),
+    },
+  }),
 });
 
-let Partner = {
+const Partner = {
   type: PartnerType,
   description: 'A Partner',
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Partner'
-    }
+      description: 'The slug or ID of the Partner',
+    },
   },
-  resolve: (root, { id }) => gravity(`partner/${id}`)
+  resolve: (root, { id }) => gravity(`partner/${id}`),
 };
 
 export default Partner;

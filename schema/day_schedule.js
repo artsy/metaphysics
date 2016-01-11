@@ -1,22 +1,22 @@
 import {
   GraphQLInt,
   GraphQLString,
-  GraphQLObjectType
+  GraphQLObjectType,
 } from 'graphql';
 
-let DayScheduleType = new GraphQLObjectType({
+const DayScheduleType = new GraphQLObjectType({
   name: 'DaySchedule',
   fields: {
     start_time: {
-      type: GraphQLInt
+      type: GraphQLInt,
     },
     end_time: {
-      type: GraphQLInt
+      type: GraphQLInt,
     },
     day_of_week: {
-      type: GraphQLString
-    }
-  }
+      type: GraphQLString,
+    },
+  },
 });
 
 export default DayScheduleType;

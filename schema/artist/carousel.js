@@ -1,24 +1,23 @@
 import _ from 'lodash';
 import Image from '../image';
 import gravity from '../../lib/loaders/gravity';
-import debug from 'debug'
+import debug from 'debug';
 import {
   GraphQLObjectType,
   GraphQLList,
-  GraphQlStringType
 } from 'graphql';
 
-let ArtistCarouselType = new GraphQLObjectType({
+const ArtistCarouselType = new GraphQLObjectType({
   name: 'ArtistCarousel',
   fields: {
     images: {
       type: new GraphQLList(Image.type),
-      resolve: images => images
-    }
-  }
+      resolve: images => images,
+    },
+  },
 });
 
-let ArtistCarousel = {
+const ArtistCarousel = {
   type: ArtistCarouselType,
   resolve: (artist) => {
     return Promise.all([
@@ -27,15 +26,15 @@ let ArtistCarousel = {
         sort: '-end_at',
         displayable: true,
         solo_show: true,
-        top_tier: true
+        top_tier: true,
       }),
       gravity(`artist/${artist.id}/artworks`, {
         size: 7,
         sort: '-iconicity',
-        published: true
-      })
+        published: true,
+      }),
     ]).then(([shows, artworks]) => {
-      let elligibleShows = shows.filter(show => show.images_count > 0);
+      const elligibleShows = shows.filter(show => show.images_count > 0);
       return Promise.all(
         elligibleShows.map(show => gravity(`partner_show/${show.id}/images`, { size: 1 }))
       )
@@ -50,10 +49,10 @@ let ArtistCarousel = {
             return _.assign({ href: `/artwork/${artwork.id}` }, _.first(artwork.images));
           })
         );
-      })
+      });
     })
     .catch(debug('error'));
-  }
+  },
 };
 
 export default ArtistCarousel;

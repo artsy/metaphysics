@@ -1,0 +1,12 @@
+{
+  "env": {
+    "browser": true,
+    "node": true,
+    "mocha": true,
+    "es6": true
+  },
+  "extends": "airbnb",
+  "rules": {
+    "camelcase": 0
+  }
+}

@@ -1,27 +1,26 @@
-import _ from 'lodash';
 import positron from '../lib/loaders/positron';
-import Article from './article'
+import Article from './article';
 import {
   GraphQLString,
   GraphQLBoolean,
   GraphQLList,
-} from 'graphql'
+} from 'graphql';
 
-let Articles = {
+const Articles = {
   type: new GraphQLList(Article.type),
   description: 'A list of Articles',
   args: {
     show_id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     published: {
       type: GraphQLBoolean,
-      defaultValue: true
-    }
+      defaultValue: true,
+    },
   },
   resolve: (root, options) => {
     return positron('articles', options).then(articles => articles.results);
-  }
+  },
 };
 
 export default Articles;

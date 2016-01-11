@@ -20,12 +20,12 @@ describe('Cache', () => {
     describe('#set', () => {
       it('returns false', () => {
         cache.set('foo', {}).should.be.false();
-      })
+      });
     });
   });
 
   describe('when successfully connected to Redis', () => {
-    let client = fakeredis.createClient();
+    const client = fakeredis.createClient();
 
     before(() => {
       cache.__Rewire__('client', client);
@@ -36,15 +36,15 @@ describe('Cache', () => {
     });
 
     afterEach((done) => {
-      client.flushdb(err => done());
+      client.flushdb(() => done());
     });
 
     describe('#get', () => {
-      beforeEach(() => cache.set('get_foo', { bar: 'baz'}));
+      beforeEach(() => cache.set('get_foo', { bar: 'baz' }));
 
       it('parses the data and resolves the promise', () => {
         return cache.get('get_foo').then(data => {
-          data.bar.should.equal('baz')
+          data.bar.should.equal('baz');
         }).should.be.fulfilled();
       });
     });
@@ -55,10 +55,10 @@ describe('Cache', () => {
           cache.set('set_foo', { bar: 'baz' });
 
           client.get('set_foo', (err, data) => {
-            let parsed = JSON.parse(data);
+            const parsed = JSON.parse(data);
 
             parsed.bar.should.equal('baz');
-            parsed.cached.should.be.instanceOf(Number)
+            parsed.cached.should.be.instanceOf(Number);
 
             done();
           });
@@ -70,11 +70,11 @@ describe('Cache', () => {
           cache.set('set_bar', [{ baz: 'qux' }]);
 
           client.get('set_bar', (err, data) => {
-            let parsed = JSON.parse(data);
+            const parsed = JSON.parse(data);
 
             parsed.should.have.lengthOf(1);
             parsed[0].baz.should.equal('qux');
-            parsed[0].cached.should.be.instanceOf(Number)
+            parsed[0].cached.should.be.instanceOf(Number);
 
             done();
           });

@@ -6,44 +6,44 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLFloat,
-  GraphQLInt
+  GraphQLInt,
 } from 'graphql';
 
-let ImageType = new GraphQLObjectType({
+const ImageType = new GraphQLObjectType({
   name: 'Image',
   fields: () => ({
     id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     href: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     width: {
       type: GraphQLInt,
-      resolve: ({ original_width }) => original_width
+      resolve: ({ original_width }) => original_width,
     },
     height: {
       type: GraphQLInt,
-      resolve: ({ original_height }) => original_height
+      resolve: ({ original_height }) => original_height,
     },
     aspect_ratio: {
-      type: GraphQLFloat
+      type: GraphQLFloat,
     },
     versions: {
       type: new GraphQLList(GraphQLString),
-      resolve: ({ image_versions }) => image_versions
+      resolve: ({ image_versions }) => image_versions,
     },
     caption: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     url: VersionedUrl,
     cropped: CroppedUrl,
-    resized: ResizedUrl
-  })
+    resized: ResizedUrl,
+  }),
 });
 
-let Image = {
-  type: ImageType
+const Image = {
+  type: ImageType,
 };
 
 export default Image;

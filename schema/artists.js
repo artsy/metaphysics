@@ -1,21 +1,21 @@
 import gravity from '../lib/loaders/gravity';
 import Artist from './artist';
-import ArtistSorts from './sorts/artist_sorts'
+import ArtistSorts from './sorts/artist_sorts';
 import {
   GraphQLList,
   GraphQLInt,
-} from 'graphql'
+} from 'graphql';
 
-let Artists = {
+const Artists = {
   type: new GraphQLList(Artist.type),
   description: 'A list of Artists',
   args: {
     size: {
-      type: GraphQLInt
+      type: GraphQLInt,
     },
-    sort: ArtistSorts
+    sort: ArtistSorts,
   },
-  resolve: (root, options) => gravity('artists', options)
+  resolve: (root, options) => gravity('artists', options),
 };
 
 export default Artists;

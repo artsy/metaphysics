@@ -1,33 +1,33 @@
 import Image from './image';
 import {
   GraphQLString,
-  GraphQLObjectType
+  GraphQLObjectType,
 } from 'graphql';
 
-let FeaturedLinkType = new GraphQLObjectType({
+const FeaturedLinkType = new GraphQLObjectType({
   name: 'FeaturedLink',
   fields: {
     id: {
       type: GraphQLString,
       description: 'Attempt to get the ID of the entity of the FeaturedLink',
-      resolve: ({ href }) => href.split('/').pop().split('?')[0]
+      resolve: ({ href }) => href.split('/').pop().split('?')[0],
     },
     title: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     subtitle: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     href: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     image: {
       type: Image.type,
-      resolve: (featuredLink) => featuredLink
-    }
-  }
+      resolve: (featuredLink) => featuredLink,
+    },
+  },
 });
 
 export default {
-  type: FeaturedLinkType
+  type: FeaturedLinkType,
 };
