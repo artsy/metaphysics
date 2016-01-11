@@ -1,24 +1,22 @@
-import { 
+import {
   GraphQLInputObjectType,
-  GraphQLObjectType,
   GraphQLNonNull,
   GraphQLFloat,
-  GraphQLString
 } from 'graphql';
 
-let Near = new GraphQLInputObjectType({
+const Near = new GraphQLInputObjectType({
   name: 'Near',
   fields: {
     lat: {
-      type: new GraphQLNonNull(GraphQLFloat)
+      type: new GraphQLNonNull(GraphQLFloat),
     },
     lng: {
-      type: new GraphQLNonNull(GraphQLFloat)
+      type: new GraphQLNonNull(GraphQLFloat),
     },
     max_distance: {
-      type: GraphQLFloat
-    }
-  }
+      type: GraphQLFloat,
+    },
+  },
 });
 
 export default Near;

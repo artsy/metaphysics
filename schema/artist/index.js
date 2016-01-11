@@ -2,8 +2,8 @@ import _ from 'lodash';
 import Image from '../image';
 import Artwork from '../artwork';
 import PartnerShow from '../partner_show';
-import ArtworkSorts from '../sorts/artwork_sorts'
-import PartnerShowSorts from '../sorts/partner_show_sorts'
+import ArtworkSorts from '../sorts/artwork_sorts';
+import PartnerShowSorts from '../sorts/partner_show_sorts';
 import ArtistCarousel from './carousel';
 import ArtistStatuses from './statuses';
 import gravity from '../../lib/loaders/gravity';
@@ -14,43 +14,42 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLInt,
-  GraphQLEnumType
 } from 'graphql';
 
-let ArtistType = new GraphQLObjectType({
+const ArtistType = new GraphQLObjectType({
   name: 'Artist',
   fields: () => {
     return {
       cached: {
         type: GraphQLInt,
-        resolve: ({ cached }) => new Date().getTime() - cached
+        resolve: ({ cached }) => new Date().getTime() - cached,
       },
       id: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       href: {
         type: GraphQLString,
-        resolve: (artist) => `/artist/${artist.id}`
+        resolve: (artist) => `/artist/${artist.id}`,
       },
       sortable_id: {
         type: GraphQLString,
-        description: 'Use this attribute to sort by when sorting a collection of Artists'
+        description: 'Use this attribute to sort by when sorting a collection of Artists',
       },
       name: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       years: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       public: {
-        type: GraphQLBoolean
+        type: GraphQLBoolean,
       },
       nationality: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       is_shareable: {
         type: GraphQLBoolean,
-        resolve: (artist) => artist.published_artworks_count > 0
+        resolve: (artist) => artist.published_artworks_count > 0,
       },
       counts: {
         type: new GraphQLObjectType({
@@ -58,56 +57,56 @@ let ArtistType = new GraphQLObjectType({
           fields: {
             artworks: {
               type: GraphQLInt,
-              resolve: ({ published_artworks_count }) => published_artworks_count
+              resolve: ({ published_artworks_count }) => published_artworks_count,
             },
             follows: {
               type: GraphQLInt,
-              resolve: ({ follow_count }) => follow_count
+              resolve: ({ follow_count }) => follow_count,
             },
             auction_lots: {
               type: GraphQLInt,
-              resolve: ({ auction_lots_count }) => auction_lots_count
-            }
-          }
+              resolve: ({ auction_lots_count }) => auction_lots_count,
+            },
+          },
         }),
-        resolve: (artist) => artist
+        resolve: (artist) => artist,
       },
       artworks: {
         type: new GraphQLList(Artwork.type),
         args: {
           size: {
             type: GraphQLInt,
-            description: 'The number of Artworks to return'
+            description: 'The number of Artworks to return',
           },
           sort: ArtworkSorts,
           published: {
             type: GraphQLBoolean,
-            defaultValue: true
-          }
+            defaultValue: true,
+          },
         },
-        resolve: ({ id }, options) => gravity(`artist/${id}/artworks`, options)
+        resolve: ({ id }, options) => gravity(`artist/${id}/artworks`, options),
       },
       image: {
         type: Image.type,
-        resolve: (artist) => artist
+        resolve: (artist) => artist,
       },
       artists: {
-        type: new GraphQLList(Artist.type),
+        type: new GraphQLList(Artist.type), // eslint-disable-line no-use-before-define
         args: {
           size: {
             type: GraphQLInt,
-            description: 'The number of Artists to return'
+            description: 'The number of Artists to return',
           },
           exclude_artists_without_artworks: {
             type: GraphQLBoolean,
-            defaultValue: true
-          }
+            defaultValue: true,
+          },
         },
         resolve: (artist, options) => {
           return gravity(`related/layer/main/artists`, _.defaults(options, {
-            artist: [artist.id]
+            artist: [artist.id],
           }));
-        }
+        },
       },
 
       carousel: ArtistCarousel,
@@ -119,38 +118,38 @@ let ArtistType = new GraphQLObjectType({
         args: {
           size: {
             type: GraphQLInt,
-            description: 'The number of PartnerShows to return'
+            description: 'The number of PartnerShows to return',
           },
           solo_show: {
-            type: GraphQLBoolean
+            type: GraphQLBoolean,
           },
           top_tier: {
-            type: GraphQLBoolean
+            type: GraphQLBoolean,
           },
-          sort: PartnerShowSorts
+          sort: PartnerShowSorts,
         },
         resolve: ({ id }, options) => {
           return gravity('related/shows', _.defaults(options, {
             artist_id: id,
             displayable: true,
-            sort: '-end_at'
+            sort: '-end_at',
           }));
-        }
-      }
+        },
+      },
     };
-  }
+  },
 });
 
-let Artist = {
+const Artist = {
   type: ArtistType,
   description: 'An Artist',
   args: {
     id: {
       description: 'The slug or ID of the Artist',
-      type: new GraphQLNonNull(GraphQLString)
-    }
+      type: new GraphQLNonNull(GraphQLString),
+    },
   },
-  resolve: (root, { id }) => gravity(`artist/${id}`)
+  resolve: (root, { id }) => gravity(`artist/${id}`),
 };
 
 export default Artist;

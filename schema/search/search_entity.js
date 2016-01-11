@@ -4,39 +4,38 @@ import Artwork from '../artwork';
 import Profile from '../profile';
 import PartnerShow from '../partner_show';
 import {
-  GraphQLObjectType,
-  GraphQLUnionType
+  GraphQLUnionType,
 } from 'graphql';
 
-export let ArtistSearchEntityType = _.create(Artist.type, {
+export const ArtistSearchEntityType = _.create(Artist.type, {
   name: 'ArtistSearchEntity',
   isTypeOf: ({ type }) => type === 'Artist',
 });
 
-export let ArtworkSearchEntityType = _.create(Artwork.type, {
+export const ArtworkSearchEntityType = _.create(Artwork.type, {
   name: 'ArtworkSearchEntity',
   isTypeOf: ({ type }) => type === 'Artwork',
 });
 
 
-export let ProfileSearchEntityType = _.create(Profile.type, {
+export const ProfileSearchEntityType = _.create(Profile.type, {
   name: 'ProfileSearchEntity',
-  isTypeOf: ({ type }) => type === 'Profile'
+  isTypeOf: ({ type }) => type === 'Profile',
 });
 
-export let PartnerShowSearchEntityType = _.create(PartnerShow.type, {
+export const PartnerShowSearchEntityType = _.create(PartnerShow.type, {
   name: 'PartnerShowSearchEntity',
-  isTypeOf: ({ type }) => type === 'PartnerShow'
+  isTypeOf: ({ type }) => type === 'PartnerShow',
 });
 
-export let SearchEntityType = new GraphQLUnionType({
+export const SearchEntityType = new GraphQLUnionType({
   name: 'SearchEntity',
   types: [
     ArtistSearchEntityType,
     ArtworkSearchEntityType,
     ProfileSearchEntityType,
-    PartnerShowSearchEntityType
-  ]
+    PartnerShowSearchEntityType,
+  ],
 });
 
 export default SearchEntityType;

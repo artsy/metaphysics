@@ -5,16 +5,16 @@ import schema from '../../schema';
 
 describe('Artwork type', () => {
   let gravity;
-  let Artwork = schema.__get__('Artwork');
+  const Artwork = schema.__get__('Artwork');
 
-  let partner = { id: 'existy' };
-  let sale = { id: 'existy' };
+  const partner = { id: 'existy' };
+  const sale = { id: 'existy' };
 
-  let artwork = {
+  const artwork = {
     id: 'richard-prince-untitled-portrait',
     title: 'Untitled (Portrait)',
     forsale: true,
-    acquireable: false
+    acquireable: false,
   };
 
   beforeEach(() => {
@@ -27,7 +27,7 @@ describe('Artwork type', () => {
   });
 
   describe('#is_contactable', () => {
-    let query = `
+    const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
           id
@@ -41,7 +41,7 @@ describe('Artwork type', () => {
         // Artwork
         .onCall(0)
         .returns(Promise.resolve(_.assign({}, artwork, {
-          partner: partner
+          partner,
         })))
         // Sales
         .onCall(1)
@@ -52,8 +52,8 @@ describe('Artwork type', () => {
           data.should.eql({
             artwork: {
               id: 'richard-prince-untitled-portrait',
-              is_contactable: true
-            }
+              is_contactable: true,
+            },
           });
         });
     });
@@ -63,7 +63,7 @@ describe('Artwork type', () => {
         // Artwork
         .onCall(0)
         .returns(Promise.resolve(_.assign({}, artwork, {
-          partner: partner
+          partner,
         })))
         // Sales
         .onCall(1)
@@ -74,15 +74,15 @@ describe('Artwork type', () => {
           data.should.eql({
             artwork: {
               id: 'richard-prince-untitled-portrait',
-              is_contactable: false
-            }
+              is_contactable: false,
+            },
           });
         });
     });
   });
 
   describe('#is_in_auction', () => {
-    let query = `
+    const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
           id
@@ -100,7 +100,7 @@ describe('Artwork type', () => {
         .onCall(1)
         .returns(Promise.resolve([
           _.assign({}, sale, { is_auction: false }),
-          _.assign({}, sale, { is_auction: true })
+          _.assign({}, sale, { is_auction: true }),
         ]));
 
       return graphql(schema, query)
@@ -108,8 +108,8 @@ describe('Artwork type', () => {
           data.should.eql({
             artwork: {
               id: 'richard-prince-untitled-portrait',
-              is_in_auction: true
-            }
+              is_in_auction: true,
+            },
           });
         });
     });
@@ -123,7 +123,7 @@ describe('Artwork type', () => {
         .onCall(1)
         .returns(Promise.resolve([
           _.assign({}, sale, { is_auction: false }),
-          _.assign({}, sale, { is_auction: false })
+          _.assign({}, sale, { is_auction: false }),
         ]));
 
       return graphql(schema, query)
@@ -131,8 +131,8 @@ describe('Artwork type', () => {
           data.should.eql({
             artwork: {
               id: 'richard-prince-untitled-portrait',
-              is_in_auction: false
-            }
+              is_in_auction: false,
+            },
           });
         });
     });

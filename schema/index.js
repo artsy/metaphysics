@@ -4,6 +4,7 @@ import Articles from './articles';
 import Artwork from './artwork';
 import Artist from './artist';
 import Artists from './artists';
+import Fair from './fair';
 import Gene from './gene';
 import OrderedSets from './ordered_sets';
 import Profile from './profile';
@@ -17,10 +18,10 @@ import Sale from './sale';
 import Search from './search';
 import {
   GraphQLSchema,
-  GraphQLObjectType
+  GraphQLObjectType,
 } from 'graphql';
 
-let schema = new GraphQLSchema({
+const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
@@ -30,6 +31,7 @@ let schema = new GraphQLSchema({
       artwork: Artwork,
       artist: Artist,
       artists: Artists,
+      fair: Fair,
       gene: Gene,
       profile: Profile,
       ordered_sets: OrderedSets,
@@ -40,9 +42,9 @@ let schema = new GraphQLSchema({
       partner_show: PartnerShow,
       partner_shows: PartnerShows,
       sale: Sale,
-      search: Search
-    }
-  })
+      search: Search,
+    },
+  }),
 });
 
 export default schema;

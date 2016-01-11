@@ -1,26 +1,26 @@
 import qs from 'qs';
 const {
   EMBEDLY_KEY,
-  EMBEDLY_ENDPOINT
+  EMBEDLY_ENDPOINT,
 } = process.env;
 
 export default (src, mode, width, height) => {
-  let options = {
+  const options = {
     resize: {
       grow: false,
       url: src,
-      width: width,
-      height: height,
+      width,
+      height,
       key: EMBEDLY_KEY,
-      quality: 95
+      quality: 95,
     },
 
     crop: {
       url: src,
-      width: width,
-      height: height,
+      width,
+      height,
       key: EMBEDLY_KEY,
-      quality: 95
+      quality: 95,
     },
   };
 

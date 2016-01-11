@@ -1,31 +1,27 @@
 import date from './fields/date';
 import {
   GraphQLString,
-  GraphQLObjectType
+  GraphQLObjectType,
 } from 'graphql';
 
-let PartnerShowEventType = new GraphQLObjectType({
+const PartnerShowEventType = new GraphQLObjectType({
   name: 'PartnerShowEventType',
   fields: {
     title: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     description: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     event_type: {
       type: GraphQLString,
       resolve: ({ event_type }) => {
-        if (event_type == 'Other') {
-          return 'Event';
-        } else {
-          return event_type;
-        }
-      }
+        return (event_type === 'Other') ? 'Event' : event_type;
+      },
     },
     start_at: date,
-    end_at: date
-  }
+    end_at: date,
+  },
 });
 
 export default PartnerShowEventType;

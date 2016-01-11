@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import date from './fields/date';
@@ -9,122 +8,121 @@ import Fair from './fair';
 import Artwork from './artwork';
 import Location from './location';
 import Image from './image';
-import PartnerShowEventType from './partner_show_event'
+import PartnerShowEventType from './partner_show_event';
 import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
   GraphQLInt,
-  GraphQLBoolean
+  GraphQLBoolean,
 } from 'graphql';
 
-let PartnerShowType = new GraphQLObjectType({
+const PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
   fields: () => ({
-    cached: cached,
+    cached,
     _id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     href: {
       type: GraphQLString,
-      resolve: (partnerShow) => `/show/${partnerShow.id}`
+      resolve: (partnerShow) => `/show/${partnerShow.id}`,
     },
     name: {
-      type: GraphQLString
+      type: GraphQLString,
+      description: 'The exhibition title',
     },
     description: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     displayable: {
-      type: GraphQLBoolean
+      type: GraphQLBoolean,
     },
     press_release: markdown,
     start_at: date,
     end_at: date,
-    name: {
-      type: GraphQLString,
-      description: 'The exhibition title'
-    },
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: ({ artists }) => artists
+      resolve: ({ artists }) => artists,
     },
     partner: {
       type: Partner.type,
-      resolve: ({ partner }) => partner
+      resolve: ({ partner }) => partner,
     },
     fair: {
       type: Fair.type,
-      resolve: ({ fair }) => fair
+      resolve: ({ fair }) => fair,
     },
     location: {
       type: Location.type,
-      resolve: ({ location, fair_location }) => location || fair_location
+      resolve: ({ location, fair_location }) => location || fair_location,
     },
     status: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     events: {
       type: new GraphQLList(PartnerShowEventType),
-      resolve: ({ events }) => events
+      resolve: ({ events }) => events,
     },
     artworks: {
       type: new GraphQLList(Artwork.type),
       args: {
         size: {
           type: GraphQLInt,
-          description: 'Number of artworks to return'
+          description: 'Number of artworks to return',
         },
         published: {
           type: GraphQLBoolean,
-          defaultValue: true
+          defaultValue: true,
         },
         page: {
-          type: GraphQLInt
-        }
+          type: GraphQLInt,
+        },
       },
-      resolve: (show, options) => gravity(`partner/${show.partner.id}/show/${show.id}/artworks`, options)
+      resolve: (show, options) => {
+        return gravity(`partner/${show.partner.id}/show/${show.id}/artworks`, options);
+      },
     },
     cover_image: {
       type: Image.type,
-      resolve: ({ id }, options) => gravity(`partner_show/${id}/default_image`, options)
+      resolve: ({ id }, options) => gravity(`partner_show/${id}/default_image`, options),
     },
     images: {
       type: new GraphQLList(Image.type),
       args: {
         size: {
           type: GraphQLInt,
-          description: 'Number of images to return'
+          description: 'Number of images to return',
         },
         default: {
           type: GraphQLBoolean,
-          description: 'Pass true/false to include cover or not'
+          description: 'Pass true/false to include cover or not',
         },
         page: {
-          type: GraphQLInt
-        }
+          type: GraphQLInt,
+        },
       },
-      resolve: ({ id }, options) => gravity(`partner_show/${id}/images`, options)
-    }
-  })
+      resolve: ({ id }, options) => gravity(`partner_show/${id}/images`, options),
+    },
+  }),
 });
 
-let PartnerShow = {
+const PartnerShow = {
   type: PartnerShowType,
   description: 'A Partner Show',
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the PartnerShow'
-    }
+      description: 'The slug or ID of the PartnerShow',
+    },
   },
   resolve: (root, { id }) => {
-    return gravity(`show/${id}`)
-  }
+    return gravity(`show/${id}`);
+  },
 };
 
 export default PartnerShow;

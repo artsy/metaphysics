@@ -6,53 +6,52 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLInt,
-  GraphQLList
+  GraphQLList,
 } from 'graphql';
 
-let SaleType = new GraphQLObjectType({
+const SaleType = new GraphQLObjectType({
   name: 'Sale',
   fields: () => {
     return {
-      cached: cached,
+      cached,
       id: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       name: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       description: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       sale_type: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       is_auction: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       start_at: date,
       end_at: date,
       currency: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       sale_artworks: {
         type: new GraphQLList(SaleArtwork.type),
-        resolve: ({ id }, options) => gravity(`sale/${id}/sale_artworks`, options)
-      }
-    }
-  }
+        resolve: ({ id }, options) => gravity(`sale/${id}/sale_artworks`, options),
+      },
+    };
+  },
 });
 
-let Sale = {
+const Sale = {
   type: SaleType,
   description: 'A Sale',
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Sale'
-    }
+      description: 'The slug or ID of the Sale',
+    },
   },
-  resolve: (root, { id }) => gravity(`sale/${id}`)
+  resolve: (root, { id }) => gravity(`sale/${id}`),
 };
 
 export default Sale;

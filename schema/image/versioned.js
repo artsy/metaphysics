@@ -1,15 +1,15 @@
 import { GraphQLString } from 'graphql';
 
-export let VersionedImageUrl = ({ image_url }, { version }) => {
+export const versionedImageUrl = ({ image_url }, { version }) => {
   if (!!image_url) return image_url.replace(':version', version);
 };
 
 export default {
   args: {
     version: {
-      type: GraphQLString
-    }
+      type: GraphQLString,
+    },
   },
   type: GraphQLString,
-  resolve: VersionedImageUrl
+  resolve: versionedImageUrl,
 };

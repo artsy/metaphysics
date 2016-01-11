@@ -2,13 +2,13 @@ import qs from 'qs';
 const { GEMINI_ENDPOINT } = process.env;
 
 export default (src, mode, width, height) => {
-  if (mode === 'resize') mode = 'fit';
+  const resizeTo = (mode === 'resize') ? 'fit' : mode;
 
   return `${GEMINI_ENDPOINT}/?${qs.stringify({
-    resize_to: mode,
-    height: height,
-    width: width,
+    resize_to: resizeTo,
+    height,
+    width,
     quality: 95,
-    src: src
+    src,
   })}`;
 };

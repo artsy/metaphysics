@@ -4,57 +4,60 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLFloat,
-  GraphQLInt,
-  GraphQLList
+  GraphQLList,
 } from 'graphql';
 
-let LocationType = new GraphQLObjectType({
+const LocationType = new GraphQLObjectType({
   name: 'Location',
   fields: () => ({
-    cached: cached,
+    cached,
     id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     city: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     country: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     coordinates: {
       type: new GraphQLObjectType({
         name: 'coordinates',
         fields: {
-          lat: { type: GraphQLFloat },
-          lng: { type: GraphQLFloat }
-        }
-      })
+          lat: {
+            type: GraphQLFloat,
+          },
+          lng: {
+            type: GraphQLFloat,
+          },
+        },
+      }),
     },
     display: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     address: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     address_2: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     postal_code: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     state: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     day_schedules: {
       type: new GraphQLList(DayScheduleType),
-      resolve: ({ day_schedules }) => day_schedules
-    }
-  })
+      resolve: ({ day_schedules }) => day_schedules,
+    },
+  }),
 });
 
-let Location = {
+const Location = {
   type: LocationType,
-  description: 'A Location'
+  description: 'A Location',
 };
 
 export default Location;

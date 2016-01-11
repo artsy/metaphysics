@@ -9,80 +9,77 @@ import {
   GraphQLObjectType,
 } from 'graphql';
 
-let classify = _.flow(_.camelCase, _.capitalize);
+const classify = _.flow(_.camelCase, _.capitalize);
 
-export let parseOgType = ({ pagemap }) => {
-  let ogType = _.get(pagemap, ['metatags', '0', 'og:type'], '');
-  let cleanType = ogType.split(':')[1] || ogType;
-  if (cleanType === 'exhibition') {
-    return 'PartnerShow';
-  } else {
-    return classify(cleanType);
-  }
+export const parseOgType = ({ pagemap }) => {
+  const ogType = _.get(pagemap, ['metatags', '0', 'og:type'], '');
+  const cleanType = ogType.split(':')[1] || ogType;
+  if (cleanType === 'exhibition') return 'PartnerShow';
+  return classify(cleanType);
 };
 
-export let parseId = ({ link }) => {
-  let urlComponents = _.rest(url.parse(link).path.split('/'));
-  let supportedRouteTypes = ['artist', 'artwork', 'show'];
+export const parseId = ({ link }) => {
+  const urlComponents = _.rest(url.parse(link).path.split('/'));
+  const supportedRouteTypes = ['artist', 'artwork', 'show'];
 
-  let first = _.first(urlComponents);
-  let last = _.last(urlComponents);
+  const first = _.first(urlComponents);
+  const last = _.last(urlComponents);
 
   return _.some(supportedRouteTypes.map(type => first === type)) ? last : first;
-}
+};
 
-let SearchResultType = new GraphQLObjectType({
+const SearchResultType = new GraphQLObjectType({
   name: 'SearchResult',
   fields: () => ({
     id: {
       type: GraphQLString,
-      resolve: parseId
+      resolve: parseId,
     },
     title: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     href: {
       type: GraphQLString,
-      resolve: ({ link }) => url.parse(link).path
+      resolve: ({ link }) => url.parse(link).path,
     },
     snippet: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     image: {
       type: Image.type,
       resolve: ({ pagemap }) => {
         // Should attempt to get the entity's image rather than
         // using Google's, as it is often inaccurate.
-        let image = _.first(_.get(pagemap, 'cse_image'));
+        const image = _.first(_.get(pagemap, 'cse_image'));
         return {
           image_url: image.src,
           original_height: image.height,
-          original_width: image.width
+          original_width: image.width,
         };
-      }
+      },
     },
     type: {
       type: GraphQLString,
-      resolve: parseOgType
+      resolve: parseOgType,
     },
     entity: {
       type: SearchEntityType,
       resolve: (searchResult) => {
-        let id = parseId(searchResult);
-        let type = parseOgType(searchResult);
+        const id = parseId(searchResult);
+        const type = parseOgType(searchResult);
         return gravity(routing(type, id).api)
           .then(response => {
-            response.type = type;
+            response.type = type; // eslint-disable-line no-param-reassign
             return response;
           });
-      }
-    }
-  })
+      },
+    },
+  }),
 });
 
-let SearchResult = {
+const SearchResult = {
   type: SearchResultType,
-  description: 'A Search Result'
+  description: 'A Search Result',
 };
 
 export default SearchResult;

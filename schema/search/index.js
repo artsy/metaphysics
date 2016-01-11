@@ -6,34 +6,34 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLList,
-  GraphQLInt
+  GraphQLInt,
 } from 'graphql';
 
-let SearchType = new GraphQLObjectType({
+const SearchType = new GraphQLObjectType({
   name: 'Search',
   fields: () => ({
-    cached: cached,
+    cached,
     total: {
       type: GraphQLInt,
-      resolve: (response) => response.searchInformation.totalResults
+      resolve: (response) => response.searchInformation.totalResults,
     },
     results: {
       type: new GraphQLList(SearchResult.type),
-      resolve: ({ items }) => items
-    }
-  })
+      resolve: ({ items }) => items,
+    },
+  }),
 });
 
-let Search = {
+const Search = {
   type: SearchType,
   description: 'A Search',
   args: {
     term: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'Your search term'
-    }
+      description: 'Your search term',
+    },
   },
-  resolve: (root, { term }) => googleCSE({ q: term })
+  resolve: (root, { term }) => googleCSE({ q: term }),
 };
 
 export default Search;

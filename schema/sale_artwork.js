@@ -1,66 +1,60 @@
-import _ from 'lodash';
-import qs from 'qs';
 import cached from './fields/cached';
 import date from './fields/date';
-import Image from './image';
-import Artist from './artist';
 import Artwork from './artwork';
 import gravity from '../lib/loaders/gravity';
 import {
   GraphQLObjectType,
-  GraphQLBoolean,
   GraphQLString,
   GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt
+  GraphQLInt,
 } from 'graphql';
 
-let SaleArtworkType = new GraphQLObjectType({
+const SaleArtworkType = new GraphQLObjectType({
   name: 'SaleArtwork',
   fields: () => {
     return {
-      cached: cached,
+      cached,
       _id: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       id: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       sale_id: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       position: {
-        type: GraphQLInt
+        type: GraphQLInt,
       },
       lot_number: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       bidder_positions_count: {
-        type: GraphQLInt
+        type: GraphQLInt,
       },
       reserve_status: {
-        type: GraphQLInt
+        type: GraphQLInt,
       },
       amount_cents: {
-        type: GraphQLInt
+        type: GraphQLInt,
       },
       low_estimate_cents: {
-        type: GraphQLInt
+        type: GraphQLInt,
       },
       high_estimate_cents: {
-        type: GraphQLInt
+        type: GraphQLInt,
       },
       opening_bid_cents: {
-        type: GraphQLInt
+        type: GraphQLInt,
       },
       minimum_next_bid_cents: {
-        type: GraphQLInt
+        type: GraphQLInt,
       },
       currency: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       symbol: {
-        type: GraphQLString
+        type: GraphQLString,
       },
       highest_bid: {
         type: new GraphQLObjectType({
@@ -68,35 +62,35 @@ let SaleArtworkType = new GraphQLObjectType({
           fields: {
             created_at: date,
             amount_cents: {
-              type: GraphQLString
-            }
-          }
-        })
+              type: GraphQLString,
+            },
+          },
+        }),
       },
       artwork: {
         type: Artwork.type,
-        resolve: ({ artwork }) => artwork
-      }
-    }
-  }
+        resolve: ({ artwork }) => artwork,
+      },
+    };
+  },
 });
 
-let SaleArtwork = {
+const SaleArtwork = {
   type: SaleArtworkType,
   description: 'A Sale Artwork',
   args: {
     sale_id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Sale'
+      description: 'The slug or ID of the Sale',
     },
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the SaleArtwork'
-    }
+      description: 'The slug or ID of the SaleArtwork',
+    },
   },
   resolve: (root, { sale_id, id }) => {
-    return gravity(`sale/${sale_id}/sale_artwork/${id}`)
-  }
+    return gravity(`sale/${sale_id}/sale_artwork/${id}`);
+  },
 };
 
 export default SaleArtwork;

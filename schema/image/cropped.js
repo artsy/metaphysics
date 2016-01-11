@@ -2,62 +2,60 @@ import _ from 'lodash';
 import proxy from './proxies';
 import {
   GraphQLObjectType,
-  GraphQLFloat,
   GraphQLInt,
   GraphQLString,
-  GraphQLNonNull
+  GraphQLNonNull,
 } from 'graphql';
 
-export let CroppedImageUrl = (image, options) => {
-  options = _.defaults(options, {
-    version: 'large'
+export const croppedImageUrl = (image, options) => {
+  const opts = _.defaults(options, {
+    version: 'large',
   });
 
-  let { width, height } = options;
-  let src = null;
+  const { width, height } = opts;
 
+  let src = null;
   if (image.image_url) {
-    src = image.image_url.replace(':version', options.version);
-  }
-  else {
+    src = image.image_url.replace(':version', opts.version);
+  } else {
     src = image;
   }
 
-  let url = proxy(src, 'crop', width, height);
+  const url = proxy(src, 'crop', width, height);
   return {
     width,
     height,
-    url
+    url,
   };
 };
 
-let CroppedImageUrlType = new GraphQLObjectType({
+const CroppedImageUrlType = new GraphQLObjectType({
   name: 'CroppedImageUrl',
   fields: {
     width: {
-      type: GraphQLInt
+      type: GraphQLInt,
     },
     height: {
-      type: GraphQLInt
+      type: GraphQLInt,
     },
     url: {
-      type: GraphQLString
-    }
-  }
+      type: GraphQLString,
+    },
+  },
 });
 
 export default {
   args: {
     width: {
-      type: new GraphQLNonNull(GraphQLInt)
+      type: new GraphQLNonNull(GraphQLInt),
     },
     height: {
-      type: new GraphQLNonNull(GraphQLInt)
+      type: new GraphQLNonNull(GraphQLInt),
     },
     version: {
-      type: GraphQLString
-    }
+      type: GraphQLString,
+    },
   },
   type: CroppedImageUrlType,
-  resolve: CroppedImageUrl
+  resolve: croppedImageUrl,
 };

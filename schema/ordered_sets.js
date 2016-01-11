@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import ItemType from './item';
@@ -7,27 +6,27 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLList,
-  GraphQLBoolean
+  GraphQLBoolean,
 } from 'graphql';
 
-let OrderedSetType = new GraphQLObjectType({
+const OrderedSetType = new GraphQLObjectType({
   name: 'OrderedSet',
   fields: () => ({
-    cached: cached,
+    cached,
     id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     key: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     name: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     description: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     item_type: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     items: {
       type: new GraphQLList(ItemType),
@@ -35,29 +34,29 @@ let OrderedSetType = new GraphQLObjectType({
         return gravity(`set/${id}/items`)
           .then(items => {
             return items.map(item => {
-              item.item_type = item_type;
+              item.item_type = item_type; // eslint-disable-line no-param-reassign
               return item;
             });
           });
-      }
-    }
-  })
+      },
+    },
+  }),
 });
 
-let OrderedSets = {
+const OrderedSets = {
   type: new GraphQLList(OrderedSetType),
   description: 'A collection of OrderedSets',
   args: {
     key: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'Key to the OrderedSet or group of OrderedSets'
+      description: 'Key to the OrderedSet or group of OrderedSets',
     },
     public: {
       type: GraphQLBoolean,
-      defaultValue: true
-    }
+      defaultValue: true,
+    },
   },
-  resolve: (root, options) => gravity('sets', options)
+  resolve: (root, options) => gravity('sets', options),
 };
 
 export default OrderedSets;

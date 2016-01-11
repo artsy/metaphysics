@@ -7,46 +7,46 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLList,
-  GraphQLInt
+  GraphQLInt,
 } from 'graphql';
 
-let PartnerCategoryType = new GraphQLObjectType({
+const PartnerCategoryType = new GraphQLObjectType({
   name: 'PartnerCategory',
   fields: () => ({
-    cached: cached,
+    cached,
     id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     name: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     category_type: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     partners: {
       type: new GraphQLList(Partner.type),
       args: {
         size: {
-          type: GraphQLInt
-        }
+          type: GraphQLInt,
+        },
       },
       resolve: ({ id }, options) => gravity('partners', _.defaults(options, {
-        partner_categories: [id]
-      }))
-    }
-  })
+        partner_categories: [id],
+      })),
+    },
+  }),
 });
 
-let PartnerCategory = {
+const PartnerCategory = {
   type: PartnerCategoryType,
   description: 'A PartnerCategory',
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the PartnerCategory'
-    }
+      description: 'The slug or ID of the PartnerCategory',
+    },
   },
-  resolve: (root, { id }) => gravity(`partner_category/${id}`)
+  resolve: (root, { id }) => gravity(`partner_category/${id}`),
 };
 
 export default PartnerCategory;

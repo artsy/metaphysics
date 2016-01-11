@@ -9,44 +9,43 @@ import {
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
-  GraphQLEnumType
-} from 'graphql'
+} from 'graphql';
 
-let PartnerShows = {
+const PartnerShows = {
   type: new GraphQLList(PartnerShow.type),
   description: 'A list of PartnerShows',
   args: {
     size: {
-      type: GraphQLInt
+      type: GraphQLInt,
     },
     sort: PartnerShowSorts,
     status: EventStatus,
     fair_id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     partner_id: {
-      type: GraphQLString
+      type: GraphQLString,
     },
     near: {
-      type: Near
+      type: Near,
     },
     displayable: {
       type: GraphQLBoolean,
-      defaultValue: true
+      defaultValue: true,
     },
     featured: {
-      type: GraphQLBoolean
-    }
+      type: GraphQLBoolean,
+    },
   },
   resolve: (root, options) => {
     if (options.near) {
-      options = _.assign(options, {
+      options = _.assign(options, { // eslint-disable-line no-param-reassign
         near: `${options.near.lat},${options.near.lng}`,
-        max_distance: options.near.max_distance
+        max_distance: options.near.max_distance,
       });
     }
     return gravity('shows', options);
-  }
+  },
 };
 
 export default PartnerShows;
