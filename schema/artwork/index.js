@@ -1,11 +1,12 @@
 import _ from 'lodash';
-import cached from './fields/cached';
-import Image from './image';
-import Fair from './fair';
-import Sale from './sale';
-import Partner from './partner';
-import Artist from './artist';
-import gravity from '../lib/loaders/gravity';
+import cached from '../fields/cached';
+import Artist from '../artist';
+import Image from '../image';
+import Fair from '../fair';
+import Sale from '../sale';
+import Partner from '../partner';
+import RelatedType from './related';
+import gravity from '../../lib/loaders/gravity';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -119,6 +120,21 @@ const ArtworkType = new GraphQLObjectType({
         },
         resolve: ({ images }, { size }) => {
           return size ? _.take(images, size) : images;
+        },
+      },
+      related: {
+        type: RelatedType,
+        description: 'Returns the associated Fair or Sale',
+        resolve: ({ id }) => {
+          const options = { artwork: [id], active: true, size: 1 };
+          return Promise.all([
+            gravity('related/fairs', options),
+            gravity('related/sales', options),
+          ]).then(([fairs, sales]) => {
+            fairs.map(fair => fair.related_type = 'Fair'); // eslint-disable-line no-param-reassign
+            sales.map(sale => sale.related_type = 'Sale'); // eslint-disable-line no-param-reassign
+            return _.first(_.take(fairs.concat(sales)));
+          });
         },
       },
       sales: {
