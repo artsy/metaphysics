@@ -20,6 +20,10 @@ const SaleType = new GraphQLObjectType({
       name: {
         type: GraphQLString,
       },
+      href: {
+        type: GraphQLString,
+        resolve: ({ id }) => `/auction/${id}`,
+      },
       description: {
         type: GraphQLString,
       },
