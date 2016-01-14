@@ -8,6 +8,8 @@ import {
 } from 'graphql';
 
 export const resizedImageUrl = (image, options) => {
+  if (!image.image_url) return null;
+
   const opts = _.defaults(options, {
     version: 'large',
   });
