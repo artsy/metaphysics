@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import cached from './fields/cached';
 import Image from './image';
+import Fair from './fair';
 import Sale from './sale';
 import Partner from './partner';
 import Artist from './artist';
@@ -134,6 +135,22 @@ const ArtworkType = new GraphQLObjectType({
         },
         resolve: ({ id }, options) => {
           return gravity('related/sales', _.defaults(options, { artwork: [id] }));
+        },
+      },
+      fairs: {
+        type: new GraphQLList(Fair.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+            defaultValue: 1,
+          },
+          active: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
+        },
+        resolve: ({ id }, options) => {
+          return gravity('related/fairs', _.defaults(options, { artwork: [id] }));
         },
       },
     };
