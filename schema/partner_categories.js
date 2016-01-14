@@ -1,6 +1,7 @@
 import gravity from '../lib/loaders/gravity';
 import PartnerCategory from './partner_category';
 import {
+  GraphQLString,
   GraphQLList,
   GraphQLInt,
 } from 'graphql';
@@ -11,6 +12,9 @@ const PartnerCategories = {
   args: {
     size: {
       type: GraphQLInt,
+    },
+    category_type: {
+      type: GraphQLString,
     },
   },
   resolve: (root, options) => gravity('partner_categories', options),

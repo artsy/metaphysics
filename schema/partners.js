@@ -3,6 +3,7 @@ import Partner from './partner';
 import {
   GraphQLString,
   GraphQLList,
+  GraphQLBoolean,
 } from 'graphql';
 
 const Partners = {
@@ -12,6 +13,20 @@ const Partners = {
     near: {
       type: GraphQLString,
       description: 'Coordinates to find partners closest to',
+    },
+    eligible_for_primary_bucket: {
+      type: GraphQLBoolean,
+      description: 'Indicates tier 1/2 for gallery, 1 for institution',
+    },
+    eligible_for_secondary_bucket: {
+      type: GraphQLBoolean,
+      description: 'Indicates tierl 3/4 for gallery, 2 for institution',
+    },
+    has_full_profile: {
+      type: GraphQLBoolean,
+    },
+    default_profile_public: {
+      type: GraphQLBoolean,
     },
     partner_categories: {
       type: new GraphQLList(GraphQLString),
