@@ -16,6 +16,13 @@ It is currently used in production from the `/artists/` route on [artsy.net](htt
 
 ### Getting Setup
 
+Set up your `.env` file based on our example `.env.test`.
+
+Install redis if you haven't:
+```
+brew install redis
+```
+
 To start up a development server, clone this repo and run:
 
 ``` sh
@@ -23,7 +30,6 @@ npm install
 npm run dev
 ```
 
-after setting up your `.env` file based on our example `.env.test`.
 
 ### Deployment
 
