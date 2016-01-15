@@ -20,7 +20,7 @@ const Partners = {
     },
     eligible_for_secondary_bucket: {
       type: GraphQLBoolean,
-      description: 'Indicates tierl 3/4 for gallery, 2 for institution',
+      description: 'Indicates tier 3/4 for gallery, 2 for institution',
     },
     has_full_profile: {
       type: GraphQLBoolean,
