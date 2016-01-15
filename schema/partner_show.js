@@ -89,7 +89,10 @@ const PartnerShowType = new GraphQLObjectType({
     },
     cover_image: {
       type: Image.type,
-      resolve: ({ id }, options) => gravity(`partner_show/${id}/default_image`, options),
+      resolve: ({ id }, options) => {
+        return gravity(`partner_show/${id}/default_image`, options)
+          .then(Image.resolve);
+      },
     },
     images: {
       type: new GraphQLList(Image.type),
@@ -106,7 +109,10 @@ const PartnerShowType = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: ({ id }, options) => gravity(`partner_show/${id}/images`, options),
+      resolve: ({ id }, options) => {
+        return gravity(`partner_show/${id}/images`, options)
+          .then(Image.resolve);
+      },
     },
   }),
 });

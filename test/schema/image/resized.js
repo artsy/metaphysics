@@ -6,6 +6,7 @@ describe('Image', () => {
       original_height: 2333,
       original_width: 3500,
       image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
+      image_versions: ['large'],
     };
 
     it('takes an image response with options and resizes it to fit', () => {
@@ -19,7 +20,13 @@ describe('Image', () => {
     });
 
     it('returns a resized image URL when existing image dimensions are lacking', () => {
-      const resized = resizedImageUrl({ image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg' }, { width: 500, height: 500 });
+      const resized = resizedImageUrl({
+        image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
+        image_versions: ['large'],
+      }, {
+        width: 500,
+        height: 500,
+      });
       resized.should.eql({
         factor: Infinity,
         width: null,

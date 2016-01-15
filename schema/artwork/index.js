@@ -109,7 +109,9 @@ const ArtworkType = new GraphQLObjectType({
       },
       image: {
         type: Image.type,
-        resolve: ({ images }) => _.findWhere(images, { is_default: true }) || _.first(images),
+        resolve: ({ images }) => {
+          return Image.resolve(_.findWhere(images, { is_default: true }) || _.first(images));
+        },
       },
       images: {
         type: new GraphQLList(Image.type),
@@ -119,7 +121,7 @@ const ArtworkType = new GraphQLObjectType({
           },
         },
         resolve: ({ images }, { size }) => {
-          return size ? _.take(images, size) : images;
+          return Image.resolve(size ? _.take(images, size) : images);
         },
       },
       related: {

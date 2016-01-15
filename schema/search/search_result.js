@@ -51,11 +51,11 @@ const SearchResultType = new GraphQLObjectType({
         // Should attempt to get the entity's image rather than
         // using Google's, as it is often inaccurate.
         const image = _.first(_.get(pagemap, 'cse_image'));
-        return {
+        return Image.resolve({
           image_url: image.src,
           original_height: image.height,
           original_width: image.width,
-        };
+        });
       },
     },
     type: {

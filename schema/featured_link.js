@@ -23,10 +23,7 @@ const FeaturedLinkType = new GraphQLObjectType({
     href: {
       type: GraphQLString,
     },
-    image: {
-      type: Image.type,
-      resolve: (featuredLink) => featuredLink,
-    },
+    image: Image,
   },
 });
 
