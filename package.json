@@ -19,7 +19,7 @@
   "dependencies": {
     "artsy-newrelic": "^1.0.0",
     "artsy-xapp": "^1.0.4",
-    "babel": "^6.2.4",
+    "babel": "6.3.13",
     "babel-core": "^6.2.4",
     "babel-preset-es2015": "^6.1.18",
     "cors": "^2.7.1",
@@ -47,7 +47,7 @@
     "eslint-plugin-react": "^3.14.0",
     "foreman": "^1.4.1",
     "mocha": "^2.3.3",
-    "nodemon": "^1.7.3",
+    "nodemon": "^1.8.1",
     "should": "^7.1.1",
     "should-promised": "^0.3.1",
     "sinon": "^1.17.2"
