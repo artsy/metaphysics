@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import proxy from './proxies';
+import { setVersion } from './normalize';
 import {
   GraphQLObjectType,
   GraphQLInt,
@@ -13,15 +14,9 @@ export const croppedImageUrl = (image, options) => {
   });
 
   const { width, height } = opts;
-
-  let src = null;
-  if (image.image_url) {
-    src = image.image_url.replace(':version', opts.version);
-  } else {
-    src = image;
-  }
-
+  const src = setVersion(image, opts.version);
   const url = proxy(src, 'crop', width, height);
+
   return {
     width,
     height,

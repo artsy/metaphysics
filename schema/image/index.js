@@ -1,6 +1,7 @@
 import VersionedUrl from './versioned';
 import CroppedUrl from './cropped';
 import ResizedUrl from './resized';
+import normalize from './normalize';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -44,6 +45,7 @@ const ImageType = new GraphQLObjectType({
 
 const Image = {
   type: ImageType,
+  resolve: normalize,
 };
 
 export default Image;

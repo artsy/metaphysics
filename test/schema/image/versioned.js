@@ -5,6 +5,7 @@ describe('Image', () => {
   describe('versionedImageUrl', () => {
     const image = {
       image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
+      image_versions: ['four_thirds'],
     };
 
     it('takes an image response with options and resizes it to crop', () => {

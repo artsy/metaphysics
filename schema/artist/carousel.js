@@ -12,7 +12,7 @@ const ArtistCarouselType = new GraphQLObjectType({
   fields: {
     images: {
       type: new GraphQLList(Image.type),
-      resolve: images => images,
+      resolve: Image.resolve,
     },
   },
 });

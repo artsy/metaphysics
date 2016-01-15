@@ -86,10 +86,7 @@ const ArtistType = new GraphQLObjectType({
         },
         resolve: ({ id }, options) => gravity(`artist/${id}/artworks`, options),
       },
-      image: {
-        type: Image.type,
-        resolve: (artist) => artist,
-      },
+      image: Image,
       artists: {
         type: new GraphQLList(Artist.type), // eslint-disable-line no-use-before-define
         args: {

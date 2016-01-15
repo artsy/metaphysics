@@ -36,6 +36,7 @@ describe('ArtistCarousel type', () => {
                 original_height: 2333,
                 original_width: 3500,
                 image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
+                image_versions: ['large'],
               },
             ] }]
           )
@@ -47,6 +48,7 @@ describe('ArtistCarousel type', () => {
     afterEach(() => {
       ArtistCarousel.__ResetDependency__('gravity');
     });
+
 
     it('fetches an artist by ID', () => {
       const gravity = ArtistCarousel.__get__('gravity');

@@ -27,7 +27,7 @@ const ArticleType = new GraphQLObjectType({
     },
     thumbnail_image: {
       type: Image.type,
-      resolve: ({ thumbnail_image }) => thumbnail_image,
+      resolve: ({ thumbnail_image }) => Image.resolve(thumbnail_image),
     },
     slug: {
       type: GraphQLString,

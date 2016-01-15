@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import proxy from './proxies';
+import { setVersion } from './normalize';
 import {
   GraphQLObjectType,
   GraphQLFloat,
@@ -8,10 +9,8 @@ import {
 } from 'graphql';
 
 export const resizedImageUrl = (image, options) => {
-  if (!image.image_url) return null;
-
   const opts = _.defaults(options, {
-    version: 'large',
+    version: 'larger',
   });
 
   const desired = _.pick(opts, 'width', 'height');
@@ -27,7 +26,7 @@ export const resizedImageUrl = (image, options) => {
     height = Math.floor(image.original_height * factor);
   }
 
-  const src = image.image_url.replace(':version', opts.version);
+  const src = setVersion(image, opts.version);
   const url = proxy(src, 'resize', (width || opts.width), (height || opts.height));
 
   return {
