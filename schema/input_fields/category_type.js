@@ -2,7 +2,7 @@ import { GraphQLEnumType } from 'graphql';
 
 export default {
   type: new GraphQLEnumType({
-    name: 'PartnerCategorytype',
+    name: 'CategoryType',
     values: {
       gallery: {
         value: 'Gallery',

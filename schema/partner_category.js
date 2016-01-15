@@ -2,7 +2,7 @@ import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import Partners from './partners';
-import PartnerCategorytype from './input_fields/partner_categorytype';
+import CategoryType from './input_fields/category_type';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -19,7 +19,7 @@ const PartnerCategoryType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
     },
-    category_type: PartnerCategorytype,
+    category_type: CategoryType,
     partners: {
       type: Partners.type,
       args: Partners.args,
