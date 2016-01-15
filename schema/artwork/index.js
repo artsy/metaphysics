@@ -4,6 +4,7 @@ import Artist from '../artist';
 import Image from '../image';
 import Fair from '../fair';
 import Sale from '../sale';
+import PartnerShow from '../partner_show';
 import Partner from '../partner';
 import RelatedType from './related';
 import gravity from '../../lib/loaders/gravity';
@@ -135,6 +136,22 @@ const ArtworkType = new GraphQLObjectType({
             sales.map(sale => sale.related_type = 'Sale'); // eslint-disable-line no-param-reassign
             return _.first(_.take(fairs.concat(sales)));
           });
+        },
+      },
+      shows: {
+        type: new GraphQLList(PartnerShow.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+            defaultValue: 1,
+          },
+          active: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
+        },
+        resolve: ({ id }, options) => {
+          return gravity('related/shows', _.defaults(options, { artwork: [id] }));
         },
       },
       sales: {
