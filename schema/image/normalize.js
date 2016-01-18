@@ -9,14 +9,14 @@ import {
   last,
   isArray,
   isString,
+  has,
 } from 'lodash';
 
 export const grab = flow(pick, values, first);
 
 export const setVersion = (image, version) => {
-  if (!includes(image.image_url, ':version')) {
-    return image.image_url;
-  }
+  if (has(image, ['image_urls', version])) return image.image_urls[version];
+  if (!includes(image.image_url, ':version')) return image.image_url;
 
   let size = version;
   if (!includes(image.image_versions, version)) {

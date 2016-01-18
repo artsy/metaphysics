@@ -3,7 +3,7 @@ import {
   isNull,
   isUndefined,
 } from 'lodash';
-import normalize, { grab } from '../../../schema/image/normalize';
+import normalize, { grab, setVersion } from '../../../schema/image/normalize';
 
 describe('grab', () => {
   it('grabs the first value for a set of possible keys', () => {
@@ -16,6 +16,30 @@ describe('grab', () => {
     isUndefined(grab({ foo: 'bar' }, 'baz')).should.be.true();
     isUndefined(grab({}, 'baz')).should.be.true();
     isUndefined(grab(null, 'baz')).should.be.true();
+  });
+});
+
+describe('setVersion', () => {
+  const image = {
+    image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg', // JPG
+    image_versions: [
+      'icon',
+      'large',
+    ],
+    image_urls: {
+      icon: 'https://xxx.cloudfront.net/xxx/icon.png', // PNG
+      large: 'https://xxx.cloudfront.net/xxx/large.jpg',
+    },
+  };
+
+  it('works with JPGs', () => {
+    setVersion(image, 'large')
+      .should.equal('https://xxx.cloudfront.net/xxx/large.jpg');
+  });
+
+  it('works with PNGs', () => {
+    setVersion(image, 'icon')
+      .should.equal('https://xxx.cloudfront.net/xxx/icon.png');
   });
 });
 
