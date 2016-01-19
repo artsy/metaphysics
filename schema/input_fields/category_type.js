@@ -4,11 +4,11 @@ export default {
   type: new GraphQLEnumType({
     name: 'CategoryType',
     values: {
-      gallery: {
+      GALLERY: {
         value: 'Gallery',
       },
-      institution: {
-        value: 'institution',
+      INSTITUTION: {
+        value: 'Institution',
       },
     },
   }),
