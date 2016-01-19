@@ -1,5 +1,6 @@
 import gravity from '../lib/loaders/gravity';
 import Partner from './partner';
+import PartnerTypeType from './input_fields/partner_type_type';
 import {
   GraphQLString,
   GraphQLList,
@@ -36,8 +37,7 @@ const Partners = {
       `,
     },
     type: {
-      type: new GraphQLList(GraphQLString),
-      description: 'Only return partners of the specified _type(s).',
+      type: new GraphQLList(PartnerTypeType),
     },
   },
   resolve: (root, options) => gravity('partners', options),
