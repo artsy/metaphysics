@@ -30,6 +30,10 @@ npm install
 npm run dev
 ```
 
+### Testing
+
+`npm test` to run the entire suite
+`npm run spec test/your/path/to/file.js` to run a single spec
 
 ### Deployment
 
