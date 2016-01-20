@@ -218,7 +218,7 @@ describe('Artwork type', () => {
 
       describe('if the artwork is able to be used with "View in Room"', () => {
         it('is hangable if the artwork is 2d and has reasonable dimensions', () => {
-          const response = assign({ dimensions: { cm: { width: 100, height: 100 } } }, artwork);
+          const response = assign({ width: 100, height: 100 }, artwork);
           gravity.returns(Promise.resolve(response));
           return graphql(schema, query)
             .then(({ data }) => data.artwork.is_hangable.should.be.true());
@@ -229,7 +229,8 @@ describe('Artwork type', () => {
         it('is not hangable if the category is not applicable to wall display', () => {
           const response = assign({
             category: 'sculpture',
-            dimensions: { cm: { width: 100, height: 100 } },
+            width: 100,
+            height: 100,
           }, artwork);
           gravity.returns(Promise.resolve(response));
           return graphql(schema, query)
@@ -237,22 +238,20 @@ describe('Artwork type', () => {
         });
 
         it('is not hangable if the work is 3d', () => {
-          const response = assign({
-            dimensions: { cm: { width: 100, height: 100, depth: 100 } },
-          }, artwork);
+          const response = assign({ width: 100, height: 100, depth: 100 }, artwork);
           gravity.returns(Promise.resolve(response));
           return graphql(schema, query)
             .then(({ data }) => data.artwork.is_hangable.should.be.true());
         });
 
         it('is not hangable if the dimensions are unreasonably large', () => {
-          const response = assign({ dimensions: { cm: { width: 10000, height: 10000 } } }, artwork);
+          const response = assign({ width: '10000', height: '10000', metric: 'cm' }, artwork);
           gravity.returns(Promise.resolve(response));
           return graphql(schema, query)
             .then(({ data }) => data.artwork.is_hangable.should.be.false());
         });
 
-        it('is not hangable if there is no dimensions in CM', () => {
+        it('is not hangable if there is no dimensions', () => {
           const response = assign({ dimensions: {} }, artwork);
           gravity.returns(Promise.resolve(response));
           return graphql(schema, query)
