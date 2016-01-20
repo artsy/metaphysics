@@ -1,4 +1,8 @@
 import _ from 'lodash';
+import {
+  isTwoDimensional,
+  isTooBig,
+} from './utilities';
 import cached from '../fields/cached';
 import Artist from '../artist';
 import Image from '../image';
@@ -44,12 +48,27 @@ const ArtworkType = new GraphQLObjectType({
       date: {
         type: GraphQLString,
       },
-      can_share_image: {
-        type: GraphQLBoolean,
-      },
       partner: {
         type: Partner.type,
         resolve: ({ partner }) => gravity(`partner/${partner.id}`),
+      },
+      can_share_image: {
+        type: GraphQLBoolean,
+        deprecationReason: 'Favor `is_`-prefixed boolean attributes',
+      },
+      is_shareable: {
+        type: GraphQLBoolean,
+        resolve: ({ can_share_image }) => can_share_image,
+      },
+      is_hangable: {
+        type: GraphQLBoolean,
+        resolve: (artwork) => {
+          return (
+            !_.includes(artwork.category, 'sculpture', 'installation', 'design') &&
+            isTwoDimensional(artwork) &&
+            !isTooBig(artwork)
+          );
+        },
       },
       is_contactable: {
         type: GraphQLBoolean,

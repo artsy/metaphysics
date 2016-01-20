@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { assign } from 'lodash';
 import sinon from 'sinon';
 import moment from 'moment';
 import { graphql } from 'graphql';
@@ -41,7 +41,7 @@ describe('Artwork type', () => {
       gravity
         // Artwork
         .onCall(0)
-        .returns(Promise.resolve(_.assign({}, artwork, {
+        .returns(Promise.resolve(assign({}, artwork, {
           partner,
         })))
         // Sales
@@ -63,7 +63,7 @@ describe('Artwork type', () => {
       gravity
         // Artwork
         .onCall(0)
-        .returns(Promise.resolve(_.assign({}, artwork, {
+        .returns(Promise.resolve(assign({}, artwork, {
           partner,
         })))
         // Sales
@@ -100,8 +100,8 @@ describe('Artwork type', () => {
         // Sales
         .onCall(1)
         .returns(Promise.resolve([
-          _.assign({}, sale, { is_auction: false }),
-          _.assign({}, sale, { is_auction: true }),
+          assign({}, sale, { is_auction: false }),
+          assign({}, sale, { is_auction: true }),
         ]));
 
       return graphql(schema, query)
@@ -123,8 +123,8 @@ describe('Artwork type', () => {
         // Sales
         .onCall(1)
         .returns(Promise.resolve([
-          _.assign({}, sale, { is_auction: false }),
-          _.assign({}, sale, { is_auction: false }),
+          assign({}, sale, { is_auction: false }),
+          assign({}, sale, { is_auction: false }),
         ]));
 
       return graphql(schema, query)
@@ -151,7 +151,7 @@ describe('Artwork type', () => {
         // Sales
         .onCall(2)
         .returns(Promise.resolve([
-          _.assign({}, sale, { name: 'Y2K', end_at: moment.utc('1999-12-31').format() }),
+          assign({}, sale, { name: 'Y2K', end_at: moment.utc('1999-12-31').format() }),
         ]));
 
       const query = `
@@ -182,6 +182,83 @@ describe('Artwork type', () => {
             end_at: '31:12:1999',
           });
         });
+    });
+  });
+
+  describe('predicates', () => {
+    describe('#is_shareable', () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            id
+            is_shareable
+          }
+        }
+      `;
+
+      const response = assign({}, artwork, { can_share_image: false });
+
+      beforeEach(() => gravity.returns(Promise.resolve(response)));
+
+      it('returns false if the artwork is not shareable', () => {
+        return graphql(schema, query)
+          .then(({ data }) => data.artwork.is_shareable.should.be.false());
+      });
+    });
+
+    describe('#is_hangable', () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            id
+            is_hangable
+          }
+        }
+      `;
+
+      describe('if the artwork is able to be used with "View in Room"', () => {
+        it('is hangable if the artwork is 2d and has reasonable dimensions', () => {
+          const response = assign({ dimensions: { cm: { width: 100, height: 100 } } }, artwork);
+          gravity.returns(Promise.resolve(response));
+          return graphql(schema, query)
+            .then(({ data }) => data.artwork.is_hangable.should.be.true());
+        });
+      });
+
+      describe('if the artwork is not able to be used with "View in Room"', () => {
+        it('is not hangable if the category is not applicable to wall display', () => {
+          const response = assign({
+            category: 'sculpture',
+            dimensions: { cm: { width: 100, height: 100 } },
+          }, artwork);
+          gravity.returns(Promise.resolve(response));
+          return graphql(schema, query)
+            .then(({ data }) => data.artwork.is_hangable.should.be.false());
+        });
+
+        it('is not hangable if the work is 3d', () => {
+          const response = assign({
+            dimensions: { cm: { width: 100, height: 100, depth: 100 } },
+          }, artwork);
+          gravity.returns(Promise.resolve(response));
+          return graphql(schema, query)
+            .then(({ data }) => data.artwork.is_hangable.should.be.true());
+        });
+
+        it('is not hangable if the dimensions are unreasonably large', () => {
+          const response = assign({ dimensions: { cm: { width: 10000, height: 10000 } } }, artwork);
+          gravity.returns(Promise.resolve(response));
+          return graphql(schema, query)
+            .then(({ data }) => data.artwork.is_hangable.should.be.false());
+        });
+
+        it('is not hangable if there is no dimensions in CM', () => {
+          const response = assign({ dimensions: {} }, artwork);
+          gravity.returns(Promise.resolve(response));
+          return graphql(schema, query)
+            .then(({ data }) => data.artwork.is_hangable.should.be.false());
+        });
+      });
     });
   });
 });

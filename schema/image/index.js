@@ -27,6 +27,13 @@ const ImageType = new GraphQLObjectType({
       type: GraphQLInt,
       resolve: ({ original_height }) => original_height,
     },
+    orientation: {
+      type: GraphQLString,
+      resolve: ({ original_height, original_width }) => {
+        if (original_width === original_height) return 'square';
+        return (original_width > original_height) ? 'landscape' : 'portrait';
+      },
+    },
     aspect_ratio: {
       type: GraphQLFloat,
     },
