@@ -13,7 +13,9 @@
     "test": "npm run lint && DEBUG=info,error nf run mocha test --env .env.test",
     "spec": "DEBUG=info,error nf run mocha --env .env.test",
     "lint": "eslint .",
-    "fix": "eslint . --fix"
+    "fix": "eslint . --fix",
+    "integration": "DEBUG=info,error nf run mocha integration --env .env.test",
+    "promote": "heroku pipelines:promote -r staging"
   },
   "author": "",
   "license": "ISC",
@@ -43,6 +45,7 @@
   },
   "devDependencies": {
     "babel-plugin-rewire": "1.0.0-beta-2",
+    "deep-equal": "^1.0.1",
     "eslint": "^1.10.3",
     "eslint-config-airbnb": "^3.1.0",
     "eslint-plugin-react": "^3.14.0",
