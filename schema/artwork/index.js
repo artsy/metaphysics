@@ -106,6 +106,9 @@ const ArtworkType = new GraphQLObjectType({
           return (partner.type === 'Gallery') ? 'Gallery' : 'Seller';
         },
       },
+      cultural_maker: {
+        type: GraphQLString,
+      },
       artists: {
         type: new GraphQLList(Artist.type),
         resolve: ({ artists }) => {

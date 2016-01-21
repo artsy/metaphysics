@@ -6,11 +6,12 @@ import {
   GraphQLFloat,
   GraphQLInt,
   GraphQLString,
+  GraphQLList,
 } from 'graphql';
 
 export const resizedImageUrl = (image, options) => {
   const opts = _.defaults(options, {
-    version: 'larger',
+    version: ['large'],
   });
 
   const desired = _.pick(opts, 'width', 'height');
@@ -64,7 +65,7 @@ export default {
       type: GraphQLInt,
     },
     version: {
-      type: GraphQLString,
+      type: new GraphQLList(GraphQLString),
     },
   },
   type: ResizedImageUrlType,

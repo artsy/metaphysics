@@ -6,11 +6,12 @@ import {
   GraphQLInt,
   GraphQLString,
   GraphQLNonNull,
+  GraphQLList,
 } from 'graphql';
 
 export const croppedImageUrl = (image, options) => {
   const opts = _.defaults(options, {
-    version: 'large',
+    version: ['large'],
   });
 
   const { width, height } = opts;
@@ -48,7 +49,7 @@ export default {
       type: new GraphQLNonNull(GraphQLInt),
     },
     version: {
-      type: GraphQLString,
+      type: new GraphQLList(GraphQLString),
     },
   },
   type: CroppedImageUrlType,

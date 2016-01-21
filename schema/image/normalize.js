@@ -9,20 +9,20 @@ import {
   last,
   isArray,
   isString,
-  has,
+  find,
+  curry,
 } from 'lodash';
 
 export const grab = flow(pick, values, first);
 
-export const setVersion = (image, version) => {
-  if (has(image, ['image_urls', version])) return image.image_urls[version];
-  if (!includes(image.image_url, ':version')) return image.image_url;
-
-  let size = version;
-  if (!includes(image.image_versions, version)) {
-    size = last(image.image_versions);
-  }
-  return image.image_url.replace(':version', size);
+export const setVersion = ({ image_url, image_urls, image_versions }, versions) => {
+  const version = (
+    find(versions, curry(includes)(image_versions)) ||
+    last(image_versions)
+  );
+  if (image_urls && version) return image_urls[version];
+  if (includes(image_url, ':version') && version) return image_url.replace(':version', version);
+  return image_url;
 };
 
 const normalizeImageUrl = (image) => {
@@ -40,9 +40,7 @@ const normalizeImageVersions = (image) => {
 };
 
 const normalizeBareUrls = (image) => {
-  if (isString(image)) {
-    return { image_url: image };
-  }
+  if (isString(image)) return { image_url: image };
   return image;
 };
 

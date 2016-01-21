@@ -33,13 +33,23 @@ describe('setVersion', () => {
   };
 
   it('works with JPGs', () => {
-    setVersion(image, 'large')
+    setVersion(image, ['large'])
       .should.equal('https://xxx.cloudfront.net/xxx/large.jpg');
   });
 
   it('works with PNGs', () => {
-    setVersion(image, 'icon')
+    setVersion(image, ['icon'])
       .should.equal('https://xxx.cloudfront.net/xxx/icon.png');
+  });
+
+  it('supports a prioritized list of versions', () => {
+    setVersion(image, ['version_that_will_fall_thru_because_it_doesnt_exist', 'icon'])
+      .should.equal('https://xxx.cloudfront.net/xxx/icon.png');
+  });
+
+  it('falls back to any existy version', () => {
+    setVersion(image, ['garbage'])
+      .should.equal('https://xxx.cloudfront.net/xxx/large.jpg');
   });
 });
 
