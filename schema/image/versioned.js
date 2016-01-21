@@ -1,5 +1,8 @@
 import { setVersion } from './normalize';
-import { GraphQLString } from 'graphql';
+import {
+  GraphQLList,
+  GraphQLString,
+} from 'graphql';
 
 export const versionedImageUrl = (image, { version }) => {
   return setVersion(image, version);
@@ -8,7 +11,7 @@ export const versionedImageUrl = (image, { version }) => {
 export default {
   args: {
     version: {
-      type: GraphQLString,
+      type: new GraphQLList(GraphQLString),
     },
   },
   type: GraphQLString,
