@@ -5,12 +5,19 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLBoolean,
+  GraphQLInt,
 } from 'graphql';
 
 const Partners = {
   type: new GraphQLList(Partner.type),
   description: 'A list of Partners',
   args: {
+    size: {
+      type: GraphQLInt,
+    },
+    page: {
+      type: GraphQLInt,
+    },
     near: {
       type: GraphQLString,
       description: 'Coordinates to find partners closest to',
