@@ -10,6 +10,7 @@ import OrderedSets from './ordered_sets';
 import Profile from './profile';
 import Partner from './partner';
 import Partners from './partners';
+import FilterPartners from './filter_partners';
 import PartnerCategory from './partner_category';
 import PartnerCategories from './partner_categories';
 import PartnerShow from './partner_show';
@@ -37,6 +38,7 @@ const schema = new GraphQLSchema({
       ordered_sets: OrderedSets,
       partner: Partner,
       partners: Partners,
+      filter_partners: FilterPartners,
       partner_category: PartnerCategory,
       partner_categories: PartnerCategories,
       partner_show: PartnerShow,
