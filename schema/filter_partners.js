@@ -13,7 +13,7 @@ import {
 const FilterPartners = {
   type: FilterPartnersType,
   description: 'Partners Elastic Search results',
-  args: _.create(Partners.args, {
+  args: _.assign({}, Partners.args, {
     aggregations: {
       type: new GraphQLNonNull(new GraphQLList(PartnersAggregation)),
     },
