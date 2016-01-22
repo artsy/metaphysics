@@ -1,5 +1,6 @@
+import { map } from 'lodash';
 import Partner from '../partner';
-import { parseCounts, AggregationCountType } from './aggregation_count_type';
+import AggregationCount from './aggregation_count';
 import {
   GraphQLObjectType,
   GraphQLEnumType,
@@ -26,8 +27,8 @@ export const PartnersAggregationResultsType = new GraphQLObjectType({
       type: PartnersAggregation,
     },
     counts: {
-      type: new GraphQLList(AggregationCountType),
-      resolve: (obj) => parseCounts(obj),
+      type: new GraphQLList(AggregationCount.type),
+      resolve: ({ counts }) => map(counts, AggregationCount.resolve),
     },
   }),
 });
@@ -40,13 +41,8 @@ export const FilterPartnersType = new GraphQLObjectType({
     },
     aggregations: {
       type: new GraphQLList(PartnersAggregationResultsType),
-      resolve: (obj) =>
-        Object.keys(obj.aggregations).map(function (key) {
-          const aggregation = {};
-          aggregation.counts = obj.aggregations[key];
-          aggregation.slice = key;
-          return aggregation;
-        }),
+      resolve: ({ aggregations }) =>
+        map(aggregations, (counts, slice) => ({ slice, counts })),
     },
   }),
 });

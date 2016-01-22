@@ -20,9 +20,7 @@ export const AggregationCountType = new GraphQLObjectType({
   },
 });
 
-export const parseCounts = (obj) =>
-  Object.keys(obj.counts).map(function (key) {
-    const count = obj.counts[key];
-    count.id = key;
-    return count;
-  });
+export default {
+  type: AggregationCountType,
+  resolve: ({ name, count }, id) => ({ id, name, count }),
+};
