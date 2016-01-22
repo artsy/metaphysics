@@ -10,7 +10,9 @@ import Fair from '../fair';
 import Sale from '../sale';
 import PartnerShow from '../partner_show';
 import Partner from '../partner';
-import RelatedType from './related';
+import Related from './related';
+import Dimensions from '../dimensions';
+import EditionSet from '../edition_set';
 import gravity from '../../lib/loaders/gravity';
 import {
   GraphQLObjectType,
@@ -32,6 +34,17 @@ const ArtworkType = new GraphQLObjectType({
       _id: {
         type: GraphQLString,
       },
+      to_s: {
+        type: GraphQLString,
+        resolve: ({ artist, title, date, partner }) => {
+          return _.compact([
+            (artist && artist.name),
+            (title && `‘${title}’`),
+            date,
+            (partner && partner.name),
+          ]).join(', ');
+        },
+      },
       href: {
         type: GraphQLString,
         resolve: ({ id }) => `/artwork/${id}`,
@@ -46,6 +59,9 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLString,
       },
       date: {
+        type: GraphQLString,
+      },
+      image_rights: {
         type: GraphQLString,
       },
       partner: {
@@ -93,8 +109,28 @@ const ArtworkType = new GraphQLObjectType({
             .then(sales => _.any(sales, 'is_auction'));
         },
       },
+      is_for_sale: {
+        type: GraphQLBoolean,
+        resolve: ({ forsale }) => forsale,
+      },
+      is_unique: {
+        type: GraphQLBoolean,
+        resolve: ({ unique }) => unique,
+      },
+      is_sold: {
+        type: GraphQLBoolean,
+        resolve: ({ sold }) => sold,
+      },
+      is_ecommerce: {
+        type: GraphQLBoolean,
+        resolve: ({ ecommerce }) => ecommerce,
+      },
       sale_message: {
         type: GraphQLString,
+        resolve: ({ availability, price_hidden, price, sale_message }) => {
+          if (availability === 'for sale' && price_hidden) return 'Contact For Price';
+          if (sale_message !== 'Sold') return price || sale_message;
+        },
       },
       artist: {
         type: Artist.type,
@@ -117,19 +153,7 @@ const ArtworkType = new GraphQLObjectType({
           );
         },
       },
-      dimensions: {
-        type: new GraphQLObjectType({
-          name: 'dimensions',
-          fields: {
-            in: {
-              type: GraphQLString,
-            },
-            cm: {
-              type: GraphQLString,
-            },
-          },
-        }),
-      },
+      dimensions: Dimensions,
       image: {
         type: Image.type,
         resolve: ({ images }) => {
@@ -148,7 +172,7 @@ const ArtworkType = new GraphQLObjectType({
         },
       },
       related: {
-        type: RelatedType,
+        type: Related,
         description: 'Returns the associated Fair or Sale',
         resolve: ({ id }) => {
           const options = { artwork: [id], active: true, size: 1 };
@@ -178,36 +202,33 @@ const ArtworkType = new GraphQLObjectType({
           return gravity('related/shows', _.defaults(options, { artwork: [id] }));
         },
       },
-      sales: {
-        type: new GraphQLList(Sale.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-            defaultValue: 1,
-          },
-          active: {
-            type: GraphQLBoolean,
-            defaultValue: true,
-          },
-        },
-        resolve: ({ id }, options) => {
-          return gravity('related/sales', _.defaults(options, { artwork: [id] }));
+      sale: {
+        type: Sale.type,
+        resolve: ({ id }) => {
+          return gravity('related/sales', { artwork: [id], active: true, size: 1 })
+            .then(sales => _.first(sales));
         },
       },
-      fairs: {
-        type: new GraphQLList(Fair.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-            defaultValue: 1,
-          },
-          active: {
-            type: GraphQLBoolean,
-            defaultValue: true,
-          },
+      fair: {
+        type: Fair.type,
+        resolve: ({ id }) => {
+          return gravity('related/fairs', { artwork: [id], active: true, size: 1 })
+            .then(fairs => _.first(fairs));
         },
-        resolve: ({ id }, options) => {
-          return gravity('related/fairs', _.defaults(options, { artwork: [id] }));
+      },
+      edition_of: {
+        type: GraphQLString,
+        resolve: ({ unique, edition_sets }) => {
+          if (unique) return 'Unique';
+          if (edition_sets && edition_sets.length === 1) {
+            return _.first(edition_sets).editions;
+          }
+        },
+      },
+      edition_sets: {
+        type: new GraphQLList(EditionSet.type),
+        resolve: ({ edition_sets }) => {
+          return _.where(edition_sets, { acquireable: true });
         },
       },
     };
