@@ -48,6 +48,9 @@ const LocationType = new GraphQLObjectType({
     state: {
       type: GraphQLString,
     },
+    phone: {
+      type: GraphQLString,
+    },
     day_schedules: {
       type: new GraphQLList(DayScheduleType),
       resolve: ({ day_schedules }) => day_schedules,
