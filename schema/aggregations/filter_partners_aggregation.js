@@ -1,10 +1,11 @@
-import { map } from 'lodash';
+import { map, omit } from 'lodash';
 import Partner from '../partner';
 import AggregationCount from './aggregation_count';
 import {
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLList,
+  GraphQLInt,
 } from 'graphql';
 
 export const PartnersAggregation = new GraphQLEnumType({
@@ -15,6 +16,9 @@ export const PartnersAggregation = new GraphQLEnumType({
     },
     CATEGORY: {
       value: 'partner_category',
+    },
+    TOTAL: {
+      value: 'total',
     },
   },
 });
@@ -39,10 +43,14 @@ export const FilterPartnersType = new GraphQLObjectType({
     hits: {
       type: new GraphQLList(Partner.type),
     },
+    total: {
+      type: GraphQLInt,
+      resolve: ({ aggregations }) => aggregations.total.value,
+    },
     aggregations: {
       type: new GraphQLList(PartnersAggregationResultsType),
       resolve: ({ aggregations }) =>
-        map(aggregations, (counts, slice) => ({ slice, counts })),
+        map(omit(aggregations, ['total']), (counts, slice) => ({ slice, counts })),
     },
   }),
 });
