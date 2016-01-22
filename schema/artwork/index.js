@@ -202,36 +202,18 @@ const ArtworkType = new GraphQLObjectType({
           return gravity('related/shows', _.defaults(options, { artwork: [id] }));
         },
       },
-      sales: {
-        type: new GraphQLList(Sale.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-            defaultValue: 1,
-          },
-          active: {
-            type: GraphQLBoolean,
-            defaultValue: true,
-          },
-        },
-        resolve: ({ id }, options) => {
-          return gravity('related/sales', _.defaults(options, { artwork: [id] }));
+      sale: {
+        type: Sale.type,
+        resolve: ({ id }) => {
+          return gravity('related/sales', { artwork: [id], active: true, size: 1 })
+            .then(sales => _.first(sales));
         },
       },
-      fairs: {
-        type: new GraphQLList(Fair.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-            defaultValue: 1,
-          },
-          active: {
-            type: GraphQLBoolean,
-            defaultValue: true,
-          },
-        },
-        resolve: ({ id }, options) => {
-          return gravity('related/fairs', _.defaults(options, { artwork: [id] }));
+      fair: {
+        type: Fair.type,
+        resolve: ({ id }) => {
+          return gravity('related/fairs', { artwork: [id], active: true, size: 1 })
+            .then(fairs => _.first(fairs));
         },
       },
       edition_of: {
