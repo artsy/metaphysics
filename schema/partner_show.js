@@ -91,7 +91,9 @@ const PartnerShowType = new GraphQLObjectType({
       type: Image.type,
       resolve: ({ id }, options) => {
         return gravity(`partner_show/${id}/default_image`, options)
-          .then(Image.resolve);
+          .then(Image.resolve)
+          // Shows without a default_image reject with a 404
+          .catch(() => null);
       },
     },
     images: {
