@@ -7,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLList,
+  GraphQLBoolean,
 } from 'graphql';
 
 const SaleType = new GraphQLObjectType({
@@ -31,7 +32,27 @@ const SaleType = new GraphQLObjectType({
         type: GraphQLString,
       },
       is_auction: {
-        type: GraphQLString,
+        type: GraphQLBoolean,
+      },
+      is_auction_promo: {
+        type: GraphQLBoolean,
+        resolve: ({ sale_type }) => sale_type === 'auction promo',
+      },
+      is_preview: {
+        type: GraphQLBoolean,
+        resolve: ({ auction_state }) => auction_state === 'preview',
+      },
+      is_open: {
+        type: GraphQLBoolean,
+        resolve: ({ auction_state }) => auction_state === 'open',
+      },
+      is_closed: {
+        type: GraphQLBoolean,
+        resolve: ({ auction_state }) => auction_state === 'closed',
+      },
+      is_with_buyers_premium: {
+        type: GraphQLBoolean,
+        resolve: ({ buyers_premium }) => buyers_premium,
       },
       auction_state: {
         type: GraphQLString,
@@ -44,6 +65,17 @@ const SaleType = new GraphQLObjectType({
       sale_artworks: {
         type: new GraphQLList(SaleArtwork.type),
         resolve: ({ id }, options) => gravity(`sale/${id}/sale_artworks`, options),
+      },
+      sale_artwork: {
+        type: SaleArtwork.type,
+        args: {
+          artwork_id: {
+            type: new GraphQLNonNull(GraphQLString),
+          },
+        },
+        resolve: ({ id }, { artwork_id }) => {
+          return gravity(`sale/${id}/sale_artwork/${artwork_id}`);
+        },
       },
     };
   },

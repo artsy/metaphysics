@@ -1,3 +1,4 @@
+import { compact } from 'lodash';
 import cached from './fields/cached';
 import date from './fields/date';
 import Artwork from './artwork';
@@ -70,6 +71,25 @@ const SaleArtworkType = new GraphQLObjectType({
       artwork: {
         type: Artwork.type,
         resolve: ({ artwork }) => artwork,
+      },
+      estimate: {
+        type: GraphQLString,
+        resolve: ({
+          display_low_estimate_dollars,
+          display_high_estimate_dollars,
+          display_estimate_dollars,
+        }) => {
+          return compact([
+            display_low_estimate_dollars,
+            display_high_estimate_dollars,
+          ]).join('–') || display_estimate_dollars;
+        },
+      },
+      current_bid: {
+        type: GraphQLString,
+        resolve: ({ display_highest_bid_amount_dollars, display_opening_bid_dollars }) => {
+          return display_highest_bid_amount_dollars || display_opening_bid_dollars;
+        },
       },
     };
   },

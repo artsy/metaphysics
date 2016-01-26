@@ -38,6 +38,10 @@ const PartnerType = new GraphQLObjectType({
         return default_profile_id && default_profile_public;
       },
     },
+    is_pre_qualify: {
+      type: GraphQLBoolean,
+      resolve: ({ pre_qualify }) => pre_qualify,
+    },
     initials: initials('name'),
     default_profile_id: {
       type: GraphQLString,
@@ -54,6 +58,21 @@ const PartnerType = new GraphQLObjectType({
         },
       },
       resolve: ({ id }, options) => gravity(`partner/${id}/locations`, options),
+    },
+    contact_message: {
+      type: GraphQLString,
+      resolve: ({ type }) => {
+        if (type === 'Auction') {
+          return [
+            'Hello, I am interested in placing a bid on this work.',
+            'Please send me more information.',
+          ].join(' ');
+        }
+        return [
+          'Hi, I’m interested in purchasing this work.',
+          'Could you please provide more information about the piece?',
+        ].join(' ');
+      },
     },
   }),
 });
