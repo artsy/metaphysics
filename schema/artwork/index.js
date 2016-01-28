@@ -3,7 +3,11 @@ import {
   isTwoDimensional,
   isTooBig,
 } from './utilities';
+import {
+  enhance,
+} from '../../lib/helpers';
 import cached from '../fields/cached';
+import markdown from '../fields/markdown';
 import Artist from '../artist';
 import Image from '../image';
 import Fair from '../fair';
@@ -11,9 +15,11 @@ import Sale from '../sale';
 import PartnerShow from '../partner_show';
 import Partner from '../partner';
 import Related from './related';
+import Highlight from './highlight';
 import Dimensions from '../dimensions';
 import EditionSet from '../edition_set';
 import gravity from '../../lib/loaders/gravity';
+import positron from '../../lib/loaders/positron';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -62,6 +68,15 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLString,
       },
       image_rights: {
+        type: GraphQLString,
+      },
+      series: {
+        type: GraphQLString,
+      },
+      manufacturer: {
+        type: GraphQLString,
+      },
+      website: {
         type: GraphQLString,
       },
       partner: {
@@ -125,6 +140,15 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ ecommerce }) => ecommerce,
       },
+      is_comparable_with_auction_results: {
+        type: GraphQLBoolean,
+        resolve: ({ comparables_count, category }) => {
+          return (
+            comparables_count > 0 &&
+            category !== 'Architecture'
+          );
+        },
+      },
       sale_message: {
         type: GraphQLString,
         resolve: ({ availability, price_hidden, price, sale_message }) => {
@@ -180,9 +204,24 @@ const ArtworkType = new GraphQLObjectType({
             gravity('related/fairs', options),
             gravity('related/sales', options),
           ]).then(([fairs, sales]) => {
-            fairs.map(fair => fair.related_type = 'Fair'); // eslint-disable-line no-param-reassign
-            sales.map(sale => sale.related_type = 'Sale'); // eslint-disable-line no-param-reassign
-            return _.first(_.take(fairs.concat(sales)));
+            const relatedFairs = enhance(fairs, { related_type: 'Fair' });
+            const relatedSales = enhance(sales, { related_type: 'Sale' });
+            return _.first(_.take(relatedFairs.concat(relatedSales)));
+          });
+        },
+      },
+      highlights: {
+        type: new GraphQLList(Highlight),
+        description: 'Returns the highlighted shows and articles',
+        resolve: ({ id, _id }) => {
+          return Promise.all([
+            gravity('related/shows', { artwork: [id], active: true, size: 1 }),
+            positron('articles', { artwork_id: _id, published: true })
+              .then(articles => articles.results),
+          ]).then(([shows, articles]) => {
+            const highlightedShows = enhance(shows, { highlight_type: 'Show' });
+            const highlightedArticles = enhance(articles, { highlight_type: 'Article' });
+            return highlightedShows.concat(highlightedArticles);
           });
         },
       },
@@ -231,6 +270,12 @@ const ArtworkType = new GraphQLObjectType({
           return _.where(edition_sets, { acquireable: true });
         },
       },
+      description: markdown('blurb'),
+      provenance: markdown(),
+      exhibition_history: markdown(),
+      signature: markdown(),
+      additional_information: markdown(),
+      bibliography: markdown('literature'),
     };
   },
 });
