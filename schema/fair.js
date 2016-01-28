@@ -23,7 +23,9 @@ const FairType = new GraphQLObjectType({
       type: Profile.type,
       resolve: ({ default_profile_id, organizer }) => {
         const id = default_profile_id || organizer && organizer.profile_id;
-        return gravity(`profile/${id}`);
+        return gravity(`profile/${id}`)
+          // Some profiles are private and return 403
+          .catch(() => null);
       },
     },
     has_full_feature: {
