@@ -42,7 +42,7 @@ const PartnerShowType = new GraphQLObjectType({
     displayable: {
       type: GraphQLBoolean,
     },
-    press_release: markdown,
+    press_release: markdown(),
     start_at: date,
     end_at: date,
     artists: {
