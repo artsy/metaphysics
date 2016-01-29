@@ -2,6 +2,7 @@ import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import initials from './fields/initials';
 import Profile from './profile';
+import PartnerShow from './partner_show';
 import Location from './location';
 import {
   GraphQLString,
@@ -49,6 +50,15 @@ const PartnerType = new GraphQLObjectType({
     profile: {
       type: Profile.type,
       resolve: ({ default_profile_id }) => gravity(`profile/${default_profile_id}`),
+    },
+    shows: {
+      type: new GraphQLList(PartnerShow.type),
+      args: {
+        size: {
+          type: GraphQLInt,
+        },
+      },
+      resolve: ({ id }, options) => gravity(`partner/${id}/shows`, options),
     },
     locations: {
       type: new GraphQLList(Location.type),

@@ -6,6 +6,7 @@ import {
   GraphQLList,
   GraphQLBoolean,
   GraphQLInt,
+  GraphQLEnumType,
 } from 'graphql';
 
 const Partners = {
@@ -30,11 +31,43 @@ const Partners = {
       type: GraphQLBoolean,
       description: 'Indicates tier 3/4 for gallery, 2 for institution',
     },
+    eligible_for_listing: {
+      type: GraphQLBoolean,
+      description: 'Indicates an active subscription',
+    },
+    eligible_for_carousel: {
+      type: GraphQLBoolean,
+    },
     has_full_profile: {
       type: GraphQLBoolean,
     },
     default_profile_public: {
       type: GraphQLBoolean,
+    },
+    sort: {
+      type: new GraphQLEnumType({
+        name: 'PartnersSortType',
+        values: {
+          CREATED_AT_ASC: {
+            value: 'created_at',
+          },
+          CREATED_AT_DESC: {
+            value: '-created_at',
+          },
+          SORTABLE_ID_ASC: {
+            value: 'sortable_id',
+          },
+          SORTABLE_ID_DESC: {
+            value: '-sortable_id',
+          },
+          PUBLISHED_AT_DESC: {
+            value: '-published_at',
+          },
+          RANDOM_SCORE_DESC: {
+            value: '-random_score',
+          },
+        },
+      }),
     },
     partner_categories: {
       type: new GraphQLList(GraphQLString),
