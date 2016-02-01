@@ -1,2 +1,2 @@
 web: node_modules/.bin/nodemon index.js
-redis: redis-server redis.conf
+memcached: memcached -p 11211

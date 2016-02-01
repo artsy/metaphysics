@@ -18,9 +18,9 @@ It is currently used in production from the `/artists/` route on [artsy.net](htt
 
 Set up your `.env` file based on our example `.env.test`.
 
-Install redis if you haven't:
+Install memcached if you haven't:
 ```
-brew install redis
+brew install memcached
 ```
 
 To start up a development server, clone this repo and run:
