@@ -1,10 +1,11 @@
-import fakeredis from 'fakeredis';
 import cache from '../../lib/cache';
 
 describe('Cache', () => {
   describe('when connection to Redis fails', () => {
     before(() => {
-      cache.__Rewire__('client', null);
+      cache.__Rewire__('client', {
+        get: (key, cb) => cb(new Error('connect ECONNREFUSED')),
+      });
     });
 
     after(() => {
@@ -16,27 +17,13 @@ describe('Cache', () => {
         return cache.get('foobar').should.be.rejected();
       });
     });
-
-    describe('#set', () => {
-      it('returns false', () => {
-        cache.set('foo', {}).should.be.false();
-      });
-    });
   });
 
-  describe('when successfully connected to Redis', () => {
-    const client = fakeredis.createClient();
+  describe('when successfully connected to the cache', () => {
+    const client = cache.__get__('client');
 
-    before(() => {
-      cache.__Rewire__('client', client);
-    });
-
-    after(() => {
-      cache.__ResetDependency__('client');
-    });
-
-    afterEach((done) => {
-      client.flushdb(() => done());
+    afterEach(() => {
+      client.store = {};
     });
 
     describe('#get', () => {
