@@ -32,7 +32,6 @@
     "express": "^4.13.3",
     "express-force-ssl": "^0.3.0",
     "express-graphql": "^0.4.4",
-    "fakeredis": "^1.0.0",
     "graphiql": "^0.3.1",
     "graphql": "^0.4.13",
     "lodash": "^3.10.1",
@@ -42,7 +41,6 @@
     "morgan": "^1.6.1",
     "qs": "^5.2.0",
     "react": "^0.14.3",
-    "redis": "^2.4.2",
     "request": "^2.67.0"
   },
   "devDependencies": {
