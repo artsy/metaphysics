@@ -16,7 +16,7 @@ import PartnerCategories from './partner_categories';
 import PartnerShow from './partner_show';
 import PartnerShows from './partner_shows';
 import Sale from './sale';
-import SaleArtworks from './sale_artworks';
+import SaleArtwork from './sale_artwork';
 import Search from './search';
 import {
   GraphQLSchema,
@@ -45,7 +45,7 @@ const schema = new GraphQLSchema({
       partner_show: PartnerShow,
       partner_shows: PartnerShows,
       sale: Sale,
-      sale_artworks: SaleArtworks,
+      sale_artwork: SaleArtwork,
       search: Search,
     },
   }),

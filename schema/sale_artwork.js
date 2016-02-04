@@ -99,17 +99,13 @@ const SaleArtwork = {
   type: SaleArtworkType,
   description: 'A Sale Artwork',
   args: {
-    sale_id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Sale',
-    },
     id: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The slug or ID of the SaleArtwork',
     },
   },
-  resolve: (root, { sale_id, id }) => {
-    return gravity(`sale/${sale_id}/sale_artwork/${id}`);
+  resolve: (root, { id }) => {
+    return gravity(`sale_artwork/${id}`);
   },
 };
 
