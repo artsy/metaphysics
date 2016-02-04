@@ -47,14 +47,19 @@ app.get('/favicon.ico', (req, res) => {
 
 app.all('/graphql', (req, res) => res.redirect('/'));
 
-app.use('/', cors(), morgan('combined'), graphqlHTTP(() => {
+app.use('/', cors(), morgan('combined'), graphqlHTTP(request => {
   info('----------');
 
   loaders.clearAll();
 
+  const accessToken = request.headers['x-access-token'];
+
   return {
     schema,
     graphiql: true,
+    rootValue: {
+      accessToken,
+    },
   };
 }));
 
