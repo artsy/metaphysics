@@ -1,5 +1,4 @@
 import { map, omit } from 'lodash';
-import Artwork from '../artwork';
 import AggregationCount from './aggregation_count';
 import {
   GraphQLObjectType,
@@ -54,24 +53,6 @@ export const ArtworksAggregationResultsType = new GraphQLObjectType({
     counts: {
       type: new GraphQLList(AggregationCount.type),
       resolve: ({ counts }) => map(counts, AggregationCount.resolve),
-    },
-  }),
-});
-
-export const FilterArtworksType = new GraphQLObjectType({
-  name: 'FilterArtworks',
-  fields: () => ({
-    hits: {
-      type: new GraphQLList(Artwork.type),
-    },
-    total: {
-      type: GraphQLInt,
-      resolve: ({ aggregations }) => aggregations.total.value,
-    },
-    aggregations: {
-      type: new GraphQLList(ArtworksAggregationResultsType),
-      resolve: ({ aggregations }) =>
-        map(omit(aggregations, ['total']), (counts, slice) => ({ slice, counts })),
     },
   }),
 });
