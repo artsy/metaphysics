@@ -1,10 +1,9 @@
-import { map, omit } from 'lodash';
+import { map } from 'lodash';
 import AggregationCount from './aggregation_count';
 import {
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLList,
-  GraphQLInt,
 } from 'graphql';
 
 export const ArtworksAggregation = new GraphQLEnumType({
