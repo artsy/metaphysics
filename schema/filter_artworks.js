@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import {
   FilterArtworksType,
