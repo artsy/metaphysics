@@ -1,5 +1,6 @@
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
+import initials from './fields/initials';
 import Image from './image';
 import {
   GraphQLString,
@@ -22,6 +23,7 @@ const ProfileType = new GraphQLObjectType({
       type: Image.type,
       resolve: ({ cover_image }) => Image.resolve(cover_image),
     },
+    initials: initials('owner.name'),
     icon: {
       type: Image.type,
       resolve: ({ icon }) => Image.resolve(icon),
