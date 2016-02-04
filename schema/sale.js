@@ -69,12 +69,12 @@ const SaleType = new GraphQLObjectType({
       sale_artwork: {
         type: SaleArtwork.type,
         args: {
-          artwork_id: {
+          id: {
             type: new GraphQLNonNull(GraphQLString),
           },
         },
-        resolve: ({ id }, { artwork_id }) => {
-          return gravity(`sale/${id}/sale_artwork/${artwork_id}`);
+        resolve: (sale, { id }) => {
+          return gravity(`sale/${sale.id}/sale_artwork/${id}`);
         },
       },
     };
