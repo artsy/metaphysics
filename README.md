@@ -16,7 +16,7 @@ It is currently used in production from the `/artists/` route on [artsy.net](htt
 
 ### Getting Setup
 
-Set up your `.env` file based on our example `.env.test`.
+Set up your `.env` file based on our example `.env.test` (the variables you must change for development are separated at the bottom).
 
 Install memcached if you haven't:
 ```
