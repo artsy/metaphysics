@@ -18,6 +18,7 @@ import PartnerShows from './partner_shows';
 import Sale from './sale';
 import SaleArtwork from './sale_artwork';
 import Search from './search';
+import Me from './me';
 import {
   GraphQLSchema,
   GraphQLObjectType,
@@ -47,6 +48,7 @@ const schema = new GraphQLSchema({
       sale: Sale,
       sale_artwork: SaleArtwork,
       search: Search,
+      me: Me,
     },
   }),
 });
