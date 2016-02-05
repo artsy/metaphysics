@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import url from 'url';
+import { classify } from '../../lib/helpers';
 import routing from '../../lib/routing';
 import gravity from '../../lib/loaders/gravity';
 import Image from '../image';
@@ -8,8 +9,6 @@ import {
   GraphQLString,
   GraphQLObjectType,
 } from 'graphql';
-
-const classify = _.flow(_.camelCase, _.capitalize);
 
 export const parseOgType = ({ pagemap }) => {
   const ogType = _.get(pagemap, ['metatags', '0', 'og:type'], '');

@@ -16,6 +16,7 @@ import PartnerShow from '../partner_show';
 import Partner from '../partner';
 import Related from './related';
 import Highlight from './highlight';
+import Tabs from './tabs';
 import Dimensions from '../dimensions';
 import EditionSet from '../edition_set';
 import gravity from '../../lib/loaders/gravity';
@@ -216,7 +217,7 @@ const ArtworkType = new GraphQLObjectType({
         resolve: ({ id, _id }) => {
           return Promise.all([
             gravity('related/shows', { artwork: [id], active: true, size: 1 }),
-            positron('articles', { artwork_id: _id, published: true })
+            positron('articles', { artwork_id: _id, published: true, limit: 1 })
               .then(articles => articles.results),
           ]).then(([shows, articles]) => {
             const highlightedShows = enhance(shows, { highlight_type: 'Show' });
@@ -276,6 +277,7 @@ const ArtworkType = new GraphQLObjectType({
       signature: markdown(),
       additional_information: markdown(),
       bibliography: markdown('literature'),
+      tabs: Tabs,
     };
   },
 });
