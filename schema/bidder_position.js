@@ -43,9 +43,7 @@ const BidderPositionType = new GraphQLObjectType({
     },
     sale_artwork: {
       type: SaleArtwork.type,
-      resolve: (position) => {
-        return gravity(`sale_artwork/${position.sale_artwork_id}`);
-      },
+      resolve: position => gravity(`sale_artwork/${position.sale_artwork_id}`),
     },
     highest_bid: {
       type: new GraphQLObjectType({
