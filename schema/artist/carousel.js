@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Image from '../image';
 import gravity from '../../lib/loaders/gravity';
-import debug from 'debug';
+import { error } from '../../lib/loggers';
 import {
   GraphQLObjectType,
   GraphQLList,
@@ -51,7 +51,7 @@ const ArtistCarousel = {
         );
       });
     })
-    .catch(debug('error'));
+    .catch(error);
   },
 };
 

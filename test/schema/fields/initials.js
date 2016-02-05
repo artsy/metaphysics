@@ -1,3 +1,4 @@
+import { isNull } from 'lodash';
 import { initials } from '../../../schema/fields/initials';
 
 describe('initials', () => {
@@ -18,5 +19,9 @@ describe('initials', () => {
 
   it('is a little weird for numbers', () => {
     initials('247365').should.equal('2');
+  });
+
+  it('returns null when the value is undefined', () => {
+    isNull(initials()).should.be.true();
   });
 });

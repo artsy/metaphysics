@@ -1,13 +1,20 @@
-import { compact } from 'lodash';
+import {
+  compact,
+} from 'lodash';
 import cached from './fields/cached';
 import date from './fields/date';
-import Artwork from './artwork';
 import gravity from '../lib/loaders/gravity';
+import Artwork from './artwork';
+import BidderPosition from './bidder_position';
+import {
+  enhance,
+} from '../lib/helpers';
 import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLNonNull,
   GraphQLInt,
+  GraphQLList,
 } from 'graphql';
 
 const SaleArtworkType = new GraphQLObjectType({
@@ -32,6 +39,17 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       bidder_positions_count: {
         type: GraphQLInt,
+      },
+      bidder_positions: {
+        type: new GraphQLList(BidderPosition.type),
+        resolve: (sale_artwork, options, { rootValue: { accessToken } }) => {
+          return gravity.with(accessToken)('me/bidder_positions', {
+            artwork_id: sale_artwork.id,
+            sale_id: sale_artwork.sale_id,
+          })
+            .then(response => enhance(response, { sale_artwork }))
+            .catch(() => []);
+        },
       },
       reserve_status: {
         type: GraphQLInt,
@@ -61,6 +79,9 @@ const SaleArtworkType = new GraphQLObjectType({
         type: new GraphQLObjectType({
           name: 'highest_bid',
           fields: {
+            id: {
+              type: GraphQLString,
+            },
             created_at: date,
             amount_cents: {
               type: GraphQLString,

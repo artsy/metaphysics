@@ -1,7 +1,6 @@
 import newrelic from 'artsy-newrelic';
 import xapp from 'artsy-xapp';
 import cors from 'cors';
-import debug from 'debug';
 import morgan from 'morgan';
 import express from 'express';
 import forceSSL from 'express-force-ssl';
@@ -9,6 +8,8 @@ import graphqlHTTP from 'express-graphql';
 import schema from './schema';
 import loaders from './lib/loaders';
 import config from './config';
+import { info, error } from './lib/loggers';
+
 const {
   PORT,
   NODE_ENV,
@@ -27,7 +28,7 @@ if (NODE_ENV === 'production') {
 }
 
 xapp.on('error', (err) => {
-  debug('error')(err);
+  error(err);
   process.exit();
 });
 
@@ -46,13 +47,20 @@ app.get('/favicon.ico', (req, res) => {
 
 app.all('/graphql', (req, res) => res.redirect('/'));
 
-app.use('/', cors(), morgan('combined'), graphqlHTTP(() => {
+app.use('/', cors(), morgan('combined'), graphqlHTTP(request => {
+  info('----------');
+
   loaders.clearAll();
+
+  const accessToken = request.headers['x-access-token'];
 
   return {
     schema,
     graphiql: true,
+    rootValue: {
+      accessToken,
+    },
   };
 }));
 
-app.listen(port, () => debug('info')(`Listening on ${port}`));
+app.listen(port, () => info(`Listening on ${port}`));
