@@ -1,6 +1,7 @@
 import date from './fields/date';
 import gravity from '../lib/loaders/gravity';
 import Profile from './profile';
+import BidderPositions from './bidder_positions';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -21,6 +22,7 @@ const Me = new GraphQLObjectType({
       resolve: ({ default_profile_id }) =>
         gravity(`profile/${default_profile_id}`),
     },
+    bidder_positions: BidderPositions,
   },
 });
 
