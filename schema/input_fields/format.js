@@ -4,7 +4,13 @@ export default {
   type: new GraphQLEnumType({
     name: 'Format',
     values: {
-      markdown: {
+      HTML: {
+        value: 'html',
+      },
+      PLAIN: {
+        value: 'plain',
+      },
+      markdown: { // Deprecated
         value: 'markdown',
       },
     },

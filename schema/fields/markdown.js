@@ -1,5 +1,4 @@
 import marked from 'marked';
-import { defaults } from 'lodash';
 import { GraphQLString } from 'graphql';
 import Format from '../input_fields/format';
 
@@ -8,14 +7,14 @@ export default (attr) => ({
   args: {
     format: Format,
   },
-  resolve: (obj, options, { fieldName }) => {
+  resolve: (obj, { format }, { fieldName }) => {
     const value = obj[attr || fieldName];
 
     if (!value) return null;
 
-    if (options.format === 'markdown') {
+    if (format === 'html' || format === 'markdown') {
       const renderer = new marked.Renderer;
-      marked.setOptions(defaults(options, {
+      marked.setOptions({
         renderer,
         gfm: true,
         tables: true,
@@ -23,7 +22,7 @@ export default (attr) => ({
         pedantic: false,
         sanitize: false,
         smartypants: false,
-      }));
+      });
       return marked(value);
     }
 
