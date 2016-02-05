@@ -1,4 +1,6 @@
+import gravity from '../lib/loaders/gravity';
 import date from './fields/date';
+import SaleArtwork from './sale_artwork';
 import {
   GraphQLInt,
   GraphQLBoolean,
@@ -38,6 +40,10 @@ const BidderPositionType = new GraphQLObjectType({
     },
     suggested_next_bid_cents: {
       type: GraphQLInt,
+    },
+    sale_artwork: {
+      type: SaleArtwork.type,
+      resolve: position => gravity(`sale_artwork/${position.sale_artwork_id}`),
     },
     highest_bid: {
       type: new GraphQLObjectType({
