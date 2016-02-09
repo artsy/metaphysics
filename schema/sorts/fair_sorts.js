@@ -4,22 +4,22 @@ export default {
   type: new GraphQLEnumType({
     name: 'FairSorts',
     values: {
-      created_at_asc: {
+      CREATED_AT_ASC: {
         value: 'created_at',
       },
-      created_at_desc: {
+      CREATED_AT_DESC: {
         value: '-created_at',
       },
-      start_at_asc: {
+      START_AT_ASC: {
         value: 'start_at',
       },
-      start_at_desc: {
+      START_AT_DESC: {
         value: '-start_at',
       },
-      name_asc: {
+      NAME_ASC: {
         value: 'name',
       },
-      name_desc: {
+      NAME_DESC: {
         value: '-name',
       },
     },
