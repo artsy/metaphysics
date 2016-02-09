@@ -5,6 +5,7 @@ import Artwork from './artwork';
 import Artist from './artist';
 import Artists from './artists';
 import Fair from './fair';
+import Fairs from './fairs';
 import Gene from './gene';
 import OrderedSets from './ordered_sets';
 import Profile from './profile';
@@ -36,6 +37,7 @@ const schema = new GraphQLSchema({
       artist: Artist,
       artists: Artists,
       fair: Fair,
+      fairs: Fairs,
       gene: Gene,
       profile: Profile,
       ordered_sets: OrderedSets,
