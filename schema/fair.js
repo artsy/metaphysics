@@ -2,6 +2,8 @@ import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import date from './fields/date';
 import Profile from './profile';
+import Image from './image';
+import Location from './location';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -36,6 +38,19 @@ const FairType = new GraphQLObjectType({
       resolve: ({ default_profile_id, organizer }) => {
         const id = default_profile_id || organizer && organizer.profile_id;
         return `/${id}`;
+      },
+    },
+    image: Image,
+    location: {
+      type: Location.type,
+      resolve: ({ id, location }, options) => {
+        if (location) {
+          return location;
+        }
+        return gravity(`fair/${id}`, options)
+          .then(fair => {
+            return fair.location;
+          });
       },
     },
     start_at: date,
