@@ -122,7 +122,7 @@ const ArtworkType = new GraphQLObjectType({
         description: 'Is this artwork part of an auction?',
         resolve: ({ id }) => {
           return gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
-            .then(sales => _.any(sales, 'is_auction'));
+            .then(sales => _.some(sales, 'is_auction'));
         },
       },
       is_for_sale: {
@@ -182,7 +182,7 @@ const ArtworkType = new GraphQLObjectType({
       image: {
         type: Image.type,
         resolve: ({ images }) => {
-          return Image.resolve(_.findWhere(images, { is_default: true }) || _.first(images));
+          return Image.resolve(_.first(images, { is_default: true }) || _.first(images));
         },
       },
       images: {
@@ -268,7 +268,7 @@ const ArtworkType = new GraphQLObjectType({
       edition_sets: {
         type: new GraphQLList(EditionSet.type),
         resolve: ({ edition_sets }) => {
-          return _.where(edition_sets, { acquireable: true });
+          return _.filter(edition_sets, { acquireable: true });
         },
       },
       description: markdown('blurb'),
