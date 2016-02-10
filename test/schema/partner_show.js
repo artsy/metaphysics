@@ -13,6 +13,7 @@ describe('PartnerShow type', () => {
       start_at: '2015-02-25T12:00:00+00:00',
       end_at: '2015-05-24T12:00:00+00:00',
       press_release: '**foo** *bar*',
+      displayable: true,
     }));
 
     PartnerShow.__Rewire__('gravity', gravity);
