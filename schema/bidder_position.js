@@ -29,6 +29,15 @@ const BidderPositionType = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve: ({ bid_max }) => bid_max,
     },
+    is_winning: {
+      type: GraphQLBoolean,
+      resolve: (position) => {
+        return gravity(`sale_artwork/${position.sale_artwork_id}`)
+          .then((saleArtwork) => {
+            return saleArtwork.highest_bid.id === position.highest_bid.id;
+          });
+      },
+    },
     display_max_bid_amount_dollars: {
       type: GraphQLString,
     },

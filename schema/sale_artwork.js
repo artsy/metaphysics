@@ -5,16 +5,11 @@ import cached from './fields/cached';
 import date from './fields/date';
 import gravity from '../lib/loaders/gravity';
 import Artwork from './artwork';
-import BidderPosition from './bidder_position';
-import {
-  enhance,
-} from '../lib/helpers';
 import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLNonNull,
   GraphQLInt,
-  GraphQLList,
 } from 'graphql';
 
 const SaleArtworkType = new GraphQLObjectType({
@@ -39,17 +34,6 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       bidder_positions_count: {
         type: GraphQLInt,
-      },
-      bidder_positions: {
-        type: new GraphQLList(BidderPosition.type),
-        resolve: (sale_artwork, options, { rootValue: { accessToken } }) => {
-          return gravity.with(accessToken)('me/bidder_positions', {
-            artwork_id: sale_artwork.id,
-            sale_id: sale_artwork.sale_id,
-          })
-            .then(response => enhance(response, { sale_artwork }))
-            .catch(() => []);
-        },
       },
       reserve_status: {
         type: GraphQLInt,
