@@ -10,6 +10,7 @@ import {
 } from 'graphql';
 import {
   uniqBy,
+  reject,
 } from 'lodash';
 
 const Me = new GraphQLObjectType({
@@ -39,8 +40,9 @@ const Me = new GraphQLObjectType({
       resolve: (root, { current }, { rootValue: { accessToken } }) => {
         return gravity.with(accessToken)('me/bidder_positions')
           .then((positions) => {
+            const withHighestBid = reject(positions, { highest_bid: null });
             return current
-              ? uniqBy(positions, (p) => p.sale_artwork_id)
+              ? uniqBy(withHighestBid, 'sale_artwork_id')
               : positions;
           });
       },
