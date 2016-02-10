@@ -6,6 +6,7 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from 'graphql';
 
 const ProfileType = new GraphQLObjectType({
@@ -31,6 +32,10 @@ const ProfileType = new GraphQLObjectType({
     href: {
       type: GraphQLString,
       resolve: ({ id }) => `/${id}`,
+    },
+    is_published: {
+      type: GraphQLBoolean,
+      resolve: ({ published }) => published,
     },
   }),
 });
