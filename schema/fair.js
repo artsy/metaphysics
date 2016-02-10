@@ -21,6 +21,9 @@ const FairType = new GraphQLObjectType({
     id: {
       type: GraphQLString,
     },
+    banner_size: {
+      type: GraphQLString,
+    },
     profile: {
       type: Profile.type,
       resolve: ({ default_profile_id, organizer }) => {
