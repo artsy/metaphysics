@@ -24,17 +24,11 @@ export const ArtworksAggregation = new GraphQLEnumType({
     MEDIUM: {
       value: 'medium',
     },
-    FOR_SALE: {
-      value: 'for_sale',
-    },
     GALLERY: {
-      value: 'partner_id',
+      value: 'gallery',
     },
     INSTITUTION: {
-      value: 'partner_id',
-    },
-    RELATED_GENE: {
-      value: 'gene_id',
+      value: 'institution',
     },
     TOTAL: {
       value: 'total',
