@@ -48,6 +48,9 @@ const FilterArtworks = {
     dimension_range: {
       type: GraphQLString,
     },
+    extra_aggregation_gene_ids: {
+      type: new GraphQLList(GraphQLString),
+    },
     for_sale: {
       type: GraphQLBoolean,
     },
