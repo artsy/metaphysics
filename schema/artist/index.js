@@ -1,6 +1,7 @@
 import { defaults } from 'lodash';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
+import markdown from '../fields/markdown';
 import Image from '../image';
 import Artwork from '../artwork';
 import PartnerShow from '../partner_show';
@@ -47,6 +48,7 @@ const ArtistType = new GraphQLObjectType({
       nationality: {
         type: GraphQLString,
       },
+      blurb: markdown(),
       is_shareable: {
         type: GraphQLBoolean,
         resolve: (artist) => artist.published_artworks_count > 0,
