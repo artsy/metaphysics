@@ -1,3 +1,6 @@
+import {
+  isExisty,
+} from '../lib/helpers';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import date from './fields/date';
@@ -30,7 +33,15 @@ const PartnerShowType = new GraphQLObjectType({
     },
     href: {
       type: GraphQLString,
-      resolve: (partnerShow) => `/show/${partnerShow.id}`,
+      resolve: ({ id }) => `/show/${id}`,
+    },
+    kind: {
+      type: GraphQLString,
+      resolve: ({ artists, fair }) => {
+        if (isExisty(fair)) return 'fair';
+        if (artists.length > 1) return 'group';
+        if (artists.length === 0) return 'solo';
+      },
     },
     name: {
       type: GraphQLString,
