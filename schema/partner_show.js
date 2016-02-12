@@ -40,7 +40,7 @@ const PartnerShowType = new GraphQLObjectType({
       resolve: ({ artists, fair }) => {
         if (isExisty(fair)) return 'fair';
         if (artists.length > 1) return 'group';
-        if (artists.length === 0) return 'solo';
+        if (artists.length === 1) return 'solo';
       },
     },
     name: {
