@@ -1,7 +1,9 @@
 import { defaults } from 'lodash';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
+import markdown from '../fields/markdown';
 import Image from '../image';
+import Article from '../article';
 import Artwork from '../artwork';
 import PartnerShow from '../partner_show';
 import ArtworkSorts from '../sorts/artwork_sorts';
@@ -9,6 +11,7 @@ import PartnerShowSorts from '../sorts/partner_show_sorts';
 import ArtistCarousel from './carousel';
 import ArtistStatuses from './statuses';
 import gravity from '../../lib/loaders/gravity';
+import positron from '../../lib/loaders/positron';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -47,6 +50,7 @@ const ArtistType = new GraphQLObjectType({
       nationality: {
         type: GraphQLString,
       },
+      blurb: markdown(),
       is_shareable: {
         type: GraphQLBoolean,
         resolve: (artist) => artist.published_artworks_count > 0,
@@ -132,6 +136,13 @@ const ArtistType = new GraphQLObjectType({
             sort: '-end_at',
           }));
         },
+      },
+
+      articles: {
+        type: new GraphQLList(Article.type),
+        resolve: ({ _id }) =>
+          positron('articles', { artist_id: _id, published: true })
+            .then(({ results }) => results),
       },
     };
   },
