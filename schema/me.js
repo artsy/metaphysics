@@ -8,10 +8,7 @@ import {
   GraphQLList,
   GraphQLBoolean,
 } from 'graphql';
-import {
-  uniqBy,
-  reject,
-} from 'lodash';
+import _ from 'lodash';
 
 const Me = new GraphQLObjectType({
   name: 'Me',
@@ -40,10 +37,39 @@ const Me = new GraphQLObjectType({
       resolve: (root, { current }, { rootValue: { accessToken } }) => {
         return gravity.with(accessToken)('me/bidder_positions')
           .then((positions) => {
-            const withHighestBid = reject(positions, { highest_bid: null });
-            return current
-              ? uniqBy(withHighestBid, 'sale_artwork_id')
-              : positions;
+            if (!current) return positions;
+
+            // When asking for "my current bids" we need to...
+            //
+            // 1. Find only positions that are "last placed" and
+            // "competing to win" for that user, which means finding the most
+            // recently created bidder positions per sale artwork where
+            // `position.highest_bid != null`.
+            //
+            const latestPositions = _(positions).chain()
+              .reject({ highest_bid: null })
+              .uniqBy('sale_artwork_id')
+              .value();
+            //
+            // 2. Find only bidder positions in "open" auctions. This requires
+            // fetching all of that related data to be able to do:
+            // `bidder_position.sale_artwork.sale.auction_state != open`
+            //
+            return Promise.all(_.map(latestPositions, (position) =>
+              gravity(`sale_artwork/${position.sale_artwork_id}`)
+            )).then((saleArtworks) => {
+              return Promise.all(_.map(saleArtworks, (saleArtwork) =>
+                gravity(`sale/${saleArtwork.sale_id}`)
+              )).then((sales) => {
+                return _(sales).chain()
+                  .filter((sale) => sale.auction_state === 'open')
+                  .map((sale) => _.find(saleArtworks, { sale_id: sale.id }))
+                  .map((sa) =>
+                    _.find(latestPositions, { sale_artwork_id: sa._id })
+                  )
+                  .value();
+              });
+            });
           });
       },
     },
