@@ -3,6 +3,7 @@ import { graphql } from 'graphql';
 import schema from '../../schema';
 import {
   map,
+  times,
 } from 'lodash';
 
 describe('Me type', () => {
@@ -15,11 +16,13 @@ describe('Me type', () => {
     gravity.with = sinon.stub().returns(gravity);
 
     gravity
+      // Me fetch
       .onCall(0)
       .returns(Promise.resolve({
         id: 'craig',
         name: 'craig',
       }))
+      // Bidder positions fetch
       .onCall(1)
       .returns(Promise.resolve([
         {
@@ -46,18 +49,41 @@ describe('Me type', () => {
           sale_artwork_id: 'foo',
           highest_bid: { id: 'hb13' },
         },
-      ]))
-      .onCall(3)
+        {
+          id: 4,
+          max_bid_amount_cents: 1000000,
+          sale_artwork_id: 'baz',
+          highest_bid: { id: 'hb4' },
+        },
+      ]));
+    // Sale artworks fetches
+    times(3, (i) => {
+      let id;
+      if (i === 0) id = 'foo';
+      if (i === 1) id = 'bar';
+      if (i === 2) id = 'baz';
+      gravity.onCall(i + 2)
       .returns(Promise.resolve({
-        id: '123',
+        id,
+        _id: id,
         artwork: { title: 'Andy Warhol Skull' },
+        sale_id: i,
       }));
+    });
+    // Sale fetches
+    times(3, (i) => {
+      gravity.onCall(i + 5)
+      .returns(Promise.resolve({
+        id: i,
+        auction_state: i === 1 ? 'closed' : 'open',
+      }));
+    });
+    // Sale artwork fetch used in `is_winning` property
     gravity2.returns(Promise.resolve({
       id: '456',
       highest_bid: { id: 'hb2' },
       artwork: { title: 'Andy Warhol Skull' },
     }));
-
     Me.__Rewire__('gravity', gravity);
     BidderPosition.__Rewire__('gravity', gravity2);
   });
@@ -80,7 +106,7 @@ describe('Me type', () => {
     return graphql(schema, query, { accessToken: 'foo' })
       .then(({ data }) => {
         Me.__get__('gravity').args[1][0].should.equal('me/bidder_positions');
-        map(data.me.bidder_positions, 'id').join('').should.eql('0123');
+        map(data.me.bidder_positions, 'id').join('').should.eql('01234');
       });
   });
 
@@ -97,7 +123,7 @@ describe('Me type', () => {
     return graphql(schema, query, { accessToken: 'foo' })
       .then(({ data }) => {
         Me.__get__('gravity').args[1][0].should.equal('me/bidder_positions');
-        map(data.me.bidder_positions, 'id').join('').should.eql('12');
+        map(data.me.bidder_positions, 'id').join('').should.eql('14');
       });
   });
 
