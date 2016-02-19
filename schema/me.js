@@ -61,14 +61,13 @@ const Me = new GraphQLObjectType({
               return Promise.all(_.map(saleArtworks, (saleArtwork) =>
                 gravity(`sale/${saleArtwork.sale_id}`)
               )).then((sales) => {
-                const bids = _.filter(latestPositions, (position) => {
+                return _.filter(latestPositions, (position) => {
                   const saleArtwork = _.find(saleArtworks, {
                     _id: position.sale_artwork_id,
                   });
                   const sale = _.find(sales, { id: saleArtwork.sale_id });
                   return sale.auction_state === 'open';
                 });
-                return bids;
               });
             });
           });
