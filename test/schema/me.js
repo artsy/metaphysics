@@ -67,14 +67,14 @@ describe('Me type', () => {
         id,
         _id: id,
         artwork: { title: 'Andy Warhol Skull' },
-        sale_id: i,
+        sale_id: i === 1 ? 'bar-auction' : 'else-auction',
       }));
     });
     // Sale fetches
     times(3, (i) => {
       gravity.onCall(i + 5)
       .returns(Promise.resolve({
-        id: i,
+        id: i === 1 ? 'bar-auction' : 'else-auction',
         auction_state: i === 1 ? 'closed' : 'open',
       }));
     });
