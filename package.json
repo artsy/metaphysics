@@ -9,6 +9,7 @@
     "npm": "3.x.x"
   },
   "scripts": {
+    "verbose-dev": "DEBUG=verbose,info,error nf start --procfile Procfile.dev",
     "dev": "DEBUG=info,error nf start --procfile Procfile.dev",
     "staging": "DEBUG=info,error nf start --procfile Procfile.dev --env .env.staging",
     "test": "npm run lint && DEBUG=info,error nf run mocha test --env .env.test",
