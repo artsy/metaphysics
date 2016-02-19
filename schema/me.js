@@ -61,13 +61,13 @@ const Me = new GraphQLObjectType({
               return Promise.all(_.map(saleArtworks, (saleArtwork) =>
                 gravity(`sale/${saleArtwork.sale_id}`)
               )).then((sales) => {
-                return _(sales).chain()
-                  .filter((sale) => sale.auction_state === 'open')
-                  .map((sale) => _.find(saleArtworks, { sale_id: sale.id }))
-                  .map((sa) =>
-                    _.find(latestPositions, { sale_artwork_id: sa._id })
-                  )
-                  .value();
+                return _.filter(latestPositions, (position) => {
+                  const saleArtwork = _.find(saleArtworks, {
+                    _id: position.sale_artwork_id,
+                  });
+                  const sale = _.find(sales, { id: saleArtwork.sale_id });
+                  return sale.auction_state === 'open';
+                });
               });
             });
           });
