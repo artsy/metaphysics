@@ -18,6 +18,35 @@ describe('Artwork type', () => {
     acquireable: false,
   };
 
+  const artworkImages = [
+    {
+      is_default: false,
+      id: '56b6311876143f4e82000188',
+      image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
+      image_versions: [
+        'icon',
+        'large',
+      ],
+      image_urls: {
+        icon: 'https://xxx.cloudfront.net/xxx/icon.png',
+        large: 'https://xxx.cloudfront.net/xxx/large.jpg',
+      },
+    },
+    {
+      is_default: true,
+      id: '56b64ed2cd530e670c0000b2',
+      image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
+      image_versions: [
+        'icon',
+        'large',
+      ],
+      image_urls: {
+        icon: 'https://xxx.cloudfront.net/xxx/icon.png',
+        large: 'https://xxx.cloudfront.net/xxx/large.jpg',
+      },
+    },
+  ];
+
   beforeEach(() => {
     gravity = sinon.stub();
     Artwork.__Rewire__('gravity', gravity);
@@ -76,6 +105,35 @@ describe('Artwork type', () => {
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_contactable: false,
+            },
+          });
+        });
+    });
+  });
+
+  describe('#images', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          image {
+            id
+          }
+        }
+      }
+    `;
+
+    it('returns the first default image', () => {
+      gravity
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork, { images: artworkImages })));
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artwork: {
+              image: {
+                id: '56b64ed2cd530e670c0000b2',
+              },
             },
           });
         });

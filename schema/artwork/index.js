@@ -182,7 +182,7 @@ const ArtworkType = new GraphQLObjectType({
       image: {
         type: Image.type,
         resolve: ({ images }) => {
-          return Image.resolve(_.first(images, { is_default: true }) || _.first(images));
+          return Image.resolve(_.find(images, { is_default: true }) || _.first(images));
         },
       },
       images: {
