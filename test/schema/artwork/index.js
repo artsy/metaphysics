@@ -18,10 +18,10 @@ describe('Artwork type', () => {
     acquireable: false,
   };
 
-  const images = [
+  const artworkImages = [
     {
       is_default: false,
-      id: "56b6311876143f4e82000188",
+      id: '56b6311876143f4e82000188',
       image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
       image_versions: [
         'icon',
@@ -34,7 +34,7 @@ describe('Artwork type', () => {
     },
     {
       is_default: true,
-      id: "56b64ed2cd530e670c0000b2",
+      id: '56b64ed2cd530e670c0000b2',
       image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
       image_versions: [
         'icon',
@@ -44,8 +44,8 @@ describe('Artwork type', () => {
         icon: 'https://xxx.cloudfront.net/xxx/icon.png',
         large: 'https://xxx.cloudfront.net/xxx/large.jpg',
       },
-    }
-  ]
+    },
+  ];
 
   beforeEach(() => {
     gravity = sinon.stub();
@@ -122,19 +122,17 @@ describe('Artwork type', () => {
       }
     `;
 
-    const artworkWithImages = assign({}, artwork, { images: images });
-
     it('returns the first default image', () => {
       gravity
         .onCall(0)
-        .returns(Promise.resolve(artworkWithImages));
+        .returns(Promise.resolve(assign({}, artwork, { images: artworkImages })));
 
       return graphql(schema, query)
         .then(({ data }) => {
           data.should.eql({
             artwork: {
               image: {
-                id: '56b64ed2cd530e670c0000b2'
+                id: '56b64ed2cd530e670c0000b2',
               },
             },
           });
