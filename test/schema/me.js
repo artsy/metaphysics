@@ -9,10 +9,12 @@ import {
 describe('Me type', () => {
   const Me = schema.__get__('Me');
   const BidderPosition = Me.__get__('BidderPosition');
+  let gravity;
+  let gravity2;
 
   beforeEach(() => {
-    const gravity = sinon.stub();
-    const gravity2 = sinon.stub();
+    gravity = sinon.stub();
+    gravity2 = sinon.stub();
     gravity.with = sinon.stub().returns(gravity);
 
     gravity
@@ -124,6 +126,24 @@ describe('Me type', () => {
       .then(({ data }) => {
         Me.__get__('gravity').args[1][0].should.equal('me/bidder_positions');
         map(data.me.bidder_positions, 'id').join('').should.eql('14');
+      });
+  });
+
+
+  it('does not fail for bidder positions with unpublished artworks', () => {
+    const query = `
+      {
+        me {
+          bidder_positions(current: true) {
+            id
+          }
+        }
+      }
+    `;
+    gravity.onCall(4).returns(Promise.reject(new Error('Forbidden')));
+    return graphql(schema, query, { accessToken: 'foo' })
+      .then(({ data }) => {
+        map(data.me.bidder_positions, 'id').join('').should.eql('1');
       });
   });
 
