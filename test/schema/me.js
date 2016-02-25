@@ -8,7 +8,9 @@ import {
 
 describe('Me type', () => {
   const Me = schema.__get__('Me');
-  const BidderPosition = Me.__get__('BidderPosition');
+  const BidderPositions = Me.__get__('BidderPositions');
+  const BidderPosition = BidderPositions.__get__('BidderPosition');
+
   let gravity;
   let gravity2;
 
@@ -86,12 +88,15 @@ describe('Me type', () => {
       highest_bid: { id: 'hb2' },
       artwork: { title: 'Andy Warhol Skull' },
     }));
+
     Me.__Rewire__('gravity', gravity);
+    BidderPositions.__Rewire__('gravity', gravity);
     BidderPosition.__Rewire__('gravity', gravity2);
   });
 
   afterEach(() => {
     Me.__ResetDependency__('gravity');
+    BidderPositions.__ResetDependency__('gravity');
     BidderPosition.__ResetDependency__('gravity');
   });
 
@@ -128,7 +133,6 @@ describe('Me type', () => {
         map(data.me.bidder_positions, 'id').join('').should.eql('14');
       });
   });
-
 
   it('does not fail for bidder positions with unpublished artworks', () => {
     const query = `
