@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import { graphql } from 'graphql';
-import schema from '../../schema';
+import schema from '../../../schema';
 import {
   map,
   times,
