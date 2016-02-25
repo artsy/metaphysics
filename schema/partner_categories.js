@@ -5,6 +5,7 @@ import CategoryType from './input_fields/category_type';
 import {
   GraphQLList,
   GraphQLInt,
+  GraphQLBoolean,
 } from 'graphql';
 
 const PartnerCategories = {
@@ -15,6 +16,11 @@ const PartnerCategories = {
       type: GraphQLInt,
     },
     category_type: CategoryType,
+    internal: {
+      type: GraphQLBoolean,
+      defaultValue: false,
+      description: 'Filter by whether category is internal',
+    },
   },
   resolve: (root, options) => gravity('partner_categories', options),
 };
