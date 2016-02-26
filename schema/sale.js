@@ -3,6 +3,7 @@ import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import date from './fields/date';
 import SaleArtwork from './sale_artwork';
+import Profile from './profile';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -93,6 +94,10 @@ const SaleType = new GraphQLObjectType({
         resolve: (sale, { id }) => {
           return gravity(`sale/${sale.id}/sale_artwork/${id}`);
         },
+      },
+      profile: {
+        type: Profile.type,
+        resolve: ({ profile }) => profile,
       },
     };
   },
