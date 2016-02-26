@@ -49,20 +49,22 @@ const Sales = {
     is_auction: {
       description: 'Limit by auction.',
       type: GraphQLBoolean,
+      defaultValue: true,
     },
     published: {
       description: 'Limit by published status.',
       type: GraphQLBoolean,
+      defaultValue: true,
     },
     live: {
       description: 'Limit by live status.',
       type: GraphQLBoolean,
+      defaultValue: true,
     },
     sort: Sorts,
   },
-  resolve: (root, options) => {
-    return gravity('sales', options);
-  },
+  resolve: (root, options) =>
+    gravity('sales', options),
 };
 
 export default Sales;
