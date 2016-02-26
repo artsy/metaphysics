@@ -1,3 +1,4 @@
+import moment from 'moment';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import date from './fields/date';
@@ -9,6 +10,18 @@ import {
   GraphQLList,
   GraphQLBoolean,
 } from 'graphql';
+
+export function auctionState({ start_at, end_at }) {
+  const start = moment(start_at);
+  const end = moment(end_at);
+  if (moment().isAfter(end) || moment().isSame(end)) {
+    return 'closed';
+  } else if (moment().isBetween(start, end)) {
+    return 'open';
+  } else if (moment().isBefore(start) || moment().isSame(start)) {
+    return 'preview';
+  }
+}
 
 const SaleType = new GraphQLObjectType({
   name: 'Sale',
@@ -40,15 +53,18 @@ const SaleType = new GraphQLObjectType({
       },
       is_preview: {
         type: GraphQLBoolean,
-        resolve: ({ auction_state }) => auction_state === 'preview',
+        resolve: (sale) =>
+          auctionState(sale) === 'preview',
       },
       is_open: {
         type: GraphQLBoolean,
-        resolve: ({ auction_state }) => auction_state === 'open',
+        resolve: (sale) =>
+          auctionState(sale) === 'open',
       },
       is_closed: {
         type: GraphQLBoolean,
-        resolve: ({ auction_state }) => auction_state === 'closed',
+        resolve: (sale) =>
+          auctionState(sale) === 'closed',
       },
       is_with_buyers_premium: {
         type: GraphQLBoolean,
@@ -56,6 +72,7 @@ const SaleType = new GraphQLObjectType({
       },
       auction_state: {
         type: GraphQLString,
+        resolve: auctionState,
       },
       start_at: date,
       end_at: date,
