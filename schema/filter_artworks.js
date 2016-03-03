@@ -10,7 +10,6 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLBoolean,
-  GraphQLNonNull,
   GraphQLInt,
 } from 'graphql';
 
@@ -37,7 +36,7 @@ const FilterArtworks = {
   description: 'Artworks Elastic Search results',
   args: {
     aggregations: {
-      type: new GraphQLNonNull(new GraphQLList(ArtworksAggregation)),
+      type: new GraphQLList(ArtworksAggregation),
     },
     artist_id: {
       type: GraphQLInt,
