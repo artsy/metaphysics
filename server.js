@@ -9,6 +9,7 @@ import schema from './schema';
 import loaders from './lib/loaders';
 import config from './config';
 import { info, error } from './lib/loggers';
+import auth from './lib/auth';
 
 const {
   PORT,
@@ -47,7 +48,7 @@ app.get('/favicon.ico', (req, res) => {
 
 app.all('/graphql', (req, res) => res.redirect('/'));
 
-app.use('/', cors(), morgan('combined'), graphqlHTTP(request => {
+app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
   info('----------');
 
   loaders.clearAll();
