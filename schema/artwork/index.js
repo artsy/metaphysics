@@ -159,7 +159,7 @@ const ArtworkType = new GraphQLObjectType({
       },
       artist: {
         type: Artist.type,
-        resolve: ({ artist }) => gravity(`artist/${artist.id}`),
+        resolve: ({ artist }) => gravity(`artist/${artist.id}`).catch(() => null),
       },
       contact_label: {
         type: GraphQLString,
@@ -175,7 +175,7 @@ const ArtworkType = new GraphQLObjectType({
         resolve: ({ artists }) => {
           return Promise.all(
             artists.map(artist => gravity(`/artist/${artist.id}`))
-          );
+          ).catch(() => null);
         },
       },
       dimensions: Dimensions,
