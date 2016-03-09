@@ -175,7 +175,7 @@ const ArtworkType = new GraphQLObjectType({
         resolve: ({ artists }) => {
           return Promise.all(
             artists.map(artist => gravity(`/artist/${artist.id}`))
-          ).catch(() => null);
+          ).catch(() => []);
         },
       },
       dimensions: Dimensions,
