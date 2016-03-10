@@ -26,6 +26,9 @@ const ArtistType = new GraphQLObjectType({
   fields: () => {
     return {
       cached,
+      _id: {
+        type: GraphQLString,
+      },
       id: {
         type: GraphQLString,
       },
@@ -49,6 +52,15 @@ const ArtistType = new GraphQLObjectType({
       },
       nationality: {
         type: GraphQLString,
+      },
+      birthday: {
+        type: GraphQLString,
+      },
+      deathday: {
+        type: GraphQLString,
+      },
+      alternate_names: {
+        type: new GraphQLList(GraphQLString),
       },
       blurb: markdown(),
       is_shareable: {
@@ -105,6 +117,25 @@ const ArtistType = new GraphQLObjectType({
         },
         resolve: (artist, options) => {
           return gravity(`related/layer/main/artists`, defaults(options, {
+            artist: [artist.id],
+          }));
+        },
+      },
+
+      contemporary: {
+        type: new GraphQLList(Artist.type), // eslint-disable-line no-use-before-define
+        args: {
+          size: {
+            type: GraphQLInt,
+            description: 'The number of Artists to return',
+          },
+          exclude_artists_without_artworks: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
+        },
+        resolve: (artist, options) => {
+          return gravity(`related/layer/contemporary/artists`, defaults(options, {
             artist: [artist.id],
           }));
         },

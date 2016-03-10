@@ -40,13 +40,14 @@ const ArtistCarousel = {
       )
       .then(showImages => {
         return _.zip(elligibleShows, showImages).map(([show, images]) => {
-          return _.assign({ href: `/show/${show.id}` }, _.first(images));
+          return _.assign({ href: `/show/${show.id}`, title: show.name }, _.first(images));
         });
       })
       .then(showsWithImages => {
         return showsWithImages.concat(
           artworks.map(artwork => {
-            return _.assign({ href: `/artwork/${artwork.id}` }, _.first(artwork.images));
+            return _.assign({ href: `/artwork/${artwork.id}`, title: artwork.title },
+              _.first(artwork.images));
           })
         );
       });

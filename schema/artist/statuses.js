@@ -36,6 +36,15 @@ const ArtistStatusesType = new GraphQLObjectType({
         }).then(artists => !!artists.length);
       },
     },
+    contemporary: {
+      type: GraphQLBoolean,
+      resolve: ({ id }) => {
+        return gravity(`related/layer/contemporary/artists`, {
+          exclude_artists_without_artworks: true,
+          artist: [id],
+        }).then(contemporary => !!contemporary.length);
+      },
+    },
     articles: {
       type: GraphQLBoolean,
       resolve: ({ _id }) => {
