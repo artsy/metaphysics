@@ -44,6 +44,9 @@ const ArtistType = new GraphQLObjectType({
         type: GraphQLString,
       },
       initials: initials('name'),
+      gender: {
+        type: GraphQLString,
+      },
       years: {
         type: GraphQLString,
       },
