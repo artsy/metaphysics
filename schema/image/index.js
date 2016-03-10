@@ -19,6 +19,9 @@ const ImageType = new GraphQLObjectType({
     href: {
       type: GraphQLString,
     },
+    title: {
+      type: GraphQLString,
+    },
     width: {
       type: GraphQLInt,
       resolve: ({ original_width }) => original_width,
