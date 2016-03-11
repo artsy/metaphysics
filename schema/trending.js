@@ -1,6 +1,5 @@
 import delta from '../lib/loaders/delta';
 import gravity from '../lib/loaders/gravity';
-import cached from './fields/cached';
 import { keys } from 'lodash';
 import Artist from './artist';
 import {
@@ -8,8 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLList,
-  GraphQLBoolean,
-  GraphQLInt
+  GraphQLInt,
 } from 'graphql';
 
 const TrendingArtistsType = new GraphQLObjectType({
@@ -18,7 +16,7 @@ const TrendingArtistsType = new GraphQLObjectType({
     artists: {
       type: new GraphQLList(Artist.type),
       resolve: (results) => {
-        let ids = keys(results).slice(0,-1);
+        const ids = keys(results).slice(0, -1);
         return Promise.all(
           ids.map(id => gravity(`/artist/${id}`))
         );
