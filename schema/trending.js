@@ -1,4 +1,5 @@
-import delta from '../lib/loaders/gravity';
+import delta from '../lib/loaders/delta';
+import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import { keys } from 'lodash';
 import Artist from './artist';
@@ -14,13 +15,13 @@ import {
 const TrendingArtistsType = new GraphQLObjectType({
   name: 'TrendingArtists',
   fields: () => ({
-    cached,
     artists: {
       type: new GraphQLList(Artist.type),
       resolve: (results) => {
+        let ids = keys(results).slice(0,-1);
         return Promise.all(
-          keys(results).map(id => gravity(`/artist/${id}`))
-        ).catch(() => []);
+          ids.map(id => gravity(`/artist/${id}`))
+        );
       },
     },
   }),
@@ -38,7 +39,7 @@ const TrendingArtists = {
     name: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'Trending metric name',
-    }
+    },
     n: {
       type: GraphQLInt,
       description: 'Number of results to return',

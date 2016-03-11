@@ -21,6 +21,7 @@ import Sale from './sale';
 import Sales from './sales';
 import SaleArtwork from './sale_artwork';
 import Search from './search';
+import TrendingArtists from './trending';
 import Me from './me';
 import {
   GraphQLSchema,
@@ -54,6 +55,7 @@ const schema = new GraphQLSchema({
       sales: Sales,
       sale_artwork: SaleArtwork,
       search: Search,
+      trending_artists: TrendingArtists,
       me: Me,
     },
   }),
