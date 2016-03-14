@@ -506,6 +506,11 @@
         }
       }
     },
+    "bluebird": {
+      "version": "3.3.4",
+      "from": "bluebird@latest",
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.3.4.tgz"
+    },
     "boom": {
       "version": "2.10.1",
       "from": "boom@>=2.0.0 <3.0.0",
