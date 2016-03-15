@@ -151,6 +151,9 @@ const ArtistType = new GraphQLObjectType({
       partner_shows: {
         type: new GraphQLList(PartnerShow.type),
         args: {
+          active: {
+            type: GraphQLBoolean,
+          },
           size: {
             type: GraphQLInt,
             description: 'The number of PartnerShows to return',
