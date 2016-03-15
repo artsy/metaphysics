@@ -114,7 +114,7 @@ const ArtworkType = new GraphQLObjectType({
                 !artwork.acquireable &&
                 !sales.length
               );
-            });
+            }).catch(() => false);
         },
       },
       is_in_auction: {
