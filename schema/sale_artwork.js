@@ -1,6 +1,4 @@
-import {
-  compact,
-} from 'lodash';
+import _ from 'lodash';
 import cached from './fields/cached';
 import date from './fields/date';
 import gravity from '../lib/loaders/gravity';
@@ -8,6 +6,7 @@ import Artwork from './artwork';
 import {
   GraphQLObjectType,
   GraphQLString,
+  GraphQLBoolean,
   GraphQLNonNull,
   GraphQLInt,
 } from 'graphql';
@@ -73,6 +72,18 @@ const SaleArtworkType = new GraphQLObjectType({
           },
         }),
       },
+      current_user_has_winning_bid: {
+        type: GraphQLBoolean,
+        resolve: (sale_artwork, $, { rootValue: { accessToken } }) => {
+          if(!sale_artwork.highest_bid) return false;
+          return gravity.with(accessToken)('me/bidder_positions')
+            .then((positions) => {
+              return _.some(_(positions).find((position) => {
+                return position.highest_bid && position.highest_bid.id == sale_artwork.highest_bid.id;
+              }));
+            }).catch(() => false);
+        }
+      },
       artwork: {
         type: Artwork.type,
         resolve: ({ artwork }) => artwork,
@@ -84,7 +95,7 @@ const SaleArtworkType = new GraphQLObjectType({
           display_high_estimate_dollars,
           display_estimate_dollars,
         }) => {
-          return compact([
+          return _.compact([
             display_low_estimate_dollars,
             display_high_estimate_dollars,
           ]).join('–') || display_estimate_dollars;
