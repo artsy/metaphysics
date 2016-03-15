@@ -75,14 +75,17 @@ const SaleArtworkType = new GraphQLObjectType({
       current_user_has_winning_bid: {
         type: GraphQLBoolean,
         resolve: (sale_artwork, $, { rootValue: { accessToken } }) => {
-          if(!sale_artwork.highest_bid) return false;
+          if (!sale_artwork.highest_bid) return false;
           return gravity.with(accessToken)('me/bidder_positions')
             .then((positions) => {
               return _.some(_(positions).find((position) => {
-                return position.highest_bid && position.highest_bid.id == sale_artwork.highest_bid.id;
+                return (
+                  position.highest_bid &&
+                  position.highest_bid.id === sale_artwork.highest_bid.id
+                );
               }));
             }).catch(() => false);
-        }
+        },
       },
       artwork: {
         type: Artwork.type,
