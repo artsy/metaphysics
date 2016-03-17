@@ -4,6 +4,7 @@ import BidderPosition from '../bidder_position';
 import {
   GraphQLList,
   GraphQLBoolean,
+  GraphQLString,
 } from 'graphql';
 
 export default {
@@ -14,12 +15,15 @@ export default {
       type: GraphQLBoolean,
       description: 'Only the most recent bidder positions per artwork.',
     },
+    artwork_id: {
+      type: GraphQLString,
+      description: 'Only the bidder positions on a specific artwork',
+    },
   },
-  resolve: (root, { current }, { rootValue: { accessToken } }) => {
-    return gravity.with(accessToken)('me/bidder_positions')
+  resolve: (root, { current, artwork_id }, { rootValue: { accessToken } }) => {
+    return gravity.with(accessToken)('me/bidder_positions', { artwork_id })
       .then((positions) => {
-        if (!current) return positions;
-
+        if (!current || artwork_id) return positions;
         // When asking for "my current bids" we need to...
         //
         // 1. Find only positions that are "last placed" and
