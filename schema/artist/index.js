@@ -183,6 +183,12 @@ const ArtistType = new GraphQLObjectType({
       sales: {
         type: new GraphQLList(Sale.type),
         args: {
+          live: {
+            type: GraphQLBoolean,
+          },
+          is_auction: {
+            type: GraphQLBoolean,
+          },
           size: {
             type: GraphQLInt,
             description: 'The number of Sales to return',
