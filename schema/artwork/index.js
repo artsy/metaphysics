@@ -11,7 +11,7 @@ import markdown from '../fields/markdown';
 import Artist from '../artist';
 import Image from '../image';
 import Fair from '../fair';
-import Sale from '../sale';
+import Sale from '../sale/index';
 import PartnerShow from '../partner_show';
 import Partner from '../partner';
 import Related from './related';

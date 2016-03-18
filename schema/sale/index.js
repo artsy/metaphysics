@@ -1,9 +1,10 @@
 import moment from 'moment';
-import gravity from '../lib/loaders/gravity';
-import cached from './fields/cached';
-import date from './fields/date';
-import SaleArtwork from './sale_artwork';
-import Profile from './profile';
+import gravity from '../../lib/loaders/gravity';
+import cached from '../fields/cached';
+import date from '../fields/date';
+import SaleArtwork from '../sale_artwork';
+import Profile from '../profile';
+import Image from '../image/index';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -83,6 +84,10 @@ const SaleType = new GraphQLObjectType({
       sale_artworks: {
         type: new GraphQLList(SaleArtwork.type),
         resolve: ({ id }, options) => gravity(`sale/${id}/sale_artworks`, options),
+      },
+      cover_image: {
+        type: Image.type,
+        resolve: ({ image_versions, image_url }) => Image.resolve({ image_versions, image_url }),
       },
       sale_artwork: {
         type: SaleArtwork.type,

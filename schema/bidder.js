@@ -1,5 +1,5 @@
 import date from './fields/date';
-import Sale from './sale';
+import Sale from './sale/index';
 import {
   GraphQLString,
   GraphQLObjectType,

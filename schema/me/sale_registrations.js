@@ -1,6 +1,6 @@
 import { first } from 'lodash';
 import gravity from '../../lib/loaders/gravity';
-import Sale from '../sale';
+import Sale from '../sale/index';
 import Sales from '../sales';
 import Bidder from '../bidder';
 import {

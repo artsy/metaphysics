@@ -6,8 +6,10 @@ import Image from '../image';
 import Article from '../article';
 import Artwork from '../artwork';
 import PartnerShow from '../partner_show';
+import Sale from '../sale/index';
 import ArtworkSorts from '../sorts/artwork_sorts';
 import PartnerShowSorts from '../sorts/partner_show_sorts';
+import SaleSorts from '../sale/sorts';
 import ArtistCarousel from './carousel';
 import ArtistStatuses from './statuses';
 import gravity from '../../lib/loaders/gravity';
@@ -151,6 +153,9 @@ const ArtistType = new GraphQLObjectType({
       partner_shows: {
         type: new GraphQLList(PartnerShow.type),
         args: {
+          exclude_fair_booths: {
+            type: GraphQLBoolean,
+          },
           active: {
             type: GraphQLBoolean,
           },
@@ -170,6 +175,23 @@ const ArtistType = new GraphQLObjectType({
           return gravity('related/shows', defaults(options, {
             artist_id: id,
             displayable: true,
+            sort: '-end_at',
+          }));
+        },
+      },
+
+      sales: {
+        type: new GraphQLList(Sale.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+            description: 'The number of Sales to return',
+          },
+          sort: SaleSorts,
+        },
+        resolve: ({ id }, options) => {
+          return gravity('related/sales', defaults(options, {
+            artist_id: id,
             sort: '-end_at',
           }));
         },

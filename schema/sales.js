@@ -1,43 +1,11 @@
 import gravity from '../lib/loaders/gravity';
-import Sale from './sale';
+import Sale from './sale/index';
+import SaleSorts from './sale/sorts';
 import {
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
-  GraphQLEnumType,
 } from 'graphql';
-
-export const Sorts = {
-  type: new GraphQLEnumType({
-    name: 'SaleSorts',
-    values: {
-      _ID_ASC: {
-        value: '_id',
-      },
-      _ID_DESC: {
-        value: '-_id',
-      },
-      NAME_ASC: {
-        value: 'name',
-      },
-      NAME_DESC: {
-        value: '-name',
-      },
-      CREATED_AT_ASC: {
-        value: 'created_at',
-      },
-      CREATED_AT_DESC: {
-        value: '-created_at',
-      },
-      ELIGIBLE_SALE_ARTWORKS_COUNT_ASC: {
-        value: 'eligible_sale_artworks_count',
-      },
-      ELIGIBLE_SALE_ARTWORKS_COUNT_DESC: {
-        value: '-eligible_sale_artworks_count',
-      },
-    },
-  }),
-};
 
 const Sales = {
   type: new GraphQLList(Sale.type),
@@ -61,7 +29,7 @@ const Sales = {
       type: GraphQLBoolean,
       defaultValue: true,
     },
-    sort: Sorts,
+    sort: SaleSorts,
   },
   resolve: (root, options) =>
     gravity('sales', options),
