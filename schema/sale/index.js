@@ -1,10 +1,10 @@
 import moment from 'moment';
-import gravity from '../lib/loaders/gravity';
-import cached from './fields/cached';
-import date from './fields/date';
-import SaleArtwork from './sale_artwork';
-import Profile from './profile';
-import Image from './image/index';
+import gravity from '../../lib/loaders/gravity';
+import cached from '../fields/cached';
+import date from '../fields/date';
+import SaleArtwork from '../sale_artwork';
+import Profile from '../profile';
+import Image from '../image/index';
 import {
   GraphQLString,
   GraphQLObjectType,

@@ -17,7 +17,7 @@ import PartnerCategory from './partner_category';
 import PartnerCategories from './partner_categories';
 import PartnerShow from './partner_show';
 import PartnerShows from './partner_shows';
-import Sale from './sale';
+import Sale from './sale/index';
 import Sales from './sales';
 import SaleArtwork from './sale_artwork';
 import Search from './search';

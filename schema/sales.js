@@ -1,6 +1,6 @@
 import gravity from '../lib/loaders/gravity';
-import Sale from './sale';
-import SaleSorts from './sorts/sale_sorts';
+import Sale from './sale/index';
+import SaleSorts from './sale/sorts';
 import {
   GraphQLList,
   GraphQLInt,

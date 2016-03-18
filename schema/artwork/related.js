@@ -1,6 +1,6 @@
 import { create } from 'lodash';
 import Fair from '../fair';
-import Sale from '../sale';
+import Sale from '../sale/index';
 import { GraphQLUnionType } from 'graphql';
 
 export const RelatedFairType = create(Fair.type, {
