@@ -21,7 +21,11 @@ export default {
     },
   },
   resolve: (root, { current, artwork_id }, { rootValue: { accessToken } }) => {
-    return gravity.with(accessToken)('me/bidder_positions', { artwork_id })
+    return gravity
+      .with(accessToken)('me/bidder_positions', {
+        artwork_id,
+        sort: '-created_at',
+      })
       .then((positions) => {
         if (!current || artwork_id) return positions;
         // When asking for "my current bids" we need to...
