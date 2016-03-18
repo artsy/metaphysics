@@ -151,6 +151,9 @@ const ArtistType = new GraphQLObjectType({
       partner_shows: {
         type: new GraphQLList(PartnerShow.type),
         args: {
+          exclude_fair_booths: {
+            type: GraphQLBoolean,
+          },
           active: {
             type: GraphQLBoolean,
           },
