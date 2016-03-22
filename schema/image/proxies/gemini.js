@@ -1,5 +1,4 @@
 import qs from 'qs';
-import { isEmpty } from 'lodash';
 import { isExisty } from '../../../lib/helpers';
 
 const { GEMINI_ENDPOINT } = process.env;
@@ -7,9 +6,9 @@ const { GEMINI_ENDPOINT } = process.env;
 function resizeTo(mode, width, height) {
   if (mode === 'crop') {
     return 'fill';
-  } else if (isExisty(width) && isEmpty(height)) {
+  } else if (isExisty(width) && !isExisty(height)) {
     return 'width';
-  } else if (isExisty(height) && isEmpty(width)) {
+  } else if (isExisty(height) && !isExisty(width)) {
     return 'height';
   }
   return 'fit';
