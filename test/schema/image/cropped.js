@@ -13,7 +13,7 @@ describe('Image', () => {
         .should.eql({
           width: 500,
           height: 500,
-          url: 'https://i.embed.ly.test/1/display/crop?url=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg&width=500&height=500&key=xxx_embedly_key_xxx&quality=95',
+          url: 'https://gemini.cloudfront.test/?resize_to=fill&width=500&height=500&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg',
         });
     });
 
@@ -23,7 +23,7 @@ describe('Image', () => {
         .should.eql({
           width: 500,
           height: 500,
-          url: 'https://i.embed.ly.test/1/display/crop?url=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg&width=500&height=500&key=xxx_embedly_key_xxx&quality=95',
+          url: 'https://gemini.cloudfront.test/?resize_to=fill&width=500&height=500&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg',
         });
     });
   });
