@@ -26,6 +26,10 @@ describe('isExisty', () => {
       isExisty({}).should.be.false();
     });
 
+    it('returns `false` for empty Strings', () => {
+      isExisty('').should.be.false();
+    });
+
     it('returns `false` for `undefined`', () => {
       isExisty(undefined).should.be.false();
     });
