@@ -1,6 +1,7 @@
 import VersionedUrl from './versioned';
 import CroppedUrl from './cropped';
 import ResizedUrl from './resized';
+import DeepZoom from './deep_zoom';
 import normalize from './normalize';
 import {
   GraphQLObjectType,
@@ -50,12 +51,11 @@ const ImageType = new GraphQLObjectType({
     url: VersionedUrl,
     cropped: CroppedUrl,
     resized: ResizedUrl,
+    deep_zoom: DeepZoom,
   }),
 });
 
-const Image = {
+export default {
   type: ImageType,
   resolve: normalize,
 };
-
-export default Image;
