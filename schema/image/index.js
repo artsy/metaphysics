@@ -9,6 +9,7 @@ import {
   GraphQLList,
   GraphQLFloat,
   GraphQLInt,
+  GraphQLBoolean,
 } from 'graphql';
 
 const ImageType = new GraphQLObjectType({
@@ -47,6 +48,12 @@ const ImageType = new GraphQLObjectType({
     },
     caption: {
       type: GraphQLString,
+    },
+    is_default: {
+      type: GraphQLBoolean,
+    },
+    position: {
+      type: GraphQLInt,
     },
     url: VersionedUrl,
     cropped: CroppedUrl,
