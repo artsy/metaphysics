@@ -54,11 +54,11 @@ const DeepZoomType = new GraphQLObjectType({
             type: new GraphQLObjectType({
               name: 'DeepZoomImageSize',
               fields: {
-                width: {
+                Width: {
                   type: GraphQLInt,
                   resolve: ({ max_tiled_width }) => max_tiled_width,
                 },
-                height: {
+                Height: {
                   type: GraphQLInt,
                   resolve: ({ max_tiled_height }) => max_tiled_height,
                 },
