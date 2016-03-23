@@ -193,7 +193,8 @@ const ArtworkType = new GraphQLObjectType({
           },
         },
         resolve: ({ images }, { size }) => {
-          return Image.resolve(size ? _.take(images, size) : images);
+          const sorted = _.sortBy(images, 'position');
+          return Image.resolve(size ? _.take(sorted, size) : sorted);
         },
       },
       related: {
