@@ -7,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLBoolean,
+  GraphQLInt,
 } from 'graphql';
 
 const ProfileType = new GraphQLObjectType({
@@ -36,6 +37,21 @@ const ProfileType = new GraphQLObjectType({
     is_published: {
       type: GraphQLBoolean,
       resolve: ({ published }) => published,
+    },
+    bio: {
+      type: GraphQLString,
+    },
+    counts: {
+      resolve: (profile) => profile,
+      type: new GraphQLObjectType({
+        name: 'ProfileCounts',
+        fields: {
+          follows: {
+            type: GraphQLInt,
+            resolve: ({ follows_count }) => follows_count,
+          },
+        },
+      }),
     },
   }),
 });
