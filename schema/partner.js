@@ -25,6 +25,7 @@ const PartnerType = new GraphQLObjectType({
     },
     name: {
       type: GraphQLString,
+      resolve: ({ name }) => name.trim(),
     },
     type: {
       type: GraphQLString,
