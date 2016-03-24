@@ -74,7 +74,7 @@ const ArtistType = new GraphQLObjectType({
       },
       counts: {
         type: new GraphQLObjectType({
-          name: 'counts',
+          name: 'ArtistCounts',
           fields: {
             artworks: {
               type: GraphQLInt,
