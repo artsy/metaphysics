@@ -55,6 +55,12 @@ const ArtistType = new GraphQLObjectType({
       public: {
         type: GraphQLBoolean,
       },
+      hometown: {
+        type: GraphQLString
+      },
+      location: {
+        type: GraphQLString
+      },
       nationality: {
         type: GraphQLString,
       },
@@ -87,6 +93,38 @@ const ArtistType = new GraphQLObjectType({
             auction_lots: {
               type: GraphQLInt,
               resolve: ({ auction_lots_count }) => auction_lots_count,
+            },
+            forsale_artworks_count: {
+              type: GraphQLInt,
+              resolve: ({ forsale_artworks_count }) => forsale_artworks_count,
+            },
+          },
+        }),
+        resolve: (artist) => artist,
+      },
+      overview: {
+        type: new GraphQLObjectType({
+          name: 'ArtistOverview',
+          fields: {
+            bio: {
+              type: GraphQLString,
+              resolve: (artist) => {
+                if (artist.years && artist.hometown && artist.location) {
+                  return `${artist.years}, ${artist.hometown}, lives and works in ${artist.location}`
+                } else if (artist.years && artist.hometown) {
+                  return `${artist.years}, ${artist.hometown}`
+                } else if (artist.years && artist.location) {
+                  return `${artist.years}, lives and works in ${artist.location}`
+                } else if (artist.years) {
+                  return `${artist.years}`
+                } else if (artist.hometown && artist.location) {
+                  return `${artist.hometown}, lives and works in ${artist.location}`
+                } else if (artist.hometown) {
+                  return `${artist.hometown}`
+                } else if (artist.location) {
+                  return `${artist.location}`
+                }
+              },
             },
           },
         }),
