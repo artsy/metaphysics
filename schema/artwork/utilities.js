@@ -1,7 +1,7 @@
 export const isDimensional = (value) => parseFloat(value) > 0;
 
 export const isThreeDimensional = ({ depth, diameter }) => {
-  return isDimensional(depth) && isDimensional(diameter);
+  return isDimensional(depth) || isDimensional(diameter);
 };
 
 export const isTwoDimensional = ({ width, height, depth, diameter }) => {

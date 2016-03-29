@@ -299,7 +299,7 @@ describe('Artwork type', () => {
           const response = assign({ width: 100, height: 100, depth: 100 }, artwork);
           gravity.returns(Promise.resolve(response));
           return graphql(schema, query)
-            .then(({ data }) => data.artwork.is_hangable.should.be.true());
+            .then(({ data }) => data.artwork.is_hangable.should.be.false());
         });
 
         it('is not hangable if the dimensions are unreasonably large', () => {
