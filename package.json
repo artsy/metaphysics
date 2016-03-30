@@ -17,7 +17,8 @@
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "integration": "DEBUG=info,error nf run mocha integration --env .env.test",
-    "promote": "heroku pipelines:promote -r staging"
+    "promote": "heroku pipelines:promote -r staging",
+    "dump-schema": "babel-node ./scripts/dump-schema.js"
   },
   "author": "",
   "license": "MIT",
@@ -50,6 +51,7 @@
     "request": "^2.67.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.6.5",
     "babel-plugin-rewire": "1.0.0-beta-2",
     "deep-equal": "^1.0.1",
     "eslint": "^1.10.3",
