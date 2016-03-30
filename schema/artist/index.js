@@ -1,4 +1,4 @@
-import { defaults } from 'lodash';
+import { defaults, compact } from 'lodash';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
 import markdown from '../fields/markdown';
@@ -55,6 +55,12 @@ const ArtistType = new GraphQLObjectType({
       public: {
         type: GraphQLBoolean,
       },
+      hometown: {
+        type: GraphQLString,
+      },
+      location: {
+        type: GraphQLString,
+      },
       nationality: {
         type: GraphQLString,
       },
@@ -72,6 +78,16 @@ const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: (artist) => artist.published_artworks_count > 0,
       },
+      bio: {
+        type: GraphQLString,
+        resolve: ({ years, hometown, location }) => {
+          return compact([
+            years,
+            hometown,
+            (location ? `lives and works in ${location}` : undefined),
+          ]).join(', ');
+        },
+      },
       counts: {
         type: new GraphQLObjectType({
           name: 'ArtistCounts',
@@ -87,6 +103,10 @@ const ArtistType = new GraphQLObjectType({
             auction_lots: {
               type: GraphQLInt,
               resolve: ({ auction_lots_count }) => auction_lots_count,
+            },
+            for_sale_artworks: {
+              type: GraphQLInt,
+              resolve: ({ forsale_artworks_count }) => forsale_artworks_count,
             },
           },
         }),
