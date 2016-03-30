@@ -54,7 +54,9 @@ const PartnerType = new GraphQLObjectType({
     },
     profile: {
       type: Profile.type,
-      resolve: ({ default_profile_id }) => gravity(`profile/${default_profile_id}`),
+      resolve: ({ default_profile_id }) =>
+        gravity(`profile/${default_profile_id}`)
+          .catch(() => null),
     },
     shows: {
       type: new GraphQLList(PartnerShow.type),
