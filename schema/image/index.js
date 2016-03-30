@@ -1,7 +1,7 @@
 import VersionedUrl from './versioned';
 import CroppedUrl from './cropped';
 import ResizedUrl from './resized';
-import DeepZoom from './deep_zoom';
+import { isZoomable, default as DeepZoom } from './deep_zoom';
 import normalize from './normalize';
 import {
   GraphQLObjectType,
@@ -59,6 +59,10 @@ const ImageType = new GraphQLObjectType({
     cropped: CroppedUrl,
     resized: ResizedUrl,
     deep_zoom: DeepZoom,
+    is_zoomable: {
+      type: GraphQLBoolean,
+      resolve: isZoomable,
+    },
   }),
 });
 

@@ -1,6 +1,6 @@
 import { isExisty } from '../../lib/helpers';
 
-export function canDeepZoom(image) {
+export function isZoomable(image) {
   return (
     isExisty(image.tile_base_url) &&
     isExisty(image.tile_size) &&
@@ -74,5 +74,5 @@ const DeepZoomType = new GraphQLObjectType({
 export default {
   type: DeepZoomType,
   resolve: (image) =>
-    canDeepZoom(image) ? image : null,
+    isZoomable(image) ? image : null,
 };
