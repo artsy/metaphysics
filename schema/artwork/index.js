@@ -217,7 +217,7 @@ const ArtworkType = new GraphQLObjectType({
         description: 'Returns the highlighted shows and articles',
         resolve: ({ id, _id }) => {
           return Promise.all([
-            gravity('related/shows', { artwork: [id], active: true, size: 1 }),
+            gravity('related/shows', { artwork: [id], size: 1, at_a_fair: false }),
             positron('articles', { artwork_id: _id, published: true, limit: 1 })
               .then(articles => articles.results),
           ]).then(([shows, articles]) => {
