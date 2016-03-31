@@ -21,6 +21,12 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 
+const kind = ({ artists, fair }) => {
+  if (isExisty(fair)) return 'fair';
+  if (artists.length > 1) return 'group';
+  if (artists.length === 1) return 'solo';
+};
+
 const PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
   fields: () => ({
@@ -37,10 +43,9 @@ const PartnerShowType = new GraphQLObjectType({
     },
     kind: {
       type: GraphQLString,
-      resolve: ({ artists, fair }) => {
-        if (isExisty(fair)) return 'fair';
-        if (artists.length > 1) return 'group';
-        if (artists.length === 1) return 'solo';
+      resolve: (show) => {
+        if (show.artists) return kind(show);
+        return gravity(`partner/${show.partner.id}/show/${show.id}`).then(kind);
       },
     },
     name: {
