@@ -1,4 +1,4 @@
-import { defaults, compact } from 'lodash';
+import { defaults, compact, concat, take } from 'lodash';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
 import markdown from '../fields/markdown';
@@ -169,6 +169,90 @@ const ArtistType = new GraphQLObjectType({
       carousel: ArtistCarousel,
 
       statuses: ArtistStatuses,
+
+      exhibition_highlights: {
+        type: new GraphQLList(PartnerShow.type),
+        resolve: ({ id }) => {
+          // First, highest tier solo institutional shows, and then group.
+          // Second, highest tier solo gallery shows, and then group.
+          // Third, lower tier solo institutional shows, and then group.
+          // Fourth, lower tier solo gallery shows, and then group.
+          // Last fair booths.
+          return Promise.all([
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              is_institution: true,
+              highest_tier: true,
+              solo_show: true,
+            }),
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              is_institution: true,
+              highest_tier: true,
+              solo_show: false,
+            }),
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              highest_tier: true,
+              solo_show: true,
+              at_a_fair: false,
+            }),
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              highest_tier: true,
+              solo_show: false,
+              at_a_fair: false,
+            }),
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              is_institution: true,
+              highest_tier: false,
+              solo_show: true,
+            }),
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              is_institution: true,
+              highest_tier: false,
+              solo_show: false,
+            }),
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              highest_tier: false,
+              solo_show: true,
+              at_a_fair: false,
+            }),
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              highest_tier: false,
+              solo_show: false,
+              at_a_fair: false,
+            }),
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              solo_show: true,
+              at_a_fair: true,
+            }),
+          ]).then(allShows => take(concat(...allShows), 5));
+        },
+      },
 
       partner_shows: {
         type: new GraphQLList(PartnerShow.type),
