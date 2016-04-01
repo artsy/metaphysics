@@ -54,6 +54,15 @@ const ArtistStatusesType = new GraphQLObjectType({
         }).then(articles => !!articles.count);
       },
     },
+    biography: {
+      type: GraphQLBoolean,
+      resolve: ({ _id }) => {
+        return positron('articles', {
+          published: true,
+          biography_for_artist_id: _id,
+        }).then(articles => !!articles.count);
+      },
+    },
   },
 });
 
