@@ -318,4 +318,28 @@ describe('Artwork type', () => {
       });
     });
   });
+
+  describe('markdown fields', () => {
+    describe('#signature', () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            id
+            signature(format: HTML)
+          }
+        }
+      `;
+
+      const response = assign({}, artwork, { signature: 'Signature: Foo *bar*' });
+
+      beforeEach(() => gravity.returns(Promise.resolve(response)));
+
+      it('removes the hardcoded signature label if present', () => {
+        return graphql(schema, query)
+          .then(({ data: { artwork: { signature } } }) =>
+            signature.should.equal('<p>Foo <em>bar</em></p>\n')
+          );
+      });
+    });
+  });
 });
