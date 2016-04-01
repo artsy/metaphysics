@@ -1,4 +1,4 @@
-import { defaults, compact, concat, take } from 'lodash';
+import { defaults, compact, concat, take, sortBy, reverse } from 'lodash';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
 import markdown from '../fields/markdown';
@@ -186,6 +186,7 @@ const ArtistType = new GraphQLObjectType({
               is_institution: true,
               highest_tier: true,
               solo_show: true,
+              at_a_fair: false,
             }),
             gravity('related/shows', {
               artist_id: id,
@@ -194,6 +195,7 @@ const ArtistType = new GraphQLObjectType({
               is_institution: true,
               highest_tier: true,
               solo_show: false,
+              at_a_fair: false,
             }),
             gravity('related/shows', {
               artist_id: id,
@@ -220,6 +222,7 @@ const ArtistType = new GraphQLObjectType({
               is_institution: true,
               highest_tier: false,
               solo_show: true,
+              at_a_fair: false,
             }),
             gravity('related/shows', {
               artist_id: id,
@@ -228,6 +231,7 @@ const ArtistType = new GraphQLObjectType({
               is_institution: true,
               highest_tier: false,
               solo_show: false,
+              at_a_fair: false
             }),
             gravity('related/shows', {
               artist_id: id,
@@ -251,11 +255,9 @@ const ArtistType = new GraphQLObjectType({
               artist_id: id,
               sort: '-end_at',
               displayable: true,
-              is_institution: false,
-              solo_show: true,
               at_a_fair: true,
             }),
-          ]).then(allShows => take(concat(...allShows), 5));
+          ]).then(allShows => reverse(sortBy(take(concat(...allShows), 5), 'end_at')));
         },
       },
 
