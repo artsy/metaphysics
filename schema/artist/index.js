@@ -174,19 +174,15 @@ const ArtistType = new GraphQLObjectType({
         args: {
           size: {
             type: GraphQLInt,
-            description: 'The number of highlights to return',
+            description: 'The number of Artists to return',
             defaultValue: 5,
           },
         },
         type: new GraphQLList(PartnerShow.type),
         resolve: ({ id }, options) => {
-          // First, highest tier solo institutional shows, and then group.
-          // Second, highest tier solo gallery shows, and then group.
-          // Third, lower tier solo institutional shows, and then group.
-          // Fourth, lower tier solo gallery shows, and then group.
-          // Last fair booths.
           return Promise.all([
-            gravity('related/shows', defaults(options, {
+            // Highest tier solo institutional shows
+            gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -194,8 +190,10 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: true,
               at_a_fair: false,
-            })),
-            gravity('related/shows', defaults(options, {
+              size: options.size,
+            }),
+            // Highest tier group institutional shows
+            gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -203,8 +201,10 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: false,
               at_a_fair: false,
-            })),
-            gravity('related/shows', defaults(options, {
+              size: options.size,
+            }),
+            // Highest tier solo gallery shows
+            gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -212,8 +212,10 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: true,
               at_a_fair: false,
-            })),
-            gravity('related/shows', defaults(options, {
+              size: options.size,
+            }),
+            // Highest tier group gallery shows
+            gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -221,8 +223,10 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: false,
               at_a_fair: false,
-            })),
-            gravity('related/shows', defaults(options, {
+              size: options.size,
+            }),
+            // Lower tier solo institutional shows
+            gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -230,8 +234,10 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: false,
               solo_show: true,
               at_a_fair: false,
-            })),
-            gravity('related/shows', defaults(options, {
+              size: options.size,
+            }),
+            // Lower tier group institutional shows
+            gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -239,8 +245,10 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: false,
               solo_show: false,
               at_a_fair: false,
-            })),
-            gravity('related/shows', defaults(options, {
+              size: options.size,
+            }),
+            // Lower tier solo gallery shows
+            gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -248,8 +256,10 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: false,
               solo_show: true,
               at_a_fair: false,
-            })),
-            gravity('related/shows', defaults(options, {
+              size: options.size,
+            }),
+            // Lower tier group gallery shows
+            gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -257,13 +267,16 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: false,
               solo_show: false,
               at_a_fair: false,
-            })),
-            gravity('related/shows', defaults(options, {
+              size: options.size,
+            }),
+            // Fair booths
+            gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
               at_a_fair: true,
-            })),
+              size: options.size,
+            }),
           ]).then(allShows => reverse(sortBy(take(concat(...allShows), options.size), 'end_at')));
         },
       },
