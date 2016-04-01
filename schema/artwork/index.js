@@ -5,6 +5,7 @@ import {
 } from './utilities';
 import {
   enhance,
+  isExisty,
 } from '../../lib/helpers';
 import cached from '../fields/cached';
 import markdown from '../fields/markdown';
@@ -16,7 +17,6 @@ import PartnerShow from '../partner_show';
 import Partner from '../partner';
 import Related from './related';
 import Highlight from './highlight';
-import Tabs from './tabs';
 import Dimensions from '../dimensions';
 import EditionSet from '../edition_set';
 import gravity from '../../lib/loaders/gravity';
@@ -69,12 +69,6 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLString,
       },
       image_rights: {
-        type: GraphQLString,
-      },
-      series: {
-        type: GraphQLString,
-      },
-      manufacturer: {
         type: GraphQLString,
       },
       website: {
@@ -272,13 +266,21 @@ const ArtworkType = new GraphQLObjectType({
           return _.filter(edition_sets, { acquireable: true });
         },
       },
-      description: markdown('blurb'),
-      provenance: markdown(),
+      description: markdown(({ blurb }) => blurb),
       exhibition_history: markdown(),
-      signature: markdown(),
+      provenance: markdown(({ provenance }) => {
+        if (isExisty(provenance)) return provenance.replace(/^provenance:\s+/i, '');
+      }),
+      signature: markdown(({ signature }) => {
+        if (isExisty(signature)) return signature.replace(/^signature:\s+/i, '');
+      }),
       additional_information: markdown(),
-      bibliography: markdown('literature'),
-      tabs: Tabs,
+      literature: markdown(({ literature }) => {
+        if (isExisty(literature)) return literature.replace(/^literature:\s+/i, '');
+      }),
+      publisher: markdown(),
+      manufacturer: markdown(),
+      series: markdown(),
     };
   },
 });

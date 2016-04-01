@@ -2,13 +2,13 @@ import marked from 'marked';
 import { GraphQLString } from 'graphql';
 import Format from '../input_fields/format';
 
-export default (attr) => ({
+export default (fn) => ({
   type: GraphQLString,
   args: {
     format: Format,
   },
   resolve: (obj, { format }, { fieldName }) => {
-    const value = obj[attr || fieldName];
+    const value = fn ? fn(obj) : obj[fieldName];
 
     if (!value) return null;
 
