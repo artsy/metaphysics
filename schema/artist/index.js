@@ -171,15 +171,22 @@ const ArtistType = new GraphQLObjectType({
       statuses: ArtistStatuses,
 
       exhibition_highlights: {
+        args: {
+          size: {
+            type: GraphQLInt,
+            description: 'The number of highlights to return',
+            defaultValue: 5,
+          },
+        },
         type: new GraphQLList(PartnerShow.type),
-        resolve: ({ id }) => {
+        resolve: ({ id }, options) => {
           // First, highest tier solo institutional shows, and then group.
           // Second, highest tier solo gallery shows, and then group.
           // Third, lower tier solo institutional shows, and then group.
           // Fourth, lower tier solo gallery shows, and then group.
           // Last fair booths.
           return Promise.all([
-            gravity('related/shows', {
+            gravity('related/shows', defaults(options, {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -187,8 +194,8 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: true,
               at_a_fair: false,
-            }),
-            gravity('related/shows', {
+            })),
+            gravity('related/shows', defaults(options, {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -196,8 +203,8 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: false,
               at_a_fair: false,
-            }),
-            gravity('related/shows', {
+            })),
+            gravity('related/shows', defaults(options, {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -205,8 +212,8 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: true,
               at_a_fair: false,
-            }),
-            gravity('related/shows', {
+            })),
+            gravity('related/shows', defaults(options, {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -214,8 +221,8 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: false,
               at_a_fair: false,
-            }),
-            gravity('related/shows', {
+            })),
+            gravity('related/shows', defaults(options, {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -223,17 +230,17 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: false,
               solo_show: true,
               at_a_fair: false,
-            }),
-            gravity('related/shows', {
+            })),
+            gravity('related/shows', defaults(options, {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
               is_institution: true,
               highest_tier: false,
               solo_show: false,
-              at_a_fair: false
-            }),
-            gravity('related/shows', {
+              at_a_fair: false,
+            })),
+            gravity('related/shows', defaults(options, {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -241,8 +248,8 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: false,
               solo_show: true,
               at_a_fair: false,
-            }),
-            gravity('related/shows', {
+            })),
+            gravity('related/shows', defaults(options, {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
@@ -250,14 +257,14 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: false,
               solo_show: false,
               at_a_fair: false,
-            }),
-            gravity('related/shows', {
+            })),
+            gravity('related/shows', defaults(options, {
               artist_id: id,
               sort: '-end_at',
               displayable: true,
               at_a_fair: true,
-            }),
-          ]).then(allShows => reverse(sortBy(take(concat(...allShows), 5), 'end_at')));
+            })),
+          ]).then(allShows => reverse(sortBy(take(concat(...allShows), options.size), 'end_at')));
         },
       },
 
