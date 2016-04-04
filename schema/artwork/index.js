@@ -6,6 +6,7 @@ import {
 import {
   enhance,
   isExisty,
+  existyValue,
 } from '../../lib/helpers';
 import cached from '../fields/cached';
 import markdown from '../fields/markdown';
@@ -73,6 +74,11 @@ const ArtworkType = new GraphQLObjectType({
       },
       website: {
         type: GraphQLString,
+      },
+      collecting_institution: {
+        type: GraphQLString,
+        resolve: ({ collecting_institution }) =>
+          existyValue(collecting_institution),
       },
       partner: {
         type: Partner.type,
