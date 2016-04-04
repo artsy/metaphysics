@@ -1,6 +1,10 @@
 import {
   assign,
   omit,
+  map,
+  sortBy,
+  uniqBy,
+  take,
 } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
@@ -96,6 +100,41 @@ const PartnerType = new GraphQLObjectType({
             'Hi, I’m interested in purchasing this work.',
             'Could you please provide more information about the piece?',
           ].join(' ');
+        },
+      },
+      fair_highlights: {
+        type: GraphQLString,
+        args: {
+          length: {
+            type: GraphQLInt,
+            defaultValue: 3,
+          },
+        },
+        resolve: ({ _id }, { length }) => {
+          return gravity('shows', {
+            partner_id: _id,
+            displayable: true,
+            at_a_fair: true,
+            size: 30,
+          }).then(shows => {
+            let fairs = shows.map(({ fair: { name, banner_size } }) => ({
+              banner_size,
+              name: name.replace(/\d{2,4}.*$/, '').trim(),
+            }));
+
+            fairs = uniqBy(fairs, 'name');
+            fairs = sortBy(fairs, 'name');
+            fairs = sortBy(fairs, ({ banner_size }) =>
+              ['x-large', 'large', 'medium', 'small', 'x-small'].indexOf(banner_size)
+            );
+
+            const names = map(fairs, 'name');
+            const display = take(names, length);
+
+            if (names.length - length > 0) display.push(`${names.length - length} more`);
+
+            return display.join(', ').replace(/,\s([^,]+)$/, ' and $1');
+          });
         },
       },
     };
