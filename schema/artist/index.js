@@ -192,17 +192,6 @@ const ArtistType = new GraphQLObjectType({
               at_a_fair: false,
               size: options.size,
             }),
-            // Highest tier group institutional shows
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              displayable: true,
-              is_institution: true,
-              highest_tier: true,
-              solo_show: false,
-              at_a_fair: false,
-              size: options.size,
-            }),
             // Highest tier solo gallery shows
             gravity('related/shows', {
               artist_id: id,
@@ -211,6 +200,17 @@ const ArtistType = new GraphQLObjectType({
               is_institution: false,
               highest_tier: true,
               solo_show: true,
+              at_a_fair: false,
+              size: options.size,
+            }),
+            // Highest tier group institutional shows
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              is_institution: true,
+              highest_tier: true,
+              solo_show: false,
               at_a_fair: false,
               size: options.size,
             }),
@@ -236,17 +236,6 @@ const ArtistType = new GraphQLObjectType({
               at_a_fair: false,
               size: options.size,
             }),
-            // Lower tier group institutional shows
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              displayable: true,
-              is_institution: true,
-              highest_tier: false,
-              solo_show: false,
-              at_a_fair: false,
-              size: options.size,
-            }),
             // Lower tier solo gallery shows
             gravity('related/shows', {
               artist_id: id,
@@ -255,6 +244,17 @@ const ArtistType = new GraphQLObjectType({
               is_institution: false,
               highest_tier: false,
               solo_show: true,
+              at_a_fair: false,
+              size: options.size,
+            }),
+            // Lower tier group institutional shows
+            gravity('related/shows', {
+              artist_id: id,
+              sort: '-end_at',
+              displayable: true,
+              is_institution: true,
+              highest_tier: false,
+              solo_show: false,
               at_a_fair: false,
               size: options.size,
             }),
