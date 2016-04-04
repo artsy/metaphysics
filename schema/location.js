@@ -1,3 +1,4 @@
+import { existyValue } from '../lib/helpers';
 import cached from './fields/cached';
 import DayScheduleType from './day_schedule';
 import {
@@ -50,6 +51,7 @@ const LocationType = new GraphQLObjectType({
     },
     phone: {
       type: GraphQLString,
+      resolve: ({ phone }) => existyValue(phone),
     },
     day_schedules: {
       type: new GraphQLList(DayScheduleType),
