@@ -36,6 +36,9 @@ const PartnerShows = {
     featured: {
       type: GraphQLBoolean,
     },
+    at_a_fair: {
+      type: GraphQLBoolean,
+    },
   },
   resolve: (root, options) => {
     if (options.near) {
