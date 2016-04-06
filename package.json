@@ -22,6 +22,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "accounting": "^0.4.1",
     "artsy-newrelic": "^1.0.0",
     "artsy-xapp": "^1.0.4",
     "babel": "6.3.13",
