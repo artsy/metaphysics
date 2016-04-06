@@ -38,7 +38,7 @@ const SaleArtworkType = new GraphQLObjectType({
       reserve_status: {
         type: GraphQLInt,
       },
-      amount_cents: {
+      reserve_cents: {
         type: GraphQLInt,
       },
       low_estimate_cents: {
