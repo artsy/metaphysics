@@ -3,6 +3,7 @@ import gravity from '../../lib/loaders/gravity';
 import Bidders from './bidders';
 import BidderPositions from './bidder_positions';
 import SaleRegistrations from './sale_registrations';
+import HomePageModules from './home_page_modules';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -21,6 +22,7 @@ const Me = new GraphQLObjectType({
     bidders: Bidders,
     bidder_positions: BidderPositions,
     sale_registrations: SaleRegistrations,
+    home_page_modules: HomePageModules,
   },
 });
 
