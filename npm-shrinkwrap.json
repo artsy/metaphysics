@@ -2703,6 +2703,11 @@
       "from": "number-is-nan@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/number-is-nan/-/number-is-nan-1.0.0.tgz"
     },
+    "numeral": {
+      "version": "1.5.3",
+      "from": "numeral@latest",
+      "resolved": "https://registry.npmjs.org/numeral/-/numeral-1.5.3.tgz"
+    },
     "oauth-sign": {
       "version": "0.8.0",
       "from": "oauth-sign@>=0.8.0 <0.9.0",
