@@ -34,6 +34,9 @@ const PartnerType = new GraphQLObjectType({
         type: GraphQLString,
         resolve: ({ name }) => name.trim(),
       },
+      collecting_institution: {
+        type: GraphQLString,
+      },
       type: {
         type: GraphQLString,
       },
