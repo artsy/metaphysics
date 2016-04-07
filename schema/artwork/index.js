@@ -112,6 +112,7 @@ const ArtworkType = new GraphQLObjectType({
                 artwork.forsale &&
                 !_.isEmpty(artwork.partner) &&
                 !artwork.acquireable &&
+                !artwork.partner.has_limited_fair_partnership &&
                 !sales.length
               );
             }).catch(() => false);
