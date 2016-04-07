@@ -290,6 +290,9 @@ const ArtistType = new GraphQLObjectType({
           active: {
             type: GraphQLBoolean,
           },
+          status: {
+            type: GraphQLString,
+          },
           size: {
             type: GraphQLInt,
             description: 'The number of PartnerShows to return',
