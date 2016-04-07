@@ -103,6 +103,10 @@ const SaleArtworkType = new GraphQLObjectType({
               type: GraphQLInt,
               resolve: ({ amount_cents }) => amount_cents,
             },
+            amount_cents: {
+              type: GraphQLInt,
+              deprecationReason: 'Favor `cents`',
+            },
           },
         }),
         resolve: ({ symbol, highest_bid }) =>
