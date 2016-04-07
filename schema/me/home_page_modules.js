@@ -4,90 +4,99 @@ import {
   map,
   sortBy,
   first,
-  filter
+  filter,
 } from 'lodash';
 import Artwork from '../artwork/index';
 import {
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLBoolean,
-  GraphQLInt,
 } from 'graphql';
 
 const RESULTS_SIZE = 15;
 
 const featuredFair = () => {
   return gravity('fairs', { size: 5, status: 'running' }).then((fairs) => {
-    if(fairs){
+    if (fairs) {
       return first(sortBy(fairs, ({ banner_size }) =>
         ['x-large', 'large', 'medium', 'small', 'x-small'].indexOf(banner_size)
       ));
     }
   });
-}
+};
 
 const featuredAuction = () => {
   return gravity('sales', { live: true, size: 1 }).then((sales) => {
-    if(sales){
+    if (sales) {
       return first(sales);
     }
   });
-}
+};
 
 const moduleTitle = {
-  active_bids: () => "Your Active Bids",
-  followed_artists: () => "Works by Artists you Follow",
-  followed_galleries: () => "Works from Galleries you Follow",
-  saved_works: () => "Recently Saved Works",
-  recommended_works: () => "Recommended Works for You",
+  active_bids: () => 'Your Active Bids',
+  followed_artists: () => 'Works by Artists you Follow',
+  followed_galleries: () => 'Works from Galleries you Follow',
+  saved_works: () => 'Recently Saved Works',
+  recommended_works: () => 'Recommended Works for You',
   live_auctions: () => {
-    return featuredAuction().then(({name}) => {
+    return featuredAuction().then(({ name }) => {
       return `At auction: ${name}`;
-    })
+    });
   },
-  current_fairs: () =>  {
-    return featuredFair().then(({name}) => {
+  current_fairs: () => {
+    return featuredFair().then(({ name }) => {
       return `Art Fair: ${name}`;
-    })
+    });
   },
-  related_artists: () => "Works by Related Artists",
-  genes: () => "Works from Gene you Follow",
-}
+  related_artists: () => 'Works by Related Artists',
+  genes: () => 'Works from Gene you Follow',
+};
 
 const moduleResults = {
-  active_bids: (accessToken) => [],
+  active_bids: () => [],
   followed_artists: (accessToken) => {
-    return gravity.with(accessToken)('me/follow/artists/artworks', { for_sale: true, size: RESULTS_SIZE });
+    return gravity
+      .with(accessToken)('me/follow/artists/artworks', {
+        for_sale: true,
+        size: RESULTS_SIZE,
+      });
   },
   followed_galleries: (accessToken) => {
-    return gravity.with(accessToken)('me/follow/profiles/artworks', { for_sale: true, size: RESULTS_SIZE });
+    return gravity.with(accessToken)('me/follow/profiles/artworks', {
+      for_sale: true,
+      size: RESULTS_SIZE,
+    });
   },
   saved_works: (accessToken) => {
     return gravity.with(accessToken)('me').then((user) => {
-      return gravity.with(accessToken)('collection/saved-artwork/artworks', { size: RESULTS_SIZE, user_id: user.id });
+      return gravity
+        .with(accessToken)('collection/saved-artwork/artworks', {
+          size: RESULTS_SIZE,
+          user_id: user.id,
+        });
     }).catch(() => {});
   },
   recommended_works: (accessToken) => {
     return gravity.with(accessToken)('me/suggested/artworks/homepage', { limit: RESULTS_SIZE });
   },
   live_auctions: () => {
-    return featuredAuction().then(({id}) => {
+    return featuredAuction().then(({ id }) => {
       return gravity(`sale/${id}/sale_artworks`, { size: RESULTS_SIZE });
-    })
+    });
   },
-  current_fairs: () =>  {
-    return featuredFair().then(({id}) => {
+  current_fairs: () => {
+    return featuredFair().then(({ id }) => {
       return gravity('filter/artworks', {
         fair_id: id,
         for_sale: true,
-        size: RESULTS_SIZE
+        size: RESULTS_SIZE,
       }).then(({ hits }) => hits);
-    })
+    });
   },
   related_artists: () => [],
   genes: () => [],
-}
+};
 
 
 export const HomePageModulesType = new GraphQLObjectType({
@@ -102,16 +111,16 @@ export const HomePageModulesType = new GraphQLObjectType({
     title: {
       type: GraphQLString,
       resolve: ({ key, display }, options, { rootValue: { accessToken } }) => {
-        if(display) return moduleTitle[key](accessToken);
+        if (display) return moduleTitle[key](accessToken);
       },
     },
     results: {
       type: new GraphQLList(Artwork.type),
       resolve: ({ key, display }, options, { rootValue: { accessToken } }) => {
-        if(display) return moduleResults[key](accessToken);
+        if (display) return moduleResults[key](accessToken);
       },
     },
-  })
+  }),
 });
 
 const HomePageModules = {
@@ -127,16 +136,15 @@ const HomePageModules = {
   resolve: (root, { include_keys }, { rootValue: { accessToken } }) => {
     return gravity.with(accessToken)('me/modules').then((response) => {
       const modules = map(keys(response), (key) => {
-        return { key: key, display: response[key] };
+        return { key, display: response[key] };
       });
-      if(include_keys){
+      if (include_keys) {
         return filter(modules, (module) => {
           return include_keys.indexOf(module.key) > -1;
         });
-      }else{
-        return filter(modules, [ 'display', true ]);
       }
-    })
+      return filter(modules, ['display', true]);
+    });
   },
 };
 
