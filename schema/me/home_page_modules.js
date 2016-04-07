@@ -1,5 +1,11 @@
 import gravity from '../../lib/loaders/gravity';
-import { keys, map, sortBy, first, filter } from 'lodash';
+import {
+  keys,
+  map,
+  sortBy,
+  first,
+  filter
+} from 'lodash';
 import Artwork from '../artwork/index';
 import {
   GraphQLList,
@@ -111,12 +117,25 @@ export const HomePageModulesType = new GraphQLObjectType({
 const HomePageModules = {
   type: new GraphQLList(HomePageModulesType),
   description: 'Modules to show on the home screen',
-  resolve: (root, options, { rootValue: { accessToken } }) => {
+  args: {
+    include_keys: {
+      type: new GraphQLList(GraphQLString),
+      description: 'A list of modules to return (by key)',
+      defaultValue: false,
+    },
+  },
+  resolve: (root, { include_keys }, { rootValue: { accessToken } }) => {
     return gravity.with(accessToken)('me/modules').then((response) => {
       const modules = map(keys(response), (key) => {
         return { key: key, display: response[key] };
       });
-      return filter(modules, [ 'display', true ]);
+      if(include_keys){
+        return filter(modules, (module) => {
+          return include_keys.indexOf(module.key) > -1;
+        });
+      }else{
+        return filter(modules, [ 'display', true ]);
+      }
     })
   },
 };
