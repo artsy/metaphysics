@@ -65,6 +65,10 @@ const SaleArtworkType = new GraphQLObjectType({
           return null;
         },
       },
+      reserve: money({
+        name: 'SaleArtworkReserve',
+        resolve: ({ reserve_cents }) => reserve_cents,
+      }),
       low_estimate: money({
         name: 'SaleArtworkLowEstimate',
         resolve: ({ low_estimate_cents }) => low_estimate_cents,
