@@ -24,6 +24,11 @@
         }
       }
     },
+    "accounting": {
+      "version": "0.4.1",
+      "from": "accounting@latest",
+      "resolved": "https://registry.npmjs.org/accounting/-/accounting-0.4.1.tgz"
+    },
     "acorn": {
       "version": "2.6.4",
       "from": "acorn@>=2.1.0 <3.0.0",
@@ -2702,6 +2707,11 @@
       "version": "1.0.0",
       "from": "number-is-nan@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/number-is-nan/-/number-is-nan-1.0.0.tgz"
+    },
+    "numeral": {
+      "version": "1.5.3",
+      "from": "numeral@latest",
+      "resolved": "https://registry.npmjs.org/numeral/-/numeral-1.5.3.tgz"
     },
     "oauth-sign": {
       "version": "0.8.0",

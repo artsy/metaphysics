@@ -17,6 +17,10 @@ const EditionSetType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: ({ editions }) => editions,
     },
+    is_acquireable: {
+      type: GraphQLBoolean,
+      resolve: ({ acquireable }) => acquireable,
+    },
     is_sold: {
       type: GraphQLBoolean,
       resolve: ({ sold }) => sold,

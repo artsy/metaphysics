@@ -22,6 +22,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "accounting": "^0.4.1",
     "artsy-newrelic": "^1.0.0",
     "artsy-xapp": "^1.0.4",
     "babel": "6.3.13",
@@ -42,6 +43,7 @@
     "memjs": "^0.9.0",
     "moment": "^2.10.6",
     "morgan": "^1.6.1",
+    "numeral": "^1.5.3",
     "qs": "^5.2.0",
     "react": "^0.14.3",
     "request": "^2.67.0"

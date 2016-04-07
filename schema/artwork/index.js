@@ -139,7 +139,13 @@ const ArtworkType = new GraphQLObjectType({
       },
       is_ecommerce: {
         type: GraphQLBoolean,
+        deprecationReason: 'Should not be used to determine anything UI-level',
         resolve: ({ ecommerce }) => ecommerce,
+      },
+      is_acquireable: {
+        type: GraphQLBoolean,
+        description: 'Whether work can be purchased through e-commerce',
+        resolve: ({ acquireable }) => acquireable,
       },
       is_comparable_with_auction_results: {
         type: GraphQLBoolean,
@@ -270,9 +276,7 @@ const ArtworkType = new GraphQLObjectType({
       },
       edition_sets: {
         type: new GraphQLList(EditionSet.type),
-        resolve: ({ edition_sets }) => {
-          return _.filter(edition_sets, { acquireable: true });
-        },
+        resolve: ({ edition_sets }) => edition_sets,
       },
       description: markdown(({ blurb }) => blurb),
       exhibition_history: markdown(),
