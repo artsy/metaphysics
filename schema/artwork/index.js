@@ -17,6 +17,7 @@ import Sale from '../sale/index';
 import PartnerShow from '../partner_show';
 import Partner from '../partner';
 import Related from './related';
+import Meta from './meta';
 import Highlight from './highlight';
 import Dimensions from '../dimensions';
 import EditionSet from '../edition_set';
@@ -294,6 +295,7 @@ const ArtworkType = new GraphQLObjectType({
       publisher: markdown(),
       manufacturer: markdown(),
       series: markdown(),
+      meta: Meta,
     };
   },
 });
