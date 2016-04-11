@@ -17,7 +17,7 @@ const RESULTS_SIZE = 15;
 
 const featuredFair = () => {
   return gravity('fairs', { size: 5, status: 'running' }).then((fairs) => {
-    if (fairs) {
+    if (fairs.length) {
       return first(sortBy(fairs, ({ banner_size }) =>
         ['x-large', 'large', 'medium', 'small', 'x-small'].indexOf(banner_size)
       ));
@@ -27,7 +27,7 @@ const featuredFair = () => {
 
 const featuredAuction = () => {
   return gravity('sales', { live: true, size: 1 }).then((sales) => {
-    if (sales) {
+    if (sales.length) {
       return first(sales);
     }
   });
@@ -40,13 +40,17 @@ const moduleTitle = {
   saved_works: () => 'Recently Saved Works',
   recommended_works: () => 'Recommended Works for You',
   live_auctions: () => {
-    return featuredAuction().then(({ name }) => {
-      return `At auction: ${name}`;
+    return featuredAuction().then((auction) => {
+      if (auction) {
+        return `At auction: ${auction.name}`;
+      }
     });
   },
   current_fairs: () => {
-    return featuredFair().then(({ name }) => {
-      return `Art Fair: ${name}`;
+    return featuredFair().then((fair) => {
+      if (fair) {
+        return `Art Fair: ${fair.name}`;
+      }
     });
   },
   related_artists: () => 'Works by Related Artists',
