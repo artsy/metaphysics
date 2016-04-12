@@ -85,17 +85,21 @@ const moduleResults = {
     return gravity.with(accessToken)('me/suggested/artworks/homepage', { limit: RESULTS_SIZE });
   },
   live_auctions: () => {
-    return featuredAuction().then(({ id }) => {
-      return gravity(`sale/${id}/sale_artworks`, { size: RESULTS_SIZE });
+    return featuredAuction().then((auction) => {
+      if (auction) {
+        return gravity(`sale/${auction.id}/sale_artworks`, { size: RESULTS_SIZE });
+      }
     });
   },
   current_fairs: () => {
-    return featuredFair().then(({ id }) => {
-      return gravity('filter/artworks', {
-        fair_id: id,
-        for_sale: true,
-        size: RESULTS_SIZE,
-      }).then(({ hits }) => hits);
+    return featuredFair().then((fair) => {
+      if (fair) {
+        return gravity('filter/artworks', {
+          fair_id: fair.id,
+          for_sale: true,
+          size: RESULTS_SIZE,
+        }).then(({ hits }) => hits);
+      }
     });
   },
   related_artists: () => [],
