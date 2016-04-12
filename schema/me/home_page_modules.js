@@ -87,7 +87,10 @@ const moduleResults = {
   live_auctions: () => {
     return featuredAuction().then((auction) => {
       if (auction) {
-        return gravity(`sale/${auction.id}/sale_artworks`, { size: RESULTS_SIZE });
+        return gravity(`sale/${auction.id}/sale_artworks`, { size: RESULTS_SIZE })
+          .then((sale_artworks) => {
+            return map(sale_artworks, 'artwork');
+          });
       }
     });
   },
