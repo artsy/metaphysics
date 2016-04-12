@@ -78,8 +78,9 @@ const moduleResults = {
         .with(accessToken)('collection/saved-artwork/artworks', {
           size: RESULTS_SIZE,
           user_id: user.id,
+          private: true,
         });
-    }).catch(() => {});
+    });
   },
   recommended_works: (accessToken) => {
     return gravity.with(accessToken)('me/suggested/artworks/homepage', { limit: RESULTS_SIZE });
