@@ -63,6 +63,12 @@ const ImageType = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve: isZoomable,
     },
+    placeholder: {
+      type: GraphQLString,
+      description: 'Value to use when `padding-bottom` for fluid image placeholders',
+      resolve: ({ original_height, original_width }) =>
+        `${(original_height / original_width) * 100}%`,
+    },
   }),
 });
 
