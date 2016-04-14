@@ -146,15 +146,15 @@ const HomePageModules = {
     },
   },
   resolve: (root, { include_keys }, { rootValue: { accessToken } }) => {
+    if (include_keys && include_keys.length > 0) {
+      return map(include_keys, (key) => {
+        return { key, display: true };
+      });
+    }
     return gravity.with(accessToken)('me/modules').then((response) => {
       const modules = map(keys(response), (key) => {
         return { key, display: response[key] };
       });
-      if (include_keys) {
-        return filter(modules, (module) => {
-          return include_keys.indexOf(module.key) > -1;
-        });
-      }
       return filter(modules, ['display', true]);
     });
   },
