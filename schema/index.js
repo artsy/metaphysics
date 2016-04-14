@@ -22,6 +22,7 @@ import Sales from './sales';
 import SaleArtwork from './sale_artwork';
 import Search from './search';
 import TrendingArtists from './trending';
+import HomePageModules from './home_page_modules';
 import Me from './me';
 import {
   GraphQLSchema,
@@ -41,6 +42,7 @@ const schema = new GraphQLSchema({
       fair: Fair,
       fairs: Fairs,
       gene: Gene,
+      home_page_modules: HomePageModules,
       profile: Profile,
       ordered_sets: OrderedSets,
       partner: Partner,

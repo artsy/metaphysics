@@ -1,4 +1,4 @@
-import gravity from '../../lib/loaders/gravity';
+import gravity from '../lib/loaders/gravity';
 import {
   keys,
   map,
@@ -6,7 +6,7 @@ import {
   first,
   filter,
 } from 'lodash';
-import Artwork from '../artwork/index';
+import Artwork from './artwork/index';
 import {
   GraphQLList,
   GraphQLObjectType,
