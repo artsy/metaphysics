@@ -146,7 +146,7 @@ const HomePageModules = {
     },
   },
   resolve: (root, { include_keys }, { rootValue: { accessToken } }) => {
-    if (include_keys && include_keys.length > 0){
+    if (include_keys && include_keys.length > 0) {
       return map(include_keys, (key) => {
         return { key, display: true };
       });
