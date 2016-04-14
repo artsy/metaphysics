@@ -21,6 +21,8 @@ import Meta from './meta';
 import Highlight from './highlight';
 import Dimensions from '../dimensions';
 import EditionSet from '../edition_set';
+import ArtworkLayer from '../artwork_layer';
+import ArtworkLayers from '../artwork_layers';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
 import {
@@ -300,6 +302,26 @@ const ArtworkType = new GraphQLObjectType({
       manufacturer: markdown(),
       series: markdown(),
       meta: Meta,
+      layer: {
+        type: ArtworkLayer.type,
+        args: {
+          id: {
+            type: new GraphQLNonNull(GraphQLString),
+          },
+        },
+        resolve: (artwork, { id }) =>
+          // There's no route in Gravity for an actual layer, interestingly.
+          gravity(`related/layers`, { artwork: [artwork.id] })
+            .then(layers =>
+              _.assign({ artwork_id: artwork.id }, _.find(layers, { id }))
+            ),
+      },
+      layers: {
+        type: ArtworkLayers.type,
+        resolve: ({ id }) =>
+          gravity(`related/layers`, { artwork: [id] })
+            .then(layers => enhance(layers, { artwork_id: id })),
+      },
     };
   },
 });
