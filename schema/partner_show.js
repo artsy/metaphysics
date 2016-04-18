@@ -1,6 +1,7 @@
 import {
   isExisty,
 } from '../lib/helpers';
+import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import date from './fields/date';
@@ -105,7 +106,16 @@ const PartnerShowType = new GraphQLObjectType({
     },
     cover_image: {
       type: Image.type,
-      resolve: ({ image_versions, image_url }) => Image.resolve({ image_versions, image_url }),
+      resolve: ({ id, partner, image_versions, image_url }) => {
+        if (image_versions && image_versions.length && image_url) {
+          return Image.resolve({ image_versions, image_url });
+        }
+        return gravity(`partner/${partner.id}/show/${id}/artworks`, { size: 1, published: true })
+          .then(artworks => {
+            const { images } = artworks[0];
+            return Image.resolve(_.find(images, { is_default: true }) || _.first(images));
+          });
+      },
     },
     images: {
       type: new GraphQLList(Image.type),
