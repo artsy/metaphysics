@@ -1,7 +1,4 @@
-import {
-  isExisty,
-} from '../lib/helpers';
-import _ from 'lodash';
+import { isExisty } from '../lib/helpers';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import date from './fields/date';
@@ -11,7 +8,7 @@ import Partner from './partner';
 import Fair from './fair';
 import Artwork from './artwork';
 import Location from './location';
-import Image from './image';
+import Image, { getDefault } from './image';
 import PartnerShowEventType from './partner_show_event';
 import {
   GraphQLObjectType,
@@ -110,10 +107,14 @@ const PartnerShowType = new GraphQLObjectType({
         if (image_versions && image_versions.length && image_url) {
           return Image.resolve({ image_versions, image_url });
         }
-        return gravity(`partner/${partner.id}/show/${id}/artworks`, { size: 1, published: true })
+
+        return gravity(`partner/${partner.id}/show/${id}/artworks`, {
+          size: 1,
+          published: true,
+        })
           .then(artworks => {
             const { images } = artworks[0];
-            return Image.resolve(_.find(images, { is_default: true }) || _.first(images));
+            return Image.resolve(getDefault(images));
           });
       },
     },
