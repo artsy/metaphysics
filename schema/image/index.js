@@ -1,7 +1,12 @@
+import {
+  find,
+  first,
+  isArray,
+} from 'lodash';
 import VersionedUrl from './versioned';
 import CroppedUrl from './cropped';
 import ResizedUrl from './resized';
-import { isZoomable, default as DeepZoom } from './deep_zoom';
+import DeepZoom, { isZoomable } from './deep_zoom';
 import normalize from './normalize';
 import {
   GraphQLObjectType,
@@ -11,6 +16,14 @@ import {
   GraphQLInt,
   GraphQLBoolean,
 } from 'graphql';
+
+export const getDefault = images => {
+  if (isArray(images)) {
+    return find(images, { is_default: true }) || first(images);
+  }
+
+  return images;
+};
 
 const ImageType = new GraphQLObjectType({
   name: 'Image',

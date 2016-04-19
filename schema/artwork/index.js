@@ -11,7 +11,7 @@ import {
 import cached from '../fields/cached';
 import markdown from '../fields/markdown';
 import Artist from '../artist';
-import Image from '../image';
+import Image, { getDefault } from '../image';
 import Fair from '../fair';
 import Sale from '../sale/index';
 import PartnerShow from '../partner_show';
@@ -198,7 +198,7 @@ const ArtworkType = new GraphQLObjectType({
       image: {
         type: Image.type,
         resolve: ({ images }) => {
-          return Image.resolve(_.find(images, { is_default: true }) || _.first(images));
+          return Image.resolve(getDefault(images));
         },
       },
       images: {

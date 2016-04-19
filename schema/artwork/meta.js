@@ -1,12 +1,9 @@
-import {
-  map,
-  find,
-  first,
-} from 'lodash';
+import { map } from 'lodash';
 import {
   join,
   truncate,
 } from '../../lib/helpers';
+import { getDefault } from '../image';
 import { setVersion } from '../image/normalize';
 import {
   GraphQLInt,
@@ -63,10 +60,12 @@ const ArtworkMetaType = new GraphQLObjectType({
     },
     image: {
       type: GraphQLString,
-      resolve: ({ images }) => {
-        const image = find(images, { is_default: true }) || first(images);
-        return setVersion(image, ['large', 'medium', 'tall']);
-      },
+      resolve: ({ images }) =>
+        setVersion(getDefault(images), [
+          'large',
+          'medium',
+          'tall',
+        ]),
     },
   },
 });
