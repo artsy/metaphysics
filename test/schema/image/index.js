@@ -2,6 +2,27 @@ import { assign } from 'lodash';
 import sinon from 'sinon';
 import { graphql } from 'graphql';
 import schema from '../../../schema';
+import { getDefault } from '../../../schema/image';
+
+describe('getDefault', () => {
+  it('returns the default image', () => {
+    getDefault([
+      { id: 'foo', is_default: false },
+      { id: 'bar', is_default: true },
+      { id: 'baz', is_default: false },
+    ])
+      .id.should.equal('bar');
+  });
+
+  it('returns the first object if there is no default', () => {
+    getDefault([
+      { id: 'foo' },
+      { id: 'bar' },
+      { id: 'baz' },
+    ])
+      .id.should.equal('foo');
+  });
+});
 
 describe('Image type', () => {
   const Artwork = schema.__get__('Artwork');
