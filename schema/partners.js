@@ -60,6 +60,12 @@ const Partners = {
           SORTABLE_ID_DESC: {
             value: '-sortable_id',
           },
+          RELATIVE_SIZE_ASC: {
+            value: 'relative_size',
+          },
+          RELATIVE_SIZE_DESC: {
+            value: '-relative_size',
+          },
           PUBLISHED_AT_DESC: {
             value: '-published_at',
           },
