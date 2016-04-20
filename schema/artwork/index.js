@@ -129,6 +129,13 @@ const ArtworkType = new GraphQLObjectType({
             .then(sales => _.some(sales, 'is_auction'));
         },
       },
+      is_in_show: {
+        type: GraphQLBoolean,
+        description: 'Is this artwork part of a current show',
+        resolve: ({ id }) =>
+          gravity('related/shows', { active: true, size: 1, artwork: [id] })
+            .then(shows => shows.length > 0),
+      },
       is_for_sale: {
         type: GraphQLBoolean,
         resolve: ({ forsale }) => forsale,
@@ -167,7 +174,7 @@ const ArtworkType = new GraphQLObjectType({
       sale_message: {
         type: GraphQLString,
         resolve: ({ sold, availability, price_hidden, price, sale_message }) => {
-          if (availability === 'for sale' && price_hidden) return 'Contact For Price';
+          if (availability === 'for sale' && price_hidden) return 'Contact for price';
           if (sold) return 'Sold';
           if (sale_message !== 'Sold' && !price_hidden) return price;
           return sale_message;
@@ -255,23 +262,20 @@ const ArtworkType = new GraphQLObjectType({
             defaultValue: true,
           },
         },
-        resolve: ({ id }, options) => {
-          return gravity('related/shows', _.defaults(options, { artwork: [id] }));
-        },
+        resolve: ({ id }, { size, active }) =>
+          gravity('related/shows', { size, active, artwork: [id] }),
       },
       sale: {
         type: Sale.type,
-        resolve: ({ id }) => {
-          return gravity('related/sales', { artwork: [id], active: true, size: 1 })
-            .then(sales => _.first(sales));
-        },
+        resolve: ({ id }) =>
+          gravity('related/sales', { artwork: [id], active: true, size: 1 })
+            .then(sales => _.first(sales)),
       },
       fair: {
         type: Fair.type,
-        resolve: ({ id }) => {
-          return gravity('related/fairs', { artwork: [id], active: true, size: 1 })
-            .then(fairs => _.first(fairs));
-        },
+        resolve: ({ id }) =>
+          gravity('related/fairs', { artwork: [id], active: true, size: 1 })
+            .then(fairs => _.first(fairs)),
       },
       edition_of: {
         type: GraphQLString,
