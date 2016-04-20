@@ -79,6 +79,10 @@ const Partners = {
     type: {
       type: new GraphQLList(PartnerTypeType),
     },
+    term: {
+      type: GraphQLString,
+      description: 'term used for searching Partners',
+    },
   },
   resolve: (root, options) => gravity('partners', options),
 };
