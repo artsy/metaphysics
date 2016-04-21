@@ -33,6 +33,9 @@ const SaleType = new GraphQLObjectType({
       id: {
         type: GraphQLString,
       },
+      _id: {
+        type: GraphQLString,
+      },
       name: {
         type: GraphQLString,
       },
