@@ -269,13 +269,13 @@ const ArtworkType = new GraphQLObjectType({
         type: Sale.type,
         resolve: ({ id }) =>
           gravity('related/sales', { artwork: [id], active: true, size: 1 })
-            .then(sales => _.first(sales)),
+            .then(_.first),
       },
       fair: {
         type: Fair.type,
         resolve: ({ id }) =>
           gravity('related/fairs', { artwork: [id], active: true, size: 1 })
-            .then(fairs => _.first(fairs)),
+            .then(_.first),
       },
       edition_of: {
         type: GraphQLString,
