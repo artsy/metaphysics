@@ -88,6 +88,7 @@ const PartnerShowType = new GraphQLObjectType({
         size: {
           type: GraphQLInt,
           description: 'Number of artworks to return',
+          defaultValue: 25,
         },
         published: {
           type: GraphQLBoolean,
@@ -95,10 +96,21 @@ const PartnerShowType = new GraphQLObjectType({
         },
         page: {
           type: GraphQLInt,
+          defaultValue: 1,
+        },
+        all: {
+          type: GraphQLBoolean,
+          default: false,
         },
       },
       resolve: (show, options) => {
-        return gravity(`partner/${show.partner.id}/show/${show.id}/artworks`, options);
+        const path = `partner/${show.partner.id}/show/${show.id}/artworks`;
+
+        if (options.all) {
+          return gravity.all(path, options);
+        }
+
+        return gravity(path, options);
       },
     },
     cover_image: {
