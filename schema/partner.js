@@ -39,6 +39,15 @@ const PartnerType = new GraphQLObjectType({
       },
       type: {
         type: GraphQLString,
+        resolve: ({ name, type }) => {
+          const exceptions = {
+            Auction: 'Auction House',
+            Brand: name,
+            'Institutional Seller': 'Institution',
+          };
+
+          return exceptions[type] || type;
+        },
       },
       href: {
         type: GraphQLString,
