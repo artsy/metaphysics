@@ -1,7 +1,9 @@
+import { map } from 'lodash';
 import moment from 'moment';
 import gravity from '../../lib/loaders/gravity';
 import cached from '../fields/cached';
 import date from '../fields/date';
+import Artwork from '../artwork';
 import SaleArtwork from '../sale_artwork';
 import Profile from '../profile';
 import Image from '../image/index';
@@ -11,6 +13,7 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLBoolean,
+  GraphQLInt,
 } from 'graphql';
 
 export function auctionState({ start_at, end_at }) {
@@ -83,11 +86,60 @@ const SaleType = new GraphQLObjectType({
       },
       sale_artworks: {
         type: new GraphQLList(SaleArtwork.type),
-        resolve: ({ id }, options) => gravity(`sale/${id}/sale_artworks`, options),
+        args: {
+          page: {
+            type: GraphQLInt,
+            defaultValue: 1,
+          },
+          size: {
+            type: GraphQLInt,
+            defaultValue: 25,
+          },
+          all: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+          },
+        },
+        resolve: ({ id }, options) => {
+          if (options.all) {
+            return gravity.all(`sale/${id}/sale_artworks`, options);
+          }
+
+          return gravity(`sale/${id}/sale_artworks`, options);
+        },
+      },
+      artworks: {
+        type: new GraphQLList(Artwork.type),
+        args: {
+          page: {
+            type: GraphQLInt,
+            defaultValue: 1,
+          },
+          size: {
+            type: GraphQLInt,
+            defaultValue: 25,
+          },
+          all: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+          },
+        },
+        resolve: ({ id }, options) => {
+          const invert = saleArtworks => map(saleArtworks, 'artwork');
+
+          if (options.all) {
+            return gravity.all(`sale/${id}/sale_artworks`, options)
+              .then(invert);
+          }
+
+          return gravity(`sale/${id}/sale_artworks`, options)
+            .then(invert);
+        },
       },
       cover_image: {
         type: Image.type,
-        resolve: ({ image_versions, image_url }) => Image.resolve({ image_versions, image_url }),
+        resolve: ({ image_versions, image_url }) =>
+          Image.resolve({ image_versions, image_url }),
       },
       sale_artwork: {
         type: SaleArtwork.type,
@@ -96,9 +148,8 @@ const SaleType = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString),
           },
         },
-        resolve: (sale, { id }) => {
-          return gravity(`sale/${sale.id}/sale_artwork/${id}`);
-        },
+        resolve: (sale, { id }) =>
+          gravity(`sale/${sale.id}/sale_artwork/${id}`),
       },
       profile: {
         type: Profile.type,
