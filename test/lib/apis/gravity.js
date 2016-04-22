@@ -31,8 +31,8 @@ describe('APIs', () => {
       const request = sinon.stub().yields(null, { statusCode: 200, body: { foo: 'bar' } });
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').then(data => {
-        data.foo.should.equal('bar');
+      return gravity('foo/bar').then(({ body: { foo } }) => {
+        foo.should.equal('bar');
       });
     });
 
@@ -43,8 +43,8 @@ describe('APIs', () => {
       });
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').then(data => {
-        data.foo.should.equal('bar');
+      return gravity('foo/bar').then(({ body: { foo } }) => {
+        foo.should.equal('bar');
       });
     });
 
