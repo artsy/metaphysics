@@ -17,7 +17,9 @@ const PingType = new GraphQLObjectType({
 
 const Ping = {
   type: PingType,
-  resolve: () => gravity('system/ping'),
+  resolve: () =>
+    gravity('system/ping')
+      .then(({ body }) => body),
 };
 
 export default Ping;
