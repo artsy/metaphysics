@@ -6,7 +6,7 @@ describe('gravity', () => {
 
   describe('with authentication', () => {
     it('loads the path and passes in the token', () => {
-      const api = sinon.stub().returns(Promise.resolve({ ok: true }));
+      const api = sinon.stub().returns(Promise.resolve({ body: { ok: true } }));
       gravity.__Rewire__('gravity', api);
 
       return Promise.all([
