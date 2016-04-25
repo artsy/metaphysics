@@ -1,4 +1,5 @@
 import { isExisty } from '../lib/helpers';
+import { find } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import date from './fields/date';
@@ -111,6 +112,21 @@ const PartnerShowType = new GraphQLObjectType({
         }
 
         return gravity(path, options);
+      },
+    },
+    meta_image: {
+      type: Image.type,
+      resolve: ({ id, partner, image_versions, image_url }) => {
+        if (image_versions && image_versions.length && image_url) {
+          return Image.resolve({ image_versions, image_url });
+        }
+
+        return gravity(`partner/${partner.id}/show/${id}/artworks`, {
+          published: true,
+        })
+          .then(artworks => {
+            Image.resolve(getDefault(find(artworks, { can_share_image: true })));
+          });
       },
     },
     cover_image: {
