@@ -24,6 +24,7 @@ import Search from './search';
 import TrendingArtists from './trending';
 import HomePageModules from './home_page_modules';
 import Me from './me';
+import JWT from './jwt';
 import {
   GraphQLSchema,
   GraphQLObjectType,
@@ -59,6 +60,7 @@ const schema = new GraphQLSchema({
       search: Search,
       trending_artists: TrendingArtists,
       me: Me,
+      jwt: JWT,
     },
   }),
 });
