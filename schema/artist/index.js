@@ -21,6 +21,7 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLInt,
+  GraphQLEnumType,
 } from 'graphql';
 
 const ArtistType = new GraphQLObjectType({
@@ -126,6 +127,19 @@ const ArtistType = new GraphQLObjectType({
           published: {
             type: GraphQLBoolean,
             defaultValue: true,
+          },
+          filter: {
+            type: new GraphQLList(new GraphQLEnumType({
+              name: 'ArtistArtworksFilters',
+              values: {
+                IS_FOR_SALE: {
+                  value: 'for_sale',
+                },
+                IS_NOT_FOR_SALE: {
+                  value: 'not_for_sale',
+                },
+              },
+            })),
           },
         },
         resolve: ({ id }, options) => gravity(`artist/${id}/artworks`, options),
