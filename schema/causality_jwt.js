@@ -4,7 +4,7 @@ import {
   GraphQLNonNull,
   GraphQLEnumType,
 } from 'graphql';
-import gravity from '../../lib/loaders/gravity';
+import gravity from '../lib/loaders/gravity';
 import { find } from 'lodash';
 
 const { HMAC_SECRET } = process.env;
