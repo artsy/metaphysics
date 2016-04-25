@@ -2,7 +2,6 @@ import jwt from 'jwt-simple';
 import {
   GraphQLString,
   GraphQLNonNull,
-  GraphQLObjectType,
   GraphQLEnumType,
 } from 'graphql';
 import gravity from '../../lib/loaders/gravity';
@@ -32,20 +31,22 @@ export default {
   resolve: (root, options, { rootValue: { accessToken } }) => {
     return Promise.all([
       gravity.with(accessToken)('me'),
-      gravity.with(accessToken)('me/bidders')
-    ]).then(([ me, bidders ]) => {
-      if (options.role === 'OPERATOR' && me.type !== 'Admin')
+      gravity.with(accessToken)('me/bidders'),
+    ]).then(([me, bidders]) => {
+      if (options.role === 'OPERATOR' && me.type !== 'Admin') {
         throw new Error('Unauthorized to act as an operator');
-      const registered = find(bidders, (b) => b.sale.id === options.sale_id)
-      if (options.causality_role === 'BIDDER' && !registered)
-        throw new Error('Not registered to bid in this auction')
+      }
+      const registered = find(bidders, (b) => b.sale._id === options.sale_id);
+      if (options.role === 'BIDDER' && !registered) {
+        throw new Error('Not registered to bid in this auction');
+      }
       const data = {
-        sub: 'auctions',
-        role: 'bidder',
+        aud: 'auctions',
+        role: options.role.toLowerCase(),
         userId: me.id,
-        saleId: registered.sale._id,
+        saleId: registered ? registered.sale._id : options.sale_id,
         bidderId: me.paddle_number,
-        iat: new Date().getTime()
+        iat: new Date().getTime(),
       };
       return jwt.encode(data, HMAC_SECRET);
     });
