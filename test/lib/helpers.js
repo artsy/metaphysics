@@ -45,6 +45,7 @@ describe('isExisty', () => {
     it('returns `true` for Strings', () => {
       isExisty('0').should.be.true();
       isExisty('Foobar').should.be.true();
+      isExisty(' Foo bar ').should.be.true();
     });
 
     it('returns `true` for `NaN`', () => {
@@ -63,6 +64,12 @@ describe('isExisty', () => {
 
     it('returns `false` for empty Strings', () => {
       isExisty('').should.be.false();
+    });
+
+    it('returns `false` for whitespace Strings', () => {
+      isExisty(' ').should.be.false();
+      isExisty(' \n ').should.be.false();
+      isExisty(' \n\n').should.be.false();
     });
 
     it('returns `false` for `undefined`', () => {
