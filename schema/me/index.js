@@ -14,6 +14,9 @@ const Me = new GraphQLObjectType({
     id: {
       type: GraphQLString,
     },
+    type: {
+      type: GraphQLString,
+    },
     created_at: date,
     email: {
       type: GraphQLString,

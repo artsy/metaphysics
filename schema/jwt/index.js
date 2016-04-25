@@ -1,4 +1,4 @@
-import Me from './me';
+import Me from '../me';
 import jwt from 'jwt-simple';
 import {
   GraphQLString,
