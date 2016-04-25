@@ -5,7 +5,6 @@ import {
 } from './utilities';
 import {
   enhance,
-  isExisty,
   existyValue,
 } from '../../lib/helpers';
 import cached from '../fields/cached';
@@ -292,16 +291,16 @@ const ArtworkType = new GraphQLObjectType({
       },
       description: markdown(({ blurb }) => blurb),
       exhibition_history: markdown(),
-      provenance: markdown(({ provenance }) => {
-        if (isExisty(provenance)) return provenance.replace(/^provenance:\s+/i, '');
-      }),
-      signature: markdown(({ signature }) => {
-        if (isExisty(signature)) return signature.replace(/^signature:\s+/i, '');
-      }),
+      provenance: markdown(({ provenance }) =>
+        provenance.replace(/^provenance:\s+/i, '')
+      ),
+      signature: markdown(({ signature }) =>
+        signature.replace(/^signature:\s+/i, '')
+      ),
       additional_information: markdown(),
-      literature: markdown(({ literature }) => {
-        if (isExisty(literature)) return literature.replace(/^literature:\s+/i, '');
-      }),
+      literature: markdown(({ literature }) =>
+        literature.replace(/^literature:\s+/i, '')
+      ),
       publisher: markdown(),
       manufacturer: markdown(),
       series: markdown(),
