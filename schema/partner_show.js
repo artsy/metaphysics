@@ -81,7 +81,12 @@ const PartnerShowType = new GraphQLObjectType({
     },
     events: {
       type: new GraphQLList(PartnerShowEventType),
-      resolve: ({ events }) => events,
+      resolve: ({ partner, id }) =>
+        // Gravity redirects from /api/v1/show/:id => /api/v1/partner/:partner_id/show/:show_id
+        // this creates issues where events will remain cached. Fetch the non-redirected
+        // route to circumvent this
+        gravity(`partner/${partner.id}/show/${id}`)
+          .then(({ events }) => events),
     },
     artworks: {
       type: new GraphQLList(Artwork.type),
