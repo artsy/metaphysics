@@ -1,5 +1,6 @@
 import marked from 'marked';
 import { GraphQLString } from 'graphql';
+import { isExisty } from '../../lib/helpers';
 import Format from '../input_fields/format';
 
 export default (fn) => ({
@@ -10,7 +11,7 @@ export default (fn) => ({
   resolve: (obj, { format }, { fieldName }) => {
     const value = fn ? fn(obj) : obj[fieldName];
 
-    if (!value) return null;
+    if (!isExisty(value)) return null;
 
     if (format === 'html' || format === 'markdown') {
       const renderer = new marked.Renderer;

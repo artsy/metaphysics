@@ -5,7 +5,6 @@ import {
 } from './utilities';
 import {
   enhance,
-  isExisty,
   existyValue,
 } from '../../lib/helpers';
 import cached from '../fields/cached';
@@ -85,7 +84,16 @@ const ArtworkType = new GraphQLObjectType({
       },
       partner: {
         type: Partner.type,
-        resolve: ({ partner }) => gravity(`partner/${partner.id}`),
+        args: {
+          shallow: {
+            type: GraphQLBoolean,
+            description: 'Use whatever is in the original response instead of making a request',
+          },
+        },
+        resolve: ({ partner }, { shallow }) => {
+          if (shallow) return partner;
+          return gravity(`partner/${partner.id}`);
+        },
       },
       can_share_image: {
         type: GraphQLBoolean,
@@ -195,7 +203,14 @@ const ArtworkType = new GraphQLObjectType({
       },
       artists: {
         type: new GraphQLList(Artist.type),
-        resolve: ({ artists }) => {
+        args: {
+          shallow: {
+            type: GraphQLBoolean,
+            description: 'Use whatever is in the original response instead of making a request',
+          },
+        },
+        resolve: ({ artists }, { shallow }) => {
+          if (shallow) return artists;
           return Promise.all(
             artists.map(artist => gravity(`/artist/${artist.id}`))
           ).catch(() => []);
@@ -292,16 +307,16 @@ const ArtworkType = new GraphQLObjectType({
       },
       description: markdown(({ blurb }) => blurb),
       exhibition_history: markdown(),
-      provenance: markdown(({ provenance }) => {
-        if (isExisty(provenance)) return provenance.replace(/^provenance:\s+/i, '');
-      }),
-      signature: markdown(({ signature }) => {
-        if (isExisty(signature)) return signature.replace(/^signature:\s+/i, '');
-      }),
+      provenance: markdown(({ provenance }) =>
+        provenance.replace(/^provenance:\s+/i, '')
+      ),
+      signature: markdown(({ signature }) =>
+        signature.replace(/^signature:\s+/i, '')
+      ),
       additional_information: markdown(),
-      literature: markdown(({ literature }) => {
-        if (isExisty(literature)) return literature.replace(/^literature:\s+/i, '');
-      }),
+      literature: markdown(({ literature }) =>
+        literature.replace(/^literature:\s+/i, '')
+      ),
       publisher: markdown(),
       manufacturer: markdown(),
       series: markdown(),
