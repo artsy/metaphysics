@@ -84,7 +84,16 @@ const ArtworkType = new GraphQLObjectType({
       },
       partner: {
         type: Partner.type,
-        resolve: ({ partner }) => gravity(`partner/${partner.id}`),
+        args: {
+          shallow: {
+            type: GraphQLBoolean,
+            description: 'Use whatever is in the original response instead of making a request',
+          },
+        },
+        resolve: ({ partner }, { shallow }) => {
+          if (shallow) return partner;
+          return gravity(`partner/${partner.id}`);
+        },
       },
       can_share_image: {
         type: GraphQLBoolean,
@@ -194,7 +203,14 @@ const ArtworkType = new GraphQLObjectType({
       },
       artists: {
         type: new GraphQLList(Artist.type),
-        resolve: ({ artists }) => {
+        args: {
+          shallow: {
+            type: GraphQLBoolean,
+            description: 'Use whatever is in the original response instead of making a request',
+          },
+        },
+        resolve: ({ artists }, { shallow }) => {
+          if (shallow) return artists;
           return Promise.all(
             artists.map(artist => gravity(`/artist/${artist.id}`))
           ).catch(() => []);
