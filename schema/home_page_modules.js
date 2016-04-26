@@ -79,6 +79,7 @@ const moduleResults = {
           size: RESULTS_SIZE,
           user_id: user.id,
           private: true,
+          sort: '-position',
         });
     });
   },
