@@ -120,8 +120,12 @@ const PartnerShowType = new GraphQLObjectType({
         const path = `partner/${show.partner.id}/show/${show.id}/artworks`;
 
         let fetch = null;
-        if (options.all) fetch = gravity.all(path, options);
-        fetch = gravity(path, options);
+
+        if (options.all) {
+          fetch = gravity.all(path, options);
+        } else {
+          fetch = gravity(path, options);
+        }
 
         return fetch
           .then(exclude(options.exclude, 'id'));
