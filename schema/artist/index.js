@@ -1,4 +1,12 @@
-import { defaults, compact, concat, take, sortBy, reverse } from 'lodash';
+import {
+  defaults,
+  compact,
+  concat,
+  take,
+  sortBy,
+  reverse,
+} from 'lodash';
+import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
 import markdown from '../fields/markdown';
@@ -141,8 +149,13 @@ const ArtistType = new GraphQLObjectType({
               },
             })),
           },
+          exclude: {
+            type: new GraphQLList(GraphQLString),
+          },
         },
-        resolve: ({ id }, options) => gravity(`artist/${id}/artworks`, options),
+        resolve: ({ id }, options) =>
+          gravity(`artist/${id}/artworks`, options)
+            .then(exclude(options.exclude, 'id')),
       },
       image: Image,
       artists: {

@@ -1,4 +1,7 @@
-import { isExisty } from '../lib/helpers';
+import {
+  isExisty,
+  exclude,
+} from '../lib/helpers';
 import { find } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
@@ -108,15 +111,20 @@ const PartnerShowType = new GraphQLObjectType({
           type: GraphQLBoolean,
           default: false,
         },
+        exclude: {
+          type: new GraphQLList(GraphQLString),
+          description: 'List of artwork IDs to exclude from the response (irrespective of size)',
+        },
       },
       resolve: (show, options) => {
         const path = `partner/${show.partner.id}/show/${show.id}/artworks`;
 
-        if (options.all) {
-          return gravity.all(path, options);
-        }
+        let fetch = null;
+        if (options.all) fetch = gravity.all(path, options);
+        fetch = gravity(path, options);
 
-        return gravity(path, options);
+        return fetch
+          .then(exclude(options.exclude, 'id'));
       },
     },
     meta_image: {
