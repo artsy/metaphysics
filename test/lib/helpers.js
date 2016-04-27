@@ -1,7 +1,28 @@
 import {
+  exclude,
   toKey,
   isExisty,
 } from '../../lib/helpers';
+
+describe('exclude', () => {
+  const xs = [
+    { id: 'foo', name: 'Foo' },
+    { id: 'bar', name: 'Bar' },
+    { id: 'baz', name: 'Baz' },
+  ];
+
+  it('excludes objects given a list of values and which property to match against', () => {
+    exclude(['foo', 'baz'], 'id')(xs)
+      .should.eql([
+        { id: 'bar', name: 'Bar' },
+      ]);
+  });
+
+  it('simply returns the list if invoked without arguments', () => {
+    exclude()(xs)
+      .should.eql(xs);
+  });
+});
 
 describe('toKey', () => {
   it('returns a stringified key given a path', () => {
