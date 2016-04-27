@@ -331,9 +331,10 @@ const ArtworkType = new GraphQLObjectType({
         resolve: (artwork, { id }) =>
           // There's no route in Gravity for an actual layer, interestingly.
           gravity(`related/layers`, { artwork: [artwork.id] })
-            .then(layers =>
-              _.assign({ artwork_id: artwork.id }, _.find(layers, { id }))
-            ),
+            .then(layers => {
+              const layer = _.find(layers, { id });
+              if (layer) return _.assign({ artwork_id: artwork.id }, layer);
+            }),
       },
       layers: {
         type: ArtworkLayers.type,
