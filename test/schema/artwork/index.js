@@ -7,6 +7,7 @@ import schema from '../../../schema';
 describe('Artwork type', () => {
   let gravity;
   const Artwork = schema.__get__('Artwork');
+  const Context = Artwork.__get__('Context');
 
   const partner = { id: 'existy' };
   const sale = { id: 'existy' };
@@ -50,10 +51,12 @@ describe('Artwork type', () => {
   beforeEach(() => {
     gravity = sinon.stub();
     Artwork.__Rewire__('gravity', gravity);
+    Context.__Rewire__('gravity', gravity);
   });
 
   afterEach(() => {
     Artwork.__ResetDependency__('gravity');
+    Context.__ResetDependency__('gravity');
   });
 
   describe('#is_contactable', () => {
@@ -197,8 +200,8 @@ describe('Artwork type', () => {
     });
   });
 
-  describe('#related', () => {
-    it('returns either one fair or sale', () => {
+  describe('#context', () => {
+    it('returns either one Fair, Sale, or PartnerShow', () => {
       gravity
         // Artwork
         .onCall(0)
@@ -210,19 +213,21 @@ describe('Artwork type', () => {
         .onCall(2)
         .returns(Promise.resolve([
           assign({}, sale, { name: 'Y2K', end_at: moment.utc('1999-12-31').format() }),
-        ]));
+        ]))
+        .onCall(3)
+        .returns(Promise.resolve([]));
 
       const query = `
         {
           artwork(id: "richard-prince-untitled-portrait") {
-            banner: related {
+            banner: context {
               __typename
-              ... on RelatedSale {
+              ... on ArtworkContextSale {
                 name
                 href
                 end_at(format: "D:M:YYYY")
               }
-              ... on RelatedFair {
+              ... on ArtworkContextFair {
                 name
                 href
               }
@@ -234,7 +239,7 @@ describe('Artwork type', () => {
       return graphql(schema, query)
         .then(({ data }) => {
           data.artwork.banner.should.eql({
-            __typename: 'RelatedSale',
+            __typename: 'ArtworkContextSale',
             name: 'Y2K',
             href: '/auction/existy',
             end_at: '31:12:1999',
