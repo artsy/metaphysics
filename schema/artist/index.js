@@ -80,8 +80,9 @@ const ArtistType = new GraphQLObjectType({
       },
       bio: {
         type: GraphQLString,
-        resolve: ({ years, hometown, location }) => {
+        resolve: ({ nationality, years, hometown, location }) => {
           return compact([
+            nationality,
             years,
             hometown,
             (location ? `lives and works in ${location}` : undefined),
