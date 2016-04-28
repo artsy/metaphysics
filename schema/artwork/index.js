@@ -15,7 +15,7 @@ import Fair from '../fair';
 import Sale from '../sale/index';
 import PartnerShow from '../partner_show';
 import Partner from '../partner';
-import Related from './related';
+import Context from './context';
 import Meta from './meta';
 import Highlight from './highlight';
 import Dimensions from '../dimensions';
@@ -235,21 +235,7 @@ const ArtworkType = new GraphQLObjectType({
           return Image.resolve(size ? _.take(sorted, size) : sorted);
         },
       },
-      related: {
-        type: Related,
-        description: 'Returns the associated Fair or Sale',
-        resolve: ({ id }) => {
-          const options = { artwork: [id], active: true, size: 1 };
-          return Promise.all([
-            gravity('related/fairs', options),
-            gravity('related/sales', options),
-          ]).then(([fairs, sales]) => {
-            const relatedFairs = enhance(fairs, { related_type: 'Fair' });
-            const relatedSales = enhance(sales, { related_type: 'Sale' });
-            return _.first(_.take(relatedFairs.concat(relatedSales)));
-          });
-        },
-      },
+      context: Context,
       highlights: {
         type: new GraphQLList(Highlight),
         description: 'Returns the highlighted shows and articles',
