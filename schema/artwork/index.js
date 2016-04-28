@@ -190,7 +190,18 @@ const ArtworkType = new GraphQLObjectType({
       },
       artist: {
         type: Artist.type,
-        resolve: ({ artist }) => gravity(`artist/${artist.id}`).catch(() => null),
+        args: {
+          shallow: {
+            type: GraphQLBoolean,
+            description: 'Use whatever is in the original response instead of making a request',
+          },
+        },
+        resolve: ({ artist }, { shallow }) => {
+          if (!artist) return null;
+          if (shallow) return artist;
+          return gravity(`artist/${artist.id}`)
+            .catch(() => null);
+        },
       },
       contact_label: {
         type: GraphQLString,
