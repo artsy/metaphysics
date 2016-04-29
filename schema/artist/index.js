@@ -10,6 +10,7 @@ import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
 import markdown from '../fields/markdown';
+import numeral from '../fields/numeral';
 import Image from '../image';
 import Article from '../article';
 import Artwork from '../artwork';
@@ -105,22 +106,14 @@ const ArtistType = new GraphQLObjectType({
         type: new GraphQLObjectType({
           name: 'ArtistCounts',
           fields: {
-            artworks: {
-              type: GraphQLInt,
-              resolve: ({ published_artworks_count }) => published_artworks_count,
-            },
-            follows: {
-              type: GraphQLInt,
-              resolve: ({ follow_count }) => follow_count,
-            },
-            auction_lots: {
-              type: GraphQLInt,
-              resolve: ({ auction_lots_count }) => auction_lots_count,
-            },
-            for_sale_artworks: {
-              type: GraphQLInt,
-              resolve: ({ forsale_artworks_count }) => forsale_artworks_count,
-            },
+            artworks: numeral(({ published_artworks_count }) =>
+              published_artworks_count),
+            follows: numeral(({ follow_count }) =>
+              follow_count),
+            auction_lots: numeral(({ auction_lots_count }) =>
+              auction_lots_count),
+            for_sale_artworks: numeral(({ forsale_artworks_count }) =>
+              forsale_artworks_count),
           },
         }),
         resolve: (artist) => artist,
