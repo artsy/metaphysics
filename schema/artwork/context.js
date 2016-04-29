@@ -39,9 +39,9 @@ export default {
   resolve: ({ id }) =>
     Promise
       .all([
-        gravity('related/fairs', { artwork: [id], active: true, size: 1 }),
-        gravity('related/sales', { artwork: [id], active: true, size: 1 }),
-        gravity('related/shows', { artwork: [id], active: true, size: 1 }),
+        gravity('related/fairs', { artwork: [id], size: 1 }),
+        gravity('related/sales', { artwork: [id], size: 1 }),
+        gravity('related/shows', { artwork: [id], size: 1 }),
       ])
       .then(([fairs, sales, shows]) =>
         first(flatten([
