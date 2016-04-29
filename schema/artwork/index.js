@@ -9,6 +9,7 @@ import {
 } from '../../lib/helpers';
 import cached from '../fields/cached';
 import markdown from '../fields/markdown';
+import Article from '../article';
 import Artist from '../artist';
 import Image, { getDefault } from '../image';
 import Fair from '../fair';
@@ -250,17 +251,29 @@ const ArtworkType = new GraphQLObjectType({
       highlights: {
         type: new GraphQLList(Highlight),
         description: 'Returns the highlighted shows and articles',
-        resolve: ({ id, _id }) => {
-          return Promise.all([
-            gravity('related/shows', { artwork: [id], size: 1, at_a_fair: false }),
-            positron('articles', { artwork_id: _id, published: true, limit: 1 })
-              .then(articles => articles.results),
-          ]).then(([shows, articles]) => {
-            const highlightedShows = enhance(shows, { highlight_type: 'Show' });
-            const highlightedArticles = enhance(articles, { highlight_type: 'Article' });
-            return highlightedShows.concat(highlightedArticles);
-          });
+        resolve: ({ id, _id }) =>
+          Promise
+            .all([
+              gravity('related/shows', { artwork: [id], size: 1, at_a_fair: false }),
+              positron('articles', { artwork_id: _id, published: true, limit: 1 })
+                .then(({ results }) => results),
+            ])
+            .then(([shows, articles]) => {
+              const highlightedShows = enhance(shows, { highlight_type: 'Show' });
+              const highlightedArticles = enhance(articles, { highlight_type: 'Article' });
+              return highlightedShows.concat(highlightedArticles);
+            }),
+      },
+      articles: {
+        type: new GraphQLList(Article.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+          },
         },
+        resolve: ({ _id }, { size }) =>
+          positron('articles', { artwork_id: _id, published: true, limit: size })
+            .then(({ results }) => results),
       },
       shows: {
         type: new GraphQLList(PartnerShow.type),
