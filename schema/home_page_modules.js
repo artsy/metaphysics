@@ -33,6 +33,15 @@ const featuredAuction = () => {
   });
 };
 
+// 'Random' gene that the user is following
+const featuredGene = (accessToken) => {
+  return gravity.with(accessToken)('me/follow/genes', { size: 1 }).then((follows) => {
+    if (follows.length) {
+      return first(follows).gene;
+    }
+  });
+};
+
 const moduleTitle = {
   active_bids: () => 'Your Active Bids',
   followed_artists: () => 'Works by Artists you Follow',
@@ -54,7 +63,13 @@ const moduleTitle = {
     });
   },
   related_artists: () => 'Works by Related Artists',
-  genes: () => 'Works from Gene you Follow',
+  genes: (accessToken) => {
+    return featuredGene(accessToken).then((gene) => {
+      if (gene) {
+        return gene.name;
+      }
+    });
+  },
 };
 
 const moduleResults = {
@@ -108,9 +123,18 @@ const moduleResults = {
     });
   },
   related_artists: () => [],
-  genes: () => [],
+  genes: (accessToken) => {
+    return featuredGene(accessToken).then((gene) => {
+      if (gene) {
+        return gravity('filter/artworks', {
+          gene_id: gene.id,
+          for_sale: true,
+          size: RESULTS_SIZE,
+        }).then(({ hits }) => hits);
+      }
+    });
+  },
 };
-
 
 export const HomePageModulesType = new GraphQLObjectType({
   name: 'HomePageModules',
