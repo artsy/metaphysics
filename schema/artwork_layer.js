@@ -18,10 +18,11 @@ const ArtworkLayerType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
     },
-    description: {
+    href: {
       type: GraphQLString,
+      resolve: ({ more_info_url }) => more_info_url,
     },
-    more_info_url: {
+    description: {
       type: GraphQLString,
     },
     artworks: {
