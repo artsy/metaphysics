@@ -16,7 +16,7 @@ import {
 const RESULTS_SIZE = 15;
 
 const featuredFair = () => {
-  return gravity('fairs', { size: 5, status: 'running' }).then((fairs) => {
+  return gravity('fairs', { size: 5, active: true }).then((fairs) => {
     if (fairs.length) {
       return first(sortBy(fairs, ({ banner_size }) =>
         ['x-large', 'large', 'medium', 'small', 'x-small'].indexOf(banner_size)
