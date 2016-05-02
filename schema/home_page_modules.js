@@ -16,7 +16,7 @@ import {
 const RESULTS_SIZE = 15;
 
 const featuredFair = () => {
-  return gravity('fairs', { size: 5, status: 'running' }).then((fairs) => {
+  return gravity('fairs', { size: 5, active: true }).then((fairs) => {
     if (fairs.length) {
       return first(sortBy(fairs, ({ banner_size }) =>
         ['x-large', 'large', 'medium', 'small', 'x-small'].indexOf(banner_size)
@@ -29,6 +29,15 @@ const featuredAuction = () => {
   return gravity('sales', { live: true, size: 1 }).then((sales) => {
     if (sales.length) {
       return first(sales);
+    }
+  });
+};
+
+// 'Random' gene that the user is following
+const featuredGene = (accessToken) => {
+  return gravity.with(accessToken)('me/follow/genes', { size: 1 }).then((follows) => {
+    if (follows.length) {
+      return first(follows).gene;
     }
   });
 };
@@ -54,7 +63,13 @@ const moduleTitle = {
     });
   },
   related_artists: () => 'Works by Related Artists',
-  genes: () => 'Works from Gene you Follow',
+  genes: (accessToken) => {
+    return featuredGene(accessToken).then((gene) => {
+      if (gene) {
+        return gene.name;
+      }
+    });
+  },
 };
 
 const moduleResults = {
@@ -108,9 +123,18 @@ const moduleResults = {
     });
   },
   related_artists: () => [],
-  genes: () => [],
+  genes: (accessToken) => {
+    return featuredGene(accessToken).then((gene) => {
+      if (gene) {
+        return gravity('filter/artworks', {
+          gene_id: gene.id,
+          for_sale: true,
+          size: RESULTS_SIZE,
+        }).then(({ hits }) => hits);
+      }
+    });
+  },
 };
-
 
 export const HomePageModulesType = new GraphQLObjectType({
   name: 'HomePageModules',
