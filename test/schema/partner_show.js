@@ -7,6 +7,7 @@ describe('PartnerShow type', () => {
 
   beforeEach(() => {
     const gravity = sinon.stub();
+    const total = sinon.stub();
 
     gravity.returns(Promise.resolve({
       id: 'new-museum-1-2015-triennial-surround-audience',
@@ -16,11 +17,17 @@ describe('PartnerShow type', () => {
       displayable: true,
     }));
 
+    total
+      .onCall(0).returns(Promise.resolve(42))
+      .onCall(1).returns(Promise.resolve(2));
+
     PartnerShow.__Rewire__('gravity', gravity);
+    PartnerShow.__Rewire__('total', total);
   });
 
   afterEach(() => {
     PartnerShow.__ResetDependency__('gravity');
+    PartnerShow.__ResetDependency__('total');
   });
 
   it('includes a formattable start and end date', () => {
@@ -66,6 +73,44 @@ describe('PartnerShow type', () => {
         data.should.eql({
           partner_show: {
             press_release: '<p><strong>foo</strong> <em>bar</em></p>\n',
+          },
+        });
+      });
+  });
+
+  it('includes the total number of artworks', () => {
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          artworks_count
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          partner_show: {
+            artworks_count: 42,
+          },
+        });
+      });
+  });
+
+  it('includes the number of artworks by a specific artist', () => {
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          artworks_count(artist_id: "juliana-huxtable")
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          partner_show: {
+            artworks_count: 2,
           },
         });
       });

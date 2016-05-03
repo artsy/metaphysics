@@ -4,6 +4,7 @@ import {
 } from '../lib/helpers';
 import { find } from 'lodash';
 import gravity from '../lib/loaders/gravity';
+import total from '../lib/loaders/total';
 import cached from './fields/cached';
 import date from './fields/date';
 import markdown from './fields/markdown';
@@ -129,6 +130,18 @@ const PartnerShowType = new GraphQLObjectType({
 
         return fetch
           .then(exclude(options.exclude, 'id'));
+      },
+    },
+    artworks_count: {
+      type: GraphQLInt,
+      args: {
+        artist_id: {
+          type: GraphQLString,
+          description: 'The slug or ID of an artist in the show.',
+        },
+      },
+      resolve: ({ id, partner }, options) => {
+        return total(`partner/${partner.id}/show/${id}/artworks`, options);
       },
     },
     meta_image: {
