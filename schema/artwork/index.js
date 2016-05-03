@@ -114,9 +114,15 @@ const ArtworkType = new GraphQLObjectType({
           );
         },
       },
+      is_inquireable: {
+        type: GraphQLBoolean,
+        description: 'Do we want to encourage inquiries on this work?',
+        resolve: ({ inquireable, acquireable }) => inquireable && !acquireable,
+      },
       is_contactable: {
         type: GraphQLBoolean,
         description: 'Are we able to display a contact form on artwork pages?',
+        deprecationReason: 'Prefer to use is_inquireable',
         resolve: (artwork) => {
           return gravity('related/sales', { size: 1, active: true, artwork: [artwork.id] })
             .then(sales => {
