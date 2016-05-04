@@ -98,6 +98,26 @@ const PartnerShowType = new GraphQLObjectType({
         gravity(`partner/${partner.id}/show/${id}`)
           .then(({ events }) => events),
     },
+    counts: {
+      type: new GraphQLObjectType({
+        name: 'PartnerShowCounts',
+        fields: {
+          artworks: {
+            type: GraphQLInt,
+            args: {
+              artist_id: {
+                type: GraphQLString,
+                description: 'The slug or ID of an artist in the show.',
+              },
+            },
+            resolve: ({ id, partner }, options) => {
+              return total(`partner/${partner.id}/show/${id}/artworks`, options);
+            },
+          },
+        },
+      }),
+      resolve: (partner_show) => partner_show,
+    },
     artworks: {
       type: new GraphQLList(Artwork.type),
       args: {
@@ -136,18 +156,6 @@ const PartnerShowType = new GraphQLObjectType({
 
         return fetch
           .then(exclude(options.exclude, 'id'));
-      },
-    },
-    artworks_count: {
-      type: GraphQLInt,
-      args: {
-        artist_id: {
-          type: GraphQLString,
-          description: 'The slug or ID of an artist in the show.',
-        },
-      },
-      resolve: ({ id, partner }, options) => {
-        return total(`partner/${partner.id}/show/${id}/artworks`, options);
       },
     },
     meta_image: {

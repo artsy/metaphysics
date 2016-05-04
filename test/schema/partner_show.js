@@ -106,7 +106,9 @@ describe('PartnerShow type', () => {
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
-          artworks_count
+          counts {
+            artworks
+          }
         }
       }
     `;
@@ -115,7 +117,9 @@ describe('PartnerShow type', () => {
       .then(({ data }) => {
         data.should.eql({
           partner_show: {
-            artworks_count: 42,
+            counts: {
+              artworks: 42,
+            },
           },
         });
       });
@@ -129,7 +133,9 @@ describe('PartnerShow type', () => {
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
-          artworks_count(artist_id: "juliana-huxtable")
+          counts {
+            artworks(artist_id: "juliana-huxtable")
+          }
         }
       }
     `;
@@ -138,7 +144,9 @@ describe('PartnerShow type', () => {
       .then(({ data }) => {
         data.should.eql({
           partner_show: {
-            artworks_count: 2,
+            counts: {
+              artworks: 2,
+            },
           },
         });
       });
