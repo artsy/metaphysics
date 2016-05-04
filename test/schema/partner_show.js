@@ -4,10 +4,12 @@ import schema from '../../schema';
 
 describe('PartnerShow type', () => {
   const PartnerShow = schema.__get__('PartnerShow');
+  let total = null;
 
   beforeEach(() => {
     const gravity = sinon.stub();
-    const total = sinon.stub();
+
+    total = sinon.stub();
 
     gravity.returns(Promise.resolve({
       id: 'new-museum-1-2015-triennial-surround-audience',
@@ -15,11 +17,10 @@ describe('PartnerShow type', () => {
       end_at: '2015-05-24T12:00:00+00:00',
       press_release: '**foo** *bar*',
       displayable: true,
+      partner: {
+        id: 'new-museum',
+      },
     }));
-
-    total
-      .onCall(0).returns(Promise.resolve(42))
-      .onCall(1).returns(Promise.resolve(2));
 
     PartnerShow.__Rewire__('gravity', gravity);
     PartnerShow.__Rewire__('total', total);
@@ -57,7 +58,7 @@ describe('PartnerShow type', () => {
   });
 
   it('includes a formatted exhibition period', () => {
-     const query = `
+    const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
           exhibition_period
@@ -69,7 +70,7 @@ describe('PartnerShow type', () => {
       .then(({ data }) => {
         data.should.eql({
           partner_show: {
-            exhibition_period: 'February 25th - May 24th, 2015'
+            exhibition_period: 'February 25th - May 24th, 2015',
           },
         });
       });
@@ -98,6 +99,10 @@ describe('PartnerShow type', () => {
   });
 
   it('includes the total number of artworks', () => {
+    total
+      .onCall(0)
+      .returns(Promise.resolve(42));
+
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -117,6 +122,10 @@ describe('PartnerShow type', () => {
   });
 
   it('includes the number of artworks by a specific artist', () => {
+    total
+      .onCall(0)
+      .returns(Promise.resolve(2));
+
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
