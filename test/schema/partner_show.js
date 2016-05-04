@@ -70,7 +70,7 @@ describe('PartnerShow type', () => {
       .then(({ data }) => {
         data.should.eql({
           partner_show: {
-            exhibition_period: 'February 25th - May 24th, 2015',
+            exhibition_period: 'Feb 25 – May 24, 2015',
           },
         });
       });
