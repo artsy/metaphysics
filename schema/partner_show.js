@@ -5,6 +5,7 @@ import {
 import { find } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import total from '../lib/loaders/total';
+import { exhibitionPeriod } from '../lib/date';
 import cached from './fields/cached';
 import date from './fields/date';
 import markdown from './fields/markdown';
@@ -64,6 +65,11 @@ const PartnerShowType = new GraphQLObjectType({
     press_release: markdown(),
     start_at: date,
     end_at: date,
+    exhibition_period: {
+      type: GraphQLString,
+      description: 'A formatted description of the start to end dates',
+      resolve: ({ start_at, end_at }) => exhibitionPeriod(start_at, end_at),
+    },
     artists: {
       type: new GraphQLList(Artist.type),
       resolve: ({ artists }) => artists,

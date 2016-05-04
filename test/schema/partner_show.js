@@ -56,6 +56,25 @@ describe('PartnerShow type', () => {
       });
   });
 
+  it('includes a formatted exhibition period', () => {
+     const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          exhibition_period
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          partner_show: {
+            exhibition_period: 'February 25th - May 24th, 2015'
+          },
+        });
+      });
+  });
+
   it('includes the html version of markdown', () => {
     const query = `
       {
