@@ -14,6 +14,9 @@ const ProfileType = new GraphQLObjectType({
   name: 'Profile',
   fields: () => ({
     cached,
+    _id: {
+      type: GraphQLString,
+    },
     id: {
       type: GraphQLString,
     },
