@@ -17,6 +17,7 @@ const LocationType = new GraphQLObjectType({
     },
     city: {
       type: GraphQLString,
+      resolve: ({ city }) => existyValue(city),
     },
     country: {
       type: GraphQLString,

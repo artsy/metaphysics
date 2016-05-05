@@ -55,9 +55,8 @@ const PartnerType = new GraphQLObjectType({
       },
       is_linkable: {
         type: GraphQLBoolean,
-        resolve: ({ default_profile_id, default_profile_public }) => {
-          return default_profile_id && default_profile_public;
-        },
+        resolve: ({ default_profile_id, default_profile_public, type }) =>
+          default_profile_id && default_profile_public && type !== 'Auction',
       },
       is_pre_qualify: {
         type: GraphQLBoolean,
