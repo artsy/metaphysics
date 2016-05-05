@@ -98,7 +98,8 @@ const PartnerShowType = new GraphQLObjectType({
           description: 'Before this many days no update will be generated',
         },
       },
-      resolve: ({ start_at, end_at }, options) => exhibitionStatus(start_at, end_at, options.max_days),
+      resolve: ({ start_at, end_at }, options) =>
+        exhibitionStatus(start_at, end_at, options.max_days),
     },
     events: {
       type: new GraphQLList(PartnerShowEventType),

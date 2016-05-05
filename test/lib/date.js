@@ -75,13 +75,13 @@ describe('date', () => {
       });
 
       it('states that an exhibition will close today', () => {
-         const status = exhibitionStatus(past, today);
-         status.should.equal('Closing today');
+        const status = exhibitionStatus(past, today);
+        status.should.equal('Closing today');
       });
 
       it('states that an exhibition will close tomorrow', () => {
-         const status = exhibitionStatus(past, today.add(1, 'd'));
-         status.should.equal('Closing tomorrow');
+        const status = exhibitionStatus(past, today.add(1, 'd'));
+        status.should.equal('Closing tomorrow');
       });
 
       it('states that an exhibition is about to close in a few days', () => {
