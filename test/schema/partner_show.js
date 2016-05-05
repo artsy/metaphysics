@@ -1,17 +1,18 @@
 import sinon from 'sinon';
+import moment from 'moment';
 import { graphql } from 'graphql';
 import schema from '../../schema';
 
 describe('PartnerShow type', () => {
   const PartnerShow = schema.__get__('PartnerShow');
   let total = null;
+  let showData = null;
 
   beforeEach(() => {
     const gravity = sinon.stub();
-
     total = sinon.stub();
 
-    gravity.returns(Promise.resolve({
+    showData = {
       id: 'new-museum-1-2015-triennial-surround-audience',
       start_at: '2015-02-25T12:00:00+00:00',
       end_at: '2015-05-24T12:00:00+00:00',
@@ -20,7 +21,8 @@ describe('PartnerShow type', () => {
       partner: {
         id: 'new-museum',
       },
-    }));
+    };
+    gravity.returns(Promise.resolve(showData));
 
     PartnerShow.__Rewire__('gravity', gravity);
     PartnerShow.__Rewire__('total', total);
@@ -71,6 +73,27 @@ describe('PartnerShow type', () => {
         data.should.eql({
           partner_show: {
             exhibition_period: 'Feb 25 – May 24, 2015',
+          },
+        });
+      });
+  });
+
+  it('includes an update on upcoming status changes', () => {
+    showData.end_at = moment().add(1, 'd');
+
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          status_update
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          partner_show: {
+            status_update: 'Closing tomorrow',
           },
         });
       });

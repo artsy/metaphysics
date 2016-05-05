@@ -5,7 +5,7 @@ import {
 import { find } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import total from '../lib/loaders/total';
-import { exhibitionPeriod } from '../lib/date';
+import { exhibitionPeriod, exhibitionStatus } from '../lib/date';
 import cached from './fields/cached';
 import date from './fields/date';
 import markdown from './fields/markdown';
@@ -88,6 +88,17 @@ const PartnerShowType = new GraphQLObjectType({
     },
     status: {
       type: GraphQLString,
+    },
+    status_update: {
+      type: GraphQLString,
+      description: 'A formatted update on upcoming status changes',
+      args: {
+        max_days: {
+          type: GraphQLInt,
+          description: 'Before this many days no update will be generated',
+        },
+      },
+      resolve: ({ start_at, end_at }, options) => exhibitionStatus(start_at, end_at, options.max_days),
     },
     events: {
       type: new GraphQLList(PartnerShowEventType),
