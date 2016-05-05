@@ -4,6 +4,8 @@ import {
 } from '../lib/helpers';
 import { find } from 'lodash';
 import gravity from '../lib/loaders/gravity';
+import total from '../lib/loaders/total';
+import { exhibitionPeriod, exhibitionStatus } from '../lib/date';
 import cached from './fields/cached';
 import date from './fields/date';
 import markdown from './fields/markdown';
@@ -63,6 +65,11 @@ const PartnerShowType = new GraphQLObjectType({
     press_release: markdown(),
     start_at: date,
     end_at: date,
+    exhibition_period: {
+      type: GraphQLString,
+      description: 'A formatted description of the start to end dates',
+      resolve: ({ start_at, end_at }) => exhibitionPeriod(start_at, end_at),
+    },
     artists: {
       type: new GraphQLList(Artist.type),
       resolve: ({ artists }) => artists,
@@ -82,6 +89,18 @@ const PartnerShowType = new GraphQLObjectType({
     status: {
       type: GraphQLString,
     },
+    status_update: {
+      type: GraphQLString,
+      description: 'A formatted update on upcoming status changes',
+      args: {
+        max_days: {
+          type: GraphQLInt,
+          description: 'Before this many days no update will be generated',
+        },
+      },
+      resolve: ({ start_at, end_at }, options) =>
+        exhibitionStatus(start_at, end_at, options.max_days),
+    },
     events: {
       type: new GraphQLList(PartnerShowEventType),
       resolve: ({ partner, id }) =>
@@ -90,6 +109,26 @@ const PartnerShowType = new GraphQLObjectType({
         // route to circumvent this
         gravity(`partner/${partner.id}/show/${id}`)
           .then(({ events }) => events),
+    },
+    counts: {
+      type: new GraphQLObjectType({
+        name: 'PartnerShowCounts',
+        fields: {
+          artworks: {
+            type: GraphQLInt,
+            args: {
+              artist_id: {
+                type: GraphQLString,
+                description: 'The slug or ID of an artist in the show.',
+              },
+            },
+            resolve: ({ id, partner }, options) => {
+              return total(`partner/${partner.id}/show/${id}/artworks`, options);
+            },
+          },
+        },
+      }),
+      resolve: (partner_show) => partner_show,
     },
     artworks: {
       type: new GraphQLList(Artwork.type),
