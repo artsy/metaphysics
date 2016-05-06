@@ -78,6 +78,9 @@ const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         deprecationReason: 'Favor `is_`-prefixed boolean attributes',
       },
+      display_auction_link: {
+        type: GraphQLBoolean,
+      },
       hometown: {
         type: GraphQLString,
       },
