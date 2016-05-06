@@ -22,6 +22,12 @@ const Me = new GraphQLObjectType({
     email: {
       type: GraphQLString,
     },
+    name: {
+      type: GraphQLString,
+    },
+    paddle_number: {
+      type: GraphQLString,
+    },
     bidders: Bidders,
     bidder_status: BidderStatus,
     bidder_positions: BidderPositions,
