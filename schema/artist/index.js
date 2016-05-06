@@ -68,6 +68,9 @@ const ArtistType = new GraphQLObjectType({
       consignable: {
         type: GraphQLBoolean,
       },
+      display_auction_link: {
+        type: GraphQLBoolean,
+      },
       hometown: {
         type: GraphQLString,
       },

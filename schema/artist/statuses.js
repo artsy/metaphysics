@@ -54,6 +54,10 @@ const ArtistStatusesType = new GraphQLObjectType({
         }).then(articles => !!articles.count);
       },
     },
+    auction_lots: {
+      type: GraphQLBoolean,
+      resolve: ({ display_auction_link }) => display_auction_link,
+    },
     biography: {
       type: GraphQLBoolean,
       resolve: ({ _id }) => {
