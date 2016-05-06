@@ -62,11 +62,21 @@ const ArtistType = new GraphQLObjectType({
       years: {
         type: GraphQLString,
       },
+      is_public: {
+        type: GraphQLBoolean,
+        resolve: artist => artist.public,
+      },
+      is_consignable: {
+        type: GraphQLBoolean,
+        resolve: ({ consignable }) => consignable,
+      },
       public: {
         type: GraphQLBoolean,
+        deprecationReason: 'Favor `is_`-prefixed boolean attributes',
       },
       consignable: {
         type: GraphQLBoolean,
+        deprecationReason: 'Favor `is_`-prefixed boolean attributes',
       },
       hometown: {
         type: GraphQLString,
