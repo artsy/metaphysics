@@ -6,17 +6,16 @@ import {
 } from 'graphql';
 
 
-const countDisplay = (artist) => {
+export const countDisplay = (artist) => {
   const count = artist.published_artworks_count;
 
   if (count < 10) { return ''; }
   if (count < 100) { return `${Math.floor(count / 10) * 10}+ `; }
-  if (count < 1000) { return `${Math.floor(count / 100) * 100}+ `; }
-  if (count < 10000) { return `${Math.floor(count / 1000) * 1000}+ `; }
+  if (count < 10000) { return `${Math.floor(count / 100) * 100}+ `; }
   return `${Math.floor(count / 10000) * 10000}+ `;
 };
 
-const metaName = (artist) => {
+export const metaName = (artist) => {
   if (artist.name) return stripTags(artist.name);
   return 'Unnamed Artist';
 };
