@@ -14,6 +14,7 @@ import numeral from '../fields/numeral';
 import Image from '../image';
 import Article from '../article';
 import Artwork from '../artwork';
+import Meta from './meta';
 import PartnerShow from '../partner_show';
 import Sale from '../sale/index';
 import ArtworkSorts from '../sorts/artwork_sorts';
@@ -99,6 +100,7 @@ const ArtistType = new GraphQLObjectType({
       alternate_names: {
         type: new GraphQLList(GraphQLString),
       },
+      meta: Meta,
       blurb: markdown(),
       is_shareable: {
         type: GraphQLBoolean,

@@ -2,6 +2,7 @@ import {
   exclude,
   toKey,
   isExisty,
+  stripTags,
 } from '../../lib/helpers';
 
 describe('exclude', () => {
@@ -100,5 +101,17 @@ describe('isExisty', () => {
     it('returns `false` for `null`', () => {
       isExisty(null).should.be.false();
     });
+  });
+});
+
+describe('stripTags', () => {
+  const html = '<a href="http://google.com">Cabbie</a>';
+
+  it('strips html from a string', () => {
+    stripTags(html).should.eql('Cabbie');
+  });
+
+  it('returns an empty string if no string is provided', () => {
+    stripTags().should.eql('');
   });
 });
