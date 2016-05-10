@@ -26,7 +26,7 @@ const staging = metaphysics(METAPHYSICS_STAGING_ENDPOINT);
 const production = metaphysics(METAPHYSICS_PRODUCTION_ENDPOINT);
 
 describe('Integration specs', () => {
-  describe('/artwork', () => {
+  xdescribe('/artwork', () => {
     const query = `
       query artwork($id: String!) {
         artwork(id: $id) {
