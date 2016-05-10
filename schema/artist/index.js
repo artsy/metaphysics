@@ -140,6 +140,9 @@ const ArtistType = new GraphQLObjectType({
             type: GraphQLInt,
             description: 'The number of Artworks to return',
           },
+          page: {
+            type: GraphQLInt,
+          },
           sort: ArtworkSorts,
           published: {
             type: GraphQLBoolean,
