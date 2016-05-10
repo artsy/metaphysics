@@ -182,7 +182,7 @@ const ArtworkType = new GraphQLObjectType({
             .then(sale => {
               if (!sale) return [false];
 
-              gravity(`sale/${sale.id}/sale_artwork/${id}`)
+              return gravity(`sale/${sale.id}/sale_artwork/${id}`)
                 .then(saleArtwork => [sale, saleArtwork]);
             })
             .then(([sale, saleArtwork]) => {
