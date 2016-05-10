@@ -175,7 +175,7 @@ const ArtworkType = new GraphQLObjectType({
       },
       is_buy_nowable: {
         type: GraphQLBoolean,
-        description: 'When in an auction, can the work buy bought before any bids are placed',
+        description: 'When in an auction, can the work be bought before any bids are placed',
         resolve: ({ id, acquireable }) => {
           return gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
             .then(_.first)
