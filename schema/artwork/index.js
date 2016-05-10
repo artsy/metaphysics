@@ -195,12 +195,6 @@ const ArtworkType = new GraphQLObjectType({
       },
       sale_message: {
         type: GraphQLString,
-        resolve: ({ sold, availability, price_hidden, price, sale_message }) => {
-          if (availability === 'for sale' && price_hidden) return 'Contact for price';
-          if (sold) return 'Sold';
-          if (sale_message !== 'Sold' && !price_hidden) return price;
-          return sale_message;
-        },
       },
       artist: {
         type: Artist.type,
