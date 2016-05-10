@@ -186,6 +186,13 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ images }) => _.first(images).downloadable,
       },
+      is_price_hidden: {
+        type: GraphQLBoolean,
+        resolve: ({ price_hidden }) => price_hidden,
+      },
+      availability: {
+        type: GraphQLString,
+      },
       sale_message: {
         type: GraphQLString,
         resolve: ({ sold, availability, price_hidden, price, sale_message }) => {
