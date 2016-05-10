@@ -37,6 +37,9 @@ const Me = new GraphQLObjectType({
 
 export default {
   type: Me,
-  resolve: (root, options, { rootValue: { accessToken } }) =>
-    gravity.with(accessToken)('me'),
+  resolve: (root, options, { rootValue: { accessToken } }) => {
+    if (!accessToken) return null;
+    return gravity.with(accessToken)('me')
+      .catch(() => null);
+  },
 };
