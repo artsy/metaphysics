@@ -13,7 +13,7 @@ import Article from '../article';
 import Artist from '../artist';
 import Image, { getDefault } from '../image';
 import Fair from '../fair';
-import Sale from '../sale/index';
+import Sale, { auctionState } from '../sale';
 import PartnerShow from '../partner_show';
 import Partner from '../partner';
 import Context from './context';
@@ -172,6 +172,30 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         description: 'Whether work can be purchased through e-commerce',
         resolve: ({ acquireable }) => acquireable,
+      },
+      is_buy_nowable: {
+        type: GraphQLBoolean,
+        description: 'When in an auction, can the work buy bought before any bids are placed',
+        resolve: ({ id, acquireable }) => {
+          return gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
+            .then(_.first)
+            .then(sale => {
+              if (!sale) return [false];
+
+              gravity(`sale/${sale.id}/sale_artwork/${id}`)
+                .then(saleArtwork => [sale, saleArtwork]);
+            })
+            .then(([sale, saleArtwork]) => {
+              if (!sale) return false;
+
+              return (
+                acquireable &&
+                sale.sale_type === 'auction' &&
+                auctionState(sale) === 'open' &&
+                saleArtwork.bidder_positions_count < 1
+              );
+            });
+        },
       },
       is_comparable_with_auction_results: {
         type: GraphQLBoolean,
