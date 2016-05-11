@@ -39,7 +39,11 @@ export default {
   resolve: ({ id }) =>
     Promise
       .all([
-        gravity('related/fairs', { artwork: [id], size: 1 }),
+        gravity('related/fairs', { artwork: [id], size: 1 })
+          .then(fairs => {
+            if (fairs.length && !first(fairs).has_full_feature) return [];
+            return fairs;
+          }),
         gravity('related/sales', { artwork: [id], size: 1 }),
         gravity('related/shows', { artwork: [id], size: 1, at_a_fair: false }),
       ])
