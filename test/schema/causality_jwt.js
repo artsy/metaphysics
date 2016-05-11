@@ -22,7 +22,7 @@ describe('CausalityJWT', () => {
         type: 'User',
       }))
       .onCall(1)
-      .returns(Promise.resolve([{ sale: { _id: 'foo' } }]));
+      .returns(Promise.resolve([{ sale: { _id: 'foo', id: 'slug' } }]));
     CausalityJWT.__Rewire__('gravity', gravity);
   });
 
@@ -33,6 +33,23 @@ describe('CausalityJWT', () => {
   it('encodes a JWT for Causality', () => {
     const query = `{
       causality_jwt(role: BIDDER, sale_id: "foo")
+    }`;
+    return graphql(schema, query, { accessToken: 'foo' })
+      .then((data) => {
+        omit(jwt.decode(data.data.causality_jwt, HMAC_SECRET), 'iat')
+          .should.eql({
+            aud: 'auctions',
+            role: 'bidder',
+            userId: 'craig',
+            saleId: 'foo',
+            bidderId: '123',
+          });
+      });
+  });
+
+  it('works with a sale slug', () => {
+    const query = `{
+      causality_jwt(role: BIDDER, sale_id: "slug")
     }`;
     return graphql(schema, query, { accessToken: 'foo' })
       .then((data) => {
