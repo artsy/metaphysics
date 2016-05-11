@@ -2,8 +2,9 @@ import gravity from '../../lib/loaders/gravity';
 import {
   featuredAuction,
   featuredFair,
-  featuredGene
+  featuredGene,
 } from './fetch';
+import { map } from 'lodash';
 import Artwork from '../artwork/index';
 import {
   GraphQLList,
@@ -80,4 +81,4 @@ export default {
   resolve: ({ key, display }, options, { rootValue: { accessToken } }) => {
     if (display) return moduleResults[key](accessToken);
   },
-}
+};

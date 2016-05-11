@@ -2,7 +2,7 @@ import { create, assign } from 'lodash';
 import {
   featuredAuction,
   featuredFair,
-  featuredGene
+  featuredGene,
 } from './fetch';
 import Fair from '../fair';
 import Sale from '../sale/index';
@@ -11,10 +11,7 @@ import { GraphQLUnionType } from 'graphql';
 
 export const HomePageModuleContextFairType = create(Fair.type, {
   name: 'HomePageModuleContextFair',
-  isTypeOf: ({ context_type }) => {
-    console.log('context_type', context_type);
-    return context_type === 'Fair'
-  },
+  isTypeOf: ({ context_type }) => context_type === 'Fair',
 });
 
 export const HomePageModuleContextSaleType = create(Sale.type, {
@@ -49,7 +46,7 @@ export const moduleContext = {
       return assign({}, gene, { context_type: 'Gene' });
     });
   },
-}
+};
 
 export default {
   type: new GraphQLUnionType({
@@ -63,4 +60,4 @@ export default {
   resolve: ({ key, display }, options, { rootValue: { accessToken } }) => {
     return moduleContext[key](accessToken);
   },
-}
+};

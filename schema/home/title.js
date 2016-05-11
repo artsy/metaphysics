@@ -1,7 +1,7 @@
 import {
   featuredAuction,
   featuredFair,
-  featuredGene
+  featuredGene,
 } from './fetch';
 import { GraphQLString } from 'graphql';
 
@@ -40,4 +40,4 @@ export default {
   resolve: ({ key, display }, options, { rootValue: { accessToken } }) => {
     if (display) return moduleTitle[key](accessToken);
   },
-}
+};

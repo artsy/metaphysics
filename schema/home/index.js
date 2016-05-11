@@ -2,8 +2,6 @@ import gravity from '../../lib/loaders/gravity';
 import {
   keys,
   map,
-  sortBy,
-  first,
   filter,
 } from 'lodash';
 import Results from './results';
