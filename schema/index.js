@@ -22,7 +22,7 @@ import Sales from './sales';
 import SaleArtwork from './sale_artwork';
 import Search from './search';
 import TrendingArtists from './trending';
-import HomePageModules from './home_page_modules';
+import HomePageModules from './home';
 import Me from './me';
 import CausalityJWT from './causality_jwt';
 import {
