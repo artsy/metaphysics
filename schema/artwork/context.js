@@ -41,7 +41,7 @@ export default {
       .all([
         gravity('related/fairs', { artwork: [id], size: 1 }),
         gravity('related/sales', { artwork: [id], size: 1 }),
-        gravity('related/shows', { artwork: [id], size: 1 }),
+        gravity('related/shows', { artwork: [id], size: 1, at_a_fair: false }),
       ])
       .then(([fairs, sales, shows]) =>
         first(flatten([
