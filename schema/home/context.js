@@ -11,7 +11,10 @@ import { GraphQLUnionType } from 'graphql';
 
 export const HomePageModuleContextFairType = create(Fair.type, {
   name: 'HomePageModuleContextFair',
-  isTypeOf: ({ context_type }) => context_type === 'Fair',
+  isTypeOf: ({ context_type }) => {
+    console.log('context_type', context_type);
+    return context_type === 'Fair'
+  },
 });
 
 export const HomePageModuleContextSaleType = create(Sale.type, {
@@ -31,18 +34,18 @@ export const moduleContext = {
   saved_works: () => false,
   recommended_works: () => false,
   live_auctions: () => {
-    featuredAuction().then((sale) => {
+    return featuredAuction().then((sale) => {
       return assign({}, sale, { context_type: 'Sale' });
     });
   },
   current_fairs: () => {
-    featuredFair().then((fair) => {
+    return featuredFair().then((fair) => {
       return assign({}, fair, { context_type: 'Fair' });
     });
   },
   related_artists: () => false,
   genes: (accessToken) => {
-    featuredGene(accessToken).then((gene) => {
+    return featuredGene(accessToken).then((gene) => {
       return assign({}, gene, { context_type: 'Gene' });
     });
   },
