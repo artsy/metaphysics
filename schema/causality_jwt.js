@@ -36,7 +36,9 @@ export default {
       if (options.role === 'OPERATOR' && me.type !== 'Admin') {
         throw new Error('Unauthorized to act as an operator');
       }
-      const registered = find(bidders, (b) => b.sale._id === options.sale_id);
+      const registered = find(bidders, (b) => {
+        return (b.sale._id === options.sale_id || b.sale.id === options.sale_id);
+      });
       if (options.role === 'BIDDER' && !registered) {
         throw new Error('Not registered to bid in this auction');
       }
