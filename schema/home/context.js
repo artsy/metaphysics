@@ -20,7 +20,7 @@ export const HomePageModuleContextSaleType = create(Sale.type, {
 });
 
 export const HomePageModuleContextGeneType = create(Gene.type, {
-  name: 'HomePageModuleContextPartnerShow',
+  name: 'HomePageModuleContextGene',
   isTypeOf: ({ context_type }) => context_type === 'Gene',
 });
 
