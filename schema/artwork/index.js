@@ -14,6 +14,7 @@ import Artist from '../artist';
 import Image, { getDefault } from '../image';
 import Fair from '../fair';
 import Sale, { auctionState } from '../sale';
+import SaleArtwork from '../sale_artwork';
 import PartnerShow from '../partner_show';
 import Partner from '../partner';
 import Context from './context';
@@ -320,6 +321,13 @@ const ArtworkType = new GraphQLObjectType({
         },
         resolve: ({ id }, { size, active }) =>
           gravity('related/shows', { size, active, artwork: [id] }),
+      },
+      sale_artwork: {
+        type: SaleArtwork.type,
+        resolve: ({ id }) =>
+          gravity('related/sales', { artwork: [id], active: true, size: 1 })
+            .then(_.first)
+            .then(sale => gravity(`sale/${sale.id}/sale_artwork/${id}`)),
       },
       sale: {
         type: Sale.type,
