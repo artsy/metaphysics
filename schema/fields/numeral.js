@@ -3,7 +3,7 @@ import numeral from 'numeral';
 import FormattedNumber from '../types/formatted_number';
 import { GraphQLString } from 'graphql';
 
-const { pluralize } = inflect();
+const { pluralize, singularize } = inflect();
 
 export default fn => ({
   type: FormattedNumber,
@@ -21,12 +21,14 @@ export default fn => ({
 
     if (!value) return null;
 
+    const count = value;
+
     if (!!format) {
       value = numeral(value).format(format);
     }
 
     if (!!label) {
-      value = `${value} ${pluralize(label)}`;
+      value = `${value} ${count === 1 ? singularize(label) : pluralize(label)}`;
     }
 
     return value;
