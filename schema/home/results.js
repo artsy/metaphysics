@@ -1,10 +1,11 @@
+
 import gravity from '../../lib/loaders/gravity';
 import {
   featuredAuction,
   featuredFair,
   featuredGene,
 } from './fetch';
-import { map } from 'lodash';
+import { map, assign } from 'lodash';
 import Artwork from '../artwork/index';
 import {
   GraphQLList,
@@ -14,20 +15,21 @@ const RESULTS_SIZE = 15;
 
 const moduleResults = {
   active_bids: () => [],
-  followed_artists: (accessToken) => {
+  iconic_artists: () => [],
+  followed_artists: ({ accessToken }) => {
     return gravity
       .with(accessToken)('me/follow/artists/artworks', {
         for_sale: true,
         size: RESULTS_SIZE,
       });
   },
-  followed_galleries: (accessToken) => {
+  followed_galleries: ({ accessToken }) => {
     return gravity.with(accessToken)('me/follow/profiles/artworks', {
       for_sale: true,
       size: RESULTS_SIZE,
     });
   },
-  saved_works: (accessToken) => {
+  saved_works: ({ accessToken }) => {
     return gravity.with(accessToken)('me').then((user) => {
       return gravity
         .with(accessToken)('collection/saved-artwork/artworks', {
@@ -38,7 +40,7 @@ const moduleResults = {
         });
     });
   },
-  recommended_works: (accessToken) => {
+  recommended_works: ({ accessToken }) => {
     return gravity.with(accessToken)('me/suggested/artworks/homepage', { limit: RESULTS_SIZE });
   },
   live_auctions: () => {
@@ -63,7 +65,7 @@ const moduleResults = {
     });
   },
   related_artists: () => [],
-  genes: (accessToken) => {
+  genes: ({ accessToken }) => {
     return featuredGene(accessToken).then((gene) => {
       if (gene) {
         return gravity('filter/artworks', {
@@ -74,11 +76,15 @@ const moduleResults = {
       }
     });
   },
+  generic_gene: ({ params }) => {
+    return gravity('filter/artworks', assign({}, params, { size: RESULTS_SIZE }))
+      .then(({ hits }) => hits);
+  },
 };
 
 export default {
   type: new GraphQLList(Artwork.type),
-  resolve: ({ key, display }, options, { rootValue: { accessToken } }) => {
-    if (display) return moduleResults[key](accessToken);
+  resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {
+    if (display) return moduleResults[key]({ accessToken, params });
   },
 };
