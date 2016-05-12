@@ -1,4 +1,5 @@
 import { create, assign } from 'lodash';
+import gravity from '../../lib/loaders/gravity';
 import {
   featuredAuction,
   featuredFair,
@@ -41,8 +42,13 @@ export const moduleContext = {
     });
   },
   related_artists: () => false,
-  genes: (accessToken) => {
+  genes: ({ accessToken }) => {
     return featuredGene(accessToken).then((gene) => {
+      return assign({}, gene, { context_type: 'Gene' });
+    });
+  },
+  generic_gene: ({ params }) => {
+    return gravity(`gene/${params.gene_id}`).then((gene) => {
       return assign({}, gene, { context_type: 'Gene' });
     });
   },
@@ -57,7 +63,7 @@ export default {
       HomePageModuleContextGeneType,
     ],
   }),
-  resolve: ({ key, display }, options, { rootValue: { accessToken } }) => {
-    return moduleContext[key](accessToken);
+  resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {
+    return moduleContext[key]({ accessToken, params });
   },
 };
