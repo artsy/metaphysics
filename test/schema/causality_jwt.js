@@ -64,6 +64,26 @@ describe('CausalityJWT', () => {
       });
   });
 
+  it('allows an anonymous user to be an observer', () => {
+    const query = `{
+      causality_jwt(role: OBSERVER, sale_id: "slug")
+    }`;
+    gravity
+      .onCall(0)
+      .returns(Promise.resolve({ _id: 'foo' }));
+    return graphql(schema, query, { accessToken: null })
+      .then((data) => {
+        omit(jwt.decode(data.data.causality_jwt, HMAC_SECRET), 'iat')
+          .should.eql({
+            aud: 'auctions',
+            role: 'observer',
+            userId: null,
+            saleId: 'foo',
+            bidderId: null,
+          });
+      });
+  });
+
   it('denies a bidder not registered to the sale', () => {
     const query = `{
       causality_jwt(role: BIDDER, sale_id: "bar")
