@@ -70,7 +70,7 @@ describe('CausalityJWT', () => {
     }`;
     gravity
       .onCall(0)
-      .returns(Promise.resolve({ _id: 'foo' }))
+      .returns(Promise.resolve({ _id: 'foo' }));
     return graphql(schema, query, { accessToken: null })
       .then((data) => {
         omit(jwt.decode(data.data.causality_jwt, HMAC_SECRET), 'iat')
