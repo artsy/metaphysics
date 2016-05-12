@@ -23,12 +23,24 @@ export default {
         values: {
           BIDDER: { value: 'BIDDER' },
           OPERATOR: { value: 'OPERATOR' },
+          OBSERVER: { value: 'OBSERVER' },
         },
       }),
       description: '',
     },
   },
   resolve: (root, options, { rootValue: { accessToken } }) => {
+    if (options.role === 'OBSERVER') {
+      return gravity(`sale/${options.sale_id}`).then((sale) =>
+        jwt.encode({
+          aud: 'auctions',
+          role: 'observer',
+          userId: null,
+          saleId: sale._id,
+          bidderId: null,
+          iat: new Date().getTime(),
+        }, HMAC_SECRET));
+    }
     return Promise.all([
       gravity.with(accessToken)('me'),
       gravity.with(accessToken)('me/bidders'),
