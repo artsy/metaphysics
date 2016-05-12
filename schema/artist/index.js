@@ -113,7 +113,7 @@ const ArtistType = new GraphQLObjectType({
             nationality,
             years,
             hometown,
-            (location ? `lives and works in ${location}` : undefined),
+            (location ? `based in ${location}` : undefined),
           ]).join(', ');
         },
       },
