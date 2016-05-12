@@ -5,6 +5,7 @@ import {
 import cached from './fields/cached';
 import date from './fields/date';
 import money, { amount } from './fields/money';
+import numeral from './fields/numeral';
 import gravity from '../lib/loaders/gravity';
 import Artwork from './artwork';
 import {
@@ -138,10 +139,8 @@ const SaleArtworkType = new GraphQLObjectType({
         type: new GraphQLObjectType({
           name: 'SaleArtworkCounts',
           fields: {
-            bidder_positions: {
-              type: GraphQLInt,
-              resolve: ({ bidder_positions_count }) => bidder_positions_count,
-            },
+            bidder_positions: numeral(({ bidder_positions_count }) =>
+              bidder_positions_count),
           },
         }),
       },
