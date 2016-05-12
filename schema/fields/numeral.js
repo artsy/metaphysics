@@ -19,7 +19,9 @@ export default fn => ({
   resolve: (obj, { format, label }, { fieldName }) => {
     let value = fn ? fn(obj) : obj[fieldName];
 
-    if (!value) return null;
+    if (!value) {
+      value = 0;
+    }
 
     const count = value;
 
