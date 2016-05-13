@@ -26,6 +26,7 @@ export const HomePageModuleContextGeneType = create(Gene.type, {
 });
 
 export const moduleContext = {
+  iconic_artists: () => false,
   active_bids: () => false,
   followed_artists: () => false,
   followed_galleries: () => false,
