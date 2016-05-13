@@ -6,7 +6,7 @@
   "repository": "https://github.com/artsy/metaphysics",
   "engines": {
     "node": ">=5.1.1",
-    "npm": "3.x.x"
+    "npm": "3.8.x"
   },
   "scripts": {
     "verbose-dev": "DEBUG=verbose,info,error nf start --procfile Procfile.dev",
