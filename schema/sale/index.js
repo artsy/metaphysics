@@ -1,4 +1,5 @@
 import { map } from 'lodash';
+import { exclude } from '../../lib/helpers';
 import moment from 'moment';
 import gravity from '../../lib/loaders/gravity';
 import cached from '../fields/cached';
@@ -126,17 +127,23 @@ const SaleType = new GraphQLObjectType({
             type: GraphQLBoolean,
             defaultValue: false,
           },
+          exclude: {
+            type: new GraphQLList(GraphQLString),
+            description: 'List of artwork IDs to exclude from the response (irrespective of size)',
+          },
         },
         resolve: ({ id }, options) => {
           const invert = saleArtworks => map(saleArtworks, 'artwork');
 
           if (options.all) {
             return gravity.all(`sale/${id}/sale_artworks`, options)
-              .then(invert);
+              .then(invert)
+              .then(exclude(options.exclude, 'id'));
           }
 
           return gravity(`sale/${id}/sale_artworks`, options)
-            .then(invert);
+            .then(invert)
+            .then(exclude(options.exclude, 'id'));
         },
       },
       cover_image: {
