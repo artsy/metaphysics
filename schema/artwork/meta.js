@@ -17,7 +17,7 @@ const titleWithDate = ({ title, date }) => join(' ', [
 ]);
 
 const artistNames = artwork =>
-  map(artwork.artists, 'name').join(', ');
+  artwork.cultural_maker || map(artwork.artists, 'name').join(', ');
 
 const forSaleIndication = artwork =>
   artwork.forsale ? 'Available for Sale' : undefined;
