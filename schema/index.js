@@ -7,6 +7,8 @@ import Artists from './artists';
 import Fair from './fair';
 import Fairs from './fairs';
 import Gene from './gene';
+import HomePageModules from './home/home_page_modules';
+import HomePageModule from './home/home_page_module';
 import OrderedSets from './ordered_sets';
 import Profile from './profile';
 import Partner from './partner';
@@ -22,7 +24,6 @@ import Sales from './sales';
 import SaleArtwork from './sale_artwork';
 import Search from './search';
 import TrendingArtists from './trending';
-import HomePageModules from './home';
 import Me from './me';
 import CausalityJWT from './causality_jwt';
 import {
@@ -44,6 +45,7 @@ const schema = new GraphQLSchema({
       fairs: Fairs,
       gene: Gene,
       home_page_modules: HomePageModules,
+      home_page_module: HomePageModule,
       profile: Profile,
       ordered_sets: OrderedSets,
       partner: Partner,
