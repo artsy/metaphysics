@@ -1,4 +1,4 @@
-import { times, concat } from 'lodash';
+import { times, concat, clone } from 'lodash';
 
 // see https://github.com/artsy/force/issues/4705
 export const params = [
@@ -60,10 +60,11 @@ export const params = [
 ];
 
 export default (modules) => {
+  const clonedParams = clone(params);
   return concat(modules, times(10, () => {
-    const index = Math.floor(Math.random() * params.length);
-    const moduleParams = params[index];
-    params.splice(index, 1);
+    const index = Math.floor(Math.random() * clonedParams.length);
+    const moduleParams = clonedParams[index];
+    clonedParams.splice(index, 1);
     return {
       key: 'generic_gene',
       display: true,
