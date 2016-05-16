@@ -94,7 +94,8 @@ const ArtworkType = new GraphQLObjectType({
         },
         resolve: ({ partner }, { shallow }) => {
           if (shallow) return partner;
-          return gravity(`partner/${partner.id}`);
+          return gravity(`partner/${partner.id}`)
+            .catch(() => null);
         },
       },
       can_share_image: {
