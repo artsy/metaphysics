@@ -8,6 +8,7 @@ import money, { amount } from './fields/money';
 import numeral from './fields/numeral';
 import gravity from '../lib/loaders/gravity';
 import Artwork from './artwork';
+import Sale, { auctionState } from './sale';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -15,6 +16,12 @@ import {
   GraphQLInt,
   GraphQLBoolean,
 } from 'graphql';
+
+export const isBiddable = (sale, { artwork: { sold } }) => (
+  !sold &&
+  sale.sale_type === 'auction' &&
+  auctionState(sale) === 'open'
+);
 
 const SaleArtworkType = new GraphQLObjectType({
   name: 'SaleArtwork',
@@ -29,6 +36,13 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       sale_id: {
         type: GraphQLString,
+      },
+      sale: {
+        type: Sale.type,
+        resolve: ({ sale, sale_id }) => {
+          if (!!sale) return sale;
+          return gravity(`sale/${sale_id}`);
+        },
       },
       position: {
         type: GraphQLInt,
@@ -54,6 +68,18 @@ const SaleArtworkType = new GraphQLObjectType({
       is_bid_on: {
         type: GraphQLBoolean,
         resolve: ({ bidder_positions_count }) => bidder_positions_count !== 0,
+      },
+      is_biddable: {
+        type: GraphQLBoolean,
+        description: 'Can bids be placed on the artwork?',
+        resolve: saleArtwork => {
+          if (!!saleArtwork.sale) {
+            return isBiddable(saleArtwork.sale, saleArtwork);
+          }
+
+          return gravity(`sale/${saleArtwork.sale_id}`)
+            .then(sale => isBiddable(sale, saleArtwork));
+        },
       },
       reserve_message: {
         type: GraphQLString,
