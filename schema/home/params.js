@@ -15,6 +15,9 @@ const HomePageModuleParams = new GraphQLObjectType({
     price_range: {
       type: GraphQLString,
     },
+    id: {
+      type: GraphQLString,
+    },
   },
 });
 

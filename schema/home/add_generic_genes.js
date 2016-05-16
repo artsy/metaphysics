@@ -1,60 +1,65 @@
 import { times, concat } from 'lodash';
 
-export default (modules) => {
-  // see https://github.com/artsy/force/issues/4705
-  const params = [
-    {
-      gene_id: 'geometric',
-    },
-    {
-      gene_id: 'landscape',
-    },
-    {
-      gene_id: 'emerging-art',
-      medium: 'painting',
-      price_range: '50.00-10000.00',
-    },
-    {
-      gene_id: 'emerging-art',
-      medium: 'painting',
-      price_range: '50.00-10000.00',
-    },
-    {
-      gene_id: 'emerging-art',
-      medium: 'photography',
-      price_range: '50.00-10000.00',
-    },
-    {
-      gene_id: 'graffiti-slash-street-art',
-      price_range: '50.00-5000.00',
-    },
-    {
-      gene_id: 'pop-and-contemporary-pop',
-      medium: 'prints',
-      price_range: '50.00-5000.00',
-    },
-    {
-      gene_id: 'black-and-white',
-      medium: 'photography',
-      price_range: '50.00-10000.00',
-    },
-    {
-      gene_id: 'abstract-art',
-      medium: 'painting',
-      price_range: '50.00-10000.00',
-    },
-    {
-      gene_id: 'figurative-painting',
-      medium: 'painting',
-      price_range: '50.00-10000.00',
-    },
-    {
-      gene_id: 'collage',
-      medium: 'work-on-paper',
-      price_range: '50.00-5000.00',
-    },
-  ];
+// see https://github.com/artsy/force/issues/4705
+export const params = [
+  {
+    id: 'geometric',
+    gene_id: 'geometric',
+  },
+  {
+    id: 'landscape',
+    gene_id: 'landscape',
+  },
+  {
+    id: 'emerging-art-painting',
+    gene_id: 'emerging-art',
+    medium: 'painting',
+    price_range: '50.00-10000.00',
+  },
+  {
+    id: 'emerging-art-photography',
+    gene_id: 'emerging-art',
+    medium: 'photography',
+    price_range: '50.00-10000.00',
+  },
+  {
+    id: 'graffiti-slash-street-art',
+    gene_id: 'graffiti-slash-street-art',
+    price_range: '50.00-5000.00',
+  },
+  {
+    id: 'pop-and-contemporary-pop',
+    gene_id: 'pop-and-contemporary-pop',
+    medium: 'prints',
+    price_range: '50.00-5000.00',
+  },
+  {
+    id: 'black-and-white',
+    gene_id: 'black-and-white',
+    medium: 'photography',
+    price_range: '50.00-10000.00',
+  },
+  {
+    id: 'abstract-art',
+    gene_id: 'abstract-art',
+    medium: 'painting',
+    price_range: '50.00-10000.00',
+  },
+  {
+    id: 'figurative-painting',
+    gene_id: 'figurative-painting',
+    medium: 'painting',
+    price_range: '50.00-10000.00',
+  },
+  {
+    id: 'collage',
+    gene_id: 'collage',
+    medium: 'work-on-paper',
+    price_range: '50.00-5000.00',
+  },
+];
 
+export default (modules) => {
   return concat(modules, times(10, () => {
     const index = Math.floor(Math.random() * params.length);
     const moduleParams = params[index];
