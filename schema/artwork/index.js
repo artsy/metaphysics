@@ -328,7 +328,11 @@ const ArtworkType = new GraphQLObjectType({
         resolve: ({ id }) =>
           gravity('related/sales', { artwork: [id], active: true, size: 1 })
             .then(_.first)
-            .then(sale => gravity(`sale/${sale.id}/sale_artwork/${id}`)),
+            .then(sale => {
+              if (!sale) return null;
+              return gravity(`sale/${sale.id}/sale_artwork/${id}`);
+            })
+            .catch(() => null),
       },
       sale: {
         type: Sale.type,
