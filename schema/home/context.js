@@ -4,10 +4,12 @@ import {
   featuredAuction,
   featuredFair,
   featuredGene,
+  iconicArtists,
 } from './fetch';
 import Fair from '../fair';
 import Sale from '../sale/index';
 import Gene from '../gene';
+import Trending from '../trending';
 import { GraphQLUnionType } from 'graphql';
 
 export const HomePageModuleContextFairType = create(Fair.type, {
@@ -25,8 +27,18 @@ export const HomePageModuleContextGeneType = create(Gene.type, {
   isTypeOf: ({ context_type }) => context_type === 'Gene',
 });
 
+export const HomePageModuleContextTrendingType = create(Trending.type, {
+  name: 'HomePageModuleContextTrending',
+  isTypeOf: ({ context_type }) => context_type === 'Trending',
+});
+
 export const moduleContext = {
-  iconic_artists: () => false,
+  iconic_artists: () => {
+    return iconicArtists().then((trending) => {
+      console.log('trending', trending);
+      return assign({}, trending, { context_type: 'Trending' });
+    });
+  },
   active_bids: () => false,
   followed_artists: () => false,
   followed_galleries: () => false,
@@ -62,6 +74,7 @@ export default {
       HomePageModuleContextFairType,
       HomePageModuleContextSaleType,
       HomePageModuleContextGeneType,
+      HomePageModuleContextTrendingType,
     ],
   }),
   resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {
