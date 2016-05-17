@@ -1,5 +1,7 @@
 import gravity from '../../lib/loaders/gravity';
-import { sortBy, first } from 'lodash';
+import delta from '../../lib/loaders/delta';
+import { sortBy, first, forEach, clone } from 'lodash';
+import blacklist from '../../lib/artist_blacklist';
 
 export const featuredFair = () => {
   return gravity('fairs', { size: 5, active: true }).then((fairs) => {
@@ -24,5 +26,17 @@ export const featuredGene = (accessToken) => {
     if (follows.length) {
       return first(follows).gene;
     }
+  });
+};
+
+export const iconicArtists = () => {
+  return delta('/', {
+    method: 'fetch',
+    n: 9,
+    name: 'artist_search_2t',
+  }).then((trending) => {
+    const clonedTrending = clone(trending);
+    forEach(blacklist, (id) => delete clonedTrending[id]);
+    return clonedTrending;
   });
 };
