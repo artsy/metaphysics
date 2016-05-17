@@ -35,7 +35,6 @@ export const HomePageModuleContextTrendingType = create(Trending.type, {
 export const moduleContext = {
   iconic_artists: () => {
     return iconicArtists().then((trending) => {
-      console.log('trending', trending);
       return assign({}, trending, { context_type: 'Trending' });
     });
   },
