@@ -16,14 +16,15 @@ import Fair from '../fair';
 import Sale, { auctionState } from '../sale';
 import SaleArtwork from '../sale_artwork';
 import PartnerShow from '../partner_show';
+import PartnerShowSorts from '../sorts/partner_show_sorts';
 import Partner from '../partner';
 import Context from './context';
 import Meta from './meta';
 import Highlight from './highlight';
 import Dimensions from '../dimensions';
 import EditionSet from '../edition_set';
-import ArtworkLayer from '../artwork_layer';
-import ArtworkLayers from '../artwork_layers';
+import ArtworkLayer from './layer';
+import ArtworkLayers, { artworkLayers } from './layers';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
 import {
@@ -313,15 +314,19 @@ const ArtworkType = new GraphQLObjectType({
         args: {
           size: {
             type: GraphQLInt,
-            defaultValue: 1,
           },
           active: {
             type: GraphQLBoolean,
-            defaultValue: true,
+          },
+          at_a_fair: {
+            type: GraphQLBoolean,
+          },
+          sort: {
+            type: PartnerShowSorts.type,
           },
         },
-        resolve: ({ id }, { size, active }) =>
-          gravity('related/shows', { size, active, artwork: [id] }),
+        resolve: ({ id }, { size, active, sort, at_a_fair }) =>
+          gravity('related/shows', { artwork: [id], active, size, sort, at_a_fair }),
       },
       sale_artwork: {
         type: SaleArtwork.type,
@@ -343,7 +348,7 @@ const ArtworkType = new GraphQLObjectType({
       fair: {
         type: Fair.type,
         resolve: ({ id }) =>
-          gravity('related/fairs', { artwork: [id], active: true, size: 1 })
+          gravity('related/fairs', { artwork: [id], size: 1 })
             .then(_.first),
       },
       edition_of: {
@@ -379,22 +384,18 @@ const ArtworkType = new GraphQLObjectType({
         type: ArtworkLayer.type,
         args: {
           id: {
-            type: new GraphQLNonNull(GraphQLString),
+            type: GraphQLString,
           },
         },
         resolve: (artwork, { id }) =>
-          // There's no route in Gravity for an actual layer, interestingly.
-          gravity(`related/layers`, { artwork: [artwork.id] })
-            .then(layers => {
-              const layer = _.find(layers, { id });
-              if (layer) return _.assign({ artwork_id: artwork.id }, layer);
-            }),
+          artworkLayers(artwork.id)
+            .then(layers =>
+              !!id ? _.find(layers, { id }) : _.first(layers)
+            ),
       },
       layers: {
         type: ArtworkLayers.type,
-        resolve: ({ id }) =>
-          gravity(`related/layers`, { artwork: [id] })
-            .then(layers => enhance(layers, { artwork_id: id })),
+        resolve: ({ id }) => artworkLayers(id),
       },
     };
   },
