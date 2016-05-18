@@ -1,13 +1,13 @@
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import initials from './fields/initials';
+import numeral from './fields/numeral';
 import Image from './image';
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLBoolean,
-  GraphQLInt,
 } from 'graphql';
 
 const ProfileType = new GraphQLObjectType({
@@ -49,10 +49,7 @@ const ProfileType = new GraphQLObjectType({
       type: new GraphQLObjectType({
         name: 'ProfileCounts',
         fields: {
-          follows: {
-            type: GraphQLInt,
-            resolve: ({ follows_count }) => follows_count,
-          },
+          follows: numeral(({ follows_count }) => follows_count),
         },
       }),
     },
