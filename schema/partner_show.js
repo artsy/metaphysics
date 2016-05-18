@@ -59,8 +59,22 @@ const PartnerShowType = new GraphQLObjectType({
     description: {
       type: GraphQLString,
     },
+    type: {
+      type: GraphQLString,
+      resolve: ({ fair }) =>
+        isExisty(fair) ? 'Fair Booth' : 'Show',
+    },
     displayable: {
       type: GraphQLBoolean,
+      deprecationReason: 'Prefix Boolean returning fields with `is_`',
+    },
+    is_displayable: {
+      type: GraphQLBoolean,
+      resolve: ({ displayable }) => displayable,
+    },
+    is_fair_booth: {
+      type: GraphQLBoolean,
+      resolve: ({ fair }) => isExisty(fair),
     },
     press_release: markdown(),
     start_at: date,
