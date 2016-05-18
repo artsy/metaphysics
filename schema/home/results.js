@@ -88,7 +88,7 @@ const moduleResults = {
     });
   },
   generic_gene: ({ params }) => {
-    return gravity('filter/artworks', assign({}, params, { size: RESULTS_SIZE }))
+    return gravity('filter/artworks', assign({}, params, { size: RESULTS_SIZE, for_sale: true }))
       .then(({ hits }) => hits);
   },
 };

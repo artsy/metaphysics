@@ -5,57 +5,67 @@ export const params = [
   {
     id: 'geometric',
     gene_id: 'geometric',
+    title: 'Geometric',
   },
   {
     id: 'landscape',
     gene_id: 'landscape',
+    title: 'Landscape',
   },
   {
     id: 'emerging-art-painting',
     gene_id: 'emerging-art',
     medium: 'painting',
     price_range: '50.00-10000.00',
+    title: 'Emerging Painting',
   },
   {
     id: 'emerging-art-photography',
     gene_id: 'emerging-art',
     medium: 'photography',
     price_range: '50.00-10000.00',
+    title: 'Emerging Photography',
   },
   {
     id: 'graffiti-slash-street-art',
     gene_id: 'graffiti-slash-street-art',
     price_range: '50.00-5000.00',
+    title: 'Street Art',
   },
   {
     id: 'pop-and-contemporary-pop',
     gene_id: 'pop-and-contemporary-pop',
     medium: 'prints',
     price_range: '50.00-5000.00',
+    title: 'Pop Prints & Multiples',
   },
   {
     id: 'black-and-white',
     gene_id: 'black-and-white',
     medium: 'photography',
     price_range: '50.00-10000.00',
+    title: 'Black & White Photography',
   },
   {
     id: 'abstract-art',
     gene_id: 'abstract-art',
     medium: 'painting',
     price_range: '50.00-10000.00',
+    title: 'Abstract Painting',
   },
   {
     id: 'figurative-painting',
     gene_id: 'figurative-painting',
     medium: 'painting',
     price_range: '50.00-10000.00',
+    title: 'Figurative Painting',
   },
   {
     id: 'collage',
     gene_id: 'collage',
     medium: 'work-on-paper',
     price_range: '50.00-5000.00',
+    title: 'Collage / Works on Paper',
   },
 ];
 

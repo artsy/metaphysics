@@ -3,7 +3,6 @@ import {
   featuredFair,
   featuredGene,
 } from './fetch';
-import gravity from '../../lib/loaders/gravity';
 import { GraphQLString } from 'graphql';
 
 const moduleTitle = {
@@ -36,9 +35,7 @@ const moduleTitle = {
     });
   },
   generic_gene: ({ params }) => {
-    return gravity(`gene/${params.gene_id}`).then((gene) => {
-      return gene.name;
-    });
+    return params.title;
   },
 };
 
