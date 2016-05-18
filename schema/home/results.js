@@ -1,11 +1,13 @@
-
 import gravity from '../../lib/loaders/gravity';
+import uncachedGravity from '../../lib/apis/gravity';
 import {
   featuredAuction,
   featuredFair,
   featuredGene,
+  iconicArtists,
 } from './fetch';
-import { map, assign } from 'lodash';
+import { map, assign, keys, without } from 'lodash';
+import { toQueryString } from '../../lib/helpers';
 import Artwork from '../artwork/index';
 import {
   GraphQLList,
@@ -15,7 +17,16 @@ const RESULTS_SIZE = 15;
 
 const moduleResults = {
   active_bids: () => [],
-  iconic_artists: () => [],
+  iconic_artists: () => {
+    return iconicArtists().then((artists) => {
+      const ids = without(keys(artists), 'cached', 'context_type');
+      return uncachedGravity('filter/artworks?' + toQueryString({
+        artist_ids: ids,
+        size: RESULTS_SIZE,
+        sort: '-partner_updated_at',
+      })).then(({ body: { hits } }) => hits);
+    });
+  },
   followed_artists: ({ accessToken }) => {
     return gravity
       .with(accessToken)('me/follow/artists/artworks', {
