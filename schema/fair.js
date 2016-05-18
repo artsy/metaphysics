@@ -61,6 +61,9 @@ const FairType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
     },
+    tagline: {
+      type: GraphQLString,
+    },
     published: {
       type: GraphQLBoolean,
       deprecationReason: 'Prefix Boolean returning fields with `is_`',
