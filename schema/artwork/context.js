@@ -1,9 +1,10 @@
 import {
+  assign,
   create,
   first,
-  flatten,
+  flow,
+  compact,
 } from 'lodash';
-import { enhance } from '../../lib/helpers';
 import gravity from '../../lib/loaders/gravity';
 import Fair from '../fair';
 import Sale from '../sale/index';
@@ -20,6 +21,11 @@ export const ArtworkContextSaleType = create(Sale.type, {
   isTypeOf: ({ context_type }) => context_type === 'Sale',
 });
 
+export const ArtworkContextAuctionType = create(Sale.type, {
+  name: 'ArtworkContextAuction',
+  isTypeOf: ({ context_type }) => context_type === 'Auction',
+});
+
 export const ArtworkContextPartnerShowType = create(PartnerShow.type, {
   name: 'ArtworkContextPartnerShow',
   isTypeOf: ({ context_type }) => context_type === 'PartnerShow',
@@ -28,30 +34,41 @@ export const ArtworkContextPartnerShowType = create(PartnerShow.type, {
 export const ArtworkContextType = new GraphQLUnionType({
   name: 'ArtworkContext',
   types: [
-    ArtworkContextFairType,
+    ArtworkContextAuctionType,
     ArtworkContextSaleType,
+    ArtworkContextFairType,
     ArtworkContextPartnerShowType,
   ],
 });
+
+const choose = flow(compact, first);
+
 export default {
   type: ArtworkContextType,
   description: 'Returns the associated Fair/Sale/PartnerShow',
   resolve: ({ id }) =>
     Promise
       .all([
-        gravity('related/fairs', { artwork: [id], size: 1 })
-          .then(fairs => {
-            if (fairs.length && !first(fairs).has_full_feature) return [];
-            return fairs;
+        gravity('related/sales', { artwork: [id], size: 1, active: false })
+          .then(first)
+          .then(sale => {
+            if (!sale) return null;
+            return assign({ context_type: sale.is_auction ? 'Auction' : 'Sale' }, sale);
           }),
-        gravity('related/sales', { artwork: [id], size: 1 }),
-        gravity('related/shows', { artwork: [id], size: 1, at_a_fair: false }),
+
+        gravity('related/fairs', { artwork: [id], size: 1 }) // API only returns `active: true`
+          .then(first)
+          .then(fair => {
+            if (!fair || fair && !fair.has_full_feature) return null;
+            return assign({ context_type: 'Fair' }, fair);
+          }),
+
+        gravity('related/shows', { artwork: [id], size: 1, active: false })
+          .then(first)
+          .then(show => {
+            if (!show) return null;
+            return assign({ context_type: 'PartnerShow' }, show);
+          }),
       ])
-      .then(([fairs, sales, shows]) =>
-        first(flatten([
-          enhance(fairs, { context_type: 'Fair' }),
-          enhance(sales, { context_type: 'Sale' }),
-          enhance(shows, { context_type: 'PartnerShow' }),
-        ]))
-      ),
+      .then(choose),
 };

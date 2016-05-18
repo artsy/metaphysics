@@ -206,14 +206,18 @@ describe('Artwork type', () => {
         // Artwork
         .onCall(0)
         .returns(Promise.resolve(artwork))
-        // Fairs
-        .onCall(1)
-        .returns(Promise.resolve([]))
         // Sales
-        .onCall(2)
+        .onCall(1)
         .returns(Promise.resolve([
-          assign({}, sale, { name: 'Y2K', end_at: moment.utc('1999-12-31').format() }),
+          assign({}, sale, {
+            is_auction: true,
+            name: 'Y2K',
+            end_at: moment.utc('1999-12-31').format(),
+          }),
         ]))
+        // Fairs
+        .onCall(2)
+        .returns(Promise.resolve([]))
         .onCall(3)
         .returns(Promise.resolve([]));
 
@@ -222,7 +226,7 @@ describe('Artwork type', () => {
           artwork(id: "richard-prince-untitled-portrait") {
             banner: context {
               __typename
-              ... on ArtworkContextSale {
+              ... on ArtworkContextAuction {
                 name
                 href
                 end_at(format: "D:M:YYYY")
@@ -239,7 +243,7 @@ describe('Artwork type', () => {
       return graphql(schema, query)
         .then(({ data }) => {
           data.artwork.banner.should.eql({
-            __typename: 'ArtworkContextSale',
+            __typename: 'ArtworkContextAuction',
             name: 'Y2K',
             href: '/auction/existy',
             end_at: '31:12:1999',
