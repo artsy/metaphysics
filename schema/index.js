@@ -1,4 +1,4 @@
-import Ping from './ping';
+import Status from './status';
 import Article from './article';
 import Articles from './articles';
 import Artwork from './artwork';
@@ -35,7 +35,7 @@ const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-      ping: Ping,
+      status: Status,
       article: Article,
       articles: Articles,
       artwork: Artwork,
