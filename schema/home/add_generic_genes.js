@@ -33,8 +33,8 @@ export const params = [
     title: 'Street Art',
   },
   {
-    id: 'pop-and-contemporary-pop',
-    gene_id: 'pop-and-contemporary-pop',
+    id: 'contemporary-pop',
+    gene_id: 'contemporary-pop',
     medium: 'prints',
     price_range: '50.00-5000.00',
     title: 'Pop Prints & Multiples',
