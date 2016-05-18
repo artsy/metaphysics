@@ -1,5 +1,5 @@
-import Artwork from './artwork';
-import gravity from '../lib/loaders/gravity';
+import Artwork from './index';
+import gravity from '../../lib/loaders/gravity';
 import {
   GraphQLObjectType,
   GraphQLString,
