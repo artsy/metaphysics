@@ -328,6 +328,26 @@ const ArtworkType = new GraphQLObjectType({
         resolve: ({ id }, { size, active, sort, at_a_fair }) =>
           gravity('related/shows', { artwork: [id], active, size, sort, at_a_fair }),
       },
+      show: {
+        type: PartnerShow.type,
+        args: {
+          size: {
+            type: GraphQLInt,
+          },
+          active: {
+            type: GraphQLBoolean,
+          },
+          at_a_fair: {
+            type: GraphQLBoolean,
+          },
+          sort: {
+            type: PartnerShowSorts.type,
+          },
+        },
+        resolve: ({ id }, { active, sort, at_a_fair }) =>
+          gravity('related/shows', { artwork: [id], size: 1, active, sort, at_a_fair })
+            .then(_.first),
+      },
       sale_artwork: {
         type: SaleArtwork.type,
         resolve: ({ id }) =>
