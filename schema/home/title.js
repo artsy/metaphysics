@@ -36,9 +36,7 @@ const moduleTitle = {
     });
   },
   generic_gene: ({ params }) => {
-    return gravity(`gene/${params.gene_id}`).then((gene) => {
-      return gene.name;
-    });
+    return params.title;
   },
 };
 
