@@ -63,7 +63,7 @@ export default {
             return assign({ context_type: 'Fair' }, fair);
           }),
 
-        gravity('related/shows', { artwork: [id], size: 1, active: false })
+        gravity('related/shows', { artwork: [id], size: 1, active: false, at_a_fair: false })
           .then(first)
           .then(show => {
             if (!show) return null;
