@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {
   isExisty,
   exclude,
@@ -67,6 +68,15 @@ const PartnerShowType = new GraphQLObjectType({
     displayable: {
       type: GraphQLBoolean,
       deprecationReason: 'Prefix Boolean returning fields with `is_`',
+    },
+    is_active: {
+      type: GraphQLBoolean,
+      description: 'Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.',
+      resolve: ({ start_at, end_at }) => {
+        const start = moment.utc(start_at).subtract(7, 'days');
+        const end = moment.utc(end_at).add(7, 'days');
+        return moment.utc().isBetween(start, end);
+      },
     },
     is_displayable: {
       type: GraphQLBoolean,
