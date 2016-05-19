@@ -82,6 +82,11 @@ const SaleType = new GraphQLObjectType({
       auction_state: {
         type: GraphQLString,
         resolve: auctionState,
+        deprecationReason: 'Favor `status` for consistency with other models',
+      },
+      status: {
+        type: GraphQLString,
+        resolve: auctionState,
       },
       start_at: date,
       end_at: date,
