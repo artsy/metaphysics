@@ -37,8 +37,9 @@ const PartnerType = new GraphQLObjectType({
       collecting_institution: {
         type: GraphQLString,
       },
-      default_profile_public: {
+      is_default_profile_public: {
         type: GraphQLBoolean,
+        resolve: ({ default_profile_public }) => default_profile_public,
       },
       type: {
         type: GraphQLString,
