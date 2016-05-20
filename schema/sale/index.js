@@ -17,11 +17,14 @@ import {
   GraphQLInt,
 } from 'graphql';
 
-export function auctionState({ start_at, end_at }) {
+export function auctionState({ start_at, end_at, live_start_at }) {
   const start = moment(start_at);
   const end = moment(end_at);
+  const liveStart = moment(live_start_at);
   if (moment().isAfter(end) || moment().isSame(end)) {
     return 'closed';
+  } else if (moment().isBetween(liveStart, end)) {
+    return 'live';
   } else if (moment().isBetween(start, end)) {
     return 'open';
   } else if (moment().isBefore(start) || moment().isSame(start)) {
@@ -69,6 +72,11 @@ const SaleType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: (sale) =>
           auctionState(sale) === 'open',
+      },
+      is_live_open: {
+        type: GraphQLBoolean,
+        resolve: (sale) =>
+          auctionState(sale) === 'live',
       },
       is_closed: {
         type: GraphQLBoolean,
