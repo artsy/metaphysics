@@ -71,6 +71,12 @@ const FilterArtworks = {
     period: {
       type: GraphQLString,
     },
+    periods: {
+      type: new GraphQLList(GraphQLString),
+    },
+    major_periods: {
+      type: new GraphQLList(GraphQLString),
+    },
     price_range: {
       type: GraphQLString,
     },
