@@ -3,6 +3,7 @@ import { exclude } from '../../lib/helpers';
 import moment from 'moment';
 import gravity from '../../lib/loaders/gravity';
 import cached from '../fields/cached';
+import markdown from '../fields/markdown';
 import date from '../fields/date';
 import Artwork from '../artwork';
 import SaleArtwork from '../sale_artwork';
@@ -96,6 +97,7 @@ const SaleType = new GraphQLObjectType({
         type: GraphQLString,
         resolve: auctionState,
       },
+      description: markdown,
       start_at: date,
       end_at: date,
       currency: {
