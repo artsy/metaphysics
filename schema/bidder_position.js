@@ -41,11 +41,17 @@ const BidderPositionType = new GraphQLObjectType({
     },
     max_bid: money({
       name: 'BidderPositionMaxBid',
-      resolve: ({ max_bid_amount_cents }) => max_bid_amount_cents,
+      resolve: ({ display_max_bid_amount_dollars, max_bid_amount_cents }) => ({
+        cents: max_bid_amount_cents,
+        display: display_max_bid_amount_dollars,
+      }),
     }),
     suggested_next_bid: money({
       name: 'BidderPositionSuggestedNextBid',
-      resolve: ({ suggested_next_bid_cents }) => suggested_next_bid_cents,
+      resolve: ({ display_suggested_next_bid_dollars, suggested_next_bid_cents }) => ({
+        cents: suggested_next_bid_cents,
+        display: display_suggested_next_bid_dollars,
+      }),
     }),
     sale_artwork: {
       type: SaleArtwork.type,
@@ -71,13 +77,17 @@ const BidderPositionType = new GraphQLObjectType({
             type: GraphQLInt,
             resolve: ({ amount_cents }) => amount_cents,
           },
+          display: {
+            type: GraphQLString,
+            resolve: ({ display_amount_dollars }) => display_amount_dollars,
+          },
           amount_cents: {
             type: GraphQLInt,
             deprecationReason: 'Favor `cents`',
           },
           display_amount_dollars: {
             type: GraphQLString,
-            deprecationReason: 'Favor `amount`',
+            deprecationReason: 'Favor `display`',
           },
         },
       }),

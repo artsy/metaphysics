@@ -94,28 +94,48 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       reserve: money({
         name: 'SaleArtworkReserve',
-        resolve: ({ reserve_cents }) => reserve_cents,
+        resolve: ({ display_reserve_dollars, reserve_cents }) => ({
+          cents: reserve_cents,
+          display: display_reserve_dollars,
+        }),
       }),
       low_estimate: money({
         name: 'SaleArtworkLowEstimate',
-        resolve: ({ low_estimate_cents }) => low_estimate_cents,
+        resolve: ({ display_low_estimate_dollars, low_estimate_cents }) => ({
+          cents: low_estimate_cents,
+          display: display_low_estimate_dollars,
+        }),
       }),
       high_estimate: money({
         name: 'SaleArtworkHighEstimate',
-        resolve: ({ high_estimate_cents }) => high_estimate_cents,
+        resolve: ({ display_high_estimate_dollars, high_estimate_cents }) => ({
+          cents: high_estimate_cents,
+          display: display_high_estimate_dollars,
+        }),
       }),
       opening_bid: money({
         name: 'SaleArtworkOpeningBid',
-        resolve: ({ opening_bid_cents }) => opening_bid_cents,
+        resolve: ({ display_opening_bid_dollars, opening_bid_cents }) => ({
+          cents: opening_bid_cents,
+          display: display_opening_bid_dollars,
+        }),
       }),
       minimum_next_bid: money({
         name: 'SaleArtworkMinimumNextBid',
-        resolve: ({ minimum_next_bid_cents }) => minimum_next_bid_cents,
+        resolve: ({ display_minimum_next_bid_dollars, minimum_next_bid_cents }) => ({
+          cents: minimum_next_bid_cents,
+          display: display_minimum_next_bid_dollars,
+        }),
       }),
       current_bid: money({
         name: 'SaleArtworkCurrentBid',
-        resolve: ({ highest_bid_amount_cents, opening_bid_cents }) =>
-          highest_bid_amount_cents || opening_bid_cents,
+        resolve: saleArtwork => ({
+          cents: saleArtwork.highest_bid_amount_cents || saleArtwork.opening_bid_cents,
+          display: (
+            saleArtwork.display_highest_bid_amount_dollars ||
+            saleArtwork.display_opening_bid_dollars
+          ),
+        }),
       }),
       highest_bid: {
         type: new GraphQLObjectType({
@@ -133,6 +153,10 @@ const SaleArtworkType = new GraphQLObjectType({
             cents: {
               type: GraphQLInt,
               resolve: ({ amount_cents }) => amount_cents,
+            },
+            display: {
+              type: GraphQLString,
+              resolve: ({ display_amount_dollars }) => display_amount_dollars,
             },
             amount_cents: {
               type: GraphQLInt,
