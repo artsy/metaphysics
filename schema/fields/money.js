@@ -30,11 +30,11 @@ export const amount = resolve => ({
       defaultValue: 0,
     },
   },
-  resolve: (obj, options, { fieldName }) => {
-    const value = resolve ? resolve(obj) : obj[fieldName];
-    if (!value) return null;
+  resolve: (obj, options) => {
+    const cents = resolve(obj);
+    if (!cents) return null;
     const symbol = options.symbol || obj.symbol;
-    return formatMoney(value / 100, assign({}, options, {
+    return formatMoney(cents / 100, assign({}, options, {
       symbol,
     }));
   },
@@ -47,13 +47,21 @@ const money = ({ name, resolve }) => ({
     fields: {
       cents: {
         type: GraphQLInt,
-        resolve: (obj, options, { fieldName }) => {
-          const value = resolve ? resolve(obj) : obj[fieldName];
-          if (!value) return null;
-          return value;
+        resolve: (obj) => {
+          const { cents } = resolve(obj);
+          if (!cents) return null;
+          return cents;
         },
       },
-      amount: amount(resolve),
+      display: {
+        type: GraphQLString,
+        resolve: (obj) => {
+          const { display } = resolve(obj);
+          if (!display) return null;
+          return display;
+        },
+      },
+      amount: amount(obj => resolve(obj).cents),
     },
   }),
 });
