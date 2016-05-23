@@ -35,6 +35,9 @@ const FilterArtworks = {
   type: FilterArtworksType,
   description: 'Artworks Elastic Search results',
   args: {
+    aggregation_partner_cities: {
+      type: new GraphQLList(GraphQLString),
+    },
     aggregations: {
       type: new GraphQLList(ArtworksAggregation),
     },
@@ -75,6 +78,9 @@ const FilterArtworks = {
       type: new GraphQLList(GraphQLString),
     },
     major_periods: {
+      type: new GraphQLList(GraphQLString),
+    },
+    partner_cities: {
       type: new GraphQLList(GraphQLString),
     },
     price_range: {
