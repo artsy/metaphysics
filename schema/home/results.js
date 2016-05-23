@@ -6,14 +6,14 @@ import {
   featuredGene,
   iconicArtists,
 } from './fetch';
-import { map, assign, keys, without } from 'lodash';
+import { map, assign, keys, without, shuffle, slice } from 'lodash';
 import { toQueryString } from '../../lib/helpers';
 import Artwork from '../artwork/index';
 import {
   GraphQLList,
 } from 'graphql';
 
-const RESULTS_SIZE = 15;
+const RESULTS_SIZE = 20;
 
 const moduleResults = {
   active_bids: () => [],
@@ -22,7 +22,7 @@ const moduleResults = {
       const ids = without(keys(artists), 'cached', 'context_type');
       return uncachedGravity('filter/artworks?' + toQueryString({
         artist_ids: ids,
-        size: RESULTS_SIZE,
+        size: 60,
         sort: '-partner_updated_at',
       })).then(({ body: { hits } }) => hits);
     });
@@ -31,13 +31,15 @@ const moduleResults = {
     return gravity
       .with(accessToken)('me/follow/artists/artworks', {
         for_sale: true,
-        size: RESULTS_SIZE,
+        size: 60,
       });
   },
   followed_galleries: ({ accessToken }) => {
     return gravity.with(accessToken)('me/follow/profiles/artworks', {
       for_sale: true,
-      size: RESULTS_SIZE,
+      size: 60,
+    }).then((artworks) => {
+      return slice(shuffle(artworks), 0, RESULTS_SIZE);
     });
   },
   saved_works: ({ accessToken }) => {
@@ -70,8 +72,10 @@ const moduleResults = {
         return gravity('filter/artworks', {
           fair_id: fair.id,
           for_sale: true,
-          size: RESULTS_SIZE,
-        }).then(({ hits }) => hits);
+          size: 60,
+        }).then(({ hits }) => {
+          return slice(shuffle(hits), 0, RESULTS_SIZE);
+        });
       }
     });
   },
