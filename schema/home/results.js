@@ -22,7 +22,7 @@ const moduleResults = {
       const ids = without(keys(artists), 'cached', 'context_type');
       return uncachedGravity('filter/artworks?' + toQueryString({
         artist_ids: ids,
-        size: 60,
+        size: RESULTS_SIZE,
         sort: '-partner_updated_at',
       })).then(({ body: { hits } }) => hits);
     });
@@ -31,7 +31,7 @@ const moduleResults = {
     return gravity
       .with(accessToken)('me/follow/artists/artworks', {
         for_sale: true,
-        size: 60,
+        size: RESULTS_SIZE,
       });
   },
   followed_galleries: ({ accessToken }) => {
