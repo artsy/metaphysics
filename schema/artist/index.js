@@ -380,10 +380,17 @@ const ArtistType = new GraphQLObjectType({
       },
 
       articles: {
+        args: {
+          limit: {
+            type: GraphQLInt,
+          },
+        },
         type: new GraphQLList(Article.type),
-        resolve: ({ _id }) =>
-          positron('articles', { artist_id: _id, published: true })
-            .then(({ results }) => results),
+        resolve: ({ _id }, options) =>
+          positron('articles', defaults(options, {
+            artist_id: _id,
+            published: true,
+          })).then(({ results }) => results),
       },
     };
   },

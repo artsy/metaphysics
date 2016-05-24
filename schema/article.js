@@ -2,6 +2,7 @@ import positron from '../lib/loaders/positron';
 import cached from './fields/cached';
 import AuthorType from './author';
 import Image from './image';
+import date from './fields/date';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -18,7 +19,12 @@ const ArticleType = new GraphQLObjectType({
     title: {
       type: GraphQLString,
     },
+    published_at: date,
+    updated_at: date,
     thumbnail_title: {
+      type: GraphQLString,
+    },
+    thumbnail_teaser: {
       type: GraphQLString,
     },
     author: {
