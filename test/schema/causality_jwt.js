@@ -84,13 +84,20 @@ describe('CausalityJWT', () => {
       });
   });
 
-  it('denies a bidder not registered to the sale', () => {
+  it('converts a BIDDER to an OBSERVER if not registered to the sale', () => {
     const query = `{
       causality_jwt(role: BIDDER, sale_id: "bar")
     }`;
     return graphql(schema, query, { accessToken: 'foo' })
       .then((data) => {
-        data.errors[0].message.should.containEql('Not registered');
+        omit(jwt.decode(data.data.causality_jwt, HMAC_SECRET), 'iat')
+          .should.eql({
+            aud: 'auctions',
+            role: 'observer',
+            userId: 'craig',
+            saleId: 'bar',
+            bidderId: null,
+          });
       });
   });
 
