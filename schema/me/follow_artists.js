@@ -18,12 +18,20 @@ const FollowArtists = new GraphQLObjectType({
         return map(artists, 'artist');
       },
     },
-    total_count: {
-      type: GraphQLInt,
-      resolve: (data, options, { rootValue: { accessToken } }) => {
-        return getTotal('me/follow/artists?total_count=true', accessToken)
-          .then(({ body: { total } }) => total);
-      },
+    counts: {
+      type: new GraphQLObjectType({
+        name: 'FollowArtistCounts',
+        fields: {
+          artists: {
+            type: GraphQLInt,
+            resolve: (data, options, { rootValue: { accessToken } }) => {
+              return getTotal('me/follow/artists?total_count=true', accessToken)
+                .then(({ body: { total } }) => total);
+            },
+          },
+        },
+      }),
+      resolve: (follows) => follows,
     },
   },
 });
