@@ -51,15 +51,14 @@ export default {
       const registered = find(bidders, (b) => {
         return (b.sale._id === options.sale_id || b.sale.id === options.sale_id);
       });
-      if (options.role === 'BIDDER' && !registered) {
-        throw new Error('Not registered to bid in this auction');
-      }
+      const loggedInAndNotRegistered = (options.role === 'BIDDER' && !registered);
+      const role = loggedInAndNotRegistered ? 'OBSERVER' : options.role;
       const data = {
         aud: 'auctions',
-        role: options.role.toLowerCase(),
+        role: role.toLowerCase(),
         userId: me.id,
         saleId: registered ? registered.sale._id : options.sale_id,
-        bidderId: me.paddle_number,
+        bidderId: registered ? me.paddle_number : null,
         iat: new Date().getTime(),
       };
       return jwt.encode(data, HMAC_SECRET);
