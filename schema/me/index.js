@@ -4,6 +4,7 @@ import Bidders from './bidders';
 import BidderStatus from './bidder_status';
 import BidderPositions from './bidder_positions';
 import SaleRegistrations from './sale_registrations';
+import FollowArtists from './follow_artists';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -32,6 +33,7 @@ const Me = new GraphQLObjectType({
     bidder_status: BidderStatus,
     bidder_positions: BidderPositions,
     sale_registrations: SaleRegistrations,
+    follow_artists: FollowArtists,
   },
 });
 
