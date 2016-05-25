@@ -46,7 +46,7 @@ export const moduleContext = {
   },
   active_bids: () => false,
   followed_artists: ({ accessToken }) => {
-    return gravity.with(accessToken)('me/follow/artists', { size: 9, page: 1, total_count: true })
+    return gravity.with(accessToken)('me/follow/artists', { size: 9, page: 1 })
       .then((artists) => {
         return assign({}, { artists }, { context_type: 'FollowArtists' });
       });
