@@ -35,7 +35,8 @@ const HomePageModules = {
     if (accessToken) {
       return gravity.with(accessToken)('me/modules').then((response) => {
         const modules = map(keys(response), (key) => {
-          return { key, display: response[key] };
+          const display = key === 'followed_artists' ? true : response[key];
+          return { key, display };
         });
         return filteredModules(modules, max_rails);
       });
