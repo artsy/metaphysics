@@ -81,6 +81,8 @@ const ArtworkType = new GraphQLObjectType({
       },
       website: {
         type: GraphQLString,
+        resolve: artwork =>
+          isEmbeddedVideo(artwork) ? null : artwork.website,
       },
       collecting_institution: {
         type: GraphQLString,
