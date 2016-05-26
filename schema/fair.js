@@ -46,14 +46,16 @@ const FairType = new GraphQLObjectType({
     image: Image,
     location: {
       type: Location.type,
-      resolve: ({ id, location }, options) => {
+      resolve: ({ id, location, published }, options) => {
         if (location) {
           return location;
+        } else if (published) {
+          return gravity(`fair/${id}`, options)
+            .then(fair => {
+              return fair.location;
+            });
         }
-        return gravity(`fair/${id}`, options)
-          .then(fair => {
-            return fair.location;
-          });
+        return null;
       },
     },
     start_at: date,
