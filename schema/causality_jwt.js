@@ -21,16 +21,16 @@ export default {
       type: new GraphQLEnumType({
         name: 'Role',
         values: {
-          BIDDER: { value: 'BIDDER' },
           OPERATOR: { value: 'OPERATOR' },
-          OBSERVER: { value: 'OBSERVER' },
+          PARTICIPANT: { value: 'PARTICIPANT' },
         },
       }),
       description: '',
     },
   },
   resolve: (root, options, { rootValue: { accessToken } }) => {
-    if (options.role === 'OBSERVER') {
+    // Observer role for logged out user
+    if (!accessToken) {
       return gravity(`sale/${options.sale_id}`).then((sale) =>
         jwt.encode({
           aud: 'auctions',
@@ -39,30 +39,44 @@ export default {
           saleId: sale._id,
           bidderId: null,
           iat: new Date().getTime(),
-        }, HMAC_SECRET));
-    }
-    return Promise.all([
-      gravity.with(accessToken)('me'),
-      gravity.with(accessToken)('me/bidders'),
-    ]).then(([me, bidders]) => {
-      if (options.role === 'OPERATOR' && me.type !== 'Admin') {
-        throw new Error('Unauthorized to act as an operator');
-      }
-      const registered = find(bidders, (b) => {
-        return (b.sale._id === options.sale_id || b.sale.id === options.sale_id);
+        }, HMAC_SECRET)
+      );
+
+    // Bidder role for logged in & registered user
+    } else if (options.role === 'PARTICIPANT' && accessToken) {
+      return Promise.all([
+        gravity.with(accessToken)('me'),
+        gravity.with(accessToken)('me/bidders'),
+        gravity(`sale/${options.sale_id}`),
+      ]).then(([me, bidders, sale]) => {
+        const registered = find(bidders, (b) => b.sale._id === sale._id);
+        if (!registered) throw new Error('Not registered to bid in auction');
+        return jwt.encode({
+          aud: 'auctions',
+          role: 'bidder',
+          userId: me._id,
+          saleId: sale._id,
+          bidderId: me.paddle_number,
+          iat: new Date().getTime(),
+        }, HMAC_SECRET);
       });
-      if (options.role === 'BIDDER' && !registered) {
-        throw new Error('Not registered to bid in this auction');
-      }
-      const data = {
-        aud: 'auctions',
-        role: options.role.toLowerCase(),
-        userId: me.id,
-        saleId: registered ? registered.sale._id : options.sale_id,
-        bidderId: me.paddle_number,
-        iat: new Date().getTime(),
-      };
-      return jwt.encode(data, HMAC_SECRET);
-    });
+
+    // Operator role for logged in admin
+    } else if (options.role === 'OPERATOR' && accessToken) {
+      return Promise.all([
+        gravity.with(accessToken)('me'),
+        gravity(`sale/${options.sale_id}`),
+      ]).then(([me, sale]) => {
+        if (me.type !== 'Admin') throw new Error('Unauthorized to be operator');
+        return jwt.encode({
+          aud: 'auctions',
+          role: 'operator',
+          userId: me._id,
+          saleId: sale._id,
+          bidderId: me.paddle_number,
+          iat: new Date().getTime(),
+        }, HMAC_SECRET);
+      });
+    }
   },
 };
