@@ -319,7 +319,7 @@ const ArtistType = new GraphQLObjectType({
               at_a_fair: true,
               size: options.size,
             }),
-          ]).then(allShows => reverse(sortBy(take(concat(...allShows), options.size), 'end_at')));
+          ]).then(allShows => take(concat(...allShows), options.size));
         },
       },
 
