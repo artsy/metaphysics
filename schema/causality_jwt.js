@@ -42,9 +42,10 @@ export default {
         }, HMAC_SECRET));
     }
     return Promise.all([
+      gravity(`sale/${options.sale_id}`),
       gravity.with(accessToken)('me'),
       gravity.with(accessToken)('me/bidders'),
-    ]).then(([me, bidders]) => {
+    ]).then(([sale, me, bidders]) => {
       if (options.role === 'OPERATOR' && me.type !== 'Admin') {
         throw new Error('Unauthorized to act as an operator');
       }
@@ -57,7 +58,7 @@ export default {
         aud: 'auctions',
         role: role.toLowerCase(),
         userId: me.id,
-        saleId: registered ? registered.sale._id : options.sale_id,
+        saleId: sale._id,
         bidderId: registered ? me.paddle_number : null,
         iat: new Date().getTime(),
       };
