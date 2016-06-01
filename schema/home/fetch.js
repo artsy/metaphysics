@@ -1,6 +1,6 @@
 import gravity from '../../lib/loaders/gravity';
 import delta from '../../lib/loaders/delta';
-import { sortBy, first, forEach, clone, get } from 'lodash';
+import { sortBy, first, forEach, clone } from 'lodash';
 import blacklist from '../../lib/artist_blacklist';
 
 export const featuredFair = () => {
@@ -29,17 +29,23 @@ export const featuredGene = (accessToken) => {
   });
 };
 
-export const relatedArtist = (accessToken) => {
-  return gravity.with(accessToken)('me/follow/artists', { size: 10 }).then((follows) => {
+export const followedArtist = (accessToken) => {
+  return gravity.with(accessToken)('me/follow/artists', { size: 1 }).then((follows) => {
     if (follows.length) {
-      return gravity
-        .with(accessToken)('me/suggested/artists', {
-          exclude_followed_artists: true,
-          exclude_artists_without_artworks: true,
-          artist_id: get(first(follows), 'artist._id'),
-        })
-        .then(first);
+      return first(follows).artist;
     }
+  });
+};
+
+export const relatedArtist = (accessToken) => {
+  return followedArtist(accessToken).then((followed_artist) => {
+    return gravity
+      .with(accessToken)('me/suggested/artists', {
+        exclude_followed_artists: true,
+        exclude_artists_without_artworks: true,
+        artist_id: followed_artist._id,
+      })
+      .then(first);
   });
 };
 
