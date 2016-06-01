@@ -12,10 +12,17 @@ describe('Artist type', () => {
         name: 'Foo Bar',
       })
     ));
+
+    const total = sinon.stub();
+    total
+      .onCall(0)
+      .returns(Promise.resolve(42));
+    Artist.__Rewire__('total', total);
   });
 
   afterEach(() => {
     Artist.__ResetDependency__('gravity');
+    Artist.__ResetDependency__('total');
   });
 
   it('fetches an artist by ID', () => {
@@ -24,6 +31,29 @@ describe('Artist type', () => {
         Artist.__get__('gravity').args[0][0].should.equal('artist/foo-bar');
         data.artist.id.should.equal('foo-bar');
         data.artist.name.should.equal('Foo Bar');
+      });
+  });
+
+  it('returns the total number of partner shows for an artist', () => {
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          counts {
+            partner_shows
+          }
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          artist: {
+            counts: {
+              partner_shows: 42,
+            },
+          },
+        });
       });
   });
 });

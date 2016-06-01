@@ -24,6 +24,7 @@ import ArtistCarousel from './carousel';
 import ArtistStatuses from './statuses';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
+import total from '../../lib/loaders/total';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -129,6 +130,8 @@ const ArtistType = new GraphQLObjectType({
               auction_lots_count),
             for_sale_artworks: numeral(({ forsale_artworks_count }) =>
               forsale_artworks_count),
+            partner_shows: numeral(({ id }) =>
+              total(`related/shows`, { artist_id: id })),
           },
         }),
         resolve: (artist) => artist,
