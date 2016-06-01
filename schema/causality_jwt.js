@@ -53,23 +53,23 @@ export default {
 
           // ...registered users, use bidder role...
           ? jwt.encode({
-              aud: 'auctions',
-              role: 'bidder',
-              userId: me._id,
-              saleId: sale._id,
-              bidderId: me.paddle_number,
-              iat: new Date().getTime(),
-            }, HMAC_SECRET)
+            aud: 'auctions',
+            role: 'bidder',
+            userId: me._id,
+            saleId: sale._id,
+            bidderId: me.paddle_number,
+            iat: new Date().getTime(),
+          }, HMAC_SECRET)
 
           // ...otherwise use observer role
           : jwt.encode({
-              aud: 'auctions',
-              role: 'observer',
-              userId: me._id,
-              saleId: sale._id,
-              bidderId: null,
-              iat: new Date().getTime(),
-            }, HMAC_SECRET)
+            aud: 'auctions',
+            role: 'observer',
+            userId: me._id,
+            saleId: sale._id,
+            bidderId: null,
+            iat: new Date().getTime(),
+          }, HMAC_SECRET)
       );
 
     // Operator role if logged in as an admin
