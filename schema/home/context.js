@@ -14,7 +14,7 @@ import Gene from '../gene';
 import Artist from '../artist/index';
 import FollowArtists from '../me/follow_artists';
 import Trending from '../trending';
-import { GraphQLUnionType } from 'graphql';
+import { GraphQLUnionType, GraphQLObjectType } from 'graphql';
 
 export const HomePageModuleContextFairType = create(Fair.type, {
   name: 'HomePageModuleContextFair',
@@ -41,8 +41,16 @@ export const HomePageModuleContextFollowArtistsType = create(FollowArtists.type,
   isTypeOf: ({ context_type }) => context_type === 'FollowArtists',
 });
 
-export const HomePageModuleContextRelatedArtistsType = create(Artist.type, {
-  name: 'HomePageModuleContextRelatedArtists',
+export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
+  name: 'HomePageModuleContextRelatedArtist',
+  fields: () => ({
+    artist: {
+      type: Artist.type,
+    },
+    based_on: {
+      type: Artist.type,
+    },
+  }),
   isTypeOf: ({ context_type }) => context_type === 'Artist',
 });
 
@@ -74,10 +82,11 @@ export const moduleContext = {
   },
   related_artists: ({ accessToken }) => {
     return followedArtist(accessToken).then((follow) => {
-      return relatedArtist(accessToken).then((artist) => {
-        const message = `Based on ${follow.name}`;
-        return assign({}, artist, { context_type: 'Artist', follow_annotation: message });
-      });
+      return relatedArtist(accessToken).then((artist) => ({
+        context_type: 'Artist',
+        based_on: follow,
+        artist,
+      }));
     });
   },
   genes: ({ accessToken }) => {
@@ -101,7 +110,7 @@ export default {
       HomePageModuleContextGeneType,
       HomePageModuleContextTrendingType,
       HomePageModuleContextFollowArtistsType,
-      HomePageModuleContextRelatedArtistsType,
+      HomePageModuleContextRelatedArtistType,
     ],
   }),
   resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {

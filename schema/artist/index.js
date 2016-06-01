@@ -44,9 +44,6 @@ const ArtistType = new GraphQLObjectType({
       id: {
         type: GraphQLString,
       },
-      follow_annotation: {
-        type: GraphQLString,
-      },
       href: {
         type: GraphQLString,
         resolve: (artist) => `/artist/${artist.id}`,
