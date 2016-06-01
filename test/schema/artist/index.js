@@ -18,11 +18,24 @@ describe('Artist type', () => {
       .onCall(0)
       .returns(Promise.resolve(42));
     Artist.__Rewire__('total', total);
+
+    const bio = sinon.stub();
+    bio
+      .onCall(0)
+      .returns(Promise.resolve(null));
+    Artist.__Rewire__('bio', bio);
+
+    const blurb = sinon.stub();
+    blurb
+      .onCall(0)
+      .returns(Promise.resolve(null));
+    Artist.__Rewire__('blurb', blurb);
   });
 
   afterEach(() => {
     Artist.__ResetDependency__('gravity');
     Artist.__ResetDependency__('total');
+    Artist.__ResetDependency__('bio');
   });
 
   it('fetches an artist by ID', () => {
@@ -52,6 +65,48 @@ describe('Artist type', () => {
             counts: {
               partner_shows: 42,
             },
+          },
+        });
+      });
+  });
+
+  it('returns the total number of related artists for an artist', () => {
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          counts {
+            related_artists
+          }
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          artist: {
+            counts: {
+              related_artists: 42,
+            },
+          },
+        });
+      });
+  });
+
+  it('returns false if artist has no metadata', () => {
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          has_metadata
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          artist: {
+            has_metadata: false,
           },
         });
       });
