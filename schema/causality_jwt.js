@@ -21,15 +21,15 @@ export default {
       type: new GraphQLEnumType({
         name: 'Role',
         values: {
-          OPERATOR: { value: 'OPERATOR' },
           PARTICIPANT: { value: 'PARTICIPANT' },
+          OPERATOR: { value: 'OPERATOR' },
         },
       }),
       description: '',
     },
   },
   resolve: (root, options, { rootValue: { accessToken } }) => {
-    // Observer role for logged out user
+    // Observer role for logged out users
     if (!accessToken) {
       return gravity(`sale/${options.sale_id}`).then((sale) =>
         jwt.encode({
@@ -42,31 +42,42 @@ export default {
         }, HMAC_SECRET)
       );
 
-    // Bidder role for logged in & registered user
+    // For logged in and...
     } else if (options.role === 'PARTICIPANT' && accessToken) {
       return Promise.all([
+        gravity(`sale/${options.sale_id}`),
         gravity.with(accessToken)('me'),
         gravity.with(accessToken)('me/bidders'),
-        gravity(`sale/${options.sale_id}`),
-      ]).then(([me, bidders, sale]) => {
-        const registered = find(bidders, (b) => b.sale._id === sale._id);
-        if (!registered) throw new Error('Not registered to bid in auction');
-        return jwt.encode({
-          aud: 'auctions',
-          role: 'bidder',
-          userId: me._id,
-          saleId: sale._id,
-          bidderId: me.paddle_number,
-          iat: new Date().getTime(),
-        }, HMAC_SECRET);
-      });
+      ]).then(([sale, me, bidders]) =>
+        find(bidders, (b) => b.sale._id === sale._id)
 
-    // Operator role for logged in admin
+          // ...registered users, use bidder role...
+          ? jwt.encode({
+              aud: 'auctions',
+              role: 'bidder',
+              userId: me._id,
+              saleId: sale._id,
+              bidderId: me.paddle_number,
+              iat: new Date().getTime(),
+            }, HMAC_SECRET)
+
+          // ...otherwise use observer role
+          : jwt.encode({
+              aud: 'auctions',
+              role: 'observer',
+              userId: me._id,
+              saleId: sale._id,
+              bidderId: null,
+              iat: new Date().getTime(),
+            }, HMAC_SECRET)
+      );
+
+    // Operator role if logged in as an admin
     } else if (options.role === 'OPERATOR' && accessToken) {
       return Promise.all([
-        gravity.with(accessToken)('me'),
         gravity(`sale/${options.sale_id}`),
-      ]).then(([me, sale]) => {
+        gravity.with(accessToken)('me'),
+      ]).then(([sale, me]) => {
         if (me.type !== 'Admin') throw new Error('Unauthorized to be operator');
         return jwt.encode({
           aud: 'auctions',

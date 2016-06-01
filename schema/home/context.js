@@ -5,10 +5,13 @@ import {
   featuredFair,
   featuredGene,
   iconicArtists,
+  relatedArtist,
 } from './fetch';
 import Fair from '../fair';
 import Sale from '../sale/index';
 import Gene from '../gene';
+import Artist from '../artist/index';
+import FollowArtists from '../me/follow_artists';
 import Trending from '../trending';
 import { GraphQLUnionType } from 'graphql';
 
@@ -32,6 +35,16 @@ export const HomePageModuleContextTrendingType = create(Trending.type, {
   isTypeOf: ({ context_type }) => context_type === 'Trending',
 });
 
+export const HomePageModuleContextFollowArtistsType = create(FollowArtists.type, {
+  name: 'HomePageModuleContextFollowArtists',
+  isTypeOf: ({ context_type }) => context_type === 'FollowArtists',
+});
+
+export const HomePageModuleContextRelatedArtistsType = create(Artist.type, {
+  name: 'HomePageModuleContextRelatedArtists',
+  isTypeOf: ({ context_type }) => context_type === 'Artist',
+});
+
 export const moduleContext = {
   iconic_artists: () => {
     return iconicArtists().then((trending) => {
@@ -39,7 +52,12 @@ export const moduleContext = {
     });
   },
   active_bids: () => false,
-  followed_artists: () => false,
+  followed_artists: ({ accessToken }) => {
+    return gravity.with(accessToken)('me/follow/artists', { size: 9, page: 1 })
+      .then((artists) => {
+        return assign({}, { artists }, { context_type: 'FollowArtists' });
+      });
+  },
   followed_galleries: () => false,
   saved_works: () => false,
   recommended_works: () => false,
@@ -53,7 +71,11 @@ export const moduleContext = {
       return assign({}, fair, { context_type: 'Fair' });
     });
   },
-  related_artists: () => false,
+  related_artists: ({ accessToken }) => {
+    return relatedArtist(accessToken).then((artist) => {
+      return assign({}, artist, { context_type: 'Artist' });
+    });
+  },
   genes: ({ accessToken }) => {
     return featuredGene(accessToken).then((gene) => {
       return assign({}, gene, { context_type: 'Gene' });
@@ -74,6 +96,8 @@ export default {
       HomePageModuleContextSaleType,
       HomePageModuleContextGeneType,
       HomePageModuleContextTrendingType,
+      HomePageModuleContextFollowArtistsType,
+      HomePageModuleContextRelatedArtistsType,
     ],
   }),
   resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {

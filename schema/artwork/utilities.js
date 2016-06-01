@@ -1,3 +1,5 @@
+import { parse } from 'url';
+
 export const isDimensional = (value) => parseFloat(value) > 0;
 
 export const isThreeDimensional = ({ depth, diameter }) => {
@@ -18,4 +20,26 @@ export const isTooBig = ({ width, height, metric }) => {
     parseFloat(width) > LIMIT[metric] ||
     parseFloat(height) > LIMIT[metric]
   );
+};
+
+export const isEmbeddedVideo = ({ website, category }) => (
+  website.match('vimeo|youtu') &&
+  category.match('Video')
+);
+
+export const embed = (website, { width, height, autoplay }) => {
+  const { host } = parse(website);
+  const id = website.split('/').pop();
+
+  switch (host) {
+    case 'youtu.be':
+    case 'youtube.com':
+      return `<iframe width='${width}' height='${height}' src='https://www.youtube.com/embed/${id}?rel=0&amp;showinfo=0&amp;autoplay=${autoplay ? 1 : 0}' frameborder='0' allowfullscreen></iframe>`; // eslint-disable-line max-len
+
+    case 'vimeo.com':
+      return `<iframe width='${width}' height='${height}' src='//player.vimeo.com/video/${id}?color=ffffff&amp;autoplay=${autoplay ? 1 : 0}' frameborder='0' allowfullscreen></iframe>`; // eslint-disable-line max-len
+
+    default:
+      return null;
+  }
 };

@@ -1,5 +1,6 @@
 import positron from '../lib/loaders/positron';
 import Article from './article';
+import ArticleSorts from './sorts/article_sorts';
 import {
   GraphQLString,
   GraphQLBoolean,
@@ -13,6 +14,7 @@ const Articles = {
     show_id: {
       type: GraphQLString,
     },
+    sort: ArticleSorts,
     published: {
       type: GraphQLBoolean,
       defaultValue: true,

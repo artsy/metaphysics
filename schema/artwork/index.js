@@ -2,6 +2,8 @@ import _ from 'lodash';
 import {
   isTwoDimensional,
   isTooBig,
+  isEmbeddedVideo,
+  embed,
 } from './utilities';
 import {
   enhance,
@@ -79,6 +81,8 @@ const ArtworkType = new GraphQLObjectType({
       },
       website: {
         type: GraphQLString,
+        resolve: artwork =>
+          isEmbeddedVideo(artwork) ? null : artwork.website,
       },
       collecting_institution: {
         type: GraphQLString,
@@ -99,9 +103,33 @@ const ArtworkType = new GraphQLObjectType({
             .catch(() => null);
         },
       },
+      embed: {
+        type: GraphQLString,
+        description: 'Returns an HTML string representing the embedded content (video)',
+        args: {
+          width: {
+            type: GraphQLInt,
+            defaultValue: 853,
+          },
+          height: {
+            type: GraphQLInt,
+            defaultValue: 450,
+          },
+          autoplay: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+          },
+        },
+        resolve: ({ website }, options) =>
+          isEmbeddedVideo ? embed(website, options) : null,
+      },
       can_share_image: {
         type: GraphQLBoolean,
         deprecationReason: 'Favor `is_`-prefixed boolean attributes',
+      },
+      is_embeddable_video: {
+        type: GraphQLBoolean,
+        resolve: isEmbeddedVideo,
       },
       is_shareable: {
         type: GraphQLBoolean,

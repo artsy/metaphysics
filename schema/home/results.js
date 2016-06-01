@@ -5,6 +5,7 @@ import {
   featuredFair,
   featuredGene,
   iconicArtists,
+  relatedArtist,
 } from './fetch';
 import { map, assign, keys, without, shuffle, slice } from 'lodash';
 import { toQueryString } from '../../lib/helpers';
@@ -79,7 +80,17 @@ const moduleResults = {
       }
     });
   },
-  related_artists: () => [],
+  related_artists: ({ accessToken }) => {
+    return relatedArtist(accessToken).then((related_artist) => {
+      if (related_artist) {
+        return gravity('filter/artworks', {
+          artist_id: related_artist._id,
+          for_sale: true,
+          size: RESULTS_SIZE,
+        }).then(({ hits }) => hits);
+      }
+    });
+  },
   genes: ({ accessToken }) => {
     return featuredGene(accessToken).then((gene) => {
       if (gene) {

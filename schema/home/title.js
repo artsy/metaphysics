@@ -2,6 +2,7 @@ import {
   featuredAuction,
   featuredFair,
   featuredGene,
+  relatedArtist,
 } from './fetch';
 import { GraphQLString } from 'graphql';
 
@@ -26,7 +27,13 @@ const moduleTitle = {
       }
     });
   },
-  related_artists: () => 'Works by Related Artists',
+  related_artists: ({ accessToken }) => {
+    return relatedArtist(accessToken).then((related_artist) => {
+      if (related_artist) {
+        return related_artist.name;
+      }
+    });
+  },
   genes: ({ accessToken }) => {
     return featuredGene(accessToken).then((gene) => {
       if (gene) {

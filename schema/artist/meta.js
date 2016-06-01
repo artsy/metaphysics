@@ -29,7 +29,8 @@ const ArtistMetaType = new GraphQLObjectType({
         if (slugs.indexOf(artist.id) !== -1) {
           return `${artist.name} Art - ${countDisplay(artist)}Works, Bio, News | Artsy`;
         }
-        return `${metaName(artist)} - ${countDisplay(artist)}Artworks, Bio & Shows on Artsy`;
+        const count = artist.published_artworks_count;
+        return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`;
       },
     },
   },

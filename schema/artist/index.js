@@ -3,8 +3,6 @@ import {
   compact,
   concat,
   take,
-  sortBy,
-  reverse,
 } from 'lodash';
 import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
@@ -18,6 +16,7 @@ import Meta from './meta';
 import PartnerShow from '../partner_show';
 import Sale from '../sale/index';
 import ArtworkSorts from '../sorts/artwork_sorts';
+import ArticleSorts from '../sorts/article_sorts';
 import PartnerShowSorts from '../sorts/partner_show_sorts';
 import SaleSorts from '../sale/sorts';
 import ArtistCarousel from './carousel';
@@ -319,7 +318,7 @@ const ArtistType = new GraphQLObjectType({
               at_a_fair: true,
               size: options.size,
             }),
-          ]).then(allShows => reverse(sortBy(take(concat(...allShows), options.size), 'end_at')));
+          ]).then(allShows => take(concat(...allShows), options.size));
         },
       },
 
@@ -380,10 +379,18 @@ const ArtistType = new GraphQLObjectType({
       },
 
       articles: {
+        args: {
+          sort: ArticleSorts,
+          limit: {
+            type: GraphQLInt,
+          },
+        },
         type: new GraphQLList(Article.type),
-        resolve: ({ _id }) =>
-          positron('articles', { artist_id: _id, published: true })
-            .then(({ results }) => results),
+        resolve: ({ _id }, options) =>
+          positron('articles', defaults(options, {
+            artist_id: _id,
+            published: true,
+          })).then(({ results }) => results),
       },
     };
   },
