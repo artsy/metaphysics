@@ -30,7 +30,7 @@ const moduleTitle = {
   related_artists: ({ accessToken }) => {
     return relatedArtist(accessToken).then((related_artist) => {
       if (related_artist) {
-        return related_artist.name;
+        return `Works by ${related_artist.name}`;
       }
     });
   },

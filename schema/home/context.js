@@ -6,6 +6,7 @@ import {
   featuredGene,
   iconicArtists,
   relatedArtist,
+  followedArtist,
 } from './fetch';
 import Fair from '../fair';
 import Sale from '../sale/index';
@@ -72,8 +73,11 @@ export const moduleContext = {
     });
   },
   related_artists: ({ accessToken }) => {
-    return relatedArtist(accessToken).then((artist) => {
-      return assign({}, artist, { context_type: 'Artist' });
+    return followedArtist(accessToken).then((follow) => {
+      return relatedArtist(accessToken).then((artist) => {
+        const message = `Based on ${follow.name}`;
+        return assign({}, artist, { context_type: 'Artist', follow_annotation: message });
+      });
     });
   },
   genes: ({ accessToken }) => {
