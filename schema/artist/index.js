@@ -140,6 +140,12 @@ const ArtistType = new GraphQLObjectType({
               total(`related/shows`, { artist_id: id })),
             related_artists: numeral(({ id }) =>
               total(`related/layer/main/artists`, { artist: id })),
+            articles: numeral(({ _id }) =>
+              positron('articles', {
+                artist_id: _id,
+                published: true,
+                limit: 1,
+              }).then(({ count }) => count)),
           },
         }),
         resolve: (artist) => artist,

@@ -10,6 +10,13 @@ describe('Artist type', () => {
       Promise.resolve({
         id: 'foo-bar',
         name: 'Foo Bar',
+        bio: null,
+        blurb: null,
+      })
+    ));
+    Artist.__Rewire__('positron', sinon.stub().returns(
+      Promise.resolve({
+        count: 22,
       })
     ));
 
@@ -18,24 +25,12 @@ describe('Artist type', () => {
       .onCall(0)
       .returns(Promise.resolve(42));
     Artist.__Rewire__('total', total);
-
-    const bio = sinon.stub();
-    bio
-      .onCall(0)
-      .returns(Promise.resolve(null));
-    Artist.__Rewire__('bio', bio);
-
-    const blurb = sinon.stub();
-    blurb
-      .onCall(0)
-      .returns(Promise.resolve(null));
-    Artist.__Rewire__('blurb', blurb);
   });
 
   afterEach(() => {
     Artist.__ResetDependency__('gravity');
     Artist.__ResetDependency__('total');
-    Artist.__ResetDependency__('bio');
+    Artist.__ResetDependency__('positron');
   });
 
   it('fetches an artist by ID', () => {
@@ -87,6 +82,29 @@ describe('Artist type', () => {
           artist: {
             counts: {
               related_artists: 42,
+            },
+          },
+        });
+      });
+  });
+
+  it('returns the total number of related articles for an artist', () => {
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          counts {
+            articles
+          }
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          artist: {
+            counts: {
+              articles: 22,
             },
           },
         });
