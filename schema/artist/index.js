@@ -84,9 +84,7 @@ const ArtistType = new GraphQLObjectType({
       },
       has_metadata: {
         type: GraphQLBoolean,
-        resolve: ({ bio, blurb }) => {
-          return !!(bio || blurb);
-        },
+        resolve: ({ biography, blurb }) => !!(biography || blurb),
       },
       hometown: {
         type: GraphQLString,
