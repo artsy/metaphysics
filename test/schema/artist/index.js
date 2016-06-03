@@ -10,6 +10,13 @@ describe('Artist type', () => {
       Promise.resolve({
         id: 'foo-bar',
         name: 'Foo Bar',
+        bio: null,
+        blurb: null,
+      })
+    ));
+    Artist.__Rewire__('positron', sinon.stub().returns(
+      Promise.resolve({
+        count: 22,
       })
     ));
 
@@ -23,6 +30,7 @@ describe('Artist type', () => {
   afterEach(() => {
     Artist.__ResetDependency__('gravity');
     Artist.__ResetDependency__('total');
+    Artist.__ResetDependency__('positron');
   });
 
   it('fetches an artist by ID', () => {
@@ -52,6 +60,71 @@ describe('Artist type', () => {
             counts: {
               partner_shows: 42,
             },
+          },
+        });
+      });
+  });
+
+  it('returns the total number of related artists for an artist', () => {
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          counts {
+            related_artists
+          }
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          artist: {
+            counts: {
+              related_artists: 42,
+            },
+          },
+        });
+      });
+  });
+
+  it('returns the total number of related articles for an artist', () => {
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          counts {
+            articles
+          }
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          artist: {
+            counts: {
+              articles: 22,
+            },
+          },
+        });
+      });
+  });
+
+  it('returns false if artist has no metadata', () => {
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          has_metadata
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          artist: {
+            has_metadata: false,
           },
         });
       });

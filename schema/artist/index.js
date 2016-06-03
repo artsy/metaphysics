@@ -82,6 +82,12 @@ const ArtistType = new GraphQLObjectType({
       display_auction_link: {
         type: GraphQLBoolean,
       },
+      has_metadata: {
+        type: GraphQLBoolean,
+        resolve: ({ bio, blurb }) => {
+          return !!(bio || blurb);
+        },
+      },
       hometown: {
         type: GraphQLString,
       },
@@ -131,6 +137,14 @@ const ArtistType = new GraphQLObjectType({
               forsale_artworks_count),
             partner_shows: numeral(({ id }) =>
               total(`related/shows`, { artist_id: id })),
+            related_artists: numeral(({ id }) =>
+              total(`related/layer/main/artists`, { artist: id })),
+            articles: numeral(({ _id }) =>
+              positron('articles', {
+                artist_id: _id,
+                published: true,
+                limit: 1,
+              }).then(({ count }) => count)),
           },
         }),
         resolve: (artist) => artist,
