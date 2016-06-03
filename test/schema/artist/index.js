@@ -4,16 +4,20 @@ import schema from '../../../schema';
 
 describe('Artist type', () => {
   const Artist = schema.__get__('Artist');
+  let gravityResponse = null;
 
   beforeEach(() => {
+    gravityResponse = {
+      id: 'foo-bar',
+      name: 'Foo Bar',
+      biography: null,
+      blurb: null,
+    };
+
     Artist.__Rewire__('gravity', sinon.stub().returns(
-      Promise.resolve({
-        id: 'foo-bar',
-        name: 'Foo Bar',
-        bio: null,
-        blurb: null,
-      })
+      Promise.resolve(gravityResponse)
     ));
+
     Artist.__Rewire__('positron', sinon.stub().returns(
       Promise.resolve({
         count: 22,
@@ -111,22 +115,35 @@ describe('Artist type', () => {
       });
   });
 
-  it('returns false if artist has no metadata', () => {
-    const query = `
-      {
-        artist(id: "foo-bar") {
-          has_metadata
-        }
-      }
-    `;
+  [
+    { fields: { biography: null, blurb: null }, expected: false },
+    { fields: { biography: '', blurb: null }, expected: false },
+    { fields: { biography: null, blurb: '' }, expected: false },
+    { fields: { biography: '', blurb: '' }, expected: false },
+    { fields: { biography: '..', blurb: null }, expected: true },
+    { fields: { biography: null, blurb: '..' }, expected: true },
+    { fields: { biography: '..', blurb: '..' }, expected: true },
+  ].forEach(({ fields, expected }) => {
+    const desc = JSON.stringify(fields);
+    it(`returns that an artist ${expected ? 'has' : 'has no'} metadata with data: ${desc}`, () => {
+      Object.assign(gravityResponse, fields);
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
-          artist: {
-            has_metadata: false,
-          },
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            has_metadata
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              has_metadata: expected,
+            },
+          });
         });
-      });
+    });
   });
 });
