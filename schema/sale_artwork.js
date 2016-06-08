@@ -223,11 +223,11 @@ const SaleArtworkType = new GraphQLObjectType({
             const bucket = find(deflt.increments, (inc) =>
               minimum_next_bid_cents >= inc.from &&
               minimum_next_bid_cents <= inc.to
-            )
+            );
             return bucket.amount;
           });
-        }
-      }
+        },
+      },
     };
   },
 });

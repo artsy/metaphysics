@@ -106,8 +106,8 @@ describe('SaleArtwork type', () => {
         increments: [
           { from: 0, to: 249999, amount: 1 },
           { from: 350000, to: 500000, amount: 2 },
-        ]
-      }
+        ],
+      },
     ]));
     const query = `
       {
