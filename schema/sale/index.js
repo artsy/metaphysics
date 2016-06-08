@@ -96,6 +96,7 @@ const SaleType = new GraphQLObjectType({
         type: GraphQLString,
         resolve: auctionState,
       },
+      registration_ends_at: date,
       start_at: date,
       end_at: date,
       currency: {

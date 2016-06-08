@@ -67,7 +67,7 @@ describe('Me', () => {
       `;
 
       gravity
-        .withArgs('bidders', { sale_id: 'the-fun-sale' })
+        .withArgs('me/bidders', { sale_id: 'the-fun-sale' })
         .returns(Promise.resolve([
           { id: 'Foo ID' },
           { id: 'Bar ID' },
