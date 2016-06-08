@@ -3,6 +3,7 @@ import Sale from './sale/index';
 import {
   GraphQLString,
   GraphQLObjectType,
+  GraphQLBoolean,
 } from 'graphql';
 
 const BidderType = new GraphQLObjectType({
@@ -17,6 +18,9 @@ const BidderType = new GraphQLObjectType({
     },
     sale: {
       type: Sale.type,
+    },
+    qualified_for_bidding: {
+      type: GraphQLBoolean,
     },
   }),
 });

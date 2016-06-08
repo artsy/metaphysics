@@ -15,8 +15,7 @@ export default {
     },
   },
   resolve: (root, options, { rootValue: { accessToken } }) => {
-    const url = options.sale_id === undefined ? 'me/bidders' : 'bidders';
     if (!accessToken) return null;
-    return gravity.with(accessToken)(url, options);
+    return gravity.with(accessToken)('me/bidders', options);
   },
 };
