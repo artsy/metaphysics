@@ -3,10 +3,11 @@ import { graphql } from 'graphql';
 import schema from '../../schema';
 
 describe('SaleArtwork type', () => {
+  let gravity;
   const SaleArtwork = schema.__get__('SaleArtwork');
 
   beforeEach(() => {
-    const gravity = sinon.stub();
+    gravity = sinon.stub();
 
     gravity.returns(Promise.resolve({
       id: 'ed-ruscha-pearl-dust-combination-from-insects-portfolio',
@@ -71,7 +72,6 @@ describe('SaleArtwork type', () => {
       .then(({ data }) => {
         SaleArtwork.__get__('gravity').args[0][0]
           .should.equal('sale_artwork/54c7ed2a7261692bfa910200');
-
         data.should.eql({
           sale_artwork: {
             high_estimate: {
@@ -97,5 +97,26 @@ describe('SaleArtwork type', () => {
           },
         });
       });
+  });
+
+  it('can return the bid increment', () => {
+    gravity.onCall(1).returns(Promise.resolve([
+      {
+        key: 'default',
+        increments: [
+          { from: 0, to: 249999, amount: 1 },
+          { from: 350000, to: 500000, amount: 2 },
+        ],
+      },
+    ]));
+    const query = `
+      {
+        sale_artwork(id: "54c7ed2a7261692bfa910200") {
+          bid_increment
+        }
+      }
+    `;
+    return graphql(schema, query)
+      .then(({ data }) => data.sale_artwork.bid_increment.should.equal(2));
   });
 });
