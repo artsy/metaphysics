@@ -104,19 +104,25 @@ describe('SaleArtwork type', () => {
       {
         key: 'default',
         increments: [
-          { from: 0, to: 249999, amount: 1 },
-          { from: 350000, to: 500000, amount: 2 },
+           { from: 0, to: 399999, amount: 5000 },
+           { from: 400000, to: 1000000, amount: 10000 },
         ],
       },
     ]));
     const query = `
       {
         sale_artwork(id: "54c7ed2a7261692bfa910200") {
-          bid_increment
+          bid_increments
         }
       }
     `;
     return graphql(schema, query)
-      .then(({ data }) => data.sale_artwork.bid_increment.should.equal(2));
+      .then(({ data }) => {
+        data.sale_artwork.bid_increments.slice(0, 20).should.eql([
+          350000, 355000, 360000, 365000, 370000, 375000, 380000, 385000,
+          390000, 395000, 400000, 410000, 420000, 430000, 440000, 450000,
+          460000, 470000, 480000, 490000,
+        ]);
+      });
   });
 });
