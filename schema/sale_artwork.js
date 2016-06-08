@@ -1,6 +1,7 @@
 import {
   assign,
   compact,
+  find,
 } from 'lodash';
 import cached from './fields/cached';
 import date from './fields/date';
@@ -214,6 +215,19 @@ const SaleArtworkType = new GraphQLObjectType({
         type: GraphQLInt,
         deprecationReason: 'Favor `counts.bidder_positions`',
       },
+      bid_increment: {
+        type: GraphQLInt,
+        resolve: ({ minimum_next_bid_cents }) => {
+          return gravity('/increments').then((res) => {
+            const deflt = find(res, { key: 'default' });
+            const bucket = find(deflt.increments, (inc) =>
+              minimum_next_bid_cents >= inc.from &&
+              minimum_next_bid_cents <= inc.to
+            )
+            return bucket.amount;
+          });
+        }
+      }
     };
   },
 });

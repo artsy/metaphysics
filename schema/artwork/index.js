@@ -97,10 +97,10 @@ const ArtworkType = new GraphQLObjectType({
             description: 'Use whatever is in the original response instead of making a request',
           },
         },
-        resolve: ({ partner }, { shallow }) => {
-          if (shallow) return partner;
-          return gravity(`partner/${partner.id}`)
-            .catch(() => null);
+        resolve: (artwork, { shallow }) => {
+          if (shallow) return artwork.partner;
+          console.log(artwork.partner);
+          return gravity(`partner/${artwork.partner._id}`);
         },
       },
       embed: {
