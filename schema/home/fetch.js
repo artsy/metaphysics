@@ -42,7 +42,7 @@ export const relatedArtist = (accessToken) => {
     return gravity
       .with(accessToken)('me/suggested/artists', {
         exclude_followed_artists: true,
-        exclude_artists_without_artworks: true,
+        exclude_artists_without_forsale_artworks: true,
         artist_id: followed_artist._id,
       })
       .then(first);
