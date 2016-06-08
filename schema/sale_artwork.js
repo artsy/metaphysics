@@ -2,6 +2,8 @@ import {
   assign,
   compact,
   find,
+  times,
+  last,
 } from 'lodash';
 import cached from './fields/cached';
 import date from './fields/date';
@@ -16,6 +18,7 @@ import {
   GraphQLNonNull,
   GraphQLInt,
   GraphQLBoolean,
+  GraphQLList,
 } from 'graphql';
 
 export const isBiddable = (sale, { artwork: { sold } }) => (
@@ -215,16 +218,27 @@ const SaleArtworkType = new GraphQLObjectType({
         type: GraphQLInt,
         deprecationReason: 'Favor `counts.bidder_positions`',
       },
-      bid_increment: {
-        type: GraphQLInt,
+      bid_increments: {
+        type: new GraphQLList(GraphQLInt),
         resolve: ({ minimum_next_bid_cents }) => {
           return gravity('/increments').then((res) => {
             const deflt = find(res, { key: 'default' });
-            const bucket = find(deflt.increments, (inc) =>
-              minimum_next_bid_cents >= inc.from &&
-              minimum_next_bid_cents <= inc.to
-            );
-            return bucket.amount;
+            const increments = [minimum_next_bid_cents];
+            times(100, () => {
+              const bid = last(increments);
+              const bucket = find(deflt.increments, (inc) =>
+                bid >= inc.from && bid <= inc.to
+              ) || last(deflt.increments);
+              const nextBid = bid + bucket.amount;
+              if (!bucket.to) return increments.push(nextBid);
+              const nextBidBucket = find(deflt.increments, (inc) =>
+                nextBid >= inc.from && nextBid <= inc.to
+              );
+              if (!nextBidBucket) return increments.push(nextBid);
+              if (nextBid === nextBidBucket.from) increments.push(nextBid);
+              else increments.push(bid + nextBidBucket.amount);
+            });
+            return increments;
           });
         },
       },
