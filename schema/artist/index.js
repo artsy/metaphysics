@@ -129,11 +129,13 @@ const ArtistType = new GraphQLObjectType({
       blurb: assign({}, markdown(), {
         resolve: (artist, args, ast) => {
           const blurb = markdown().resolve(artist, args, ast);
-          if (!blurb.length) {
+          if (blurb.length) {
             return blurb;
           }
           return gravity(`artist/${artist.id}/partner_artists`, {
             size: 1,
+            sort: '-published_artworks_count',
+            has_biography: true,
           }).then(({ biography }) => biography);
         },
       }),
