@@ -48,29 +48,27 @@ export default {
         gravity(`sale/${options.sale_id}`),
         gravity.with(accessToken)('me'),
         gravity.with(accessToken)('me/bidders'),
-      ]).then(([sale, me, bidders]) =>
-        find(bidders, (b) => b.sale._id === sale._id)
-
-          // ...registered users, use bidder role...
-          ? jwt.encode({
+      ]).then(([sale, me, bidders]) => {
+        const bidder = find(bidders, (b) => b.sale._id === sale._id);
+        if (bidder) {
+          return jwt.encode({
             aud: 'auctions',
             role: 'bidder',
             userId: me._id,
             saleId: sale._id,
-            bidderId: me.paddle_number,
+            bidderId: bidder.id,
             iat: new Date().getTime(),
-          }, HMAC_SECRET)
-
-          // ...otherwise use observer role
-          : jwt.encode({
-            aud: 'auctions',
-            role: 'observer',
-            userId: me._id,
-            saleId: sale._id,
-            bidderId: null,
-            iat: new Date().getTime(),
-          }, HMAC_SECRET)
-      );
+          }, HMAC_SECRET);
+        }
+        return jwt.encode({
+          aud: 'auctions',
+          role: 'observer',
+          userId: me._id,
+          saleId: sale._id,
+          bidderId: null,
+          iat: new Date().getTime(),
+        }, HMAC_SECRET);
+      });
 
     // Operator role if logged in as an admin
     } else if (options.role === 'OPERATOR' && accessToken) {

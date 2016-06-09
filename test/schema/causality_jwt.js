@@ -24,7 +24,7 @@ describe('CausalityJWT', () => {
         type: 'User',
       }))
       .onCall(2)
-      .returns(Promise.resolve([{ sale: { _id: 'foo', id: 'slug' } }]));
+      .returns(Promise.resolve([{ id: 'bidder1', sale: { _id: 'foo', id: 'slug' } }]));
     CausalityJWT.__Rewire__('gravity', gravity);
   });
 
@@ -44,7 +44,7 @@ describe('CausalityJWT', () => {
             role: 'bidder',
             userId: 'craig',
             saleId: 'foo',
-            bidderId: '123',
+            bidderId: 'bidder1',
           });
       });
   });
@@ -61,7 +61,7 @@ describe('CausalityJWT', () => {
             role: 'bidder',
             userId: 'craig',
             saleId: 'foo',
-            bidderId: '123',
+            bidderId: 'bidder1',
           });
       });
   });
