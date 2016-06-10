@@ -12,6 +12,6 @@ export default (fn) => ({
     const value = fn ? fn(obj) : obj[fieldName];
 
     if (!isExisty(value)) return null;
-    formatMarkdownValue(value, format);
+    return formatMarkdownValue(value, format);
   },
 });

@@ -4,10 +4,7 @@ import {
   concat,
   take,
   first,
-  assign,
-  pick,
 } from 'lodash';
-import Format from '../input_fields/format';
 import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
