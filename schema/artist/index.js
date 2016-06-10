@@ -3,13 +3,16 @@ import {
   compact,
   concat,
   take,
-  assign,
   first,
+  assign,
+  pick,
 } from 'lodash';
+import Format from '../input_fields/format';
 import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
-import markdown from '../fields/markdown';
+import markdown from '../fields/markdown/markdown';
+import formatMarkdownValue from '../fields/markdown/format_markdown_value';
 import numeral from '../fields/numeral';
 import Image from '../image';
 import Article from '../article';
@@ -126,19 +129,38 @@ const ArtistType = new GraphQLObjectType({
         type: new GraphQLList(GraphQLString),
       },
       meta: Meta,
-      blurb: assign({}, markdown(), {
-        resolve: (artist, args, ast) => {
-          const blurb = markdown().resolve(artist, args, ast);
+      blurb: {
+        args: markdown().args,
+        type: new GraphQLObjectType({
+          name: 'ArtistBlurb',
+          fields: {
+            text: {
+              type: GraphQLString,
+              resolve: ({ text }) => text,
+            },
+            credit: {
+              type: GraphQLString,
+              resolve: ({ credit }) => credit,
+            },
+          },
+        }),
+        resolve: ({ blurb, id }, { format }) => {
           if (blurb.length) {
-            return blurb;
+            return { text: formatMarkdownValue(blurb, format) };
           }
-          return gravity(`artist/${artist.id}/partner_artists`, {
+          return gravity(`artist/${id}/partner_artists`, {
             size: 1,
             sort: '-published_artworks_count',
             has_biography: true,
-          }).then(({ biography }) => biography);
+          }).then((partner_artists) => {
+            const { biography, partner } = first(partner_artists);
+            return {
+              text: biography,
+              credit: `Submitted by ${partner.name}`,
+            };
+          });
         },
-      }),
+      },
       is_shareable: {
         type: GraphQLBoolean,
         resolve: (artist) => artist.published_artworks_count > 0,

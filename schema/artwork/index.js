@@ -10,7 +10,7 @@ import {
   existyValue,
 } from '../../lib/helpers';
 import cached from '../fields/cached';
-import markdown from '../fields/markdown';
+import markdown from '../fields/markdown/markdown';
 import Article from '../article';
 import Artist from '../artist';
 import Image, { getDefault } from '../image';

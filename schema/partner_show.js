@@ -9,7 +9,7 @@ import total from '../lib/loaders/total';
 import { exhibitionPeriod, exhibitionStatus } from '../lib/date';
 import cached from './fields/cached';
 import date from './fields/date';
-import markdown from './fields/markdown';
+import markdown from './fields/markdown/markdown';
 import Artist from './artist';
 import Partner from './partner';
 import Fair from './fair';
