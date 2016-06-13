@@ -1,4 +1,4 @@
-import gravity from '../../lib/loaders/gravity';
+import total from '../../lib/loaders/total';
 import positron from '../../lib/loaders/positron';
 import {
   GraphQLObjectType,
@@ -10,53 +10,63 @@ const ArtistStatusesType = new GraphQLObjectType({
   fields: {
     artworks: {
       type: GraphQLBoolean,
-      resolve: ({ id }) => {
-        return gravity(`artist/${id}/artworks`, {
-          published: true,
-          size: 1,
-        }).then(artworks => !!artworks.length);
-      },
+      resolve: ({ published_artworks_count }) => published_artworks_count > 0,
     },
     shows: {
       type: GraphQLBoolean,
       resolve: ({ id }) => {
-        return gravity('related/shows', {
+        return total(`related/shows`, {
           artist_id: id,
           displayable: true,
-          size: 1,
-        }).then(shows => !!shows.length);
+          size: 0,
+        }).then(count => count > 0);
+      },
+    },
+    cv: {
+      type: GraphQLBoolean,
+      resolve: ({ id }) => {
+        return total(`related/shows`, {
+          artist_id: id,
+          displayable: true,
+          size: 0,
+        }).then(count => count > 15);
       },
     },
     artists: {
       type: GraphQLBoolean,
       resolve: ({ id }) => {
-        return gravity(`related/layer/main/artists`, {
+        return total(`related/layer/main/artists`, {
           exclude_artists_without_artworks: true,
           artist: [id],
-        }).then(artists => !!artists.length);
+          size: 0,
+        }).then(count => count > 0);
       },
     },
     contemporary: {
       type: GraphQLBoolean,
       resolve: ({ id }) => {
-        return gravity(`related/layer/contemporary/artists`, {
+        return total(`related/layer/contemporary/artists`, {
           exclude_artists_without_artworks: true,
           artist: [id],
-        }).then(contemporary => !!contemporary.length);
+          size: 0,
+        }).then(count => count > 0);
       },
     },
     articles: {
       type: GraphQLBoolean,
       resolve: ({ _id }) => {
         return positron('articles', {
-          published: true,
           artist_id: _id,
-        }).then(articles => !!articles.count);
+          published: true,
+          limit: 0,
+        }).then(({ count }) => count > 0);
       },
     },
     auction_lots: {
       type: GraphQLBoolean,
-      resolve: ({ display_auction_link }) => display_auction_link,
+      resolve: ({ display_auction_link, hide_auction_link }) => {
+        return display_auction_link && !hide_auction_link;
+      },
     },
     biography: {
       type: GraphQLBoolean,
@@ -64,7 +74,8 @@ const ArtistStatusesType = new GraphQLObjectType({
         return positron('articles', {
           published: true,
           biography_for_artist_id: _id,
-        }).then(articles => !!articles.count);
+          limit: 0,
+        }).then(({ count }) => count > 0);
       },
     },
   },
