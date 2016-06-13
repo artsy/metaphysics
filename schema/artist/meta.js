@@ -1,5 +1,7 @@
 import { slugs } from './maps/artist_title_slugs';
-import { stripTags } from '../../lib/helpers';
+import descriptions from './maps/artist_meta_descriptions';
+import { stripTags, truncate, markdownToText } from '../../lib/helpers';
+import { compact } from 'lodash';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -31,6 +33,20 @@ const ArtistMetaType = new GraphQLObjectType({
         }
         const count = artist.published_artworks_count;
         return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`;
+      },
+    },
+    description: {
+      type: GraphQLString,
+      resolve: (artist) => {
+        if (descriptions[artist.id]) {
+          return descriptions[artist.id];
+        }
+        const blurb = artist.blurb.length ? markdownToText(artist.blurb) : undefined;
+        const description = compact([
+          `Find the latest shows, biography, and artworks for sale by ${metaName(artist)}`,
+          blurb,
+        ]).join('. ');
+        return truncate(description, 200);
       },
     },
   },
