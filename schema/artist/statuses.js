@@ -10,7 +10,7 @@ const ArtistStatusesType = new GraphQLObjectType({
   fields: {
     artworks: {
       type: GraphQLBoolean,
-      resolve: ({ published_artworks_count }) => !!published_artworks_count,
+      resolve: ({ published_artworks_count }) => published_artworks_count > 0,
     },
     shows: {
       type: GraphQLBoolean,
@@ -19,7 +19,7 @@ const ArtistStatusesType = new GraphQLObjectType({
           artist_id: id,
           displayable: true,
           size: 0,
-        }).then(count => !!count);
+        }).then(count => count > 0);
       },
     },
     cv: {
@@ -39,7 +39,7 @@ const ArtistStatusesType = new GraphQLObjectType({
           exclude_artists_without_artworks: true,
           artist: [id],
           size: 0,
-        }).then(count => !!count);
+        }).then(count => count > 0);
       },
     },
     contemporary: {
@@ -49,7 +49,7 @@ const ArtistStatusesType = new GraphQLObjectType({
           exclude_artists_without_artworks: true,
           artist: [id],
           size: 0,
-        }).then(count => !!count);
+        }).then(count => count > 0);
       },
     },
     articles: {
@@ -59,7 +59,7 @@ const ArtistStatusesType = new GraphQLObjectType({
           artist_id: _id,
           published: true,
           limit: 0,
-        }).then(({ count }) => !!count);
+        }).then(({ count }) => count > 0);
       },
     },
     auction_lots: {
@@ -75,7 +75,7 @@ const ArtistStatusesType = new GraphQLObjectType({
           published: true,
           biography_for_artist_id: _id,
           limit: 0,
-        }).then(({ count }) => !!count);
+        }).then(({ count }) => count > 0);
       },
     },
   },

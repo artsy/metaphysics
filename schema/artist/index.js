@@ -4,12 +4,12 @@ import {
   concat,
   take,
   first,
+  assign,
 } from 'lodash';
 import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
-import markdown from '../fields/markdown/markdown';
-import formatMarkdownValue from '../fields/markdown/format_markdown_value';
+import { markdown, formatMarkdownValue } from '../fields/markdown';
 import numeral from '../fields/numeral';
 import Image from '../image';
 import Article from '../article';
@@ -126,7 +126,10 @@ const ArtistType = new GraphQLObjectType({
         type: new GraphQLList(GraphQLString),
       },
       meta: Meta,
-      blurb: {
+      blurb: assign({
+        deprecationReason: 'Use biography_blurb which includes a gallery-submitted fallback.',
+      }, markdown()),
+      biography_blurb: {
         args: markdown().args,
         type: GraphQLString,
         resolve: ({ blurb, id }, { format }) => {

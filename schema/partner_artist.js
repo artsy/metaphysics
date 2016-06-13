@@ -30,6 +30,7 @@ const PartnerArtistType = new GraphQLObjectType({
     },
     is_display_on_partner_profile: {
       type: GraphQLBoolean,
+      resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
     },
     is_represented_by: {
       type: GraphQLBoolean,
@@ -66,7 +67,7 @@ const PartnerArtist = {
     },
   },
   resolve: (root, { partner_id, artist_id }) =>
-    gravity(`partner/${partner_id}/artist/${artist_id}/`),
+    gravity(`partner/${partner_id}/artist/${artist_id}`),
 };
 
 export default PartnerArtist;
