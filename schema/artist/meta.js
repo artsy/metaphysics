@@ -41,7 +41,7 @@ const ArtistMetaType = new GraphQLObjectType({
         if (descriptions[artist.id]) {
           return descriptions[artist.id];
         }
-        const blurb = artist.blurb.length ? stripTags(markdownToText(artist.blurb)) : undefined;
+        const blurb = artist.blurb.length ? markdownToText(artist.blurb) : undefined;
         const description = compact([
           `Find the latest shows, biography, and artworks for sale by ${metaName(artist)}`,
           blurb,
