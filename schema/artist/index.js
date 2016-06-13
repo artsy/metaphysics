@@ -3,15 +3,18 @@ import {
   compact,
   concat,
   take,
+  first,
 } from 'lodash';
 import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
-import markdown from '../fields/markdown';
+import markdown from '../fields/markdown/markdown';
+import formatMarkdownValue from '../fields/markdown/format_markdown_value';
 import numeral from '../fields/numeral';
 import Image from '../image';
 import Article from '../article';
 import Artwork from '../artwork';
+import PartnerArtist from '../partner_artist';
 import Meta from './meta';
 import PartnerShow from '../partner_show';
 import Sale from '../sale/index';
@@ -79,8 +82,13 @@ const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         deprecationReason: 'Favor `is_`-prefixed boolean attributes',
       },
+      is_display_auction_link: {
+        type: GraphQLBoolean,
+        resolve: ({ display_auction_link }) => display_auction_link,
+      },
       display_auction_link: {
         type: GraphQLBoolean,
+        deprecationReason: 'Favor `is_`-prefixed boolean attributes',
       },
       has_metadata: {
         type: GraphQLBoolean,
@@ -103,11 +111,38 @@ const ArtistType = new GraphQLObjectType({
       deathday: {
         type: GraphQLString,
       },
+      biography: {
+        type: Article.type,
+        description: 'The Artist biography article written by Artsy',
+        resolve: ({ _id }) => {
+          return positron('articles', {
+            published: true,
+            biography_for_artist_id: _id,
+            limit: 1,
+          }).then(articles => first(articles.results));
+        },
+      },
       alternate_names: {
         type: new GraphQLList(GraphQLString),
       },
       meta: Meta,
-      blurb: markdown(),
+      blurb: {
+        args: markdown().args,
+        type: GraphQLString,
+        resolve: ({ blurb, id }, { format }) => {
+          if (blurb.length) {
+            return formatMarkdownValue(blurb, format);
+          }
+          return gravity(`artist/${id}/partner_artists`, {
+            size: 1,
+            sort: '-published_artworks_count',
+            has_biography: true,
+          }).then((partner_artists) => {
+            const { biography } = first(partner_artists);
+            return biography;
+          });
+        },
+      },
       is_shareable: {
         type: GraphQLBoolean,
         resolve: (artist) => artist.published_artworks_count > 0,
@@ -131,8 +166,6 @@ const ArtistType = new GraphQLObjectType({
               published_artworks_count),
             follows: numeral(({ follow_count }) =>
               follow_count),
-            auction_lots: numeral(({ auction_lots_count }) =>
-              auction_lots_count),
             for_sale_artworks: numeral(({ forsale_artworks_count }) =>
               forsale_artworks_count),
             partner_shows: numeral(({ id }) =>
@@ -204,7 +237,6 @@ const ArtistType = new GraphQLObjectType({
           }));
         },
       },
-
       contemporary: {
         type: new GraphQLList(Artist.type), // eslint-disable-line no-use-before-define
         args: {
@@ -369,6 +401,19 @@ const ArtistType = new GraphQLObjectType({
             displayable: true,
             sort: '-end_at',
           }));
+        },
+      },
+
+      partner_artists: {
+        type: new GraphQLList(PartnerArtist.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+            description: 'The number of PartnerArtists to return',
+          },
+        },
+        resolve: ({ id }, options) => {
+          return gravity(`artist/${id}/partner_artists`, options);
         },
       },
 
