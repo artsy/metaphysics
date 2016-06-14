@@ -5,7 +5,6 @@ import {
   GraphQLEnumType,
 } from 'graphql';
 import gravity from '../lib/loaders/gravity';
-import { find } from 'lodash';
 
 const { HMAC_SECRET } = process.env;
 
@@ -49,14 +48,13 @@ export default {
         gravity.with(accessToken)('me'),
         gravity.with(accessToken)('me/bidders', { sale_id: options.sale_id }),
       ]).then(([sale, me, bidders]) => {
-        const bidder = find(bidders, (b) => b.sale._id === sale._id);
-        if (bidder) {
+        if (bidders.length) {
           return jwt.encode({
             aud: 'auctions',
             role: 'bidder',
             userId: me._id,
             saleId: sale._id,
-            bidderId: bidder.id,
+            bidderId: bidders[0].id,
             iat: new Date().getTime(),
           }, HMAC_SECRET);
         }
