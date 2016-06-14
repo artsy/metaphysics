@@ -47,7 +47,7 @@ export default {
       return Promise.all([
         gravity(`sale/${options.sale_id}`),
         gravity.with(accessToken)('me'),
-        gravity.with(accessToken)('me/bidders'),
+        gravity.with(accessToken)('me/bidders', { sale_id: options.sale_id }),
       ]).then(([sale, me, bidders]) => {
         const bidder = find(bidders, (b) => b.sale._id === sale._id);
         if (bidder) {
