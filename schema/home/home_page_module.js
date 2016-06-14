@@ -1,10 +1,14 @@
 import { find } from 'lodash';
-import { GraphQLString, GraphQLObjectType } from 'graphql';
 import { params as genericGenes } from './add_generic_genes';
 import Results from './results';
 import Title from './title';
 import Context from './context';
 import Params from './params';
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLBoolean,
+} from 'graphql';
 
 export const HomePageModulesType = new GraphQLObjectType({
   name: 'HomePageModules',
@@ -14,6 +18,11 @@ export const HomePageModulesType = new GraphQLObjectType({
     },
     display: {
       type: GraphQLString,
+      deprecationReason: 'Favor `is_`-prefixed Booleans (*and* this should be a Boolean)',
+    },
+    is_displayable: {
+      type: GraphQLBoolean,
+      resolve: ({ display }) => display,
     },
     params: Params,
     context: Context,
