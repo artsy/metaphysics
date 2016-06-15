@@ -26,6 +26,7 @@ import Search from './search';
 import TrendingArtists from './trending';
 import Me from './me';
 import CausalityJWT from './causality_jwt';
+import BidIncrements from './bid_increments';
 import {
   GraphQLSchema,
   GraphQLObjectType,
@@ -63,6 +64,7 @@ const schema = new GraphQLSchema({
       trending_artists: TrendingArtists,
       me: Me,
       causality_jwt: CausalityJWT,
+      bid_increments: BidIncrements,
     },
   }),
 });
