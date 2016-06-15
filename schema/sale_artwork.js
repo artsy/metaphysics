@@ -223,7 +223,7 @@ const SaleArtworkType = new GraphQLObjectType({
         resolve: ({ minimum_next_bid_cents, sale_id }) => {
           return gravity(`sale/${sale_id}`).then((sale) => {
             return gravity('increments', {
-              key: sale.increment_strategy
+              key: sale.increment_strategy,
             }).then((incrs) => {
               const incr = incrs[0].increments;
               const increments = [minimum_next_bid_cents];

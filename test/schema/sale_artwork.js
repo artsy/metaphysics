@@ -100,7 +100,9 @@ describe('SaleArtwork type', () => {
   });
 
   it('can return the bid increment', () => {
-    gravity.onCall(1).returns(Promise.resolve([
+    gravity.onCall(1).returns(Promise.resolve({
+      increment_strategy: 'default',
+    })).onCall(2).returns(Promise.resolve([
       {
         key: 'default',
         increments: [
