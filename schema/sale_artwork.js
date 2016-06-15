@@ -220,25 +220,29 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       bid_increments: {
         type: new GraphQLList(GraphQLInt),
-        resolve: ({ minimum_next_bid_cents }) => {
-          return gravity('/increments').then((res) => {
-            const deflt = find(res, { key: 'default' });
-            const increments = [minimum_next_bid_cents];
-            times(100, () => {
-              const bid = last(increments);
-              const bucket = find(deflt.increments, (inc) =>
-                bid >= inc.from && bid <= inc.to
-              ) || last(deflt.increments);
-              const nextBid = bid + bucket.amount;
-              if (!bucket.to) return increments.push(nextBid);
-              const nextBidBucket = find(deflt.increments, (inc) =>
-                nextBid >= inc.from && nextBid <= inc.to
-              );
-              if (!nextBidBucket) return increments.push(nextBid);
-              if (nextBid === nextBidBucket.from) increments.push(nextBid);
-              else increments.push(bid + nextBidBucket.amount);
+        resolve: ({ minimum_next_bid_cents, sale_id }) => {
+          return gravity(`sale/${sale_id}`).then((sale) => {
+            return gravity('increments', {
+              key: sale.increment_strategy
+            }).then((incrs) => {
+              const incr = incrs[0].increments;
+              const increments = [minimum_next_bid_cents];
+              times(100, () => {
+                const bid = last(increments);
+                const bucket = find(incr, (inc) =>
+                  bid >= inc.from && bid <= inc.to
+                ) || last(incr);
+                const nextBid = bid + bucket.amount;
+                if (!bucket.to) return increments.push(nextBid);
+                const nextBidBucket = find(incr, (inc) =>
+                  nextBid >= inc.from && nextBid <= inc.to
+                );
+                if (!nextBidBucket) return increments.push(nextBid);
+                if (nextBid === nextBidBucket.from) increments.push(nextBid);
+                else increments.push(bid + nextBidBucket.amount);
+              });
+              return increments;
             });
-            return increments;
           });
         },
       },
