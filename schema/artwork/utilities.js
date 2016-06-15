@@ -23,11 +23,12 @@ export const isTooBig = ({ width, height, metric }) => {
 };
 
 export const isEmbeddedVideo = ({ website, category }) => (
-  website.match('vimeo|youtu') &&
-  category.match('Video')
+  website && website.match('vimeo|youtu') && category && category.match('Video')
 );
 
 export const embed = (website, { width, height, autoplay }) => {
+  if (!website) return null;
+
   const { host } = parse(website);
   const id = website.split('/').pop();
 
