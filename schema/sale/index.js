@@ -71,7 +71,7 @@ const SaleType = new GraphQLObjectType({
       is_open: {
         type: GraphQLBoolean,
         resolve: (sale) =>
-          auctionState(sale) === 'open',
+          auctionState(sale) === 'open' || auctionState(sale) === 'live',
       },
       is_live_open: {
         type: GraphQLBoolean,
