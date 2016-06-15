@@ -179,6 +179,26 @@ const SaleType = new GraphQLObjectType({
         type: Profile.type,
         resolve: ({ profile }) => profile,
       },
+      bid_increments: {
+        type: new GraphQLList(new GraphQLObjectType({
+          name: 'BidIncrements',
+          fields: {
+            from: {
+              type: GraphQLInt,
+            },
+            to: {
+              type: GraphQLInt,
+            },
+            amount: {
+              type: GraphQLInt,
+            },
+          },
+        })),
+        description: 'A bid increment policy that explains minimum bids in ranges.',
+        resolve: (sale) =>
+          gravity(`increments`, { key: sale.increment_strategy })
+            .then((incs) => incs[0].increments),
+      },
     };
   },
 });
