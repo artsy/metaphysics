@@ -5,7 +5,6 @@ import {
   GraphQLList,
   GraphQLNonNull,
 } from 'graphql';
-import { find } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 
 const BidIncrementsType = new GraphQLObjectType({
@@ -33,7 +32,7 @@ const BidIncrements = {
     },
   },
   resolve: (root, { key }) =>
-    gravity(`increments`).then((incs) => find(incs, { key }).increments),
+    gravity(`increments`, { key }).then((incs) => incs[0].increments),
 };
 
 export default BidIncrements;
