@@ -19,11 +19,16 @@ export default {
       type: GraphQLString,
       description: 'Only the bidder positions on a specific artwork',
     },
+    sale_id: {
+      type: GraphQLString,
+      description: 'Only the bidder positions for a specific auction',
+    },
   },
-  resolve: (root, { current, artwork_id }, { rootValue: { accessToken } }) => {
+  resolve: (root, { current, artwork_id, sale_id }, { rootValue: { accessToken } }) => {
     return gravity
       .with(accessToken)('me/bidder_positions', {
         artwork_id,
+        sale_id,
         sort: '-created_at',
       })
       .then((positions) => {
