@@ -99,6 +99,7 @@ const SaleType = new GraphQLObjectType({
       registration_ends_at: date,
       start_at: date,
       end_at: date,
+      live_start_at: date,
       currency: {
         type: GraphQLString,
       },
