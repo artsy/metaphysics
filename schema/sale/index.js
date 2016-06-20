@@ -8,6 +8,7 @@ import Artwork from '../artwork';
 import SaleArtwork from '../sale_artwork';
 import Profile from '../profile';
 import Image from '../image/index';
+import { amount } from '../fields/money';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -15,6 +16,7 @@ import {
   GraphQLList,
   GraphQLBoolean,
   GraphQLInt,
+  GraphQLFloat,
 } from 'graphql';
 
 export function auctionState({ start_at, end_at, live_start_at }) {
@@ -199,6 +201,27 @@ const SaleType = new GraphQLObjectType({
         resolve: (sale) =>
           gravity(`increments`, { key: sale.increment_strategy })
             .then((incs) => incs[0].increments),
+      },
+      buyers_premium: {
+        type: new GraphQLList(new GraphQLObjectType({
+          name: 'BuyersPremium',
+          fields: {
+            amount: amount(({ cents }) => cents),
+            cents: {
+              type: GraphQLInt,
+              resolve: ({ cents }) => cents,
+            },
+            percent: {
+              type: GraphQLFloat,
+            },
+          },
+        })),
+        description: "Auction's buyer's premium policy.",
+        resolve: (sale) => map(sale.buyers_premium.schedule, (item) => ({
+          cents: item.min_amount_cents,
+          symbol: sale.currency,
+          percent: item.percent,
+        })),
       },
     };
   },
