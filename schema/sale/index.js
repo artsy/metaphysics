@@ -8,6 +8,7 @@ import Artwork from '../artwork';
 import SaleArtwork from '../sale_artwork';
 import Profile from '../profile';
 import Image from '../image/index';
+import { amount } from '../fields/money';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -205,8 +206,10 @@ const SaleType = new GraphQLObjectType({
         type: new GraphQLList(new GraphQLObjectType({
           name: 'BuyersPremium',
           fields: {
-            min_amount_cents: {
+            amount: amount(({ min_amount_cents }) => min_amount_cents),
+            cents: {
               type: GraphQLInt,
+              resolve: ({ min_amount_cents }) => min_amount_cents,
             },
             percent: {
               type: GraphQLFloat,
