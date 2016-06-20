@@ -206,10 +206,10 @@ const SaleType = new GraphQLObjectType({
         type: new GraphQLList(new GraphQLObjectType({
           name: 'BuyersPremium',
           fields: {
-            amount: amount(({ min_amount_cents }) => min_amount_cents),
+            amount: amount(({ cents }) => cents),
             cents: {
               type: GraphQLInt,
-              resolve: ({ min_amount_cents }) => min_amount_cents,
+              resolve: ({ cents }) => cents,
             },
             percent: {
               type: GraphQLFloat,
@@ -217,7 +217,11 @@ const SaleType = new GraphQLObjectType({
           },
         })),
         description: "Auction's buyer's premium policy.",
-        resolve: (sale) => sale.buyers_premium.schedule,
+        resolve: (sale) => map(sale.buyers_premium.schedule, (item) => ({
+          cents: item.min_amount_cents,
+          symbol: sale.currency,
+          percent: item.percent,
+        })),
       },
     };
   },
