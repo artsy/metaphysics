@@ -15,6 +15,7 @@ import {
   GraphQLList,
   GraphQLBoolean,
   GraphQLInt,
+  GraphQLFloat,
 } from 'graphql';
 
 export function auctionState({ start_at, end_at, live_start_at }) {
@@ -199,6 +200,21 @@ const SaleType = new GraphQLObjectType({
         resolve: (sale) =>
           gravity(`increments`, { key: sale.increment_strategy })
             .then((incs) => incs[0].increments),
+      },
+      buyers_premium: {
+        type: new GraphQLList(new GraphQLObjectType({
+          name: 'BuyersPremium',
+          fields: {
+            min_amount_cents: {
+              type: GraphQLInt,
+            },
+            percent: {
+              type: GraphQLFloat,
+            },
+          },
+        })),
+        description: "Auction's buyer's premium policy.",
+        resolve: (sale) => sale.buyers_premium.schedule,
       },
     };
   },
