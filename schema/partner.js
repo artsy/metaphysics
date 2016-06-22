@@ -94,6 +94,7 @@ const PartnerType = new GraphQLObjectType({
         args: {
           size: {
             type: GraphQLInt,
+            defaultValue: 25,
           },
         },
         resolve: ({ id }, options) => gravity(`partner/${id}/locations`, options),
