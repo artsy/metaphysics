@@ -16,14 +16,14 @@ const moduleTitle = {
   live_auctions: () => {
     return featuredAuction().then((auction) => {
       if (auction) {
-        return `At Auction: ${auction.name}`;
+        return `Current Auction: ${auction.name}`;
       }
     });
   },
   current_fairs: () => {
     return featuredFair().then((fair) => {
       if (fair) {
-        return `Art Fair: ${fair.name}`;
+        return `Current Fair: ${fair.name}`;
       }
     });
   },
