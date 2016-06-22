@@ -172,7 +172,7 @@ const ArtworkType = new GraphQLObjectType({
         description: 'Is this artwork part of an auction?',
         resolve: ({ id }) => {
           return gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
-            .then(sales => _.some(sales, 'is_auction'));
+            .then(sales => _.some(sales, 'is_auction')).catch(() => false);
         },
       },
       is_in_show: {
