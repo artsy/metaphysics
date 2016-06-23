@@ -153,11 +153,13 @@ const ArtistType = new GraphQLObjectType({
             sort: '-published_artworks_count',
             has_biography: true,
           }).then((partner_artists) => {
-            const { biography, partner } = first(partner_artists);
-            return {
-              text: biography,
-              credit: `Submitted by ${partner.name}`,
-            };
+            if (partner_artists && partner_artists.length) {
+              const { biography, partner } = first(partner_artists);
+              return {
+                text: biography,
+                credit: `Submitted by ${partner.name}`,
+              };
+            }
           });
         },
       },
