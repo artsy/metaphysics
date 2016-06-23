@@ -131,18 +131,33 @@ const ArtistType = new GraphQLObjectType({
       }, markdown()),
       biography_blurb: {
         args: markdown().args,
-        type: GraphQLString,
+        type: new GraphQLObjectType({
+          name: 'ArtistBlurb',
+          fields: {
+            text: {
+              type: GraphQLString,
+              resolve: ({ text }) => text,
+            },
+            credit: {
+              type: GraphQLString,
+              resolve: ({ credit }) => credit,
+            },
+          },
+        }),
         resolve: ({ blurb, id }, { format }) => {
           if (blurb.length) {
-            return formatMarkdownValue(blurb, format);
+            return { text: formatMarkdownValue(blurb, format) };
           }
           return gravity(`artist/${id}/partner_artists`, {
             size: 1,
             sort: '-published_artworks_count',
             has_biography: true,
           }).then((partner_artists) => {
-            const { biography } = first(partner_artists);
-            return biography;
+            const { biography, partner } = first(partner_artists);
+            return {
+              text: biography,
+              credit: `Submitted by ${partner.name}`,
+            };
           });
         },
       },
