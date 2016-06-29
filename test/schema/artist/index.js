@@ -4,15 +4,21 @@ import schema from '../../../schema';
 
 describe('Artist type', () => {
   const Artist = schema.__get__('Artist');
+  let gravity;
+  let gravity_data;
 
   beforeEach(() => {
-    Artist.__Rewire__('gravity', sinon.stub().returns(
-      Promise.resolve({
-        id: 'foo-bar',
-        name: 'Foo Bar',
-        bio: null,
-        blurb: null,
-      })
+    gravity = sinon.stub();
+
+    gravity_data = {
+      id: 'foo-bar',
+      name: 'Foo Bar',
+      bio: null,
+      blurb: null,
+    };
+
+    Artist.__Rewire__('gravity', gravity.returns(
+      Promise.resolve(gravity_data)
     ));
     Artist.__Rewire__('positron', sinon.stub().returns(
       Promise.resolve({
@@ -125,6 +131,31 @@ describe('Artist type', () => {
         data.should.eql({
           artist: {
             has_metadata: false,
+          },
+        });
+      });
+  });
+
+  it('reformats birthday string if it contains "born"', () => {
+    gravity_data = {
+      id: 'foo-bar',
+      nationality: '',
+      birthday: 'Born 1950',
+    };
+
+    const query = `
+      {
+        artist(id: 'foo-bar') {
+          formatted_nationality_and_birthday
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          artist: {
+            formatted_nationality_and_birthday: 'b. 1950',
           },
         });
       });

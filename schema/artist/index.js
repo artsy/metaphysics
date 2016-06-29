@@ -111,6 +111,25 @@ const ArtistType = new GraphQLObjectType({
       deathday: {
         type: GraphQLString,
       },
+      formatted_nationality_and_birthday: {
+        type: GraphQLString,
+        resolve: ({ birthday, nationality }) => {
+          let formatted_birthday;
+          if (birthday.toLowerCase.includes('born')) {
+            formatted_birthday = birthday.replace('born', 'b.');
+          } else if (!isNaN(birthday) && birthday) {
+            formatted_birthday = 'b. ' + birthday;
+          } else {
+            formatted_birthday = birthday;
+          }
+
+          if (nationality && formatted_birthday) {
+            return nationality + ', ' + formatted_birthday;
+          }
+
+          return nationality || formatted_birthday;
+        },
+      },
       biography: {
         type: Article.type,
         description: 'The Artist biography article written by Artsy',
