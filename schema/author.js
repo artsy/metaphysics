@@ -18,6 +18,7 @@ const AuthorType = new GraphQLObjectType({
     href: {
       type: GraphQLString,
       resolve: ({ profile_handle }) => `/${profile_handle}`,
+      deprecationReason: "Profiles and thus artist hrefs don't exist anymore",
     },
   },
 });
