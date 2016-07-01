@@ -29,6 +29,7 @@ import ArtworkLayer from './layer';
 import ArtworkLayers, { artworkLayers } from './layers';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
+import ObjectIdentification from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -40,9 +41,11 @@ import {
 
 const ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
+  interfaces: [ObjectIdentification.NodeInterface],
   fields: () => {
     return {
       cached,
+      __id: ObjectIdentification.GlobalIDField,
       id: {
         type: GraphQLString,
       },

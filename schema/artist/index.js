@@ -27,6 +27,7 @@ import ArtistStatuses from './statuses';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
 import total from '../../lib/loaders/total';
+import ObjectIdentification from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -39,9 +40,11 @@ import {
 
 const ArtistType = new GraphQLObjectType({
   name: 'Artist',
+  interfaces: [ObjectIdentification.NodeInterface],
   fields: () => {
     return {
       cached,
+      __id: ObjectIdentification.GlobalIDField,
       _id: {
         type: GraphQLString,
       },

@@ -66,7 +66,7 @@ describe('APIs', () => {
       const request = sinon.stub().yields(null, { statusCode: 200, body: 'not json' });
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').should.be.rejectedWith('Unexpected token o');
+      return gravity('foo/bar').should.be.rejectedWith(/Unexpected token o/);
     });
   });
 });
