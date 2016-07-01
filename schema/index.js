@@ -2,6 +2,7 @@ import Status from './status';
 import Article from './article';
 import Articles from './articles';
 import Artwork from './artwork';
+import Artworks from './artworks';
 import Artist from './artist';
 import Artists from './artists';
 import Fair from './fair';
@@ -39,6 +40,7 @@ const schema = new GraphQLSchema({
       article: Article,
       articles: Articles,
       artwork: Artwork,
+      artworks: Artworks,
       artist: Artist,
       artists: Artists,
       fair: Fair,
