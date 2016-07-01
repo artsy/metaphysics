@@ -92,6 +92,8 @@ const SaleArtworkType = new GraphQLObjectType({
             return 'Reserve met';
           } else if (bidder_positions_count === 0 && reserve_status === 'reserve_not_met') {
             return 'This work has a reserve';
+          } else if (bidder_positions_count > 0 && reserve_status === 'reserve_not_met') {
+            return 'Reserve not met';
           }
           return null;
         },
