@@ -8,27 +8,23 @@ describe('Global Identification', () => {
   const Artist = schema.__get__('Artist');
   const Artwork = schema.__get__('Artwork');
   const PartnerShow = schema.__get__('PartnerShow');
-  const ObjectIdentification = schema.__get__('ObjectIdentification');
 
   afterEach(() => {
     Article.__ResetDependency__('positron');
     Artist.__ResetDependency__('gravity');
     Artwork.__ResetDependency__('gravity');
     PartnerShow.__ResetDependency__('gravity');
-    ObjectIdentification.__ResetDependency__('gravity');
   });
 
   describe('for an Article', () => {
     beforeEach(() => {
-      [Article, ObjectIdentification].forEach((mod) => {
-        mod.__Rewire__('positron', sinon.stub().returns(
-          Promise.resolve({
-            id: 'foo-bar',
-            title: 'Nightlife at the Foo Bar',
-            author: 'Artsy Editorial',
-          })
-        ));
-      });
+      Article.__Rewire__('positron', sinon.stub().returns(
+        Promise.resolve({
+          id: 'foo-bar',
+          title: 'Nightlife at the Foo Bar',
+          author: 'Artsy Editorial',
+        })
+      ));
     });
 
     it('generates a Global ID', () => {
@@ -76,15 +72,13 @@ describe('Global Identification', () => {
 
   describe('for an Artist', () => {
     beforeEach(() => {
-      [Artist, ObjectIdentification].forEach((mod) => {
-        mod.__Rewire__('gravity', sinon.stub().returns(
-          Promise.resolve({
-            id: 'foo-bar',
-            birthday: null,
-            artworks_count: 42,
-          })
-        ));
-      });
+      Artist.__Rewire__('gravity', sinon.stub().returns(
+        Promise.resolve({
+          id: 'foo-bar',
+          birthday: null,
+          artworks_count: 42,
+        })
+      ));
     });
 
     it('generates a Global ID', () => {
@@ -132,15 +126,13 @@ describe('Global Identification', () => {
 
   describe('for an Artwork', () => {
     beforeEach(() => {
-      [Artwork, ObjectIdentification].forEach((mod) => {
-        mod.__Rewire__('gravity', sinon.stub().returns(
-          Promise.resolve({
-            id: 'foo-bar',
-            title: 'For baz',
-            artists: null,
-          })
-        ));
-      });
+      Artwork.__Rewire__('gravity', sinon.stub().returns(
+        Promise.resolve({
+          id: 'foo-bar',
+          title: 'For baz',
+          artists: null,
+        })
+      ));
     });
 
     it('generates a Global ID', () => {
@@ -188,16 +180,14 @@ describe('Global Identification', () => {
 
   describe('for a PartnerShow', () => {
     beforeEach(() => {
-      [PartnerShow, ObjectIdentification].forEach((mod) => {
-        mod.__Rewire__('gravity', sinon.stub().returns(
-          Promise.resolve({
-            id: 'foo-bar',
-            displayable: true,
-            partner: { id: 'for-baz' },
-            display_on_partner_profile: true,
-          })
-        ));
-      });
+      PartnerShow.__Rewire__('gravity', sinon.stub().returns(
+        Promise.resolve({
+          id: 'foo-bar',
+          displayable: true,
+          partner: { id: 'for-baz' },
+          display_on_partner_profile: true,
+        })
+      ));
     });
 
     it('generates a Global ID', () => {

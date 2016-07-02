@@ -58,6 +58,8 @@ const Article = {
     },
   },
   resolve: (root, { id }) => positron(`articles/${id}`),
+  // ObjectIdentification
+  isType: (obj) => obj.title !== undefined && obj.author !== undefined,
 };
 
 export default Article;

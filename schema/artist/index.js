@@ -491,6 +491,8 @@ const Artist = {
     },
   },
   resolve: (root, { id }) => gravity(`artist/${id}`),
+  // ObjectIdentification
+  isType: (obj) => obj.birthday !== undefined && obj.artworks_count !== undefined,
 };
 
 export default Artist;

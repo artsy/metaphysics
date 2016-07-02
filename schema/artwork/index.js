@@ -462,6 +462,8 @@ const Artwork = {
     },
   },
   resolve: (root, { id }) => gravity(`artwork/${id}`),
+  // ObjectIdentification
+  isType: (obj) => obj.title !== undefined && obj.artists !== undefined,
 };
 
 export default Artwork;

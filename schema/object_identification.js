@@ -1,6 +1,4 @@
-import gravity from '../lib/loaders/gravity';
-import positron from '../lib/loaders/positron';
-
+import _ from 'lodash';
 import {
   fromGlobalId,
   toGlobalId,
@@ -10,6 +8,12 @@ import {
   GraphQLID,
   GraphQLInterfaceType,
 } from 'graphql';
+
+const SupportedTypes = {
+  types: ['Article', 'Artist', 'Artwork', 'PartnerShow'],
+  // To prevent circular dependencies, when this file is loaded, the modules are lazily loaded.
+  typeModule: _.memoize(type => require(`./${_.snakeCase(type)}`).default),
+};
 
 // Because we use a custom Node ID, we duplicate and slightly adjust the code from:
 // https://github.com/graphql/graphql-relay-js/blob/master/src/node/node.js
@@ -24,16 +28,11 @@ const NodeInterface = new GraphQLInterfaceType({
     },
   }),
   resolveType: (obj) => {
-    if (obj.birthday !== undefined && obj.artworks_count !== undefined) {
-      return require('./artist').default.type;
-    } else if (obj.title !== undefined && obj.artists !== undefined) {
-      return require('./artwork').default.type;
-    } else if (obj.title !== undefined && obj.author !== undefined) {
-      return require('./article').default.type;
-    } else if (obj.partner !== undefined && obj.display_on_partner_profile !== undefined) {
-      return require('./partner_show').default.type;
-    }
-    return null;
+    const mod = _.chain(SupportedTypes.types)
+      .map(type => SupportedTypes.typeModule(type))
+      .find(m => m.isType(obj))
+      .value();
+    return mod && mod.type;
   },
 });
 
@@ -47,19 +46,11 @@ const NodeField = {
       description: 'The ID of the object',
     },
   },
-  resolve: (_, { __id }) => {
+  resolve: (root, { __id }) => {
     const { type, id } = fromGlobalId(__id);
-    switch (type) {
-      case 'Artist':
-        return gravity(`artist/${id}`);
-      case 'Artwork':
-        return gravity(`artwork/${id}`);
-      case 'Article':
-        return positron(`articles/${id}`);
-      case 'PartnerShow':
-        return gravity(`show/${id}`);
-      default:
-        return null;
+    if (_.includes(SupportedTypes.types, type)) {
+      // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
+      return SupportedTypes.typeModule(type).resolve(null, { id });
     }
   },
 };

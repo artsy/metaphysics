@@ -268,6 +268,8 @@ const PartnerShow = {
         return show;
       });
   },
+  // ObjectIdentification
+  isType: (obj) => obj.partner !== undefined && obj.display_on_partner_profile !== undefined,
 };
 
 export default PartnerShow;
