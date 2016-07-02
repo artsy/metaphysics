@@ -97,8 +97,10 @@ const moduleResults = {
         return gravity('filter/artworks', {
           gene_id: gene.id,
           for_sale: true,
-          size: RESULTS_SIZE,
-        }).then(({ hits }) => hits);
+          size: 60,
+        }).then(({ hits }) => {
+          return slice(shuffle(hits), 0, RESULTS_SIZE);
+        });
       }
     });
   },
