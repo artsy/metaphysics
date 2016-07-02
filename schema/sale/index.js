@@ -34,6 +34,35 @@ export function auctionState({ start_at, end_at, live_start_at }) {
   }
 }
 
+const BidIncrement = new GraphQLObjectType({
+  name: 'BidIncrements',
+  fields: {
+    from: {
+      type: GraphQLInt,
+    },
+    to: {
+      type: GraphQLInt,
+    },
+    amount: {
+      type: GraphQLInt,
+    },
+  },
+});
+
+const BuyersPremium = new GraphQLObjectType({
+  name: 'BuyersPremium',
+  fields: {
+    amount: amount(({ cents }) => cents),
+    cents: {
+      type: GraphQLInt,
+      resolve: ({ cents }) => cents,
+    },
+    percent: {
+      type: GraphQLFloat,
+    },
+  },
+});
+
 const SaleType = new GraphQLObjectType({
   name: 'Sale',
   fields: () => {
@@ -183,39 +212,14 @@ const SaleType = new GraphQLObjectType({
         resolve: ({ profile }) => profile,
       },
       bid_increments: {
-        type: new GraphQLList(new GraphQLObjectType({
-          name: 'BidIncrements',
-          fields: {
-            from: {
-              type: GraphQLInt,
-            },
-            to: {
-              type: GraphQLInt,
-            },
-            amount: {
-              type: GraphQLInt,
-            },
-          },
-        })),
+        type: new GraphQLList(BidIncrement),
         description: 'A bid increment policy that explains minimum bids in ranges.',
         resolve: (sale) =>
           gravity(`increments`, { key: sale.increment_strategy })
             .then((incs) => incs[0].increments),
       },
       buyers_premium: {
-        type: new GraphQLList(new GraphQLObjectType({
-          name: 'BuyersPremium',
-          fields: {
-            amount: amount(({ cents }) => cents),
-            cents: {
-              type: GraphQLInt,
-              resolve: ({ cents }) => cents,
-            },
-            percent: {
-              type: GraphQLFloat,
-            },
-          },
-        })),
+        type: new GraphQLList(BuyersPremium),
         description: "Auction's buyer's premium policy.",
         resolve: (sale) => map(sale.buyers_premium.schedule, (item) => ({
           cents: item.min_amount_cents,
