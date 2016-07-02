@@ -11,6 +11,15 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 
+const OrganizerType = new GraphQLObjectType({
+  name: 'organizer',
+  fields: {
+    profile_id: {
+      type: GraphQLString,
+    },
+  },
+});
+
 const FairType = new GraphQLObjectType({
   name: 'Fair',
   fields: () => ({
@@ -75,14 +84,7 @@ const FairType = new GraphQLObjectType({
       resolve: ({ published }) => published,
     },
     organizer: {
-      type: new GraphQLObjectType({
-        name: 'organizer',
-        fields: {
-          profile_id: {
-            type: GraphQLString,
-          },
-        },
-      }),
+      type: OrganizerType,
     },
   }),
 });

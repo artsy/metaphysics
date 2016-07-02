@@ -185,4 +185,61 @@ describe('Global Identification', () => {
         });
     });
   });
+
+  describe('for a PartnerShow', () => {
+    beforeEach(() => {
+      [PartnerShow, ObjectIdentification].forEach((mod) => {
+        mod.__Rewire__('gravity', sinon.stub().returns(
+          Promise.resolve({
+            id: 'foo-bar',
+            displayable: true,
+            partner: { id: 'for-baz' },
+            display_on_partner_profile: true,
+          })
+        ));
+      });
+    });
+
+    it('generates a Global ID', () => {
+      const query = `
+        {
+          partner_show(id: "foo-bar") {
+            __id
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            partner_show: {
+              __id: toGlobalId('PartnerShow', 'foo-bar'),
+            },
+          });
+        });
+    });
+
+    it('resolves a node', () => {
+      const query = `
+        {
+          node(__id: "${toGlobalId('PartnerShow', 'foo-bar')}") {
+            __typename
+            ... on PartnerShow {
+              id
+            }
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            node: {
+              __typename: 'PartnerShow',
+              id: 'foo-bar',
+            },
+          });
+        });
+    });
+  });
 });

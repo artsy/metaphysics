@@ -30,6 +30,8 @@ const NodeInterface = new GraphQLInterfaceType({
       return require('./artwork').default.type;
     } else if (obj.title !== undefined && obj.author !== undefined) {
       return require('./article').default.type;
+    } else if (obj.partner !== undefined && obj.display_on_partner_profile !== undefined) {
+      return require('./partner_show').default.type;
     }
     return null;
   },
@@ -54,6 +56,8 @@ const NodeField = {
         return gravity(`artwork/${id}`);
       case 'Article':
         return positron(`articles/${id}`);
+      case 'PartnerShow':
+        return gravity(`show/${id}`);
       default:
         return null;
     }

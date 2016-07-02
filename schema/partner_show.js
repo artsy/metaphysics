@@ -17,6 +17,7 @@ import Artwork from './artwork';
 import Location from './location';
 import Image, { getDefault } from './image';
 import PartnerShowEventType from './partner_show_event';
+import ObjectIdentification from './object_identification';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -34,8 +35,10 @@ const kind = ({ artists, fair }) => {
 
 const PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
+  interfaces: [ObjectIdentification.NodeInterface],
   fields: () => ({
     cached,
+    __id: ObjectIdentification.GlobalIDField,
     _id: {
       type: GraphQLString,
     },
