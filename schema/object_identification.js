@@ -1,3 +1,6 @@
+import gravity from '../lib/loaders/gravity';
+import positron from '../lib/loaders/positron';
+
 import {
   fromGlobalId,
   toGlobalId,
@@ -7,10 +10,6 @@ import {
   GraphQLID,
   GraphQLInterfaceType,
 } from 'graphql';
-
-import gravity from '../lib/loaders/gravity';
-import Artist from './artist';
-import Artwork from './artwork';
 
 // Because we use a custom Node ID, we duplicate and slightly adjust the code from:
 // https://github.com/graphql/graphql-relay-js/blob/master/src/node/node.js
@@ -26,9 +25,11 @@ const NodeInterface = new GraphQLInterfaceType({
   }),
   resolveType: (obj) => {
     if (obj.birthday !== undefined && obj.artworks_count !== undefined) {
-      return Artist.type;
+      return require('./artist').default.type;
     } else if (obj.title !== undefined && obj.artists !== undefined) {
-      return Artwork.type;
+      return require('./artwork').default.type;
+    } else if (obj.title !== undefined && obj.author !== undefined) {
+      return require('./article').default.type;
     }
     return null;
   },
@@ -51,6 +52,8 @@ const NodeField = {
         return gravity(`artist/${id}`);
       case 'Artwork':
         return gravity(`artwork/${id}`);
+      case 'Article':
+        return positron(`articles/${id}`);
       default:
         return null;
     }
