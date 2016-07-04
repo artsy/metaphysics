@@ -28,7 +28,7 @@ describe('Object Identification', () => {
       gravity: {
         has_full_profile: true,
         shows_count: 42,
-      }
+      },
     },
     PartnerShow: {
       gravity: {
@@ -68,7 +68,7 @@ describe('Object Identification', () => {
         return graphql(schema, query).then(({ data }) => {
           const expectedData = {};
           expectedData[fieldName] = { __id: toGlobalId(typeName, 'foo-bar') };
-          data.should.eql(expectedData)
+          data.should.eql(expectedData);
         });
       });
 

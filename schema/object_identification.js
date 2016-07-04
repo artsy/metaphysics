@@ -46,7 +46,7 @@ const SupportedTypes = {
 // Because we use a custom Node ID, we duplicate and slightly adjust the code from:
 // https://github.com/graphql/graphql-relay-js/blob/master/src/node/node.js
 
-const NodeInterface = new GraphQLInterfaceType({
+export const NodeInterface = new GraphQLInterfaceType({
   name: 'Node',
   description: 'An object with a Globally Unique ID',
   fields: () => ({
@@ -85,13 +85,31 @@ const NodeField = {
 
 const GlobalIDField = {
   name: '__id',
-  description: 'A Globally Unique ID',
+  description: 'A globally unique ID.',
   type: new GraphQLNonNull(GraphQLID),
   resolve: (obj, args, info) => toGlobalId(info.parentType.name, obj.id),
 };
 
+export const IDFields = {
+  __id: GlobalIDField,
+  id: {
+    description: 'A type-specific ID.',
+    type: new GraphQLNonNull(GraphQLID),
+  },
+};
+
+export const GravityIDFields = {
+  ...IDFields,
+  _id: {
+    description: 'A type-specific Gravity Mongo Document ID.',
+    type: new GraphQLNonNull(GraphQLID),
+  },
+};
+
 export default {
   GlobalIDField,
-  NodeField,
+  GravityIDFields,
+  IDFields,
   NodeInterface,
+  NodeField,
 };
