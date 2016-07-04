@@ -1,235 +1,92 @@
+import _ from 'lodash';
 import sinon from 'sinon';
 import { graphql } from 'graphql';
 import { toGlobalId } from 'graphql-relay';
 import schema from '../../schema';
 
-describe('Global Identification', () => {
-  const Article = schema.__get__('Article');
-  const Artist = schema.__get__('Artist');
-  const Artwork = schema.__get__('Artwork');
-  const PartnerShow = schema.__get__('PartnerShow');
+describe('Object Identification', () => {
+  const tests = {
+    Article: {
+      positron: {
+        title: 'Nightlife at the Foo Bar',
+        author: 'Artsy Editorial',
+      },
+    },
+    Artist: {
+      gravity: {
+        birthday: null,
+        artworks_count: 42,
+      },
+    },
+    Artwork: {
+      gravity: {
+        title: 'For baz',
+        artists: null,
+      },
+    },
+    PartnerShow: {
+      gravity: {
+        displayable: true, // this is only so that the show doesn’t get rejected
+        partner: { id: 'for-baz' },
+        display_on_partner_profile: true,
+      },
+    },
+  };
 
-  afterEach(() => {
-    Article.__ResetDependency__('positron');
-    Artist.__ResetDependency__('gravity');
-    Artwork.__ResetDependency__('gravity');
-    PartnerShow.__ResetDependency__('gravity');
-  });
+  _.keys(tests).forEach((typeName) => {
+    describe(`for a ${typeName}`, () => {
+      const fieldName = _.snakeCase(typeName);
+      const type = schema.__get__(typeName);
+      const api = _.keys(tests[typeName])[0];
+      const payload = tests[typeName][api];
 
-  describe('for an Article', () => {
-    beforeEach(() => {
-      Article.__Rewire__('positron', sinon.stub().returns(
-        Promise.resolve({
-          id: 'foo-bar',
-          title: 'Nightlife at the Foo Bar',
-          author: 'Artsy Editorial',
-        })
-      ));
-    });
+      beforeEach(() => {
+        type.__Rewire__(api, sinon.stub().returns(
+          Promise.resolve(_.assign({ id: 'foo-bar' }, payload))
+        ));
+      });
 
-    it('generates a Global ID', () => {
-      const query = `
-        {
-          article(id: "foo-bar") {
-            __id
-          }
-        }
-      `;
+      afterEach(() => {
+        type.__ResetDependency__(api);
+      });
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
-            article: {
-              __id: toGlobalId('Article', 'foo-bar'),
-            },
-          });
-        });
-    });
-
-    it('resolves a node', () => {
-      const query = `
-        {
-          node(__id: "${toGlobalId('Article', 'foo-bar')}") {
-            __typename
-            ... on Article {
-              id
+      it('generates a Global ID', () => {
+        const query = `
+          {
+            ${fieldName}(id: "foo-bar") {
+              __id
             }
           }
-        }
-      `;
+        `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
+        return graphql(schema, query).then(({ data }) => {
+          const expectedData = {};
+          expectedData[fieldName] = { __id: toGlobalId(typeName, 'foo-bar') };
+          data.should.eql(expectedData)
+        });
+      });
+
+      it('resolves a node', () => {
+        const query = `
+          {
+            node(__id: "${toGlobalId(typeName, 'foo-bar')}") {
+              __typename
+              ... on ${typeName} {
+                id
+              }
+            }
+          }
+        `;
+
+        return graphql(schema, query).then(({ data }) => {
           data.should.eql({
             node: {
-              __typename: 'Article',
+              __typename: typeName,
               id: 'foo-bar',
             },
           });
         });
-    });
-  });
-
-  describe('for an Artist', () => {
-    beforeEach(() => {
-      Artist.__Rewire__('gravity', sinon.stub().returns(
-        Promise.resolve({
-          id: 'foo-bar',
-          birthday: null,
-          artworks_count: 42,
-        })
-      ));
-    });
-
-    it('generates a Global ID', () => {
-      const query = `
-        {
-          artist(id: "foo-bar") {
-            __id
-          }
-        }
-      `;
-
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
-            artist: {
-              __id: toGlobalId('Artist', 'foo-bar'),
-            },
-          });
-        });
-    });
-
-    it('resolves a node', () => {
-      const query = `
-        {
-          node(__id: "${toGlobalId('Artist', 'foo-bar')}") {
-            __typename
-            ... on Artist {
-              id
-            }
-          }
-        }
-      `;
-
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
-            node: {
-              __typename: 'Artist',
-              id: 'foo-bar',
-            },
-          });
-        });
-    });
-  });
-
-  describe('for an Artwork', () => {
-    beforeEach(() => {
-      Artwork.__Rewire__('gravity', sinon.stub().returns(
-        Promise.resolve({
-          id: 'foo-bar',
-          title: 'For baz',
-          artists: null,
-        })
-      ));
-    });
-
-    it('generates a Global ID', () => {
-      const query = `
-        {
-          artwork(id: "foo-bar") {
-            __id
-          }
-        }
-      `;
-
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
-            artwork: {
-              __id: toGlobalId('Artwork', 'foo-bar'),
-            },
-          });
-        });
-    });
-
-    it('resolves a node', () => {
-      const query = `
-        {
-          node(__id: "${toGlobalId('Artwork', 'foo-bar')}") {
-            __typename
-            ... on Artwork {
-              id
-            }
-          }
-        }
-      `;
-
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
-            node: {
-              __typename: 'Artwork',
-              id: 'foo-bar',
-            },
-          });
-        });
-    });
-  });
-
-  describe('for a PartnerShow', () => {
-    beforeEach(() => {
-      PartnerShow.__Rewire__('gravity', sinon.stub().returns(
-        Promise.resolve({
-          id: 'foo-bar',
-          displayable: true,
-          partner: { id: 'for-baz' },
-          display_on_partner_profile: true,
-        })
-      ));
-    });
-
-    it('generates a Global ID', () => {
-      const query = `
-        {
-          partner_show(id: "foo-bar") {
-            __id
-          }
-        }
-      `;
-
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
-            partner_show: {
-              __id: toGlobalId('PartnerShow', 'foo-bar'),
-            },
-          });
-        });
-    });
-
-    it('resolves a node', () => {
-      const query = `
-        {
-          node(__id: "${toGlobalId('PartnerShow', 'foo-bar')}") {
-            __typename
-            ... on PartnerShow {
-              id
-            }
-          }
-        }
-      `;
-
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
-            node: {
-              __typename: 'PartnerShow',
-              id: 'foo-bar',
-            },
-          });
-        });
+      });
     });
   });
 });
