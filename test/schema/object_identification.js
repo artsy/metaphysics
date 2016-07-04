@@ -24,6 +24,12 @@ describe('Object Identification', () => {
         artists: null,
       },
     },
+    Partner: {
+      gravity: {
+        has_full_profile: true,
+        shows_count: 42,
+      }
+    },
     PartnerShow: {
       gravity: {
         displayable: true, // this is only so that the show doesn’t get rejected

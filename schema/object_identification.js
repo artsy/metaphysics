@@ -10,7 +10,7 @@ import {
 } from 'graphql';
 
 const SupportedTypes = {
-  types: ['Article', 'Artist', 'Artwork', 'PartnerShow'],
+  types: ['Article', 'Artist', 'Artwork', 'Partner', 'PartnerShow'],
   // To prevent circular dependencies, when this file is loaded, the modules are lazily loaded.
   typeModule: _.memoize(type => require(`./${_.snakeCase(type)}`).default),
 };
