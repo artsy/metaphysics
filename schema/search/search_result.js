@@ -6,6 +6,7 @@ import gravity from '../../lib/loaders/gravity';
 import Image from '../image';
 import SearchEntityType from './search_entity';
 import {
+  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
 } from 'graphql';
@@ -31,7 +32,7 @@ const SearchResultType = new GraphQLObjectType({
   name: 'SearchResult',
   fields: () => ({
     id: {
-      type: GraphQLString,
+      type: GraphQLID,
       resolve: parseId,
     },
     title: {

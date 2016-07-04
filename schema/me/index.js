@@ -5,6 +5,7 @@ import BidderStatus from './bidder_status';
 import BidderPositions from './bidder_positions';
 import SaleRegistrations from './sale_registrations';
 import FollowArtists from './follow_artists';
+import { IDFields } from '../object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -13,9 +14,7 @@ import {
 const Me = new GraphQLObjectType({
   name: 'Me',
   fields: {
-    id: {
-      type: GraphQLString,
-    },
+    ...IDFields,
     type: {
       type: GraphQLString,
     },

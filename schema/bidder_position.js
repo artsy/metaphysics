@@ -3,6 +3,7 @@ import gravity from '../lib/loaders/gravity';
 import date from './fields/date';
 import money, { amount } from './fields/money';
 import SaleArtwork from './sale_artwork';
+import { IDFields } from './object_identification';
 import {
   GraphQLInt,
   GraphQLBoolean,
@@ -13,9 +14,7 @@ import {
 const BidderPositionType = new GraphQLObjectType({
   name: 'BidderPosition',
   fields: () => ({
-    id: {
-      type: GraphQLString,
-    },
+    ...IDFields,
     created_at: date,
     updated_at: date,
     processed_at: date,
@@ -61,9 +60,7 @@ const BidderPositionType = new GraphQLObjectType({
       type: new GraphQLObjectType({
         name: 'HighestBid',
         fields: {
-          id: {
-            type: GraphQLString,
-          },
+          ...IDFields,
           created_at: date,
           number: {
             type: GraphQLInt,

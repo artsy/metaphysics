@@ -3,7 +3,9 @@ import cached from './fields/cached';
 import initials from './fields/initials';
 import numeral from './fields/numeral';
 import Image from './image';
+import { GravityIDFields } from './object_identification';
 import {
+  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -13,13 +15,8 @@ import {
 const ProfileType = new GraphQLObjectType({
   name: 'Profile',
   fields: () => ({
+    ...GravityIDFields,
     cached,
-    _id: {
-      type: GraphQLString,
-    },
-    id: {
-      type: GraphQLString,
-    },
     name: {
       type: GraphQLString,
       resolve: ({ owner }) => owner.name,
@@ -61,7 +58,7 @@ const Profile = {
   description: 'A Profile',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The slug or ID of the Profile',
     },
   },

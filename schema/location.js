@@ -1,6 +1,7 @@
 import { existyValue } from '../lib/helpers';
 import cached from './fields/cached';
 import DayScheduleType from './day_schedule';
+import { IDFields } from './object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -11,10 +12,8 @@ import {
 const LocationType = new GraphQLObjectType({
   name: 'Location',
   fields: () => ({
+    ...IDFields,
     cached,
-    id: {
-      type: GraphQLString,
-    },
     city: {
       type: GraphQLString,
       resolve: ({ city }) => existyValue(city),

@@ -27,10 +27,11 @@ import ArtistStatuses from './statuses';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
 import total from '../../lib/loaders/total';
-import ObjectIdentification from '../object_identification';
+import { GravityIDFields, NodeInterface } from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
+  GraphQLID,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
@@ -40,17 +41,11 @@ import {
 
 const ArtistType = new GraphQLObjectType({
   name: 'Artist',
-  interfaces: [ObjectIdentification.NodeInterface],
+  interfaces: [NodeInterface],
   fields: () => {
     return {
+      ...GravityIDFields,
       cached,
-      __id: ObjectIdentification.GlobalIDField,
-      _id: {
-        type: GraphQLString,
-      },
-      id: {
-        type: GraphQLString,
-      },
       href: {
         type: GraphQLString,
         resolve: (artist) => `/artist/${artist.id}`,
@@ -487,7 +482,7 @@ const Artist = {
   args: {
     id: {
       description: 'The slug or ID of the Artist',
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
     },
   },
   resolve: (root, { id }) => gravity(`artist/${id}`),

@@ -3,8 +3,9 @@ import cached from './fields/cached';
 import AuthorType from './author';
 import Image from './image';
 import date from './fields/date';
-import ObjectIdentification from './object_identification';
+import { IDFields, NodeInterface } from './object_identification';
 import {
+  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -12,13 +13,10 @@ import {
 
 const ArticleType = new GraphQLObjectType({
   name: 'Article',
-  interfaces: [ObjectIdentification.NodeInterface],
+  interfaces: [NodeInterface],
   fields: () => ({
+    ...IDFields,
     cached,
-    __id: ObjectIdentification.GlobalIDField,
-    id: {
-      type: GraphQLString,
-    },
     title: {
       type: GraphQLString,
     },
@@ -53,7 +51,7 @@ const Article = {
   description: 'An Article',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The ID of the Article',
     },
   },

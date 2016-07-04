@@ -9,7 +9,9 @@ import SaleArtwork from '../sale_artwork';
 import Profile from '../profile';
 import Image from '../image/index';
 import { amount } from '../fields/money';
+import { GravityIDFields } from '../object_identification';
 import {
+  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -67,13 +69,8 @@ const SaleType = new GraphQLObjectType({
   name: 'Sale',
   fields: () => {
     return {
+      ...GravityIDFields,
       cached,
-      id: {
-        type: GraphQLString,
-      },
-      _id: {
-        type: GraphQLString,
-      },
       name: {
         type: GraphQLString,
       },
@@ -201,7 +198,7 @@ const SaleType = new GraphQLObjectType({
         type: SaleArtwork.type,
         args: {
           id: {
-            type: new GraphQLNonNull(GraphQLString),
+            type: new GraphQLNonNull(GraphQLID),
           },
         },
         resolve: (sale, { id }) =>
@@ -236,7 +233,7 @@ const Sale = {
   description: 'A Sale',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The slug or ID of the Sale',
     },
   },
