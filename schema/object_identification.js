@@ -1,3 +1,31 @@
+// To support a type, it should:
+// * specify that it implements the Node interface
+// * add the Node `__id` fields
+// * implement a `isType` function that from a payload determines if the payload is of that type
+// * add to the below `SupportedTypes` list.
+//
+// Example:
+//
+//   import ObjectIdentification from './object_identification';
+//
+//   const ArtworkType = new GraphQLObjectType({
+//     ...
+//     interfaces: [ObjectIdentification.NodeInterface],
+//     fields: () => {
+//       return {
+//         __id: ObjectIdentification.GlobalIDField,
+//         ...
+//       };
+//     },
+//   });
+//
+//   const Artwork = {
+//     type: ArtworkType,
+//     resolve: (root, { id }) => gravity(`artwork/${id}`),
+//     isType: (obj) => obj.title !== undefined && obj.artists !== undefined,
+//     ...
+//   };
+
 import _ from 'lodash';
 import {
   fromGlobalId,
