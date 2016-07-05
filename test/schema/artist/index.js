@@ -4,16 +4,18 @@ import schema from '../../../schema';
 
 describe('Artist type', () => {
   const Artist = schema.__get__('Artist');
+  let artist = null;
 
   beforeEach(() => {
-    Artist.__Rewire__('gravity', sinon.stub().returns(
-      Promise.resolve({
-        id: 'foo-bar',
-        name: 'Foo Bar',
-        bio: null,
-        blurb: null,
-      })
-    ));
+    artist = {
+      id: 'foo-bar',
+      name: 'Foo Bar',
+      bio: null,
+      blurb: null,
+    };
+
+    Artist.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(artist)));
+
     Artist.__Rewire__('positron', sinon.stub().returns(
       Promise.resolve({
         count: 22,
@@ -128,5 +130,29 @@ describe('Artist type', () => {
           },
         });
       });
+  });
+
+  describe('concerning works count', () => {
+    it('returns a formatted description', () => {
+      artist.published_artworks_count = 42;
+      artist.forsale_artworks_count = 21;
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_artworks_count_string
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_artworks_count_string: '42 works, 21 for sale',
+            },
+          });
+        });
+    });
   });
 });
