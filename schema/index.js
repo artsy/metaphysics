@@ -8,6 +8,7 @@ import Artists from './artists';
 import Fair from './fair';
 import Fairs from './fairs';
 import Gene from './gene';
+import HomePage from './home';
 import HomePageModules from './home/home_page_modules';
 import HomePageModule from './home/home_page_module';
 import OrderedSets from './ordered_sets';
@@ -46,6 +47,7 @@ const schema = new GraphQLSchema({
       fair: Fair,
       fairs: Fairs,
       gene: Gene,
+      home_page: HomePage,
       home_page_modules: HomePageModules,
       home_page_module: HomePageModule,
       profile: Profile,
