@@ -37,7 +37,7 @@ export function auctionState({ start_at, end_at, live_start_at }) {
 }
 
 const BidIncrement = new GraphQLObjectType({
-  name: 'BidIncrements',
+  name: 'BidIncrement',
   fields: {
     from: {
       type: GraphQLInt,

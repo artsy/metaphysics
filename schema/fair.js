@@ -13,7 +13,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 
-const OrganizerType = new GraphQLObjectType({
+const FairOrganizerType = new GraphQLObjectType({
   name: 'organizer',
   fields: {
     profile_id: {
@@ -81,7 +81,7 @@ const FairType = new GraphQLObjectType({
       resolve: ({ published }) => published,
     },
     organizer: {
-      type: OrganizerType,
+      type: FairOrganizerType,
     },
   }),
 });
