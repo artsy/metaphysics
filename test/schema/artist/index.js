@@ -4,22 +4,18 @@ import schema from '../../../schema';
 
 describe('Artist type', () => {
   const Artist = schema.__get__('Artist');
-  let gravity;
-  let gravity_data;
+  let artist = null;
 
   beforeEach(() => {
-    gravity = sinon.stub();
-
-    gravity_data = {
+    artist = {
       id: 'foo-bar',
       name: 'Foo Bar',
       bio: null,
       blurb: null,
     };
 
-    Artist.__Rewire__('gravity', gravity.returns(
-      Promise.resolve(gravity_data)
-    ));
+    Artist.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(artist)));
+
     Artist.__Rewire__('positron', sinon.stub().returns(
       Promise.resolve({
         count: 22,
@@ -136,28 +132,125 @@ describe('Artist type', () => {
       });
   });
 
-  it('reformats birthday string if it contains "born"', () => {
-    gravity_data = {
-      id: 'foo-bar',
-      nationality: '',
-      birthday: 'Born 1950',
-    };
+  describe('when formatting nationality and birthday string', () => {
+    it('replaces born with b.', () => {
+      artist.birthday = 'Born 2000';
 
-    const query = `
-      {
-        artist(id: 'foo-bar') {
-          formatted_nationality_and_birthday
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
         }
-      }
-    `;
+      `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
-          artist: {
-            formatted_nationality_and_birthday: 'b. 1950',
-          },
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: 'b. 2000',
+            },
+          });
         });
-      });
+    });
+    it('adds b. to birthday if only a date is provided', () => {
+      artist.birthday = '2000';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: 'b. 2000',
+            },
+          });
+        });
+    });
+    it('does not change birthday if birthday contains Est.', () => {
+      artist.birthday = 'Est. 2000';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: 'Est. 2000',
+            },
+          });
+        });
+    });
+    it('returns both if both are provided', () => {
+      artist.birthday = '2000';
+      artist.nationality = 'Martian';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: 'Martian, b. 2000',
+            },
+          });
+        });
+    });
+    it('returns only nationality if no birthday is provided', () => {
+      artist.nationality = 'Martian';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: 'Martian',
+            },
+          });
+        });
+    });
+    it('returns null if neither are provided', () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: null,
+            },
+          });
+        });
+    });
   });
 });

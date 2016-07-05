@@ -114,20 +114,18 @@ const ArtistType = new GraphQLObjectType({
       formatted_nationality_and_birthday: {
         type: GraphQLString,
         resolve: ({ birthday, nationality }) => {
-          let formatted_birthday;
-          if (birthday.toLowerCase.includes('born')) {
-            formatted_birthday = birthday.replace('born', 'b.');
-          } else if (!isNaN(birthday) && birthday) {
-            formatted_birthday = 'b. ' + birthday;
-          } else {
-            formatted_birthday = birthday;
+          let formatted_bday = (!isNaN(birthday) && birthday) ? 'b. ' + birthday : birthday;
+
+          if (formatted_bday && formatted_bday.toLowerCase().includes('born')) {
+            const regEx = new RegExp('born', 'ig');
+            formatted_bday = formatted_bday.replace(regEx, 'b.');
           }
 
-          if (nationality && formatted_birthday) {
-            return nationality + ', ' + formatted_birthday;
+          if (nationality && formatted_bday) {
+            return nationality + ', ' + formatted_bday;
           }
 
-          return nationality || formatted_birthday;
+          return nationality || formatted_bday;
         },
       },
       biography: {
