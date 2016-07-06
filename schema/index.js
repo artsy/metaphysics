@@ -28,6 +28,7 @@ import Search from './search';
 import TrendingArtists from './trending';
 import Me from './me';
 import CausalityJWT from './causality_jwt';
+import ObjectIdentification from './object_identification';
 import {
   GraphQLSchema,
   GraphQLObjectType,
@@ -37,6 +38,7 @@ const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
+      node: ObjectIdentification.NodeField,
       status: Status,
       article: Article,
       articles: Articles,

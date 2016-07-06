@@ -2,6 +2,7 @@ import gravity from '../lib/loaders/gravity';
 import Partner from './partner';
 import Artist from './artist/index';
 import numeral from './fields/numeral';
+import { IDFields } from './object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -12,7 +13,7 @@ import {
 const PartnerArtistType = new GraphQLObjectType({
   name: 'PartnerArtist',
   fields: () => ({
-
+    ...IDFields,
     counts: {
       type: new GraphQLObjectType({
         name: 'PartnerArtistCounts',
@@ -24,9 +25,6 @@ const PartnerArtistType = new GraphQLObjectType({
         },
       }),
       resolve: (partner_artist) => partner_artist,
-    },
-    id: {
-      type: GraphQLString,
     },
     is_display_on_partner_profile: {
       type: GraphQLBoolean,

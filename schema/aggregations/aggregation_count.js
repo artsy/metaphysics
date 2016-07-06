@@ -1,3 +1,4 @@
+import { IDFields } from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -8,9 +9,7 @@ export const AggregationCountType = new GraphQLObjectType({
   name: 'AggregationCount',
   description: 'One item in an aggregation',
   fields: {
-    id: {
-      type: GraphQLString,
-    },
+    ...IDFields,
     name: {
       type: GraphQLString,
     },

@@ -17,8 +17,10 @@ import Artwork from './artwork';
 import Location from './location';
 import Image, { getDefault } from './image';
 import PartnerShowEventType from './partner_show_event';
+import { GravityIDFields, NodeInterface } from './object_identification';
 import {
   GraphQLObjectType,
+  GraphQLID,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
@@ -34,14 +36,10 @@ const kind = ({ artists, fair }) => {
 
 const PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
+  interfaces: [NodeInterface],
   fields: () => ({
+    ...GravityIDFields,
     cached,
-    _id: {
-      type: GraphQLString,
-    },
-    id: {
-      type: GraphQLString,
-    },
     href: {
       type: GraphQLString,
       resolve: ({ id }) => `/show/${id}`,
@@ -254,7 +252,7 @@ const PartnerShow = {
   description: 'A Partner Show',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The slug or ID of the PartnerShow',
     },
   },
@@ -265,6 +263,8 @@ const PartnerShow = {
         return show;
       });
   },
+  // ObjectIdentification
+  isType: (obj) => obj.partner !== undefined && obj.display_on_partner_profile !== undefined,
 };
 
 export default PartnerShow;

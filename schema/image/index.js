@@ -8,6 +8,7 @@ import CroppedUrl from './cropped';
 import ResizedUrl from './resized';
 import DeepZoom, { isZoomable } from './deep_zoom';
 import normalize from './normalize';
+import { IDFields } from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -28,9 +29,7 @@ export const getDefault = images => {
 const ImageType = new GraphQLObjectType({
   name: 'Image',
   fields: () => ({
-    id: {
-      type: GraphQLString,
-    },
+    ...IDFields,
     href: {
       type: GraphQLString,
     },

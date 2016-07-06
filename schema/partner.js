@@ -7,7 +7,9 @@ import cached from './fields/cached';
 import initials from './fields/initials';
 import Profile from './profile';
 import Location from './location';
+import { GravityIDFields, NodeInterface } from './object_identification';
 import {
+  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -18,18 +20,14 @@ import {
 
 const PartnerType = new GraphQLObjectType({
   name: 'Partner',
+  interfaces: [NodeInterface],
   fields: () => {
     // Prevent circular dependency
     const PartnerShows = require('./partner_shows').default;
 
     return {
+      ...GravityIDFields,
       cached,
-      _id: {
-        type: GraphQLString,
-      },
-      id: {
-        type: GraphQLString,
-      },
       name: {
         type: GraphQLString,
         resolve: ({ name }) => name.trim(),
@@ -123,11 +121,13 @@ const Partner = {
   description: 'A Partner',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
       description: 'The slug or ID of the Partner',
     },
   },
   resolve: (root, { id }) => gravity(`partner/${id}`),
+  // ObjectIdentification
+  isType: (obj) => obj.has_full_profile !== undefined && obj.shows_count !== undefined,
 };
 
 export default Partner;

@@ -27,9 +27,11 @@ import ArtistStatuses from './statuses';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
 import total from '../../lib/loaders/total';
+import { GravityIDFields, NodeInterface } from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
+  GraphQLID,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
@@ -39,15 +41,11 @@ import {
 
 const ArtistType = new GraphQLObjectType({
   name: 'Artist',
+  interfaces: [NodeInterface],
   fields: () => {
     return {
+      ...GravityIDFields,
       cached,
-      _id: {
-        type: GraphQLString,
-      },
-      id: {
-        type: GraphQLString,
-      },
       href: {
         type: GraphQLString,
         resolve: (artist) => `/artist/${artist.id}`,
@@ -484,10 +482,12 @@ const Artist = {
   args: {
     id: {
       description: 'The slug or ID of the Artist',
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(GraphQLID),
     },
   },
   resolve: (root, { id }) => gravity(`artist/${id}`),
+  // ObjectIdentification
+  isType: (obj) => obj.birthday !== undefined && obj.artworks_count !== undefined,
 };
 
 export default Artist;
