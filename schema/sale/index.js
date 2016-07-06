@@ -11,7 +11,6 @@ import Image from '../image/index';
 import { amount } from '../fields/money';
 import { GravityIDFields } from '../object_identification';
 import {
-  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -198,7 +197,7 @@ const SaleType = new GraphQLObjectType({
         type: SaleArtwork.type,
         args: {
           id: {
-            type: new GraphQLNonNull(GraphQLID),
+            type: new GraphQLNonNull(GraphQLString),
           },
         },
         resolve: (sale, { id }) =>
@@ -233,7 +232,7 @@ const Sale = {
   description: 'A Sale',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The slug or ID of the Sale',
     },
   },

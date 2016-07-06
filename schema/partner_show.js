@@ -20,7 +20,6 @@ import PartnerShowEventType from './partner_show_event';
 import { GravityIDFields, NodeInterface } from './object_identification';
 import {
   GraphQLObjectType,
-  GraphQLID,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
@@ -252,7 +251,7 @@ const PartnerShow = {
   description: 'A Partner Show',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The slug or ID of the PartnerShow',
     },
   },

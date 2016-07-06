@@ -6,7 +6,6 @@ import CategoryType from './input_fields/category_type';
 import { IDFields } from './object_identification';
 import {
   GraphQLString,
-  GraphQLID,
   GraphQLObjectType,
   GraphQLNonNull,
 } from 'graphql';
@@ -35,7 +34,7 @@ const PartnerCategory = {
   description: 'A PartnerCategory',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The slug or ID of the PartnerCategory',
     },
   },

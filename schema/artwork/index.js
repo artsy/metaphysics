@@ -452,7 +452,7 @@ const Artwork = {
   description: 'An Artwork',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The slug or ID of the Artwork',
     },
   },

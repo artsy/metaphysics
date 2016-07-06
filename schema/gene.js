@@ -6,7 +6,6 @@ import Image from './image';
 import { GravityIDFields } from './object_identification';
 import {
   GraphQLObjectType,
-  GraphQLID,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
@@ -58,7 +57,7 @@ const Gene = {
   args: {
     id: {
       description: 'The slug or ID of the Gene',
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
   resolve: (root, { id }) => gravity(`gene/${id}`),

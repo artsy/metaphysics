@@ -31,7 +31,6 @@ import { GravityIDFields, NodeInterface } from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
-  GraphQLID,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
@@ -482,7 +481,7 @@ const Artist = {
   args: {
     id: {
       description: 'The slug or ID of the Artist',
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
   resolve: (root, { id }) => gravity(`artist/${id}`),

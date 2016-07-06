@@ -33,6 +33,7 @@ import {
 } from 'graphql-relay';
 import {
   GraphQLNonNull,
+  GraphQLString,
   GraphQLID,
   GraphQLInterfaceType,
 } from 'graphql';
@@ -94,7 +95,7 @@ export const IDFields = {
   __id: GlobalIDField,
   id: {
     description: 'A type-specific ID.',
-    type: new GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLString),
   },
 };
 
@@ -102,7 +103,7 @@ export const GravityIDFields = {
   ...IDFields,
   _id: {
     description: 'A type-specific Gravity Mongo Document ID.',
-    type: new GraphQLNonNull(GraphQLID),
+    type: new GraphQLNonNull(GraphQLString),
   },
 };
 

@@ -5,7 +5,6 @@ import numeral from './fields/numeral';
 import Image from './image';
 import { GravityIDFields } from './object_identification';
 import {
-  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -58,7 +57,7 @@ const Profile = {
   description: 'A Profile',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The slug or ID of the Profile',
     },
   },
