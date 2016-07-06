@@ -5,7 +5,6 @@ import Image from './image';
 import date from './fields/date';
 import { IDFields, NodeInterface } from './object_identification';
 import {
-  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -51,7 +50,7 @@ const Article = {
   description: 'An Article',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The ID of the Article',
     },
   },

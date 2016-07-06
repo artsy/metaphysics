@@ -9,7 +9,6 @@ import Profile from './profile';
 import Location from './location';
 import { GravityIDFields, NodeInterface } from './object_identification';
 import {
-  GraphQLID,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -121,7 +120,7 @@ const Partner = {
   description: 'A Partner',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The slug or ID of the Partner',
     },
   },

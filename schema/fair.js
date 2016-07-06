@@ -91,7 +91,7 @@ const Fair = {
   description: 'A Fair',
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLID),
+      type: new GraphQLNonNull(GraphQLString),
       description: 'The slug or ID of the Fair',
     },
   },
