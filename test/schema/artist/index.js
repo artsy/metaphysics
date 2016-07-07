@@ -133,7 +133,7 @@ describe('Artist type', () => {
   });
 
   describe('concerning works count', () => {
-    it('returns a formatted description', () => {
+    it('returns a formatted description including works for sale', () => {
       artist.published_artworks_count = 42;
       artist.forsale_artworks_count = 21;
 
@@ -154,10 +154,8 @@ describe('Artist type', () => {
           });
         });
     });
-  });
 
-  describe('concerning works count', () => {
-    it('returns a only works if none are for sale', () => {
+    it('returns only works if none are for sale', () => {
       artist.published_artworks_count = 42;
       artist.forsale_artworks_count = 0;
 
@@ -178,9 +176,8 @@ describe('Artist type', () => {
           });
         });
     });
-  });
-  describe('concerning works count', () => {
-    it('returns a only works if none are for sale', () => {
+
+    it('returns null when there are no works', () => {
       artist.published_artworks_count = 0;
       artist.forsale_artworks_count = 0;
 
@@ -201,8 +198,7 @@ describe('Artist type', () => {
           });
         });
     });
-  });
-  describe('concerning works count', () => {
+
     it('returns a singular string if only one work for sale', () => {
       artist.published_artworks_count = 1;
       artist.forsale_artworks_count = 0;
