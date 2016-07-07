@@ -33,7 +33,6 @@ import { GravityIDFields, NodeInterface } from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
-  GraphQLID,
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
@@ -430,7 +429,7 @@ const ArtworkType = new GraphQLObjectType({
         type: ArtworkLayer.type,
         args: {
           id: {
-            type: GraphQLID,
+            type: GraphQLString,
           },
         },
         resolve: (artwork, { id }) =>
