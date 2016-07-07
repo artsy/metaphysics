@@ -84,7 +84,7 @@ const NodeField = {
   },
 };
 
-const GlobalIDField = {
+export const GlobalIDField = {
   name: '__id',
   description: 'A globally unique ID.',
   type: new GraphQLNonNull(GraphQLID),
