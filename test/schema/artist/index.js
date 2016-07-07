@@ -140,7 +140,7 @@ describe('Artist type', () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_artworks_count_string
+            formatted_artworks_count
           }
         }
       `;
@@ -149,7 +149,77 @@ describe('Artist type', () => {
         .then(({ data }) => {
           data.should.eql({
             artist: {
-              formatted_artworks_count_string: '42 works, 21 for sale',
+              formatted_artworks_count: '42 works, 21 for sale',
+            },
+          });
+        });
+    });
+  });
+
+  describe('concerning works count', () => {
+    it('returns a only works if none are for sale', () => {
+      artist.published_artworks_count = 42;
+      artist.forsale_artworks_count = 0;
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_artworks_count
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_artworks_count: '42 works',
+            },
+          });
+        });
+    });
+  });
+  describe('concerning works count', () => {
+    it('returns a only works if none are for sale', () => {
+      artist.published_artworks_count = 0;
+      artist.forsale_artworks_count = 0;
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_artworks_count
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_artworks_count: null,
+            },
+          });
+        });
+    });
+  });
+  describe('concerning works count', () => {
+    it('returns a singular string if only one work for sale', () => {
+      artist.published_artworks_count = 1;
+      artist.forsale_artworks_count = 0;
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_artworks_count
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_artworks_count: '1 work',
             },
           });
         });

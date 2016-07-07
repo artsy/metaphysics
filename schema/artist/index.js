@@ -238,10 +238,14 @@ const ArtistType = new GraphQLObjectType({
           gravity(`artist/${id}/artworks`, options)
             .then(exclude(options.exclude, 'id')),
       },
-      formatted_artworks_count_string: {
+      formatted_artworks_count: {
         type: GraphQLString,
         resolve: ({ published_artworks_count, forsale_artworks_count }) => {
-          const totalWorks = published_artworks_count ? published_artworks_count + (published_artworks_count > 1 ? ' works' : ' work') : null;
+          let totalWorks = null;
+          if (published_artworks_count) {
+            totalWorks = published_artworks_count +
+              (published_artworks_count > 1 ? ' works' : ' work');
+          }
           const forSaleWorks = forsale_artworks_count ? forsale_artworks_count + ' for sale' : null;
           return (forSaleWorks && totalWorks) ? (totalWorks + ', ' + forSaleWorks) : totalWorks;
         },
