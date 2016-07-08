@@ -8,6 +8,7 @@ import {
 
 export const amount = resolve => ({
   type: GraphQLString,
+  description: 'A formatted price with various currency formatting options.',
   args: {
     symbol: {
       type: GraphQLString,
@@ -47,6 +48,7 @@ const money = ({ name, resolve }) => ({
     fields: {
       cents: {
         type: GraphQLInt,
+        description: 'An amount of money expressed in cents.',
         resolve: (obj) => {
           const { cents } = resolve(obj);
           if (!cents) return null;
@@ -55,6 +57,7 @@ const money = ({ name, resolve }) => ({
       },
       display: {
         type: GraphQLString,
+        description: 'A pre-formatted price.',
         resolve: (obj) => {
           const { display } = resolve(obj);
           if (!display) return null;
