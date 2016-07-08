@@ -6,7 +6,6 @@ import Context from './context';
 import Params from './params';
 import {
   GraphQLObjectType,
-  GraphQLID,
   GraphQLString,
   GraphQLBoolean,
 } from 'graphql';
@@ -41,7 +40,7 @@ const HomePageModule = {
       description: 'Module key',
     },
     id: {
-      type: GraphQLID,
+      type: GraphQLString,
       description: 'ID of generic gene rail to target',
     },
   },
