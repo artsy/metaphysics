@@ -1,5 +1,6 @@
 import {
   GraphQLObjectType,
+  GraphQLID,
   GraphQLString,
 } from 'graphql';
 
@@ -16,7 +17,7 @@ const HomePageModuleParams = new GraphQLObjectType({
       type: GraphQLString,
     },
     id: {
-      type: GraphQLString,
+      type: GraphQLID,
     },
   },
 });

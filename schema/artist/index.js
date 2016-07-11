@@ -27,6 +27,7 @@ import ArtistStatuses from './statuses';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
 import total from '../../lib/loaders/total';
+import { GravityIDFields, NodeInterface } from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -39,15 +40,11 @@ import {
 
 const ArtistType = new GraphQLObjectType({
   name: 'Artist',
+  interfaces: [NodeInterface],
   fields: () => {
     return {
+      ...GravityIDFields,
       cached,
-      _id: {
-        type: GraphQLString,
-      },
-      id: {
-        type: GraphQLString,
-      },
       href: {
         type: GraphQLString,
         resolve: (artist) => `/artist/${artist.id}`,
@@ -110,6 +107,20 @@ const ArtistType = new GraphQLObjectType({
       },
       deathday: {
         type: GraphQLString,
+      },
+      formatted_nationality_and_birthday: {
+        type: GraphQLString,
+        description: 'A string of the form "Nationality, Birthday"',
+        resolve: ({ birthday, nationality }) => {
+          let formatted_bday = (!isNaN(birthday) && birthday) ? 'b. ' + birthday : birthday;
+          formatted_bday = formatted_bday ? formatted_bday.replace(/born/i, 'b.') : null;
+
+          if (nationality && formatted_bday) {
+            return nationality + ', ' + formatted_bday;
+          }
+
+          return nationality || formatted_bday;
+        },
       },
       biography: {
         type: Article.type,
@@ -501,6 +512,8 @@ const Artist = {
     },
   },
   resolve: (root, { id }) => gravity(`artist/${id}`),
+  // ObjectIdentification
+  isType: (obj) => obj.birthday !== undefined && obj.artworks_count !== undefined,
 };
 
 export default Artist;

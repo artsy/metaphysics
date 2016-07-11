@@ -3,6 +3,7 @@ import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import Partners from './partners';
 import CategoryType from './input_fields/category_type';
+import { IDFields } from './object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -12,10 +13,8 @@ import {
 const PartnerCategoryType = new GraphQLObjectType({
   name: 'PartnerCategory',
   fields: () => ({
+    ...IDFields,
     cached,
-    id: {
-      type: GraphQLString,
-    },
     name: {
       type: GraphQLString,
     },

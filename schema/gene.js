@@ -3,6 +3,7 @@ import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import Artist from './artist';
 import Image from './image';
+import { GravityIDFields } from './object_identification';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -14,10 +15,8 @@ import {
 const GeneType = new GraphQLObjectType({
   name: 'Gene',
   fields: {
+    ...GravityIDFields,
     cached,
-    id: {
-      type: GraphQLString,
-    },
     href: {
       type: GraphQLString,
       resolve: ({ id }) => `gene/${id}`,

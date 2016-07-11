@@ -2,11 +2,13 @@ import Status from './status';
 import Article from './article';
 import Articles from './articles';
 import Artwork from './artwork';
+import Artworks from './artworks';
 import Artist from './artist';
 import Artists from './artists';
 import Fair from './fair';
 import Fairs from './fairs';
 import Gene from './gene';
+import HomePage from './home';
 import HomePageModules from './home/home_page_modules';
 import HomePageModule from './home/home_page_module';
 import OrderedSets from './ordered_sets';
@@ -26,6 +28,7 @@ import Search from './search';
 import TrendingArtists from './trending';
 import Me from './me';
 import CausalityJWT from './causality_jwt';
+import ObjectIdentification from './object_identification';
 import {
   GraphQLSchema,
   GraphQLObjectType,
@@ -35,15 +38,18 @@ const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
+      node: ObjectIdentification.NodeField,
       status: Status,
       article: Article,
       articles: Articles,
       artwork: Artwork,
+      artworks: Artworks,
       artist: Artist,
       artists: Artists,
       fair: Fair,
       fairs: Fairs,
       gene: Gene,
+      home_page: HomePage,
       home_page_modules: HomePageModules,
       home_page_module: HomePageModule,
       profile: Profile,

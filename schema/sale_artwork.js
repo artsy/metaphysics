@@ -12,8 +12,10 @@ import numeral from './fields/numeral';
 import gravity from '../lib/loaders/gravity';
 import Artwork from './artwork';
 import Sale, { auctionState } from './sale';
+import { GravityIDFields } from './object_identification';
 import {
   GraphQLObjectType,
+  GraphQLID,
   GraphQLString,
   GraphQLNonNull,
   GraphQLInt,
@@ -31,13 +33,8 @@ const SaleArtworkType = new GraphQLObjectType({
   name: 'SaleArtwork',
   fields: () => {
     return {
+      ...GravityIDFields,
       cached,
-      _id: {
-        type: GraphQLString,
-      },
-      id: {
-        type: GraphQLString,
-      },
       sale_id: {
         type: GraphQLString,
       },
@@ -92,6 +89,8 @@ const SaleArtworkType = new GraphQLObjectType({
             return 'Reserve met';
           } else if (bidder_positions_count === 0 && reserve_status === 'reserve_not_met') {
             return 'This work has a reserve';
+          } else if (bidder_positions_count > 0 && reserve_status === 'reserve_not_met') {
+            return 'Reserve not met';
           }
           return null;
         },
@@ -146,7 +145,7 @@ const SaleArtworkType = new GraphQLObjectType({
           name: 'SaleArtworkHighestBid',
           fields: {
             id: {
-              type: GraphQLString,
+              type: GraphQLID,
             },
             created_at: date,
             is_cancelled: {

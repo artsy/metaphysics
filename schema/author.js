@@ -1,3 +1,4 @@
+import { IDFields } from './object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -6,9 +7,7 @@ import {
 const AuthorType = new GraphQLObjectType({
   name: 'Author',
   fields: {
-    id: {
-      type: GraphQLString,
-    },
+    ...IDFields,
     name: {
       type: GraphQLString,
     },
@@ -18,6 +17,7 @@ const AuthorType = new GraphQLObjectType({
     href: {
       type: GraphQLString,
       resolve: ({ profile_handle }) => `/${profile_handle}`,
+      deprecationReason: "Profiles have been removed and thus author hrefs don't exist anymore.",
     },
   },
 });

@@ -3,6 +3,7 @@ import cached from './fields/cached';
 import initials from './fields/initials';
 import numeral from './fields/numeral';
 import Image from './image';
+import { GravityIDFields } from './object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -13,13 +14,8 @@ import {
 const ProfileType = new GraphQLObjectType({
   name: 'Profile',
   fields: () => ({
+    ...GravityIDFields,
     cached,
-    _id: {
-      type: GraphQLString,
-    },
-    id: {
-      type: GraphQLString,
-    },
     name: {
       type: GraphQLString,
       resolve: ({ owner }) => owner.name,

@@ -1,5 +1,6 @@
 import Artwork from './index';
 import gravity from '../../lib/loaders/gravity';
+import { IDFields } from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -9,9 +10,7 @@ import {
 const ArtworkLayerType = new GraphQLObjectType({
   name: 'ArtworkLayer',
   fields: () => ({
-    id: {
-      type: GraphQLString,
-    },
+    ...IDFields,
     type: {
       type: GraphQLString,
     },

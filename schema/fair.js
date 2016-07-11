@@ -4,23 +4,29 @@ import date from './fields/date';
 import Profile from './profile';
 import Image from './image';
 import Location from './location';
+import { GravityIDFields } from './object_identification';
 import {
   GraphQLObjectType,
+  GraphQLID,
   GraphQLString,
   GraphQLBoolean,
   GraphQLNonNull,
 } from 'graphql';
 
+const FairOrganizerType = new GraphQLObjectType({
+  name: 'organizer',
+  fields: {
+    profile_id: {
+      type: GraphQLID,
+    },
+  },
+});
+
 const FairType = new GraphQLObjectType({
   name: 'Fair',
   fields: () => ({
+    ...GravityIDFields,
     cached,
-    _id: {
-      type: GraphQLString,
-    },
-    id: {
-      type: GraphQLString,
-    },
     banner_size: {
       type: GraphQLString,
     },
@@ -75,14 +81,7 @@ const FairType = new GraphQLObjectType({
       resolve: ({ published }) => published,
     },
     organizer: {
-      type: new GraphQLObjectType({
-        name: 'organizer',
-        fields: {
-          profile_id: {
-            type: GraphQLString,
-          },
-        },
-      }),
+      type: FairOrganizerType,
     },
   }),
 });

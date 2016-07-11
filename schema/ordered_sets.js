@@ -1,6 +1,7 @@
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import ItemType from './item';
+import { IDFields } from './object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -12,10 +13,8 @@ import {
 const OrderedSetType = new GraphQLObjectType({
   name: 'OrderedSet',
   fields: () => ({
+    ...IDFields,
     cached,
-    id: {
-      type: GraphQLString,
-    },
     key: {
       type: GraphQLString,
     },

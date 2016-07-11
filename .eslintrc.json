@@ -6,6 +6,7 @@
     "es6": true
   },
   "extends": "airbnb",
+  "parser": "babel-eslint",
   "rules": {
     "camelcase": 0
   }

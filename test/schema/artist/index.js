@@ -131,7 +131,132 @@ describe('Artist type', () => {
         });
       });
   });
+  describe('when formatting nationality and birthday string', () => {
+    it('replaces born with b.', () => {
+      artist.birthday = 'Born 2000';
 
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: 'b. 2000',
+            },
+          });
+        });
+    });
+
+    it('adds b. to birthday if only a date is provided', () => {
+      artist.birthday = '2000';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: 'b. 2000',
+            },
+          });
+        });
+    });
+
+    it('does not change birthday if birthday contains Est.', () => {
+      artist.birthday = 'Est. 2000';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: 'Est. 2000',
+            },
+          });
+        });
+    });
+
+    it('returns both if both are provided', () => {
+      artist.birthday = '2000';
+      artist.nationality = 'Martian';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: 'Martian, b. 2000',
+            },
+          });
+        });
+    });
+
+    it('returns only nationality if no birthday is provided', () => {
+      artist.nationality = 'Martian';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: 'Martian',
+            },
+          });
+        });
+    });
+
+    it('returns null if neither are provided', () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_nationality_and_birthday: null,
+            },
+          });
+        });
+    });
+  });
   describe('concerning works count', () => {
     it('returns a formatted description including works for sale', () => {
       artist.published_artworks_count = 42;

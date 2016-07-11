@@ -3,6 +3,7 @@ import cached from './fields/cached';
 import AuthorType from './author';
 import Image from './image';
 import date from './fields/date';
+import { IDFields, NodeInterface } from './object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -11,11 +12,10 @@ import {
 
 const ArticleType = new GraphQLObjectType({
   name: 'Article',
+  interfaces: [NodeInterface],
   fields: () => ({
+    ...IDFields,
     cached,
-    id: {
-      type: GraphQLString,
-    },
     title: {
       type: GraphQLString,
     },
@@ -55,6 +55,8 @@ const Article = {
     },
   },
   resolve: (root, { id }) => positron(`articles/${id}`),
+  // ObjectIdentification
+  isType: (obj) => obj.title !== undefined && obj.author !== undefined,
 };
 
 export default Article;
