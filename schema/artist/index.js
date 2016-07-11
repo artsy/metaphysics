@@ -108,6 +108,20 @@ const ArtistType = new GraphQLObjectType({
       deathday: {
         type: GraphQLString,
       },
+      formatted_nationality_and_birthday: {
+        type: GraphQLString,
+        description: 'A string of the form "Nationality, Birthday"',
+        resolve: ({ birthday, nationality }) => {
+          let formatted_bday = (!isNaN(birthday) && birthday) ? 'b. ' + birthday : birthday;
+          formatted_bday = formatted_bday ? formatted_bday.replace(/born/i, 'b.') : null;
+
+          if (nationality && formatted_bday) {
+            return nationality + ', ' + formatted_bday;
+          }
+
+          return nationality || formatted_bday;
+        },
+      },
       biography: {
         type: Article.type,
         description: 'The Artist biography article written by Artsy',
