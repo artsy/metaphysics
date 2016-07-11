@@ -39,6 +39,9 @@ export const ArtworksAggregation = new GraphQLEnumType({
     TOTAL: {
       value: 'total',
     },
+    FOLLOWED_ARTISTS: {
+      value: 'followed_artists',
+    },
   },
 });
 
