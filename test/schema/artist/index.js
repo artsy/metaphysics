@@ -153,6 +153,7 @@ describe('Artist type', () => {
           });
         });
     });
+
     it('adds b. to birthday if only a date is provided', () => {
       artist.birthday = '2000';
 
@@ -173,6 +174,7 @@ describe('Artist type', () => {
           });
         });
     });
+
     it('does not change birthday if birthday contains Est.', () => {
       artist.birthday = 'Est. 2000';
 
@@ -193,6 +195,7 @@ describe('Artist type', () => {
           });
         });
     });
+
     it('returns both if both are provided', () => {
       artist.birthday = '2000';
       artist.nationality = 'Martian';
@@ -214,6 +217,7 @@ describe('Artist type', () => {
           });
         });
     });
+
     it('returns only nationality if no birthday is provided', () => {
       artist.nationality = 'Martian';
 
@@ -234,6 +238,7 @@ describe('Artist type', () => {
           });
         });
     });
+
     it('returns null if neither are provided', () => {
       const query = `
         {

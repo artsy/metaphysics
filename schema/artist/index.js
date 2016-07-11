@@ -113,13 +113,10 @@ const ArtistType = new GraphQLObjectType({
       },
       formatted_nationality_and_birthday: {
         type: GraphQLString,
+        description: 'A string of the form "Nationality, Birthday"',
         resolve: ({ birthday, nationality }) => {
           let formatted_bday = (!isNaN(birthday) && birthday) ? 'b. ' + birthday : birthday;
-
-          if (formatted_bday && formatted_bday.toLowerCase().includes('born')) {
-            const regEx = new RegExp('born', 'ig');
-            formatted_bday = formatted_bday.replace(regEx, 'b.');
-          }
+          formatted_bday = formatted_bday ? formatted_bday.replace(/born/i, 'b.') : null;
 
           if (nationality && formatted_bday) {
             return nationality + ', ' + formatted_bday;
