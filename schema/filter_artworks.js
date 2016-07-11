@@ -17,6 +17,7 @@ export const FilterArtworksType = new GraphQLObjectType({
   name: 'FilterArtworks',
   fields: () => ({
     hits: {
+      description: 'Artwork results.',
       type: new GraphQLList(Artwork.type),
     },
     total: {
@@ -28,9 +29,12 @@ export const FilterArtworksType = new GraphQLObjectType({
       resolve: ({ aggregations }) => aggregations.followed_artists.value,
     },
     aggregations: {
+      description: 'Returns aggregation counts for the given filter query.',
       type: new GraphQLList(ArtworksAggregationResultsType),
-      resolve: ({ aggregations }) =>
-        map(omit(aggregations, ['total', 'followed_artists']), (counts, slice) => ({ slice, counts })),
+      resolve: ({ aggregations }) => {
+        const whitelistedAggregations = omit(aggregations, ['total', 'followed_artists']);
+        return map(whitelistedAggregations, (counts, slice) => ({ slice, counts }));
+      },
     },
   }),
 });
