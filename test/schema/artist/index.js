@@ -131,7 +131,6 @@ describe('Artist type', () => {
         });
       });
   });
-
   describe('when formatting nationality and birthday string', () => {
     it('replaces born with b.', () => {
       artist.birthday = 'Born 2000';
@@ -253,6 +252,95 @@ describe('Artist type', () => {
           data.should.eql({
             artist: {
               formatted_nationality_and_birthday: null,
+            },
+          });
+        });
+    });
+  });
+  describe('concerning works count', () => {
+    it('returns a formatted description including works for sale', () => {
+      artist.published_artworks_count = 42;
+      artist.forsale_artworks_count = 21;
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_artworks_count
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_artworks_count: '42 works, 21 for sale',
+            },
+          });
+        });
+    });
+
+    it('returns only works if none are for sale', () => {
+      artist.published_artworks_count = 42;
+      artist.forsale_artworks_count = 0;
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_artworks_count
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_artworks_count: '42 works',
+            },
+          });
+        });
+    });
+
+    it('returns null when there are no works', () => {
+      artist.published_artworks_count = 0;
+      artist.forsale_artworks_count = 0;
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_artworks_count
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_artworks_count: null,
+            },
+          });
+        });
+    });
+
+    it('returns a singular string if only one work for sale', () => {
+      artist.published_artworks_count = 1;
+      artist.forsale_artworks_count = 0;
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_artworks_count
+          }
+        }
+      `;
+
+      return graphql(schema, query)
+        .then(({ data }) => {
+          data.should.eql({
+            artist: {
+              formatted_artworks_count: '1 work',
             },
           });
         });
