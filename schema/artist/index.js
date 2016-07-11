@@ -240,6 +240,7 @@ const ArtistType = new GraphQLObjectType({
       },
       formatted_artworks_count: {
         type: GraphQLString,
+        description: 'A string showing the total number of works and those for sale',
         resolve: ({ published_artworks_count, forsale_artworks_count }) => {
           let totalWorks = null;
           if (published_artworks_count) {
