@@ -91,6 +91,9 @@ const FilterArtworks = {
     major_periods: {
       type: new GraphQLList(GraphQLString),
     },
+    partner_id: {
+      type: GraphQLString,
+    },
     partner_cities: {
       type: new GraphQLList(GraphQLString),
     },
