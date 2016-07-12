@@ -17,16 +17,24 @@ export const FilterArtworksType = new GraphQLObjectType({
   name: 'FilterArtworks',
   fields: () => ({
     hits: {
+      description: 'Artwork results.',
       type: new GraphQLList(Artwork.type),
     },
     total: {
       type: GraphQLInt,
       resolve: ({ aggregations }) => aggregations.total.value,
     },
+    followed_artists_total: {
+      type: GraphQLInt,
+      resolve: ({ aggregations }) => aggregations.followed_artists.value,
+    },
     aggregations: {
+      description: 'Returns aggregation counts for the given filter query.',
       type: new GraphQLList(ArtworksAggregationResultsType),
-      resolve: ({ aggregations }) =>
-        map(omit(aggregations, ['total']), (counts, slice) => ({ slice, counts })),
+      resolve: ({ aggregations }) => {
+        const whitelistedAggregations = omit(aggregations, ['total', 'followed_artists']);
+        return map(whitelistedAggregations, (counts, slice) => ({ slice, counts }));
+      },
     },
   }),
 });
@@ -52,6 +60,9 @@ const FilterArtworks = {
     },
     extra_aggregation_gene_ids: {
       type: new GraphQLList(GraphQLString),
+    },
+    include_artworks_by_followed_artists: {
+      type: GraphQLBoolean,
     },
     for_sale: {
       type: GraphQLBoolean,
@@ -96,7 +107,12 @@ const FilterArtworks = {
       type: GraphQLString,
     },
   },
-  resolve: (root, options) => gravity('filter/artworks', options),
+  resolve: (root, options, { rootValue: { accessToken } }) => {
+    if (accessToken) {
+      return gravity.with(accessToken)('filter/artworks', options);
+    }
+    return gravity('filter/artworks', options);
+  },
 };
 
 export default FilterArtworks;
