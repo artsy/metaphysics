@@ -13,8 +13,8 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 
-export const HomePageModulesType = new GraphQLObjectType({
-  name: 'HomePageModules',
+export const HomePageModuleType = new GraphQLObjectType({
+  name: 'HomePageModule',
   fields: () => ({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -40,7 +40,7 @@ export const HomePageModulesType = new GraphQLObjectType({
 });
 
 const HomePageModule = {
-  type: HomePageModulesType,
+  type: HomePageModuleType,
   description: 'Single module to show on the home screen',
   args: {
     key: {
