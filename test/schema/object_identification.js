@@ -95,4 +95,100 @@ describe('Object Identification', () => {
       });
     });
   });
+
+  describe('for a HomePageModule', () => {
+    describe('with a specific module', () => {
+      const globalId = toGlobalId('HomePageModule', JSON.stringify({ key: 'iconic_artists' }));
+
+      it('generates a Global ID', () => {
+        const query = `
+          {
+            home_page_module(key: "iconic_artists") {
+              __id
+            }
+          }
+        `;
+
+        return graphql(schema, query).then(({ data }) => {
+          data.should.eql({
+            home_page_module: {
+              __id: globalId,
+            }
+          });
+        });
+      });
+
+      it('resolves a node', () => {
+        const query = `
+          {
+            node(__id: "${globalId}") {
+              __typename
+              ... on HomePageModule {
+                key
+              }
+            }
+          }
+        `;
+
+        return graphql(schema, query).then(({ data }) => {
+          data.should.eql({
+            node: {
+              __typename: 'HomePageModule',
+              key: 'iconic_artists',
+            },
+          });
+        });
+      });
+    });
+
+    describe('with a generic gene', () => {
+      const globalId = toGlobalId('HomePageModule', JSON.stringify({ key: 'generic_gene', id: 'abstract-art' }));
+
+      it('generates a Global ID', () => {
+        const query = `
+          {
+            home_page_module(key: "generic_gene", id: "abstract-art") {
+              __id
+            }
+          }
+        `;
+
+        return graphql(schema, query).then(({ data }) => {
+          data.should.eql({
+            home_page_module: {
+              __id: globalId,
+            }
+          });
+        });
+      });
+
+      it('resolves a node', () => {
+        const query = `
+          {
+            node(__id: "${globalId}") {
+              __typename
+              ... on HomePageModule {
+                key
+                params {
+                  id
+                }
+              }
+            }
+          }
+        `;
+
+        return graphql(schema, query).then(({ data }) => {
+          data.should.eql({
+            node: {
+              __typename: 'HomePageModule',
+              key: 'generic_gene',
+              params: {
+                id: 'abstract-art',
+              },
+            },
+          });
+        });
+      });
+    });
+  });
 });
