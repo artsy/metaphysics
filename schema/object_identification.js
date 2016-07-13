@@ -26,6 +26,7 @@
 //     ...
 //   };
 
+import { basename } from 'path';
 import _ from 'lodash';
 import {
   fromGlobalId,
@@ -38,11 +39,41 @@ import {
   GraphQLInterfaceType,
 } from 'graphql';
 
+/* eslint-disable no-param-reassign */
 const SupportedTypes = {
-  types: ['Article', 'Artist', 'Artwork', 'Partner', 'PartnerShow'],
+  files: [
+    './article',
+    './artist',
+    './artwork',
+    './home/home_page_module',
+    './partner',
+    './partner_show',
+  ],
+  get typeMap() {
+    delete this.typeMap;
+    this.typeMap = this.files.reduce((typeMap, file) => {
+      const type = _.upperFirst(_.camelCase(basename(file)));
+      typeMap[type] = file;
+      return typeMap;
+    }, {});
+    return this.typeMap;
+  },
+  get types() {
+    delete this.types;
+    this.types = _.keys(this.typeMap);
+    return this.types;
+  },
   // To prevent circular dependencies, when this file is loaded, the modules are lazily loaded.
-  typeModule: _.memoize(type => require(`./${_.snakeCase(type)}`).default),
+  get typeModules() {
+    delete this.typeModules;
+    this.typeModules = this.types.reduce((modules, type) => {
+      modules[type] = require(this.typeMap[type]).default;
+      return modules;
+    }, {});
+    return this.typeModules;
+  },
 };
+/* eslint-enable no-param-reassign */
 
 // Because we use a custom Node ID, we duplicate and slightly adjust the code from:
 // https://github.com/graphql/graphql-relay-js/blob/master/src/node/node.js
@@ -58,7 +89,7 @@ export const NodeInterface = new GraphQLInterfaceType({
   }),
   resolveType: (obj) => {
     const mod = _.chain(SupportedTypes.types)
-      .map(type => SupportedTypes.typeModule(type))
+      .map(type => SupportedTypes.typeModules[type])
       .find(m => m.isType(obj))
       .value();
     return mod && mod.type;
@@ -78,8 +109,9 @@ const NodeField = {
   resolve: (root, { __id }) => {
     const { type, id } = fromGlobalId(__id);
     if (_.includes(SupportedTypes.types, type)) {
+      const payload = type === 'HomePageModule' ? JSON.parse(id) : { id };
       // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
-      return SupportedTypes.typeModule(type).resolve(null, { id });
+      return SupportedTypes.typeModules[type].resolve(null, payload);
     }
   },
 };

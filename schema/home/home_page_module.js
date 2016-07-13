@@ -4,6 +4,7 @@ import Results from './results';
 import Title from './title';
 import Context from './context';
 import Params from './params';
+import { NodeInterface } from '../object_identification';
 import { toGlobalId } from 'graphql-relay';
 import {
   GraphQLObjectType,
@@ -15,11 +16,19 @@ import {
 
 export const HomePageModuleType = new GraphQLObjectType({
   name: 'HomePageModule',
+  interfaces: [NodeInterface],
   fields: () => ({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'A globally unique ID.',
-      resolve: (obj) => toGlobalId('HomePageModules', JSON.stringify(obj)),
+      resolve: (obj) => {
+        // Compose this ID from params that `resolve` uses to identify a rail later on.
+        const payload = { key: obj.key };
+        if (obj.params) {
+          payload.id = obj.params.id;
+        }
+        return toGlobalId('HomePageModule', JSON.stringify(payload));
+      },
     },
     key: {
       type: GraphQLString,
@@ -60,6 +69,8 @@ const HomePageModule = {
     }
     return { key, display: true };
   },
+  // ObjectIdentification
+  isType: (obj) => obj.hasOwnProperty('key') && obj.hasOwnProperty('display'),
 };
 
 export default HomePageModule;
