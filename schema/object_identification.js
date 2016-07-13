@@ -55,7 +55,7 @@ SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {
   const type = _.upperFirst(_.camelCase(basename(file)));
   // TODO Fix incorrect plural naming of type: https://github.com/artsy/metaphysics/issues/353
   if (type === 'HomePageModule') {
-    typeMap['HomePageModules'] = file;
+    typeMap.HomePageModules = file;
   } else {
     typeMap[type] = file;
   }

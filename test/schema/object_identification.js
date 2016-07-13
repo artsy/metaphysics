@@ -113,7 +113,7 @@ describe('Object Identification', () => {
           data.should.eql({
             home_page_module: {
               __id: globalId,
-            }
+            },
           });
         });
       });
@@ -142,7 +142,10 @@ describe('Object Identification', () => {
     });
 
     describe('with a generic gene', () => {
-      const globalId = toGlobalId('HomePageModules', JSON.stringify({ key: 'generic_gene', id: 'abstract-art' }));
+      const globalId = toGlobalId(
+        'HomePageModules',
+        JSON.stringify({ key: 'generic_gene', id: 'abstract-art' })
+      );
 
       it('generates a Global ID', () => {
         const query = `
@@ -157,7 +160,7 @@ describe('Object Identification', () => {
           data.should.eql({
             home_page_module: {
               __id: globalId,
-            }
+            },
           });
         });
       });
