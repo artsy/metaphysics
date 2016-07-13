@@ -48,31 +48,26 @@ const SupportedTypes = {
     './home/home_page_module',
     './partner',
     './partner_show',
-  ],
-  get typeMap() {
-    delete this.typeMap;
-    this.typeMap = this.files.reduce((typeMap, file) => {
-      const type = _.upperFirst(_.camelCase(basename(file)));
-      typeMap[type] = file;
-      return typeMap;
-    }, {});
-    return this.typeMap;
-  },
-  get types() {
-    delete this.types;
-    this.types = _.keys(this.typeMap);
-    return this.types;
-  },
-  // To prevent circular dependencies, when this file is loaded, the modules are lazily loaded.
-  get typeModules() {
-    delete this.typeModules;
-    this.typeModules = this.types.reduce((modules, type) => {
-      modules[type] = require(this.typeMap[type]).default;
+  ]
+};
+
+SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {
+  const type = _.upperFirst(_.camelCase(basename(file)));
+  typeMap[type] = file;
+  return typeMap;
+}, {});
+
+SupportedTypes.types = _.keys(SupportedTypes.typeMap);
+
+Object.defineProperty(SupportedTypes, 'typeModules', { get: () => {
+  if (SupportedTypes._typeModules === undefined) {
+    SupportedTypes._typeModules = SupportedTypes.types.reduce((modules, type) => {
+      modules[type] = require(SupportedTypes.typeMap[type]).default;
       return modules;
     }, {});
-    return this.typeModules;
-  },
-};
+  }
+  return SupportedTypes._typeModules;
+}});
 /* eslint-enable no-param-reassign */
 
 // Because we use a custom Node ID, we duplicate and slightly adjust the code from:
