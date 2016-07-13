@@ -98,7 +98,7 @@ describe('Object Identification', () => {
 
   describe('for a HomePageModule', () => {
     describe('with a specific module', () => {
-      const globalId = toGlobalId('HomePageModules', JSON.stringify({ key: 'iconic_artists' }));
+      const globalId = toGlobalId('HomePageModule', JSON.stringify({ key: 'iconic_artists' }));
 
       it('generates a Global ID', () => {
         const query = `
@@ -123,7 +123,7 @@ describe('Object Identification', () => {
           {
             node(__id: "${globalId}") {
               __typename
-              ... on HomePageModules {
+              ... on HomePageModule {
                 key
               }
             }
@@ -133,7 +133,7 @@ describe('Object Identification', () => {
         return graphql(schema, query).then(({ data }) => {
           data.should.eql({
             node: {
-              __typename: 'HomePageModules',
+              __typename: 'HomePageModule',
               key: 'iconic_artists',
             },
           });
@@ -143,7 +143,7 @@ describe('Object Identification', () => {
 
     describe('with a generic gene', () => {
       const globalId = toGlobalId(
-        'HomePageModules',
+        'HomePageModule',
         JSON.stringify({ key: 'generic_gene', id: 'abstract-art' })
       );
 
@@ -170,7 +170,7 @@ describe('Object Identification', () => {
           {
             node(__id: "${globalId}") {
               __typename
-              ... on HomePageModules {
+              ... on HomePageModule {
                 key
                 params {
                   id
@@ -183,7 +183,7 @@ describe('Object Identification', () => {
         return graphql(schema, query).then(({ data }) => {
           data.should.eql({
             node: {
-              __typename: 'HomePageModules',
+              __typename: 'HomePageModule',
               key: 'generic_gene',
               params: {
                 id: 'abstract-art',

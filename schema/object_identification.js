@@ -53,12 +53,7 @@ const SupportedTypes = {
 
 SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {
   const type = _.upperFirst(_.camelCase(basename(file)));
-  // TODO Fix incorrect plural naming of type: https://github.com/artsy/metaphysics/issues/353
-  if (type === 'HomePageModule') {
-    typeMap.HomePageModules = file;
-  } else {
-    typeMap[type] = file;
-  }
+  typeMap[type] = file;
   return typeMap;
 }, {});
 
@@ -109,7 +104,7 @@ const NodeField = {
   resolve: (root, { __id }) => {
     const { type, id } = fromGlobalId(__id);
     if (_.includes(SupportedTypes.types, type)) {
-      const payload = type === 'HomePageModules' ? JSON.parse(id) : { id };
+      const payload = type === 'HomePageModule' ? JSON.parse(id) : { id };
       // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
       return SupportedTypes.typeModules[type].resolve(null, payload);
     }
