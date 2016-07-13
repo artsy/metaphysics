@@ -98,7 +98,7 @@ describe('Object Identification', () => {
 
   describe('for a HomePageModule', () => {
     describe('with a specific module', () => {
-      const globalId = toGlobalId('HomePageModule', JSON.stringify({ key: 'iconic_artists' }));
+      const globalId = toGlobalId('HomePageModules', JSON.stringify({ key: 'iconic_artists' }));
 
       it('generates a Global ID', () => {
         const query = `
@@ -123,7 +123,7 @@ describe('Object Identification', () => {
           {
             node(__id: "${globalId}") {
               __typename
-              ... on HomePageModule {
+              ... on HomePageModules {
                 key
               }
             }
@@ -133,7 +133,7 @@ describe('Object Identification', () => {
         return graphql(schema, query).then(({ data }) => {
           data.should.eql({
             node: {
-              __typename: 'HomePageModule',
+              __typename: 'HomePageModules',
               key: 'iconic_artists',
             },
           });
@@ -142,7 +142,7 @@ describe('Object Identification', () => {
     });
 
     describe('with a generic gene', () => {
-      const globalId = toGlobalId('HomePageModule', JSON.stringify({ key: 'generic_gene', id: 'abstract-art' }));
+      const globalId = toGlobalId('HomePageModules', JSON.stringify({ key: 'generic_gene', id: 'abstract-art' }));
 
       it('generates a Global ID', () => {
         const query = `
@@ -167,7 +167,7 @@ describe('Object Identification', () => {
           {
             node(__id: "${globalId}") {
               __typename
-              ... on HomePageModule {
+              ... on HomePageModules {
                 key
                 params {
                   id
@@ -180,7 +180,7 @@ describe('Object Identification', () => {
         return graphql(schema, query).then(({ data }) => {
           data.should.eql({
             node: {
-              __typename: 'HomePageModule',
+              __typename: 'HomePageModules',
               key: 'generic_gene',
               params: {
                 id: 'abstract-art',

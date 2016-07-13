@@ -9,7 +9,7 @@ import {
   GraphQLList,
   GraphQLInt,
 } from 'graphql';
-import { HomePageModuleType } from './home_page_module';
+import { HomePageModulesType } from './home_page_module';
 import loggedOutModules from './logged_out_modules';
 import addGenericGenes from './add_generic_genes';
 import { featuredFair, featuredAuction } from './fetch';
@@ -21,7 +21,7 @@ const filteredModules = (modules, max_rails) => {
 };
 
 const HomePageModules = {
-  type: new GraphQLList(HomePageModuleType),
+  type: new GraphQLList(HomePageModulesType),
   description: 'Modules to show on the home screen',
   args: {
     max_rails: {

@@ -14,8 +14,8 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 
-export const HomePageModuleType = new GraphQLObjectType({
-  name: 'HomePageModule',
+export const HomePageModulesType = new GraphQLObjectType({
+  name: 'HomePageModules',
   interfaces: [NodeInterface],
   fields: () => ({
     __id: {
@@ -27,7 +27,7 @@ export const HomePageModuleType = new GraphQLObjectType({
         if (obj.params) {
           payload.id = obj.params.id;
         }
-        return toGlobalId('HomePageModule', JSON.stringify(payload));
+        return toGlobalId('HomePageModules', JSON.stringify(payload));
       },
     },
     key: {
@@ -49,7 +49,7 @@ export const HomePageModuleType = new GraphQLObjectType({
 });
 
 const HomePageModule = {
-  type: HomePageModuleType,
+  type: HomePageModulesType,
   description: 'Single module to show on the home screen',
   args: {
     key: {
