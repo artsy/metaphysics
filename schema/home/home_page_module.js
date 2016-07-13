@@ -4,15 +4,23 @@ import Results from './results';
 import Title from './title';
 import Context from './context';
 import Params from './params';
+import { toGlobalId } from 'graphql-relay';
 import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLBoolean,
+  GraphQLID,
+  GraphQLNonNull,
 } from 'graphql';
 
 export const HomePageModulesType = new GraphQLObjectType({
   name: 'HomePageModules',
   fields: () => ({
+    __id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'A globally unique ID.',
+      resolve: (obj) => toGlobalId('HomePageModules', JSON.stringify(obj)),
+    },
     key: {
       type: GraphQLString,
     },
