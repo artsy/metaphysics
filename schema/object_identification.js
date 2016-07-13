@@ -48,7 +48,7 @@ const SupportedTypes = {
     './home/home_page_module',
     './partner',
     './partner_show',
-  ]
+  ],
 };
 
 SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {
@@ -67,7 +67,7 @@ Object.defineProperty(SupportedTypes, 'typeModules', { get: () => {
     }, {});
   }
   return SupportedTypes._typeModules;
-}});
+} });
 /* eslint-enable no-param-reassign */
 
 // Because we use a custom Node ID, we duplicate and slightly adjust the code from:
