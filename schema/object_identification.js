@@ -115,7 +115,9 @@ export const GlobalIDField = {
   name: '__id',
   description: 'A globally unique ID.',
   type: new GraphQLNonNull(GraphQLID),
-  resolve: (obj, args, info) => toGlobalId(info.parentType.name, obj.id),
+  // Ensure we never encode a null `id`, as it would silently work. Instead return `null`, so that
+  // e.g. Relay will complain about the result not matching the type specified in the schema.
+  resolve: (obj, args, info) => obj.id && toGlobalId(info.parentType.name, obj.id),
 };
 
 export const IDFields = {
