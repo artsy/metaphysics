@@ -42,6 +42,9 @@ export const ArtworksAggregation = new GraphQLEnumType({
     FOLLOWED_ARTISTS: {
       value: 'followed_artists',
     },
+    MERCHANDISABLE_ARTISTS: {
+      value: 'merchandisable_artists',
+    },
   },
 });
 
