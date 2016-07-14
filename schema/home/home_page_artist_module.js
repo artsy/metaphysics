@@ -10,11 +10,9 @@ import {
 } from 'graphql';
 
 export const Results = {
-  suggested: ({ accessToken }) => {
-    return gravity.with(accessToken)('me').then(({ id }) => {
-      return gravity.with(accessToken)(`user/${id}/suggested/similar/artists`).then(results => {
-        return map(results, 'artist');
-      });
+  suggested: ({ accessToken, userID }) => {
+    return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`).then(results => {
+      return map(results, 'artist');
     });
   },
   trending: () => gravity('artists/trending'),
@@ -29,9 +27,9 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     },
     results: {
       type: new GraphQLList(Artist.type),
-      resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {
+      resolve: ({ key, display, params }, options, { rootValue: { accessToken, userID } }) => {
         // TODO figure out what `display` is supposed to do
-        return Results[key]({ accessToken });
+        return Results[key]({ accessToken, userID });
       },
     },
   },

@@ -43,16 +43,14 @@ const moduleResults = {
       return slice(shuffle(artworks), 0, RESULTS_SIZE);
     });
   },
-  saved_works: ({ accessToken }) => {
-    return gravity.with(accessToken)('me').then((user) => {
-      return gravity
-        .with(accessToken)('collection/saved-artwork/artworks', {
-          size: RESULTS_SIZE,
-          user_id: user.id,
-          private: true,
-          sort: '-position',
-        });
-    });
+  saved_works: ({ accessToken, userID }) => {
+    return gravity
+      .with(accessToken)('collection/saved-artwork/artworks', {
+        size: RESULTS_SIZE,
+        user_id: userID,
+        private: true,
+        sort: '-position',
+      });
   },
   recommended_works: ({ accessToken }) => {
     return gravity.with(accessToken)('me/suggested/artworks/homepage', { limit: RESULTS_SIZE });
@@ -112,7 +110,7 @@ const moduleResults = {
 
 export default {
   type: new GraphQLList(Artwork.type),
-  resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {
-    if (display) return moduleResults[key]({ accessToken, params });
+  resolve: ({ key, display, params }, options, { rootValue: { accessToken, userID } }) => {
+    if (display) return moduleResults[key]({ accessToken, userID, params });
   },
 };
