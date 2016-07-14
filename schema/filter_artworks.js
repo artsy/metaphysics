@@ -11,6 +11,7 @@ import {
   GraphQLString,
   GraphQLBoolean,
   GraphQLInt,
+  GraphQLID,
 } from 'graphql';
 
 export const FilterArtworksType = new GraphQLObjectType({
@@ -92,7 +93,7 @@ const FilterArtworks = {
       type: new GraphQLList(GraphQLString),
     },
     partner_id: {
-      type: GraphQLString,
+      type: GraphQLID,
     },
     partner_cities: {
       type: new GraphQLList(GraphQLString),

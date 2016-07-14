@@ -103,10 +103,9 @@ const PartnerType = new GraphQLObjectType({
           },
         },
         resolve: ({ id }, options) => {
-          return gravity(`filter/artworks`, assign({}, options, {
-            partner_id: id,
+          return gravity(`partner/${id}/artworks`, assign({}, options, {
             published: true,
-          })).then((data) => data.hits).then(exclude(options.exclude, 'id'));
+          })).then(exclude(options.exclude, 'id'));
         },
       },
       locations: {
