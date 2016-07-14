@@ -10,8 +10,8 @@ import {
 const HomePageType = new GraphQLObjectType({
   name: 'HomePage',
   fields: {
-    modules: HomePageModules,
-    module: HomePageModule,
+    artwork_module: HomePageModule,
+    artwork_modules: HomePageModules,
     artist_module: HomePageArtistModule,
     artist_modules: HomePageArtistModules,
   },
