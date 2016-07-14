@@ -1,6 +1,8 @@
 import gravity from '../lib/loaders/gravity';
-import { map, omit } from 'lodash';
+import { map, omit, keys } from 'lodash';
+import { isExisty } from '../lib/helpers';
 import Artwork from './artwork';
+import Artist from './artist';
 import {
   ArtworksAggregationResultsType,
   ArtworksAggregation,
@@ -28,6 +30,16 @@ export const FilterArtworksType = new GraphQLObjectType({
     followed_artists_total: {
       type: GraphQLInt,
       resolve: ({ aggregations }) => aggregations.followed_artists.value,
+    },
+    merchandisable_artists: {
+      type: new GraphQLList(Artist.type),
+      description: 'Returns a list of merchandisable artists sorted by merch score.',
+      resolve: ({ aggregations }) => {
+        if (!isExisty(aggregations.merchandisable_artists)) {
+          return null;
+        }
+        return gravity(`artists`, { ids: keys(aggregations.merchandisable_artists) });
+      },
     },
     aggregations: {
       description: 'Returns aggregation counts for the given filter query.',
