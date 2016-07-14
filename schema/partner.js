@@ -2,12 +2,17 @@ import {
   assign,
   omit,
 } from 'lodash';
+import { exclude } from '../lib/helpers';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import initials from './fields/initials';
 import Profile from './profile';
 import Location from './location';
 import { GravityIDFields, NodeInterface } from './object_identification';
+import Artwork from './artwork';
+import numeral from './fields/numeral';
+import ArtworkSorts from './sorts/artwork_sorts';
+
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -86,6 +91,23 @@ const PartnerType = new GraphQLObjectType({
           }));
         },
       },
+      artworks: {
+        type: new GraphQLList(Artwork.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+          },
+          sort: ArtworkSorts,
+          exclude: {
+            type: new GraphQLList(GraphQLString),
+          },
+        },
+        resolve: ({ id }, options) => {
+          return gravity(`partner/${id}/artworks`, assign({}, options, {
+            published: true,
+          })).then(exclude(options.exclude, 'id'));
+        },
+      },
       locations: {
         type: new GraphQLList(Location.type),
         args: {
@@ -110,6 +132,36 @@ const PartnerType = new GraphQLObjectType({
             'Could you please provide more information about the piece?',
           ].join(' ');
         },
+      },
+      counts: {
+        type: new GraphQLObjectType({
+          name: 'PartnerCounts',
+          fields: {
+            artworks: numeral(({ artworks_count }) =>
+              artworks_count),
+            artists: numeral(({ artists_count }) =>
+              artists_count),
+            partner_artists: numeral(({ partner_artists_count }) =>
+              partner_artists_count),
+            eligible_artworks: numeral(({ eligible_artworks_count }) =>
+              eligible_artworks_count),
+            published_for_sale_artworks: numeral(({ published_for_sale_artworks_count }) =>
+              published_for_sale_artworks_count),
+            published_not_for_sale_artworks: numeral(({ published_not_for_sale_artworks_count }) =>
+              published_not_for_sale_artworks_count),
+            shows: numeral(({ shows_count }) =>
+              shows_count),
+            displayable_shows: numeral(({ displayable_shows_count }) =>
+              displayable_shows_count),
+            current_displayable_shows: numeral(({ current_displayable_shows_count }) =>
+              current_displayable_shows_count),
+            artist_documents: numeral(({ artist_documents_count }) =>
+              artist_documents_count),
+            partner_show_documents: numeral(({ partner_show_documents_count }) =>
+              partner_show_documents_count),
+          },
+        }),
+        resolve: (artist) => artist,
       },
     };
   },
