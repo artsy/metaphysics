@@ -9,7 +9,7 @@ import {
   GraphQLString,
 } from 'graphql';
 
-const Results = {
+export const Results = {
   suggested: ({ accessToken }) => {
     return gravity.with(accessToken)('me').then(({ id }) => {
       return gravity.with(accessToken)(`user/${id}/suggested/similar/artists`).then(results => {
