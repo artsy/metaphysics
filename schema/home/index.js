@@ -1,5 +1,6 @@
 import HomePageModules from './home_page_modules';
 import HomePageModule from './home_page_module';
+import HomePageArtistModule from './home_page_artist_module';
 
 import {
   GraphQLObjectType,
@@ -10,6 +11,7 @@ const HomePageType = new GraphQLObjectType({
   fields: {
     modules: HomePageModules,
     module: HomePageModule,
+    artist_module: HomePageArtistModule,
   },
 });
 
