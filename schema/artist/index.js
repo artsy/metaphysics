@@ -1,10 +1,11 @@
 import {
-  defaults,
+  assign,
   compact,
   concat,
-  take,
+  defaults,
   first,
-  assign,
+  has,
+  take,
 } from 'lodash';
 import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
@@ -41,6 +42,7 @@ import {
 const ArtistType = new GraphQLObjectType({
   name: 'Artist',
   interfaces: [NodeInterface],
+  isTypeOf: (obj) => has(obj, 'birthday') && has(obj, 'artworks_count'),
   fields: () => {
     return {
       ...GravityIDFields,
@@ -512,8 +514,6 @@ const Artist = {
     },
   },
   resolve: (root, { id }) => gravity(`artist/${id}`),
-  // ObjectIdentification
-  isType: (obj) => obj.birthday !== undefined && obj.artworks_count !== undefined,
 };
 
 export default Artist;

@@ -1,4 +1,7 @@
-import { find } from 'lodash';
+import {
+  find,
+  has,
+} from 'lodash';
 import { params as genericGenes } from './add_generic_genes';
 import Results from './results';
 import Title from './title';
@@ -17,6 +20,7 @@ import {
 export const HomePageModuleType = new GraphQLObjectType({
   name: 'HomePageModule',
   interfaces: [NodeInterface],
+  isTypeOf: (obj) => has(obj, 'key') && has(obj, 'display'),
   fields: () => ({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -69,8 +73,6 @@ const HomePageModule = {
     }
     return { key, display: true };
   },
-  // ObjectIdentification
-  isType: (obj) => obj.hasOwnProperty('key') && obj.hasOwnProperty('display'),
 };
 
 export default HomePageModule;

@@ -1,4 +1,7 @@
-import { map } from 'lodash';
+import {
+  has,
+  map,
+} from 'lodash';
 import Artist from '../artist';
 import gravity from '../../lib/loaders/gravity';
 import { NodeInterface } from '../object_identification';
@@ -24,6 +27,7 @@ export const Results = {
 export const HomePageArtistModuleType = new GraphQLObjectType({
   name: 'HomePageArtistModule',
   interfaces: [NodeInterface],
+  isTypeOf: (obj) => has(obj, 'key') && !has(obj, 'display'),
   fields: {
     __id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -53,8 +57,6 @@ const HomePageArtistModule = {
     },
   },
   resolve: (root, obj) => obj.key && Results[obj.key] ? obj : null,
-  // ObjectIdentification
-  isType: (obj) => obj.hasOwnProperty('key') && !obj.hasOwnProperty('display'),
 };
 
 export default HomePageArtistModule;
