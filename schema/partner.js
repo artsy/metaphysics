@@ -26,7 +26,7 @@ import {
 const PartnerType = new GraphQLObjectType({
   name: 'Partner',
   interfaces: [NodeInterface],
-  isTypeOf: (obj) => has(obj, 'has_full_profile') && has(obj, 'shows_count'),
+  isTypeOf: (obj) => has(obj, 'has_full_profile') && has(obj, 'profile_banner_display'),
   fields: () => {
     // Prevent circular dependency
     const PartnerShows = require('./partner_shows').default;
