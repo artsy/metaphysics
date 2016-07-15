@@ -49,7 +49,7 @@ export const relatedArtist = (accessToken) => {
   });
 };
 
-export const trendingArtists = () => {
+export const iconicArtists = () => {
   return delta('/', {
     method: 'fetch',
     n: 9,

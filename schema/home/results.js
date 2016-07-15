@@ -4,7 +4,7 @@ import {
   featuredAuction,
   featuredFair,
   featuredGene,
-  trendingArtists,
+  iconicArtists,
   relatedArtist,
 } from './fetch';
 import { map, assign, keys, without, shuffle, slice } from 'lodash';
@@ -18,8 +18,8 @@ const RESULTS_SIZE = 20;
 
 const moduleResults = {
   active_bids: () => [],
-  trending_artists: () => {
-    return trendingArtists().then((artists) => {
+  iconic_artists: () => {
+    return iconicArtists().then((artists) => {
       const ids = without(keys(artists), 'cached', 'context_type');
       return uncachedGravity('filter/artworks?' + toQueryString({
         artist_ids: ids,
