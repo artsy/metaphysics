@@ -12,6 +12,8 @@ describe('Artist type', () => {
       name: 'Foo Bar',
       bio: null,
       blurb: null,
+      birthday: null,
+      artworks_count: 42,
     };
 
     Artist.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(artist)));

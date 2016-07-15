@@ -11,6 +11,8 @@ describe('ArtistCarousel type', () => {
       Promise.resolve({
         id: 'foo-bar',
         name: 'Foo Bar',
+        birthday: null,
+        artworks_count: null,
       })
     ));
   });

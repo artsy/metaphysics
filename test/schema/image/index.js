@@ -46,6 +46,8 @@ describe('Image type', () => {
       .onCall(0)
       .returns(Promise.resolve({
         id: 'richard-prince-untitled-portrait',
+        title: 'untitled-portrait',
+        artists: [],
         images: [image],
       }));
 

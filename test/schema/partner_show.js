@@ -21,6 +21,7 @@ describe('PartnerShow type', () => {
       partner: {
         id: 'new-museum',
       },
+      display_on_partner_profile: true,
     };
     gravity.returns(Promise.resolve(showData));
 
