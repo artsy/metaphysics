@@ -1,6 +1,8 @@
 import { map } from 'lodash';
 import Artist from '../artist';
 import gravity from '../../lib/loaders/gravity';
+import { NodeInterface } from '../object_identification';
+import { toGlobalId } from 'graphql-relay';
 import {
   GraphQLID,
   GraphQLNonNull,
@@ -21,14 +23,21 @@ export const Results = {
 
 export const HomePageArtistModuleType = new GraphQLObjectType({
   name: 'HomePageArtistModule',
+  interfaces: [NodeInterface],
   fields: {
+    __id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: 'A globally unique ID.',
+      resolve: ({ key }) => {
+        return toGlobalId('HomePageArtistModule', JSON.stringify({ key }));
+      },
+    },
     key: {
       type: GraphQLString,
     },
     results: {
       type: new GraphQLList(Artist.type),
       resolve: ({ key, display, params }, options, { rootValue: { accessToken, userID } }) => {
-        // TODO figure out what `display` is supposed to do
         return Results[key]({ accessToken, userID });
       },
     },
@@ -43,11 +52,9 @@ const HomePageArtistModule = {
       description: 'Module key',
     },
   },
-  resolve: (root, { key }) => {
-    if (Results.hasOwnProperty(key)) {
-      return { key, display: true };
-    }
-  },
+  resolve: (root, obj) => obj.key && Results[obj.key] ? obj : null,
+  // ObjectIdentification
+  isType: (obj) => obj.hasOwnProperty('key') && !obj.hasOwnProperty('display'),
 };
 
 export default HomePageArtistModule;

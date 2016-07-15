@@ -21,11 +21,11 @@ export const HomePageModuleType = new GraphQLObjectType({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'A globally unique ID.',
-      resolve: (obj) => {
+      resolve: ({ key, params }) => {
         // Compose this ID from params that `resolve` uses to identify a rail later on.
-        const payload = { key: obj.key };
-        if (obj.params) {
-          payload.id = obj.params.id;
+        const payload = { key };
+        if (params) {
+          payload.id = params.id;
         }
         return toGlobalId('HomePageModule', JSON.stringify(payload));
       },

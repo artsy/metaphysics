@@ -46,6 +46,7 @@ const SupportedTypes = {
     './artist',
     './artwork',
     './home/home_page_module',
+    './home/home_page_artist_module',
     './partner',
     './partner_show',
   ],
@@ -104,7 +105,7 @@ const NodeField = {
   resolve: (root, { __id }) => {
     const { type, id } = fromGlobalId(__id);
     if (_.includes(SupportedTypes.types, type)) {
-      const payload = type === 'HomePageModule' ? JSON.parse(id) : { id };
+      const payload = type.includes('HomePage') ? JSON.parse(id) : { id };
       // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
       return SupportedTypes.typeModules[type].resolve(null, payload);
     }

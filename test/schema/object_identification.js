@@ -98,21 +98,28 @@ describe('Object Identification', () => {
 
   describe('for a HomePageModule', () => {
     describe('with a specific module', () => {
-      const globalId = toGlobalId('HomePageModule', JSON.stringify({ key: 'iconic_artists' }));
+      const globalId = toGlobalId(
+        'HomePageModule',
+        JSON.stringify({ key: 'iconic_artists' })
+      );
 
       it('generates a Global ID', () => {
         const query = `
           {
-            home_page_module(key: "iconic_artists") {
-              __id
+            home_page {
+              artwork_module(key: "iconic_artists") {
+                __id
+              }
             }
           }
         `;
 
         return graphql(schema, query).then(({ data }) => {
           data.should.eql({
-            home_page_module: {
-              __id: globalId,
+            home_page: {
+              artwork_module: {
+                __id: globalId,
+              }
             },
           });
         });
@@ -150,16 +157,20 @@ describe('Object Identification', () => {
       it('generates a Global ID', () => {
         const query = `
           {
-            home_page_module(key: "generic_gene", id: "abstract-art") {
-              __id
+            home_page {
+              artwork_module(key: "generic_gene", id: "abstract-art") {
+                __id
+              }
             }
           }
         `;
 
         return graphql(schema, query).then(({ data }) => {
           data.should.eql({
-            home_page_module: {
-              __id: globalId,
+            home_page: {
+              artwork_module: {
+                __id: globalId,
+              }
             },
           });
         });
@@ -190,6 +201,57 @@ describe('Object Identification', () => {
               },
             },
           });
+        });
+      });
+    });
+  });
+
+  describe('for a HomePageArtistModule', () => {
+    const globalId = toGlobalId(
+      'HomePageArtistModule',
+      JSON.stringify({ key: 'trending' })
+    );
+
+    it('generates a Global ID', () => {
+      const query = `
+        {
+          home_page {
+            artist_module(key: "trending") {
+              __id
+            }
+          }
+        }
+      `;
+
+      return graphql(schema, query).then(({ data }) => {
+        data.should.eql({
+          home_page: {
+            artist_module: {
+              __id: globalId,
+            }
+          },
+        });
+      });
+    });
+
+    it('resolves a node', () => {
+      const query = `
+        {
+          node(__id: "${globalId}") {
+            __typename
+            ... on HomePageArtistModule {
+              key
+            }
+          }
+        }
+      `;
+
+      return graphql(schema, query).then(({ data }) => {
+        data.should.eql({
+          node: {
+            __typename: 'HomePageArtistModule',
+            key: 'trending',
+          },
         });
       });
     });
