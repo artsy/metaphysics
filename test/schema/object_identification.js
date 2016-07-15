@@ -27,7 +27,7 @@ describe('Object Identification', () => {
     Partner: {
       gravity: {
         has_full_profile: true,
-        shows_count: 42,
+        profile_banner_display: false,
       },
     },
     PartnerShow: {
