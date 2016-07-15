@@ -43,7 +43,7 @@ const SupportedTypes = {
     './article',
     './artist',
     './artwork',
-    './home/home_page_module',
+    './home/home_page_artwork_module',
     './home/home_page_artist_module',
     './partner',
     './partner_show',

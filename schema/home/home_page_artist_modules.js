@@ -12,7 +12,7 @@ import {
 
 const HomePageArtistModules = {
   type: new GraphQLList(HomePageArtistModuleType),
-  description: 'Modules to show on the home screen',
+  description: 'Artist modules to show on the home screen',
   resolve: () => map(keys(Results), key => ({ key })),
 };
 

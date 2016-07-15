@@ -50,6 +50,7 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
 
 const HomePageArtistModule = {
   type: HomePageArtistModuleType,
+  description: 'Single artist module to show on the home screen',
   args: {
     key: {
       type: GraphQLString,
