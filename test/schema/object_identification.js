@@ -119,7 +119,7 @@ describe('Object Identification', () => {
             home_page: {
               artwork_module: {
                 __id: globalId,
-              }
+              },
             },
           });
         });
@@ -170,7 +170,7 @@ describe('Object Identification', () => {
             home_page: {
               artwork_module: {
                 __id: globalId,
-              }
+              },
             },
           });
         });
@@ -228,7 +228,7 @@ describe('Object Identification', () => {
           home_page: {
             artist_module: {
               __id: globalId,
-            }
+            },
           },
         });
       });

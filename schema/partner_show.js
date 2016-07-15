@@ -5,7 +5,7 @@ import {
 } from '../lib/helpers';
 import {
   find,
-  has
+  has,
 } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import total from '../lib/loaders/total';
