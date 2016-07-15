@@ -96,23 +96,30 @@ describe('Object Identification', () => {
     });
   });
 
-  describe('for a HomePageModule', () => {
+  describe('for a HomePageArtworkModule', () => {
     describe('with a specific module', () => {
-      const globalId = toGlobalId('HomePageModule', JSON.stringify({ key: 'iconic_artists' }));
+      const globalId = toGlobalId(
+        'HomePageArtworkModule',
+        JSON.stringify({ key: 'iconic_artists' })
+      );
 
       it('generates a Global ID', () => {
         const query = `
           {
-            home_page_module(key: "iconic_artists") {
-              __id
+            home_page {
+              artwork_module(key: "iconic_artists") {
+                __id
+              }
             }
           }
         `;
 
         return graphql(schema, query).then(({ data }) => {
           data.should.eql({
-            home_page_module: {
-              __id: globalId,
+            home_page: {
+              artwork_module: {
+                __id: globalId,
+              },
             },
           });
         });
@@ -123,7 +130,7 @@ describe('Object Identification', () => {
           {
             node(__id: "${globalId}") {
               __typename
-              ... on HomePageModule {
+              ... on HomePageArtworkModule {
                 key
               }
             }
@@ -133,7 +140,7 @@ describe('Object Identification', () => {
         return graphql(schema, query).then(({ data }) => {
           data.should.eql({
             node: {
-              __typename: 'HomePageModule',
+              __typename: 'HomePageArtworkModule',
               key: 'iconic_artists',
             },
           });
@@ -143,23 +150,27 @@ describe('Object Identification', () => {
 
     describe('with a generic gene', () => {
       const globalId = toGlobalId(
-        'HomePageModule',
+        'HomePageArtworkModule',
         JSON.stringify({ key: 'generic_gene', id: 'abstract-art' })
       );
 
       it('generates a Global ID', () => {
         const query = `
           {
-            home_page_module(key: "generic_gene", id: "abstract-art") {
-              __id
+            home_page {
+              artwork_module(key: "generic_gene", id: "abstract-art") {
+                __id
+              }
             }
           }
         `;
 
         return graphql(schema, query).then(({ data }) => {
           data.should.eql({
-            home_page_module: {
-              __id: globalId,
+            home_page: {
+              artwork_module: {
+                __id: globalId,
+              },
             },
           });
         });
@@ -170,7 +181,7 @@ describe('Object Identification', () => {
           {
             node(__id: "${globalId}") {
               __typename
-              ... on HomePageModule {
+              ... on HomePageArtworkModule {
                 key
                 params {
                   id
@@ -183,13 +194,64 @@ describe('Object Identification', () => {
         return graphql(schema, query).then(({ data }) => {
           data.should.eql({
             node: {
-              __typename: 'HomePageModule',
+              __typename: 'HomePageArtworkModule',
               key: 'generic_gene',
               params: {
                 id: 'abstract-art',
               },
             },
           });
+        });
+      });
+    });
+  });
+
+  describe('for a HomePageArtistModule', () => {
+    const globalId = toGlobalId(
+      'HomePageArtistModule',
+      JSON.stringify({ key: 'trending' })
+    );
+
+    it('generates a Global ID', () => {
+      const query = `
+        {
+          home_page {
+            artist_module(key: "trending") {
+              __id
+            }
+          }
+        }
+      `;
+
+      return graphql(schema, query).then(({ data }) => {
+        data.should.eql({
+          home_page: {
+            artist_module: {
+              __id: globalId,
+            },
+          },
+        });
+      });
+    });
+
+    it('resolves a node', () => {
+      const query = `
+        {
+          node(__id: "${globalId}") {
+            __typename
+            ... on HomePageArtistModule {
+              key
+            }
+          }
+        }
+      `;
+
+      return graphql(schema, query).then(({ data }) => {
+        data.should.eql({
+          node: {
+            __typename: 'HomePageArtistModule',
+            key: 'trending',
+          },
         });
       });
     });

@@ -1,30 +1,28 @@
 // To support a type, it should:
 // * specify that it implements the Node interface
 // * add the Node `__id` fields
-// * implement a `isType` function that from a payload determines if the payload is of that type
+// * implement a `isTypeOf` function that from a payload determines if the payload is of that type
 // * add to the below `SupportedTypes` list.
 //
 // Example:
 //
-//   import ObjectIdentification from './object_identification';
+//   import { has } from 'lodash';
+//   import {
+//     GlobalIDField,
+//     NodeInterface,
+//   } from './object_identification';
 //
 //   const ArtworkType = new GraphQLObjectType({
 //     ...
-//     interfaces: [ObjectIdentification.NodeInterface],
+//     interfaces: [NodeInterface],
+//     isTypeOf: (obj) => has(obj, 'title') && has(obj, 'artists'),
 //     fields: () => {
 //       return {
-//         __id: ObjectIdentification.GlobalIDField,
+//         __id: GlobalIDField,
 //         ...
 //       };
 //     },
 //   });
-//
-//   const Artwork = {
-//     type: ArtworkType,
-//     resolve: (root, { id }) => gravity(`artwork/${id}`),
-//     isType: (obj) => obj.title !== undefined && obj.artists !== undefined,
-//     ...
-//   };
 
 import { basename } from 'path';
 import _ from 'lodash';
@@ -45,7 +43,8 @@ const SupportedTypes = {
     './article',
     './artist',
     './artwork',
-    './home/home_page_module',
+    './home/home_page_artwork_module',
+    './home/home_page_artist_module',
     './partner',
     './partner_show',
   ],
@@ -82,13 +81,6 @@ export const NodeInterface = new GraphQLInterfaceType({
       description: 'The ID of the object.',
     },
   }),
-  resolveType: (obj) => {
-    const mod = _.chain(SupportedTypes.types)
-      .map(type => SupportedTypes.typeModules[type])
-      .find(m => m.isType(obj))
-      .value();
-    return mod && mod.type;
-  },
 });
 
 const NodeField = {
@@ -104,7 +96,7 @@ const NodeField = {
   resolve: (root, { __id }) => {
     const { type, id } = fromGlobalId(__id);
     if (_.includes(SupportedTypes.types, type)) {
-      const payload = type === 'HomePageModule' ? JSON.parse(id) : { id };
+      const payload = type.includes('HomePage') ? JSON.parse(id) : { id };
       // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
       return SupportedTypes.typeModules[type].resolve(null, payload);
     }

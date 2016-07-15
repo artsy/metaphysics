@@ -17,18 +17,21 @@ describe('PartnerShows type', () => {
           partner: {
             id: 'new-museum',
           },
+          display_on_partner_profile: true,
         },
         {
           id: 'new-museum-group-show',
           partner: {
             id: 'new-museum',
           },
+          display_on_partner_profile: true,
         },
         {
           id: 'new-museum-fair-booth',
           partner: {
             id: 'new-museum',
           },
+          display_on_partner_profile: true,
         },
       ]))
       .onCall(1)

@@ -3,7 +3,10 @@ import {
   isExisty,
   exclude,
 } from '../lib/helpers';
-import { find } from 'lodash';
+import {
+  find,
+  has,
+} from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import total from '../lib/loaders/total';
 import { exhibitionPeriod, exhibitionStatus } from '../lib/date';
@@ -36,6 +39,7 @@ const kind = ({ artists, fair }) => {
 const PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
   interfaces: [NodeInterface],
+  isTypeOf: (obj) => has(obj, 'partner') && has(obj, 'display_on_partner_profile'),
   fields: () => ({
     ...GravityIDFields,
     cached,
@@ -262,8 +266,6 @@ const PartnerShow = {
         return show;
       });
   },
-  // ObjectIdentification
-  isType: (obj) => obj.partner !== undefined && obj.display_on_partner_profile !== undefined,
 };
 
 export default PartnerShow;

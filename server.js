@@ -54,12 +54,14 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
   loaders.clearAll();
 
   const accessToken = request.headers['x-access-token'];
+  const userID = request.headers['x-user-id'];
 
   return {
     schema,
     graphiql: true,
     rootValue: {
       accessToken,
+      userID,
     },
   };
 }));

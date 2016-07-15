@@ -42,6 +42,7 @@ import {
 const ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
   interfaces: [NodeInterface],
+  isTypeOf: (obj) => _.has(obj, 'title') && _.has(obj, 'artists'),
   fields: () => {
     return {
       ...GravityIDFields,
@@ -469,8 +470,6 @@ const Artwork = {
     },
   },
   resolve: (root, { id }) => gravity(`artwork/${id}`),
-  // ObjectIdentification
-  isType: (obj) => obj.title !== undefined && obj.artists !== undefined,
 };
 
 export default Artwork;

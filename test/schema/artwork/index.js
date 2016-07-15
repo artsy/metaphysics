@@ -17,6 +17,7 @@ describe('Artwork type', () => {
     title: 'Untitled (Portrait)',
     forsale: true,
     acquireable: false,
+    artists: [],
   };
 
   const artworkImages = [

@@ -1,3 +1,4 @@
+import { has } from 'lodash';
 import positron from '../lib/loaders/positron';
 import cached from './fields/cached';
 import AuthorType from './author';
@@ -13,6 +14,7 @@ import {
 const ArticleType = new GraphQLObjectType({
   name: 'Article',
   interfaces: [NodeInterface],
+  isTypeOf: (obj) => has(obj, 'title') && has(obj, 'author'),
   fields: () => ({
     ...IDFields,
     cached,
@@ -55,8 +57,6 @@ const Article = {
     },
   },
   resolve: (root, { id }) => positron(`articles/${id}`),
-  // ObjectIdentification
-  isType: (obj) => obj.title !== undefined && obj.author !== undefined,
 };
 
 export default Article;

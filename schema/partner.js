@@ -1,5 +1,6 @@
 import {
   assign,
+  has,
   omit,
 } from 'lodash';
 import { exclude } from '../lib/helpers';
@@ -25,6 +26,7 @@ import {
 const PartnerType = new GraphQLObjectType({
   name: 'Partner',
   interfaces: [NodeInterface],
+  isTypeOf: (obj) => has(obj, 'has_full_profile') && has(obj, 'shows_count'),
   fields: () => {
     // Prevent circular dependency
     const PartnerShows = require('./partner_shows').default;
@@ -177,8 +179,6 @@ const Partner = {
     },
   },
   resolve: (root, { id }) => gravity(`partner/${id}`),
-  // ObjectIdentification
-  isType: (obj) => obj.has_full_profile !== undefined && obj.shows_count !== undefined,
 };
 
 export default Partner;
