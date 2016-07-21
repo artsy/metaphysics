@@ -2,8 +2,8 @@ import {
   featuredAuction,
   featuredFair,
   featuredGene,
-  relatedArtist,
 } from './fetch';
+import gravity from '../../lib/loaders/gravity';
 import { GraphQLString } from 'graphql';
 
 const moduleTitle = {
@@ -27,11 +27,9 @@ const moduleTitle = {
       }
     });
   },
-  related_artists: ({ accessToken }) => {
-    return relatedArtist(accessToken).then((related_artist) => {
-      if (related_artist) {
-        return `Works by ${related_artist.name}`;
-      }
+  related_artists: ({ params }) => {
+    return gravity(`artist/${params.related_artist_id}`).then((artist) => {
+      return `Works by ${artist.name}`;
     });
   },
   genes: ({ accessToken }) => {
