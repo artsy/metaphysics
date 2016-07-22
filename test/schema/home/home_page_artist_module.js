@@ -46,16 +46,16 @@ describe('HomePageArtistModule', () => {
     HomePageArtistModule.__ResetDependency__('gravity');
   });
 
-  const shared = () => {
+  const shared = (queryRunner) => {
     it('returns trending artists', () => {
-      return runQuery(query('trending')).then(({ home_page }) => {
+      return queryRunner(query('trending')).then(({ home_page }) => {
         home_page.artist_module.results.should.eql([{ id: 'trending' }]);
       });
     });
   };
 
   describe('when signed-in', () => {
-    shared();
+    shared(runAuthenticatedQuery);
 
     it('returns suggestions', () => {
       return runAuthenticatedQuery(query('suggested')).then(({ home_page }) => {
@@ -65,7 +65,7 @@ describe('HomePageArtistModule', () => {
   });
 
   describe('when signed-out', () => {
-    shared();
+    shared(runQuery);
 
     it('does not return any suggestions', () => {
       return runQuery(query('suggested')).then(({ home_page }) => {
