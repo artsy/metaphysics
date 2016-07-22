@@ -27,9 +27,13 @@ export const Results = {
       });
     },
     resolve: (accessToken, userID) => {
-      return Results.suggested.fetch(accessToken, userID).then(results => {
-        return map(results, 'artist');
-      });
+      if (accessToken && userID) {
+        return Results.suggested.fetch(accessToken, userID).then(results => {
+          return map(results, 'artist');
+        });
+      } else {
+        Promise.resolve(null);
+      }
     },
   },
   trending: {
@@ -60,7 +64,7 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     results: {
       type: new GraphQLList(Artist.type),
       resolve: ({ key, display, params }, options, { rootValue: { accessToken, userID } }) => {
-        return Results[key].resolve({ accessToken, userID });
+        return Results[key].resolve(accessToken, userID);
       },
     },
   },
