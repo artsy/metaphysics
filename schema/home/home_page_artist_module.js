@@ -31,8 +31,6 @@ export const Results = {
         return Results.suggested.fetch(accessToken, userID).then(results => {
           return map(results, 'artist');
         });
-      } else {
-        Promise.resolve(null);
       }
     },
   },
