@@ -15,13 +15,33 @@ import {
 } from 'graphql';
 
 export const Results = {
-  suggested: ({ accessToken, userID }) => {
-    return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`).then(results => {
-      return map(results, 'artist');
-    });
+  suggested: {
+    fetch: (accessToken, userID) => {
+      return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`);
+    },
+    display: (accessToken, userID) => {
+      return Promise.resolve(!!(accessToken && userID)).then(display => {
+        return display && Results.suggested.fetch(accessToken, userID).then(results => {
+          return results.length > 0;
+        });
+      });
+    },
+    resolve: (accessToken, userID) => {
+      if (accessToken && userID) {
+        return Results.suggested.fetch(accessToken, userID).then(results => {
+          return map(results, 'artist');
+        });
+      }
+    },
   },
-  trending: () => gravity('artists/trending'),
-  iconic: () => [],
+  trending: {
+    display: () => Promise.resolve(true),
+    resolve: () => gravity('artists/trending'),
+  },
+  popular: {
+    display: () => Promise.resolve(true),
+    resolve: () => [],
+  },
 };
 
 export const HomePageArtistModuleType = new GraphQLObjectType({
@@ -42,7 +62,7 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     results: {
       type: new GraphQLList(Artist.type),
       resolve: ({ key, display, params }, options, { rootValue: { accessToken, userID } }) => {
-        return Results[key]({ accessToken, userID });
+        return Results[key].resolve(accessToken, userID);
       },
     },
   },
