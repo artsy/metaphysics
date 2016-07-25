@@ -31,6 +31,12 @@ describe('HomePageArtistModule', () => {
       artworks_count: null,
     }]));
 
+    gravity.withArgs('artists/popular').returns(Promise.resolve([{
+      id: 'popular',
+      birthday: null,
+      artworks_count: null,
+    }]));
+
     gravity.withArgs('user/user-42/suggested/similar/artists').returns(Promise.resolve([{
       artist: {
         id: 'suggested',
@@ -50,6 +56,12 @@ describe('HomePageArtistModule', () => {
     it('returns trending artists', () => {
       return queryRunner(query('trending')).then(({ home_page }) => {
         home_page.artist_module.results.should.eql([{ id: 'trending' }]);
+      });
+    });
+
+    it('returns popular artists', () => {
+      return queryRunner(query('popular')).then(({ home_page }) => {
+        home_page.artist_module.results.should.eql([{ id: 'popular' }]);
       });
     });
   };

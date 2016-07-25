@@ -40,7 +40,7 @@ export const Results = {
   },
   popular: {
     display: () => Promise.resolve(true),
-    resolve: () => [],
+    resolve: () => gravity('artists/popular'),
   },
 };
 
