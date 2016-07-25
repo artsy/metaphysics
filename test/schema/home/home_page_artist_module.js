@@ -1,5 +1,6 @@
 import { isNull } from 'lodash';
 import sinon from 'sinon';
+import { graphql } from 'graphql';
 import schema from '../../../schema';
 import { runAuthenticatedQuery, runQuery } from '../../helper';
 
@@ -11,7 +12,7 @@ describe('HomePageArtistModule', () => {
     return `
       {
         home_page {
-          artist_module(key: "${key}") {
+          artist_module(key: ${key}) {
             results {
               id
             }
@@ -54,13 +55,13 @@ describe('HomePageArtistModule', () => {
 
   const shared = (queryRunner) => {
     it('returns trending artists', () => {
-      return queryRunner(query('trending')).then(({ home_page }) => {
+      return queryRunner(query('TRENDING')).then(({ home_page }) => {
         home_page.artist_module.results.should.eql([{ id: 'trending' }]);
       });
     });
 
     it('returns popular artists', () => {
-      return queryRunner(query('popular')).then(({ home_page }) => {
+      return queryRunner(query('POPULAR')).then(({ home_page }) => {
         home_page.artist_module.results.should.eql([{ id: 'popular' }]);
       });
     });
@@ -70,7 +71,7 @@ describe('HomePageArtistModule', () => {
     shared(runAuthenticatedQuery);
 
     it('returns suggestions', () => {
-      return runAuthenticatedQuery(query('suggested')).then(({ home_page }) => {
+      return runAuthenticatedQuery(query('SUGGESTED')).then(({ home_page }) => {
         home_page.artist_module.results.should.eql([{ id: 'suggested' }]);
       });
     });
@@ -80,8 +81,9 @@ describe('HomePageArtistModule', () => {
     shared(runQuery);
 
     it('does not return any suggestions', () => {
-      return runQuery(query('suggested')).then(({ home_page }) => {
-        isNull(home_page.artist_module.results).should.be.true();
+      return graphql(schema, query('SUGGESTED')).then(response => {
+        isNull(response.data.home_page.artist_module.results).should.be.true();
+        response.errors.should.not.be.empty();
       });
     });
   });
