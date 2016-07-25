@@ -37,21 +37,12 @@ export const followedArtist = (accessToken) => {
   });
 };
 
-export const relatedArtist = (accessToken) => {
-  return followedArtist(accessToken).then((followed_artist) => {
-    return gravity
-      .with(accessToken)('me/suggested/artists', {
-        exclude_followed_artists: true,
-        exclude_artists_without_forsale_artworks: true,
-        artist_id: followed_artist._id,
-      })
-      .then((related_artists) => {
-        return {
-          followed_artist,
-          related_artist: first(related_artists),
-        };
-      });
-  });
+export const relatedArtist = (accessToken, userID) => {
+  return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`,{
+    exclude_artists_without_forsale_artworks: true,
+    exclude_artists_without_artworks: true,
+
+  })
 };
 
 export const iconicArtists = () => {
