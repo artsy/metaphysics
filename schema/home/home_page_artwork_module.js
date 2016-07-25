@@ -64,12 +64,30 @@ export function createHomePageArtworkModule(moduleTypeName) {
       id: {
         type: GraphQLString,
         description: 'ID of generic gene rail to target',
+        deprecationReason: 'Favor more specific `generic_gene_id`',
+      },
+      generic_gene_id: {
+        type: GraphQLString,
+        description: 'ID of generic gene rail to target',
+        deprecationReason: 'Favor more specific `generic_gene_id`',
+      },
+      followed_artist_id: {
+        type: GraphQLString,
+        description: 'ID of followed artist to target for related artist rails',
+      },
+      related_artist_id: {
+        type: GraphQLString,
+        description: 'ID of related artist to target for related artist rails',
       },
     },
-    resolve: (root, { key, id }) => {
+    resolve: (root, { key, id, followed_artist_id, related_artist_id }) => {
       // is id a generic gene?
-      const params = find(genericGenes, ['id', id]);
+      let params = find(genericGenes, ['id', id]);
       if (params) {
+        return { key, params, display: true };
+      }
+      if (followed_artist_id && related_artist_id) {
+        params = { followed_artist_id, related_artist_id };
         return { key, params, display: true };
       }
       return { key, display: true };

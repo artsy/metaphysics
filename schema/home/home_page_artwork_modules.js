@@ -4,6 +4,8 @@ import {
   map,
   filter,
   slice,
+  findIndex,
+  set,
 } from 'lodash';
 import {
   GraphQLList,
@@ -12,9 +14,9 @@ import {
 import HomePageArtworkModule from './home_page_artwork_module';
 import loggedOutModules from './logged_out_modules';
 import addGenericGenes from './add_generic_genes';
-import { featuredFair, featuredAuction } from './fetch';
+import { featuredFair, featuredAuction, relatedArtist } from './fetch';
 
-const filteredModules = (modules, max_rails) => {
+const filterModules = (modules, max_rails) => {
   return slice(
     addGenericGenes(filter(modules, ['display', true])),
   0, max_rails);
@@ -39,7 +41,18 @@ export function createHomePageArtworkModules(singularModule) {
             const display = key === 'followed_artists' ? true : response[key];
             return { key, display };
           });
-          return filteredModules(modules, max_rails);
+          const filteredModules = filterModules(modules, max_rails);
+          const relatedArtistIndex = findIndex(filteredModules, ['key', 'related_artists']);
+          if (relatedArtistIndex) {
+            return Promise.all([relatedArtist(accessToken)]).then(([{ followed_artist, related_artist }]) => {
+              const relatedArtistModuleParams = {
+                followed_artist_id: followed_artist.id,
+                related_artist_id: related_artist.id,
+              };
+              return set(filteredModules, `[${relatedArtistIndex}].params`, relatedArtistModuleParams);
+            });
+          }
+          return filteredModules;
         });
       }
       // otherwise, get the generic set of modules
@@ -48,7 +61,7 @@ export function createHomePageArtworkModules(singularModule) {
         featuredFair(),
       ]).then(([auction, fair]) => {
         const modules = loggedOutModules(auction, fair);
-        return filteredModules(modules, max_rails);
+        return filterModules(modules, max_rails);
       });
     },
   };

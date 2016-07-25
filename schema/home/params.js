@@ -19,6 +19,12 @@ const HomePageModuleParams = new GraphQLObjectType({
     id: {
       type: GraphQLID,
     },
+    followed_artist_id: {
+      type: GraphQLID,
+    },
+    related_artist_id: {
+      type: GraphQLID,
+    },
   },
 });
 
