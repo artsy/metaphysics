@@ -8,7 +8,6 @@
   "extends": "airbnb",
   "parser": "babel-eslint",
   "rules": {
-    "camelcase": 0,
-    "object-shorthand": [2, "properties"]
+    "camelcase": 0
   }
 }
