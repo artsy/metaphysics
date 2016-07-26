@@ -1,5 +1,4 @@
 import { map } from 'lodash';
-import sinon from 'sinon';
 import schema from '../../../schema';
 import { runAuthenticatedQuery, runQuery } from '../../helper';
 
@@ -24,14 +23,18 @@ describe('HomePageArtistModules', () => {
       beforeEach(() => {
         suggestions = [];
 
-        const gravity = sinon.stub();
-        gravity.with = sinon.stub().returns(gravity);
-        gravity.returns(Promise.resolve(suggestions));
-        HomePageArtistModule.__Rewire__('gravity', gravity);
+        HomePageArtistModule.__Rewire__('gravity', () => {
+          return { with: () => Promise.resolve(suggestions) };
+        });
+
+        HomePageArtistModule.__Rewire__('total', () => {
+          return Promise.resolve({ body: { total: suggestions.length } });
+        });
       });
 
       afterEach(() => {
         HomePageArtistModule.__ResetDependency__('gravity');
+        HomePageArtistModule.__ResetDependency__('total');
       });
 
       it('shows all modules if there are any suggestions', () => {

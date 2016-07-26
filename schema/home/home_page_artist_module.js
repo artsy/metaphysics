@@ -4,6 +4,7 @@ import {
 } from 'lodash';
 import Artist from '../artist';
 import gravity from '../../lib/loaders/gravity';
+import { total } from '../../lib/loaders/total';
 import { NodeInterface } from '../object_identification';
 import { toGlobalId } from 'graphql-relay';
 import {
@@ -19,21 +20,19 @@ import {
 export const HomePageArtistModuleTypes = {
   SUGGESTED: {
     description: 'Artists recommended for the specific user.',
-    fetch: function fetch(accessToken, userID) {
-      return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`);
-    },
-    display: function display(accessToken, userID) {
+    display: (accessToken, userID) => {
       if (!accessToken || !userID) {
         return Promise.resolve(false);
       }
-      // Performing a full `fetch` instead of a count, so the next `fetch` call will be cached.
-      return this.fetch(accessToken, userID).then(results => results.length > 0);
+      return total(`user/${userID}/suggested/similar/artists?total_count=1&size=0`, accessToken)
+        .then(response => response.body.total > 0);
     },
-    resolve: function resolve(accessToken, userID) {
+    resolve: (accessToken, userID) => {
       if (!accessToken || !userID) {
         throw new Error('Both the X-USER-ID and X-ACCESS-TOKEN headers are required.');
       }
-      return this.fetch(accessToken, userID).then(results => map(results, 'artist'));
+      return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`)
+        .then(results => map(results, 'artist'));
     },
   },
   TRENDING: {
