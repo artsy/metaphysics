@@ -15,8 +15,8 @@ const HomePageArtistModules = {
   description: 'Artist modules to show on the home screen',
   resolve: (root, params, { rootValue: { accessToken, userID } }) => {
     // First check each type if they can display…
-    return Promise.all(map(HomePageArtistModuleTypes, ({ display }, key) => {
-      return display(accessToken, userID).then(displayable => ({ key, displayable }));
+    return Promise.all(map(HomePageArtistModuleTypes, (type, key) => {
+      return type.display(accessToken, userID).then(displayable => ({ key, displayable }));
     })).then(results => {
       // …then reduce list to those that can be displayed.
       return map(filter(results, 'displayable'), ({ key }) => ({ key }));

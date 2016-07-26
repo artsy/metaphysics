@@ -19,25 +19,21 @@ import {
 export const HomePageArtistModuleTypes = {
   SUGGESTED: {
     description: 'Artists recommended for the specific user.',
-    fetch: (accessToken, userID) => {
+    fetch: function fetch(accessToken, userID) {
       return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`);
     },
-    display: (accessToken, userID) => {
-      const fetch = HomePageArtistModuleTypes.SUGGESTED.fetch;
-      return Promise.resolve(!!(accessToken && userID)).then(display => {
-        return display && fetch(accessToken, userID).then(results => {
-          return results.length > 0;
-        });
-      });
+    display: function display(accessToken, userID) {
+      if (!accessToken || !userID) {
+        return Promise.resolve(false);
+      }
+      // Performing a full `fetch` instead of a count, so the next `fetch` call will be cached.
+      return this.fetch(accessToken, userID).then(results => results.length > 0);
     },
-    resolve: (accessToken, userID) => {
+    resolve: function resolve(accessToken, userID) {
       if (!accessToken || !userID) {
         throw new Error('Both the X-USER-ID and X-ACCESS-TOKEN headers are required.');
       }
-      const fetch = HomePageArtistModuleTypes.SUGGESTED.fetch;
-      return fetch(accessToken, userID).then(results => {
-        return map(results, 'artist');
-      });
+      return this.fetch(accessToken, userID).then(results => map(results, 'artist'));
     },
   },
   TRENDING: {
