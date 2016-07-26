@@ -4,7 +4,7 @@ import {
 } from 'lodash';
 import {
   HomePageArtistModuleType,
-  Results,
+  HomePageArtistModuleTypes,
 } from './home_page_artist_module';
 import {
   GraphQLList,
@@ -15,7 +15,7 @@ const HomePageArtistModules = {
   description: 'Artist modules to show on the home screen',
   resolve: (root, params, { rootValue: { accessToken, userID } }) => {
     // First check each type if they can display…
-    return Promise.all(map(Results, ({ display }, key) => {
+    return Promise.all(map(HomePageArtistModuleTypes, ({ display }, key) => {
       return display(accessToken, userID).then(displayable => ({ key, displayable }));
     })).then(results => {
       // …then reduce list to those that can be displayed.

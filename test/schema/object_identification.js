@@ -209,14 +209,14 @@ describe('Object Identification', () => {
   describe('for a HomePageArtistModule', () => {
     const globalId = toGlobalId(
       'HomePageArtistModule',
-      JSON.stringify({ key: 'trending' })
+      JSON.stringify({ key: 'TRENDING' })
     );
 
     it('generates a Global ID', () => {
       const query = `
         {
           home_page {
-            artist_module(key: "trending") {
+            artist_module(key: TRENDING) {
               __id
             }
           }
@@ -250,7 +250,7 @@ describe('Object Identification', () => {
         data.should.eql({
           node: {
             __typename: 'HomePageArtistModule',
-            key: 'trending',
+            key: 'TRENDING',
           },
         });
       });

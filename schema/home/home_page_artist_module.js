@@ -4,9 +4,11 @@ import {
 } from 'lodash';
 import Artist from '../artist';
 import gravity from '../../lib/loaders/gravity';
+import { total } from '../../lib/loaders/total';
 import { NodeInterface } from '../object_identification';
 import { toGlobalId } from 'graphql-relay';
 import {
+  GraphQLEnumType,
   GraphQLID,
   GraphQLNonNull,
   GraphQLList,
@@ -14,33 +16,34 @@ import {
   GraphQLString,
 } from 'graphql';
 
-export const Results = {
-  suggested: {
-    fetch: (accessToken, userID) => {
-      return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`);
-    },
+// This object is used for both the `key` argument enum and to do fetching.
+export const HomePageArtistModuleTypes = {
+  SUGGESTED: {
+    description: 'Artists recommended for the specific user.',
     display: (accessToken, userID) => {
-      return Promise.resolve(!!(accessToken && userID)).then(display => {
-        return display && Results.suggested.fetch(accessToken, userID).then(results => {
-          return results.length > 0;
-        });
-      });
+      if (!accessToken || !userID) {
+        return Promise.resolve(false);
+      }
+      return total(`user/${userID}/suggested/similar/artists?total_count=1&size=0`, accessToken)
+        .then(response => response.body.total > 0);
     },
     resolve: (accessToken, userID) => {
-      if (accessToken && userID) {
-        return Results.suggested.fetch(accessToken, userID).then(results => {
-          return map(results, 'artist');
-        });
+      if (!accessToken || !userID) {
+        throw new Error('Both the X-USER-ID and X-ACCESS-TOKEN headers are required.');
       }
+      return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`)
+        .then(results => map(results, 'artist'));
     },
   },
-  trending: {
+  TRENDING: {
+    description: 'The trending artists.',
     display: () => Promise.resolve(true),
     resolve: () => gravity('artists/trending'),
   },
-  popular: {
+  POPULAR: {
+    description: 'The most searched for artists.',
     display: () => Promise.resolve(true),
-    resolve: () => [],
+    resolve: () => gravity('artists/popular'),
   },
 };
 
@@ -57,12 +60,13 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
       },
     },
     key: {
+      description: 'Module identifier.',
       type: GraphQLString,
     },
     results: {
       type: new GraphQLList(Artist.type),
       resolve: ({ key, display, params }, options, { rootValue: { accessToken, userID } }) => {
-        return Results[key].resolve(accessToken, userID);
+        return HomePageArtistModuleTypes[key].resolve(accessToken, userID);
       },
     },
   },
@@ -70,14 +74,17 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
 
 const HomePageArtistModule = {
   type: HomePageArtistModuleType,
-  description: 'Single artist module to show on the home screen',
+  description: 'Single artist module to show on the home screen.',
   args: {
     key: {
-      type: GraphQLString,
-      description: 'Module key',
+      description: 'Module identifier.',
+      type: new GraphQLEnumType({
+        name: 'HomePageArtistModuleTypes',
+        values: HomePageArtistModuleTypes,
+      }),
     },
   },
-  resolve: (root, obj) => obj.key && Results[obj.key] ? obj : null,
+  resolve: (root, obj) => obj.key && HomePageArtistModuleTypes[obj.key] ? obj : null,
 };
 
 export default HomePageArtistModule;
