@@ -95,6 +95,9 @@ const PartnerType = new GraphQLObjectType({
           size: {
             type: GraphQLInt,
           },
+          for_sale: {
+            type: GraphQLBoolean,
+          },
           sort: ArtworkSorts,
           exclude: {
             type: new GraphQLList(GraphQLString),
