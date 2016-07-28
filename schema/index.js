@@ -9,8 +9,6 @@ import Fair from './fair';
 import Fairs from './fairs';
 import Gene from './gene';
 import HomePage from './home';
-import HomePageModules from './home/home_page_modules';
-import HomePageModule from './home/home_page_module';
 import OrderedSets from './ordered_sets';
 import Profile from './profile';
 import Partner from './partner';
@@ -50,8 +48,6 @@ const schema = new GraphQLSchema({
       fairs: Fairs,
       gene: Gene,
       home_page: HomePage,
-      home_page_modules: HomePageModules,
-      home_page_module: HomePageModule,
       profile: Profile,
       ordered_sets: OrderedSets,
       partner: Partner,
