@@ -217,11 +217,15 @@ const SaleType = new GraphQLObjectType({
       buyers_premium: {
         type: new GraphQLList(BuyersPremium),
         description: "Auction's buyer's premium policy.",
-        resolve: (sale) => map(sale.buyers_premium.schedule, (item) => ({
-          cents: item.min_amount_cents,
-          symbol: sale.currency,
-          percent: item.percent,
-        })),
+        resolve: sale => {
+          if (!sale.buyers_premium.schedule) return null;
+
+          return map(sale.buyers_premium.schedule, item => ({
+            cents: item.min_amount_cents,
+            symbol: sale.currency,
+            percent: item.percent,
+          }));
+        },
       },
     };
   },
