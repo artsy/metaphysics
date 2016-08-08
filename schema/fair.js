@@ -1,4 +1,5 @@
 import gravity from '../lib/loaders/gravity';
+import moment from 'moment';
 import cached from './fields/cached';
 import date from './fields/date';
 import Profile from './profile';
@@ -62,6 +63,15 @@ const FairType = new GraphQLObjectType({
             });
         }
         return null;
+      },
+    },
+    is_active: {
+      type: GraphQLBoolean,
+      description: 'Are we currently in the fair\'s active period?',
+      resolve: ({ autopublish_artworks_at, end_at }) => {
+        const start = moment.utc(autopublish_artworks_at).subtract(7, 'days');
+        const end = moment.utc(end_at).add(14, 'days');
+        return moment.utc().isBetween(start, end);
       },
     },
     start_at: date,
