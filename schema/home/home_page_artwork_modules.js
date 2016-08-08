@@ -33,29 +33,40 @@ export function createHomePageArtworkModules(singularModule) {
         defaultValue: 8,
       },
     },
-    resolve: (root, { max_rails }, { rootValue: { accessToken } }) => {
-      // if user is logged in, get their modules
+    resolve: (root, { max_rails }, { rootValue: { accessToken, userID } }) => {
+      // If user is logged in, get their specific modules
       if (accessToken) {
         return gravity.with(accessToken)('me/modules').then((response) => {
           const modules = map(keys(response), (key) => {
+            // We always want to show the followed_artists rail no matter what
             const display = key === 'followed_artists' ? true : response[key];
             return { key, display };
           });
           const filteredModules = filterModules(modules, max_rails);
+
+          // For the related artists rail, we need to fetch a random
+          // set of followed artist + related artist initially
+          // and pass it along so that any placeholder titles are consistent
           const relatedArtistIndex = findIndex(filteredModules, ['key', 'related_artists']);
           if (relatedArtistIndex) {
-            return Promise.all([relatedArtist(accessToken)]).then(([{ followed_artist, related_artist }]) => {
+            return Promise.resolve(relatedArtist(accessToken, userID))
+            .then(({ artist, sim_artist }) => {
               const relatedArtistModuleParams = {
-                followed_artist_id: followed_artist.id,
-                related_artist_id: related_artist.id,
+                followed_artist_id: sim_artist.id,
+                related_artist_id: artist.id,
               };
-              return set(filteredModules, `[${relatedArtistIndex}].params`, relatedArtistModuleParams);
+              return set(
+                filteredModules,
+                `[${relatedArtistIndex}].params`,
+                relatedArtistModuleParams
+              );
             });
           }
           return filteredModules;
         });
       }
-      // otherwise, get the generic set of modules
+
+      // Otherwise, get the generic set of modules
       return Promise.all([
         featuredAuction(),
         featuredFair(),

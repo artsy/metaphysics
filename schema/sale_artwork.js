@@ -23,11 +23,13 @@ import {
   GraphQLList,
 } from 'graphql';
 
-export const isBiddable = (sale, { artwork: { sold } }) => (
-  !sold &&
-  sale.sale_type === 'auction' &&
-  auctionState(sale) === 'open'
-);
+export const isBiddable = (sale, { artwork: { sold } }) => {
+  return (
+    !sold &&
+    sale.is_auction &&
+    auctionState(sale) === 'open'
+  );
+};
 
 const SaleArtworkType = new GraphQLObjectType({
   name: 'SaleArtwork',

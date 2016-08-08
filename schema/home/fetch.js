@@ -29,20 +29,11 @@ export const featuredGene = (accessToken) => {
   });
 };
 
-export const followedArtist = (accessToken) => {
-  return gravity.with(accessToken)('me/follow/artists', { size: 15 }).then((follows) => {
-    if (follows.length) {
-      return sample(follows).artist;
-    }
-  });
-};
-
 export const relatedArtist = (accessToken, userID) => {
-  return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`,{
+  return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`, {
     exclude_artists_without_forsale_artworks: true,
-    exclude_artists_without_artworks: true,
-
-  })
+    exclude_followed_artists: true,
+  }).then( sample );
 };
 
 export const iconicArtists = () => {

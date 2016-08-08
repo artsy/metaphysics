@@ -5,8 +5,6 @@ import {
   featuredFair,
   featuredGene,
   iconicArtists,
-  relatedArtist,
-  followedArtist,
 } from './fetch';
 import Fair from '../fair';
 import Sale from '../sale/index';
