@@ -32,6 +32,12 @@ const Fairs = {
     has_full_feature: {
       type: GraphQLBoolean,
     },
+    has_homepage_section: {
+      type: GraphQLBoolean,
+    },
+    has_listing: {
+      type: GraphQLBoolean,
+    },
   },
   resolve: (root, options) => {
     if (options.near) {

@@ -43,6 +43,15 @@ const FairType = new GraphQLObjectType({
     has_full_feature: {
       type: GraphQLBoolean,
     },
+    has_homepage_section: {
+      type: GraphQLBoolean,
+    },
+    has_listing: {
+      type: GraphQLBoolean,
+    },
+    has_large_banner: {
+      type: GraphQLBoolean,
+    },
     href: {
       type: GraphQLString,
       resolve: ({ default_profile_id, organizer }) => {
