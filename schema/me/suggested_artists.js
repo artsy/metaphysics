@@ -9,11 +9,11 @@ import {
 
 export default {
   type: new GraphQLList(Artist.type),
-  description: 'A list of the current user’s suggested artist, based on a single artist',
+  description: 'A list of the current user’s suggested artists, based on a single artist',
   args: {
     artist_id: {
       type: GraphQLString,
-      description: 'The slug or ID of an Artist',
+      description: 'The slug or ID of an artist',
     },
     exclude_artists_without_forsale_artworks: {
       type: GraphQLBoolean,
