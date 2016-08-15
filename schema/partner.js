@@ -45,6 +45,10 @@ const PartnerType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ default_profile_public }) => default_profile_public,
       },
+      has_fair_partnership: {
+        type: GraphQLBoolean,
+        resolve: ({ has_fair_partnership }) => has_fair_partnership,
+      },
       type: {
         type: GraphQLString,
         resolve: ({ name, type }) => {
