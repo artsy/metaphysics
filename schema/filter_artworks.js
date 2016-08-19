@@ -63,7 +63,7 @@ const FilterArtworks = {
       type: new GraphQLList(ArtworksAggregation),
     },
     artist_id: {
-      type: GraphQLInt,
+      type: GraphQLString,
     },
     color: {
       type: GraphQLString,
