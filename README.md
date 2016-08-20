@@ -4,7 +4,7 @@ Metaphysics is a [GraphQL](http://graphql.org)-compliant API for the Artsy v1 AP
 
 It is built on `express`, `express-graphql`, and `graphql`. With `graphiql` providing a sandbox to work with.
 
-It is currently used in production from the `/artists/` route on [artsy.net](https://artsy.net/artists). To see it's usage, check out  [`force-public/apps/artists/routes.coffee`](https://github.com/artsy/force-public/blob/f60e582dd115bc794964e3db8e26a870c54e1bfd/apps/artists/routes.coffee#L6-L53).
+It is currently used in production from the `/artists/` route on [artsy.net](https://artsy.net/artists). To see its usage, check out  [`force-public/apps/artists/routes.coffee`](https://github.com/artsy/force-public/blob/f60e582dd115bc794964e3db8e26a870c54e1bfd/apps/artists/routes.coffee#L6-L53).
 
 ### Meta
 
