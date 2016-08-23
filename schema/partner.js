@@ -45,6 +45,10 @@ const PartnerType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ default_profile_public }) => default_profile_public,
       },
+      has_fair_partnership: {
+        type: GraphQLBoolean,
+        resolve: ({ has_fair_partnership }) => has_fair_partnership,
+      },
       type: {
         type: GraphQLString,
         resolve: ({ name, type }) => {
@@ -69,10 +73,6 @@ const PartnerType = new GraphQLObjectType({
       is_pre_qualify: {
         type: GraphQLBoolean,
         resolve: ({ pre_qualify }) => pre_qualify,
-      },
-      is_limited_fair_partner: {
-        type: GraphQLBoolean,
-        resolve: ({ has_limited_fair_partnership }) => has_limited_fair_partnership,
       },
       initials: initials('name'),
       default_profile_id: {

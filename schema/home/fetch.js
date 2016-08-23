@@ -4,7 +4,7 @@ import { sortBy, first, forEach, clone, sample } from 'lodash';
 import blacklist from '../../lib/artist_blacklist';
 
 export const featuredFair = () => {
-  return gravity('fairs', { size: 5, active: true, has_full_feature: true }).then((fairs) => {
+  return gravity('fairs', { size: 5, active: true, has_homepage_section: true }).then((fairs) => {
     if (fairs.length) {
       return first(sortBy(fairs, ({ banner_size }) =>
         ['x-large', 'large', 'medium', 'small', 'x-small'].indexOf(banner_size)

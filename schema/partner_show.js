@@ -175,6 +175,10 @@ const PartnerShowType = new GraphQLObjectType({
           type: GraphQLBoolean,
           default: false,
         },
+        for_sale: {
+          type: GraphQLBoolean,
+          default: false,
+        },
         exclude: {
           type: new GraphQLList(GraphQLString),
           description: 'List of artwork IDs to exclude from the response (irrespective of size)',
