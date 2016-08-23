@@ -51,8 +51,6 @@ const HomePageArtworkModules = {
         if (relatedArtistIndex > -1) {
           return Promise.resolve(relatedArtist(accessToken, userID))
           .then(({ artist, sim_artist }) => {
-            console.log('artist', artist, 'sim_artist', sim_artist);
-
             const relatedArtistModuleParams = {
               followed_artist_id: sim_artist.id,
               related_artist_id: artist.id,
