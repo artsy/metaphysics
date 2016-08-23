@@ -5,8 +5,6 @@ import {
   featuredFair,
   featuredGene,
   iconicArtists,
-  relatedArtist,
-  followedArtist,
 } from './fetch';
 import Fair from '../fair';
 import Sale from '../sale/index';
@@ -80,13 +78,16 @@ export const moduleContext = {
       return assign({}, fair, { context_type: 'Fair' });
     });
   },
-  related_artists: ({ accessToken }) => {
-    return followedArtist(accessToken).then((follow) => {
-      return relatedArtist(accessToken).then((artist) => ({
+  related_artists: ({ params }) => {
+    return Promise.all([
+      gravity(`artist/${params.related_artist_id}`),
+      gravity(`artist/${params.followed_artist_id}`),
+    ]).then(([related_artist, follow_artist]) => {
+      return assign({}, {
         context_type: 'Artist',
-        based_on: follow,
-        artist,
-      }));
+        based_on: follow_artist,
+        artist: related_artist,
+      });
     });
   },
   genes: ({ accessToken }) => {
