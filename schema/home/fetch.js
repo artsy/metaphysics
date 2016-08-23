@@ -33,7 +33,7 @@ export const relatedArtist = (accessToken, userID) => {
   return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`, {
     exclude_artists_without_forsale_artworks: true,
     exclude_followed_artists: true,
-  }).then( sample );
+  }).then(sample);
 };
 
 export const iconicArtists = () => {

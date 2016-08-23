@@ -17,7 +17,7 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 
-const HomePageArtworkModuleType = new GraphQLObjectType({
+export const HomePageArtworkModuleType = new GraphQLObjectType({
   name: 'HomePageArtworkModule',
   interfaces: [NodeInterface],
   isTypeOf: (obj) => has(obj, 'key') && has(obj, 'display'),

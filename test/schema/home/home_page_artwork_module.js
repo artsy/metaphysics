@@ -32,15 +32,10 @@ describe('HomePageArtworkModule', () => {
     HomePageArtworkModule.__ResetDependency__('gravity');
   });
 
-  describe('when signed-out', () => {
+  describe('when signed out', () => {
     it('returns the proper title for iconic_artists', () => {
       return runQuery(query('iconic_artists')).then(({ home_page }) => {
         home_page.artwork_module.title.should.eql('Works by Iconic Artists');
-      });
-    });
-    it('returns the proper title for current_fairs', () => {
-      return runQuery(query('current_fairs')).then(({ home_page }) => {
-        home_page.artwork_module.title.should.eql("Current Fair: Cabbie's Fair, Y'all");
       });
     });
   });

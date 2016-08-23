@@ -5,7 +5,6 @@ import {
   featuredFair,
   featuredGene,
   iconicArtists,
-  relatedArtist,
 } from './fetch';
 import { map, assign, keys, without, shuffle, slice } from 'lodash';
 import { toQueryString } from '../../lib/helpers';
