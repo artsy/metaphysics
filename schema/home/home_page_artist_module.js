@@ -31,8 +31,9 @@ export const HomePageArtistModuleTypes = {
       if (!accessToken || !userID) {
         throw new Error('Both the X-USER-ID and X-ACCESS-TOKEN headers are required.');
       }
-      return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`)
-        .then(results => map(results, 'artist'));
+      return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`, {
+        exclude_followed_artists: true,
+      }).then(results => map(results, 'artist'));
     },
   },
   TRENDING: {
