@@ -151,7 +151,7 @@ describe('Object Identification', () => {
     describe('with a generic gene', () => {
       const globalId = toGlobalId(
         'HomePageArtworkModule',
-        JSON.stringify({ key: 'generic_gene', id: 'abstract-art' })
+        JSON.stringify({ id: 'abstract-art', key: 'generic_gene' })
       );
 
       it('generates a Global ID', () => {
@@ -198,6 +198,71 @@ describe('Object Identification', () => {
               key: 'generic_gene',
               params: {
                 id: 'abstract-art',
+              },
+            },
+          });
+        });
+      });
+    });
+
+    describe('with a related artist', () => {
+      const globalId = toGlobalId(
+        'HomePageArtworkModule',
+        JSON.stringify({
+          followed_artist_id: 'pablo-picasso',
+          related_artist_id: 'charles-broskoski',
+          key: 'related_artists',
+        })
+      );
+
+      it('generates a Global ID', () => {
+        const query = `
+          {
+            home_page {
+              artwork_module(key: "related_artists",
+                             related_artist_id: "charles-broskoski",
+                             followed_artist_id: "pablo-picasso") {
+                __id
+              }
+            }
+          }
+        `;
+
+        return graphql(schema, query).then(({ data }) => {
+          data.should.eql({
+            home_page: {
+              artwork_module: {
+                __id: globalId,
+              },
+            },
+          });
+        });
+      });
+
+      it('resolves a node', () => {
+        const query = `
+          {
+            node(__id: "${globalId}") {
+              __typename
+              ... on HomePageArtworkModule {
+                key
+                params {
+                  related_artist_id
+                  followed_artist_id
+                }
+              }
+            }
+          }
+        `;
+
+        return graphql(schema, query).then(({ data }) => {
+          data.should.eql({
+            node: {
+              __typename: 'HomePageArtworkModule',
+              key: 'related_artists',
+              params: {
+                related_artist_id: 'charles-broskoski',
+                followed_artist_id: 'pablo-picasso',
               },
             },
           });

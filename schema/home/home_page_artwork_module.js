@@ -1,4 +1,5 @@
 import {
+  chain,
   find,
   has,
 } from 'lodash';
@@ -17,6 +18,8 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 
+let possibleArgs;
+
 export const HomePageArtworkModuleType = new GraphQLObjectType({
   name: 'HomePageArtworkModule',
   interfaces: [NodeInterface],
@@ -27,10 +30,7 @@ export const HomePageArtworkModuleType = new GraphQLObjectType({
       description: 'A globally unique ID.',
       resolve: ({ key, params }) => {
         // Compose this ID from params that `resolve` uses to identify a rail later on.
-        const payload = { key };
-        if (params) {
-          payload.id = params.id;
-        }
+        const payload = chain(params).pick(possibleArgs).set('key', key).value();
         return toGlobalId('HomePageArtworkModule', JSON.stringify(payload));
       },
     },
@@ -91,5 +91,7 @@ const HomePageArtworkModule = {
     return { key, display: true };
   },
 };
+
+possibleArgs = Object.keys(HomePageArtworkModule.args).sort();
 
 export default HomePageArtworkModule;
