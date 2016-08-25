@@ -24,8 +24,9 @@ export const HomePageArtistModuleTypes = {
       if (!accessToken || !userID) {
         return Promise.resolve(false);
       }
-      return total(`user/${userID}/suggested/similar/artists?total_count=1&size=0`, accessToken)
-        .then(response => response.body.total > 0);
+      return total(`user/${userID}/suggested/similar/artists`, accessToken, {
+        exclude_followed_artists: true,
+      }).then(response => response.body.total > 0);
     },
     resolve: (accessToken, userID) => {
       if (!accessToken || !userID) {
