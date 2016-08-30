@@ -469,7 +469,12 @@ const Artwork = {
       description: 'The slug or ID of the Artwork',
     },
   },
-  resolve: (root, { id }) => gravity(`artwork/${id}`),
+  resolve: (root, { id }, { rootValue: { accessToken } }) => {
+    if(accessToken) {
+      return gravity.with(accessToken)(`artwork/${id}`);
+    }
+    return gravity(`artwork/${id}`);
+  },
 };
 
 export default Artwork;
