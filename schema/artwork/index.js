@@ -439,6 +439,16 @@ const ArtworkType = new GraphQLObjectType({
       manufacturer: markdown(),
       series: markdown(),
       meta: Meta,
+      related: {
+        type: new GraphQLList(Artwork.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+          },
+        },
+        resolve: ({ _id }, { size }) =>
+          gravity('related/artworks', { artwork_id: _id, size: size })
+      },
       layer: {
         type: ArtworkLayer.type,
         args: {
