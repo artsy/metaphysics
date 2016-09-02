@@ -4,9 +4,7 @@ import { sortBy, first, forEach, clone, sample } from 'lodash';
 import blacklist from '../../lib/artist_blacklist';
 
 export const featuredFair = () => {
-  // FIXME: Until this Gravity bug is fixed https://github.com/artsy/gravity/issues/10347,
-  //        the order of the query parameters is hardcoded to ensure results.
-  return gravity('fairs?has_homepage_section=true&active=true&size=5').then((fairs) => {
+  return gravity('fairs', { size: 5, active: true, has_homepage_section: true }).then((fairs) => {
     if (fairs.length) {
       return first(sortBy(fairs, ({ banner_size }) =>
         ['x-large', 'large', 'medium', 'small', 'x-small'].indexOf(banner_size)
