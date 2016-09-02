@@ -16,6 +16,13 @@ import {
   GraphQLString,
 } from 'graphql';
 
+function fetchArtists(path) {
+  return (accessToken) => {
+    const loader = accessToken ? gravity.with(accessToken) : gravity;
+    return loader(path, accessToken && { exclude_followed_artists: true });
+  };
+}
+
 // This object is used for both the `key` argument enum and to do fetching.
 export const HomePageArtistModuleTypes = {
   SUGGESTED: {
@@ -40,12 +47,12 @@ export const HomePageArtistModuleTypes = {
   TRENDING: {
     description: 'The trending artists.',
     display: () => Promise.resolve(true),
-    resolve: () => gravity('artists/trending'),
+    resolve: fetchArtists('artists/trending'),
   },
   POPULAR: {
     description: 'The most searched for artists.',
     display: () => Promise.resolve(true),
-    resolve: () => gravity('artists/popular'),
+    resolve: fetchArtists('artists/popular'),
   },
 };
 
