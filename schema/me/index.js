@@ -3,6 +3,8 @@ import gravity from '../../lib/loaders/gravity';
 import Bidders from './bidders';
 import BidderStatus from './bidder_status';
 import BidderPositions from './bidder_positions';
+import LotStanding from './lot_standing';
+import LotStandings from './lot_standings';
 import SaleRegistrations from './sale_registrations';
 import SuggestedArtists from './suggested_artists';
 import FollowArtists from './follow_artists';
@@ -32,6 +34,8 @@ const Me = new GraphQLObjectType({
     bidders: Bidders,
     bidder_status: BidderStatus,
     bidder_positions: BidderPositions,
+    lot_standing: LotStanding,
+    lot_standings: LotStandings,
     sale_registrations: SaleRegistrations,
     follow_artists: FollowArtists,
     suggested_artists: SuggestedArtists,

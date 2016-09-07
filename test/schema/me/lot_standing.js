@@ -2,9 +2,9 @@ import sinon from 'sinon';
 import { graphql } from 'graphql';
 import schema from '../../../schema';
 
-describe('BidderStatus type', () => {
+describe('LotStanding type', () => {
   const Me = schema.__get__('Me');
-  const BidderStatus = Me.__get__('BidderStatus');
+  const LotStanding = Me.__get__('LotStanding');
 
   let gravity;
 
@@ -13,12 +13,12 @@ describe('BidderStatus type', () => {
     gravity.with = sinon.stub().returns(gravity);
 
     Me.__Rewire__('gravity', gravity);
-    BidderStatus.__Rewire__('gravity', gravity);
+    LotStanding.__Rewire__('gravity', gravity);
   });
 
   afterEach(() => {
     Me.__ResetDependency__('gravity');
-    BidderStatus.__ResetDependency__('gravity');
+    LotStanding.__ResetDependency__('gravity');
   });
 
   it('returns the correct state when you are the high bidder on a work', () => {
@@ -69,7 +69,7 @@ describe('BidderStatus type', () => {
     const query = `
       {
         me {
-          bidder_status(artwork_id: "untitled", sale_id: "active-auction") {
+          lot_standing(artwork_id: "untitled", sale_id: "active-auction") {
             is_highest_bidder
             most_recent_bid {
               id
@@ -85,7 +85,7 @@ describe('BidderStatus type', () => {
     return graphql(schema, query, { accessToken: 'xxx' })
       .then(({ data: { me } }) => {
         me.should.eql({
-          bidder_status: {
+          lot_standing: {
             is_highest_bidder: true,
             most_recent_bid: { id: '0' },
             active_bid: { id: '0' },
@@ -126,7 +126,7 @@ describe('BidderStatus type', () => {
     const query = `
       {
         me {
-          bidder_status(artwork_id: "untitled", sale_id: "active-auction") {
+          lot_standing(artwork_id: "untitled", sale_id: "active-auction") {
             is_highest_bidder
             most_recent_bid {
               id
@@ -142,7 +142,7 @@ describe('BidderStatus type', () => {
     return graphql(schema, query, { accessToken: 'xxx' })
       .then(({ data: { me } }) => {
         me.should.eql({
-          bidder_status: {
+          lot_standing: {
             is_highest_bidder: false,
             most_recent_bid: { id: '0' },
             active_bid: null,
