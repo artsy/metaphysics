@@ -6,6 +6,8 @@ import {
   slice,
   findIndex,
   set,
+  without,
+  find,
 } from 'lodash';
 import {
   GraphQLList,
@@ -50,15 +52,25 @@ const HomePageArtworkModules = {
 
         if (relatedArtistIndex > -1) {
           return Promise.resolve(relatedArtist(accessToken, userID))
-          .then(({ artist, sim_artist }) => {
-            const relatedArtistModuleParams = {
-              followed_artist_id: sim_artist.id,
-              related_artist_id: artist.id,
-            };
-            return set(
+          .then((artistPair) => {
+            if (artistPair) {
+              const { artist, sim_artist } = artistPair;
+
+              const relatedArtistModuleParams = {
+                followed_artist_id: sim_artist.id,
+                related_artist_id: artist.id,
+              };
+              return set(
+                filteredModules,
+                `[${relatedArtistIndex}].params`,
+                relatedArtistModuleParams
+              );
+            }
+            // if we don't find an artist pair,
+            // remove the related artist rail
+            return without(
               filteredModules,
-              `[${relatedArtistIndex}].params`,
-              relatedArtistModuleParams
+              find(filteredModules, { key: 'related_artists' })
             );
           });
         }
