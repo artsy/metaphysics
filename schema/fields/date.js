@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { GraphQLString } from 'graphql';
+import { GraphQLString, GraphQLBoolean } from 'graphql';
 
 export default {
   type: GraphQLString,
@@ -7,9 +7,16 @@ export default {
     format: {
       type: GraphQLString,
     },
+    convert_to_utc: {
+      type: GraphQLBoolean,
+      defaultValue: true,
+    },
   },
-  resolve: (obj, { format }, { fieldName }) => {
+  resolve: (obj, { format, convert_to_utc }, { fieldName }) => {
     if (!format) return obj[fieldName];
-    return moment.utc(obj[fieldName]).format(format);
+    if (convert_to_utc) {
+      return moment.utc(obj[fieldName]).format(format);
+    }
+    return moment(obj[fieldName]).format(format);
   },
 };
