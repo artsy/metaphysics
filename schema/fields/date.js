@@ -1,5 +1,5 @@
 import moment from 'moment';
-import * as tz from 'moment-timezone'; // eslint-disable-line no-unused-var
+import * as tz from 'moment-timezone'; // eslint-disable-line no-unused-vars
 import { GraphQLString, GraphQLBoolean } from 'graphql';
 
 export default {
