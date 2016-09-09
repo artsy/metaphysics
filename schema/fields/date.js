@@ -1,6 +1,6 @@
 import moment from 'moment';
 import * as tz from 'moment-timezone'; // eslint-disable-line no-unused-var
-import { GraphQLString } from 'graphql';
+import { GraphQLString, GraphQLBoolean } from 'graphql';
 
 export default {
   type: GraphQLString,
@@ -10,6 +10,10 @@ export default {
     },
     timezone: {
       type: GraphQLString,
+    },
+    convert_to_utc: {
+      type: GraphQLBoolean,
+      deprecationReason: 'Use timezone instead',
     },
   },
   resolve: (obj, { format, timezone }, { fieldName }) => {
