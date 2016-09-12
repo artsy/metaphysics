@@ -33,6 +33,7 @@ export const HomePageArtistModuleTypes = {
       }
       return total(`user/${userID}/suggested/similar/artists`, accessToken, {
         exclude_followed_artists: true,
+        exclude_artists_without_forsale_artworks: true,
       }).then(response => response.body.total > 0);
     },
     resolve: (accessToken, userID) => {
@@ -41,6 +42,7 @@ export const HomePageArtistModuleTypes = {
       }
       return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`, {
         exclude_followed_artists: true,
+        exclude_artists_without_forsale_artworks: true,
       }).then(results => map(results, 'artist'));
     },
   },
