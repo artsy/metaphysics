@@ -22,6 +22,7 @@ describe('PartnerShow type', () => {
         id: 'new-museum',
       },
       display_on_partner_profile: true,
+      eligible_artworks_count: 8,
     };
     gravity.returns(Promise.resolve(showData));
 
@@ -143,6 +144,29 @@ describe('PartnerShow type', () => {
           partner_show: {
             counts: {
               artworks: 42,
+            },
+          },
+        });
+      });
+  });
+
+  it('includes the total number of eligible artworks', () => {
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          counts {
+            eligible_artworks
+          }
+        }
+      }
+    `;
+
+    return graphql(schema, query)
+      .then(({ data }) => {
+        data.should.eql({
+          partner_show: {
+            counts: {
+              eligible_artworks: 8,
             },
           },
         });
