@@ -9,6 +9,7 @@ import {
 } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import total from '../lib/loaders/total';
+import numeral from './fields/numeral';
 import { exhibitionPeriod, exhibitionStatus } from '../lib/date';
 import cached from './fields/cached';
 import date from './fields/date';
@@ -151,6 +152,8 @@ const PartnerShowType = new GraphQLObjectType({
               return total(`partner/${partner.id}/show/${id}/artworks`, options);
             },
           },
+          eligible_artworks: numeral(({ eligible_artworks_count }) =>
+            eligible_artworks_count),
         },
       }),
       resolve: (partner_show) => partner_show,
