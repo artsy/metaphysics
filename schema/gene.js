@@ -24,6 +24,9 @@ const GeneType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
     },
+    description: {
+      type: GraphQLString,
+    },
     image: Image,
     artists: {
       type: new GraphQLList(Artist.type),
