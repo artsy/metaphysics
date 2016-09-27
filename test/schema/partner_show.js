@@ -2,14 +2,16 @@ import sinon from 'sinon';
 import moment from 'moment';
 import { graphql } from 'graphql';
 import schema from '../../schema';
+import { runQuery } from '../helper';
 
 describe('PartnerShow type', () => {
   const PartnerShow = schema.__get__('PartnerShow');
   let total = null;
+  let gravity = null;
   let showData = null;
 
   beforeEach(() => {
-    const gravity = sinon.stub();
+    gravity = sinon.stub();
     total = sinon.stub();
 
     showData = {
@@ -196,6 +198,29 @@ describe('PartnerShow type', () => {
               artworks: 2,
             },
           },
+        });
+      });
+  });
+
+  it('does not return errors when there is no cover image', () => {
+    gravity
+      .onCall(1)
+      .returns(Promise.resolve([]));
+
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          cover_image {
+            id
+          }
+        }
+      }
+    `;
+
+    return runQuery(query)
+      .then(({ partner_show }) => {
+        partner_show.should.eql({
+          cover_image: null,
         });
       });
   });
