@@ -229,8 +229,8 @@ const PartnerShowType = new GraphQLObjectType({
           published: true,
         })
           .then(artworks => {
-            const { images } = artworks[0];
-            return Image.resolve(getDefault(images));
+            const artwork = artworks[0];
+            return artwork && Image.resolve(getDefault(artwork.images));
           });
       },
     },
