@@ -17,7 +17,8 @@ import schema from '../schema';
 export function runQuery(query, rootValue = { accessToken: null, userID: null }) {
   return graphql(schema, query, rootValue).then(result => {
     if (result.errors) {
-      throw result.errors[0].originalError;
+      const error = result.errors[0];
+      throw error.originalError ? error.originalError : error;
     } else {
       return Promise.resolve(result.data);
     }
