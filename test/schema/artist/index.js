@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
-
 describe('Artist type', () => {
   const Artist = schema.__get__('Artist');
   let artist = null;
@@ -38,11 +34,11 @@ describe('Artist type', () => {
   });
 
   it('fetches an artist by ID', () => {
-    return graphql(schema, '{ artist(id: "foo-bar") { id, name } }')
-      .then(({ data }) => {
-        Artist.__get__('gravity').args[0][0].should.equal('artist/foo-bar');
-        data.artist.id.should.equal('foo-bar');
-        data.artist.name.should.equal('Foo Bar');
+    return runQuery('{ artist(id: "foo-bar") { id, name } }')
+      .then(data => {
+        expect(Artist.__get__('gravity').args[0][0]).to.equal('artist/foo-bar');
+        expect(data.artist.id).to.equal('foo-bar');
+        expect(data.artist.name).to.equal('Foo Bar');
       });
   });
 
@@ -57,9 +53,9 @@ describe('Artist type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).to.eql({
           artist: {
             counts: {
               partner_shows: 42,
@@ -80,9 +76,9 @@ describe('Artist type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).to.eql({
           artist: {
             counts: {
               related_artists: 42,
@@ -103,9 +99,9 @@ describe('Artist type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).to.eql({
           artist: {
             counts: {
               articles: 22,
@@ -124,9 +120,9 @@ describe('Artist type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).to.eql({
           artist: {
             has_metadata: false,
           },
@@ -145,9 +141,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artist: {
               formatted_nationality_and_birthday: 'b. 2000',
             },
@@ -166,9 +162,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artist: {
               formatted_nationality_and_birthday: 'b. 2000',
             },
@@ -187,9 +183,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artist: {
               formatted_nationality_and_birthday: 'Est. 2000',
             },
@@ -209,9 +205,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artist: {
               formatted_nationality_and_birthday: 'Martian, b. 2000',
             },
@@ -230,9 +226,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artist: {
               formatted_nationality_and_birthday: 'Martian',
             },
@@ -249,9 +245,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artist: {
               formatted_nationality_and_birthday: null,
             },
@@ -272,9 +268,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artist: {
               formatted_artworks_count: '42 works, 21 for sale',
             },
@@ -294,9 +290,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artist: {
               formatted_artworks_count: '42 works',
             },
@@ -316,9 +312,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artist: {
               formatted_artworks_count: null,
             },
@@ -338,9 +334,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artist: {
               formatted_artworks_count: '1 work',
             },

@@ -1,5 +1,11 @@
-import { graphql } from 'graphql';
 import schema from '../schema';
+import sinon from 'sinon';
+import expect from 'expect.js';
+import { graphql } from 'graphql';
+
+global.schema = schema;
+global.expect = expect;
+global.sinon = sinon;
 
 /**
  * Performs a GraphQL query against our schema.
@@ -14,7 +20,7 @@ import schema from '../schema';
  *
  * @todo This assumes there will always be just 1 error, not sure how to handle this differently.
  */
-export function runQuery(query, rootValue = { accessToken: null, userID: null }) {
+global.runQuery = (query, rootValue = { accessToken: null, userID: null }) => {
   return graphql(schema, query, rootValue).then(result => {
     if (result.errors) {
       const error = result.errors[0];
@@ -23,13 +29,13 @@ export function runQuery(query, rootValue = { accessToken: null, userID: null })
       return Promise.resolve(result.data);
     }
   });
-}
+};
 
 /**
  * Same as `runQuery` except it provides a `rootValue` that’s required for authenticated queries.
  *
  * @see runQuery
  */
-export function runAuthenticatedQuery(query) {
+global.runAuthenticatedQuery = (query) => {
   return runQuery(query, { accessToken: 'secret', userID: 'user-42' });
-}
+};

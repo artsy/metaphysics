@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
-
 describe('BidderStatus type', () => {
   const Me = schema.__get__('Me');
   const BidderStatus = Me.__get__('BidderStatus');
@@ -82,9 +78,9 @@ describe('BidderStatus type', () => {
       }
     `;
 
-    return graphql(schema, query, { accessToken: 'xxx' })
-      .then(({ data: { me } }) => {
-        me.should.eql({
+    return runAuthenticatedQuery(query)
+      .then(({ me }) => {
+        expect(me).to.eql({
           bidder_status: {
             is_highest_bidder: true,
             most_recent_bid: { id: '0' },
@@ -139,9 +135,9 @@ describe('BidderStatus type', () => {
       }
     `;
 
-    return graphql(schema, query, { accessToken: 'xxx' })
-      .then(({ data: { me } }) => {
-        me.should.eql({
+    return runAuthenticatedQuery(query)
+      .then(({ me }) => {
+        expect(me).to.eql({
           bidder_status: {
             is_highest_bidder: false,
             most_recent_bid: { id: '0' },

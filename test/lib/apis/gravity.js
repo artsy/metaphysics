@@ -1,4 +1,4 @@
-import sinon from 'sinon';
+import assert from 'assert';
 import gravity from '../../../lib/apis/gravity';
 
 describe('APIs', () => {
@@ -18,8 +18,8 @@ describe('APIs', () => {
       fetch.__Rewire__('request', request);
 
       return gravity('foo/bar').then(() => {
-        request.args[0][0].should.equal('https://api.artsy.test/api/v1/foo/bar');
-        request.args[0][1].should.eql({
+        expect(request.args[0][0]).to.equal('https://api.artsy.test/api/v1/foo/bar');
+        expect(request.args[0][1]).to.eql({
           headers: { 'X-XAPP-TOKEN': 'secret' },
           method: 'GET',
           timeout: 5000,
@@ -32,7 +32,7 @@ describe('APIs', () => {
       fetch.__Rewire__('request', request);
 
       return gravity('foo/bar').then(({ body: { foo } }) => {
-        foo.should.equal('bar');
+        expect(foo).to.equal('bar');
       });
     });
 
@@ -44,7 +44,7 @@ describe('APIs', () => {
       fetch.__Rewire__('request', request);
 
       return gravity('foo/bar').then(({ body: { foo } }) => {
-        foo.should.equal('bar');
+        expect(foo).to.equal('bar');
       });
     });
 
@@ -52,21 +52,26 @@ describe('APIs', () => {
       const request = sinon.stub().yields(new Error('bad'));
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').should.be.rejectedWith('bad');
+      return gravity('foo/bar').then(() => assert.fail(),
+                                     (error) => expect(error.message).to.equal('bad'));
     });
 
     it('rejects API errors', () => {
       const request = sinon.stub().yields(null, { statusCode: 401, body: 'Unauthorized' });
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').should.be.rejectedWith('Unauthorized');
+      return gravity('foo/bar').then(() => assert.fail(),
+                                     (error) => expect(error.message).to.equal('Unauthorized'));
     });
 
     it('rejects parse errors', () => {
       const request = sinon.stub().yields(null, { statusCode: 200, body: 'not json' });
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').should.be.rejectedWith(/Unexpected token o/);
+      return gravity('foo/bar').then(
+        () => assert.fail(),
+        (error) => expect(error.message).to.contain('Unexpected token o')
+      );
     });
   });
 });

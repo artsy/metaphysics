@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import schema from '../../../schema';
-import { runQuery } from '../../helper';
-
 describe('HomePageHeroUnits', () => {
   const HomePage = schema.__get__('HomePage');
   const HomePageHeroUnits = HomePage.__get__('HomePageHeroUnits');
@@ -47,7 +43,7 @@ describe('HomePageHeroUnits', () => {
       `;
 
       return runQuery(query).then(({ home_page: { hero_units } }) => {
-        hero_units.should.eql([{
+        expect(hero_units).to.eql([{
           _id: '57e2ec9b8b3b817dc10015f7',
           id: 'artrio-2016-number-3',
           href: '/artrio-2016',
@@ -73,7 +69,7 @@ describe('HomePageHeroUnits', () => {
     `;
 
     return runQuery(query).then(({ home_page: { hero_units } }) => {
-      hero_units.should.eql([{
+      expect(hero_units).to.eql([{
         background_image_url: 'wide.jpg',
       }]);
     });

@@ -1,4 +1,3 @@
-import sinon from 'sinon';
 import all from '../../lib/all';
 
 describe('all', () => {
@@ -15,7 +14,7 @@ describe('all', () => {
 
     return all(`artist/foo-bar/artworks`, { size: 10 })
       .then(artworks => {
-        gravity.args.should.eql([
+        expect(gravity.args).to.eql([
           ['artist/foo-bar/artworks', { size: 10, page: 1 }],
           ['artist/foo-bar/artworks', { size: 10, page: 2 }],
           ['artist/foo-bar/artworks', { size: 10, page: 3 }],
@@ -30,7 +29,7 @@ describe('all', () => {
           ['artist/foo-bar/artworks', { size: 10, page: 12 }],
         ]);
 
-        artworks.should.have.lengthOf(12); // 12 pages
+        expect(artworks.length).to.be(12); // 12 pages
       });
   });
 });

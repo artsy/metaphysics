@@ -1253,6 +1253,11 @@
       "from": "expand-range@>=1.8.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/expand-range/-/expand-range-1.8.1.tgz"
     },
+    "expect.js": {
+      "version": "0.3.1",
+      "from": "expect.js@latest",
+      "resolved": "https://registry.npmjs.org/expect.js/-/expect.js-0.3.1.tgz"
+    },
     "express": {
       "version": "4.13.3",
       "from": "express@>=4.13.3 <5.0.0",
@@ -3045,31 +3050,6 @@
       "version": "0.5.3",
       "from": "shelljs@>=0.5.3 <0.6.0",
       "resolved": "https://registry.npmjs.org/shelljs/-/shelljs-0.5.3.tgz"
-    },
-    "should": {
-      "version": "7.1.1",
-      "from": "should@>=7.1.1 <8.0.0",
-      "resolved": "https://registry.npmjs.org/should/-/should-7.1.1.tgz"
-    },
-    "should-equal": {
-      "version": "0.5.0",
-      "from": "should-equal@0.5.0",
-      "resolved": "https://registry.npmjs.org/should-equal/-/should-equal-0.5.0.tgz"
-    },
-    "should-format": {
-      "version": "0.3.1",
-      "from": "should-format@0.3.1",
-      "resolved": "https://registry.npmjs.org/should-format/-/should-format-0.3.1.tgz"
-    },
-    "should-promised": {
-      "version": "0.3.1",
-      "from": "should-promised@>=0.3.1 <0.4.0",
-      "resolved": "https://registry.npmjs.org/should-promised/-/should-promised-0.3.1.tgz"
-    },
-    "should-type": {
-      "version": "0.2.0",
-      "from": "should-type@0.2.0",
-      "resolved": "https://registry.npmjs.org/should-type/-/should-type-0.2.0.tgz"
     },
     "sigmund": {
       "version": "1.0.1",

@@ -62,11 +62,10 @@
     "eslint": "^1.10.3",
     "eslint-config-airbnb": "^3.1.0",
     "eslint-plugin-react": "^3.14.0",
+    "expect.js": "^0.3.1",
     "foreman": "^1.4.1",
     "mocha": "^2.3.3",
     "nodemon": "^1.8.1",
-    "should": "^7.1.1",
-    "should-promised": "^0.3.1",
     "sinon": "^1.17.2"
   }
 }

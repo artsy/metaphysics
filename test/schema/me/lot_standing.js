@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
-
 describe('LotStanding type', () => {
   const Me = schema.__get__('Me');
   const LotStanding = Me.__get__('LotStanding');
@@ -82,9 +78,9 @@ describe('LotStanding type', () => {
       }
     `;
 
-    return graphql(schema, query, { accessToken: 'xxx' })
-      .then(({ data: { me } }) => {
-        me.should.eql({
+    return runAuthenticatedQuery(query)
+      .then(({ me }) => {
+        expect(me).to.eql({
           lot_standing: {
             is_highest_bidder: true,
             most_recent_bid: { id: '0' },
@@ -139,9 +135,9 @@ describe('LotStanding type', () => {
       }
     `;
 
-    return graphql(schema, query, { accessToken: 'xxx' })
-      .then(({ data: { me } }) => {
-        me.should.eql({
+    return runAuthenticatedQuery(query)
+      .then(({ me }) => {
+        expect(me).to.eql({
           lot_standing: {
             is_highest_bidder: false,
             most_recent_bid: { id: '0' },

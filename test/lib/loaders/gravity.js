@@ -1,4 +1,3 @@
-import sinon from 'sinon';
 import gravity from '../../../lib/loaders/gravity';
 
 describe('gravity', () => {
@@ -15,12 +14,12 @@ describe('gravity', () => {
         gravity.with('zzz')('foo/bar', { ids: ['baz'] }),
       ])
         .then(responses => {
-          api.args.should.eql([
+          expect(api.args).to.eql([
             ['foo/bar?ids%5B%5D=baz', 'xxx'],
             ['foo/bar?ids%5B%5D=baz', 'yyy'],
             ['foo/bar?ids%5B%5D=baz', 'zzz'],
           ]);
-          responses.should.eql([
+          expect(responses).to.eql([
             { ok: true },
             { ok: true },
             { ok: true },

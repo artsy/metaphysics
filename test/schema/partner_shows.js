@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../schema';
-
 describe('PartnerShows type', () => {
   const PartnerShows = schema.__get__('PartnerShows');
   const PartnerShow = PartnerShows.__get__('PartnerShow');
@@ -70,15 +66,16 @@ describe('PartnerShows type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) =>
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             partner_shows: [
               { id: 'new-museum-solo-show', kind: 'solo' },
               { id: 'new-museum-group-show', kind: 'group' },
               { id: 'new-museum-fair-booth', kind: 'fair' },
             ],
-          }));
+          });
+        });
     });
   });
 });

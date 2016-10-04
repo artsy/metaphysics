@@ -1,3 +1,4 @@
+import assert from 'assert';
 import cache from '../../lib/cache';
 
 describe('Cache', () => {
@@ -14,7 +15,8 @@ describe('Cache', () => {
 
     describe('#get', () => {
       it('falls through with a rejection', () => {
-        return cache.get('foobar').should.be.rejected();
+        return cache.get('foobar').then(() => assert.fail(),
+                                        (error) => expect(error).to.be.an(Error));
       });
     });
   });
@@ -31,8 +33,8 @@ describe('Cache', () => {
 
       it('parses the data and resolves the promise', () => {
         return cache.get('get_foo').then(data => {
-          data.bar.should.equal('baz');
-        }).should.be.fulfilled();
+          expect(data.bar).to.equal('baz');
+        });
       });
     });
 
@@ -44,8 +46,8 @@ describe('Cache', () => {
           client.get('set_foo', (err, data) => {
             const parsed = JSON.parse(data);
 
-            parsed.bar.should.equal('baz');
-            parsed.cached.should.be.instanceOf(Number);
+            expect(parsed.bar).to.equal('baz');
+            expect(typeof parsed.cached).to.be('number');
 
             done();
           });
@@ -59,9 +61,9 @@ describe('Cache', () => {
           client.get('set_bar', (err, data) => {
             const parsed = JSON.parse(data);
 
-            parsed.should.have.lengthOf(1);
-            parsed[0].baz.should.equal('qux');
-            parsed[0].cached.should.be.instanceOf(Number);
+            expect(parsed.length).to.be(1);
+            expect(parsed[0].baz).to.equal('qux');
+            expect(typeof parsed[0].cached).to.be('number');
 
             done();
           });

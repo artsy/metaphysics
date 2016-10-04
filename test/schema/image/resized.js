@@ -10,8 +10,8 @@ describe('Image', () => {
     };
 
     it('takes an image response with options and resizes it to fit', () => {
-      resizedImageUrl(image, { width: 500, height: 500 })
-        .should.eql({
+      expect(resizedImageUrl(image, { width: 500, height: 500 }))
+        .to.eql({
           factor: 0.14285714285714285,
           height: 333,
           width: 500,
@@ -20,8 +20,8 @@ describe('Image', () => {
     });
 
     it('takes an image response with options (just one dimension) and resizes it to fit', () => {
-      resizedImageUrl(image, { width: 500 })
-        .should.eql({
+      expect(resizedImageUrl(image, { width: 500 }))
+        .to.eql({
           factor: 0.14285714285714285,
           height: 333,
           width: 500,
@@ -30,14 +30,14 @@ describe('Image', () => {
     });
 
     it('returns a resized image URL when existing image dimensions are lacking', () => {
-      resizedImageUrl({
+      expect(resizedImageUrl({
         image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
         image_versions: ['large'],
       }, {
         width: 500,
         height: 500,
-      })
-        .should.eql({
+      }))
+        .to.eql({
           factor: Infinity,
           width: null,
           height: null,

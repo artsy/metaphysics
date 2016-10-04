@@ -9,5 +9,12 @@
   "parser": "babel-eslint",
   "rules": {
     "camelcase": 0
+  },
+  "globals": {
+    "expect": false,
+    "runQuery": false,
+    "runAuthenticatedQuery": false,
+    "schema": false,
+    "sinon": false
   }
 }
