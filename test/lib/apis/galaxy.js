@@ -13,7 +13,7 @@ describe('APIs', () => {
       fetch.__Rewire__('request', request);
 
       return galaxy('foo/bar').then(() => {
-        expect(request.args[0][0]).to.equal('https://galaxy-production-herokuapp.com/foo/bar');
+        expect(request.args[0][0]).to.equal('https://galaxy-staging-herokuapp.com/foo/bar');
         expect(request.args[0][1]).to.eql({
           headers: {
             Accept: 'application/vnd.galaxy-public+json',
