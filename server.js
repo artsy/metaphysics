@@ -10,6 +10,7 @@ import loaders from './lib/loaders';
 import config from './config';
 import { info, error } from './lib/loggers';
 import auth from './lib/auth';
+import graphqlErrorHandler from './lib/graphql-error-handler';
 
 const {
   PORT,
@@ -63,6 +64,7 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
       accessToken,
       userID,
     },
+    formatError: graphqlErrorHandler,
   };
 }));
 

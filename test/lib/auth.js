@@ -1,4 +1,3 @@
-import { stub } from 'sinon';
 import auth from '../../lib/auth';
 
 describe('auth middleware', () => {
@@ -6,10 +5,10 @@ describe('auth middleware', () => {
   let next;
 
   beforeEach(() => {
-    next = stub();
+    next = sinon.stub();
     res = {
-      set: stub(),
-      send: stub(),
+      set: sinon.stub(),
+      send: sinon.stub(),
     };
   });
 
@@ -25,20 +24,20 @@ describe('auth middleware', () => {
     it('nexts', () => {
       auth(null, null, next);
 
-      next.called.should.be.true();
+      expect(next.called).to.be(true);
     });
   });
 
   describe('json request', () => {
     it('nexts', () => {
-      auth({ accepts: stub().returns('json') }, null, next);
+      auth({ accepts: sinon.stub().returns('json') }, null, next);
 
-      next.called.should.be.true();
+      expect(next.called).to.be(true);
     });
   });
 
   describe('html request (GraphiQL)', () => {
-    const req = { accepts: stub().returns('html') };
+    const req = { accepts: sinon.stub().returns('html') };
 
     describe('invalid user/pass combo', () => {
       beforeEach(() => {
@@ -55,13 +54,13 @@ describe('auth middleware', () => {
       it('requires auth; 401s', () => {
         auth(req, res, next);
 
-        next.called.should.be.false();
+        expect(next.called).to.be(false);
 
-        res.set.args[0]
-          .should.eql(['WWW-Authenticate', 'Basic realm=Authorization Required']);
+        expect(res.set.args[0])
+          .to.eql(['WWW-Authenticate', 'Basic realm=Authorization Required']);
 
-        res.send.args[0][0]
-          .should.equal(401);
+        expect(res.send.args[0][0])
+          .to.equal(401);
       });
     });
 
@@ -80,7 +79,7 @@ describe('auth middleware', () => {
       it('nexts', () => {
         auth(req, res, next);
 
-        next.called.should.be.true();
+        expect(next.called).to.be(true);
       });
     });
   });
