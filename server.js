@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import express from 'express';
 import forceSSL from 'express-force-ssl';
 import graphqlHTTP from 'express-graphql';
+import bodyParser from 'body-parser';
 import schema from './schema';
 import loaders from './lib/loaders';
 import config from './config';
@@ -49,6 +50,7 @@ app.get('/favicon.ico', (req, res) => {
 
 app.all('/graphql', (req, res) => res.redirect('/'));
 
+app.use(bodyParser.json());
 app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
   info('----------');
 
@@ -64,7 +66,7 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
       accessToken,
       userID,
     },
-    formatError: graphqlErrorHandler,
+    formatError: graphqlErrorHandler(request.body),
   };
 }));
 
