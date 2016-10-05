@@ -13,6 +13,8 @@ import { info, error } from './lib/loggers';
 import auth from './lib/auth';
 import graphqlErrorHandler from './lib/graphql-error-handler';
 
+import 'source-map-support/register';
+
 const {
   PORT,
   NODE_ENV,
