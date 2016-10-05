@@ -16,7 +16,7 @@ describe('APIs', () => {
         expect(request.args[0][0]).to.equal('https://galaxy-production-herokuapp.com/foo/bar');
         expect(request.args[0][1]).to.eql({
           headers: {
-            Accept: 'application/vnd.galaxy-admin+json',
+            Accept: 'application/vnd.galaxy-public+json',
             'Content-Type': 'application/hal+json',
             'Http-Authorization': 'galaxy_token',
           },
