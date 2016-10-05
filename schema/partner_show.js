@@ -16,6 +16,7 @@ import date from './fields/date';
 import { markdown } from './fields/markdown';
 import Artist from './artist';
 import Partner from './partner';
+import GalaxyPartner from './galaxy_partner';
 import Fair from './fair';
 import Artwork from './artwork';
 import Location from './location';
@@ -29,6 +30,7 @@ import {
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
+  GraphQLUnionType,
 } from 'graphql';
 
 const kind = ({ artists, fair }) => {
@@ -101,8 +103,25 @@ const PartnerShowType = new GraphQLObjectType({
       resolve: ({ artists }) => artists,
     },
     partner: {
-      type: Partner.type,
-      resolve: ({ partner }) => partner,
+      type: new GraphQLUnionType({
+        name: 'PartnerTypes',
+        types: [
+          Partner.type,
+          GalaxyPartner.type,
+        ],
+        resolveType: (value) => {
+          if (value._links) {
+            return GalaxyPartner.type;
+          }
+          return Partner.type;
+        },
+      }),
+      resolve: ({ partner, galaxy_partner_id }) => {
+        if (partner) {
+          return partner;
+        }
+        return GalaxyPartner.resolve(galaxy_partner_id);
+      },
     },
     fair: {
       type: Fair.type,
@@ -269,7 +288,7 @@ const PartnerShow = {
   resolve: (root, { id }) => {
     return gravity(`show/${id}`)
       .then(show => {
-        if (!show.displayable) return new Error('Show Not Found');
+        if (!show.displayable && !show.is_reference) return new Error('Show Not Found');
         return show;
       });
   },
