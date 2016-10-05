@@ -1,4 +1,3 @@
-import assert from 'assert';
 import cache from '../../lib/cache';
 
 describe('Cache', () => {
@@ -15,8 +14,7 @@ describe('Cache', () => {
 
     describe('#get', () => {
       it('falls through with a rejection', () => {
-        return cache.get('foobar').then(() => assert.fail(),
-                                        (error) => expect(error).to.be.an(Error));
+        return expect(cache.get('foobar')).to.be.rejected();
       });
     });
   });

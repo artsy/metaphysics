@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 
-import assert from 'assert';
 import cache from '../../../lib/cache';
 import httpLoader from '../../../lib/loaders/http';
 
@@ -13,10 +12,7 @@ describe('Loaders', () => {
 
         const loader = httpLoader(api);
 
-        return loader.load('/foo/bar').then(
-          () => assert.fail(),
-          (error) => expect(error.message).to.equal('Something went wrong')
-        );
+        return expect(loader.load('/foo/bar')).to.be.rejectedWith('Something went wrong');
       });
     });
 

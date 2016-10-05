@@ -1,4 +1,3 @@
-import assert from 'assert';
 import gravity from '../../../lib/apis/gravity';
 
 describe('APIs', () => {
@@ -52,26 +51,21 @@ describe('APIs', () => {
       const request = sinon.stub().yields(new Error('bad'));
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').then(() => assert.fail(),
-                                     (error) => expect(error.message).to.equal('bad'));
+      return expect(gravity('foo/bar')).to.be.rejectedWith('bad');
     });
 
     it('rejects API errors', () => {
       const request = sinon.stub().yields(null, { statusCode: 401, body: 'Unauthorized' });
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').then(() => assert.fail(),
-                                     (error) => expect(error.message).to.equal('Unauthorized'));
+      return expect(gravity('foo/bar')).to.be.rejectedWith('Unauthorized');
     });
 
     it('rejects parse errors', () => {
       const request = sinon.stub().yields(null, { statusCode: 200, body: 'not json' });
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').then(
-        () => assert.fail(),
-        (error) => expect(error.message).to.contain('Unexpected token o')
-      );
+      return expect(gravity('foo/bar')).to.be.rejectedWith(/Unexpected token o/);
     });
   });
 });

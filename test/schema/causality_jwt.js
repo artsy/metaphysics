@@ -1,4 +1,3 @@
-import { graphql } from 'graphql';
 import jwt from 'jwt-simple';
 import { omit } from 'lodash';
 
@@ -108,9 +107,6 @@ describe('CausalityJWT', () => {
     const query = `{
       causality_jwt(role: OPERATOR, sale_id: "foo")
     }`;
-    return graphql(schema, query, { accessToken: 'foo' })
-      .then(data => {
-        expect(data.errors[0].message).to.contain('Unauthorized');
-      });
+    return expect(runAuthenticatedQuery(query)).to.be.rejectedWith(/Unauthorized/);
   });
 });

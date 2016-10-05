@@ -1,4 +1,3 @@
-import { isNull } from 'lodash';
 import { graphql } from 'graphql';
 
 describe('HomePageArtistModule', () => {
@@ -79,7 +78,7 @@ describe('HomePageArtistModule', () => {
 
     it('does not return any suggestions', () => {
       return graphql(schema, query('SUGGESTED')).then(response => {
-        expect(isNull(response.data.home_page.artist_module.results)).to.be(true);
+        expect(response.data.home_page.artist_module.results).to.be(null);
         expect(response.errors).to.not.be.empty();
       });
     });
