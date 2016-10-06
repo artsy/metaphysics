@@ -30,6 +30,7 @@ import {
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
+  GraphQLUnionType,
 } from 'graphql';
 
 const kind = ({ artists, fair }) => {
@@ -38,9 +39,8 @@ const kind = ({ artists, fair }) => {
   if (artists.length === 1) return 'solo';
 };
 
-const PartnerShowType = new GraphQLObjectType({
-  name: 'PartnerShow',
-  description: 'Deprecated in favor of Show',
+const ShowType = new GraphQLObjectType({
+  name: 'Show',
   interfaces: [NodeInterface],
   isTypeOf: (obj) => has(obj, 'partner') && has(obj, 'display_on_partner_profile'),
   fields: () => ({
@@ -102,17 +102,26 @@ const PartnerShowType = new GraphQLObjectType({
       type: new GraphQLList(Artist.type),
       resolve: ({ artists }) => artists,
     },
-    galaxy_partner: {
-      type: GalaxyPartner.type,
-      resolve: ({ galaxy_partner_id }) => {
-        if (galaxy_partner_id) {
-          return GalaxyPartner.resolve(galaxy_partner_id);
-        }
-      },
-    },
     partner: {
-      type: Partner.type,
-      resolve: ({ partner }) => partner,
+      type: new GraphQLUnionType({
+        name: 'PartnerTypes',
+        types: [
+          Partner.type,
+          GalaxyPartner.type,
+        ],
+        resolveType: (value) => {
+          if (value._links) {
+            return GalaxyPartner.type;
+          }
+          return Partner.type;
+        },
+      }),
+      resolve: ({ partner, galaxy_partner_id }) => {
+        if (partner) {
+          return partner;
+        }
+        return GalaxyPartner.resolve(galaxy_partner_id);
+      },
     },
     fair: {
       type: Fair.type,
@@ -148,7 +157,7 @@ const PartnerShowType = new GraphQLObjectType({
     },
     counts: {
       type: new GraphQLObjectType({
-        name: 'PartnerShowCounts',
+        name: 'ShowCounts',
         fields: {
           artworks: {
             type: GraphQLInt,
@@ -267,22 +276,22 @@ const PartnerShowType = new GraphQLObjectType({
   }),
 });
 
-const PartnerShow = {
-  type: PartnerShowType,
-  description: 'A Partner Show',
+const Show = {
+  type: ShowType,
+  description: 'A Show',
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the PartnerShow',
+      description: 'The slug or ID of the Show',
     },
   },
   resolve: (root, { id }) => {
     return gravity(`show/${id}`)
       .then(show => {
-        if (!show.displayable) return new Error('Show Not Found');
+        if (!show.displayable && !show.is_reference) return new Error('Show Not Found');
         return show;
       });
   },
 };
 
-export default PartnerShow;
+export default Show;
