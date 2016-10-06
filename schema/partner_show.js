@@ -30,7 +30,6 @@ import {
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
-  GraphQLUnionType,
 } from 'graphql';
 
 const kind = ({ artists, fair }) => {
@@ -102,26 +101,17 @@ const PartnerShowType = new GraphQLObjectType({
       type: new GraphQLList(Artist.type),
       resolve: ({ artists }) => artists,
     },
-    partner: {
-      type: new GraphQLUnionType({
-        name: 'PartnerTypes',
-        types: [
-          Partner.type,
-          GalaxyPartner.type,
-        ],
-        resolveType: (value) => {
-          if (value._links) {
-            return GalaxyPartner.type;
-          }
-          return Partner.type;
-        },
-      }),
-      resolve: ({ partner, galaxy_partner_id }) => {
-        if (partner) {
-          return partner;
+    galaxy_partner: {
+      type: GalaxyPartner.type,
+      resolve: ({ galaxy_partner_id }) => {
+        if (galaxy_partner_id) {
+          return GalaxyPartner.resolve(galaxy_partner_id);
         }
-        return GalaxyPartner.resolve(galaxy_partner_id);
       },
+    },
+    partner: {
+      type: Partner.type,
+      resolve: ({ partner }) => partner,
     },
     fair: {
       type: Fair.type,
