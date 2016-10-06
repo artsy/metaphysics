@@ -17,6 +17,7 @@ import Article from '../article';
 import Artwork from '../artwork';
 import PartnerArtist from '../partner_artist';
 import Meta from './meta';
+import PartnerShow from '../partner_show';
 import Show from '../show';
 import Sale from '../sale/index';
 import ArtworkSorts from '../sorts/artwork_sorts';
@@ -411,7 +412,8 @@ const ArtistType = new GraphQLObjectType({
       },
 
       partner_shows: {
-        type: new GraphQLList(Show.type),
+        type: new GraphQLList(PartnerShow.type),
+        deprecationReason: 'Prefer to use shows attribute',
         args: {
           at_a_fair: {
             type: GraphQLBoolean,
@@ -425,6 +427,38 @@ const ArtistType = new GraphQLObjectType({
           size: {
             type: GraphQLInt,
             description: 'The number of PartnerShows to return',
+          },
+          solo_show: {
+            type: GraphQLBoolean,
+          },
+          top_tier: {
+            type: GraphQLBoolean,
+          },
+          sort: PartnerShowSorts,
+        },
+        resolve: ({ id }, options) => {
+          return gravity('related/shows', defaults(options, {
+            artist_id: id,
+            sort: '-end_at',
+          }));
+        },
+      },
+
+      shows: {
+        type: new GraphQLList(Show.type),
+        args: {
+          at_a_fair: {
+            type: GraphQLBoolean,
+          },
+          active: {
+            type: GraphQLBoolean,
+          },
+          status: {
+            type: GraphQLString,
+          },
+          size: {
+            type: GraphQLInt,
+            description: 'The number of Shows to return',
           },
           solo_show: {
             type: GraphQLBoolean,
