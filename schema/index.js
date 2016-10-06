@@ -5,6 +5,7 @@ import Artwork from './artwork';
 import Artworks from './artworks';
 import Artist from './artist';
 import Artists from './artists';
+import ExternalPartner from './external_partner';
 import Fair from './fair';
 import Fairs from './fairs';
 import Gene from './gene';
@@ -23,6 +24,7 @@ import Sale from './sale/index';
 import Sales from './sales';
 import SaleArtwork from './sale_artwork';
 import Search from './search';
+import Show from './show';
 import TrendingArtists from './trending';
 import Me from './me';
 import CausalityJWT from './causality_jwt';
@@ -44,6 +46,7 @@ const schema = new GraphQLSchema({
       artworks: Artworks,
       artist: Artist,
       artists: Artists,
+      external_partner: ExternalPartner,
       fair: Fair,
       fairs: Fairs,
       gene: Gene,
@@ -62,6 +65,7 @@ const schema = new GraphQLSchema({
       sales: Sales,
       sale_artwork: SaleArtwork,
       search: Search,
+      show: Show,
       trending_artists: TrendingArtists,
       me: Me,
       causality_jwt: CausalityJWT,
