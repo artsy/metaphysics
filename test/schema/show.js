@@ -25,6 +25,7 @@ describe('Show type', () => {
       },
       display_on_partner_profile: true,
       eligible_artworks_count: 8,
+      is_reference: true,
     };
     gravity.returns(Promise.resolve(showData));
 

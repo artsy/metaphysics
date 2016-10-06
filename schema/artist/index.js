@@ -17,7 +17,6 @@ import Article from '../article';
 import Artwork from '../artwork';
 import PartnerArtist from '../partner_artist';
 import Meta from './meta';
-import PartnerShow from '../partner_show';
 import Show from '../show';
 import Sale from '../sale/index';
 import ArtworkSorts from '../sorts/artwork_sorts';
@@ -412,7 +411,7 @@ const ArtistType = new GraphQLObjectType({
       },
 
       partner_shows: {
-        type: new GraphQLList(PartnerShow.type),
+        type: new GraphQLList(Show.type),
         args: {
           at_a_fair: {
             type: GraphQLBoolean,
