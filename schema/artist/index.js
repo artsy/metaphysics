@@ -18,6 +18,7 @@ import Artwork from '../artwork';
 import PartnerArtist from '../partner_artist';
 import Meta from './meta';
 import PartnerShow from '../partner_show';
+import Show from '../show';
 import Sale from '../sale/index';
 import ArtworkSorts from '../sorts/artwork_sorts';
 import ArticleSorts from '../sorts/article_sorts';
@@ -310,11 +311,11 @@ const ArtistType = new GraphQLObjectType({
         args: {
           size: {
             type: GraphQLInt,
-            description: 'The number of Artists to return',
+            description: 'The number of Shows to return',
             defaultValue: 5,
           },
         },
-        type: new GraphQLList(PartnerShow.type),
+        type: new GraphQLList(Show.type),
         resolve: ({ id }, options) => {
           return Promise.all([
             // Highest tier solo institutional shows
