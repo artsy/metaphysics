@@ -2,13 +2,17 @@ import moment from 'moment';
 
 describe('Show type', () => {
   const Show = schema.__get__('Show');
+  const GalaxyPartner = schema.__get__('GalaxyPartner');
   let total = null;
   let gravity = null;
+  let galaxy = null;
   let showData = null;
+  let galaxyData = null;
 
   beforeEach(() => {
     gravity = sinon.stub();
     total = sinon.stub();
+    galaxy = sinon.stub();
 
     showData = {
       id: 'new-museum-1-2015-triennial-surround-audience',
@@ -24,13 +28,48 @@ describe('Show type', () => {
     };
     gravity.returns(Promise.resolve(showData));
 
+    galaxyData = {
+      id: '1',
+      name: 'Galaxy Partner',
+      _links: 'blah',
+    };
+    galaxy.returns(Promise.resolve(galaxyData));
+
     Show.__Rewire__('gravity', gravity);
+    GalaxyPartner.__Rewire__('galaxy', galaxy);
     Show.__Rewire__('total', total);
   });
 
   afterEach(() => {
     Show.__ResetDependency__('gravity');
+    GalaxyPartner.__ResetDependency__('galaxy');
     Show.__ResetDependency__('total');
+  });
+
+  it('includes the galaxy partner information when galaxy_partner_id is present', () => {
+    showData.galaxy_partner_id = 'galaxy-partner';
+    showData.partner = null;
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          partner {
+            ... on GalaxyPartner {
+              name
+            }
+          }
+        }
+      }
+    `;
+    return runQuery(query)
+      .then(data => {
+        expect(data).to.eql({
+          show: {
+            partner: {
+              name: 'Galaxy Partner',
+            },
+          },
+        });
+      });
   });
 
   it('includes a formattable start and end date', () => {

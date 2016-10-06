@@ -16,7 +16,6 @@ import date from './fields/date';
 import { markdown } from './fields/markdown';
 import Artist from './artist';
 import Partner from './partner';
-import GalaxyPartner from './galaxy_partner';
 import Fair from './fair';
 import Artwork from './artwork';
 import Location from './location';
@@ -40,7 +39,7 @@ const kind = ({ artists, fair }) => {
 
 const PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
-  description: 'Deprecated in favor of Show',
+  deprecationReason: 'Prefer to use Show schema',
   interfaces: [NodeInterface],
   isTypeOf: (obj) => has(obj, 'partner') && has(obj, 'display_on_partner_profile'),
   fields: () => ({
@@ -101,14 +100,6 @@ const PartnerShowType = new GraphQLObjectType({
     artists: {
       type: new GraphQLList(Artist.type),
       resolve: ({ artists }) => artists,
-    },
-    galaxy_partner: {
-      type: GalaxyPartner.type,
-      resolve: ({ galaxy_partner_id }) => {
-        if (galaxy_partner_id) {
-          return GalaxyPartner.resolve(galaxy_partner_id);
-        }
-      },
     },
     partner: {
       type: Partner.type,
