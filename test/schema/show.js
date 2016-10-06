@@ -2,7 +2,7 @@ import moment from 'moment';
 
 describe('Show type', () => {
   const Show = schema.__get__('Show');
-  const GalaxyPartner = schema.__get__('GalaxyPartner');
+  const ExternalPartner = schema.__get__('ExternalPartner');
   let total = null;
   let gravity = null;
   let galaxy = null;
@@ -36,13 +36,13 @@ describe('Show type', () => {
     galaxy.returns(Promise.resolve(galaxyData));
 
     Show.__Rewire__('gravity', gravity);
-    GalaxyPartner.__Rewire__('galaxy', galaxy);
+    ExternalPartner.__Rewire__('galaxy', galaxy);
     Show.__Rewire__('total', total);
   });
 
   afterEach(() => {
     Show.__ResetDependency__('gravity');
-    GalaxyPartner.__ResetDependency__('galaxy');
+    ExternalPartner.__ResetDependency__('galaxy');
     Show.__ResetDependency__('total');
   });
 
@@ -53,7 +53,7 @@ describe('Show type', () => {
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           partner {
-            ... on GalaxyPartner {
+            ... on ExternalPartner {
               name
             }
           }

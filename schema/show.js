@@ -16,7 +16,7 @@ import date from './fields/date';
 import { markdown } from './fields/markdown';
 import Artist from './artist';
 import Partner from './partner';
-import GalaxyPartner from './galaxy_partner';
+import ExternalPartner from './external_partner';
 import Fair from './fair';
 import Artwork from './artwork';
 import Location from './location';
@@ -107,11 +107,11 @@ const ShowType = new GraphQLObjectType({
         name: 'PartnerTypes',
         types: [
           Partner.type,
-          GalaxyPartner.type,
+          ExternalPartner.type,
         ],
         resolveType: (value) => {
           if (value._links) {
-            return GalaxyPartner.type;
+            return ExternalPartner.type;
           }
           return Partner.type;
         },
@@ -120,7 +120,7 @@ const ShowType = new GraphQLObjectType({
         if (partner) {
           return partner;
         }
-        return GalaxyPartner.resolve(galaxy_partner_id);
+        return ExternalPartner.resolve(galaxy_partner_id);
       },
     },
     fair: {

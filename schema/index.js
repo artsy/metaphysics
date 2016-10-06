@@ -5,9 +5,9 @@ import Artwork from './artwork';
 import Artworks from './artworks';
 import Artist from './artist';
 import Artists from './artists';
+import ExternalPartner from './external_partner';
 import Fair from './fair';
 import Fairs from './fairs';
-import GalaxyPartner from './galaxy_partner';
 import Gene from './gene';
 import HomePage from './home';
 import OrderedSets from './ordered_sets';
@@ -46,9 +46,9 @@ const schema = new GraphQLSchema({
       artworks: Artworks,
       artist: Artist,
       artists: Artists,
+      external_partner: ExternalPartner,
       fair: Fair,
       fairs: Fairs,
-      galaxy_partner: GalaxyPartner,
       gene: Gene,
       home_page: HomePage,
       profile: Profile,

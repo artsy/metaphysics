@@ -7,8 +7,8 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 
-const GalaxyPartnerType = new GraphQLObjectType({
-  name: 'GalaxyPartner',
+const ExternalPartnerType = new GraphQLObjectType({
+  name: 'ExternalPartner',
   fields: () => {
     return {
       ...IDFields,
@@ -20,9 +20,9 @@ const GalaxyPartnerType = new GraphQLObjectType({
   },
 });
 
-const GalaxyPartner = {
-  type: GalaxyPartnerType,
-  description: 'A Galaxy Partner',
+const ExternalPartner = {
+  type: ExternalPartnerType,
+  description: 'An External Partner not on the platform',
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -32,4 +32,4 @@ const GalaxyPartner = {
   resolve: (id) => galaxy(`galleries/${id}`),
 };
 
-export default GalaxyPartner;
+export default ExternalPartner;
