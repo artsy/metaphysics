@@ -2,6 +2,7 @@ import moment from 'moment';
 import {
   isExisty,
   exclude,
+  existyValue,
 } from '../lib/helpers';
 import {
   find,
@@ -130,6 +131,15 @@ const ShowType = new GraphQLObjectType({
     location: {
       type: Location.type,
       resolve: ({ location, fair_location }) => location || fair_location,
+    },
+    best_city: {
+      type: GraphQLString,
+      resolve: ({ location, partner_city }) => {
+        if (location && isExisty(location.city)) {
+          return existyValue(location.city);
+        }
+        return existyValue(partner_city);
+      },
     },
     status: {
       type: GraphQLString,

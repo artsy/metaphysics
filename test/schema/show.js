@@ -47,6 +47,47 @@ describe('Show type', () => {
     Show.__ResetDependency__('total');
   });
 
+  describe('best_city', () => {
+    it('returns the location city if one is set', () => {
+      showData.location = { city: 'Quonochontaug' };
+      showData.partner_city = 'Something Else';
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            best_city
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              best_city: 'Quonochontaug',
+            },
+          });
+        });
+    });
+    it('returns the partner_city if one is set', () => {
+      showData.partner_city = 'Quonochontaug';
+      showData.location = null;
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            best_city
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              best_city: 'Quonochontaug',
+            },
+          });
+        });
+    });
+  });
+
   it('includes the galaxy partner information when galaxy_partner_id is present', () => {
     showData.galaxy_partner_id = 'galaxy-partner';
     showData.partner = null;
