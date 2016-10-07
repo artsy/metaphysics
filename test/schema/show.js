@@ -88,6 +88,103 @@ describe('Show type', () => {
     });
   });
 
+  describe('kind', () => {
+    it('returns fair when a fair booth', () => {
+      showData.fair = { id: 'foo' };
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            kind
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              kind: 'fair',
+            },
+          });
+        });
+    });
+    it('returns solo when only one artist in a ref show', () => {
+      showData.artists = [];
+      showData.artists_without_artworks = [{ id: 'foo' }];
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            kind
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              kind: 'solo',
+            },
+          });
+        });
+    });
+    it('returns group when more than one artist in a ref show', () => {
+      showData.artists = [];
+      showData.artists_without_artworks = [{ id: 'foo' }, { id: 'bar' }];
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            kind
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              kind: 'group',
+            },
+          });
+        });
+    });
+    it('returns solo when only one artist', () => {
+      showData.artists = [{ id: 'foo' }];
+      showData.artists_without_artworks = null;
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            kind
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              kind: 'solo',
+            },
+          });
+        });
+    });
+    it('returns group when more than one artist in a regular show show', () => {
+      showData.artists = [{ id: 'foo' }, { id: 'bar' }];
+      showData.artists_without_artworks = null;
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            kind
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              kind: 'group',
+            },
+          });
+        });
+    });
+  });
+
   describe('href', () => {
     it('returns the href for a regular show', () => {
       showData.is_reference = false;
