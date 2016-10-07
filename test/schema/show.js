@@ -47,6 +47,85 @@ describe('Show type', () => {
     Show.__ResetDependency__('total');
   });
 
+  describe('city', () => {
+    it('returns the location city if one is set', () => {
+      showData.location = { city: 'Quonochontaug' };
+      showData.partner_city = 'Something Else';
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            city
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              city: 'Quonochontaug',
+            },
+          });
+        });
+    });
+    it('returns the partner_city if one is set', () => {
+      showData.partner_city = 'Quonochontaug';
+      showData.location = null;
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            city
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              city: 'Quonochontaug',
+            },
+          });
+        });
+    });
+  });
+
+  describe('href', () => {
+    it('returns the href for a regular show', () => {
+      showData.is_reference = false;
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            href
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              href: '/show/new-museum-1-2015-triennial-surround-audience',
+            },
+          });
+        });
+    });
+    it('returns null for a reference show', () => {
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            href
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              href: null,
+            },
+          });
+        });
+    });
+  });
+
   it('includes the galaxy partner information when galaxy_partner_id is present', () => {
     showData.galaxy_partner_id = 'galaxy-partner';
     showData.partner = null;
