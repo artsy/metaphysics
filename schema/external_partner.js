@@ -16,6 +16,10 @@ const ExternalPartnerType = new GraphQLObjectType({
         type: GraphQLString,
         resolve: ({ name }) => name.trim(),
       },
+      city: {
+        type: GraphQLString,
+        resolve: ({ city }) => city,
+      },
     };
   },
 });

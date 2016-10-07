@@ -42,7 +42,7 @@ const kind = ({ artists, fair }) => {
 const ShowType = new GraphQLObjectType({
   name: 'Show',
   interfaces: [NodeInterface],
-  isTypeOf: (obj) => has(obj, 'partner') && has(obj, 'display_on_partner_profile'),
+  isTypeOf: (obj) => has(obj, 'is_reference') && has(obj, 'display_on_partner_profile'),
   fields: () => ({
     ...GravityIDFields,
     cached,
