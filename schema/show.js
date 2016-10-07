@@ -135,7 +135,7 @@ const ShowType = new GraphQLObjectType({
       type: Location.type,
       resolve: ({ location, fair_location }) => location || fair_location,
     },
-    best_city: {
+    city: {
       type: GraphQLString,
       resolve: ({ location, partner_city }) => {
         if (location && isExisty(location.city)) {

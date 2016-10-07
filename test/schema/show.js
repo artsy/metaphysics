@@ -47,14 +47,14 @@ describe('Show type', () => {
     Show.__ResetDependency__('total');
   });
 
-  describe('best_city', () => {
+  describe('city', () => {
     it('returns the location city if one is set', () => {
       showData.location = { city: 'Quonochontaug' };
       showData.partner_city = 'Something Else';
       const query = `
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
-            best_city
+            city
           }
         }
       `;
@@ -62,7 +62,7 @@ describe('Show type', () => {
         .then(data => {
           expect(data).to.eql({
             show: {
-              best_city: 'Quonochontaug',
+              city: 'Quonochontaug',
             },
           });
         });
@@ -73,7 +73,7 @@ describe('Show type', () => {
       const query = `
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
-            best_city
+            city
           }
         }
       `;
@@ -81,7 +81,7 @@ describe('Show type', () => {
         .then(data => {
           expect(data).to.eql({
             show: {
-              best_city: 'Quonochontaug',
+              city: 'Quonochontaug',
             },
           });
         });
