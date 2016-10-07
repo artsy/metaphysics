@@ -88,6 +88,44 @@ describe('Show type', () => {
     });
   });
 
+  describe('href', () => {
+    it('returns the href for a regular show', () => {
+      showData.is_reference = false;
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            href
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              href: '/show/new-museum-1-2015-triennial-surround-audience',
+            },
+          });
+        });
+    });
+    it('returns null for a reference show', () => {
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            href
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              href: null,
+            },
+          });
+        });
+    });
+  });
+
   it('includes the galaxy partner information when galaxy_partner_id is present', () => {
     showData.galaxy_partner_id = 'galaxy-partner';
     showData.partner = null;

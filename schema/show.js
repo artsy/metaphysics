@@ -49,7 +49,10 @@ const ShowType = new GraphQLObjectType({
     cached,
     href: {
       type: GraphQLString,
-      resolve: ({ id }) => `/show/${id}`,
+      resolve: ({ id, is_reference }) => {
+        if (is_reference) return null;
+        return `/show/${id}`;
+      },
     },
     kind: {
       type: GraphQLString,
