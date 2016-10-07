@@ -34,7 +34,7 @@ const HomePageArtworkModules = {
       defaultValue: 8,
     },
   },
-  resolve: (root, { max_rails }, { rootValue: { accessToken, userID } }) => {
+  resolve: (root, { max_rails }, request, { rootValue: { accessToken, userID } }) => {
     // If user is logged in, get their specific modules
     if (accessToken) {
       return gravity.with(accessToken)('me/modules').then((response) => {

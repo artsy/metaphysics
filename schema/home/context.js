@@ -114,7 +114,7 @@ export default {
       HomePageModuleContextRelatedArtistType,
     ],
   }),
-  resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {
+  resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {
     return moduleContext[key]({ accessToken, params });
   },
 };

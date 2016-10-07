@@ -123,7 +123,7 @@ const FilterArtworks = {
       type: GraphQLString,
     },
   },
-  resolve: (root, options, { rootValue: { accessToken } }) => {
+  resolve: (root, options, request, { rootValue: { accessToken } }) => {
     if (accessToken) {
       return gravity.with(accessToken)('filter/artworks', options);
     }
