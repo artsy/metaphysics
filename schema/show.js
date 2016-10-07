@@ -34,10 +34,14 @@ import {
   GraphQLUnionType,
 } from 'graphql';
 
-const kind = ({ artists, fair }) => {
+const kind = ({ artists, fair, artists_without_artworks }) => {
   if (isExisty(fair)) return 'fair';
-  if (artists.length > 1) return 'group';
-  if (artists.length === 1) return 'solo';
+  if (artists.length > 1 || (artists_without_artworks && artists_without_artworks.length > 1)) {
+    return 'group';
+  }
+  if (artists.length === 1 || (artists_without_artworks && artists_without_artworks.length === 1)) {
+    return 'solo';
+  }
 };
 
 const ShowType = new GraphQLObjectType({
@@ -57,7 +61,7 @@ const ShowType = new GraphQLObjectType({
     kind: {
       type: GraphQLString,
       resolve: (show) => {
-        if (show.artists) return kind(show);
+        if (show.artists || show.artists_without_artworks) return kind(show);
         return gravity(`partner/${show.partner.id}/show/${show.id}`).then(kind);
       },
     },
@@ -106,6 +110,10 @@ const ShowType = new GraphQLObjectType({
       type: new GraphQLList(Artist.type),
       resolve: ({ artists }) => artists,
     },
+    artists_without_artworks: {
+      type: new GraphQLList(Artist.type),
+      resolve: ({ artists_without_artworks }) => artists_without_artworks,
+    },
     partner: {
       type: new GraphQLUnionType({
         name: 'PartnerTypes',
@@ -139,7 +147,7 @@ const ShowType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: ({ location, partner_city }) => {
         if (location && isExisty(location.city)) {
-          return existyValue(location.city);
+          return location.city;
         }
         return existyValue(partner_city);
       },
