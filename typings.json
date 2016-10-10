@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "express": "registry:npm/express#4.14.0+20160922175659",
-    "graphql": "registry:npm/graphql#0.5.0+20160602041655",
-    "react": "registry:npm/react#15.0.1+20160601175240",
-    "request": "registry:npm/request#2.69.0+20160428223725"
-  }
-}

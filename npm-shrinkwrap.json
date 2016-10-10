@@ -2,6 +2,161 @@
   "name": "metaphysics",
   "version": "0.0.1",
   "dependencies": {
+    "@types/accounting": {
+      "version": "0.3.29",
+      "from": "@types/accounting@latest",
+      "resolved": "https://registry.npmjs.org/@types/accounting/-/accounting-0.3.29.tgz"
+    },
+    "@types/babel-core": {
+      "version": "6.7.14",
+      "from": "@types/babel-core@latest",
+      "resolved": "https://registry.npmjs.org/@types/babel-core/-/babel-core-6.7.14.tgz"
+    },
+    "@types/babel-template": {
+      "version": "6.7.14",
+      "from": "@types/babel-template@*",
+      "resolved": "https://registry.npmjs.org/@types/babel-template/-/babel-template-6.7.14.tgz"
+    },
+    "@types/babel-traverse": {
+      "version": "6.7.15",
+      "from": "@types/babel-traverse@*",
+      "resolved": "https://registry.npmjs.org/@types/babel-traverse/-/babel-traverse-6.7.15.tgz"
+    },
+    "@types/babel-types": {
+      "version": "6.7.14",
+      "from": "@types/babel-types@*",
+      "resolved": "https://registry.npmjs.org/@types/babel-types/-/babel-types-6.7.14.tgz"
+    },
+    "@types/babylon": {
+      "version": "6.7.14",
+      "from": "@types/babylon@*",
+      "resolved": "https://registry.npmjs.org/@types/babylon/-/babylon-6.7.14.tgz"
+    },
+    "@types/basic-auth": {
+      "version": "0.0.30",
+      "from": "@types/basic-auth@latest",
+      "resolved": "https://registry.npmjs.org/@types/basic-auth/-/basic-auth-0.0.30.tgz"
+    },
+    "@types/bluebird": {
+      "version": "3.0.35",
+      "from": "@types/bluebird@latest",
+      "resolved": "https://registry.npmjs.org/@types/bluebird/-/bluebird-3.0.35.tgz"
+    },
+    "@types/cors": {
+      "version": "0.0.33",
+      "from": "@types/cors@latest",
+      "resolved": "https://registry.npmjs.org/@types/cors/-/cors-0.0.33.tgz"
+    },
+    "@types/debug": {
+      "version": "0.0.29",
+      "from": "@types/debug@latest",
+      "resolved": "https://registry.npmjs.org/@types/debug/-/debug-0.0.29.tgz"
+    },
+    "@types/deep-equal": {
+      "version": "0.0.30",
+      "from": "@types/deep-equal@latest",
+      "resolved": "https://registry.npmjs.org/@types/deep-equal/-/deep-equal-0.0.30.tgz"
+    },
+    "@types/express": {
+      "version": "4.0.33",
+      "from": "@types/express@latest",
+      "resolved": "https://registry.npmjs.org/@types/express/-/express-4.0.33.tgz"
+    },
+    "@types/express-graphql": {
+      "version": "0.0.33",
+      "from": "@types/express-graphql@latest",
+      "resolved": "https://registry.npmjs.org/@types/express-graphql/-/express-graphql-0.0.33.tgz"
+    },
+    "@types/express-serve-static-core": {
+      "version": "4.0.37",
+      "from": "@types/express-serve-static-core@*",
+      "resolved": "https://registry.npmjs.org/@types/express-serve-static-core/-/express-serve-static-core-4.0.37.tgz"
+    },
+    "@types/graphql": {
+      "version": "0.7.1",
+      "from": "@types/graphql@latest",
+      "resolved": "https://registry.npmjs.org/@types/graphql/-/graphql-0.7.1.tgz"
+    },
+    "@types/jwt-simple": {
+      "version": "0.5.32",
+      "from": "@types/jwt-simple@latest",
+      "resolved": "https://registry.npmjs.org/@types/jwt-simple/-/jwt-simple-0.5.32.tgz"
+    },
+    "@types/lodash": {
+      "version": "4.14.37",
+      "from": "@types/lodash@latest",
+      "resolved": "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.37.tgz"
+    },
+    "@types/marked": {
+      "version": "0.0.28",
+      "from": "@types/marked@latest",
+      "resolved": "https://registry.npmjs.org/@types/marked/-/marked-0.0.28.tgz"
+    },
+    "@types/mime": {
+      "version": "0.0.29",
+      "from": "@types/mime@*",
+      "resolved": "https://registry.npmjs.org/@types/mime/-/mime-0.0.29.tgz"
+    },
+    "@types/mocha": {
+      "version": "2.2.32",
+      "from": "@types/mocha@latest",
+      "resolved": "https://registry.npmjs.org/@types/mocha/-/mocha-2.2.32.tgz"
+    },
+    "@types/moment": {
+      "version": "2.13.0",
+      "from": "@types/moment@latest",
+      "resolved": "https://registry.npmjs.org/@types/moment/-/moment-2.13.0.tgz"
+    },
+    "@types/moment-timezone": {
+      "version": "0.2.32",
+      "from": "@types/moment-timezone@latest",
+      "resolved": "https://registry.npmjs.org/@types/moment-timezone/-/moment-timezone-0.2.32.tgz"
+    },
+    "@types/morgan": {
+      "version": "1.7.32",
+      "from": "@types/morgan@latest",
+      "resolved": "https://registry.npmjs.org/@types/morgan/-/morgan-1.7.32.tgz"
+    },
+    "@types/node": {
+      "version": "6.0.45",
+      "from": "@types/node@*",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-6.0.45.tgz"
+    },
+    "@types/numeral": {
+      "version": "0.0.17",
+      "from": "@types/numeral@latest",
+      "resolved": "https://registry.npmjs.org/@types/numeral/-/numeral-0.0.17.tgz"
+    },
+    "@types/qs": {
+      "version": "6.2.30",
+      "from": "@types/qs@latest",
+      "resolved": "https://registry.npmjs.org/@types/qs/-/qs-6.2.30.tgz"
+    },
+    "@types/react": {
+      "version": "0.14.39",
+      "from": "@types/react@latest",
+      "resolved": "https://registry.npmjs.org/@types/react/-/react-0.14.39.tgz"
+    },
+    "@types/serve-static": {
+      "version": "1.7.31",
+      "from": "@types/serve-static@*",
+      "resolved": "https://registry.npmjs.org/@types/serve-static/-/serve-static-1.7.31.tgz"
+    },
+    "@types/should": {
+      "version": "8.1.30",
+      "from": "@types/should@latest",
+      "resolved": "https://registry.npmjs.org/@types/should/-/should-8.1.30.tgz"
+    },
+    "@types/should-promised": {
+      "version": "0.0.27",
+      "from": "@types/should-promised@latest",
+      "resolved": "https://registry.npmjs.org/@types/should-promised/-/should-promised-0.0.27.tgz"
+    },
+    "@types/sinon": {
+      "version": "1.16.31",
+      "from": "@types/sinon@latest",
+      "resolved": "https://registry.npmjs.org/@types/sinon/-/sinon-1.16.31.tgz"
+    },
     "abbrev": {
       "version": "1.0.7",
       "from": "abbrev@>=1.0.0 <2.0.0",
@@ -1376,6 +1531,11 @@
         }
       }
     },
+    "flow-bin": {
+      "version": "0.33.0",
+      "from": "flow-bin@latest",
+      "resolved": "https://registry.npmjs.org/flow-bin/-/flow-bin-0.33.0.tgz"
+    },
     "for-in": {
       "version": "0.1.4",
       "from": "for-in@>=0.1.4 <0.2.0",
@@ -2414,6 +2574,11 @@
       "version": "2.14.1",
       "from": "moment@>=2.14.1 <3.0.0",
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.14.1.tgz"
+    },
+    "moment-timezone": {
+      "version": "0.5.5",
+      "from": "moment-timezone@>=0.5.5 <0.6.0",
+      "resolved": "https://registry.npmjs.org/moment-timezone/-/moment-timezone-0.5.5.tgz"
     },
     "morgan": {
       "version": "1.6.1",

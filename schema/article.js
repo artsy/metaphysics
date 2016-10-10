@@ -59,4 +59,5 @@ const Article = {
   resolve: (root, { id }) => positron(`articles/${id}`),
 };
 
+
 export default Article;
