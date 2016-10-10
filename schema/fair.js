@@ -1,13 +1,5 @@
-
 /* @flow */
-import gravity from '../lib/loaders/gravity';
 import moment from 'moment';
-import cached from './fields/cached';
-import date from './fields/date';
-import Profile from './profile';
-import Image from './image';
-import Location from './location';
-import { GravityIDFields } from './object_identification';
 import {
   GraphQLObjectType,
   GraphQLID,
@@ -15,6 +7,14 @@ import {
   GraphQLBoolean,
   GraphQLNonNull,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import cached from './fields/cached';
+import date from './fields/date';
+import Profile from './profile';
+import Image from './image';
+import Location from './location';
+import { GravityIDFields } from './object_identification';
 
 const FairOrganizerType = new GraphQLObjectType({
   name: 'organizer',
@@ -36,7 +36,7 @@ const FairType = new GraphQLObjectType({
     profile: {
       type: Profile.type,
       resolve: ({ default_profile_id, organizer }) => {
-        const id = default_profile_id || organizer && organizer.profile_id;
+        const id = default_profile_id || (organizer && organizer.profile_id);
         return gravity(`profile/${id}`)
           // Some profiles are private and return 403
           .catch(() => null);
@@ -57,7 +57,7 @@ const FairType = new GraphQLObjectType({
     href: {
       type: GraphQLString,
       resolve: ({ default_profile_id, organizer }) => {
-        const id = default_profile_id || organizer && organizer.profile_id;
+        const id = default_profile_id || (organizer && organizer.profile_id);
         return `/${id}`;
       },
     },

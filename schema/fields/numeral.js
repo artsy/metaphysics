@@ -2,8 +2,9 @@
 
 import inflect from 'i';
 import numeral from 'numeral';
-import FormattedNumber from '../types/formatted_number';
 import { GraphQLString } from 'graphql';
+
+import FormattedNumber from '../types/formatted_number';
 
 const { pluralize, singularize } = inflect();
 
@@ -27,11 +28,11 @@ export default fn => ({
 
     const count = value;
 
-    if (!!format) {
+    if (format) {
       value = numeral(value).format(format);
     }
 
-    if (!!label) {
+    if (label) {
       value = `${value} ${count === 1 ? singularize(label) : pluralize(label)}`;
     }
 

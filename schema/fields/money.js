@@ -1,12 +1,13 @@
 /* @flow */
 
-import { assign } from 'lodash';
-import { formatMoney } from 'accounting';
 import {
   GraphQLString,
   GraphQLInt,
   GraphQLObjectType,
 } from 'graphql';
+
+import { assign } from 'lodash';
+import { formatMoney } from 'accounting';
 
 export const amount = resolve => ({
   type: GraphQLString,

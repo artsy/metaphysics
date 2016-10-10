@@ -13,7 +13,7 @@ describe('all', () => {
     all.__Rewire__('total', sinon.stub().returns(Promise.resolve(120)));
     all.__Rewire__('gravity', gravity.returns(Promise.resolve([{}])));
 
-    return all(`artist/foo-bar/artworks`, { size: 10 })
+    return all('artist/foo-bar/artworks', { size: 10 })
       .then(artworks => {
         gravity.args.should.eql([
           ['artist/foo-bar/artworks', { size: 10, page: 1 }],

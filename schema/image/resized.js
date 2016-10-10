@@ -1,8 +1,6 @@
 /* @flow */
 
 import _ from 'lodash';
-import proxy from './proxies';
-import { setVersion } from './normalize';
 import {
   GraphQLObjectType,
   GraphQLFloat,
@@ -10,6 +8,10 @@ import {
   GraphQLString,
   GraphQLList,
 } from 'graphql';
+
+
+import proxy from './proxies';
+import { setVersion } from './normalize';
 
 export const resizedImageUrl = (image, options) => {
   const opts = _.defaults(options, {

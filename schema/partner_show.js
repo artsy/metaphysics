@@ -2,13 +2,19 @@
 
 import moment from 'moment';
 import {
-  isExisty,
-  exclude,
-} from '../lib/helpers';
-import {
   find,
   has,
 } from 'lodash';
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+} from 'graphql';
+
+import { isExisty, exclude } from '../lib/helpers';
 import gravity from '../lib/loaders/gravity';
 import total from '../lib/loaders/total';
 import numeral from './fields/numeral';
@@ -24,14 +30,6 @@ import Location from './location';
 import Image, { getDefault } from './image';
 import PartnerShowEventType from './partner_show_event';
 import { GravityIDFields, NodeInterface } from './object_identification';
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt,
-  GraphQLBoolean,
-} from 'graphql';
 
 const kind = ({ artists, fair }) => {
   if (isExisty(fair)) return 'fair';

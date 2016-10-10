@@ -1,14 +1,15 @@
 /* @flow */
 
-import gravity from '../lib/loaders/gravity';
-import PartnerCategory from './partner_category';
-import CategoryType from './input_fields/category_type';
-
 import {
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import PartnerCategory from './partner_category';
+import CategoryType from './input_fields/category_type';
+
 
 const PartnerCategories = {
   type: new GraphQLList(PartnerCategory.type),

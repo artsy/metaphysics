@@ -1,17 +1,18 @@
 /* @flow */
 
+import {
+  GraphQLID,
+  GraphQLString,
+  GraphQLObjectType,
+} from 'graphql';
 import _ from 'lodash';
+
 import url from 'url';
 import { classify } from '../../lib/helpers';
 import routing from '../../lib/routing';
 import gravity from '../../lib/loaders/gravity';
 import Image from '../image';
 import SearchEntityType from './search_entity';
-import {
-  GraphQLID,
-  GraphQLString,
-  GraphQLObjectType,
-} from 'graphql';
 
 export const parseOgType = ({ pagemap }) => {
   const ogType = _.get(pagemap, ['metatags', '0', 'og:type'], '');

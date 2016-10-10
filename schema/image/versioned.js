@@ -1,10 +1,11 @@
 /* @flow */
 
-import { setVersion } from './normalize';
 import {
   GraphQLList,
   GraphQLString,
 } from 'graphql';
+
+import { setVersion } from './normalize';
 
 export const versionedImageUrl = (image, { version }) => {
   return setVersion(image, version);

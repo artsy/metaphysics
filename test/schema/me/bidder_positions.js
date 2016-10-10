@@ -1,10 +1,11 @@
 import sinon from 'sinon';
 import { graphql } from 'graphql';
-import schema from '../../../schema';
 import {
   map,
   times,
 } from 'lodash';
+
+import schema from '../../../schema';
 
 describe('Me type', () => {
   const Me = schema.__get__('Me');

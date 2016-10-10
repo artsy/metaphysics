@@ -1,12 +1,13 @@
 /* @flow */
 
 import _ from 'lodash';
-import Artist from './artist';
-import FeaturedLink from './featured_link';
-import Gene from './gene';
 import {
   GraphQLUnionType,
 } from 'graphql';
+
+import Artist from './artist';
+import FeaturedLink from './featured_link';
+import Gene from './gene';
 
 export const FeaturedLinkItemType = _.create(FeaturedLink.type, {
   name: 'FeaturedLinkItem',
@@ -23,7 +24,7 @@ export const GeneItemType = _.create(Gene.type, {
   isTypeOf: ({ item_type }) => item_type === 'Gene',
 });
 
-export const ItemType = new GraphQLUnionType({
+export const ItemUnionType = new GraphQLUnionType({
   name: 'Item',
   types: [
     ArtistItemType,
@@ -32,4 +33,4 @@ export const ItemType = new GraphQLUnionType({
   ],
 });
 
-export default ItemType;
+export default ItemUnionType;

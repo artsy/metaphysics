@@ -1,13 +1,14 @@
 /* @flow */
 
-import Artwork from './index';
-import gravity from '../../lib/loaders/gravity';
-import { IDFields } from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLList,
 } from 'graphql';
+
+import Artwork from './index';
+import gravity from '../../lib/loaders/gravity';
+import { IDFields } from '../object_identification';
 
 const ArtworkLayerType = new GraphQLObjectType({
   name: 'ArtworkLayer',

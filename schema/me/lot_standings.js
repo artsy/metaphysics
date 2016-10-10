@@ -1,12 +1,13 @@
 /* @flow */
 
-import gravity from '../../lib/loaders/gravity';
-import LotStanding from './lot_standing';
 import {
   GraphQLList,
   GraphQLBoolean,
   GraphQLString,
 } from 'graphql';
+
+import gravity from '../../lib/loaders/gravity';
+import LotStanding from './lot_standing';
 
 export default {
   type: new GraphQLList(LotStanding.type),

@@ -63,7 +63,9 @@ SupportedTypes.types = _.keys(SupportedTypes.typeMap);
 Object.defineProperty(SupportedTypes, 'typeModules', { get: () => {
   if (SupportedTypes._typeModules === undefined) {
     SupportedTypes._typeModules = SupportedTypes.types.reduce((modules, type) => {
+      /* eslint-disable global-require */
       modules[type] = require(SupportedTypes.typeMap[type]).default;
+      /* eslint-enable global-require */
       return modules;
     }, {});
   }

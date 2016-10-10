@@ -1,6 +1,5 @@
 /* @flow */
 
-import gravity from '../../lib/loaders/gravity';
 import {
   keys,
   map,
@@ -15,10 +14,12 @@ import {
   GraphQLList,
   GraphQLInt,
 } from 'graphql';
+
 import { HomePageArtworkModuleType } from './home_page_artwork_module';
 import loggedOutModules from './logged_out_modules';
 import addGenericGenes from './add_generic_genes';
 import { featuredFair, featuredAuction, relatedArtist } from './fetch';
+import gravity from '../../lib/loaders/gravity';
 
 const filterModules = (modules, max_rails) => {
   return slice(

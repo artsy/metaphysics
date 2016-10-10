@@ -1,8 +1,5 @@
 /* @flow */
 
-import gravity from '../lib/loaders/gravity';
-import Partner from './partner';
-import PartnerTypeType from './input_fields/partner_type_type';
 import {
   GraphQLString,
   GraphQLList,
@@ -10,6 +7,11 @@ import {
   GraphQLInt,
   GraphQLEnumType,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import Partner from './partner';
+import PartnerTypeType from './input_fields/partner_type_type';
+
 
 const Partners = {
   type: new GraphQLList(Partner.type),

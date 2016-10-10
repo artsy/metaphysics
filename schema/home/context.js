@@ -1,6 +1,8 @@
 /* @flow */
 
 import { create, assign } from 'lodash';
+import { GraphQLUnionType, GraphQLObjectType } from 'graphql';
+
 import gravity from '../../lib/loaders/gravity';
 import {
   featuredAuction,
@@ -14,7 +16,6 @@ import Gene from '../gene';
 import Artist from '../artist/index';
 import FollowArtists from '../me/follow_artists';
 import Trending from '../trending';
-import { GraphQLUnionType, GraphQLObjectType } from 'graphql';
 
 export const HomePageModuleContextFairType = create(Fair.type, {
   name: 'HomePageModuleContextFair',

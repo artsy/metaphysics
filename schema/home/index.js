@@ -1,13 +1,13 @@
 /* @flow */
 
+import {
+  GraphQLObjectType,
+} from 'graphql';
+
 import HomePageArtworkModule from './home_page_artwork_module';
 import HomePageArtworkModules from './home_page_artwork_modules';
 import HomePageArtistModule from './home_page_artist_module';
 import HomePageArtistModules from './home_page_artist_modules';
-
-import {
-  GraphQLObjectType,
-} from 'graphql';
 
 const HomePageType = new GraphQLObjectType({
   name: 'HomePage',

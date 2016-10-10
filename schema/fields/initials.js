@@ -6,7 +6,7 @@ import {
   GraphQLInt,
 } from 'graphql';
 
-export function initials(string = '', length = 3) {
+export function generateInitials(string = '', length = 3) {
   if (!string) return null;
   const letters = take(string.match(/\b[A-Z]/g, ''), length);
   if (letters.length >= 1) return letters.join('').toUpperCase();
@@ -22,5 +22,5 @@ export default (attr) => ({
     },
   },
   resolve: (obj, { length }) =>
-    initials(get(obj, attr), length),
+    generateInitials(get(obj, attr), length),
 });

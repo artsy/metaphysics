@@ -33,7 +33,8 @@ describe('ArtistCarousel type', () => {
         .onCall(1)
         .returns(
           Promise.resolve(
-            [{ id: 'foo-bar-artwork-1', images: [
+            [{ id: 'foo-bar-artwork-1',
+            images: [
               {
                 original_height: 2333,
                 original_width: 3500,

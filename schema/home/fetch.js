@@ -1,8 +1,9 @@
 /* @flow */
 
+import { sortBy, first, forEach, clone, sample } from 'lodash';
+
 import gravity from '../../lib/loaders/gravity';
 import delta from '../../lib/loaders/delta';
-import { sortBy, first, forEach, clone, sample } from 'lodash';
 import blacklist from '../../lib/artist_blacklist';
 
 export const featuredFair = () => {

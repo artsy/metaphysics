@@ -1,9 +1,5 @@
 /* @flow */
 
-import gravity from '../lib/loaders/gravity';
-import cached from './fields/cached';
-import ItemType from './item';
-import { IDFields } from './object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -11,6 +7,11 @@ import {
   GraphQLList,
   GraphQLBoolean,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import cached from './fields/cached';
+import ItemType from './item';
+import { IDFields } from './object_identification';
 
 const OrderedSetType = new GraphQLObjectType({
   name: 'OrderedSet',

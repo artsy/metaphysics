@@ -5,11 +5,6 @@ import {
   first,
   isArray,
 } from 'lodash';
-import VersionedUrl from './versioned';
-import CroppedUrl from './cropped';
-import ResizedUrl from './resized';
-import DeepZoom, { isZoomable } from './deep_zoom';
-import normalize from './normalize';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -18,6 +13,12 @@ import {
   GraphQLInt,
   GraphQLBoolean,
 } from 'graphql';
+
+import VersionedUrl from './versioned';
+import CroppedUrl from './cropped';
+import ResizedUrl from './resized';
+import DeepZoom, { isZoomable } from './deep_zoom';
+import normalize from './normalize';
 
 export const getDefault = images => {
   if (isArray(images)) {

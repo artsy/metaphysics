@@ -1,13 +1,14 @@
 /* @flow */
 
-import Format from '../input_fields/format';
-import { GraphQLString } from 'graphql';
-import { isExisty } from '../../lib/helpers';
 import marked from 'marked';
+import { GraphQLString } from 'graphql';
+
+import Format from '../input_fields/format';
+import { isExisty } from '../../lib/helpers';
 
 export function formatMarkdownValue(value, format) {
   if (format === 'html' || format === 'markdown') {
-    const renderer = new marked.Renderer;
+    const renderer = new marked.Renderer();
     marked.setOptions({
       renderer,
       gfm: true,

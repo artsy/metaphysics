@@ -1,12 +1,13 @@
 /* @flow */
 
 import { map } from 'lodash';
-import AggregationCount from './aggregation_count';
 import {
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLList,
 } from 'graphql';
+
+import AggregationCount from './aggregation_count';
 
 export const ArtworksAggregation = new GraphQLEnumType({
   name: 'ArtworkAggregation',

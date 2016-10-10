@@ -1,10 +1,11 @@
 /* @flow */
 
-import date from './fields/date';
 import {
   GraphQLString,
   GraphQLObjectType,
 } from 'graphql';
+
+import date from './fields/date';
 
 const PartnerShowEventType = new GraphQLObjectType({
   name: 'PartnerShowEventType',

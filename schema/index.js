@@ -1,5 +1,10 @@
 /* @flow */
 
+import {
+  GraphQLSchema,
+  GraphQLObjectType,
+} from 'graphql';
+
 import Status from './status';
 import Article from './article';
 import Articles from './articles';
@@ -29,10 +34,6 @@ import TrendingArtists from './trending';
 import Me from './me';
 import CausalityJWT from './causality_jwt';
 import ObjectIdentification from './object_identification';
-import {
-  GraphQLSchema,
-  GraphQLObjectType,
-} from 'graphql';
 
 const schema = new GraphQLSchema({
   query: new GraphQLObjectType({

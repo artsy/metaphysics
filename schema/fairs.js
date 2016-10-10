@@ -1,17 +1,18 @@
 /* @flow */
 
-import _ from 'lodash';
-import gravity from '../lib/loaders/gravity';
-import FairSorts from './sorts/fair_sorts';
-import EventStatus from './input_fields/event_status';
-import Near from './input_fields/near';
-import Fair from './fair';
 import {
   GraphQLString,
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
 } from 'graphql';
+import _ from 'lodash';
+
+import gravity from '../lib/loaders/gravity';
+import FairSorts from './sorts/fair_sorts';
+import EventStatus from './input_fields/event_status';
+import Near from './input_fields/near';
+import Fair from './fair';
 
 const Fairs = {
   type: new GraphQLList(Fair.type),

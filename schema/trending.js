@@ -1,9 +1,5 @@
 /* @flow */
 
-import delta from '../lib/loaders/delta';
-import gravity from '../lib/loaders/gravity';
-import { keys, without } from 'lodash';
-import Artist from './artist';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -13,6 +9,11 @@ import {
   GraphQLEnumType,
   GraphQLBoolean,
 } from 'graphql';
+import { keys, without } from 'lodash';
+
+import delta from '../lib/loaders/delta';
+import gravity from '../lib/loaders/gravity';
+import Artist from './artist';
 
 const TrendingArtistsType = new GraphQLObjectType({
   name: 'TrendingArtists',

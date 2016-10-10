@@ -1,17 +1,18 @@
 /* @flow */
 
 import _ from 'lodash';
-import gravity from '../lib/loaders/gravity';
-import PartnerShowSorts from './sorts/partner_show_sorts';
-import EventStatus from './input_fields/event_status';
-import Near from './input_fields/near';
-import PartnerShow from './partner_show';
 import {
   GraphQLString,
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import PartnerShowSorts from './sorts/partner_show_sorts';
+import EventStatus from './input_fields/event_status';
+import Near from './input_fields/near';
+import PartnerShow from './partner_show';
 
 const PartnerShows = {
   type: new GraphQLList(PartnerShow.type),

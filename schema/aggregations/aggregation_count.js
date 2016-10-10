@@ -1,11 +1,12 @@
 /* @flow */
 
-import { IDFields } from '../object_identification';
 import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
 } from 'graphql';
+
+import { IDFields } from '../object_identification';
 
 export const AggregationCountType = new GraphQLObjectType({
   name: 'AggregationCount',

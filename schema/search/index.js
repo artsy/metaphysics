@@ -1,8 +1,5 @@
 /* @flow */
 
-import googleCSE from '../../lib/loaders/google_cse';
-import cached from '../fields/cached';
-import SearchResult from './search_result';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -10,6 +7,10 @@ import {
   GraphQLList,
   GraphQLInt,
 } from 'graphql';
+
+import googleCSE from '../../lib/loaders/google_cse';
+import cached from '../fields/cached';
+import SearchResult from './search_result';
 
 const SearchType = new GraphQLObjectType({
   name: 'Search',

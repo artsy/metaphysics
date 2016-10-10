@@ -1,13 +1,14 @@
 /* @flow */
 
-import date from './fields/date';
-import Sale from './sale/index';
-import { IDFields } from './object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLBoolean,
 } from 'graphql';
+
+import date from './fields/date';
+import Sale from './sale/index';
+import { IDFields } from './object_identification';
 
 const BidderType = new GraphQLObjectType({
   name: 'Bidder',

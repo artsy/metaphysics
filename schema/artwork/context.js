@@ -7,11 +7,12 @@ import {
   flow,
   compact,
 } from 'lodash';
+import { GraphQLUnionType } from 'graphql';
+
 import gravity from '../../lib/loaders/gravity';
 import Fair from '../fair';
 import Sale from '../sale/index';
 import PartnerShow from '../partner_show';
-import { GraphQLUnionType } from 'graphql';
 
 export const ArtworkContextFairType = create(Fair.type, {
   name: 'ArtworkContextFair',
@@ -61,7 +62,7 @@ export default {
         gravity('related/fairs', { artwork: [id], size: 1 }) // API only returns `active: true`
           .then(first)
           .then(fair => {
-            if (!fair || fair && !fair.has_full_feature) return null;
+            if (!fair || (fair && !fair.has_full_feature)) return null;
             return assign({ context_type: 'Fair' }, fair);
           }),
 

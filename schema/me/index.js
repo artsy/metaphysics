@@ -1,5 +1,10 @@
 /* @flow */
 
+import {
+  GraphQLString,
+  GraphQLObjectType,
+} from 'graphql';
+
 import date from '../fields/date';
 import gravity from '../../lib/loaders/gravity';
 import Bidders from './bidders';
@@ -11,10 +16,6 @@ import SaleRegistrations from './sale_registrations';
 import SuggestedArtists from './suggested_artists';
 import FollowArtists from './follow_artists';
 import { IDFields } from '../object_identification';
-import {
-  GraphQLString,
-  GraphQLObjectType,
-} from 'graphql';
 
 const Me = new GraphQLObjectType({
   name: 'Me',

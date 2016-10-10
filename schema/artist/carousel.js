@@ -1,13 +1,14 @@
 /* @flow */
 
 import _ from 'lodash';
-import Image from '../image';
-import gravity from '../../lib/loaders/gravity';
-import { error } from '../../lib/loggers';
 import {
   GraphQLObjectType,
   GraphQLList,
 } from 'graphql';
+
+import Image from '../image';
+import gravity from '../../lib/loaders/gravity';
+import { error } from '../../lib/loggers';
 
 const ArtistCarouselType = new GraphQLObjectType({
   name: 'ArtistCarousel',

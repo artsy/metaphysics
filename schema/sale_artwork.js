@@ -7,14 +7,6 @@ import {
   times,
   last,
 } from 'lodash';
-import cached from './fields/cached';
-import date from './fields/date';
-import money, { amount } from './fields/money';
-import numeral from './fields/numeral';
-import gravity from '../lib/loaders/gravity';
-import Artwork from './artwork';
-import Sale, { auctionState } from './sale';
-import { GravityIDFields } from './object_identification';
 import {
   GraphQLObjectType,
   GraphQLID,
@@ -24,6 +16,15 @@ import {
   GraphQLBoolean,
   GraphQLList,
 } from 'graphql';
+
+import cached from './fields/cached';
+import date from './fields/date';
+import money, { amount } from './fields/money';
+import numeral from './fields/numeral';
+import gravity from '../lib/loaders/gravity';
+import Artwork from './artwork';
+import Sale, { auctionState } from './sale';
+import { GravityIDFields } from './object_identification';
 
 export const isBiddable = (sale, { artwork: { sold } }) => {
   return (
@@ -45,7 +46,7 @@ const SaleArtworkType = new GraphQLObjectType({
       sale: {
         type: Sale.type,
         resolve: ({ sale, sale_id }) => {
-          if (!!sale) return sale;
+          if (sale) return sale;
           return gravity(`sale/${sale_id}`);
         },
       },
@@ -78,7 +79,7 @@ const SaleArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         description: 'Can bids be placed on the artwork?',
         resolve: saleArtwork => {
-          if (!!saleArtwork.sale) {
+          if (saleArtwork.sale) {
             return isBiddable(saleArtwork.sale, saleArtwork);
           }
 

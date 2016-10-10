@@ -1,15 +1,16 @@
 /* @flow */
 
-import { existyValue } from '../lib/helpers';
-import cached from './fields/cached';
-import DayScheduleType from './day_schedule';
-import { IDFields } from './object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLFloat,
   GraphQLList,
 } from 'graphql';
+
+import { existyValue } from '../lib/helpers';
+import cached from './fields/cached';
+import DayScheduleType from './day_schedule';
+import { IDFields } from './object_identification';
 
 const LocationType = new GraphQLObjectType({
   name: 'Location',

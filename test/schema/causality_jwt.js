@@ -1,8 +1,9 @@
 import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../schema';
 import jwt from 'jwt-simple';
 import { omit } from 'lodash';
+import { graphql } from 'graphql';
+
+import schema from '../../schema';
 
 const { HMAC_SECRET } = process.env;
 

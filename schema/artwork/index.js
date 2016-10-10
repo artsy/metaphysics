@@ -2,6 +2,15 @@
 
 import _ from 'lodash';
 import {
+  GraphQLObjectType,
+  GraphQLBoolean,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLInt,
+} from 'graphql';
+
+import {
   isTwoDimensional,
   isTooBig,
   isEmbeddedVideo,
@@ -32,16 +41,6 @@ import ArtworkLayers, { artworkLayers } from './layers';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
 import { GravityIDFields, NodeInterface } from '../object_identification';
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt,
-} from 'graphql';
-
-let Artwork;
 
 const ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
@@ -173,7 +172,7 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         description: 'Is this artwork part of an auction?',
         resolve: ({ id }) => {
-          return gravity(`related/sales`, { size: 1, artwork: [id] })
+          return gravity('related/sales', { size: 1, artwork: [id] })
             .then(sales => _.some(sales, 'is_auction')).catch(() => false);
         },
       },
@@ -192,7 +191,7 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         description: 'Is this artwork part of an auction that is currently running?',
         resolve: ({ id }) => {
-          return gravity(`related/sales`, { size: 1, artwork: [id] })
+          return gravity('related/sales', { size: 1, artwork: [id] })
             .then(sales => {
               return _.some(sales, {
                 is_auction: true,
@@ -223,7 +222,7 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         description: 'When in an auction, can the work be bought before any bids are placed',
         resolve: ({ id, acquireable }) => {
-          return gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
+          return gravity('related/sales', { size: 1, active: true, artwork: [id] })
             .then(_.first)
             .then(sale => {
               if (!sale) return [false];
@@ -463,7 +462,7 @@ const ArtworkType = new GraphQLObjectType({
         resolve: (artwork, { id }) =>
           artworkLayers(artwork.id)
             .then(layers =>
-              !!id ? _.find(layers, { id }) : _.first(layers)
+              id ? _.find(layers, { id }) : _.first(layers)
             ),
       },
       layers: {
@@ -474,7 +473,7 @@ const ArtworkType = new GraphQLObjectType({
   },
 });
 
-Artwork = {
+const Artwork = {
   type: ArtworkType,
   description: 'An Artwork',
   args: {

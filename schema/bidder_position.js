@@ -1,17 +1,18 @@
 /* @flow */
 
 import { get } from 'lodash';
-import gravity from '../lib/loaders/gravity';
-import date from './fields/date';
-import money, { amount } from './fields/money';
-import SaleArtwork from './sale_artwork';
-import { IDFields } from './object_identification';
 import {
   GraphQLInt,
   GraphQLBoolean,
   GraphQLString,
   GraphQLObjectType,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import date from './fields/date';
+import money, { amount } from './fields/money';
+import SaleArtwork from './sale_artwork';
+import { IDFields } from './object_identification';
 
 const BidderPositionType = new GraphQLObjectType({
   name: 'BidderPosition',

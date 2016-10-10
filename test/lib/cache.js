@@ -1,5 +1,7 @@
 import cache from '../../lib/cache';
 
+/* eslint-disable handle-callback-err  */
+
 describe('Cache', () => {
   describe('when connection to Redis fails', () => {
     before(() => {

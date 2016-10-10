@@ -172,6 +172,7 @@
     "react/wrap-multilines": 0,
 
     "arrow-body-style": 0,
+    "no-confusing-arrow": 0,
     "import/no-extraneous-dependencies": ["off", {"devDependencies": ["**/*.test.js", "**/*.spec.js"]}]
   }
 }

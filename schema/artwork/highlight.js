@@ -1,9 +1,10 @@
 /* @flow */
 
 import { create } from 'lodash';
+import { GraphQLUnionType } from 'graphql';
+
 import Show from '../partner_show';
 import Article from '../article';
-import { GraphQLUnionType } from 'graphql';
 
 export const HighlightedShowType = create(Show.type, {
   name: 'HighlightedShow',

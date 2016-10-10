@@ -1,5 +1,6 @@
 import sinon from 'sinon';
 import { graphql } from 'graphql';
+
 import schema from '../../../schema';
 
 describe('BidderStatus type', () => {

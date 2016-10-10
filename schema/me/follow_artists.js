@@ -1,14 +1,15 @@
 /* @flow */
 
-import gravity from '../../lib/loaders/gravity';
-import { map } from 'lodash';
-import { total as getTotal } from '../../lib/loaders/total';
-import Artist from '../artist';
 import {
   GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
 } from 'graphql';
+import { map } from 'lodash';
+
+import gravity from '../../lib/loaders/gravity';
+import { total as getTotal } from '../../lib/loaders/total';
+import Artist from '../artist';
 
 const FollowArtists = new GraphQLObjectType({
   name: 'FollowArtists',

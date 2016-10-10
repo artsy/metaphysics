@@ -1,17 +1,7 @@
 /* @flow */
 
 import { map } from 'lodash';
-import { exclude } from '../../lib/helpers';
 import moment from 'moment';
-import gravity from '../../lib/loaders/gravity';
-import cached from '../fields/cached';
-import date from '../fields/date';
-import Artwork from '../artwork';
-import SaleArtwork from '../sale_artwork';
-import Profile from '../profile';
-import Image from '../image/index';
-import { amount } from '../fields/money';
-import { GravityIDFields } from '../object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -21,6 +11,17 @@ import {
   GraphQLInt,
   GraphQLFloat,
 } from 'graphql';
+
+import { exclude } from '../../lib/helpers';
+import gravity from '../../lib/loaders/gravity';
+import cached from '../fields/cached';
+import date from '../fields/date';
+import Artwork from '../artwork';
+import SaleArtwork from '../sale_artwork';
+import Profile from '../profile';
+import Image from '../image/index';
+import { amount } from '../fields/money';
+import { GravityIDFields } from '../object_identification';
 
 export function auctionState({ start_at, end_at, live_start_at }) {
   const start = moment(start_at);
@@ -213,7 +214,7 @@ const SaleType = new GraphQLObjectType({
         type: new GraphQLList(BidIncrement),
         description: 'A bid increment policy that explains minimum bids in ranges.',
         resolve: (sale) =>
-          gravity(`increments`, { key: sale.increment_strategy })
+          gravity('increments', { key: sale.increment_strategy })
             .then((incs) => incs[0].increments),
       },
       buyers_premium: {

@@ -1,5 +1,11 @@
 /* @flow */
 
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+} from 'graphql';
+
 import { isExisty } from '../../lib/helpers';
 
 export function isZoomable(image) {
@@ -12,12 +18,6 @@ export function isZoomable(image) {
     isExisty(image.max_tiled_width)
   );
 }
-
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-} from 'graphql';
 
 const DeepZoomType = new GraphQLObjectType({
   name: 'DeepZoom',
