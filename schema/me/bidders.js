@@ -1,3 +1,5 @@
+/* @flow */
+
 import gravity from '../../lib/loaders/gravity';
 import Bidder from '../bidder';
 import {

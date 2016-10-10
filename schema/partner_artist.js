@@ -1,3 +1,5 @@
+/* @flow */
+
 import gravity from '../lib/loaders/gravity';
 import Partner from './partner';
 import Artist from './artist/index';

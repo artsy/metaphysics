@@ -1,3 +1,5 @@
+/* @flow */
+
 import total from '../../lib/loaders/total';
 import positron from '../../lib/loaders/positron';
 import {

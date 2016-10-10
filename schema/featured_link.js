@@ -1,3 +1,5 @@
+/* @flow */
+
 import initials from './fields/initials';
 import Image from './image';
 import {

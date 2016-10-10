@@ -1,3 +1,5 @@
+/* @flow */
+
 import { existyValue } from '../lib/helpers';
 import cached from './fields/cached';
 import DayScheduleType from './day_schedule';

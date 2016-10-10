@@ -1,3 +1,5 @@
+/* @flow */
+
 import { IDFields } from './object_identification';
 import {
   GraphQLString,

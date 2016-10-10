@@ -1,3 +1,5 @@
+/* @flow */
+
 import { map } from 'lodash';
 import { exclude } from '../../lib/helpers';
 import moment from 'moment';

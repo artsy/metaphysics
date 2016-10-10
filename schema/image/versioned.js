@@ -1,3 +1,5 @@
+/* @flow */
+
 import { setVersion } from './normalize';
 import {
   GraphQLList,

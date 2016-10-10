@@ -1,3 +1,5 @@
+/* @flow */
+
 import { first } from 'lodash';
 import gravity from '../../lib/loaders/gravity';
 import Sale from '../sale/index';

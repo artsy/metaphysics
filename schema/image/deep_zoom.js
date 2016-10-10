@@ -1,3 +1,5 @@
+/* @flow */
+
 import { isExisty } from '../../lib/helpers';
 
 export function isZoomable(image) {

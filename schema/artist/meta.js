@@ -1,3 +1,5 @@
+/* @flow */
+
 import slugs from './maps/artist_title_slugs';
 import descriptions from './maps/artist_meta_descriptions';
 import { stripTags, truncate, markdownToText } from '../../lib/helpers';

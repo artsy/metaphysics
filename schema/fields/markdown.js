@@ -1,3 +1,5 @@
+/* @flow */
+
 import Format from '../input_fields/format';
 import { GraphQLString } from 'graphql';
 import { isExisty } from '../../lib/helpers';

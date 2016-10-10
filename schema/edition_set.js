@@ -1,3 +1,5 @@
+/* @flow */
+
 import { isEmpty } from 'lodash';
 import { IDFields } from './object_identification';
 import Dimensions from './dimensions';

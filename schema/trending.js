@@ -1,3 +1,5 @@
+/* @flow */
+
 import delta from '../lib/loaders/delta';
 import gravity from '../lib/loaders/gravity';
 import { keys, without } from 'lodash';

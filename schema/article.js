@@ -1,3 +1,5 @@
+/* @flow */
+
 import { has } from 'lodash';
 import positron from '../lib/loaders/positron';
 import cached from './fields/cached';

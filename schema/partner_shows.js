@@ -1,3 +1,5 @@
+/* @flow */
+
 import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import PartnerShowSorts from './sorts/partner_show_sorts';

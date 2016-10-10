@@ -1,3 +1,5 @@
+/* @flow */
+
 import { times, concat, clone } from 'lodash';
 
 // see https://github.com/artsy/force-private/issues/4705

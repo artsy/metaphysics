@@ -1,3 +1,5 @@
+/* @flow */
+
 import { create } from 'lodash';
 import Show from '../partner_show';
 import Article from '../article';

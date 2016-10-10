@@ -1,3 +1,5 @@
+/* @flow */
+
 import jwt from 'jwt-simple';
 import {
   GraphQLString,

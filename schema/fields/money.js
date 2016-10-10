@@ -1,3 +1,5 @@
+/* @flow */
+
 import { assign } from 'lodash';
 import { formatMoney } from 'accounting';
 import {

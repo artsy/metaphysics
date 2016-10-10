@@ -1,3 +1,5 @@
+/* @flow */
+
 import gravity from '../lib/loaders/gravity';
 import Sale from './sale/index';
 import SaleSorts from './sale/sorts';

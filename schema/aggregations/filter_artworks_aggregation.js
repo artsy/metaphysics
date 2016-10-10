@@ -1,3 +1,5 @@
+/* @flow */
+
 import { map } from 'lodash';
 import AggregationCount from './aggregation_count';
 import {

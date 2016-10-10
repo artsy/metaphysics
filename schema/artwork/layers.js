@@ -1,3 +1,5 @@
+/* @flow */
+
 import { remove } from 'lodash';
 import gravity from '../../lib/loaders/gravity';
 import { enhance } from '../../lib/helpers';

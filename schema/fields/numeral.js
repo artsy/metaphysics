@@ -1,3 +1,5 @@
+/* @flow */
+
 import inflect from 'i';
 import numeral from 'numeral';
 import FormattedNumber from '../types/formatted_number';

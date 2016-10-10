@@ -1,3 +1,5 @@
+/* @flow */
+
 import gravity from '../lib/loaders/gravity';
 import PartnerCategory from './partner_category';
 import CategoryType from './input_fields/category_type';

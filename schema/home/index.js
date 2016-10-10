@@ -1,3 +1,5 @@
+/* @flow */
+
 import HomePageArtworkModule from './home_page_artwork_module';
 import HomePageArtworkModules from './home_page_artwork_modules';
 import HomePageArtistModule from './home_page_artist_module';

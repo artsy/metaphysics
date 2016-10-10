@@ -1,3 +1,5 @@
+/* @flow */
+
 import gravity from '../../lib/loaders/gravity';
 import LotStanding from './lot_standing';
 import {

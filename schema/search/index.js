@@ -1,3 +1,5 @@
+/* @flow */
+
 import googleCSE from '../../lib/loaders/google_cse';
 import cached from '../fields/cached';
 import SearchResult from './search_result';

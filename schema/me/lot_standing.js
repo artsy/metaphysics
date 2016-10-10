@@ -1,3 +1,5 @@
+/* @flow */
+
 import { isExisty } from '../../lib/helpers';
 import gravity from '../../lib/loaders/gravity';
 import BidderPosition from '../bidder_position';

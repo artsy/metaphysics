@@ -1,3 +1,5 @@
+/* @flow */
+
 import gravity from '../lib/apis/gravity'; // Uncached
 import {
   GraphQLObjectType,

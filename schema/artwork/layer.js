@@ -1,3 +1,5 @@
+/* @flow */
+
 import Artwork from './index';
 import gravity from '../../lib/loaders/gravity';
 import { IDFields } from '../object_identification';

@@ -1,3 +1,5 @@
+/* @flow */
+
 import { create, assign } from 'lodash';
 import gravity from '../../lib/loaders/gravity';
 import {

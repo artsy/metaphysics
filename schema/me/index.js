@@ -1,3 +1,5 @@
+/* @flow */
+
 import date from '../fields/date';
 import gravity from '../../lib/loaders/gravity';
 import Bidders from './bidders';

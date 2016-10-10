@@ -1,3 +1,5 @@
+/* @flow */
+
 import { parse } from 'url';
 
 export const isDimensional = (value) => parseFloat(value) > 0;

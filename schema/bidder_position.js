@@ -1,3 +1,5 @@
+/* @flow */
+
 import { get } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import date from './fields/date';

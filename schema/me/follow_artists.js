@@ -1,3 +1,5 @@
+/* @flow */
+
 import gravity from '../../lib/loaders/gravity';
 import { map } from 'lodash';
 import { total as getTotal } from '../../lib/loaders/total';

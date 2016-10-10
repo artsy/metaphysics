@@ -1,3 +1,5 @@
+/* @flow */
+
 // To support a type, it should:
 // * specify that it implements the Node interface
 // * add the Node `__id` fields

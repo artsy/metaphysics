@@ -1,3 +1,5 @@
+/* @flow */
+
 import date from './fields/date';
 import Sale from './sale/index';
 import { IDFields } from './object_identification';

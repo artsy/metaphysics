@@ -1,3 +1,5 @@
+/* @flow */
+
 import { get, take } from 'lodash';
 import {
   GraphQLString,

@@ -1,3 +1,5 @@
+/* @flow */
+
 import { map } from 'lodash';
 import {
   join,

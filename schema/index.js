@@ -1,3 +1,5 @@
+/* @flow */
+
 import Status from './status';
 import Article from './article';
 import Articles from './articles';

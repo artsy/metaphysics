@@ -1,3 +1,5 @@
+/* @flow */
+
 import _ from 'lodash';
 import url from 'url';
 import { classify } from '../../lib/helpers';

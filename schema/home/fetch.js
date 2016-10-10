@@ -1,3 +1,5 @@
+/* @flow */
+
 import gravity from '../../lib/loaders/gravity';
 import delta from '../../lib/loaders/delta';
 import { sortBy, first, forEach, clone, sample } from 'lodash';

@@ -1,3 +1,5 @@
+/* @flow */
+
 export default(auction, fair) => {
   const modules = [
     {

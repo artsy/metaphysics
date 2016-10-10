@@ -1,3 +1,5 @@
+/* @flow */
+
 import _ from 'lodash';
 import Image from '../image';
 import gravity from '../../lib/loaders/gravity';

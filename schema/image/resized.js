@@ -1,3 +1,5 @@
+/* @flow */
+
 import _ from 'lodash';
 import proxy from './proxies';
 import { setVersion } from './normalize';
