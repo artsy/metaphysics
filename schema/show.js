@@ -132,7 +132,9 @@ const ShowType = new GraphQLObjectType({
         if (partner) {
           return partner;
         }
-        return ExternalPartner.resolve(galaxy_partner_id);
+        if (galaxy_partner_id) {
+          return ExternalPartner.resolve(galaxy_partner_id);
+        }
       },
     },
     fair: {

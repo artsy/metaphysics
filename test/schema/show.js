@@ -249,6 +249,30 @@ describe('Show type', () => {
       });
   });
 
+  it('doesnt crash when no partner info is present', () => {
+    showData.galaxy_partner_id = null;
+    showData.partner = null;
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          partner {
+            ... on ExternalPartner {
+              name
+            }
+          }
+        }
+      }
+    `;
+    return runQuery(query)
+      .then(data => {
+        expect(data).to.eql({
+          show: {
+            partner: null,
+          },
+        });
+      });
+  });
+
   it('includes a formattable start and end date', () => {
     const query = `
       {
