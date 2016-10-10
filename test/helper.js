@@ -24,7 +24,7 @@ global.runQuery = (query, rootValue = { accessToken: null, userID: null }) => {
   return graphql(schema, query, rootValue).then(result => {
     if (result.errors) {
       const error = result.errors[0];
-      throw error.originalError ? error.originalError : error;
+      throw error.originalError || error;
     } else {
       return Promise.resolve(result.data);
     }
