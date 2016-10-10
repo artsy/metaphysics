@@ -14,7 +14,7 @@ export default {
       description: 'The slug or ID of a Sale',
     },
   },
-  resolve: (root, options, { rootValue: { accessToken } }) => {
+  resolve: (root, options, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null;
     return gravity.with(accessToken)('me/bidders', options);
   },
