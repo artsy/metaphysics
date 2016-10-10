@@ -466,6 +466,9 @@ const ArtistType = new GraphQLObjectType({
           top_tier: {
             type: GraphQLBoolean,
           },
+          is_reference: {
+            type: GraphQLBoolean,
+          },
           sort: PartnerShowSorts,
         },
         resolve: ({ id }, options) => {
