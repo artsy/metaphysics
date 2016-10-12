@@ -12,6 +12,7 @@ import config from './config';
 import { info, error } from './lib/loggers';
 import auth from './lib/auth';
 import graphqlErrorHandler from './lib/graphql-error-handler';
+import heapdump from 'heapdump';
 
 const {
   PORT,
@@ -50,8 +51,15 @@ app.get('/favicon.ico', (req, res) => {
 
 app.all('/graphql', (req, res) => res.redirect('/'));
 
-app.use(bodyParser.json());
-app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
+const dump = (req, res, next) => {
+  console.log('Writing heapdump');
+  const foo = new Array(100000).join('FOO');
+  global.gc();
+  heapdump.writeSnapshot('heapdumps/' + Date.now() + '.heapsnapshot');
+  next();
+}
+
+const graphql = graphqlHTTP(request => {
   info('----------');
 
   loaders.clearAll();
@@ -68,6 +76,9 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
     },
     formatError: graphqlErrorHandler(request.body),
   };
-}));
+});
+
+app.use(bodyParser.json());
+app.use('/', auth, cors(), morgan('combined'), dump, graphql, dump);
 
 app.listen(port, () => info(`Listening on ${port}`));
