@@ -10,8 +10,12 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 
+
+// is leading human bidder
+export const isLeadingBidder = (lotStanding) => isExisty(lotStanding.leading_position);
+
 export const isHighestBidder = (lotStanding) =>
-  isExisty(lotStanding.leading_position)
+  isLeadingBidder(lotStanding)
     && lotStanding.sale_artwork.reserve_status !== 'reserve_not_met';
 
 export const LotStandingType = new GraphQLObjectType({
@@ -25,7 +29,13 @@ export const LotStandingType = new GraphQLObjectType({
     },
     is_highest_bidder: {
       type: GraphQLBoolean,
+      description: 'You are winning and reserve is met',
       resolve: isHighestBidder,
+    },
+    is_leading_bidder: {
+      type: GraphQLBoolean,
+      description: 'You are the leading bidder without regard to reserve',
+      resolve: isLeadingBidder,
     },
     active_bid: {
       type: BidderPosition.type,
