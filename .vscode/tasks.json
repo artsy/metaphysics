@@ -1,0 +1,17 @@
+{
+    "version": "0.1.0",
+    "command": "npm",
+    "isShellCommand": true,
+    "tasks": [
+        {
+            "suppressTaskName": true,
+            "taskName": "Start Node Foreman in Dev",
+            "args": [
+                "run",
+                "dev"
+            ],
+            "isWatching": true,
+            "isBuildCommand": true
+        }
+    ]
+}
