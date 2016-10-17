@@ -22,7 +22,7 @@ describe('Gene', () => {
       const query = `
         {
           gene(id: "500-1000-ce") {
-            artworks(aggregations:[TOTAL]){
+            filtered_artworks(aggregations:[TOTAL]){
               hits {
                 id
               }
@@ -31,7 +31,7 @@ describe('Gene', () => {
         }
       `;
 
-      return runQuery(query).then(({ gene: { artworks: { hits } } }) => {
+      return runQuery(query).then(({ gene: { filtered_artworks: { hits } } }) => {
         expect(hits).to.eql([{ id: 'oseberg-norway-queens-ship' }]);
       });
     });
@@ -69,7 +69,7 @@ describe('Gene', () => {
         {
           gene(id: "500-1000-ce") {
             name
-            artworks(aggregations:[TOTAL]){
+            filtered_artworks(aggregations:[TOTAL]){
               hits {
                 id
               }
@@ -78,7 +78,7 @@ describe('Gene', () => {
         }
       `;
 
-      return runQuery(query).then(({ gene: { artworks: { hits } } }) => {
+      return runQuery(query).then(({ gene: { filtered_artworks: { hits } } }) => {
         expect(hits).to.eql([{ id: 'oseberg-norway-queens-ship' }]);
       });
     });

@@ -20,7 +20,7 @@ const GeneType = new GraphQLObjectType({
   fields: {
     ...GravityIDFields,
     cached,
-    artworks: filterArtworks('gene_id'),
+    filtered_artworks: filterArtworks('gene_id'),
     href: {
       type: GraphQLString,
       resolve: ({ id }) => `gene/${id}`,
@@ -70,7 +70,7 @@ const Gene = {
   resolve: (root, { id }, request, { fieldASTs }) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
-    const blacklistedFields = ['artworks', 'id'];
+    const blacklistedFields = ['filtered_artworks', 'id'];
     if (queriedForFieldsOtherThanBlacklisted(fieldASTs, blacklistedFields)) {
       return gravity(`gene/${id}`);
     }
