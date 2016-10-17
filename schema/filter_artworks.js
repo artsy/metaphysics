@@ -52,83 +52,95 @@ export const FilterArtworksType = new GraphQLObjectType({
   }),
 });
 
-const FilterArtworks = {
-  type: FilterArtworksType,
-  description: 'Artworks Elastic Search results',
-  args: {
-    aggregation_partner_cities: {
-      type: new GraphQLList(GraphQLString),
-    },
-    aggregations: {
-      type: new GraphQLList(ArtworksAggregation),
-    },
-    artist_id: {
-      type: GraphQLString,
-    },
-    color: {
-      type: GraphQLString,
-    },
-    dimension_range: {
-      type: GraphQLString,
-    },
-    extra_aggregation_gene_ids: {
-      type: new GraphQLList(GraphQLString),
-    },
-    include_artworks_by_followed_artists: {
-      type: GraphQLBoolean,
-    },
-    for_sale: {
-      type: GraphQLBoolean,
-    },
-    gene_id: {
-      type: GraphQLString,
-    },
-    gene_ids: {
-      type: new GraphQLList(GraphQLString),
-    },
-    height: {
-      type: GraphQLString,
-    },
-    width: {
-      type: GraphQLString,
-    },
-    medium: {
-      type: GraphQLString,
-    },
-    period: {
-      type: GraphQLString,
-    },
-    periods: {
-      type: new GraphQLList(GraphQLString),
-    },
-    major_periods: {
-      type: new GraphQLList(GraphQLString),
-    },
-    partner_id: {
-      type: GraphQLID,
-    },
-    partner_cities: {
-      type: new GraphQLList(GraphQLString),
-    },
-    price_range: {
-      type: GraphQLString,
-    },
-    page: {
-      type: GraphQLInt,
-    },
-    size: {
-      type: GraphQLInt,
-    },
-    sort: {
-      type: GraphQLString,
-    },
-  },
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
-    if (accessToken) {
-      return gravity.with(accessToken)('filter/artworks', options);
-    }
-    return gravity('filter/artworks', options);
-  },
-};
+// Support passing in your own primary key
+// so that you can nest this function into another.
 
-export default FilterArtworks;
+// When given a primary key, this function take the
+// value out of the parent payload and moves it into
+// the query itself
+
+function filterArtworks(primaryKey) {
+  return {
+    type: FilterArtworksType,
+    description: 'Artworks Elastic Search results',
+    args: {
+      aggregation_partner_cities: {
+        type: new GraphQLList(GraphQLString),
+      },
+      aggregations: {
+        type: new GraphQLList(ArtworksAggregation),
+      },
+      artist_id: {
+        type: GraphQLString,
+      },
+      color: {
+        type: GraphQLString,
+      },
+      dimension_range: {
+        type: GraphQLString,
+      },
+      extra_aggregation_gene_ids: {
+        type: new GraphQLList(GraphQLString),
+      },
+      include_artworks_by_followed_artists: {
+        type: GraphQLBoolean,
+      },
+      for_sale: {
+        type: GraphQLBoolean,
+      },
+      gene_id: {
+        type: GraphQLString,
+      },
+      gene_ids: {
+        type: new GraphQLList(GraphQLString),
+      },
+      height: {
+        type: GraphQLString,
+      },
+      width: {
+        type: GraphQLString,
+      },
+      medium: {
+        type: GraphQLString,
+      },
+      period: {
+        type: GraphQLString,
+      },
+      periods: {
+        type: new GraphQLList(GraphQLString),
+      },
+      major_periods: {
+        type: new GraphQLList(GraphQLString),
+      },
+      partner_id: {
+        type: GraphQLID,
+      },
+      partner_cities: {
+        type: new GraphQLList(GraphQLString),
+      },
+      price_range: {
+        type: GraphQLString,
+      },
+      page: {
+        type: GraphQLInt,
+      },
+      size: {
+        type: GraphQLInt,
+      },
+      sort: {
+        type: GraphQLString,
+      },
+    },
+    resolve: (root, options, request, { rootValue: { accessToken } }) => {
+      if (primaryKey) {
+        options[primaryKey] = root.id; // eslint-disable-line no-param-reassign
+      }
+      if (accessToken) {
+        return gravity.with(accessToken)('filter/artworks', options);
+      }
+      return gravity('filter/artworks', options);
+    },
+  };
+}
+
+export default filterArtworks;

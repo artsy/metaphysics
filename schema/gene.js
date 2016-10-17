@@ -3,6 +3,9 @@ import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import Artist from './artist';
 import Image from './image';
+import filterArtworks from './filter_artworks';
+import { queriedForFieldsOtherThanBlacklisted } from '../lib/helpers';
+
 import { GravityIDFields } from './object_identification';
 import {
   GraphQLObjectType,
@@ -17,6 +20,7 @@ const GeneType = new GraphQLObjectType({
   fields: {
     ...GravityIDFields,
     cached,
+    filtered_artworks: filterArtworks('gene_id'),
     href: {
       type: GraphQLString,
       resolve: ({ id }) => `gene/${id}`,
@@ -63,7 +67,15 @@ const Gene = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { id }) => gravity(`gene/${id}`),
+  resolve: (root, { id }, request, { fieldASTs }) => {
+    // If you are just making an artworks call ( e.g. if paginating )
+    // do not make a Gravity call for the gene data.
+    const blacklistedFields = ['filtered_artworks', 'id'];
+    if (queriedForFieldsOtherThanBlacklisted(fieldASTs, blacklistedFields)) {
+      return gravity(`gene/${id}`);
+    }
+    return { id };
+  },
 };
 
 export default Gene;
