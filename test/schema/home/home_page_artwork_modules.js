@@ -71,12 +71,12 @@ describe('HomePageArtworkModules', () => {
         // followed artists should always return true
         // the default module response is 8 keys
         keys.should.eql([
-          'followed_artists',
           'followed_galleries',
           'saved_works',
           'recommended_works',
           'current_fairs',
           'related_artists',
+          'generic_gene',
           'generic_gene',
           'generic_gene',
         ]);
