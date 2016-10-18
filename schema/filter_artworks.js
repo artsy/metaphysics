@@ -102,6 +102,7 @@ function filterArtworks(primaryKey) {
       },
       medium: {
         type: GraphQLString,
+        description: 'A string from the list of allocations, or * to denote all mediums',
       },
       period: {
         type: GraphQLString,
@@ -131,14 +132,20 @@ function filterArtworks(primaryKey) {
         type: GraphQLString,
       },
     },
-    resolve: (root, options, request, { rootValue: { accessToken } }) => {
+    resolve: (root, options) => {
+      const gravityOptions = Object.assign({}, options);
       if (primaryKey) {
-        options[primaryKey] = root.id; // eslint-disable-line no-param-reassign
+        gravityOptions[primaryKey] = root.id;
       }
-      if (accessToken) {
-        return gravity.with(accessToken)('filter/artworks', options);
+
+      // Support queries that show all mediums using the medium param.
+      // If you specify "*" it results in metaphysics removing the query option
+      // making the graphQL queries between all and a subset of mediums the same shape.
+      if (options.medium === '*') {
+        delete gravityOptions.medium;
       }
-      return gravity('filter/artworks', options);
+
+      return gravity('filter/artworks', gravityOptions);
     },
   };
 }
