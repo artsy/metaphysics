@@ -1,8 +1,5 @@
 import { assign } from 'lodash';
-import sinon from 'sinon';
 import moment from 'moment';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
 
 describe('Artwork type', () => {
   let gravity;
@@ -81,9 +78,9 @@ describe('Artwork type', () => {
         .onCall(1)
         .returns(Promise.resolve([]));
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_contactable: true,
@@ -103,9 +100,9 @@ describe('Artwork type', () => {
         .onCall(1)
         .returns(Promise.resolve([sale]));
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_contactable: false,
@@ -131,9 +128,9 @@ describe('Artwork type', () => {
         .onCall(0)
         .returns(Promise.resolve(assign({}, artwork, { images: artworkImages })));
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artwork: {
               image: {
                 id: '56b64ed2cd530e670c0000b2',
@@ -166,9 +163,9 @@ describe('Artwork type', () => {
           assign({}, sale, { is_auction: true }),
         ]));
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_in_auction: true,
@@ -189,9 +186,9 @@ describe('Artwork type', () => {
           assign({}, sale, { is_auction: false }),
         ]));
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_in_auction: false,
@@ -241,9 +238,9 @@ describe('Artwork type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.artwork.banner.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data.artwork.banner).to.eql({
             __typename: 'ArtworkContextAuction',
             name: 'Y2K',
             href: '/auction/existy',
@@ -269,8 +266,10 @@ describe('Artwork type', () => {
       beforeEach(() => gravity.returns(Promise.resolve(response)));
 
       it('returns false if the artwork is not shareable', () => {
-        return graphql(schema, query)
-          .then(({ data }) => data.artwork.is_shareable.should.be.false());
+        return runQuery(query)
+          .then(data => {
+            expect(data.artwork.is_shareable).to.be(false);
+          });
       });
     });
 
@@ -288,8 +287,10 @@ describe('Artwork type', () => {
         it('is hangable if the artwork is 2d and has reasonable dimensions', () => {
           const response = assign({ width: 100, height: 100 }, artwork);
           gravity.returns(Promise.resolve(response));
-          return graphql(schema, query)
-            .then(({ data }) => data.artwork.is_hangable.should.be.true());
+          return runQuery(query)
+            .then(data => {
+              expect(data.artwork.is_hangable).to.be(true);
+            });
         });
       });
 
@@ -301,29 +302,37 @@ describe('Artwork type', () => {
             height: 100,
           }, artwork);
           gravity.returns(Promise.resolve(response));
-          return graphql(schema, query)
-            .then(({ data }) => data.artwork.is_hangable.should.be.false());
+          return runQuery(query)
+            .then(data => {
+              expect(data.artwork.is_hangable).to.be(false);
+            });
         });
 
         it('is not hangable if the work is 3d', () => {
           const response = assign({ width: 100, height: 100, depth: 100 }, artwork);
           gravity.returns(Promise.resolve(response));
-          return graphql(schema, query)
-            .then(({ data }) => data.artwork.is_hangable.should.be.false());
+          return runQuery(query)
+            .then(data => {
+              expect(data.artwork.is_hangable).to.be(false);
+            });
         });
 
         it('is not hangable if the dimensions are unreasonably large', () => {
           const response = assign({ width: '10000', height: '10000', metric: 'cm' }, artwork);
           gravity.returns(Promise.resolve(response));
-          return graphql(schema, query)
-            .then(({ data }) => data.artwork.is_hangable.should.be.false());
+          return runQuery(query)
+            .then(data => {
+              expect(data.artwork.is_hangable).to.be(false);
+            });
         });
 
         it('is not hangable if there is no dimensions', () => {
           const response = assign({ dimensions: {} }, artwork);
           gravity.returns(Promise.resolve(response));
-          return graphql(schema, query)
-            .then(({ data }) => data.artwork.is_hangable.should.be.false());
+          return runQuery(query)
+            .then(data => {
+              expect(data.artwork.is_hangable).to.be(false);
+            });
         });
       });
     });
@@ -345,10 +354,10 @@ describe('Artwork type', () => {
       beforeEach(() => gravity.returns(Promise.resolve(response)));
 
       it('removes the hardcoded signature label if present', () => {
-        return graphql(schema, query)
-          .then(({ data: { artwork: { signature } } }) =>
-            signature.should.equal('<p>Foo <em>bar</em></p>\n')
-          );
+        return runQuery(query)
+          .then(({ artwork: { signature } }) => {
+            expect(signature).to.equal('<p>Foo <em>bar</em></p>\n');
+          });
       });
     });
   });

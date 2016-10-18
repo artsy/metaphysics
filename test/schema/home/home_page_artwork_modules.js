@@ -1,7 +1,4 @@
 import { map, find } from 'lodash';
-import sinon from 'sinon';
-import schema from '../../../schema';
-import { runAuthenticatedQuery } from '../../helper';
 
 describe('HomePageArtworkModules', () => {
   const query = `
@@ -70,7 +67,7 @@ describe('HomePageArtworkModules', () => {
 
         // followed artists should always return true
         // the default module response is 8 keys
-        keys.should.eql([
+        expect(keys).to.eql([
           'followed_artists',
           'followed_galleries',
           'saved_works',
@@ -82,7 +79,7 @@ describe('HomePageArtworkModules', () => {
         ]);
 
         const relatedArtistsModule = find(home_page.artwork_modules, { key: 'related_artists' });
-        relatedArtistsModule.params.should.eql({
+        expect(relatedArtistsModule.params).to.eql({
           related_artist_id: 'charles-broskoski',
           followed_artist_id: 'pablo-picasso',
         });

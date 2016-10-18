@@ -18,6 +18,7 @@ import Artwork from '../artwork';
 import PartnerArtist from '../partner_artist';
 import Meta from './meta';
 import PartnerShow from '../partner_show';
+import Show from '../show';
 import Sale from '../sale/index';
 import ArtworkSorts from '../sorts/artwork_sorts';
 import ArticleSorts from '../sorts/article_sorts';
@@ -310,18 +311,17 @@ const ArtistType = new GraphQLObjectType({
         args: {
           size: {
             type: GraphQLInt,
-            description: 'The number of Artists to return',
+            description: 'The number of Shows to return',
             defaultValue: 5,
           },
         },
-        type: new GraphQLList(PartnerShow.type),
+        type: new GraphQLList(Show.type),
         resolve: ({ id }, options) => {
           return Promise.all([
             // Highest tier solo institutional shows
             gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
-              displayable: true,
               is_institution: true,
               highest_tier: true,
               solo_show: true,
@@ -332,7 +332,6 @@ const ArtistType = new GraphQLObjectType({
             gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
-              displayable: true,
               is_institution: false,
               highest_tier: true,
               solo_show: true,
@@ -343,7 +342,6 @@ const ArtistType = new GraphQLObjectType({
             gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
-              displayable: true,
               is_institution: true,
               highest_tier: true,
               solo_show: false,
@@ -354,7 +352,6 @@ const ArtistType = new GraphQLObjectType({
             gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
-              displayable: true,
               is_institution: false,
               highest_tier: true,
               solo_show: false,
@@ -365,7 +362,6 @@ const ArtistType = new GraphQLObjectType({
             gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
-              displayable: true,
               is_institution: true,
               highest_tier: false,
               solo_show: true,
@@ -376,8 +372,8 @@ const ArtistType = new GraphQLObjectType({
             gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
-              displayable: true,
               is_institution: false,
+              is_reference: true,
               highest_tier: false,
               solo_show: true,
               at_a_fair: false,
@@ -387,7 +383,6 @@ const ArtistType = new GraphQLObjectType({
             gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
-              displayable: true,
               is_institution: true,
               highest_tier: false,
               solo_show: false,
@@ -398,9 +393,9 @@ const ArtistType = new GraphQLObjectType({
             gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
-              displayable: true,
               is_institution: false,
               highest_tier: false,
+              is_reference: true,
               solo_show: false,
               at_a_fair: false,
               size: options.size,
@@ -409,7 +404,6 @@ const ArtistType = new GraphQLObjectType({
             gravity('related/shows', {
               artist_id: id,
               sort: '-end_at',
-              displayable: true,
               at_a_fair: true,
               size: options.size,
             }),
@@ -419,6 +413,7 @@ const ArtistType = new GraphQLObjectType({
 
       partner_shows: {
         type: new GraphQLList(PartnerShow.type),
+        deprecationReason: 'Prefer to use shows attribute',
         args: {
           at_a_fair: {
             type: GraphQLBoolean,
@@ -444,7 +439,41 @@ const ArtistType = new GraphQLObjectType({
         resolve: ({ id }, options) => {
           return gravity('related/shows', defaults(options, {
             artist_id: id,
-            displayable: true,
+            sort: '-end_at',
+          }));
+        },
+      },
+
+      shows: {
+        type: new GraphQLList(Show.type),
+        args: {
+          at_a_fair: {
+            type: GraphQLBoolean,
+          },
+          active: {
+            type: GraphQLBoolean,
+          },
+          status: {
+            type: GraphQLString,
+          },
+          size: {
+            type: GraphQLInt,
+            description: 'The number of Shows to return',
+          },
+          solo_show: {
+            type: GraphQLBoolean,
+          },
+          top_tier: {
+            type: GraphQLBoolean,
+          },
+          is_reference: {
+            type: GraphQLBoolean,
+          },
+          sort: PartnerShowSorts,
+        },
+        resolve: ({ id }, options) => {
+          return gravity('related/shows', defaults(options, {
+            artist_id: id,
             sort: '-end_at',
           }));
         },

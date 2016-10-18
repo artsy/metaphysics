@@ -27,7 +27,7 @@ export const SaleRegistrationType = new GraphQLObjectType({
 export default {
   type: new GraphQLList(SaleRegistrationType),
   args: Sales.args,
-  resolve: (root, options, { rootValue: { accessToken } }) => {
+  resolve: (root, options, request, { rootValue: { accessToken } }) => {
     return gravity('sales', options)
       .then(sales => {
         return Promise.all(sales.map(sale => {

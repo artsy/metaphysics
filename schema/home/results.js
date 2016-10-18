@@ -105,7 +105,7 @@ const moduleResults = {
 
 export default {
   type: new GraphQLList(Artwork.type),
-  resolve: ({ key, display, params }, options, { rootValue: { accessToken, userID } }) => {
+  resolve: ({ key, display, params }, options, request, { rootValue: { accessToken, userID } }) => {
     if (display) return moduleResults[key]({ accessToken, userID, params });
   },
 };

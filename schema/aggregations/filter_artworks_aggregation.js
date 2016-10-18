@@ -1,4 +1,4 @@
-import { map } from 'lodash';
+import { map, orderBy } from 'lodash';
 import AggregationCount from './aggregation_count';
 import {
   GraphQLObjectType,
@@ -48,6 +48,14 @@ export const ArtworksAggregation = new GraphQLEnumType({
   },
 });
 
+const sorts = {
+  default: (counts) => orderBy(counts, ['count'], ['desc']),
+  period: (counts) => orderBy(counts, ['name'], ['desc']),
+  major_period: (counts) => orderBy(counts, ['name'], ['desc']),
+  gallery: (counts) => orderBy(counts, ['count', 'name'], ['desc', 'asc']),
+  institution: (counts) => orderBy(counts, ['count', 'name'], ['desc', 'asc']),
+};
+
 export const ArtworksAggregationResultsType = new GraphQLObjectType({
   name: 'ArtworksAggregationResults',
   description: 'The results for one of the requested aggregations',
@@ -57,7 +65,12 @@ export const ArtworksAggregationResultsType = new GraphQLObjectType({
     },
     counts: {
       type: new GraphQLList(AggregationCount.type),
-      resolve: ({ counts }) => map(counts, AggregationCount.resolve),
+      resolve: ({ counts, slice }) => {
+        const mapped = map(counts, AggregationCount.resolve);
+        let sort = sorts[slice];
+        if (!sort) sort = sorts.default;
+        return sort ? sort(mapped) : mapped;
+      },
     },
   }),
 });

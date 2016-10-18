@@ -1,6 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../schema';
 import jwt from 'jwt-simple';
 import { omit } from 'lodash';
 
@@ -36,10 +33,10 @@ describe('CausalityJWT', () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "foo")
     }`;
-    return graphql(schema, query, { accessToken: 'foo' })
-      .then((data) => {
-        omit(jwt.decode(data.data.causality_jwt, HMAC_SECRET), 'iat')
-          .should.eql({
+    return runAuthenticatedQuery(query)
+      .then(data => {
+        expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
+          .to.eql({
             aud: 'auctions',
             role: 'bidder',
             userId: 'craig',
@@ -53,10 +50,10 @@ describe('CausalityJWT', () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "slug")
     }`;
-    return graphql(schema, query, { accessToken: 'foo' })
-      .then((data) => {
-        omit(jwt.decode(data.data.causality_jwt, HMAC_SECRET), 'iat')
-          .should.eql({
+    return runAuthenticatedQuery(query)
+      .then(data => {
+        expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
+          .to.eql({
             aud: 'auctions',
             role: 'bidder',
             userId: 'craig',
@@ -73,10 +70,10 @@ describe('CausalityJWT', () => {
     gravity
       .onCall(0)
       .returns(Promise.resolve({ _id: 'foo' }));
-    return graphql(schema, query, { accessToken: null })
-      .then((data) => {
-        omit(jwt.decode(data.data.causality_jwt, HMAC_SECRET), 'iat')
-          .should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
+          .to.eql({
             aud: 'auctions',
             role: 'observer',
             userId: null,
@@ -93,10 +90,10 @@ describe('CausalityJWT', () => {
     gravity
       .onCall(2)
       .returns(Promise.resolve([]));
-    return graphql(schema, query, { accessToken: 'foo' })
-      .then((data) => {
-        omit(jwt.decode(data.data.causality_jwt, HMAC_SECRET), 'iat')
-          .should.eql({
+    return runAuthenticatedQuery(query)
+      .then(data => {
+        expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
+          .to.eql({
             aud: 'auctions',
             role: 'observer',
             userId: 'craig',
@@ -110,9 +107,6 @@ describe('CausalityJWT', () => {
     const query = `{
       causality_jwt(role: OPERATOR, sale_id: "foo")
     }`;
-    return graphql(schema, query, { accessToken: 'foo' })
-      .then((data) => {
-        data.errors[0].message.should.containEql('Unauthorized');
-      });
+    return expect(runAuthenticatedQuery(query)).to.be.rejectedWith(/Unauthorized/);
   });
 });

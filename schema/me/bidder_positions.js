@@ -24,7 +24,7 @@ export default {
       description: 'Only the bidder positions for a specific auction',
     },
   },
-  resolve: (root, { current, artwork_id, sale_id }, { rootValue: { accessToken } }) => {
+  resolve: (root, { current, artwork_id, sale_id }, request, { rootValue: { accessToken } }) => {
     return gravity
       .with(accessToken)('me/bidder_positions', {
         artwork_id,

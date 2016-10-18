@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
-
 describe('Me', () => {
   describe('Bidders', () => {
     let gravity;
@@ -45,13 +41,13 @@ describe('Me', () => {
           { id: 'Bar ID' },
         ]));
 
-      return graphql(schema, query, { accessToken: 'foo' })
-        .then(({ data: { me: { bidders } } }) => {
-          bidders.should.eql([
+      return runAuthenticatedQuery(query)
+      .then(({ me: { bidders } }) => {
+        expect(bidders).to.eql([
             { id: 'Foo ID' },
             { id: 'Bar ID' },
-          ]);
-        });
+        ]);
+      });
     });
 
 
@@ -73,13 +69,13 @@ describe('Me', () => {
           { id: 'Bar ID' },
         ]));
 
-      return graphql(schema, query, { accessToken: 'foo' })
-        .then(({ data: { me: { bidders } } }) => {
-          bidders.should.eql([
+      return runAuthenticatedQuery(query)
+      .then(({ me: { bidders } }) => {
+        expect(bidders).to.eql([
             { id: 'Foo ID' },
             { id: 'Bar ID' },
-          ]);
-        });
+        ]);
+      });
     });
   });
 });

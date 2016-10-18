@@ -1,26 +1,23 @@
 import { assign } from 'lodash';
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
 import { getDefault } from '../../../schema/image';
 
 describe('getDefault', () => {
   it('returns the default image', () => {
-    getDefault([
+    expect(getDefault([
       { id: 'foo', is_default: false },
       { id: 'bar', is_default: true },
       { id: 'baz', is_default: false },
-    ])
-      .id.should.equal('bar');
+    ]).id)
+      .to.equal('bar');
   });
 
   it('returns the first object if there is no default', () => {
-    getDefault([
+    expect(getDefault([
       { id: 'foo' },
       { id: 'bar' },
       { id: 'baz' },
-    ])
-      .id.should.equal('foo');
+    ]).id)
+      .to.equal('foo');
   });
 });
 
@@ -70,29 +67,37 @@ describe('Image type', () => {
     it('is square by default (when there is no image geometry)', () => {
       assign(image, { original_width: null, original_height: null });
 
-      return graphql(schema, query)
-        .then(({ data }) => data.artwork.image.orientation.should.equal('square'));
+      return runQuery(query)
+        .then(data => {
+          expect(data.artwork.image.orientation).to.equal('square');
+        });
     });
 
     it('detects portrait', () => {
       assign(image, { original_width: 1000, original_height: 1500 });
 
-      return graphql(schema, query)
-        .then(({ data }) => data.artwork.image.orientation.should.equal('portrait'));
+      return runQuery(query)
+        .then(data => {
+          expect(data.artwork.image.orientation).to.equal('portrait');
+        });
     });
 
     it('detects landscape', () => {
       assign(image, { original_width: 2000, original_height: 1500 });
 
-      return graphql(schema, query)
-        .then(({ data }) => data.artwork.image.orientation.should.equal('landscape'));
+      return runQuery(query)
+        .then(data => {
+          expect(data.artwork.image.orientation).to.equal('landscape');
+        });
     });
 
     it('detects square', () => {
       assign(image, { original_width: 2000, original_height: 2000 });
 
-      return graphql(schema, query)
-        .then(({ data }) => data.artwork.image.orientation.should.equal('square'));
+      return runQuery(query)
+        .then(data => {
+          expect(data.artwork.image.orientation).to.equal('square');
+        });
     });
   });
 });

@@ -1,6 +1,4 @@
 import { map } from 'lodash';
-import schema from '../../../schema';
-import { runAuthenticatedQuery, runQuery } from '../../helper';
 
 describe('HomePageArtistModules', () => {
   describe('concerning display', () => {
@@ -49,14 +47,14 @@ describe('HomePageArtistModules', () => {
 
         return runAuthenticatedQuery(query).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, 'key');
-          keys.should.eql(['SUGGESTED', 'TRENDING', 'POPULAR']);
+          expect(keys).to.eql(['SUGGESTED', 'TRENDING', 'POPULAR']);
         });
       });
 
       it('only shows the trending and popular artists modules if there are no suggestions', () => {
         return runAuthenticatedQuery(query).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, 'key');
-          keys.should.eql(['TRENDING', 'POPULAR']);
+          expect(keys).to.eql(['TRENDING', 'POPULAR']);
         });
       });
     });
@@ -65,7 +63,7 @@ describe('HomePageArtistModules', () => {
       it('only shows the trending and popular artists modules', () => {
         return runQuery(query).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, 'key');
-          keys.should.eql(['TRENDING', 'POPULAR']);
+          expect(keys).to.eql(['TRENDING', 'POPULAR']);
         });
       });
     });
