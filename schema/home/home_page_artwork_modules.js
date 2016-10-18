@@ -39,8 +39,7 @@ const HomePageArtworkModules = {
     if (accessToken) {
       return gravity.with(accessToken)('me/modules').then((response) => {
         const modules = map(keys(response), (key) => {
-          // We always want to show the followed_artists rail no matter what
-          const display = key === 'followed_artists' ? true : response[key];
+          const display = response[key];
           return { key, display };
         });
         const filteredModules = filterModules(modules, max_rails);
