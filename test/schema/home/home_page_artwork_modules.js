@@ -65,15 +65,14 @@ describe('HomePageArtworkModules', () => {
       return runAuthenticatedQuery(query).then(({ home_page }) => {
         const keys = map(home_page.artwork_modules, 'key');
 
-        // followed artists should always return true
         // the default module response is 8 keys
         expect(keys).to.eql([
-          'followed_artists',
           'followed_galleries',
           'saved_works',
           'recommended_works',
           'current_fairs',
           'related_artists',
+          'generic_gene',
           'generic_gene',
           'generic_gene',
         ]);
