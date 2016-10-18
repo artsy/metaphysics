@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../schema';
-
 describe('OrderedSets type', () => {
   const OrderedSets = schema.__get__('OrderedSets');
 
@@ -47,18 +43,18 @@ describe('OrderedSets type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        OrderedSets.__get__('gravity').args[0].should.eql([
+    return runQuery(query)
+      .then(data => {
+        expect(OrderedSets.__get__('gravity').args[0]).to.eql([
           'sets',
           { key: 'artists:featured-genes', public: true },
         ]);
 
-        OrderedSets.__get__('gravity').args[1].should.eql([
+        expect(OrderedSets.__get__('gravity').args[1]).to.eql([
           'set/52dd3c2e4b8480091700027f/items',
         ]);
 
-        data.should.eql({
+        expect(data).to.eql({
           ordered_sets: [{
             id: '52dd3c2e4b8480091700027f',
             name: 'Featured Genes',

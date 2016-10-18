@@ -1,8 +1,4 @@
-import { isNull } from 'lodash';
-import sinon from 'sinon';
 import { graphql } from 'graphql';
-import schema from '../../../schema';
-import { runAuthenticatedQuery, runQuery } from '../../helper';
 
 describe('HomePageArtistModule', () => {
   const HomePage = schema.__get__('HomePage');
@@ -56,13 +52,13 @@ describe('HomePageArtistModule', () => {
   const shared = (queryRunner) => {
     it('returns trending artists', () => {
       return queryRunner(query('TRENDING')).then(({ home_page }) => {
-        home_page.artist_module.results.should.eql([{ id: 'trending' }]);
+        expect(home_page.artist_module.results).to.eql([{ id: 'trending' }]);
       });
     });
 
     it('returns popular artists', () => {
       return queryRunner(query('POPULAR')).then(({ home_page }) => {
-        home_page.artist_module.results.should.eql([{ id: 'popular' }]);
+        expect(home_page.artist_module.results).to.eql([{ id: 'popular' }]);
       });
     });
   };
@@ -72,7 +68,7 @@ describe('HomePageArtistModule', () => {
 
     it('returns suggestions', () => {
       return runAuthenticatedQuery(query('SUGGESTED')).then(({ home_page }) => {
-        home_page.artist_module.results.should.eql([{ id: 'suggested' }]);
+        expect(home_page.artist_module.results).to.eql([{ id: 'suggested' }]);
       });
     });
   });
@@ -82,8 +78,8 @@ describe('HomePageArtistModule', () => {
 
     it('does not return any suggestions', () => {
       return graphql(schema, query('SUGGESTED')).then(response => {
-        isNull(response.data.home_page.artist_module.results).should.be.true();
-        response.errors.should.not.be.empty();
+        expect(response.data.home_page.artist_module.results).to.be(null);
+        expect(response.errors).to.not.be.empty();
       });
     });
   });

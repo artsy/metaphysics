@@ -39,6 +39,7 @@ const kind = ({ artists, fair }) => {
 
 const PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
+  deprecationReason: 'Prefer to use Show schema',
   interfaces: [NodeInterface],
   isTypeOf: (obj) => has(obj, 'partner') && has(obj, 'display_on_partner_profile'),
   fields: () => ({
@@ -229,8 +230,8 @@ const PartnerShowType = new GraphQLObjectType({
           published: true,
         })
           .then(artworks => {
-            const { images } = artworks[0];
-            return Image.resolve(getDefault(images));
+            const artwork = artworks[0];
+            return artwork && Image.resolve(getDefault(artwork.images));
           });
       },
     },

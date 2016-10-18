@@ -1,5 +1,4 @@
---require should
---require should-promised
+--require ./test/helper.js
 --ui bdd
 --timeout 30000
 --compilers js:babel-core/register

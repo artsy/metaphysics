@@ -13,7 +13,7 @@ import {
 const HomePageArtistModules = {
   type: new GraphQLList(HomePageArtistModuleType),
   description: 'Artist modules to show on the home screen',
-  resolve: (root, params, { rootValue: { accessToken, userID } }) => {
+  resolve: (root, params, request, { rootValue: { accessToken, userID } }) => {
     // First check each type if they can display…
     return Promise.all(map(HomePageArtistModuleTypes, ({ display }, key) => {
       return display(accessToken, userID).then(displayable => ({ key, displayable }));

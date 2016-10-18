@@ -32,7 +32,7 @@ export default {
     active_positions,
     artwork_id,
     sale_id,
-  }, { rootValue: { accessToken } }) => {
+  }, request, { rootValue: { accessToken } }) => {
     return gravity
       .with(accessToken)('me/lot_standings', {
         live,

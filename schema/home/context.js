@@ -58,16 +58,16 @@ export const moduleContext = {
       return assign({}, trending, { context_type: 'Trending' });
     });
   },
-  active_bids: () => false,
+  active_bids: () => null,
   followed_artists: ({ accessToken }) => {
     return gravity.with(accessToken)('me/follow/artists', { size: 9, page: 1 })
       .then((artists) => {
         return assign({}, { artists }, { context_type: 'FollowArtists' });
       });
   },
-  followed_galleries: () => false,
-  saved_works: () => false,
-  recommended_works: () => false,
+  followed_galleries: () => null,
+  saved_works: () => null,
+  recommended_works: () => null,
   live_auctions: () => {
     return featuredAuction().then((sale) => {
       return assign({}, sale, { context_type: 'Sale' });
@@ -114,7 +114,7 @@ export default {
       HomePageModuleContextRelatedArtistType,
     ],
   }),
-  resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {
+  resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {
     return moduleContext[key]({ accessToken, params });
   },
 };

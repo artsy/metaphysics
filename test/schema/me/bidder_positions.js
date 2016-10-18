@@ -1,6 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
 import {
   map,
   times,
@@ -110,10 +107,10 @@ describe('Me type', () => {
         }
       }
     `;
-    return graphql(schema, query, { accessToken: 'foo' })
-      .then(({ data }) => {
-        Me.__get__('gravity').args[1][0].should.equal('me/bidder_positions');
-        map(data.me.bidder_positions, 'id').join('').should.eql('01234');
+    return runAuthenticatedQuery(query)
+      .then(data => {
+        expect(Me.__get__('gravity').args[1][0]).to.equal('me/bidder_positions');
+        expect(map(data.me.bidder_positions, 'id').join('')).to.eql('01234');
       });
   });
 
@@ -127,10 +124,10 @@ describe('Me type', () => {
         }
       }
     `;
-    return graphql(schema, query, { accessToken: 'foo' })
-      .then(({ data }) => {
-        Me.__get__('gravity').args[1][0].should.equal('me/bidder_positions');
-        map(data.me.bidder_positions, 'id').join('').should.eql('14');
+    return runAuthenticatedQuery(query)
+      .then(data => {
+        expect(Me.__get__('gravity').args[1][0]).to.equal('me/bidder_positions');
+        expect(map(data.me.bidder_positions, 'id').join('')).to.eql('14');
       });
   });
 
@@ -145,9 +142,9 @@ describe('Me type', () => {
       }
     `;
     gravity.onCall(4).returns(Promise.reject(new Error('Forbidden')));
-    return graphql(schema, query, { accessToken: 'foo' })
-      .then(({ data }) => {
-        map(data.me.bidder_positions, 'id').join('').should.eql('1');
+    return runAuthenticatedQuery(query)
+      .then(data => {
+        expect(map(data.me.bidder_positions, 'id').join('')).to.eql('1');
       });
   });
 
@@ -162,10 +159,10 @@ describe('Me type', () => {
         }
       }
     `;
-    return graphql(schema, query, { accessToken: 'foo' })
-      .then(({ data }) => {
-        Me.__get__('gravity').args[1][0].should.equal('me/bidder_positions');
-        data.me.bidder_positions[2].is_winning.should.eql(true);
+    return runAuthenticatedQuery(query)
+      .then(data => {
+        expect(Me.__get__('gravity').args[1][0]).to.equal('me/bidder_positions');
+        expect(data.me.bidder_positions[2].is_winning).to.eql(true);
       });
   });
 });

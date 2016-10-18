@@ -1,4 +1,3 @@
-import sinon from 'sinon';
 import total from '../../../lib/loaders/total';
 
 describe('total', () => {
@@ -16,10 +15,10 @@ describe('total', () => {
 
     return total('foo/bar', { extra_option: 1 })
       .then(n => {
-        gravity.args[0][0]
-          .should.equal('foo/bar?extra_option=1&size=0&total_count=1');
+        expect(gravity.args[0][0])
+          .to.equal('foo/bar?extra_option=1&size=0&total_count=1');
 
-        n.should.equal(50);
+        expect(n).to.equal(50);
       });
   });
 });

@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
-
 describe('ArtistCarousel type', () => {
   const Artist = schema.__get__('Artist');
   const ArtistCarousel = Artist.__get__('ArtistCarousel');
@@ -72,10 +68,10 @@ describe('ArtistCarousel type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          gravity.args[0][0].should.equal('related/shows');
-          gravity.args[0][1].should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(gravity.args[0][0]).to.equal('related/shows');
+          expect(gravity.args[0][1]).to.eql({
             artist_id: 'foo-bar',
             sort: '-end_at',
             displayable: true,
@@ -83,10 +79,10 @@ describe('ArtistCarousel type', () => {
             top_tier: true,
           });
 
-          gravity.args[1][0].should.equal('artist/foo-bar/artworks');
-          gravity.args[1][1].should.eql({ size: 7, sort: '-iconicity', published: true });
+          expect(gravity.args[1][0]).to.equal('artist/foo-bar/artworks');
+          expect(gravity.args[1][1]).to.eql({ size: 7, sort: '-iconicity', published: true });
 
-          data.artist.carousel.should.eql({
+          expect(data.artist.carousel).to.eql({
             images: [
               {
                 href: '/artwork/foo-bar-artwork-1',

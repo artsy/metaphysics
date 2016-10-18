@@ -36,7 +36,7 @@ export default {
       description: 'Pagination, need I say more?',
     },
   },
-  resolve: (root, options, { rootValue: { accessToken } }) => {
+  resolve: (root, options, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null;
     if (!options.artist_id) return null;
     return gravity.with(accessToken)('me/suggested/artists', options);
