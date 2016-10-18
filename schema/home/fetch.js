@@ -36,11 +36,11 @@ export const relatedArtist = (accessToken, userID) => {
   }).then(sample);
 };
 
-export const iconicArtists = () => {
+export const popularArtists = () => {
   return delta('/', {
     method: 'fetch',
     n: 9,
-    name: 'artist_search_2t',
+    name: 'artist_follow_2t',
   }).then((trending) => {
     const clonedTrending = clone(trending);
     forEach(blacklist, (id) => delete clonedTrending[id]);

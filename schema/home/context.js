@@ -4,7 +4,7 @@ import {
   featuredAuction,
   featuredFair,
   featuredGene,
-  iconicArtists,
+  popularArtists,
 } from './fetch';
 import Fair from '../fair';
 import Sale from '../sale/index';
@@ -53,8 +53,8 @@ export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
 });
 
 export const moduleContext = {
-  iconic_artists: () => {
-    return iconicArtists().then((trending) => {
+  popular_artists: () => {
+    return popularArtists().then((trending) => {
       return assign({}, trending, { context_type: 'Trending' });
     });
   },

@@ -8,7 +8,7 @@ import { GraphQLString } from 'graphql';
 
 const moduleTitle = {
   active_bids: () => 'Your Active Bids',
-  iconic_artists: () => 'Works by Iconic Artists',
+  popular_artists: () => 'Works by Popular Artists',
   followed_artists: () => 'Works by Artists you Follow',
   followed_galleries: () => 'Works from Galleries You Follow',
   saved_works: () => 'Recently Saved Works',
