@@ -159,13 +159,12 @@ const ArtistType = new GraphQLObjectType({
           },
         }),
         resolve: ({ blurb, id }, { format }) => {
-          if (blurb.length) {
+          if (blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) };
           }
           return gravity(`artist/${id}/partner_artists`, {
             size: 1,
-            sort: '-published_artworks_count',
-            has_biography: true,
+            featured: true,
           }).then((partner_artists) => {
             if (partner_artists && partner_artists.length) {
               const { biography, partner } = first(partner_artists);

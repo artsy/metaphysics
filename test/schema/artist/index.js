@@ -1,3 +1,5 @@
+import { assign } from 'lodash';
+
 describe('Artist type', () => {
   const Artist = schema.__get__('Artist');
   let artist = null;
@@ -250,6 +252,73 @@ describe('Artist type', () => {
           expect(data).to.eql({
             artist: {
               formatted_nationality_and_birthday: null,
+            },
+          });
+        });
+    });
+  });
+
+  describe('biography_blurb', () => {
+    it('returns the blurb if present', () => {
+      artist.blurb = 'catty blurb';
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            biography_blurb {
+              text
+              credit
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artist: {
+              biography_blurb: {
+                text: 'catty blurb',
+                credit: null,
+              },
+            },
+          });
+        });
+    });
+
+    it('returns the featured bio if there is no Artsy one', () => {
+      Artist.__ResetDependency__('gravity');
+      const gravity = sinon.stub();
+      Artist.__Rewire__('gravity', gravity);
+      gravity
+        // Artist
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artist)))
+        // PartnerArtist
+        .onCall(1)
+        .returns(Promise.resolve([assign({}, {
+          biography: 'new catty bio',
+          partner: { name: 'Catty Partner' },
+        })]));
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            biography_blurb {
+              text
+              credit
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artist: {
+              biography_blurb: {
+                text: 'new catty bio',
+                credit: 'Submitted by Catty Partner',
+              },
             },
           });
         });
