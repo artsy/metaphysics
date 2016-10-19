@@ -4,6 +4,7 @@ import {
   featuredAuction,
   featuredFair,
   featuredGene,
+  geneArtworks,
   popularArtists,
 } from './fetch';
 import { map, assign, keys, without, shuffle, slice } from 'lodash';
@@ -85,16 +86,14 @@ const moduleResults = {
       size: RESULTS_SIZE,
     }).then(({ hits }) => hits);
   },
-  genes: ({ accessToken }) => {
+  genes: ({ accessToken, params: { id } }) => {
+    if (id) {
+      return geneArtworks(id, RESULTS_SIZE);
+    }
+    // Backward compatibility for Force.
     return featuredGene(accessToken).then((gene) => {
       if (gene) {
-        return gravity('filter/artworks', {
-          gene_id: gene.id,
-          for_sale: true,
-          size: 60,
-        }).then(({ hits }) => {
-          return slice(shuffle(hits), 0, RESULTS_SIZE);
-        });
+        return geneArtworks(gene.id, RESULTS_SIZE);
       }
     });
   },
@@ -107,6 +106,6 @@ const moduleResults = {
 export default {
   type: new GraphQLList(Artwork.type),
   resolve: ({ key, display, params }, options, request, { rootValue: { accessToken, userID } }) => {
-    if (display) return moduleResults[key]({ accessToken, userID, params });
+    if (display) return moduleResults[key]({ accessToken, userID, params: (params || {}) });
   },
 };
