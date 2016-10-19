@@ -4,7 +4,7 @@ import {
   featuredAuction,
   featuredFair,
   featuredGene,
-  iconicArtists,
+  popularArtists,
 } from './fetch';
 import { map, assign, keys, without, shuffle, slice } from 'lodash';
 import { toQueryString } from '../../lib/helpers';
@@ -17,8 +17,9 @@ const RESULTS_SIZE = 20;
 
 const moduleResults = {
   active_bids: () => [],
-  iconic_artists: () => {
-    return iconicArtists().then((artists) => {
+  popular_artists: () => {
+    // TODO This appears to largely replicate Gravity’s /api/v1/artists/popular endpoint
+    return popularArtists().then((artists) => {
       const ids = without(keys(artists), 'cached', 'context_type');
       return uncachedGravity('filter/artworks?' + toQueryString({
         artist_ids: ids,

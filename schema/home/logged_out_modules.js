@@ -1,7 +1,7 @@
 export default(auction, fair) => {
   const modules = [
     {
-      key: 'iconic_artists',
+      key: 'popular_artists',
       display: true,
     },
     {
