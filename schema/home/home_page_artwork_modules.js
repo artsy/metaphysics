@@ -1,17 +1,19 @@
 import gravity from '../../lib/loaders/gravity';
 import {
+  filter,
+  find,
+  findIndex,
   keys,
   map,
-  filter,
+  remove,
   slice,
-  findIndex,
   set,
   without,
-  find,
 } from 'lodash';
 import {
-  GraphQLList,
+  GraphQLEnumType,
   GraphQLInt,
+  GraphQLList,
 } from 'graphql';
 import { HomePageArtworkModuleType } from './home_page_artwork_module';
 import loggedOutModules from './logged_out_modules';
@@ -42,6 +44,59 @@ const addFollowedGenes = (accessToken, modules, max_followed_gene_rails) => {
   return Promise.resolve(modules);
 };
 
+const reorderModules = (modules, preferredOrder) => {
+  if (!preferredOrder) {
+    return modules;
+  }
+  const unordered = modules.slice(0);
+  const reordered = [];
+  preferredOrder.forEach(key => {
+    remove(unordered, mod => {
+      if (mod.key === key) {
+        reordered.push(mod);
+        return true;
+      }
+    });
+  });
+  return reordered.concat(unordered);
+};
+
+const HomePageArtworkModuleTypes = new GraphQLEnumType({
+  name: 'HomePageArtworkModuleTypes',
+  values: {
+    ACTIVE_BIDS: {
+      value: 'active_bids',
+    },
+    FOLLOWED_ARTISTS: {
+      value: 'followed_artists',
+    },
+    FOLLOWED_GALLERIES: {
+      value: 'followed_galleries',
+    },
+    SAVED_WORKS: {
+      value: 'saved_works',
+    },
+    RECOMMENDED_WORKS: {
+      value: 'recommended_works',
+    },
+    LIVE_AUCTIONS: {
+      value: 'live_auctions',
+    },
+    CURRENT_FAIRS: {
+      value: 'current_fairs',
+    },
+    RELATED_ARTISTS: {
+      value: 'related_artists',
+    },
+    FOLLOWED_GENES: {
+      value: 'genes',
+    },
+    GENERIC_GENES: {
+      value: 'generic_gene',
+    },
+  },
+});
+
 const HomePageArtworkModules = {
   type: new GraphQLList(HomePageArtworkModuleType),
   description: 'Artwork modules to show on the home screen',
@@ -56,10 +111,14 @@ const HomePageArtworkModules = {
       description: 'Maximum number of followed genes to return, disable with a negative number',
       defaultValue: 1,
     },
+    order: {
+      type: new GraphQLList(HomePageArtworkModuleTypes),
+      description: 'The preferred order of modules, defaults to order returned by Gravity',
+    },
   },
   resolve: (
     root,
-    { max_rails, max_followed_gene_rails },
+    { max_rails, max_followed_gene_rails, order },
     request,
     { rootValue: { accessToken, userID } }
   ) => {
@@ -68,13 +127,16 @@ const HomePageArtworkModules = {
       return gravity.with(accessToken)('me/modules').then((response) => {
         const modulesToDisplay = map(keys(response), (key) => ({ key, display: response[key] }));
         return addFollowedGenes(accessToken, modulesToDisplay, max_followed_gene_rails)
-          .then(modules => {
-            const filteredModules = filterModules(modules, max_rails);
+          .then(allModulesToDisplay => {
+            let modules = allModulesToDisplay;
+
+            modules = filterModules(modules, max_rails);
+            modules = reorderModules(modules, order);
 
             // For the related artists rail, we need to fetch a random
             // set of followed artist + related artist initially
             // and pass it along so that any placeholder titles are consistent
-            const relatedArtistIndex = findIndex(filteredModules, { key: 'related_artists' });
+            const relatedArtistIndex = findIndex(modules, { key: 'related_artists' });
 
             if (relatedArtistIndex > -1) {
               return Promise.resolve(relatedArtist(accessToken, userID))
@@ -87,7 +149,7 @@ const HomePageArtworkModules = {
                       related_artist_id: artist.id,
                     };
                     return set(
-                      filteredModules,
+                      modules,
                       `[${relatedArtistIndex}].params`,
                       relatedArtistModuleParams
                     );
@@ -95,12 +157,12 @@ const HomePageArtworkModules = {
                   // if we don't find an artist pair,
                   // remove the related artist rail
                   return without(
-                    filteredModules,
-                    find(filteredModules, { key: 'related_artists' })
+                    modules,
+                    find(modules, { key: 'related_artists' })
                   );
                 });
             }
-            return filteredModules;
+            return modules;
           });
       });
     }
