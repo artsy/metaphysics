@@ -32,14 +32,14 @@ const moduleTitle = {
       return `Works by ${artist.name}`;
     });
   },
-  genes: ({ accessToken, params: { name } }) => {
-    if (name) {
-      return name;
+  genes: ({ accessToken, params: { gene } }) => {
+    if (gene) {
+      return gene.name;
     }
     // Backward compatibility for Force.
-    return featuredGene(accessToken).then((gene) => {
-      if (gene) {
-        return gene.name;
+    return featuredGene(accessToken).then((fetchedGene) => {
+      if (fetchedGene) {
+        return fetchedGene.name;
       }
     });
   },
