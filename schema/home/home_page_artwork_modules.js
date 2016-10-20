@@ -32,8 +32,8 @@ const addFollowedGenes = (accessToken, modules, max_followed_gene_rails) => {
     const size = max_followed_gene_rails < 0 ? 100 : max_followed_gene_rails;
     return followedGenes(accessToken, size).then(follows => {
       const blueprint = modules[followedGeneIndex];
-      const genes = map(follows, ({ gene: { id, name } }) => {
-        return Object.assign({ params: { id, name } }, blueprint);
+      const genes = map(follows, ({ gene }) => {
+        return Object.assign({ params: { id: gene.id, gene } }, blueprint);
       });
       const copy = modules.slice(0);
       const args = [followedGeneIndex, 1].concat(genes);

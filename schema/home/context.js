@@ -90,9 +90,13 @@ export const moduleContext = {
       });
     });
   },
-  genes: ({ accessToken }) => {
-    return featuredGene(accessToken).then((gene) => {
+  genes: ({ accessToken, params: { gene } }) => {
+    if (gene) {
       return assign({}, gene, { context_type: 'Gene' });
+    }
+    // Backward compatibility for Force.
+    return featuredGene(accessToken).then((fetchedGene) => {
+      return assign({}, fetchedGene, { context_type: 'Gene' });
     });
   },
   generic_gene: ({ params }) => {
@@ -115,6 +119,6 @@ export default {
     ],
   }),
   resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {
-    return moduleContext[key]({ accessToken, params });
+    return moduleContext[key]({ accessToken, params: (params || {}) });
   },
 };
