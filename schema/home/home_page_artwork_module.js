@@ -79,16 +79,21 @@ const HomePageArtworkModule = {
     },
   },
   resolve: (root, { key, id, followed_artist_id, related_artist_id }) => {
-  // is id a generic gene?
-    let params = find(genericGenes, ['id', id]);
-    if (params) {
-      return { key, params, display: true };
+    let params;
+    switch (key) {
+      case 'generic_gene':
+        params = find(genericGenes, ['id', id]);
+        break;
+      case 'genes':
+        params = { id };
+        break;
+      case 'related_artists':
+        params = { followed_artist_id, related_artist_id };
+        break;
+      default:
+        params = {};
     }
-    if (followed_artist_id && related_artist_id) {
-      params = { followed_artist_id, related_artist_id };
-      return { key, params, display: true };
-    }
-    return { key, display: true };
+    return { key, params, display: true };
   },
 };
 

@@ -32,7 +32,11 @@ const moduleTitle = {
       return `Works by ${artist.name}`;
     });
   },
-  genes: ({ accessToken }) => {
+  genes: ({ accessToken, params: { name } }) => {
+    if (name) {
+      return name;
+    }
+    // Backward compatibility for Force.
     return featuredGene(accessToken).then((gene) => {
       if (gene) {
         return gene.name;
@@ -47,6 +51,6 @@ const moduleTitle = {
 export default {
   type: GraphQLString,
   resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {
-    if (display) return moduleTitle[key]({ accessToken, params });
+    if (display) return moduleTitle[key]({ accessToken, params: (params || {}) });
   },
 };
