@@ -84,6 +84,7 @@ const ArtistType = new GraphQLObjectType({
       },
       is_display_auction_link: {
         type: GraphQLBoolean,
+        description: 'Only specific Artists should show a link to auction results.',
         resolve: ({ display_auction_link }) => display_auction_link,
       },
       display_auction_link: {
