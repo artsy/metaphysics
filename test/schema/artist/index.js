@@ -264,9 +264,110 @@ describe('Artist type', () => {
       const query = `
         {
           artist(id: "foo-bar") {
+            blurb
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artist: {
+              blurb: 'catty blurb',
+            },
+          });
+        });
+    });
+  });
+
+  describe('biography_blurb', () => {
+    describe('with partner_bio set to true', () => {
+      describe('with a featured partner bio', () => {
+        beforeEach(() => {
+          Artist.__ResetDependency__('gravity');
+          const gravity = sinon.stub();
+          Artist.__Rewire__('gravity', gravity);
+          gravity
+            // Artist
+            .onCall(0)
+            .returns(Promise.resolve(assign({}, artist)))
+            // PartnerArtist
+            .onCall(1)
+            .returns(Promise.resolve([assign({}, {
+              biography: 'new catty bio',
+              partner: { name: 'Catty Partner', id: 'catty-partner' },
+            })]));
+        });
+        afterEach(() => {
+          const query = `
+            {
+              artist(id: "foo-bar") {
+                biography_blurb(partner_bio: true) {
+                  text
+                  credit
+                  partner_id
+                }
+              }
+            }
+          `;
+
+          return runQuery(query)
+            .then(data => {
+              expect(data).to.eql({
+                artist: {
+                  biography_blurb: {
+                    text: 'new catty bio',
+                    credit: 'Submitted by Catty Partner',
+                    partner_id: 'catty-partner',
+                  },
+                },
+              });
+            });
+        });
+        it('returns the featured partner bio without an artsy blurb', () => {
+        });
+
+        it('returns the featured partner bio with an artsy blurb', () => {
+          artist.blurb = 'artsy blurb';
+        });
+      });
+      it('returns the artsy blurb if there is no featured partner bio', () => {
+        artist.blurb = 'artsy blurb';
+        const query = `
+          {
+            artist(id: "foo-bar") {
+              biography_blurb {
+                text
+                credit
+                partner_id
+              }
+            }
+          }
+        `;
+
+        return runQuery(query)
+          .then(data => {
+            expect(data).to.eql({
+              artist: {
+                biography_blurb: {
+                  text: 'artsy blurb',
+                  credit: null,
+                  partner_id: null,
+                },
+              },
+            });
+          });
+      });
+    });
+    it('returns the blurb if present', () => {
+      artist.blurb = 'catty blurb';
+      const query = `
+        {
+          artist(id: "foo-bar") {
             biography_blurb {
               text
               credit
+              partner_id
             }
           }
         }
@@ -279,6 +380,7 @@ describe('Artist type', () => {
               biography_blurb: {
                 text: 'catty blurb',
                 credit: null,
+                partner_id: null,
               },
             },
           });
@@ -297,7 +399,7 @@ describe('Artist type', () => {
         .onCall(1)
         .returns(Promise.resolve([assign({}, {
           biography: 'new catty bio',
-          partner: { name: 'Catty Partner' },
+          partner: { name: 'Catty Partner', id: 'catty-partner' },
         })]));
 
       const query = `
@@ -306,6 +408,7 @@ describe('Artist type', () => {
             biography_blurb {
               text
               credit
+              partner_id
             }
           }
         }
@@ -318,6 +421,7 @@ describe('Artist type', () => {
               biography_blurb: {
                 text: 'new catty bio',
                 credit: 'Submitted by Catty Partner',
+                partner_id: 'catty-partner',
               },
             },
           });
