@@ -145,7 +145,17 @@ const ArtistType = new GraphQLObjectType({
         deprecationReason: 'Use biography_blurb which includes a gallery-submitted fallback.',
       }, markdown()),
       biography_blurb: {
-        args: markdown().args,
+        args: assign({
+          partner_id: {
+            type: GraphQLString,
+            description: 'If passed in, will return this partners featured bio, if one exists.',
+          },
+          partner_bio: {
+            type: GraphQLBoolean,
+            description: 'If true, will return any partners featured bio, if one exists.',
+            defaultValue: false,
+          },
+        }, markdown().args),
         type: new GraphQLObjectType({
           name: 'ArtistBlurb',
           fields: {
@@ -159,20 +169,47 @@ const ArtistType = new GraphQLObjectType({
             },
           },
         }),
-        resolve: ({ blurb, id }, { format }) => {
+        resolve: ({ blurb, id }, { format, partner_id, partner_bio }) => {
+          let bio = null;
+          if (partner_id || partner_bio) {
+            return gravity(`artist/${id}/partner_artists`, {
+              size: 1,
+              featured: true,
+            }).then((partner_artists) => {
+              if (partner_artists && partner_artists.length) {
+                const { biography, partner } = first(partner_artists);
+                bio = {
+                  text: biography,
+                  credit: `Submitted by ${partner.name}`,
+                };
+                if (partner.id === partner_id) {
+                  return bio;
+                }
+                if (blurb && blurb.length) {
+                  return { text: formatMarkdownValue(blurb, format) };
+                }
+                if (partner_bio) {
+                  return bio;
+                }
+              }
+            });
+          }
           if (blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) };
           }
+        },
+      },
+      featured_partner_id: {
+        type: GraphQLString,
+        description: 'If there is a featured partner bio for this artist, returns the partner id.',
+        resolve: ({ id }) => {
           return gravity(`artist/${id}/partner_artists`, {
             size: 1,
             featured: true,
           }).then((partner_artists) => {
             if (partner_artists && partner_artists.length) {
-              const { biography, partner } = first(partner_artists);
-              return {
-                text: biography,
-                credit: `Submitted by ${partner.name}`,
-              };
+              const { partner } = first(partner_artists);
+              return partner.id;
             }
           });
         },
