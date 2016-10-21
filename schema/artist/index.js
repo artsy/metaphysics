@@ -199,6 +199,21 @@ const ArtistType = new GraphQLObjectType({
           }
         },
       },
+      featured_partner_id: {
+        type: GraphQLString,
+        description: 'If there is a featured partner bio for this artist, returns the partner id.',
+        resolve: ({ id }) => {
+          return gravity(`artist/${id}/partner_artists`, {
+            size: 1,
+            featured: true,
+          }).then((partner_artists) => {
+            if (partner_artists && partner_artists.length) {
+              const { partner } = first(partner_artists);
+              return partner.id;
+            }
+          });
+        },
+      },
       is_shareable: {
         type: GraphQLBoolean,
         resolve: (artist) => artist.published_artworks_count > 0,

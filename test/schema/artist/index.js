@@ -258,6 +258,71 @@ describe('Artist type', () => {
     });
   });
 
+  describe('featured_partner_id', () => {
+    it('returns the featured partner id if there is a featured bio', () => {
+      Artist.__ResetDependency__('gravity');
+      const gravity = sinon.stub();
+      Artist.__Rewire__('gravity', gravity);
+      gravity
+        // Artist
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artist)))
+        // PartnerArtist
+        .onCall(1)
+        .returns(Promise.resolve([assign({}, {
+          biography: 'new catty bio',
+          partner: { name: 'Catty Partner', id: 'catty-partner' },
+        })]));
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            featured_partner_id
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artist: {
+              featured_partner_id: 'catty-partner',
+            },
+          });
+        });
+    });
+
+    it('returns null if there is no featured bio', () => {
+      Artist.__ResetDependency__('gravity');
+      const gravity = sinon.stub();
+      Artist.__Rewire__('gravity', gravity);
+      gravity
+        // Artist
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artist)))
+        // PartnerArtist
+        .onCall(1)
+        .returns(Promise.resolve([]));
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            featured_partner_id
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artist: {
+              featured_partner_id: null,
+            },
+          });
+        });
+    });
+  });
+
   describe('biography_blurb', () => {
     it('returns the blurb if present', () => {
       artist.blurb = 'catty blurb';
