@@ -234,7 +234,7 @@ const ArtworkType = new GraphQLObjectType({
 
               return (
                 acquireable &&
-                sale.sale_type === 'auction' &&
+                _.includes(['auction', 'preliminary auction'], sale.sale_type) &&
                 auctionState(sale) === 'open' &&
                 saleArtwork.bidder_positions_count < 1
               );
