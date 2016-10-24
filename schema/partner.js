@@ -63,7 +63,8 @@ const PartnerType = new GraphQLObjectType({
       },
       href: {
         type: GraphQLString,
-        resolve: ({ default_profile_id }) => `/${default_profile_id}`,
+        resolve: ({ type, default_profile_id }) =>
+          type === 'Auction' ? `/auction/${default_profile_id}` : `/${default_profile_id}`,
       },
       is_linkable: {
         type: GraphQLBoolean,
