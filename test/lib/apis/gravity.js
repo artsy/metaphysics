@@ -4,9 +4,9 @@ describe('APIs', () => {
   describe('gravity', () => {
     const fetch = gravity.__get__('fetch');
 
-    before(() => gravity.__Rewire__('config', { GRAVITY_XAPP_TOKEN: 'secret' }));
+    beforeAll(() => gravity.__Rewire__('config', { GRAVITY_XAPP_TOKEN: 'secret' }));
 
-    after(() => gravity.__ResetDependency__('config'));
+    afterAll(() => gravity.__ResetDependency__('config'));
 
     afterEach(() => {
       fetch.__ResetDependency__('request');
