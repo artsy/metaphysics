@@ -3,9 +3,13 @@ import sinon from 'sinon';
 import expect from 'expect.js';
 import { graphql } from 'graphql';
 
+// Set up our globals
 global.schema = schema;
 global.expect = expect;
 global.sinon = sinon;
+
+// Do not require the use of node-foreman during testing
+require('dotenv').config({ path: '.env.test' });
 
 /**
  * Performs a GraphQL query against our schema.
