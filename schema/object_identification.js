@@ -47,6 +47,7 @@ const SupportedTypes = {
     './home/home_page_artist_module',
     './partner',
     './partner_show',
+    './gene',
   ],
 };
 

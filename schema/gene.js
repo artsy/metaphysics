@@ -5,8 +5,7 @@ import Artist from './artist';
 import Image from './image';
 import filterArtworks from './filter_artworks';
 import { queriedForFieldsOtherThanBlacklisted } from '../lib/helpers';
-
-import { GravityIDFields } from './object_identification';
+import { GravityIDFields, NodeInterface } from './object_identification';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -17,6 +16,8 @@ import {
 
 const GeneType = new GraphQLObjectType({
   name: 'Gene',
+  interfaces: [NodeInterface],
+  isTypeOf: (obj) => _.has(obj, 'name'),
   fields: {
     ...GravityIDFields,
     cached,
