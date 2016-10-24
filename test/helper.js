@@ -101,3 +101,7 @@ expect.Assertion.prototype.resolved = function resolved() {
   this.flags.not = !this.flags.not;
   return this.rejected();
 };
+
+// We want to silence the console output from node-uuid, so we use a mocked module
+// at __mocks__/node-uuid.js which has it's console muted
+jest.mock('node-uuid');

@@ -2,13 +2,13 @@ import cache from '../../lib/cache';
 
 describe('Cache', () => {
   describe('when connection to Redis fails', () => {
-    before(() => {
+    beforeAll(() => {
       cache.__Rewire__('client', {
         get: (key, cb) => cb(new Error('connect ECONNREFUSED')),
       });
     });
 
-    after(() => {
+    afterAll(() => {
       cache.__ResetDependency__('client');
     });
 
