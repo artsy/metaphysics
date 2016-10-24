@@ -77,19 +77,19 @@ describe('Artwork type', () => {
         .onCall(0)
         .returns(Promise.resolve(assign({}, artwork, {
           partner,
-          acquireable: true
+          acquireable: true,
         })))
         // Sales
         .onCall(1)
         .returns(Promise.resolve([assign({}, sale, {
           sale_type: 'preliminary auction',
           start_at: moment().startOf('day'),
-          end_at: moment().endOf('day')
+          end_at: moment().endOf('day'),
         })]))
         // Sale artwork
         .onCall(2)
         .returns(Promise.resolve(assign({}, saleArtwork, {
-          bidder_positions_count: 0
+          bidder_positions_count: 0,
         })));
 
       return runQuery(query)
