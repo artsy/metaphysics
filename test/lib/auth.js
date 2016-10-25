@@ -13,11 +13,11 @@ describe('auth middleware', () => {
   });
 
   describe('development environment', () => {
-    before(() => {
+    beforeAll(() => {
       auth.__Rewire__('isDevelopment', () => true);
     });
 
-    after(() => {
+    afterAll(() => {
       auth.__ResetDependency__('isDevelopment');
     });
 

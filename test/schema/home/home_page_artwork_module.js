@@ -27,9 +27,9 @@ describe('HomePageArtworkModule', () => {
   });
 
   describe('when signed out', () => {
-    it('returns the proper title for iconic_artists', () => {
-      return runQuery(query('iconic_artists')).then(({ home_page }) => {
-        expect(home_page.artwork_module.title).to.eql('Works by Iconic Artists');
+    it('returns the proper title for popular_artists', () => {
+      return runQuery(query('popular_artists')).then(({ home_page }) => {
+        expect(home_page.artwork_module.title).to.eql('Works by Popular Artists');
       });
     });
   });
