@@ -3,6 +3,7 @@ import {
   find,
   has,
 } from 'lodash';
+import gravity from '../../lib/loaders/gravity';
 import { params as genericGenes } from './add_generic_genes';
 import Results from './results';
 import Title from './title';
@@ -79,16 +80,20 @@ const HomePageArtworkModule = {
     },
   },
   resolve: (root, { key, id, followed_artist_id, related_artist_id }) => {
-  // is id a generic gene?
-    let params = find(genericGenes, ['id', id]);
-    if (params) {
-      return { key, params, display: true };
+    // TODO Really not entirely sure what this `display` param is about.
+    const display = true;
+    switch (key) {
+      case 'generic_gene':
+        return { key, display, params: find(genericGenes, ['id', id]) };
+      case 'genes':
+        return gravity(`gene/${id}`).then(gene => {
+          return { key, display, params: { id, gene } };
+        });
+      case 'related_artists':
+        return { key, display, params: { followed_artist_id, related_artist_id } };
+      default:
+        return { key, display, params: {} };
     }
-    if (followed_artist_id && related_artist_id) {
-      params = { followed_artist_id, related_artist_id };
-      return { key, params, display: true };
-    }
-    return { key, display: true };
   },
 };
 
