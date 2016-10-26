@@ -14,7 +14,8 @@ describe('Filter Artworks', () => {
           ],
         }));
 
-      Gene.__Rewire__('gravity', sinon.stub().returns(Promise.resolve({ id: '500-1000-ce' })));
+      const gene = { id: '500-1000-ce', browseable: true, family: '' };
+      Gene.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(gene)));
       filterArtworks.__Rewire__('gravity', gravity);
     });
 
