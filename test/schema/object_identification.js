@@ -97,14 +97,14 @@ describe('Object Identification', () => {
     describe('with a specific module', () => {
       const globalId = toGlobalId(
         'HomePageArtworkModule',
-        JSON.stringify({ key: 'iconic_artists' })
+        JSON.stringify({ key: 'popular_artists' })
       );
 
       it('generates a Global ID', () => {
         const query = `
           {
             home_page {
-              artwork_module(key: "iconic_artists") {
+              artwork_module(key: "popular_artists") {
                 __id
               }
             }
@@ -138,7 +138,7 @@ describe('Object Identification', () => {
           expect(data).to.eql({
             node: {
               __typename: 'HomePageArtworkModule',
-              key: 'iconic_artists',
+              key: 'popular_artists',
             },
           });
         });

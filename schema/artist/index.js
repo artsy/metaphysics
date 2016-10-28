@@ -84,6 +84,7 @@ const ArtistType = new GraphQLObjectType({
       },
       is_display_auction_link: {
         type: GraphQLBoolean,
+        description: 'Only specific Artists should show a link to auction results.',
         resolve: ({ display_auction_link }) => display_auction_link,
       },
       display_auction_link: {
@@ -140,11 +141,23 @@ const ArtistType = new GraphQLObjectType({
         type: new GraphQLList(GraphQLString),
       },
       meta: Meta,
-      blurb: assign({
-        deprecationReason: 'Use biography_blurb which includes a gallery-submitted fallback.',
-      }, markdown()),
-      biography_blurb: {
+      blurb: {
         args: markdown().args,
+        type: GraphQLString,
+        resolve: ({ blurb }, { format }) => {
+          if (blurb.length) {
+            return formatMarkdownValue(blurb, format);
+          }
+        },
+      },
+      biography_blurb: {
+        args: assign({
+          partner_bio: {
+            type: GraphQLBoolean,
+            description: 'If true, will return featured bio over Artsy one.',
+            defaultValue: false,
+          },
+        }, markdown().args),
         type: new GraphQLObjectType({
           name: 'ArtistBlurb',
           fields: {
@@ -156,22 +169,27 @@ const ArtistType = new GraphQLObjectType({
               type: GraphQLString,
               resolve: ({ credit }) => credit,
             },
+            partner_id: {
+              type: GraphQLString,
+              resolve: ({ partner_id }) => partner_id,
+              description: 'The partner id of the partner who submitted the featured bio.',
+            },
           },
         }),
-        resolve: ({ blurb, id }, { format }) => {
-          if (blurb.length) {
+        resolve: ({ blurb, id }, { format, partner_bio }) => {
+          if (!partner_bio && blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) };
           }
           return gravity(`artist/${id}/partner_artists`, {
             size: 1,
-            sort: '-published_artworks_count',
-            has_biography: true,
+            featured: true,
           }).then((partner_artists) => {
             if (partner_artists && partner_artists.length) {
               const { biography, partner } = first(partner_artists);
               return {
                 text: biography,
                 credit: `Submitted by ${partner.name}`,
+                partner_id: partner.id,
               };
             }
           });
@@ -323,6 +341,7 @@ const ArtistType = new GraphQLObjectType({
               artist_id: id,
               sort: '-end_at',
               is_institution: true,
+              is_reference: true,
               highest_tier: true,
               solo_show: true,
               at_a_fair: false,
@@ -333,6 +352,7 @@ const ArtistType = new GraphQLObjectType({
               artist_id: id,
               sort: '-end_at',
               is_institution: false,
+              is_reference: true,
               highest_tier: true,
               solo_show: true,
               at_a_fair: false,
@@ -343,6 +363,7 @@ const ArtistType = new GraphQLObjectType({
               artist_id: id,
               sort: '-end_at',
               is_institution: true,
+              is_reference: true,
               highest_tier: true,
               solo_show: false,
               at_a_fair: false,
@@ -353,6 +374,7 @@ const ArtistType = new GraphQLObjectType({
               artist_id: id,
               sort: '-end_at',
               is_institution: false,
+              is_reference: true,
               highest_tier: true,
               solo_show: false,
               at_a_fair: false,
@@ -363,6 +385,7 @@ const ArtistType = new GraphQLObjectType({
               artist_id: id,
               sort: '-end_at',
               is_institution: true,
+              is_reference: true,
               highest_tier: false,
               solo_show: true,
               at_a_fair: false,
@@ -384,6 +407,7 @@ const ArtistType = new GraphQLObjectType({
               artist_id: id,
               sort: '-end_at',
               is_institution: true,
+              is_reference: true,
               highest_tier: false,
               solo_show: false,
               at_a_fair: false,

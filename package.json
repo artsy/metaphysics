@@ -13,7 +13,6 @@
     "dev": "DEBUG=info,error nf start --procfile Procfile.dev",
     "staging": "DEBUG=info,error nf start --procfile Procfile.dev --env .env.staging",
     "test": "npm run lint && DEBUG=info,error nf run jest --env .env.test",
-    "spec": "DEBUG=info,error nf run jest --env .env.test",
     "watch": "DEBUG=info,error nf run npm run envjestwatch --env .env.test",
     "envjestwatch": "jest --watch",
     "lint": "eslint .",
@@ -71,13 +70,16 @@
     "expect.js": "^0.3.1",
     "foreman": "^1.4.1",
     "jest": "^16.0.2",
-    "mocha": "^2.3.3",
     "nodemon": "^1.8.1",
     "sinon": "^1.17.2"
   },
   "jest": {
     "testRegex": "/test/.*",
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
-    "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/__mocks__"]
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/test/helper.js",
+      "/test/__mocks__"
+    ]
   }
 }
