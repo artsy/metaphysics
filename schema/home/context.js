@@ -8,7 +8,7 @@ import {
   featuredAuction,
   featuredFair,
   featuredGene,
-  iconicArtists,
+  popularArtists,
 } from './fetch';
 import Fair from '../fair';
 import Sale from '../sale/index';
@@ -56,21 +56,21 @@ export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
 });
 
 export const moduleContext = {
-  iconic_artists: () => {
-    return iconicArtists().then((trending) => {
+  popular_artists: () => {
+    return popularArtists().then((trending) => {
       return assign({}, trending, { context_type: 'Trending' });
     });
   },
-  active_bids: () => false,
+  active_bids: () => null,
   followed_artists: ({ accessToken }) => {
     return gravity.with(accessToken)('me/follow/artists', { size: 9, page: 1 })
       .then((artists) => {
         return assign({}, { artists }, { context_type: 'FollowArtists' });
       });
   },
-  followed_galleries: () => false,
-  saved_works: () => false,
-  recommended_works: () => false,
+  followed_galleries: () => null,
+  saved_works: () => null,
+  recommended_works: () => null,
   live_auctions: () => {
     return featuredAuction().then((sale) => {
       return assign({}, sale, { context_type: 'Sale' });
@@ -93,9 +93,13 @@ export const moduleContext = {
       });
     });
   },
-  genes: ({ accessToken }) => {
-    return featuredGene(accessToken).then((gene) => {
+  genes: ({ accessToken, params: { gene } }) => {
+    if (gene) {
       return assign({}, gene, { context_type: 'Gene' });
+    }
+    // Backward compatibility for Force.
+    return featuredGene(accessToken).then((fetchedGene) => {
+      return assign({}, fetchedGene, { context_type: 'Gene' });
     });
   },
   generic_gene: ({ params }) => {
@@ -117,7 +121,7 @@ export default {
       HomePageModuleContextRelatedArtistType,
     ],
   }),
-  resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {
-    return moduleContext[key]({ accessToken, params });
+  resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {
+    return moduleContext[key]({ accessToken, params: (params || {}) });
   },
 };

@@ -11,7 +11,8 @@ import {
   featuredAuction,
   featuredFair,
   featuredGene,
-  iconicArtists,
+  geneArtworks,
+  popularArtists,
 } from './fetch';
 import { toQueryString } from '../../lib/helpers';
 import Artwork from '../artwork/index';
@@ -20,8 +21,9 @@ const RESULTS_SIZE = 20;
 
 const moduleResults = {
   active_bids: () => [],
-  iconic_artists: () => {
-    return iconicArtists().then((artists) => {
+  popular_artists: () => {
+    // TODO This appears to largely replicate Gravity’s /api/v1/artists/popular endpoint
+    return popularArtists().then((artists) => {
       const ids = without(keys(artists), 'cached', 'context_type');
       return uncachedGravity(`filter/artworks?${toQueryString({
         artist_ids: ids,
@@ -87,16 +89,14 @@ const moduleResults = {
       size: RESULTS_SIZE,
     }).then(({ hits }) => hits);
   },
-  genes: ({ accessToken }) => {
+  genes: ({ accessToken, params: { id } }) => {
+    if (id) {
+      return geneArtworks(id, RESULTS_SIZE);
+    }
+    // Backward compatibility for Force.
     return featuredGene(accessToken).then((gene) => {
       if (gene) {
-        return gravity('filter/artworks', {
-          gene_id: gene.id,
-          for_sale: true,
-          size: 60,
-        }).then(({ hits }) => {
-          return slice(shuffle(hits), 0, RESULTS_SIZE);
-        });
+        return geneArtworks(gene.id, RESULTS_SIZE);
       }
     });
   },
@@ -108,7 +108,7 @@ const moduleResults = {
 
 export default {
   type: new GraphQLList(Artwork.type),
-  resolve: ({ key, display, params }, options, { rootValue: { accessToken, userID } }) => {
-    if (display) return moduleResults[key]({ accessToken, userID, params });
+  resolve: ({ key, display, params }, options, request, { rootValue: { accessToken, userID } }) => {
+    if (display) return moduleResults[key]({ accessToken, userID, params: (params || {}) });
   },
 };

@@ -1,9 +1,3 @@
-// import { isNull } from 'lodash';
-import sinon from 'sinon';
-// import { graphql } from 'graphql';
-import schema from '../../../schema';
-import { runQuery } from '../../helper';
-
 describe('HomePageArtworkModule', () => {
   const HomePage = schema.__get__('HomePage');
   const HomePageArtworkModule = HomePage.__get__('HomePageArtworkModule');
@@ -33,9 +27,9 @@ describe('HomePageArtworkModule', () => {
   });
 
   describe('when signed out', () => {
-    it('returns the proper title for iconic_artists', () => {
-      return runQuery(query('iconic_artists')).then(({ home_page }) => {
-        home_page.artwork_module.title.should.eql('Works by Iconic Artists');
+    it('returns the proper title for popular_artists', () => {
+      return runQuery(query('popular_artists')).then(({ home_page }) => {
+        expect(home_page.artwork_module.title).to.eql('Works by Popular Artists');
       });
     });
   });

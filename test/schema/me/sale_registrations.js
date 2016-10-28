@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
-
 describe('Me', () => {
   describe('SaleRegistrations', () => {
     const gravity = sinon.stub();
@@ -53,13 +49,13 @@ describe('Me', () => {
         .onCall(3)
         .returns(Promise.resolve([{ id: 'bidder-id' }]));
 
-      return graphql(schema, query, { accessToken: 'foo' })
-        .then(({ data: { me: { sale_registrations } } }) => {
-          sale_registrations.should.eql([
+      return runAuthenticatedQuery(query)
+      .then(({ me: { sale_registrations } }) => {
+        expect(sale_registrations).to.eql([
             { is_registered: false, sale: { name: 'Foo Sale' } },
             { is_registered: true, sale: { name: 'Bar Sale' } },
-          ]);
-        });
+        ]);
+      });
     });
   });
 });

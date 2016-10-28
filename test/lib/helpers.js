@@ -13,93 +13,93 @@ describe('exclude', () => {
   ];
 
   it('excludes objects given a list of values and which property to match against', () => {
-    exclude(['foo', 'baz'], 'id')(xs)
-      .should.eql([
+    expect(exclude(['foo', 'baz'], 'id')(xs))
+      .to.eql([
         { id: 'bar', name: 'Bar' },
       ]);
   });
 
   it('simply returns the list if invoked without arguments', () => {
-    exclude()(xs)
-      .should.eql(xs);
+    expect(exclude()(xs))
+      .to.eql(xs);
   });
 });
 
 describe('toKey', () => {
   it('returns a stringified key given a path', () => {
-    toKey('foo/bar')
-      .should.equal('foo/bar?');
+    expect(toKey('foo/bar'))
+      .to.equal('foo/bar?');
   });
 
   it('returns a stringified key given a path and an option', () => {
-    toKey('foo/bar', { sort: 'asc' })
-      .should.equal('foo/bar?sort=asc');
+    expect(toKey('foo/bar', { sort: 'asc' }))
+      .to.equal('foo/bar?sort=asc');
   });
 
   it('returns a stringified key given a path and multiple options', () => {
-    toKey('foo/bar', {
+    expect(toKey('foo/bar', {
       sort: 'asc',
       sleep: false,
       size: 10,
-    })
-      .should.equal('foo/bar?size=10&sleep=false&sort=asc');
+    }))
+      .to.equal('foo/bar?size=10&sleep=false&sort=asc');
   });
 
   it('sorts the option keys in alphabetical order', () => {
-    toKey('foo/bar', {
+    expect(toKey('foo/bar', {
       a: 3,
       z: 'whatever',
       b: 99,
       d: false,
       c: 0,
-    })
-      .should.equal('foo/bar?a=3&b=99&c=0&d=false&z=whatever');
+    }))
+      .to.equal('foo/bar?a=3&b=99&c=0&d=false&z=whatever');
   });
 });
 
 describe('isExisty', () => {
   describe('existy things', () => {
     it('returns `true` for Integers', () => {
-      isExisty(0).should.be.true();
-      isExisty(100).should.be.true();
+      expect(isExisty(0)).to.be(true);
+      expect(isExisty(100)).to.be(true);
     });
 
     it('returns `true` for Strings', () => {
-      isExisty('0').should.be.true();
-      isExisty('Foobar').should.be.true();
-      isExisty(' Foo bar ').should.be.true();
+      expect(isExisty('0')).to.be(true);
+      expect(isExisty('Foobar')).to.be(true);
+      expect(isExisty(' Foo bar ')).to.be(true);
     });
 
     it('returns `true` for `NaN`', () => {
-      isExisty(NaN).should.be.true();
+      expect(isExisty(NaN)).to.be(true);
     });
 
     it('returns `true` for non-empty Objects', () => {
-      isExisty({ foo: 'bar' }).should.be.true();
+      expect(isExisty({ foo: 'bar' })).to.be(true);
     });
   });
 
   describe('not existy things', () => {
     it('returns `false` for empty Objects', () => {
-      isExisty({}).should.be.false();
+      expect(isExisty({})).to.be(false);
     });
 
     it('returns `false` for empty Strings', () => {
-      isExisty('').should.be.false();
+      expect(isExisty('')).to.be(false);
     });
 
     it('returns `false` for whitespace Strings', () => {
-      isExisty(' ').should.be.false();
-      isExisty(' \n ').should.be.false();
-      isExisty(' \n\n').should.be.false();
+      expect(isExisty(' ')).to.be(false);
+      expect(isExisty(' \n ')).to.be(false);
+      expect(isExisty(' \n\n')).to.be(false);
     });
 
     it('returns `false` for `undefined`', () => {
-      isExisty(undefined).should.be.false();
+      expect(isExisty(undefined)).to.be(false);
     });
 
     it('returns `false` for `null`', () => {
-      isExisty(null).should.be.false();
+      expect(isExisty(null)).to.be(false);
     });
   });
 });
@@ -108,10 +108,10 @@ describe('stripTags', () => {
   const html = '<a href="http://google.com">Cabbie</a>';
 
   it('strips html from a string', () => {
-    stripTags(html).should.eql('Cabbie');
+    expect(stripTags(html)).to.eql('Cabbie');
   });
 
   it('returns an empty string if no string is provided', () => {
-    stripTags().should.eql('');
+    expect(stripTags()).to.eql('');
   });
 });

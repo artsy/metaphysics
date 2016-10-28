@@ -1,8 +1,5 @@
 import _ from 'lodash';
-import sinon from 'sinon';
-import { graphql } from 'graphql';
 import { toGlobalId } from 'graphql-relay';
-import schema from '../../schema';
 
 describe('Object Identification', () => {
   const tests = {
@@ -65,10 +62,10 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
+        return runQuery(query).then(data => {
           const expectedData = {};
           expectedData[fieldName] = { __id: toGlobalId(typeName, 'foo-bar') };
-          data.should.eql(expectedData);
+          expect(data).to.eql(expectedData);
         });
       });
 
@@ -84,8 +81,8 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).to.eql({
             node: {
               __typename: typeName,
               id: 'foo-bar',
@@ -100,22 +97,22 @@ describe('Object Identification', () => {
     describe('with a specific module', () => {
       const globalId = toGlobalId(
         'HomePageArtworkModule',
-        JSON.stringify({ key: 'iconic_artists' })
+        JSON.stringify({ key: 'popular_artists' })
       );
 
       it('generates a Global ID', () => {
         const query = `
           {
             home_page {
-              artwork_module(key: "iconic_artists") {
+              artwork_module(key: "popular_artists") {
                 __id
               }
             }
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).to.eql({
             home_page: {
               artwork_module: {
                 __id: globalId,
@@ -137,11 +134,11 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).to.eql({
             node: {
               __typename: 'HomePageArtworkModule',
-              key: 'iconic_artists',
+              key: 'popular_artists',
             },
           });
         });
@@ -165,8 +162,8 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).to.eql({
             home_page: {
               artwork_module: {
                 __id: globalId,
@@ -191,8 +188,8 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).to.eql({
             node: {
               __typename: 'HomePageArtworkModule',
               key: 'generic_gene',
@@ -228,8 +225,8 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).to.eql({
             home_page: {
               artwork_module: {
                 __id: globalId,
@@ -255,8 +252,8 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).to.eql({
             node: {
               __typename: 'HomePageArtworkModule',
               key: 'related_artists',
@@ -288,8 +285,8 @@ describe('Object Identification', () => {
         }
       `;
 
-      return graphql(schema, query).then(({ data }) => {
-        data.should.eql({
+      return runQuery(query).then(data => {
+        expect(data).to.eql({
           home_page: {
             artist_module: {
               __id: globalId,
@@ -311,8 +308,8 @@ describe('Object Identification', () => {
         }
       `;
 
-      return graphql(schema, query).then(({ data }) => {
-        data.should.eql({
+      return runQuery(query).then(data => {
+        expect(data).to.eql({
           node: {
             __typename: 'HomePageArtistModule',
             key: 'TRENDING',

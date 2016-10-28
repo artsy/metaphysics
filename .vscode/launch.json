@@ -2,14 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach",
+            "name": "Attach Debugger",
             "type": "node",
             "request": "attach",
             "port": 5858,
             "address": "localhost",
             "restart": true,
-            "sourceMaps": true,
-            "outDir": null,
+            "sourceMaps": false,
+            "outFiles": [],
             "localRoot": "${workspaceRoot}",
             "remoteRoot": null
         }

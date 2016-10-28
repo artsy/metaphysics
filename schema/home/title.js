@@ -11,7 +11,7 @@ import gravity from '../../lib/loaders/gravity';
 
 const moduleTitle = {
   active_bids: () => 'Your Active Bids',
-  iconic_artists: () => 'Works by Iconic Artists',
+  popular_artists: () => 'Works by Popular Artists',
   followed_artists: () => 'Works by Artists you Follow',
   followed_galleries: () => 'Works from Galleries You Follow',
   saved_works: () => 'Recently Saved Works',
@@ -35,10 +35,14 @@ const moduleTitle = {
       return `Works by ${artist.name}`;
     });
   },
-  genes: ({ accessToken }) => {
-    return featuredGene(accessToken).then((gene) => {
-      if (gene) {
-        return gene.name;
+  genes: ({ accessToken, params: { gene } }) => {
+    if (gene) {
+      return gene.name;
+    }
+    // Backward compatibility for Force.
+    return featuredGene(accessToken).then((fetchedGene) => {
+      if (fetchedGene) {
+        return fetchedGene.name;
       }
     });
   },
@@ -49,7 +53,7 @@ const moduleTitle = {
 
 export default {
   type: GraphQLString,
-  resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {
-    if (display) return moduleTitle[key]({ accessToken, params });
+  resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {
+    if (display) return moduleTitle[key]({ accessToken, params: (params || {}) });
   },
 };

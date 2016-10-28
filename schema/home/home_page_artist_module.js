@@ -79,7 +79,7 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     },
     results: {
       type: new GraphQLList(Artist.type),
-      resolve: ({ key, display, params }, options, { rootValue: { accessToken, userID } }) => {
+      resolve: ({ key }, options, request, { rootValue: { accessToken, userID } }) => {
         return HomePageArtistModuleTypes[key].resolve(accessToken, userID);
       },
     },

@@ -2,7 +2,8 @@
   "env": {
     "browser": true,
     "node": true,
-    "mocha": true,
+    "jest": true,
+    "jasmine": true,
     "es6": true
   },
   "plugins": [
@@ -114,7 +115,6 @@
   // These rules are purely matters of style and are quite subjective.
 
     "key-spacing": 0,
-    "keyword-spacing": 1,            // enforce spacing before and after keywords
     "jsx-quotes": [1, "prefer-double"],
     "comma-spacing": 0,
     "no-multi-spaces": 0,
@@ -172,7 +172,13 @@
     "react/wrap-multilines": 0,
 
     "arrow-body-style": 0,
-    "no-confusing-arrow": 0,
-    "import/no-extraneous-dependencies": ["off", {"devDependencies": ["**/*.test.js", "**/*.spec.js"]}]
+    "no-confusing-arrow": 0
+  },
+  "globals": {
+    "expect": false,
+    "runQuery": false,
+    "runAuthenticatedQuery": false,
+    "schema": false,
+    "sinon": false
   }
 }

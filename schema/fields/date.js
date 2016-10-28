@@ -18,7 +18,7 @@ export default {
       deprecationReason: 'Use timezone instead',
     },
   },
-  resolve: (obj, { format, timezone }, { fieldName }) => {
+  resolve: (obj, { format, timezone }, request, { fieldName }) => {
     if (!format) return obj[fieldName];
     if (timezone) {
       return moment(obj[fieldName]).tz(timezone).format(format);

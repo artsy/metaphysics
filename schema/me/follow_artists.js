@@ -27,7 +27,7 @@ const FollowArtists = new GraphQLObjectType({
         fields: {
           artists: {
             type: GraphQLInt,
-            resolve: (data, options, { rootValue: { accessToken } }) => {
+            resolve: (data, options, request, { rootValue: { accessToken } }) => {
               return getTotal('me/follow/artists', accessToken, { total_count: true })
                 .then(({ body: { total } }) => total);
             },
@@ -50,7 +50,7 @@ export default {
       type: GraphQLInt,
     },
   },
-  resolve: (root, options, { rootValue: { accessToken } }) => {
+  resolve: (root, options, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null;
     return gravity.with(accessToken)('me/follow/artists', options);
   },

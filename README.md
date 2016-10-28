@@ -30,10 +30,12 @@ npm install
 npm run dev
 ```
 
+If you are using VS Code, you can read [debugging with VS Code](docs/debugging_with_vscode.md) to get inline debugging.
+
 ### Testing
 
 `npm test` to run the entire suite
-`npm run spec test/your/path/to/file.js` to run a single spec
+`npm run watch` to spin up the test watcher
 
 ### Deployment
 

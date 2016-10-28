@@ -30,7 +30,7 @@ export default {
       description: '',
     },
   },
-  resolve: (root, options, { rootValue: { accessToken } }) => {
+  resolve: (root, options, request, { rootValue: { accessToken } }) => {
     // Observer role for logged out users
     if (!accessToken) {
       return gravity(`sale/${options.sale_id}`).then((sale) =>

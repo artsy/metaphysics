@@ -12,12 +12,11 @@
     "verbose-dev": "DEBUG=verbose,info,error nf start --procfile Procfile.dev",
     "dev": "DEBUG=info,error nf start --procfile Procfile.dev",
     "staging": "DEBUG=info,error nf start --procfile Procfile.dev --env .env.staging",
-    "test": "npm run lint && DEBUG=info,error nf run mocha test --env .env.test",
-    "spec": "DEBUG=info,error nf run mocha --env .env.test",
     "flow": "flow",
+    "test": "npm run lint && jest",
+    "watch": "jest --watch",
     "lint": "eslint .",
     "fix": "eslint . --fix",
-    "integration": "DEBUG=info,error nf run mocha integration --env .env.test",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js"
   },
@@ -56,15 +55,16 @@
     "babel-preset-es2015": "^6.1.18",
     "basic-auth": "^1.0.3",
     "bluebird": "^3.3.4",
+    "body-parser": "^1.15.2",
     "cors": "^2.7.1",
     "dataloader": "^1.0.0",
     "debug": "^2.2.0",
     "express": "^4.13.3",
     "express-force-ssl": "^0.3.0",
-    "express-graphql": "^0.4.4",
-    "graphiql": "^0.3.1",
-    "graphql": "^0.4.13",
-    "graphql-relay": "^0.3.6",
+    "express-graphql": "^0.5.4",
+    "graphiql": "^0.7.8",
+    "graphql": "^0.7.1",
+    "graphql-relay": "^0.4.3",
     "i": "^0.3.5",
     "jwt-simple": "^0.5.0",
     "lodash": "^4.3.0",
@@ -75,8 +75,10 @@
     "morgan": "^1.6.1",
     "numeral": "^1.5.3",
     "qs": "^5.2.0",
-    "react": "^0.14.3",
-    "request": "^2.67.0"
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "request": "^2.67.0",
+    "source-map-support": "^0.4.3"
   },
   "devDependencies": {
     "babel-cli": "^6.6.5",
@@ -91,11 +93,20 @@
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.4.0",
     "flow-bin": "^0.33.0",
+    "dotenv": "^2.0.0",
+    "expect.js": "^0.3.1",
     "foreman": "^1.4.1",
-    "mocha": "^2.3.3",
+    "jest": "^16.0.2",
     "nodemon": "^1.8.1",
-    "should": "^7.1.1",
-    "should-promised": "^0.3.1",
     "sinon": "^1.17.2"
+  },
+  "jest": {
+    "testRegex": "/test/.*",
+    "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/test/helper.js",
+      "/test/__mocks__"
+    ]
   }
 }

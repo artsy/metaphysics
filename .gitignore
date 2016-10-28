@@ -6,3 +6,4 @@ dump.rdb
 npm-debug.log
 newrelic_agent.log
 typings
+.vscode/.browse.VC.db

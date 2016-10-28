@@ -7,15 +7,18 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 
+
 import { isExisty } from '../../lib/helpers';
 import gravity from '../../lib/loaders/gravity';
 import BidderPosition from '../bidder_position';
 import Bidder from '../bidder';
 import SaleArtwork from '../sale_artwork';
 
+// is leading human bidder
+export const isLeadingBidder = (lotStanding) => isExisty(lotStanding.leading_position);
 
 export const isHighestBidder = (lotStanding) =>
-  isExisty(lotStanding.leading_position)
+  isLeadingBidder(lotStanding)
     && lotStanding.sale_artwork.reserve_status !== 'reserve_not_met';
 
 export const LotStandingType = new GraphQLObjectType({
@@ -29,7 +32,13 @@ export const LotStandingType = new GraphQLObjectType({
     },
     is_highest_bidder: {
       type: GraphQLBoolean,
+      description: 'You are winning and reserve is met',
       resolve: isHighestBidder,
+    },
+    is_leading_bidder: {
+      type: GraphQLBoolean,
+      description: 'You are the leading bidder without regard to reserve',
+      resolve: isLeadingBidder,
     },
     active_bid: {
       type: BidderPosition.type,
@@ -55,7 +64,7 @@ export default {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { sale_id, artwork_id }, { rootValue: { accessToken } }) =>
+  resolve: (root, { sale_id, artwork_id }, request, { rootValue: { accessToken } }) =>
     Promise
       .all([
         gravity.with(accessToken)('me/lot_standings', {

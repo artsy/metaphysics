@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../schema';
-
 describe('SaleArtwork type', () => {
   let gravity;
   const SaleArtwork = schema.__get__('SaleArtwork');
@@ -68,11 +64,11 @@ describe('SaleArtwork type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        SaleArtwork.__get__('gravity').args[0][0]
-          .should.equal('sale_artwork/54c7ed2a7261692bfa910200');
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(SaleArtwork.__get__('gravity').args[0][0])
+          .to.equal('sale_artwork/54c7ed2a7261692bfa910200');
+        expect(data).to.eql({
           sale_artwork: {
             high_estimate: {
               cents: 300000,
@@ -118,9 +114,9 @@ describe('SaleArtwork type', () => {
         }
       }
     `;
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.sale_artwork.bid_increments.slice(0, 20).should.eql([
+    return runQuery(query)
+      .then(data => {
+        expect(data.sale_artwork.bid_increments.slice(0, 20)).to.eql([
           350000, 355000, 360000, 365000, 370000, 375000, 380000, 385000,
           390000, 395000, 400000, 410000, 420000, 430000, 440000, 450000,
           460000, 470000, 480000, 490000,

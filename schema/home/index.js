@@ -8,6 +8,7 @@ import HomePageArtworkModule from './home_page_artwork_module';
 import HomePageArtworkModules from './home_page_artwork_modules';
 import HomePageArtistModule from './home_page_artist_module';
 import HomePageArtistModules from './home_page_artist_modules';
+import HomePageHeroUnits from './home_page_hero_units';
 
 const HomePageType = new GraphQLObjectType({
   name: 'HomePage',
@@ -16,6 +17,7 @@ const HomePageType = new GraphQLObjectType({
     artwork_modules: HomePageArtworkModules,
     artist_module: HomePageArtistModule,
     artist_modules: HomePageArtistModules,
+    hero_units: HomePageHeroUnits,
   },
 });
 

@@ -1,6 +1,7 @@
 /* @flow */
 
 import _ from 'lodash';
+
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -13,18 +14,26 @@ import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
 import Artist from './artist';
 import Image from './image';
-import { GravityIDFields } from './object_identification';
+import filterArtworks from './filter_artworks';
+import { queriedForFieldsOtherThanBlacklisted } from '../lib/helpers';
+import { GravityIDFields, NodeInterface } from './object_identification';
 
 const GeneType = new GraphQLObjectType({
   name: 'Gene',
+  interfaces: [NodeInterface],
+  isTypeOf: (obj) => _.has(obj, 'family') && _.has(obj, 'browseable'),
   fields: {
     ...GravityIDFields,
     cached,
+    filtered_artworks: filterArtworks('gene_id'),
     href: {
       type: GraphQLString,
       resolve: ({ id }) => `gene/${id}`,
     },
     name: {
+      type: GraphQLString,
+    },
+    description: {
       type: GraphQLString,
     },
     image: Image,
@@ -63,7 +72,18 @@ const Gene = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { id }) => gravity(`gene/${id}`),
+  resolve: (root, { id }, request, { fieldASTs }) => {
+    // If you are just making an artworks call ( e.g. if paginating )
+    // do not make a Gravity call for the gene data.
+    const blacklistedFields = ['filtered_artworks', 'id'];
+    if (!fieldASTs || queriedForFieldsOtherThanBlacklisted(fieldASTs, blacklistedFields)) {
+      return gravity(`gene/${id}`);
+    }
+
+    // The family and browsable are here so that the type system's `isTypeOf`
+    // resolves correctly when we're skipping gravity data
+    return { id, family: null, browseable: null };
+  },
 };
 
 export default Gene;

@@ -83,9 +83,9 @@ describe('BidderStatus type', () => {
       }
     `;
 
-    return graphql(schema, query, { accessToken: 'xxx' })
-      .then(({ data: { me } }) => {
-        me.should.eql({
+    return runAuthenticatedQuery(query)
+      .then(({ me }) => {
+        expect(me).to.eql({
           bidder_status: {
             is_highest_bidder: true,
             most_recent_bid: { id: '0' },
@@ -140,9 +140,9 @@ describe('BidderStatus type', () => {
       }
     `;
 
-    return graphql(schema, query, { accessToken: 'xxx' })
-      .then(({ data: { me } }) => {
-        me.should.eql({
+    return runAuthenticatedQuery(query)
+      .then(({ me }) => {
+        expect(me).to.eql({
           bidder_status: {
             is_highest_bidder: false,
             most_recent_bid: { id: '0' },
