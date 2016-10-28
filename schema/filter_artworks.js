@@ -132,7 +132,7 @@ function filterArtworks(primaryKey) {
         type: GraphQLString,
       },
     },
-    resolve: (root, options) => {
+    resolve: (root, options, request, { rootValue: { accessToken } }) => {
       const gravityOptions = Object.assign({}, options);
       if (primaryKey) {
         gravityOptions[primaryKey] = root.id;
@@ -143,6 +143,10 @@ function filterArtworks(primaryKey) {
       // making the graphQL queries between all and a subset of mediums the same shape.
       if (options.medium === '*') {
         delete gravityOptions.medium;
+      }
+
+      if (accessToken) {
+        return gravity.with(accessToken)('filter/artworks', gravityOptions);
       }
 
       return gravity('filter/artworks', gravityOptions);
