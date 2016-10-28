@@ -99,7 +99,7 @@ const NodeField = {
     if (_.includes(SupportedTypes.types, type)) {
       const payload = type.includes('HomePage') ? JSON.parse(id) : { id };
       // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
-      return SupportedTypes.typeModules[type].resolve(null, payload, {});
+      return SupportedTypes.typeModules[type].resolve(null, payload, {}, {});
     }
   },
 };
