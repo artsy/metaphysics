@@ -47,6 +47,7 @@ const SupportedTypes = {
     './home/home_page_artist_module',
     './partner',
     './partner_show',
+    './gene',
   ],
 };
 
@@ -98,7 +99,7 @@ const NodeField = {
     if (_.includes(SupportedTypes.types, type)) {
       const payload = type.includes('HomePage') ? JSON.parse(id) : { id };
       // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
-      return SupportedTypes.typeModules[type].resolve(null, payload);
+      return SupportedTypes.typeModules[type].resolve(null, payload, {}, {});
     }
   },
 };
