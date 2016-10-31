@@ -145,11 +145,7 @@ function filterArtworks(primaryKey) {
         delete gravityOptions.medium;
       }
 
-      if (accessToken) {
-        return gravity.with(accessToken)('filter/artworks', gravityOptions);
-      }
-
-      return gravity('filter/artworks', gravityOptions);
+      return gravity.with(accessToken)('filter/artworks', gravityOptions);
     },
   };
 }
