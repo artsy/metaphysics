@@ -36,7 +36,7 @@ const ArtistMetaType = new GraphQLObjectType({
           `Find the latest shows, biography, and artworks for sale by ${metaName(artist)}`,
           blurb,
         ]).join('. ');
-        return truncate(description, 200);
+        return truncate(description, 157);
       },
     },
   },
