@@ -5,6 +5,7 @@ describe('Filter Artworks', () => {
 
     beforeEach(() => {
       const gravity = sinon.stub();
+      gravity.with = sinon.stub().returns(gravity);
       // This is the key to the test
       // the 2nd parameter _should not_ include the mediums option, even though it's included below
       gravity.withArgs('filter/artworks', { gene_id: '500-1000-ce', aggregations: ['total'] })
@@ -14,7 +15,8 @@ describe('Filter Artworks', () => {
           ],
         }));
 
-      Gene.__Rewire__('gravity', sinon.stub().returns(Promise.resolve({ id: '500-1000-ce' })));
+      const gene = { id: '500-1000-ce', browseable: true, family: '' };
+      Gene.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(gene)));
       filterArtworks.__Rewire__('gravity', gravity);
     });
 

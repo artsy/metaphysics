@@ -315,7 +315,7 @@ const Show = {
       .then(show => {
         if (!show.displayable && !show.is_reference) return new Error('Show Not Found');
         return show;
-      });
+      }).catch(() => null);
   },
 };
 

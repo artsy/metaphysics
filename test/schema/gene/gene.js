@@ -5,6 +5,7 @@ describe('Gene', () => {
 
     beforeEach(() => {
       const gravity = sinon.stub();
+      gravity.with = sinon.stub().returns(gravity);
       gravity.withArgs('filter/artworks', { gene_id: '500-1000-ce', aggregations: ['total'] })
         .returns(Promise.resolve({
           hits: [
@@ -48,6 +49,7 @@ describe('Gene', () => {
 
     beforeEach(() => {
       const gravity = sinon.stub();
+      gravity.with = sinon.stub().returns(gravity);
       gravity.withArgs('filter/artworks', { gene_id: '500-1000-ce', aggregations: ['total'] })
         .returns(Promise.resolve({
           hits: [
@@ -55,7 +57,8 @@ describe('Gene', () => {
           ],
         }));
 
-      Gene.__Rewire__('gravity', sinon.stub().returns(Promise.resolve({ id: '500-1000-ce' })));
+      const gene = { id: '500-1000-ce', browseable: true, family: '' };
+      Gene.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(gene)));
       filterArtworks.__Rewire__('gravity', gravity);
     });
 
