@@ -17,6 +17,10 @@ describe('Artwork type', () => {
     artists: [],
   };
 
+  const saleArtwork = {
+    id: 'richard-prince-untitled-portrait',
+  };
+
   const artworkImages = [
     {
       is_default: false,
@@ -55,6 +59,49 @@ describe('Artwork type', () => {
   afterEach(() => {
     Artwork.__ResetDependency__('gravity');
     Context.__ResetDependency__('gravity');
+  });
+
+  describe('#is_buy_nowable', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_buy_nowable
+        }
+      }
+    `;
+
+    it('is buy nowable if it meets all requirements', () => {
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork, {
+          partner,
+          acquireable: true,
+        })))
+        // Sales
+        .onCall(1)
+        .returns(Promise.resolve([assign({}, sale, {
+          sale_type: 'preliminary auction',
+          start_at: moment().startOf('day'),
+          end_at: moment().endOf('day'),
+        })]))
+        // Sale artwork
+        .onCall(2)
+        .returns(Promise.resolve(assign({}, saleArtwork, {
+          bidder_positions_count: 0,
+        })));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_buy_nowable: true,
+            },
+          });
+        });
+    });
   });
 
   describe('#is_contactable', () => {
