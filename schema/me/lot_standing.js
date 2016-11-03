@@ -1,8 +1,5 @@
-import { isExisty } from '../../lib/helpers';
-import gravity from '../../lib/loaders/gravity';
-import BidderPosition from '../bidder_position';
-import Bidder from '../bidder';
-import SaleArtwork from '../sale_artwork';
+/* @flow */
+
 import {
   GraphQLObjectType,
   GraphQLNonNull,
@@ -10,6 +7,12 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 
+
+import { isExisty } from '../../lib/helpers';
+import gravity from '../../lib/loaders/gravity';
+import BidderPosition from '../bidder_position';
+import Bidder from '../bidder';
+import SaleArtwork from '../sale_artwork';
 
 // is leading human bidder
 export const isLeadingBidder = (lotStanding) => isExisty(lotStanding.leading_position);

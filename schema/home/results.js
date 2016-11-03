@@ -1,3 +1,10 @@
+/* @flow */
+
+import {
+  GraphQLList,
+} from 'graphql';
+import { map, assign, keys, without, shuffle, slice } from 'lodash';
+
 import gravity from '../../lib/loaders/gravity';
 import uncachedGravity from '../../lib/apis/gravity';
 import {
@@ -7,12 +14,8 @@ import {
   geneArtworks,
   popularArtists,
 } from './fetch';
-import { map, assign, keys, without, shuffle, slice } from 'lodash';
 import { toQueryString } from '../../lib/helpers';
 import Artwork from '../artwork/index';
-import {
-  GraphQLList,
-} from 'graphql';
 
 const RESULTS_SIZE = 20;
 
@@ -22,11 +25,11 @@ const moduleResults = {
     // TODO This appears to largely replicate Gravity’s /api/v1/artists/popular endpoint
     return popularArtists().then((artists) => {
       const ids = without(keys(artists), 'cached', 'context_type');
-      return uncachedGravity('filter/artworks?' + toQueryString({
+      return uncachedGravity(`filter/artworks?${toQueryString({
         artist_ids: ids,
         size: RESULTS_SIZE,
         sort: '-partner_updated_at',
-      })).then(({ body: { hits } }) => hits);
+      })}`).then(({ body: { hits } }) => hits);
     });
   },
   followed_artists: ({ accessToken }) => {

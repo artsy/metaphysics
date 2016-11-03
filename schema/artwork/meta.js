@@ -1,15 +1,18 @@
+/* @flow */
+
 import { map } from 'lodash';
+import {
+  GraphQLInt,
+  GraphQLString,
+  GraphQLObjectType,
+} from 'graphql';
+
 import {
   join,
   truncate,
 } from '../../lib/helpers';
 import { getDefault } from '../image';
 import { setVersion } from '../image/normalize';
-import {
-  GraphQLInt,
-  GraphQLString,
-  GraphQLObjectType,
-} from 'graphql';
 
 const titleWithDate = ({ title, date }) => join(' ', [
   title,

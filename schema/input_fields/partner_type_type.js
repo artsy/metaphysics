@@ -1,3 +1,5 @@
+/* @flow */
+
 import { GraphQLEnumType } from 'graphql';
 
 export default new GraphQLEnumType({

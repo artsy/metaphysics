@@ -1,4 +1,5 @@
-import gravity from '../../lib/loaders/gravity';
+/* @flow */
+
 import {
   filter,
   find,
@@ -15,10 +16,13 @@ import {
   GraphQLInt,
   GraphQLList,
 } from 'graphql';
+
 import { HomePageArtworkModuleType } from './home_page_artwork_module';
 import loggedOutModules from './logged_out_modules';
 import addGenericGenes from './add_generic_genes';
+
 import { featuredFair, featuredAuction, relatedArtist, followedGenes } from './fetch';
+import gravity from '../../lib/loaders/gravity';
 
 const filterModules = (modules, max_rails) => {
   const allModules = addGenericGenes(filter(modules, ['display', true]));

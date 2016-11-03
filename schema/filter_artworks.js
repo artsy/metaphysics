@@ -1,12 +1,6 @@
-import gravity from '../lib/loaders/gravity';
+/* @flow */
+
 import { map, omit, keys } from 'lodash';
-import { isExisty } from '../lib/helpers';
-import Artwork from './artwork';
-import Artist from './artist';
-import {
-  ArtworksAggregationResultsType,
-  ArtworksAggregation,
-} from './aggregations/filter_artworks_aggregation';
 import {
   GraphQLList,
   GraphQLObjectType,
@@ -15,6 +9,15 @@ import {
   GraphQLInt,
   GraphQLID,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import { isExisty } from '../lib/helpers';
+import Artwork from './artwork';
+import Artist from './artist';
+import {
+  ArtworksAggregationResultsType,
+  ArtworksAggregation,
+} from './aggregations/filter_artworks_aggregation';
 
 export const FilterArtworksType = new GraphQLObjectType({
   name: 'FilterArtworks',
@@ -38,7 +41,7 @@ export const FilterArtworksType = new GraphQLObjectType({
         if (!isExisty(aggregations.merchandisable_artists)) {
           return null;
         }
-        return gravity(`artists`, { ids: keys(aggregations.merchandisable_artists) });
+        return gravity('artists', { ids: keys(aggregations.merchandisable_artists) });
       },
     },
     aggregations: {

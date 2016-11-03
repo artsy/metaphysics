@@ -1,3 +1,5 @@
+/* @flow */
+
 import {
   assign,
   compact,
@@ -7,6 +9,16 @@ import {
   has,
   take,
 } from 'lodash';
+import {
+  GraphQLObjectType,
+  GraphQLBoolean,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLEnumType,
+} from 'graphql';
+
 import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
 import initials from '../fields/initials';
@@ -30,15 +42,6 @@ import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
 import total from '../../lib/loaders/total';
 import { GravityIDFields, NodeInterface } from '../object_identification';
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt,
-  GraphQLEnumType,
-} from 'graphql';
 
 const ArtistType = new GraphQLObjectType({
   name: 'Artist',
@@ -116,11 +119,11 @@ const ArtistType = new GraphQLObjectType({
         type: GraphQLString,
         description: 'A string of the form "Nationality, Birthday"',
         resolve: ({ birthday, nationality }) => {
-          let formatted_bday = (!isNaN(birthday) && birthday) ? 'b. ' + birthday : birthday;
+          let formatted_bday = (!isNaN(birthday) && birthday) ? `b. ${birthday}` : birthday;
           formatted_bday = formatted_bday && formatted_bday.replace(/born/i, 'b.');
 
           if (nationality && formatted_bday) {
-            return nationality + ', ' + formatted_bday;
+            return `${nationality}, ${formatted_bday}`;
           }
 
           return nationality || formatted_bday;
@@ -221,9 +224,9 @@ const ArtistType = new GraphQLObjectType({
             for_sale_artworks: numeral(({ forsale_artworks_count }) =>
               forsale_artworks_count),
             partner_shows: numeral(({ id }) =>
-              total(`related/shows`, { artist_id: id })),
+              total('related/shows', { artist_id: id })),
             related_artists: numeral(({ id }) =>
-              total(`related/layer/main/artists`, { artist: id })),
+              total('related/layer/main/artists', { artist: id })),
             articles: numeral(({ _id }) =>
               positron('articles', {
                 artist_id: _id,
@@ -279,8 +282,8 @@ const ArtistType = new GraphQLObjectType({
             totalWorks = published_artworks_count +
               (published_artworks_count > 1 ? ' works' : ' work');
           }
-          const forSaleWorks = forsale_artworks_count ? forsale_artworks_count + ' for sale' : null;
-          return (forSaleWorks && totalWorks) ? (totalWorks + ', ' + forSaleWorks) : totalWorks;
+          const forSaleWorks = forsale_artworks_count ? `${forsale_artworks_count} for sale` : null;
+          return (forSaleWorks && totalWorks) ? (`${totalWorks}, ${forSaleWorks}`) : totalWorks;
         },
       },
       image: Image,
@@ -297,7 +300,7 @@ const ArtistType = new GraphQLObjectType({
           },
         },
         resolve: (artist, options) => {
-          return gravity(`related/layer/main/artists`, defaults(options, {
+          return gravity('related/layer/main/artists', defaults(options, {
             artist: [artist.id],
           }));
         },
@@ -315,7 +318,7 @@ const ArtistType = new GraphQLObjectType({
           },
         },
         resolve: (artist, options) => {
-          return gravity(`related/layer/contemporary/artists`, defaults(options, {
+          return gravity('related/layer/contemporary/artists', defaults(options, {
             artist: [artist.id],
           }));
         },

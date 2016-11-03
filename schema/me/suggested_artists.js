@@ -1,11 +1,14 @@
-import gravity from '../../lib/loaders/gravity';
-import Artist from '../artist';
+/* @flow */
+
 import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLString,
   GraphQLInt,
 } from 'graphql';
+
+import gravity from '../../lib/loaders/gravity';
+import Artist from '../artist';
 
 export default {
   type: new GraphQLList(Artist.type),

@@ -1,3 +1,9 @@
+/* @flow */
+
+import {
+  GraphQLList,
+} from 'graphql';
+
 import {
   filter,
   map,
@@ -6,9 +12,6 @@ import {
   HomePageArtistModuleType,
   HomePageArtistModuleTypes,
 } from './home_page_artist_module';
-import {
-  GraphQLList,
-} from 'graphql';
 
 const HomePageArtistModules = {
   type: new GraphQLList(HomePageArtistModuleType),

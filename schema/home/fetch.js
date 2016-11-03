@@ -1,5 +1,5 @@
-import gravity from '../../lib/loaders/gravity';
-import delta from '../../lib/loaders/delta';
+/* @flow */
+
 import {
   clone,
   first,
@@ -9,6 +9,9 @@ import {
   slice,
   sortBy,
 } from 'lodash';
+
+import gravity from '../../lib/loaders/gravity';
+import delta from '../../lib/loaders/delta';
 import blacklist from '../../lib/artist_blacklist';
 
 export const featuredFair = () => {

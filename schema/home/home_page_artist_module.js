@@ -1,11 +1,9 @@
+/* @flow */
+
 import {
   has,
   map,
 } from 'lodash';
-import Artist from '../artist';
-import gravity from '../../lib/loaders/gravity';
-import { total } from '../../lib/loaders/total';
-import { NodeInterface } from '../object_identification';
 import { toGlobalId } from 'graphql-relay';
 import {
   GraphQLEnumType,
@@ -15,6 +13,11 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
+
+import Artist from '../artist';
+import gravity from '../../lib/loaders/gravity';
+import { total } from '../../lib/loaders/total';
+import { NodeInterface } from '../object_identification';
 
 function fetchArtists(path) {
   return (accessToken) => {

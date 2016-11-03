@@ -1,14 +1,18 @@
-import gravity from '../lib/loaders/gravity';
-import Partner from './partner';
-import Artist from './artist/index';
-import numeral from './fields/numeral';
-import { IDFields } from './object_identification';
+/* @flow */
+
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLBoolean,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import Partner from './partner';
+import Artist from './artist/index';
+import numeral from './fields/numeral';
+import { IDFields } from './object_identification';
+
 
 const PartnerArtistType = new GraphQLObjectType({
   name: 'PartnerArtist',

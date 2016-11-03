@@ -1,10 +1,13 @@
+/* @flow */
+
+import { GraphQLString } from 'graphql';
+
 import {
   featuredAuction,
   featuredFair,
   featuredGene,
 } from './fetch';
 import gravity from '../../lib/loaders/gravity';
-import { GraphQLString } from 'graphql';
 
 const moduleTitle = {
   active_bids: () => 'Your Active Bids',

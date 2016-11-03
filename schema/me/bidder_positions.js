@@ -1,11 +1,14 @@
+/* @flow */
+
 import _ from 'lodash';
-import gravity from '../../lib/loaders/gravity';
-import BidderPosition from '../bidder_position';
 import {
   GraphQLList,
   GraphQLBoolean,
   GraphQLString,
 } from 'graphql';
+
+import gravity from '../../lib/loaders/gravity';
+import BidderPosition from '../bidder_position';
 
 export default {
   type: new GraphQLList(BidderPosition.type),

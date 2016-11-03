@@ -1,9 +1,12 @@
-import total from '../../lib/loaders/total';
-import positron from '../../lib/loaders/positron';
+/* @flow */
+
 import {
   GraphQLObjectType,
   GraphQLBoolean,
 } from 'graphql';
+
+import total from '../../lib/loaders/total';
+import positron from '../../lib/loaders/positron';
 
 const ArtistStatusesType = new GraphQLObjectType({
   name: 'ArtistStatuses',
@@ -15,7 +18,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     shows: {
       type: GraphQLBoolean,
       resolve: ({ id }) => {
-        return total(`related/shows`, {
+        return total('related/shows', {
           artist_id: id,
           displayable: true,
           size: 0,
@@ -25,7 +28,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     cv: {
       type: GraphQLBoolean,
       resolve: ({ id }) => {
-        return total(`related/shows`, {
+        return total('related/shows', {
           artist_id: id,
           displayable: true,
           size: 0,
@@ -35,7 +38,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     artists: {
       type: GraphQLBoolean,
       resolve: ({ id }) => {
-        return total(`related/layer/main/artists`, {
+        return total('related/layer/main/artists', {
           exclude_artists_without_artworks: true,
           artist: [id],
           size: 0,
@@ -45,7 +48,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     contemporary: {
       type: GraphQLBoolean,
       resolve: ({ id }) => {
-        return total(`related/layer/contemporary/artists`, {
+        return total('related/layer/contemporary/artists', {
           exclude_artists_without_artworks: true,
           artist: [id],
           size: 0,

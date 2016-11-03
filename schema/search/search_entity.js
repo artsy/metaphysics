@@ -1,11 +1,14 @@
+/* @flow */
+
 import _ from 'lodash';
+import {
+  GraphQLUnionType,
+} from 'graphql';
+
 import Artist from '../artist';
 import Artwork from '../artwork';
 import Profile from '../profile';
 import PartnerShow from '../partner_show';
-import {
-  GraphQLUnionType,
-} from 'graphql';
 
 export const ArtistSearchEntityType = _.create(Artist.type, {
   name: 'ArtistSearchEntity',
@@ -17,7 +20,6 @@ export const ArtworkSearchEntityType = _.create(Artwork.type, {
   isTypeOf: ({ type }) => type === 'Artwork',
 });
 
-
 export const ProfileSearchEntityType = _.create(Profile.type, {
   name: 'ProfileSearchEntity',
   isTypeOf: ({ type }) => type === 'Profile',
@@ -28,7 +30,7 @@ export const PartnerShowSearchEntityType = _.create(PartnerShow.type, {
   isTypeOf: ({ type }) => type === 'PartnerShow',
 });
 
-export const SearchEntityType = new GraphQLUnionType({
+export const SearchEntityCombinedType = new GraphQLUnionType({
   name: 'SearchEntity',
   types: [
     ArtistSearchEntityType,
@@ -38,4 +40,4 @@ export const SearchEntityType = new GraphQLUnionType({
   ],
 });
 
-export default SearchEntityType;
+export default SearchEntityCombinedType;

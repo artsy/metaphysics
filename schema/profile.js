@@ -1,15 +1,18 @@
-import gravity from '../lib/loaders/gravity';
-import cached from './fields/cached';
-import initials from './fields/initials';
-import numeral from './fields/numeral';
-import Image from './image';
-import { GravityIDFields } from './object_identification';
+/* @flow */
+
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLBoolean,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import cached from './fields/cached';
+import initials from './fields/initials';
+import numeral from './fields/numeral';
+import Image from './image';
+import { GravityIDFields } from './object_identification';
 
 const ProfileType = new GraphQLObjectType({
   name: 'Profile',

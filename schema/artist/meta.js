@@ -1,11 +1,14 @@
-import slugs from './maps/artist_title_slugs';
-import descriptions from './maps/artist_meta_descriptions';
-import { stripTags, truncate, markdownToText } from '../../lib/helpers';
+/* @flow */
+
 import { compact } from 'lodash';
 import {
   GraphQLString,
   GraphQLObjectType,
 } from 'graphql';
+
+import slugs from './maps/artist_title_slugs';
+import descriptions from './maps/artist_meta_descriptions';
+import { stripTags, truncate, markdownToText } from '../../lib/helpers';
 
 export const metaName = (artist) => {
   if (artist.name) return stripTags(artist.name);

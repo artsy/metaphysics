@@ -1,6 +1,8 @@
+/* @flow */
+
 import { times, concat, clone } from 'lodash';
 
-// see https://github.com/artsy/force/issues/4705
+// see https://github.com/artsy/force-private/issues/4705
 export const params = [
   {
     id: 'geometric',

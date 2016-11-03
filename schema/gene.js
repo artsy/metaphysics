@@ -1,11 +1,7 @@
+/* @flow */
+
 import _ from 'lodash';
-import gravity from '../lib/loaders/gravity';
-import cached from './fields/cached';
-import Artist from './artist';
-import Image from './image';
-import filterArtworks from './filter_artworks';
-import { queriedForFieldsOtherThanBlacklisted } from '../lib/helpers';
-import { GravityIDFields, NodeInterface } from './object_identification';
+
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -13,6 +9,14 @@ import {
   GraphQLList,
   GraphQLInt,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import cached from './fields/cached';
+import Artist from './artist';
+import Image from './image';
+import filterArtworks from './filter_artworks';
+import { queriedForFieldsOtherThanBlacklisted } from '../lib/helpers';
+import { GravityIDFields, NodeInterface } from './object_identification';
 
 const GeneType = new GraphQLObjectType({
   name: 'Gene',
@@ -49,7 +53,7 @@ const GeneType = new GraphQLObjectType({
         },
       },
       resolve: ({ id }, options) => {
-        return gravity(`artists/trending`, {
+        return gravity('artists/trending', {
           gene: id,
         }).then(artists => {
           if (_.has(options, 'sample')) return _.take(_.shuffle(artists), options.sample);

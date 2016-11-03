@@ -1,11 +1,14 @@
-import gravity from '../lib/loaders/gravity';
-import Sale from './sale/index';
-import SaleSorts from './sale/sorts';
+/* @flow */
+
 import {
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
 } from 'graphql';
+
+import gravity from '../lib/loaders/gravity';
+import Sale from './sale/index';
+import SaleSorts from './sale/sorts';
 
 const Sales = {
   type: new GraphQLList(Sale.type),

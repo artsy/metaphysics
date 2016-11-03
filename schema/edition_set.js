@@ -1,11 +1,14 @@
-import { isEmpty } from 'lodash';
-import { IDFields } from './object_identification';
-import Dimensions from './dimensions';
+/* @flow */
+
 import {
   GraphQLString,
   GraphQLBoolean,
   GraphQLObjectType,
 } from 'graphql';
+
+import { isEmpty } from 'lodash';
+import { IDFields } from './object_identification';
+import Dimensions from './dimensions';
 
 const EditionSetType = new GraphQLObjectType({
   name: 'EditionSet',

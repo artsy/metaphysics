@@ -1,9 +1,13 @@
-import gravity from '../../lib/loaders/gravity';
-import { LotStandingType } from './lot_standing';
+/* @flow */
+
 import {
   GraphQLNonNull,
   GraphQLString,
 } from 'graphql';
+
+import gravity from '../../lib/loaders/gravity';
+import { LotStandingType } from './lot_standing';
+
 
 export default {
   type: LotStandingType,

@@ -1,8 +1,20 @@
+/* @flow */
+
 import {
   assign,
   has,
   omit,
 } from 'lodash';
+
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLBoolean,
+} from 'graphql';
+
 import { exclude } from '../lib/helpers';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
@@ -14,22 +26,13 @@ import Artwork from './artwork';
 import numeral from './fields/numeral';
 import ArtworkSorts from './sorts/artwork_sorts';
 
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLBoolean,
-} from 'graphql';
-
 const PartnerType = new GraphQLObjectType({
   name: 'Partner',
   interfaces: [NodeInterface],
   isTypeOf: (obj) => has(obj, 'has_full_profile') && has(obj, 'profile_banner_display'),
   fields: () => {
     // Prevent circular dependency
-    const PartnerShows = require('./partner_shows').default;
+    const PartnerShows = require('./partner_shows').default; // eslint-disable-line global-require
 
     return {
       ...GravityIDFields,

@@ -1,3 +1,5 @@
+/* @flow */
+
 export default(auction, fair) => {
   const modules = [
     {
@@ -6,11 +8,11 @@ export default(auction, fair) => {
     },
     {
       key: 'live_auctions',
-      display: auction ? true : false,
+      display: Boolean(auction)
     },
     {
       key: 'current_fairs',
-      display: fair ? true : false,
+      display: Boolean(fair)
     },
   ];
   return modules;

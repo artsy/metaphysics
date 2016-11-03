@@ -1,9 +1,12 @@
-import gravity from '../../lib/loaders/gravity';
-import Bidder from '../bidder';
+/* @flow */
+
 import {
   GraphQLList,
   GraphQLString,
 } from 'graphql';
+
+import gravity from '../../lib/loaders/gravity';
+import Bidder from '../bidder';
 
 export default {
   type: new GraphQLList(Bidder.type),

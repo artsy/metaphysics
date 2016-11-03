@@ -1,3 +1,11 @@
+/* @flow */
+
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLNonNull,
+} from 'graphql';
+
 import { has } from 'lodash';
 import positron from '../lib/loaders/positron';
 import cached from './fields/cached';
@@ -5,11 +13,7 @@ import AuthorType from './author';
 import Image from './image';
 import date from './fields/date';
 import { IDFields, NodeInterface } from './object_identification';
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-} from 'graphql';
+
 
 const ArticleType = new GraphQLObjectType({
   name: 'Article',
@@ -58,5 +62,6 @@ const Article = {
   },
   resolve: (root, { id }) => positron(`articles/${id}`),
 };
+
 
 export default Article;

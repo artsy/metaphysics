@@ -1,12 +1,15 @@
+/* @flow */
+
 import { map, omit } from 'lodash';
-import Partner from '../partner';
-import AggregationCount from './aggregation_count';
 import {
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLList,
   GraphQLInt,
 } from 'graphql';
+
+import Partner from '../partner';
+import AggregationCount from './aggregation_count';
 
 export const PartnersAggregation = new GraphQLEnumType({
   name: 'PartnersAggregation',

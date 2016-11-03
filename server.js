@@ -39,7 +39,7 @@ xapp.init({
   url: GRAVITY_API_URL,
   id: GRAVITY_ID,
   secret: GRAVITY_SECRET,
-}, () => config.GRAVITY_XAPP_TOKEN = xapp.token);
+}, () => { config.GRAVITY_XAPP_TOKEN = xapp.token; return; });
 
 app.get('/favicon.ico', (req, res) => {
   res

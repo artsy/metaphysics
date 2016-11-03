@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 
+import { graphql } from 'graphql';
+import { introspectionQuery, printSchema } from 'graphql/utilities';
+
 import fs from 'fs';
 import path from 'path';
 import schema from '../schema';
-import { graphql } from 'graphql';
-import { introspectionQuery, printSchema } from 'graphql/utilities';
 
 const destination = process.argv[2];
 if (destination === undefined || !fs.existsSync(destination)) {
