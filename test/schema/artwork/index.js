@@ -196,6 +196,57 @@ describe('Artwork type', () => {
     });
   });
 
+  describe('#is_biddable', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_biddable
+        }
+      }
+    `;
+
+    it('is true if the artwork has any sales that are open auctions', () => {
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork))
+        // Sales
+        .onCall(1)
+        .returns(Promise.resolve([{}]));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_biddable: true,
+            },
+          });
+        });
+    });
+
+    it('is false if the artwork is not in any sales that are auctions', () => {
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork))
+        // Sales
+        .onCall(1)
+        .returns(Promise.resolve([]));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_biddable: false,
+            },
+          });
+        });
+    });
+  });
+
   describe('#context', () => {
     it('returns either one Fair, Sale, or PartnerShow', () => {
       gravity

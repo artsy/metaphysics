@@ -194,14 +194,14 @@ const ArtworkType = new GraphQLObjectType({
       is_biddable: {
         type: GraphQLBoolean,
         description: 'Is this artwork part of an auction that is currently running?',
-        resolve: ({ id }) => {
-          return gravity(`related/sales`, { size: 1, artwork: [id] })
-            .then(sales => {
-              return _.some(sales, {
-                is_auction: true,
-                auction_state: 'open',
+        resolve: ({ sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            return gravity('sales', { sale_ids, is_auction: true, auction_state: 'open' })
+              .then(sales => {
+                return sales.length > 0;
               });
-            }).catch(() => false);
+          }
+          return false;
         },
       },
       is_unique: {
