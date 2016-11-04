@@ -170,9 +170,14 @@ const ArtworkType = new GraphQLObjectType({
       is_in_auction: {
         type: GraphQLBoolean,
         description: 'Is this artwork part of an auction?',
-        resolve: ({ id }) => {
-          return gravity(`related/sales`, { size: 1, artwork: [id] })
-            .then(sales => _.some(sales, 'is_auction')).catch(() => false);
+        resolve: ({ sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            return gravity('sales', { sale_ids, is_auction: true })
+              .then(sales => {
+                return sales.length > 0;
+              });
+          }
+          return false;
         },
       },
       is_in_show: {

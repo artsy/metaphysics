@@ -15,6 +15,7 @@ describe('Artwork type', () => {
     forsale: true,
     acquireable: false,
     artists: [],
+    sale_ids: ['sale-id-not-auction', 'sale-id-auction'],
   };
 
   const artworkImages = [
@@ -181,10 +182,7 @@ describe('Artwork type', () => {
         .returns(Promise.resolve(artwork))
         // Sales
         .onCall(1)
-        .returns(Promise.resolve([
-          assign({}, sale, { is_auction: false }),
-          assign({}, sale, { is_auction: false }),
-        ]));
+        .returns(Promise.resolve([]));
 
       return runQuery(query)
         .then(data => {
