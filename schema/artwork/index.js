@@ -227,7 +227,11 @@ const ArtworkType = new GraphQLObjectType({
         description: 'When in an auction, can the work be bought before any bids are placed',
         resolve: ({ id, acquireable, sale_ids }) => {
           if (sale_ids && sale_ids.length > 0 && acquireable) {
-            return gravity('sales', { id: sale_ids, is_auction: true, auction_state: 'open', size: 1 })
+            return gravity('sales', {
+              id: sale_ids,
+              is_auction: true,
+              auction_state: 'open',
+            })
               .then(_.first)
               .then(sale => {
                 if (!sale) return [false];
