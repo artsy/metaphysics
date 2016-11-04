@@ -15,7 +15,7 @@ import Article from '../article';
 import Artist from '../artist';
 import Image, { getDefault } from '../image';
 import Fair from '../fair';
-import Sale, { auctionState } from '../sale';
+import Sale from '../sale';
 import SaleArtwork from '../sale_artwork';
 import PartnerShow from '../partner_show';
 import PartnerShowSorts from '../sorts/partner_show_sorts';
@@ -172,7 +172,7 @@ const ArtworkType = new GraphQLObjectType({
         description: 'Is this artwork part of an auction?',
         resolve: ({ sale_ids }) => {
           if (sale_ids && sale_ids.length > 0) {
-            return gravity('sales', { sale_ids, is_auction: true })
+            return gravity('sales', { id: sale_ids, is_auction: true })
               .then(sales => {
                 return sales.length > 0;
               });
@@ -196,7 +196,7 @@ const ArtworkType = new GraphQLObjectType({
         description: 'Is this artwork part of an auction that is currently running?',
         resolve: ({ sale_ids }) => {
           if (sale_ids && sale_ids.length > 0) {
-            return gravity('sales', { sale_ids, is_auction: true, auction_state: 'open' })
+            return gravity('sales', { id: sale_ids, is_auction: true, auction_state: 'open' })
               .then(sales => {
                 return sales.length > 0;
               });
@@ -225,25 +225,23 @@ const ArtworkType = new GraphQLObjectType({
       is_buy_nowable: {
         type: GraphQLBoolean,
         description: 'When in an auction, can the work be bought before any bids are placed',
-        resolve: ({ id, acquireable }) => {
-          return gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
-            .then(_.first)
-            .then(sale => {
-              if (!sale) return [false];
+        resolve: ({ id, acquireable, sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0 && acquireable) {
+            return gravity('sales', { id: sale_ids, is_auction: true, auction_state: 'open', size: 1 })
+              .then(_.first)
+              .then(sale => {
+                if (!sale) return [false];
 
-              return gravity(`sale/${sale.id}/sale_artwork/${id}`)
-                .then(saleArtwork => [sale, saleArtwork]);
-            })
-            .then(([sale, saleArtwork]) => {
-              if (!sale) return false;
+                return gravity(`sale/${sale.id}/sale_artwork/${id}`)
+                  .then(saleArtwork => [sale, saleArtwork]);
+              })
+              .then(([sale, saleArtwork]) => {
+                if (!sale) return false;
 
-              return (
-                acquireable &&
-                sale.sale_type === 'auction' &&
-                auctionState(sale) === 'open' &&
-                saleArtwork.bidder_positions_count < 1
-              );
-            });
+                return saleArtwork.bidder_positions_count < 1;
+              });
+          }
+          return false;
         },
       },
       is_comparable_with_auction_results: {
