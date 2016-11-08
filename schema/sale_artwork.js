@@ -23,6 +23,8 @@ import {
   GraphQLList,
 } from 'graphql';
 
+const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = process.env;
+
 export const isBiddable = (sale, { artwork: { sold } }) => {
   return (
     !sold &&
@@ -234,6 +236,7 @@ const SaleArtworkType = new GraphQLObjectType({
                   bid >= inc.from && bid <= inc.to
                 ) || last(incr);
                 const nextBid = bid + bucket.amount;
+                if (nextBid > BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT) return increments;
                 if (!bucket.to) return increments.push(nextBid);
                 const nextBidBucket = find(incr, (inc) =>
                   nextBid >= inc.from && nextBid <= inc.to
