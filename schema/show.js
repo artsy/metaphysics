@@ -99,6 +99,10 @@ const ShowType = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve: ({ fair }) => isExisty(fair),
     },
+    is_reference: {
+      type: GraphQLBoolean,
+      resolve: ({ is_reference }) => is_reference,
+    },
     press_release: markdown(),
     start_at: date,
     end_at: date,
