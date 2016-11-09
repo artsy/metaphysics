@@ -220,8 +220,8 @@ const ArtistType = new GraphQLObjectType({
               follow_count),
             for_sale_artworks: numeral(({ forsale_artworks_count }) =>
               forsale_artworks_count),
-            partner_shows: numeral(({ id }) =>
-              total(`related/shows`, { artist_id: id })),
+            partner_shows: numeral(({ partner_shows_count }) =>
+              partner_shows_count),
             related_artists: numeral(({ id }) =>
               total(`related/layer/main/artists`, { artist: id })),
             articles: numeral(({ _id }) =>
