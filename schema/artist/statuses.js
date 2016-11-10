@@ -14,23 +14,11 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     shows: {
       type: GraphQLBoolean,
-      resolve: ({ id }) => {
-        return total(`related/shows`, {
-          artist_id: id,
-          displayable: true,
-          size: 0,
-        }).then(count => count > 0);
-      },
+      resolve: ({ partner_shows_count }) => partner_shows_count > 0,
     },
     cv: {
       type: GraphQLBoolean,
-      resolve: ({ id }) => {
-        return total(`related/shows`, {
-          artist_id: id,
-          displayable: true,
-          size: 0,
-        }).then(count => count > 15);
-      },
+      resolve: ({ partner_shows_count }) => partner_shows_count > 15,
     },
     artists: {
       type: GraphQLBoolean,
