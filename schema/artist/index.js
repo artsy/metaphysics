@@ -192,6 +192,7 @@ const ArtistType = new GraphQLObjectType({
                 partner_id: partner.id,
               };
             }
+            return { text: formatMarkdownValue(blurb, format) };
           });
         },
       },
