@@ -34,9 +34,11 @@ import {
   GraphQLUnionType,
 } from 'graphql';
 
-const kind = ({ artists, fair, artists_without_artworks }) => {
+const kind = ({ artists, fair, artists_without_artworks, group }) => {
   if (isExisty(fair)) return 'fair';
-  if (artists.length > 1 || (artists_without_artworks && artists_without_artworks.length > 1)) {
+  if (group ||
+      artists.length > 1 ||
+      (artists_without_artworks && artists_without_artworks.length > 1)) {
     return 'group';
   }
   if (artists.length === 1 || (artists_without_artworks && artists_without_artworks.length === 1)) {
