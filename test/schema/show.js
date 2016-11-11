@@ -185,9 +185,29 @@ describe('Show type', () => {
           });
         });
     });
-    it('returns group when more than one artist in a regular show show', () => {
+    it('returns group when more than one artist in a regular show', () => {
       showData.artists = [{ id: 'foo' }, { id: 'bar' }];
       showData.artists_without_artworks = null;
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            kind
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              kind: 'group',
+            },
+          });
+        });
+    });
+    it('returns group when only one artist but the show is flagged as group', () => {
+      showData.artists = [{ id: 'foo' }];
+      showData.artists_without_artworks = null;
+      showData.group = true;
       const query = `
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
