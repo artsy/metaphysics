@@ -464,6 +464,7 @@ const ArtistType = new GraphQLObjectType({
         resolve: ({ id }, options) => {
           return gravity('related/shows', defaults(options, {
             artist_id: id,
+            displayable: true,
             sort: '-end_at',
           }));
         },
@@ -499,6 +500,7 @@ const ArtistType = new GraphQLObjectType({
         resolve: ({ id }, options) => {
           return gravity('related/shows', defaults(options, {
             artist_id: id,
+            displayable: true,
             sort: '-end_at',
           }));
         },
