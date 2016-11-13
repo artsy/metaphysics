@@ -225,14 +225,13 @@ const PartnerShowType = new GraphQLObjectType({
           return Image.resolve({ image_versions, image_url });
         }
 
-        return gravity(`partner/${partner.id}/show/${id}/artworks`, {
+        return partner && gravity(`partner/${partner.id}/show/${id}/artworks`, {
           size: 1,
           published: true,
-        })
-          .then(artworks => {
-            const artwork = artworks[0];
-            return artwork && Image.resolve(getDefault(artwork.images));
-          });
+        }).then(artworks => {
+          const artwork = artworks[0];
+          return artwork && Image.resolve(getDefault(artwork.images));
+        });
       },
     },
     images: {

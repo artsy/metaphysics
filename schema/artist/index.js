@@ -40,6 +40,38 @@ import {
   GraphQLEnumType,
 } from 'graphql';
 
+// TODO Get rid of this when we remove the deprecated PartnerShow in favour of Show.
+const ShowField = {
+  args: {
+    at_a_fair: {
+      type: GraphQLBoolean,
+    },
+    active: {
+      type: GraphQLBoolean,
+    },
+    status: {
+      type: GraphQLString,
+    },
+    size: {
+      type: GraphQLInt,
+      description: 'The number of PartnerShows to return',
+    },
+    solo_show: {
+      type: GraphQLBoolean,
+    },
+    top_tier: {
+      type: GraphQLBoolean,
+    },
+    sort: PartnerShowSorts,
+  },
+  resolve: ({ id }, options) => {
+    return gravity('related/shows', defaults(options, {
+      artist_id: id,
+      sort: '-end_at',
+    }));
+  },
+};
+
 const ArtistType = new GraphQLObjectType({
   name: 'Artist',
   interfaces: [NodeInterface],
@@ -436,73 +468,13 @@ const ArtistType = new GraphQLObjectType({
         },
       },
 
-      partner_shows: {
+      partner_shows: Object.assign({
         type: new GraphQLList(PartnerShow.type),
         deprecationReason: 'Prefer to use shows attribute',
-        args: {
-          at_a_fair: {
-            type: GraphQLBoolean,
-          },
-          active: {
-            type: GraphQLBoolean,
-          },
-          status: {
-            type: GraphQLString,
-          },
-          size: {
-            type: GraphQLInt,
-            description: 'The number of PartnerShows to return',
-          },
-          solo_show: {
-            type: GraphQLBoolean,
-          },
-          top_tier: {
-            type: GraphQLBoolean,
-          },
-          sort: PartnerShowSorts,
-        },
-        resolve: ({ id }, options) => {
-          return gravity('related/shows', defaults(options, {
-            artist_id: id,
-            sort: '-end_at',
-          }));
-        },
-      },
-
-      shows: {
+      }, ShowField),
+      shows: Object.assign({
         type: new GraphQLList(Show.type),
-        args: {
-          at_a_fair: {
-            type: GraphQLBoolean,
-          },
-          active: {
-            type: GraphQLBoolean,
-          },
-          status: {
-            type: GraphQLString,
-          },
-          size: {
-            type: GraphQLInt,
-            description: 'The number of Shows to return',
-          },
-          solo_show: {
-            type: GraphQLBoolean,
-          },
-          top_tier: {
-            type: GraphQLBoolean,
-          },
-          is_reference: {
-            type: GraphQLBoolean,
-          },
-          sort: PartnerShowSorts,
-        },
-        resolve: ({ id }, options) => {
-          return gravity('related/shows', defaults(options, {
-            artist_id: id,
-            sort: '-end_at',
-          }));
-        },
-      },
+      }, ShowField),
 
       partner_artists: {
         type: new GraphQLList(PartnerArtist.type),
