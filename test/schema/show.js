@@ -26,6 +26,7 @@ describe('Show type', () => {
       display_on_partner_profile: true,
       eligible_artworks_count: 8,
       is_reference: true,
+      name: ' Whitespace Abounds ',
     };
     gravity.returns(Promise.resolve(showData));
 
@@ -45,6 +46,26 @@ describe('Show type', () => {
     Show.__ResetDependency__('gravity');
     ExternalPartner.__ResetDependency__('galaxy');
     Show.__ResetDependency__('total');
+  });
+
+  describe('name', () => {
+    it('strips whitespace from the name', () => {
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            name
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              name: 'Whitespace Abounds',
+            },
+          });
+        });
+    });
   });
 
   describe('city', () => {
@@ -164,9 +185,29 @@ describe('Show type', () => {
           });
         });
     });
-    it('returns group when more than one artist in a regular show show', () => {
+    it('returns group when more than one artist in a regular show', () => {
       showData.artists = [{ id: 'foo' }, { id: 'bar' }];
       showData.artists_without_artworks = null;
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            kind
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            show: {
+              kind: 'group',
+            },
+          });
+        });
+    });
+    it('returns group when only one artist but the show is flagged as group', () => {
+      showData.artists = [{ id: 'foo' }];
+      showData.artists_without_artworks = null;
+      showData.group = true;
       const query = `
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {

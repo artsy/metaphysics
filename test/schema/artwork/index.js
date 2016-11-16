@@ -15,6 +15,7 @@ describe('Artwork type', () => {
     forsale: true,
     acquireable: false,
     artists: [],
+    sale_ids: ['sale-id-not-auction', 'sale-id-auction'],
   };
 
   const artworkImages = [
@@ -181,10 +182,7 @@ describe('Artwork type', () => {
         .returns(Promise.resolve(artwork))
         // Sales
         .onCall(1)
-        .returns(Promise.resolve([
-          assign({}, sale, { is_auction: false }),
-          assign({}, sale, { is_auction: false }),
-        ]));
+        .returns(Promise.resolve([]));
 
       return runQuery(query)
         .then(data => {
@@ -192,6 +190,92 @@ describe('Artwork type', () => {
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_in_auction: false,
+            },
+          });
+        });
+    });
+  });
+
+  describe('#is_biddable', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_biddable
+        }
+      }
+    `;
+
+    it('is true if the artwork has any sales that are open auctions', () => {
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork))
+        // Sales
+        .onCall(1)
+        .returns(Promise.resolve([{}]));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_biddable: true,
+            },
+          });
+        });
+    });
+
+    it('is false if the artwork is not in any sales that are auctions', () => {
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork))
+        // Sales
+        .onCall(1)
+        .returns(Promise.resolve([]));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_biddable: false,
+            },
+          });
+        });
+    });
+  });
+
+  describe('#is_buy_nowable', () => {
+    const response = assign({}, artwork, { acquireable: true });
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_buy_nowable
+        }
+      }
+    `;
+
+    it('is true if the artwork is acquireable and in an open auction with no bids', () => {
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(response))
+        // Sales
+        .onCall(1)
+        .returns(Promise.resolve([{ id: 'sale-id' }]))
+        // Sale Artwork
+        .onCall(2)
+        .returns(Promise.resolve({ bidder_positions_count: 0 }));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).to.eql({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_buy_nowable: true,
             },
           });
         });

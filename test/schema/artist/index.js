@@ -12,6 +12,7 @@ describe('Artist type', () => {
       blurb: null,
       birthday: null,
       artworks_count: 42,
+      partner_shows_count: 42,
     };
 
     Artist.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(artist)));
@@ -331,32 +332,34 @@ describe('Artist type', () => {
           artist.blurb = 'artsy blurb';
         });
       });
-      it('returns the artsy blurb if there is no featured partner bio', () => {
-        artist.blurb = 'artsy blurb';
-        const query = `
-          {
-            artist(id: "foo-bar") {
-              biography_blurb {
-                text
-                credit
-                partner_id
+      describe('without a featured partner bio', () => {
+        it('returns the artsy blurb if there is no featured partner bio', () => {
+          artist.blurb = 'artsy blurb';
+          const query = `
+            {
+              artist(id: "foo-bar") {
+                biography_blurb(partner_bio: true) {
+                  text
+                  credit
+                  partner_id
+                }
               }
             }
-          }
-        `;
+          `;
 
-        return runQuery(query)
-          .then(data => {
-            expect(data).to.eql({
-              artist: {
-                biography_blurb: {
-                  text: 'artsy blurb',
-                  credit: null,
-                  partner_id: null,
+          return runQuery(query)
+            .then(data => {
+              expect(data).to.eql({
+                artist: {
+                  biography_blurb: {
+                    text: 'artsy blurb',
+                    credit: null,
+                    partner_id: null,
+                  },
                 },
-              },
+              });
             });
-          });
+        });
       });
     });
     it('returns the blurb if present', () => {

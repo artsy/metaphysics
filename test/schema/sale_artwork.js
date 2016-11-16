@@ -123,4 +123,42 @@ describe('SaleArtwork type', () => {
         ]);
       });
   });
+
+  describe('with a max amount set', () => {
+    beforeEach(() => {
+      SaleArtwork.__Rewire__('BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT', '400000');
+    });
+
+    afterEach(() => {
+      SaleArtwork.__ResetDependency__('BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT');
+    });
+
+    it('does not return increments above the max allowed', () => {
+      gravity.onCall(1).returns(Promise.resolve({
+        increment_strategy: 'default',
+      })).onCall(2).returns(Promise.resolve([
+        {
+          key: 'default',
+          increments: [
+             { from: 0, to: 399999, amount: 5000 },
+             { from: 400000, to: 1000000, amount: 10000 },
+          ],
+        },
+      ]));
+      const query = `
+        {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            bid_increments
+          }
+        }
+      `;
+      return runQuery(query)
+        .then(data => {
+          expect(data.sale_artwork.bid_increments.slice(0, 20)).to.eql([
+            350000, 355000, 360000, 365000, 370000, 375000, 380000, 385000,
+            390000, 395000, 400000,
+          ]);
+        });
+    });
+  });
 });

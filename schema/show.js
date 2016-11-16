@@ -34,9 +34,11 @@ import {
   GraphQLUnionType,
 } from 'graphql';
 
-const kind = ({ artists, fair, artists_without_artworks }) => {
+const kind = ({ artists, fair, artists_without_artworks, group }) => {
   if (isExisty(fair)) return 'fair';
-  if (artists.length > 1 || (artists_without_artworks && artists_without_artworks.length > 1)) {
+  if (group ||
+      artists.length > 1 ||
+      (artists_without_artworks && artists_without_artworks.length > 1)) {
     return 'group';
   }
   if (artists.length === 1 || (artists_without_artworks && artists_without_artworks.length === 1)) {
@@ -68,6 +70,7 @@ const ShowType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
       description: 'The exhibition title',
+      resolve: ({ name }) => name.trim(),
     },
     description: {
       type: GraphQLString,
@@ -97,6 +100,10 @@ const ShowType = new GraphQLObjectType({
     is_fair_booth: {
       type: GraphQLBoolean,
       resolve: ({ fair }) => isExisty(fair),
+    },
+    is_reference: {
+      type: GraphQLBoolean,
+      resolve: ({ is_reference }) => is_reference,
     },
     press_release: markdown(),
     start_at: date,
@@ -315,7 +322,7 @@ const Show = {
       .then(show => {
         if (!show.displayable && !show.is_reference) return new Error('Show Not Found');
         return show;
-      });
+      }).catch(() => null);
   },
 };
 
