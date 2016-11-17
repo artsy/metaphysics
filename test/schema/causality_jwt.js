@@ -19,6 +19,7 @@ describe('CausalityJWT', () => {
         _id: 'craig',
         paddle_number: '123',
         type: 'User',
+        disqualified: false,
       }))
       .onCall(2)
       .returns(Promise.resolve([{ id: 'bidder1', sale: { _id: 'foo', id: 'slug' } }]));
@@ -90,6 +91,31 @@ describe('CausalityJWT', () => {
     gravity
       .onCall(2)
       .returns(Promise.resolve([]));
+    return runAuthenticatedQuery(query)
+      .then(data => {
+        expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
+          .to.eql({
+            aud: 'auctions',
+            role: 'observer',
+            userId: 'craig',
+            saleId: 'foo',
+            bidderId: null,
+          });
+      });
+  });
+
+  it('falls back to observer if disqualified', () => {
+    const query = `{
+      causality_jwt(role: PARTICIPANT, sale_id: "foo")
+    }`;
+    gravity
+      .onCall(1)
+      .returns(Promise.resolve({
+        _id: 'craig',
+        paddle_number: '123',
+        type: 'User',
+        disqualified: true,
+      }));
     return runAuthenticatedQuery(query)
       .then(data => {
         expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))

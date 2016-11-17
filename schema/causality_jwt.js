@@ -48,7 +48,7 @@ export default {
         gravity.with(accessToken)('me'),
         gravity.with(accessToken)('me/bidders', { sale_id: options.sale_id }),
       ]).then(([sale, me, bidders]) => {
-        if (bidders.length) {
+        if (bidders.length && !me.disqualified) {
           return jwt.encode({
             aud: 'auctions',
             role: 'bidder',

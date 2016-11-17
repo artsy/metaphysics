@@ -12,6 +12,7 @@ import { IDFields } from '../object_identification';
 import {
   GraphQLString,
   GraphQLObjectType,
+  GraphQLBoolean,
 } from 'graphql';
 
 const Me = new GraphQLObjectType({
@@ -30,6 +31,9 @@ const Me = new GraphQLObjectType({
     },
     paddle_number: {
       type: GraphQLString,
+    },
+    disqualified: {
+      type: GraphQLBoolean,
     },
     bidders: Bidders,
     bidder_status: BidderStatus,
