@@ -21,7 +21,11 @@ describe('CausalityJWT', () => {
         type: 'User',
       }))
       .onCall(2)
-      .returns(Promise.resolve([{ id: 'bidder1', sale: { _id: 'foo', id: 'slug' } }]));
+      .returns(Promise.resolve([{
+        id: 'bidder1',
+        sale: { _id: 'foo', id: 'slug' },
+        qualified_for_bidding: true,
+      }]));
     CausalityJWT.__Rewire__('gravity', gravity);
   });
 
@@ -90,6 +94,30 @@ describe('CausalityJWT', () => {
     gravity
       .onCall(2)
       .returns(Promise.resolve([]));
+    return runAuthenticatedQuery(query)
+      .then(data => {
+        expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
+          .to.eql({
+            aud: 'auctions',
+            role: 'observer',
+            userId: 'craig',
+            saleId: 'foo',
+            bidderId: null,
+          });
+      });
+  });
+
+  it('falls back to observer if disqualified for bidding', () => {
+    const query = `{
+      causality_jwt(role: PARTICIPANT, sale_id: "foo")
+    }`;
+    gravity
+      .onCall(2)
+      .returns(Promise.resolve([{
+        id: 'bidder1',
+        sale: { _id: 'foo', id: 'slug' },
+        qualified_for_bidding: false,
+      }]));
     return runAuthenticatedQuery(query)
       .then(data => {
         expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
