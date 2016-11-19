@@ -67,8 +67,8 @@ describe('SaleArtwork type', () => {
     return runQuery(query)
       .then(data => {
         expect(SaleArtwork.__get__('gravity').args[0][0])
-          .to.equal('sale_artwork/54c7ed2a7261692bfa910200');
-        expect(data).to.eql({
+          .toBe('sale_artwork/54c7ed2a7261692bfa910200');
+        expect(data).toEqual({
           sale_artwork: {
             high_estimate: {
               cents: 300000,
@@ -116,7 +116,7 @@ describe('SaleArtwork type', () => {
     `;
     return runQuery(query)
       .then(data => {
-        expect(data.sale_artwork.bid_increments.slice(0, 20)).to.eql([
+        expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
           350000, 355000, 360000, 365000, 370000, 375000, 380000, 385000,
           390000, 395000, 400000, 410000, 420000, 430000, 440000, 450000,
           460000, 470000, 480000, 490000,
@@ -154,7 +154,7 @@ describe('SaleArtwork type', () => {
       `;
       return runQuery(query)
         .then(data => {
-          expect(data.sale_artwork.bid_increments.slice(0, 20)).to.eql([
+          expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
             350000, 355000, 360000, 365000, 370000, 375000, 380000, 385000,
             390000, 395000, 400000,
           ]);

@@ -109,8 +109,8 @@ describe('Me type', () => {
     `;
     return runAuthenticatedQuery(query)
       .then(data => {
-        expect(Me.__get__('gravity').args[1][0]).to.equal('me/bidder_positions');
-        expect(map(data.me.bidder_positions, 'id').join('')).to.eql('01234');
+        expect(Me.__get__('gravity').args[1][0]).toBe('me/bidder_positions');
+        expect(map(data.me.bidder_positions, 'id').join('')).toEqual('01234');
       });
   });
 
@@ -126,8 +126,8 @@ describe('Me type', () => {
     `;
     return runAuthenticatedQuery(query)
       .then(data => {
-        expect(Me.__get__('gravity').args[1][0]).to.equal('me/bidder_positions');
-        expect(map(data.me.bidder_positions, 'id').join('')).to.eql('14');
+        expect(Me.__get__('gravity').args[1][0]).toBe('me/bidder_positions');
+        expect(map(data.me.bidder_positions, 'id').join('')).toEqual('14');
       });
   });
 
@@ -144,7 +144,7 @@ describe('Me type', () => {
     gravity.onCall(4).returns(Promise.reject(new Error('Forbidden')));
     return runAuthenticatedQuery(query)
       .then(data => {
-        expect(map(data.me.bidder_positions, 'id').join('')).to.eql('1');
+        expect(map(data.me.bidder_positions, 'id').join('')).toEqual('1');
       });
   });
 
@@ -161,8 +161,8 @@ describe('Me type', () => {
     `;
     return runAuthenticatedQuery(query)
       .then(data => {
-        expect(Me.__get__('gravity').args[1][0]).to.equal('me/bidder_positions');
-        expect(data.me.bidder_positions[2].is_winning).to.eql(true);
+        expect(Me.__get__('gravity').args[1][0]).toBe('me/bidder_positions');
+        expect(data.me.bidder_positions[2].is_winning).toEqual(true);
       });
   });
 });

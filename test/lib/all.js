@@ -14,7 +14,7 @@ describe('all', () => {
 
     return all(`artist/foo-bar/artworks`, { size: 10 })
       .then(artworks => {
-        expect(gravity.args).to.eql([
+        expect(gravity.args).toEqual([
           ['artist/foo-bar/artworks', { size: 10, page: 1 }],
           ['artist/foo-bar/artworks', { size: 10, page: 2 }],
           ['artist/foo-bar/artworks', { size: 10, page: 3 }],
@@ -29,7 +29,7 @@ describe('all', () => {
           ['artist/foo-bar/artworks', { size: 10, page: 12 }],
         ]);
 
-        expect(artworks.length).to.be(12); // 12 pages
+        expect(artworks.length).toBe(12); // 12 pages
       });
   });
 });

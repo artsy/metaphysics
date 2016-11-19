@@ -68,7 +68,7 @@ describe('PartnerShows type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             partner_shows: [
               { id: 'new-museum-solo-show', kind: 'solo' },
               { id: 'new-museum-group-show', kind: 'group' },

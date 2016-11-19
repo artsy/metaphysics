@@ -12,7 +12,7 @@ describe('Loaders', () => {
 
         const loader = httpLoader(api);
 
-        return expect(loader.load('/foo/bar')).to.be.rejectedWith('Something went wrong');
+        return expect(loader.load('/foo/bar')).toThrowError('Something went wrong');
       });
     });
 
@@ -37,12 +37,12 @@ describe('Loaders', () => {
             ])
           )
           .then(([data, memoized, cached]) => {
-            expect(api.callCount).to.equal(1);
-            expect(api.args[0][0]).to.equal('/my/cached/request');
+            expect(api.callCount).toBe(1);
+            expect(api.args[0][0]).toBe('/my/cached/request');
 
-            expect(data.ok).to.be(true);
-            expect(memoized.ok).to.be(true);
-            expect(cached.ok).to.be(true);
+            expect(data.ok).toBe(true);
+            expect(memoized.ok).toBe(true);
+            expect(cached.ok).toBe(true);
           });
       });
     });

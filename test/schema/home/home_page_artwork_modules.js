@@ -67,7 +67,7 @@ describe('HomePageArtworkModules', () => {
         const keys = map(home_page.artwork_modules, 'key');
 
         // the default module response is 8 keys
-        expect(keys).to.eql([
+        expect(keys).toEqual([
           'followed_galleries',
           'saved_works',
           'recommended_works',
@@ -79,7 +79,7 @@ describe('HomePageArtworkModules', () => {
         ]);
 
         const relatedArtistsModule = find(home_page.artwork_modules, { key: 'related_artists' });
-        expect(relatedArtistsModule.params).to.eql({
+        expect(relatedArtistsModule.params).toEqual({
           related_artist_id: 'charles-broskoski',
           followed_artist_id: 'pablo-picasso',
         });
@@ -101,7 +101,7 @@ describe('HomePageArtworkModules', () => {
         // The order of rails not included in the preferred order list is left as-is from Gravity’s
         // modules endpoint response. Rails in the preferred order list that aren’t even included in
         // Gravity’s response do not lead to an error (the FOLLOWED_ARTISTS rail).
-        expect(map(artwork_modules, 'key')).to.eql([
+        expect(map(artwork_modules, 'key')).toEqual([
           'recommended_works',
           'generic_gene',
           'generic_gene',

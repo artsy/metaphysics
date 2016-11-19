@@ -11,7 +11,7 @@ describe('Image', () => {
 
     it('takes an image response with options and resizes it to fit', () => {
       expect(resizedImageUrl(image, { width: 500, height: 500 }))
-        .to.eql({
+        .toEqual({
           factor: 0.14285714285714285,
           height: 333,
           width: 500,
@@ -21,7 +21,7 @@ describe('Image', () => {
 
     it('takes an image response with options (just one dimension) and resizes it to fit', () => {
       expect(resizedImageUrl(image, { width: 500 }))
-        .to.eql({
+        .toEqual({
           factor: 0.14285714285714285,
           height: 333,
           width: 500,
@@ -37,7 +37,7 @@ describe('Image', () => {
         width: 500,
         height: 500,
       }))
-        .to.eql({
+        .toEqual({
           factor: Infinity,
           width: null,
           height: null,
