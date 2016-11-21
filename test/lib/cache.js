@@ -15,7 +15,7 @@ describe('Cache', () => {
     describe('#get', () => {
       it('falls through with a rejection', () => {
         return cache.get('foobar').catch(e => {
-          expect(e.message).toEqual("connect ECONNREFUSED")
+          expect(e.message).toEqual('connect ECONNREFUSED');
         });
       });
     });

@@ -12,7 +12,7 @@ describe('Loaders', () => {
 
         const loader = httpLoader(api);
         return loader.load('/foo/bar').catch(e => {
-          expect(e.message).toEqual("Something went wrong")
+          expect(e.message).toEqual('Something went wrong');
         });
       });
     });
