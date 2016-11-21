@@ -70,7 +70,7 @@ describe('APIs', () => {
       fetch.__Rewire__('request', request);
 
       return gravity('foo/bar').catch(e => {
-        expect(e.message).toEqual('Unexpected token o in JSON at position 1');
+        expect(e.message).toMatch(/Unexpected token/);
       });
     });
   });
