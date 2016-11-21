@@ -58,9 +58,9 @@ global.runAuthenticatedQuery = (query) => {
  * @param {RegExp,String} error The pattern or exact string that the error message should match.
  * @returns {Promise}
  */
-  beforeEach(() => {
-    installPromiseMatchers()
-  });
+import { installPromiseMatcher } from "jasmine-es6-promise-matchers"
+beforeEach(JasminePromiseMatchers.install);
+
   // return this.obj.then(
   //   () => this.assert(
   //     this.flags.not,

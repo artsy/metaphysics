@@ -79,7 +79,7 @@ describe('HomePageArtistModule', () => {
     it('does not return any suggestions', () => {
       return graphql(schema, query('SUGGESTED')).then(response => {
         expect(response.data.home_page.artist_module.results).toBe(null);
-        expect(response.errors).to.not.be.empty();
+        expect(response.errors.length).toBeGreaterThan(0);
       });
     });
   });

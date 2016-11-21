@@ -11,8 +11,9 @@ describe('Loaders', () => {
           .returns(Promise.reject(new Error('Something went wrong')));
 
         const loader = httpLoader(api);
-
-        return expect(loader.load('/foo/bar')).toThrowError('Something went wrong');
+        return loader.load('/foo/bar').catch(e => {
+          expect(e.message).toEqual("Something went wrong")
+        });
       });
     });
 

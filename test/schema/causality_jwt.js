@@ -107,6 +107,9 @@ describe('CausalityJWT', () => {
     const query = `{
       causality_jwt(role: OPERATOR, sale_id: "foo")
     }`;
-    return expect(runAuthenticatedQuery(query)).toThrowError(/Unauthorized/);
+    
+    return runAuthenticatedQuery(query).catch(e => {
+      expect(e.message).toEqual("Unauthorized to be operator")
+    });
   });
 });

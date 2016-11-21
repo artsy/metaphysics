@@ -51,21 +51,27 @@ describe('APIs', () => {
       const request = sinon.stub().yields(new Error('bad'));
       fetch.__Rewire__('request', request);
 
-      return expect(galaxy('foo/bar')).rejectedWith('bad');
+      return galaxy('foo/bar').catch(e => {
+        expect(e.message).toEqual("bad")
+      });
     });
 
     it('rejects API errors', () => {
       const request = sinon.stub().yields(null, { statusCode: 401, body: 'Unauthorized' });
       fetch.__Rewire__('request', request);
 
-      return expect(galaxy('foo/bar')).rejectedWith('Unauthorized');
+      return galaxy('foo/bar').catch(e => {
+        expect(e.message).toEqual("Unauthorized")
+      });
     });
 
     it('rejects parse errors', () => {
       const request = sinon.stub().yields(null, { statusCode: 200, body: 'not json' });
       fetch.__Rewire__('request', request);
 
-      return expect(galaxy('foo/bar')).rejectedWith(/Unexpected token o/);
+      return galaxy('foo/bar').catch(e => {
+        expect(e.message).toEqual("Unexpected token o in JSON at position 1")
+      });
     });
   });
 });
