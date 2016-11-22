@@ -220,7 +220,7 @@ const SaleType = new GraphQLObjectType({
         type: new GraphQLList(BuyersPremium),
         description: "Auction's buyer's premium policy.",
         resolve: sale => {
-          if (!sale.buyers_premium || !sale.buyers_premium.schedule) return null;
+          if (!sale.buyers_premium) return null;
 
           return map(sale.buyers_premium.schedule, item => ({
             cents: item.min_amount_cents,

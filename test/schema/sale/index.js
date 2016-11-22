@@ -74,31 +74,5 @@ describe('Sale type', () => {
           });
         });
     });
-
-    it('returns a valid object if the buyers premium is missing a schedule', () => {
-      sale.buyers_premium = {};
-
-      const query = `
-        {
-          sale(id: "foo-foo") {
-            _id
-            buyers_premium {
-              amount
-              cents
-            }
-          }
-        }
-      `;
-
-      return runQuery(query)
-        .then(data => {
-          expect(data).to.eql({
-            sale: {
-              _id: '123',
-              buyers_premium: null,
-            },
-          });
-        });
-    });
   });
 });
