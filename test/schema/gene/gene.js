@@ -3,6 +3,11 @@ describe('Gene', () => {
     const Gene = schema.__get__('Gene');
     const filterArtworks = Gene.__get__('filterArtworks');
 
+    // If this test fails because it's making a gravity request to /gene/x, it's
+    // because the AST checks to find out which nodes we're requesting
+    // is not working correctly. This test is to make sure we don't
+    // request to gravity.
+
     beforeEach(() => {
       const gravity = sinon.stub();
       gravity.with = sinon.stub().returns(gravity);
