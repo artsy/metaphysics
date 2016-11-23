@@ -51,27 +51,21 @@ describe('APIs', () => {
       const request = sinon.stub().yields(new Error('bad'));
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').catch(e => {
-        expect(e.message).toEqual('bad');
-      });
+      return expectPromiseRejectionToMatch(gravity('foo/bar'), /bad/);
     });
 
     it('rejects API errors', () => {
       const request = sinon.stub().yields(null, { statusCode: 401, body: 'Unauthorized' });
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').catch(e => {
-        expect(e.message).toEqual('Unauthorized');
-      });
+      return expectPromiseRejectionToMatch(gravity('foo/bar'), /Unauthorized/);
     });
 
     it('rejects parse errors', () => {
       const request = sinon.stub().yields(null, { statusCode: 200, body: 'not json' });
       fetch.__Rewire__('request', request);
 
-      return gravity('foo/bar').catch(e => {
-        expect(e.message).toMatch(/Unexpected token/);
-      });
+      return expectPromiseRejectionToMatch(gravity('foo/bar'), /Unexpected token/);
     });
   });
 });

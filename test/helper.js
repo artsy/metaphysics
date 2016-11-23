@@ -43,6 +43,26 @@ global.runAuthenticatedQuery = (query) => {
   return runQuery(query, { accessToken: 'secret', userID: 'user-42' });
 };
 
+/**
+ * Ensuring that promises fail is actually a little bit tricky,
+ * see https://github.com/facebook/jest/issues/2129
+ *
+ * So until this is built into Jest, then this wil ldo for now 👍
+ */
+global.expectPromiseRejectionToMatch = (promise, failureMessage) => {
+  return new Promise((resolve, reject) => {
+    promise
+      .then(() => {
+        const object = { message: 'Expected this promise to fail' };
+        reject(object);
+      })
+      .catch(e => {
+        expect(e.message).toMatch(failureMessage);
+        resolve({});
+      });
+  });
+};
+
 // // We want to silence the console output from node-uuid, so we use a mocked module
 // // at __mocks__/node-uuid.js which has it's console muted
 jest.mock('node-uuid');
