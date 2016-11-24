@@ -80,7 +80,7 @@ describe('BidderStatus type', () => {
 
     return runAuthenticatedQuery(query)
       .then(({ me }) => {
-        expect(me).to.eql({
+        expect(me).toEqual({
           bidder_status: {
             is_highest_bidder: true,
             most_recent_bid: { id: '0' },
@@ -137,7 +137,7 @@ describe('BidderStatus type', () => {
 
     return runAuthenticatedQuery(query)
       .then(({ me }) => {
-        expect(me).to.eql({
+        expect(me).toEqual({
           bidder_status: {
             is_highest_bidder: false,
             most_recent_bid: { id: '0' },

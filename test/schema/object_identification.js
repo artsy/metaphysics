@@ -65,7 +65,7 @@ describe('Object Identification', () => {
         return runQuery(query).then(data => {
           const expectedData = {};
           expectedData[fieldName] = { __id: toGlobalId(typeName, 'foo-bar') };
-          expect(data).to.eql(expectedData);
+          expect(data).toEqual(expectedData);
         });
       });
 
@@ -82,7 +82,7 @@ describe('Object Identification', () => {
         `;
 
         return runQuery(query).then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             node: {
               __typename: typeName,
               id: 'foo-bar',
@@ -112,7 +112,7 @@ describe('Object Identification', () => {
         `;
 
         return runQuery(query).then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             home_page: {
               artwork_module: {
                 __id: globalId,
@@ -135,7 +135,7 @@ describe('Object Identification', () => {
         `;
 
         return runQuery(query).then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             node: {
               __typename: 'HomePageArtworkModule',
               key: 'popular_artists',
@@ -163,7 +163,7 @@ describe('Object Identification', () => {
         `;
 
         return runQuery(query).then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             home_page: {
               artwork_module: {
                 __id: globalId,
@@ -189,7 +189,7 @@ describe('Object Identification', () => {
         `;
 
         return runQuery(query).then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             node: {
               __typename: 'HomePageArtworkModule',
               key: 'generic_gene',
@@ -226,7 +226,7 @@ describe('Object Identification', () => {
         `;
 
         return runQuery(query).then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             home_page: {
               artwork_module: {
                 __id: globalId,
@@ -253,7 +253,7 @@ describe('Object Identification', () => {
         `;
 
         return runQuery(query).then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             node: {
               __typename: 'HomePageArtworkModule',
               key: 'related_artists',
@@ -286,7 +286,7 @@ describe('Object Identification', () => {
       `;
 
       return runQuery(query).then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           home_page: {
             artist_module: {
               __id: globalId,
@@ -309,7 +309,7 @@ describe('Object Identification', () => {
       `;
 
       return runQuery(query).then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           node: {
             __typename: 'HomePageArtistModule',
             key: 'TRENDING',

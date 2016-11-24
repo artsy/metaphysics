@@ -30,7 +30,7 @@ describe('Sale type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             sale: {
               _id: '123',
               buyers_premium: null,
@@ -63,7 +63,7 @@ describe('Sale type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             sale: {
               _id: '123',
               buyers_premium: [{

@@ -43,7 +43,7 @@ describe('Me', () => {
 
       return runAuthenticatedQuery(query)
       .then(({ me: { bidders } }) => {
-        expect(bidders).to.eql([
+        expect(bidders).toEqual([
             { id: 'Foo ID' },
             { id: 'Bar ID' },
         ]);
@@ -71,7 +71,7 @@ describe('Me', () => {
 
       return runAuthenticatedQuery(query)
       .then(({ me: { bidders } }) => {
-        expect(bidders).to.eql([
+        expect(bidders).toEqual([
             { id: 'Foo ID' },
             { id: 'Bar ID' },
         ]);

@@ -8,7 +8,7 @@ describe('getDefault', () => {
       { id: 'bar', is_default: true },
       { id: 'baz', is_default: false },
     ]).id)
-      .to.equal('bar');
+      .toBe('bar');
   });
 
   it('returns the first object if there is no default', () => {
@@ -17,7 +17,7 @@ describe('getDefault', () => {
       { id: 'bar' },
       { id: 'baz' },
     ]).id)
-      .to.equal('foo');
+      .toBe('foo');
   });
 });
 
@@ -69,7 +69,7 @@ describe('Image type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data.artwork.image.orientation).to.equal('square');
+          expect(data.artwork.image.orientation).toBe('square');
         });
     });
 
@@ -78,7 +78,7 @@ describe('Image type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data.artwork.image.orientation).to.equal('portrait');
+          expect(data.artwork.image.orientation).toBe('portrait');
         });
     });
 
@@ -87,7 +87,7 @@ describe('Image type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data.artwork.image.orientation).to.equal('landscape');
+          expect(data.artwork.image.orientation).toBe('landscape');
         });
     });
 
@@ -96,7 +96,7 @@ describe('Image type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data.artwork.image.orientation).to.equal('square');
+          expect(data.artwork.image.orientation).toBe('square');
         });
     });
   });

@@ -40,7 +40,7 @@ describe('CausalityJWT', () => {
     return runAuthenticatedQuery(query)
       .then(data => {
         expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
-          .to.eql({
+          .toEqual({
             aud: 'auctions',
             role: 'bidder',
             userId: 'craig',
@@ -57,7 +57,7 @@ describe('CausalityJWT', () => {
     return runAuthenticatedQuery(query)
       .then(data => {
         expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
-          .to.eql({
+          .toEqual({
             aud: 'auctions',
             role: 'bidder',
             userId: 'craig',
@@ -77,7 +77,7 @@ describe('CausalityJWT', () => {
     return runQuery(query)
       .then(data => {
         expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
-          .to.eql({
+          .toEqual({
             aud: 'auctions',
             role: 'observer',
             userId: null,
@@ -97,7 +97,7 @@ describe('CausalityJWT', () => {
     return runAuthenticatedQuery(query)
       .then(data => {
         expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
-          .to.eql({
+          .toEqual({
             aud: 'auctions',
             role: 'observer',
             userId: 'craig',
@@ -121,7 +121,7 @@ describe('CausalityJWT', () => {
     return runAuthenticatedQuery(query)
       .then(data => {
         expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), 'iat'))
-          .to.eql({
+          .toEqual({
             aud: 'auctions',
             role: 'observer',
             userId: 'craig',
@@ -135,6 +135,9 @@ describe('CausalityJWT', () => {
     const query = `{
       causality_jwt(role: OPERATOR, sale_id: "foo")
     }`;
-    return expect(runAuthenticatedQuery(query)).to.be.rejectedWith(/Unauthorized/);
+
+    return runAuthenticatedQuery(query).catch(e => {
+      expect(e.message).toEqual('Unauthorized to be operator');
+    });
   });
 });

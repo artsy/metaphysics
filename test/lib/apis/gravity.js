@@ -17,8 +17,8 @@ describe('APIs', () => {
       fetch.__Rewire__('request', request);
 
       return gravity('foo/bar').then(() => {
-        expect(request.args[0][0]).to.equal('https://api.artsy.test/api/v1/foo/bar');
-        expect(request.args[0][1]).to.eql({
+        expect(request.args[0][0]).toBe('https://api.artsy.test/api/v1/foo/bar');
+        expect(request.args[0][1]).toEqual({
           headers: { 'X-XAPP-TOKEN': 'secret' },
           method: 'GET',
           timeout: 5000,
@@ -31,7 +31,7 @@ describe('APIs', () => {
       fetch.__Rewire__('request', request);
 
       return gravity('foo/bar').then(({ body: { foo } }) => {
-        expect(foo).to.equal('bar');
+        expect(foo).toBe('bar');
       });
     });
 
@@ -43,7 +43,7 @@ describe('APIs', () => {
       fetch.__Rewire__('request', request);
 
       return gravity('foo/bar').then(({ body: { foo } }) => {
-        expect(foo).to.equal('bar');
+        expect(foo).toBe('bar');
       });
     });
 
@@ -51,21 +51,21 @@ describe('APIs', () => {
       const request = sinon.stub().yields(new Error('bad'));
       fetch.__Rewire__('request', request);
 
-      return expect(gravity('foo/bar')).to.be.rejectedWith('bad');
+      return expectPromiseRejectionToMatch(gravity('foo/bar'), /bad/);
     });
 
     it('rejects API errors', () => {
       const request = sinon.stub().yields(null, { statusCode: 401, body: 'Unauthorized' });
       fetch.__Rewire__('request', request);
 
-      return expect(gravity('foo/bar')).to.be.rejectedWith('Unauthorized');
+      return expectPromiseRejectionToMatch(gravity('foo/bar'), /Unauthorized/);
     });
 
     it('rejects parse errors', () => {
       const request = sinon.stub().yields(null, { statusCode: 200, body: 'not json' });
       fetch.__Rewire__('request', request);
 
-      return expect(gravity('foo/bar')).to.be.rejectedWith(/Unexpected token o/);
+      return expectPromiseRejectionToMatch(gravity('foo/bar'), /Unexpected token/);
     });
   });
 });

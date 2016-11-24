@@ -16,9 +16,9 @@ describe('total', () => {
     return total('foo/bar', { extra_option: 1 })
       .then(n => {
         expect(gravity.args[0][0])
-          .to.equal('foo/bar?extra_option=1&size=0&total_count=1');
+          .toBe('foo/bar?extra_option=1&size=0&total_count=1');
 
-        expect(n).to.equal(50);
+        expect(n).toBe(50);
       });
   });
 });

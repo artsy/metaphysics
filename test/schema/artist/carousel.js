@@ -70,8 +70,8 @@ describe('ArtistCarousel type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(gravity.args[0][0]).to.equal('related/shows');
-          expect(gravity.args[0][1]).to.eql({
+          expect(gravity.args[0][0]).toBe('related/shows');
+          expect(gravity.args[0][1]).toEqual({
             artist_id: 'foo-bar',
             sort: '-end_at',
             displayable: true,
@@ -79,10 +79,10 @@ describe('ArtistCarousel type', () => {
             top_tier: true,
           });
 
-          expect(gravity.args[1][0]).to.equal('artist/foo-bar/artworks');
-          expect(gravity.args[1][1]).to.eql({ size: 7, sort: '-iconicity', published: true });
+          expect(gravity.args[1][0]).toBe('artist/foo-bar/artworks');
+          expect(gravity.args[1][1]).toEqual({ size: 7, sort: '-iconicity', published: true });
 
-          expect(data.artist.carousel).to.eql({
+          expect(data.artist.carousel).toEqual({
             images: [
               {
                 href: '/artwork/foo-bar-artwork-1',

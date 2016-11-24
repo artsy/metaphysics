@@ -14,12 +14,12 @@ describe('gravity', () => {
         gravity.with('zzz')('foo/bar', { ids: ['baz'] }),
       ])
         .then(responses => {
-          expect(api.args).to.eql([
+          expect(api.args).toEqual([
             ['foo/bar?ids%5B%5D=baz', 'xxx'],
             ['foo/bar?ids%5B%5D=baz', 'yyy'],
             ['foo/bar?ids%5B%5D=baz', 'zzz'],
           ]);
-          expect(responses).to.eql([
+          expect(responses).toEqual([
             { ok: true },
             { ok: true },
             { ok: true },

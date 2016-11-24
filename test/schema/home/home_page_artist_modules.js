@@ -47,14 +47,14 @@ describe('HomePageArtistModules', () => {
 
         return runAuthenticatedQuery(query).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, 'key');
-          expect(keys).to.eql(['SUGGESTED', 'TRENDING', 'POPULAR']);
+          expect(keys).toEqual(['SUGGESTED', 'TRENDING', 'POPULAR']);
         });
       });
 
       it('only shows the trending and popular artists modules if there are no suggestions', () => {
         return runAuthenticatedQuery(query).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, 'key');
-          expect(keys).to.eql(['TRENDING', 'POPULAR']);
+          expect(keys).toEqual(['TRENDING', 'POPULAR']);
         });
       });
     });
@@ -63,7 +63,7 @@ describe('HomePageArtistModules', () => {
       it('only shows the trending and popular artists modules', () => {
         return runQuery(query).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, 'key');
-          expect(keys).to.eql(['TRENDING', 'POPULAR']);
+          expect(keys).toEqual(['TRENDING', 'POPULAR']);
         });
       });
     });

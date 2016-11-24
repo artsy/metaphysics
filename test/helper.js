@@ -1,11 +1,9 @@
 import schema from '../schema';
 import sinon from 'sinon';
-import expect from 'expect.js';
-import { graphql } from 'graphql';
 
+import { graphql } from 'graphql';
 // Set up our globals
 global.schema = schema;
-global.expect = expect;
 global.sinon = sinon;
 
 // Do not require the use of node-foreman during testing
@@ -45,67 +43,25 @@ global.runAuthenticatedQuery = (query) => {
 };
 
 /**
- * A `expect` test matcher that is used to check if a promise was rejected with a message that
- * matches the given regexp or equals the given string.
+ * Ensuring that promises fail is actually a little bit tricky,
+ * see https://github.com/facebook/jest/issues/2129
  *
- * Note that this matcher *always* expects a promise to be rejected, i.e. it will still fail if the
- * promise resolves and `not` is used.
- *
- * @param {RegExp,String} error The pattern or exact string that the error message should match.
- * @returns {Promise}
+ * So until this is built into Jest, then this wil ldo for now 👍
  */
-expect.Assertion.prototype.rejectedWith = function rejectedWith(error) {
-  return this.obj.then(
-    () => this.assert(
-      this.flags.not,
-      () => 'expected promise to be rejected',
-      () => 'expected promise to be rejected'
-    ),
-    ({ message }) => this.assert(
-      typeof error === 'string' ? message === error : error.test(message),
-      () => 'expected ' + error + ' to match promise rejected with error "' + message + '"',
-      () => 'expected ' + error + ' to not match promise rejected with error "' + message + '"',
-      message
-    )
-  );
+global.expectPromiseRejectionToMatch = (promise, failureMessage) => {
+  return new Promise((resolve, reject) => {
+    promise
+      .then(() => {
+        const object = { message: 'Expected this promise to fail' };
+        reject(object);
+      })
+      .catch(e => {
+        expect(e.message).toMatch(failureMessage);
+        resolve({});
+      });
+  });
 };
 
-/**
- * A `expect` test matcher that is used to check if a promise was rejected or not.
- *
- * @returns {Promise}
- */
-expect.Assertion.prototype.rejected = function rejected() {
-  return this.obj.then(
-    () => this.assert(
-      false,
-      () => 'expected promise to be rejected',
-      () => 'expected promise to be resolved'
-    ),
-    () => this.assert(
-      true,
-      () => 'expected promise to be rejected',
-      () => 'expected promise to be resolved'
-    )
-  );
-};
-
-/**
- * A `expect` test matcher that is used to check if a promise was resolved or not.
- *
- * This matcher only exists because just returning a promise from a test that contains no `expect`
- * calls looks a bit lame, but in reality this matcher wouldn’t need to exist, as a test will
- * automatically fail if a returned promise fails. This is also why there’s no `resolvedWith`
- * matcher, because in that case the `resolve` callback of the promise would contain an `expect`
- * call.
- *
- * @returns {Promise}
- */
-expect.Assertion.prototype.resolved = function resolved() {
-  this.flags.not = !this.flags.not;
-  return this.rejected();
-};
-
-// We want to silence the console output from node-uuid, so we use a mocked module
-// at __mocks__/node-uuid.js which has it's console muted
+// // We want to silence the console output from node-uuid, so we use a mocked module
+// // at __mocks__/node-uuid.js which has it's console muted
 jest.mock('node-uuid');

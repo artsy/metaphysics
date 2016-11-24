@@ -34,7 +34,7 @@ describe('Artist Statuses', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           artist: {
             statuses: {
               artworks: true,

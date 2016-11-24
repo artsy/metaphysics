@@ -10,7 +10,7 @@ describe('Image', () => {
 
     it('takes an image response with options and resizes it to crop', () => {
       expect(croppedImageUrl(image, { width: 500, height: 500 }))
-        .to.eql({
+        .toEqual({
           width: 500,
           height: 500,
           url: 'https://gemini.cloudfront.test/?resize_to=fill&width=500&height=500&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg',
@@ -20,7 +20,7 @@ describe('Image', () => {
     it('works with just a url and resizes it to crop', () => {
       const bareImageUrl = normalize('https://xxx.cloudfront.net/xxx/cat.jpg');
       expect(croppedImageUrl(bareImageUrl, { width: 500, height: 500 }))
-        .to.eql({
+        .toEqual({
           width: 500,
           height: 500,
           url: 'https://gemini.cloudfront.test/?resize_to=fill&width=500&height=500&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg',

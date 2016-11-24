@@ -33,7 +33,7 @@ describe('Gene', () => {
       `;
 
       return runQuery(query).then(({ gene: { filtered_artworks: { hits } } }) => {
-        expect(hits).to.eql([{ id: 'oseberg-norway-queens-ship' }]);
+        expect(hits).toEqual([{ id: 'oseberg-norway-queens-ship' }]);
       });
     });
   });
@@ -82,7 +82,7 @@ describe('Gene', () => {
       `;
 
       return runQuery(query).then(({ gene: { filtered_artworks: { hits } } }) => {
-        expect(hits).to.eql([{ id: 'oseberg-norway-queens-ship' }]);
+        expect(hits).toEqual([{ id: 'oseberg-norway-queens-ship' }]);
       });
     });
   });
