@@ -4,6 +4,7 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLObjectType,
+  GraphQLFloat,
 } from 'graphql';
 
 export const amount = resolve => ({
@@ -47,7 +48,7 @@ const money = ({ name, resolve }) => ({
     name,
     fields: {
       cents: {
-        type: GraphQLInt,
+        type: GraphQLFloat,
         description: 'An amount of money expressed in cents.',
         resolve: (obj) => {
           const { cents } = resolve(obj);
