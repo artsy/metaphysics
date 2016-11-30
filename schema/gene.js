@@ -68,11 +68,11 @@ const Gene = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { id }, request, { fieldASTs }) => {
+  resolve: (root, { id }, request, { fieldNodes }) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ['filtered_artworks', 'id'];
-    if (!fieldASTs || queriedForFieldsOtherThanBlacklisted(fieldASTs, blacklistedFields)) {
+    if (!fieldNodes || queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return gravity(`gene/${id}`);
     }
 

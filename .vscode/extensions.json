@@ -5,6 +5,7 @@
 		"christian-kohler.path-intellisense",
 		"christian-kohler.npm-intellisense",
 		"dbaeumer.vscode-eslint",
-		"flowtype.flow-for-vscode"
+		"flowtype.flow-for-vscode",
+		"Orta.vscode-jest"
 	]
 }

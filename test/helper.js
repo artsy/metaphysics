@@ -1,3 +1,7 @@
+// Do not require the use of node-foreman during testing
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.test' });
+
 import schema from '../schema';
 import sinon from 'sinon';
 
@@ -5,9 +9,6 @@ import { graphql } from 'graphql';
 // Set up our globals
 global.schema = schema;
 global.sinon = sinon;
-
-// Do not require the use of node-foreman during testing
-require('dotenv').config({ path: '.env.test' });
 
 /**
  * Performs a GraphQL query against our schema.
