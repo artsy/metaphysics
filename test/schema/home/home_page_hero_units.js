@@ -43,7 +43,7 @@ describe('HomePageHeroUnits', () => {
       `;
 
       return runQuery(query).then(({ home_page: { hero_units } }) => {
-        expect(hero_units).to.eql([{
+        expect(hero_units).toEqual([{
           _id: '57e2ec9b8b3b817dc10015f7',
           id: 'artrio-2016-number-3',
           href: '/artrio-2016',
@@ -69,7 +69,7 @@ describe('HomePageHeroUnits', () => {
     `;
 
     return runQuery(query).then(({ home_page: { hero_units } }) => {
-      expect(hero_units).to.eql([{
+      expect(hero_units).toEqual([{
         background_image_url: 'wide.jpg',
       }]);
     });

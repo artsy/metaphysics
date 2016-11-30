@@ -80,7 +80,7 @@ describe('LotStanding type', () => {
 
     return runAuthenticatedQuery(query)
       .then(({ me }) => {
-        expect(me).to.eql({
+        expect(me).toEqual({
           lot_standing: {
             is_highest_bidder: true,
             most_recent_bid: { id: '0' },
@@ -134,7 +134,7 @@ describe('LotStanding type', () => {
 
     return runAuthenticatedQuery(query)
       .then(({ me }) => {
-        expect(me).to.eql({
+        expect(me).toEqual({
           lot_standing: {
             is_highest_bidder: false,
             is_leading_bidder: false,
@@ -193,7 +193,7 @@ describe('LotStanding type', () => {
 
     return runAuthenticatedQuery(query)
       .then(({ me }) => {
-        expect(me).to.eql({
+        expect(me).toEqual({
           lot_standing: {
             is_highest_bidder: false,
             is_leading_bidder: true,

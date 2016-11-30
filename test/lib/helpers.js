@@ -14,26 +14,26 @@ describe('exclude', () => {
 
   it('excludes objects given a list of values and which property to match against', () => {
     expect(exclude(['foo', 'baz'], 'id')(xs))
-      .to.eql([
+      .toEqual([
         { id: 'bar', name: 'Bar' },
       ]);
   });
 
   it('simply returns the list if invoked without arguments', () => {
     expect(exclude()(xs))
-      .to.eql(xs);
+      .toEqual(xs);
   });
 });
 
 describe('toKey', () => {
   it('returns a stringified key given a path', () => {
     expect(toKey('foo/bar'))
-      .to.equal('foo/bar?');
+      .toBe('foo/bar?');
   });
 
   it('returns a stringified key given a path and an option', () => {
     expect(toKey('foo/bar', { sort: 'asc' }))
-      .to.equal('foo/bar?sort=asc');
+      .toBe('foo/bar?sort=asc');
   });
 
   it('returns a stringified key given a path and multiple options', () => {
@@ -42,7 +42,7 @@ describe('toKey', () => {
       sleep: false,
       size: 10,
     }))
-      .to.equal('foo/bar?size=10&sleep=false&sort=asc');
+      .toBe('foo/bar?size=10&sleep=false&sort=asc');
   });
 
   it('sorts the option keys in alphabetical order', () => {
@@ -53,53 +53,53 @@ describe('toKey', () => {
       d: false,
       c: 0,
     }))
-      .to.equal('foo/bar?a=3&b=99&c=0&d=false&z=whatever');
+      .toBe('foo/bar?a=3&b=99&c=0&d=false&z=whatever');
   });
 });
 
 describe('isExisty', () => {
   describe('existy things', () => {
     it('returns `true` for Integers', () => {
-      expect(isExisty(0)).to.be(true);
-      expect(isExisty(100)).to.be(true);
+      expect(isExisty(0)).toBe(true);
+      expect(isExisty(100)).toBe(true);
     });
 
     it('returns `true` for Strings', () => {
-      expect(isExisty('0')).to.be(true);
-      expect(isExisty('Foobar')).to.be(true);
-      expect(isExisty(' Foo bar ')).to.be(true);
+      expect(isExisty('0')).toBe(true);
+      expect(isExisty('Foobar')).toBe(true);
+      expect(isExisty(' Foo bar ')).toBe(true);
     });
 
     it('returns `true` for `NaN`', () => {
-      expect(isExisty(NaN)).to.be(true);
+      expect(isExisty(NaN)).toBe(true);
     });
 
     it('returns `true` for non-empty Objects', () => {
-      expect(isExisty({ foo: 'bar' })).to.be(true);
+      expect(isExisty({ foo: 'bar' })).toBe(true);
     });
   });
 
   describe('not existy things', () => {
     it('returns `false` for empty Objects', () => {
-      expect(isExisty({})).to.be(false);
+      expect(isExisty({})).toBe(false);
     });
 
     it('returns `false` for empty Strings', () => {
-      expect(isExisty('')).to.be(false);
+      expect(isExisty('')).toBe(false);
     });
 
     it('returns `false` for whitespace Strings', () => {
-      expect(isExisty(' ')).to.be(false);
-      expect(isExisty(' \n ')).to.be(false);
-      expect(isExisty(' \n\n')).to.be(false);
+      expect(isExisty(' ')).toBe(false);
+      expect(isExisty(' \n ')).toBe(false);
+      expect(isExisty(' \n\n')).toBe(false);
     });
 
     it('returns `false` for `undefined`', () => {
-      expect(isExisty(undefined)).to.be(false);
+      expect(isExisty(undefined)).toBe(false);
     });
 
     it('returns `false` for `null`', () => {
-      expect(isExisty(null)).to.be(false);
+      expect(isExisty(null)).toBe(false);
     });
   });
 });
@@ -108,10 +108,10 @@ describe('stripTags', () => {
   const html = '<a href="http://google.com">Cabbie</a>';
 
   it('strips html from a string', () => {
-    expect(stripTags(html)).to.eql('Cabbie');
+    expect(stripTags(html)).toEqual('Cabbie');
   });
 
   it('returns an empty string if no string is provided', () => {
-    expect(stripTags()).to.eql('');
+    expect(stripTags()).toEqual('');
   });
 });

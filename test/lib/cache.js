@@ -14,7 +14,9 @@ describe('Cache', () => {
 
     describe('#get', () => {
       it('falls through with a rejection', () => {
-        return expect(cache.get('foobar')).to.be.rejected();
+        return cache.get('foobar').catch(e => {
+          expect(e.message).toEqual('connect ECONNREFUSED');
+        });
       });
     });
   });
@@ -31,7 +33,7 @@ describe('Cache', () => {
 
       it('parses the data and resolves the promise', () => {
         return cache.get('get_foo').then(data => {
-          expect(data.bar).to.equal('baz');
+          expect(data.bar).toBe('baz');
         });
       });
     });
@@ -44,8 +46,8 @@ describe('Cache', () => {
           client.get('set_foo', (err, data) => {
             const parsed = JSON.parse(data);
 
-            expect(parsed.bar).to.equal('baz');
-            expect(typeof parsed.cached).to.be('number');
+            expect(parsed.bar).toBe('baz');
+            expect(typeof parsed.cached).toBe('number');
 
             done();
           });
@@ -59,9 +61,9 @@ describe('Cache', () => {
           client.get('set_bar', (err, data) => {
             const parsed = JSON.parse(data);
 
-            expect(parsed.length).to.be(1);
-            expect(parsed[0].baz).to.equal('qux');
-            expect(typeof parsed[0].cached).to.be('number');
+            expect(parsed.length).toBe(1);
+            expect(parsed[0].baz).toBe('qux');
+            expect(typeof parsed[0].cached).toBe('number');
 
             done();
           });

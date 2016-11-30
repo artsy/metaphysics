@@ -47,9 +47,9 @@ describe('PartnerShow type', () => {
     return runQuery(query)
       .then(data => {
         expect(PartnerShow.__get__('gravity').args[0][0])
-          .to.equal('show/new-museum-1-2015-triennial-surround-audience');
+          .toBe('show/new-museum-1-2015-triennial-surround-audience');
 
-        expect(data).to.eql({
+        expect(data).toEqual({
           partner_show: {
             id: 'new-museum-1-2015-triennial-surround-audience',
             start_at: 'Wednesday, February 25th 2015, 12:00:00 pm',
@@ -70,7 +70,7 @@ describe('PartnerShow type', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           partner_show: {
             exhibition_period: 'Feb 25 – May 24, 2015',
           },
@@ -91,7 +91,7 @@ describe('PartnerShow type', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           partner_show: {
             status_update: 'Closing tomorrow',
           },
@@ -111,9 +111,9 @@ describe('PartnerShow type', () => {
     return runQuery(query)
       .then(data => {
         expect(PartnerShow.__get__('gravity').args[0][0])
-          .to.equal('show/new-museum-1-2015-triennial-surround-audience');
+          .toBe('show/new-museum-1-2015-triennial-surround-audience');
 
-        expect(data).to.eql({
+        expect(data).toEqual({
           partner_show: {
             press_release: '<p><strong>foo</strong> <em>bar</em></p>\n',
           },
@@ -138,7 +138,7 @@ describe('PartnerShow type', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           partner_show: {
             counts: {
               artworks: 42,
@@ -161,7 +161,7 @@ describe('PartnerShow type', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           partner_show: {
             counts: {
               eligible_artworks: 8,
@@ -188,7 +188,7 @@ describe('PartnerShow type', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           partner_show: {
             counts: {
               artworks: 2,
@@ -215,7 +215,7 @@ describe('PartnerShow type', () => {
 
     return runQuery(query)
       .then(({ partner_show }) => {
-        expect(partner_show).to.eql({
+        expect(partner_show).toEqual({
           cover_image: null,
         });
       });

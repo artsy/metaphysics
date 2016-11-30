@@ -15,13 +15,13 @@ import Article from '../article';
 import Artist from '../artist';
 import Image, { getDefault } from '../image';
 import Fair from '../fair';
-import Sale, { auctionState } from '../sale';
+import Sale from '../sale';
 import SaleArtwork from '../sale_artwork';
 import PartnerShow from '../partner_show';
 import PartnerShowSorts from '../sorts/partner_show_sorts';
 import Partner from '../partner';
 import Context from './context';
-import Meta from './meta';
+import Meta, { artistNames } from './meta';
 import Highlight from './highlight';
 import Dimensions from '../dimensions';
 import EditionSet from '../edition_set';
@@ -170,9 +170,14 @@ const ArtworkType = new GraphQLObjectType({
       is_in_auction: {
         type: GraphQLBoolean,
         description: 'Is this artwork part of an auction?',
-        resolve: ({ id }) => {
-          return gravity(`related/sales`, { size: 1, artwork: [id] })
-            .then(sales => _.some(sales, 'is_auction')).catch(() => false);
+        resolve: ({ sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            return gravity('sales', { id: sale_ids, is_auction: true })
+              .then(sales => {
+                return sales.length > 0;
+              });
+          }
+          return false;
         },
       },
       is_in_show: {
@@ -189,14 +194,14 @@ const ArtworkType = new GraphQLObjectType({
       is_biddable: {
         type: GraphQLBoolean,
         description: 'Is this artwork part of an auction that is currently running?',
-        resolve: ({ id }) => {
-          return gravity(`related/sales`, { size: 1, artwork: [id] })
-            .then(sales => {
-              return _.some(sales, {
-                is_auction: true,
-                auction_state: 'open',
+        resolve: ({ sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            return gravity('sales', { id: sale_ids, is_auction: true, auction_state: 'open' })
+              .then(sales => {
+                return sales.length > 0;
               });
-            }).catch(() => false);
+          }
+          return false;
         },
       },
       is_unique: {
@@ -220,25 +225,27 @@ const ArtworkType = new GraphQLObjectType({
       is_buy_nowable: {
         type: GraphQLBoolean,
         description: 'When in an auction, can the work be bought before any bids are placed',
-        resolve: ({ id, acquireable }) => {
-          return gravity(`related/sales`, { size: 1, active: true, artwork: [id] })
-            .then(_.first)
-            .then(sale => {
-              if (!sale) return [false];
-
-              return gravity(`sale/${sale.id}/sale_artwork/${id}`)
-                .then(saleArtwork => [sale, saleArtwork]);
+        resolve: ({ id, acquireable, sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0 && acquireable) {
+            return gravity('sales', {
+              id: sale_ids,
+              is_auction: true,
+              auction_state: 'open',
             })
-            .then(([sale, saleArtwork]) => {
-              if (!sale) return false;
+              .then(_.first)
+              .then(sale => {
+                if (!sale) return [false];
 
-              return (
-                acquireable &&
-                sale.sale_type === 'auction' &&
-                auctionState(sale) === 'open' &&
-                saleArtwork.bidder_positions_count < 1
-              );
-            });
+                return gravity(`sale/${sale.id}/sale_artwork/${id}`)
+                  .then(saleArtwork => [sale, saleArtwork]);
+              })
+              .then(([sale, saleArtwork]) => {
+                if (!sale) return false;
+
+                return saleArtwork.bidder_positions_count < 1;
+              });
+          }
+          return false;
         },
       },
       is_comparable_with_auction_results: {
@@ -302,6 +309,10 @@ const ArtworkType = new GraphQLObjectType({
             artists.map(artist => gravity(`/artist/${artist.id}`))
           ).catch(() => []);
         },
+      },
+      artist_names: {
+        type: GraphQLString,
+        resolve: (artwork) => artistNames(artwork),
       },
       dimensions: Dimensions,
       image: {

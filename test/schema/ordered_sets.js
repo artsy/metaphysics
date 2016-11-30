@@ -45,16 +45,16 @@ describe('OrderedSets type', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(OrderedSets.__get__('gravity').args[0]).to.eql([
+        expect(OrderedSets.__get__('gravity').args[0]).toEqual([
           'sets',
           { key: 'artists:featured-genes', public: true },
         ]);
 
-        expect(OrderedSets.__get__('gravity').args[1]).to.eql([
+        expect(OrderedSets.__get__('gravity').args[1]).toEqual([
           'set/52dd3c2e4b8480091700027f/items',
         ]);
 
-        expect(data).to.eql({
+        expect(data).toEqual({
           ordered_sets: [{
             id: '52dd3c2e4b8480091700027f',
             name: 'Featured Genes',

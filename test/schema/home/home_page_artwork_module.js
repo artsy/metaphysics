@@ -29,7 +29,7 @@ describe('HomePageArtworkModule', () => {
   describe('when signed out', () => {
     it('returns the proper title for popular_artists', () => {
       return runQuery(query('popular_artists')).then(({ home_page }) => {
-        expect(home_page.artwork_module.title).to.eql('Works by Popular Artists');
+        expect(home_page.artwork_module.title).toEqual('Works by Popular Artists');
       });
     });
   });

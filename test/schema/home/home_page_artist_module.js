@@ -52,13 +52,13 @@ describe('HomePageArtistModule', () => {
   const shared = (queryRunner) => {
     it('returns trending artists', () => {
       return queryRunner(query('TRENDING')).then(({ home_page }) => {
-        expect(home_page.artist_module.results).to.eql([{ id: 'trending' }]);
+        expect(home_page.artist_module.results).toEqual([{ id: 'trending' }]);
       });
     });
 
     it('returns popular artists', () => {
       return queryRunner(query('POPULAR')).then(({ home_page }) => {
-        expect(home_page.artist_module.results).to.eql([{ id: 'popular' }]);
+        expect(home_page.artist_module.results).toEqual([{ id: 'popular' }]);
       });
     });
   };
@@ -68,7 +68,7 @@ describe('HomePageArtistModule', () => {
 
     it('returns suggestions', () => {
       return runAuthenticatedQuery(query('SUGGESTED')).then(({ home_page }) => {
-        expect(home_page.artist_module.results).to.eql([{ id: 'suggested' }]);
+        expect(home_page.artist_module.results).toEqual([{ id: 'suggested' }]);
       });
     });
   });
@@ -78,8 +78,8 @@ describe('HomePageArtistModule', () => {
 
     it('does not return any suggestions', () => {
       return graphql(schema, query('SUGGESTED')).then(response => {
-        expect(response.data.home_page.artist_module.results).to.be(null);
-        expect(response.errors).to.not.be.empty();
+        expect(response.data.home_page.artist_module.results).toBe(null);
+        expect(response.errors.length).toBeGreaterThan(0);
       });
     });
   });

@@ -15,6 +15,7 @@ describe('Artwork type', () => {
     forsale: true,
     acquireable: false,
     artists: [],
+    sale_ids: ['sale-id-not-auction', 'sale-id-auction'],
   };
 
   const artworkImages = [
@@ -80,7 +81,7 @@ describe('Artwork type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_contactable: true,
@@ -102,7 +103,7 @@ describe('Artwork type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_contactable: false,
@@ -130,7 +131,7 @@ describe('Artwork type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artwork: {
               image: {
                 id: '56b64ed2cd530e670c0000b2',
@@ -165,7 +166,7 @@ describe('Artwork type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_in_auction: true,
@@ -181,17 +182,100 @@ describe('Artwork type', () => {
         .returns(Promise.resolve(artwork))
         // Sales
         .onCall(1)
-        .returns(Promise.resolve([
-          assign({}, sale, { is_auction: false }),
-          assign({}, sale, { is_auction: false }),
-        ]));
+        .returns(Promise.resolve([]));
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_in_auction: false,
+            },
+          });
+        });
+    });
+  });
+
+  describe('#is_biddable', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_biddable
+        }
+      }
+    `;
+
+    it('is true if the artwork has any sales that are open auctions', () => {
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork))
+        // Sales
+        .onCall(1)
+        .returns(Promise.resolve([{}]));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_biddable: true,
+            },
+          });
+        });
+    });
+
+    it('is false if the artwork is not in any sales that are auctions', () => {
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork))
+        // Sales
+        .onCall(1)
+        .returns(Promise.resolve([]));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_biddable: false,
+            },
+          });
+        });
+    });
+  });
+
+  describe('#is_buy_nowable', () => {
+    const response = assign({}, artwork, { acquireable: true });
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_buy_nowable
+        }
+      }
+    `;
+
+    it('is true if the artwork is acquireable and in an open auction with no bids', () => {
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(response))
+        // Sales
+        .onCall(1)
+        .returns(Promise.resolve([{ id: 'sale-id' }]))
+        // Sale Artwork
+        .onCall(2)
+        .returns(Promise.resolve({ bidder_positions_count: 0 }));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_buy_nowable: true,
             },
           });
         });
@@ -240,7 +324,7 @@ describe('Artwork type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data.artwork.banner).to.eql({
+          expect(data.artwork.banner).toEqual({
             __typename: 'ArtworkContextAuction',
             name: 'Y2K',
             href: '/auction/existy',
@@ -268,7 +352,7 @@ describe('Artwork type', () => {
       it('returns false if the artwork is not shareable', () => {
         return runQuery(query)
           .then(data => {
-            expect(data.artwork.is_shareable).to.be(false);
+            expect(data.artwork.is_shareable).toBe(false);
           });
       });
     });
@@ -289,7 +373,7 @@ describe('Artwork type', () => {
           gravity.returns(Promise.resolve(response));
           return runQuery(query)
             .then(data => {
-              expect(data.artwork.is_hangable).to.be(true);
+              expect(data.artwork.is_hangable).toBe(true);
             });
         });
       });
@@ -304,7 +388,7 @@ describe('Artwork type', () => {
           gravity.returns(Promise.resolve(response));
           return runQuery(query)
             .then(data => {
-              expect(data.artwork.is_hangable).to.be(false);
+              expect(data.artwork.is_hangable).toBe(false);
             });
         });
 
@@ -313,7 +397,7 @@ describe('Artwork type', () => {
           gravity.returns(Promise.resolve(response));
           return runQuery(query)
             .then(data => {
-              expect(data.artwork.is_hangable).to.be(false);
+              expect(data.artwork.is_hangable).toBe(false);
             });
         });
 
@@ -322,7 +406,7 @@ describe('Artwork type', () => {
           gravity.returns(Promise.resolve(response));
           return runQuery(query)
             .then(data => {
-              expect(data.artwork.is_hangable).to.be(false);
+              expect(data.artwork.is_hangable).toBe(false);
             });
         });
 
@@ -331,7 +415,7 @@ describe('Artwork type', () => {
           gravity.returns(Promise.resolve(response));
           return runQuery(query)
             .then(data => {
-              expect(data.artwork.is_hangable).to.be(false);
+              expect(data.artwork.is_hangable).toBe(false);
             });
         });
       });
@@ -356,7 +440,7 @@ describe('Artwork type', () => {
       it('removes the hardcoded signature label if present', () => {
         return runQuery(query)
           .then(({ artwork: { signature } }) => {
-            expect(signature).to.equal('<p>Foo <em>bar</em></p>\n');
+            expect(signature).toBe('<p>Foo <em>bar</em></p>\n');
           });
       });
     });

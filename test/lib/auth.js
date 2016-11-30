@@ -24,7 +24,7 @@ describe('auth middleware', () => {
     it('nexts', () => {
       auth(null, null, next);
 
-      expect(next.called).to.be(true);
+      expect(next.called).toBe(true);
     });
   });
 
@@ -32,7 +32,7 @@ describe('auth middleware', () => {
     it('nexts', () => {
       auth({ accepts: sinon.stub().returns('json') }, null, next);
 
-      expect(next.called).to.be(true);
+      expect(next.called).toBe(true);
     });
   });
 
@@ -54,13 +54,13 @@ describe('auth middleware', () => {
       it('requires auth; 401s', () => {
         auth(req, res, next);
 
-        expect(next.called).to.be(false);
+        expect(next.called).toBe(false);
 
         expect(res.set.args[0])
-          .to.eql(['WWW-Authenticate', 'Basic realm=Authorization Required']);
+          .toEqual(['WWW-Authenticate', 'Basic realm=Authorization Required']);
 
         expect(res.send.args[0][0])
-          .to.equal(401);
+          .toBe(401);
       });
     });
 
@@ -79,7 +79,7 @@ describe('auth middleware', () => {
       it('nexts', () => {
         auth(req, res, next);
 
-        expect(next.called).to.be(true);
+        expect(next.called).toBe(true);
       });
     });
   });

@@ -16,6 +16,7 @@
     "runQuery": false,
     "runAuthenticatedQuery": false,
     "schema": false,
-    "sinon": false
+    "sinon": false,
+    "expectPromiseRejectionToMatch": false
   }
 }

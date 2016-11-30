@@ -51,7 +51,7 @@ describe('Me', () => {
 
       return runAuthenticatedQuery(query)
       .then(({ me: { sale_registrations } }) => {
-        expect(sale_registrations).to.eql([
+        expect(sale_registrations).toEqual([
             { is_registered: false, sale: { name: 'Foo Sale' } },
             { is_registered: true, sale: { name: 'Bar Sale' } },
         ]);

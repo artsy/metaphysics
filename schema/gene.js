@@ -5,8 +5,7 @@ import Artist from './artist';
 import Image from './image';
 import filterArtworks from './filter_artworks';
 import { queriedForFieldsOtherThanBlacklisted } from '../lib/helpers';
-
-import { GravityIDFields } from './object_identification';
+import { GravityIDFields, NodeInterface } from './object_identification';
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -17,6 +16,8 @@ import {
 
 const GeneType = new GraphQLObjectType({
   name: 'Gene',
+  interfaces: [NodeInterface],
+  isTypeOf: (obj) => _.has(obj, 'family') && _.has(obj, 'browseable'),
   fields: {
     ...GravityIDFields,
     cached,
@@ -67,14 +68,17 @@ const Gene = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { id }, request, { fieldASTs }) => {
+  resolve: (root, { id }, request, { fieldNodes }) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ['filtered_artworks', 'id'];
-    if (queriedForFieldsOtherThanBlacklisted(fieldASTs, blacklistedFields)) {
+    if (!fieldNodes || queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return gravity(`gene/${id}`);
     }
-    return { id };
+
+    // The family and browsable are here so that the type system's `isTypeOf`
+    // resolves correctly when we're skipping gravity data
+    return { id, family: null, browseable: null };
   },
 };
 

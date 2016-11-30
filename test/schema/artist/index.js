@@ -12,6 +12,7 @@ describe('Artist type', () => {
       blurb: null,
       birthday: null,
       artworks_count: 42,
+      partner_shows_count: 42,
     };
 
     Artist.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(artist)));
@@ -38,9 +39,9 @@ describe('Artist type', () => {
   it('fetches an artist by ID', () => {
     return runQuery('{ artist(id: "foo-bar") { id, name } }')
       .then(data => {
-        expect(Artist.__get__('gravity').args[0][0]).to.equal('artist/foo-bar');
-        expect(data.artist.id).to.equal('foo-bar');
-        expect(data.artist.name).to.equal('Foo Bar');
+        expect(Artist.__get__('gravity').args[0][0]).toBe('artist/foo-bar');
+        expect(data.artist.id).toBe('foo-bar');
+        expect(data.artist.name).toBe('Foo Bar');
       });
   });
 
@@ -57,7 +58,7 @@ describe('Artist type', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           artist: {
             counts: {
               partner_shows: 42,
@@ -80,7 +81,7 @@ describe('Artist type', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           artist: {
             counts: {
               related_artists: 42,
@@ -103,7 +104,7 @@ describe('Artist type', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           artist: {
             counts: {
               articles: 22,
@@ -124,7 +125,7 @@ describe('Artist type', () => {
 
     return runQuery(query)
       .then(data => {
-        expect(data).to.eql({
+        expect(data).toEqual({
           artist: {
             has_metadata: false,
           },
@@ -145,7 +146,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: 'b. 2000',
             },
@@ -166,7 +167,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: 'b. 2000',
             },
@@ -187,7 +188,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: 'Est. 2000',
             },
@@ -209,7 +210,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: 'Martian, b. 2000',
             },
@@ -230,7 +231,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: 'Martian',
             },
@@ -249,7 +250,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: null,
             },
@@ -271,7 +272,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               blurb: 'catty blurb',
             },
@@ -313,7 +314,7 @@ describe('Artist type', () => {
 
           return runQuery(query)
             .then(data => {
-              expect(data).to.eql({
+              expect(data).toEqual({
                 artist: {
                   biography_blurb: {
                     text: 'new catty bio',
@@ -331,32 +332,34 @@ describe('Artist type', () => {
           artist.blurb = 'artsy blurb';
         });
       });
-      it('returns the artsy blurb if there is no featured partner bio', () => {
-        artist.blurb = 'artsy blurb';
-        const query = `
-          {
-            artist(id: "foo-bar") {
-              biography_blurb {
-                text
-                credit
-                partner_id
+      describe('without a featured partner bio', () => {
+        it('returns the artsy blurb if there is no featured partner bio', () => {
+          artist.blurb = 'artsy blurb';
+          const query = `
+            {
+              artist(id: "foo-bar") {
+                biography_blurb(partner_bio: true) {
+                  text
+                  credit
+                  partner_id
+                }
               }
             }
-          }
-        `;
+          `;
 
-        return runQuery(query)
-          .then(data => {
-            expect(data).to.eql({
-              artist: {
-                biography_blurb: {
-                  text: 'artsy blurb',
-                  credit: null,
-                  partner_id: null,
+          return runQuery(query)
+            .then(data => {
+              expect(data).toEqual({
+                artist: {
+                  biography_blurb: {
+                    text: 'artsy blurb',
+                    credit: null,
+                    partner_id: null,
+                  },
                 },
-              },
+              });
             });
-          });
+        });
       });
     });
     it('returns the blurb if present', () => {
@@ -375,7 +378,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               biography_blurb: {
                 text: 'catty blurb',
@@ -416,7 +419,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               biography_blurb: {
                 text: 'new catty bio',
@@ -443,7 +446,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               formatted_artworks_count: '42 works, 21 for sale',
             },
@@ -465,7 +468,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               formatted_artworks_count: '42 works',
             },
@@ -487,7 +490,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               formatted_artworks_count: null,
             },
@@ -509,7 +512,7 @@ describe('Artist type', () => {
 
       return runQuery(query)
         .then(data => {
-          expect(data).to.eql({
+          expect(data).toEqual({
             artist: {
               formatted_artworks_count: '1 work',
             },
