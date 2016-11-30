@@ -21,7 +21,7 @@ import PartnerShow from '../partner_show';
 import PartnerShowSorts from '../sorts/partner_show_sorts';
 import Partner from '../partner';
 import Context from './context';
-import Meta from './meta';
+import Meta, { artistNames } from './meta';
 import Highlight from './highlight';
 import Dimensions from '../dimensions';
 import EditionSet from '../edition_set';
@@ -309,6 +309,10 @@ const ArtworkType = new GraphQLObjectType({
             artists.map(artist => gravity(`/artist/${artist.id}`))
           ).catch(() => []);
         },
+      },
+      artist_names: {
+        type: GraphQLString,
+        resolve: (artwork) => artistNames(artwork),
       },
       dimensions: Dimensions,
       image: {

@@ -16,7 +16,7 @@ const titleWithDate = ({ title, date }) => join(' ', [
   date ? `(${date})` : undefined,
 ]);
 
-const artistNames = artwork =>
+export const artistNames = artwork =>
   artwork.cultural_maker || map(artwork.artists, 'name').join(', ');
 
 const forSaleIndication = artwork =>
