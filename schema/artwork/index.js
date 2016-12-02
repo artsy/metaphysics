@@ -208,7 +208,7 @@ const ArtworkType = new GraphQLObjectType({
         description: 'Is this artwork part of an auction that is currently running?',
         resolve: ({ sale_ids }) => {
           if (sale_ids && sale_ids.length > 0) {
-            return gravity('sales', { id: sale_ids, is_auction: true, auction_state: 'open' })
+            return gravity('sales', { id: sale_ids, is_auction: true, live: true })
               .then(sales => {
                 return sales.length > 0;
               });
