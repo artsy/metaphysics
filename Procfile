@@ -1,1 +1,1 @@
-web: node index.js
+web: node_modules/.bin/forever -c "node --max_old_space_size=960" index.js
