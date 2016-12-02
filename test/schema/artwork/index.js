@@ -113,6 +113,74 @@ describe('Artwork type', () => {
     });
   });
 
+  describe('#is_purchasable', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_purchasable
+        }
+      }
+    `;
+
+    it('is purchasable if it is inquireable with an exact price', () => {
+      artwork.inquireable = true;
+      artwork.price = '$420';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_purchasable: true,
+            },
+          });
+        });
+    });
+
+    it('is not purchasable if it is inquireable without an exact price', () => {
+      artwork.inquireable = true;
+      artwork.price = '$420 - $500';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_purchasable: false,
+            },
+          });
+        });
+    });
+
+    it('is not purchasable if it is not inquireable with an exact price', () => {
+      artwork.inquireable = false;
+      artwork.price = '$420';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_purchasable: false,
+            },
+          });
+        });
+    });
+  });
+
   describe('#images', () => {
     const query = `
       {
