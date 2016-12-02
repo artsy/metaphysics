@@ -18,15 +18,16 @@ It is currently used in production all over the place in [Artsy.net](http://gith
 
 Set up your `.env` file based on our example `.env.test` (the variables you must change for development are separated at the bottom).
 
-Install memcached if you haven't:
-```
+Install memcached and Yarn if you don't already have them:
+``` sh
 brew install memcached
+npm install -g yarn
 ```
 
 To start up a development server, clone this repo and run:
 
 ``` sh
-npm install
+yarn install
 npm run dev
 ```
 
