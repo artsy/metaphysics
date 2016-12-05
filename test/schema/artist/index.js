@@ -303,7 +303,7 @@ describe('Artist type', () => {
           const query = `
             {
               artist(id: "foo-bar") {
-                biography_blurb(partner_bio: true) {
+                biography_blurb(partner_bio: true, format: HTML) {
                   text
                   credit
                   partner_id
@@ -317,7 +317,7 @@ describe('Artist type', () => {
               expect(data).toEqual({
                 artist: {
                   biography_blurb: {
-                    text: 'new catty bio',
+                    text: '<p>new catty bio</p>\n',
                     credit: 'Submitted by Catty Partner',
                     partner_id: 'catty-partner',
                   },

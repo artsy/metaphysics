@@ -222,7 +222,7 @@ const ArtistType = new GraphQLObjectType({
             if (partner_artists && partner_artists.length) {
               const { biography, partner } = first(partner_artists);
               return {
-                text: biography,
+                text: formatMarkdownValue(biography, format),
                 credit: `Submitted by ${partner.name}`,
                 partner_id: partner.id,
               };
