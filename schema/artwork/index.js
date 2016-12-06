@@ -280,7 +280,7 @@ const ArtworkType = new GraphQLObjectType({
       is_price_range: {
         type: GraphQLBoolean,
         resolve: (artwork) => {
-          return new RegExp(/\-/).exec(artwork.price);
+          return new RegExp(/\-/).test(artwork.price);
         },
       },
       availability: {
