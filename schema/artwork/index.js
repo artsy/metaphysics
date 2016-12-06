@@ -277,6 +277,12 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ price_hidden }) => price_hidden,
       },
+      is_price_range: {
+        type: GraphQLBoolean,
+        resolve: (artwork) => {
+          return new RegExp(/\-/).exec(artwork.price);
+        },
+      },
       availability: {
         type: GraphQLString,
       },
@@ -297,6 +303,10 @@ const ArtworkType = new GraphQLObjectType({
           return gravity(`artist/${artist.id}`)
             .catch(() => null);
         },
+      },
+      price: {
+        type: GraphQLString,
+        resolve: ({ price }) => price,
       },
       contact_label: {
         type: GraphQLString,
