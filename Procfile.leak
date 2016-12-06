@@ -1,0 +1,2 @@
+web: node --expose-gc --debug index.js
+memcached: memcached -p 11211
