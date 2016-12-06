@@ -279,8 +279,8 @@ const ArtworkType = new GraphQLObjectType({
       },
       is_price_range: {
         type: GraphQLBoolean,
-        resolve: (artwork) => {
-          return new RegExp(/\-/).test(artwork.price);
+        resolve: ({ price }) => {
+          return new RegExp(/\-/).test(price);
         },
       },
       availability: {
@@ -306,7 +306,6 @@ const ArtworkType = new GraphQLObjectType({
       },
       price: {
         type: GraphQLString,
-        resolve: ({ price }) => price,
       },
       contact_label: {
         type: GraphQLString,

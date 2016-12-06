@@ -513,4 +513,51 @@ describe('Artwork type', () => {
       });
     });
   });
+
+  describe('#is_price_range', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_price_range
+        }
+      }
+    `;
+
+    it('returns true if artwork price is a range.', () => {
+      artwork.price = '$200 - $300';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_price_range: true,
+            },
+          });
+        });
+    });
+
+    it('returns false if artwork price is not a range.', () => {
+      artwork.price = '$1000';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_price_range: false,
+            },
+          });
+        });
+    });
+  });
 });
