@@ -43,6 +43,10 @@ const is_inquireable = ({ inquireable, acquireable }) => {
   return (inquireable && !acquireable);
 };
 
+const is_price_range = ({ price }) => {
+  return new RegExp(/\-/).test(price);
+};
+
 let Artwork;
 
 const ArtworkType = new GraphQLObjectType({
@@ -152,10 +156,7 @@ const ArtworkType = new GraphQLObjectType({
       is_purchasable: {
         type: GraphQLBoolean,
         description: 'True for inquireable artworks that have an exact price.',
-        resolve: (artwork) => {
-          const hasRange = new RegExp(/\-/).exec(artwork.price);
-          return (is_inquireable(artwork) && !hasRange);
-        },
+        resolve: (artwork) => (is_inquireable(artwork) && !is_price_range(artwork)),
       },
       is_inquireable: {
         type: GraphQLBoolean,
@@ -279,9 +280,7 @@ const ArtworkType = new GraphQLObjectType({
       },
       is_price_range: {
         type: GraphQLBoolean,
-        resolve: ({ price }) => {
-          return new RegExp(/\-/).test(price);
-        },
+        resolve: (artwork) => is_price_range(artwork),
       },
       availability: {
         type: GraphQLString,
