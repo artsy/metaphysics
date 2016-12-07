@@ -20,21 +20,6 @@ import {
   GraphQLFloat,
 } from 'graphql';
 
-export function auctionState({ start_at, end_at, live_start_at }) {
-  const start = moment(start_at);
-  const end = moment(end_at);
-  const liveStart = moment(live_start_at);
-  if (moment().isAfter(end) || moment().isSame(end)) {
-    return 'closed';
-  } else if (moment().isBetween(liveStart, end)) {
-    return 'live';
-  } else if (moment().isBetween(start, end)) {
-    return 'open';
-  } else if (moment().isBefore(start) || moment().isSame(start)) {
-    return 'preview';
-  }
-}
-
 const BidIncrement = new GraphQLObjectType({
   name: 'BidIncrement',
   fields: {
@@ -92,23 +77,28 @@ const SaleType = new GraphQLObjectType({
       },
       is_preview: {
         type: GraphQLBoolean,
-        resolve: (sale) =>
-          auctionState(sale) === 'preview',
+        resolve: ({ auction_state }) =>
+          auction_state === 'preview',
       },
       is_open: {
         type: GraphQLBoolean,
-        resolve: (sale) =>
-          auctionState(sale) === 'open' || auctionState(sale) === 'live',
+        resolve: ({ auction_state }) =>
+          auction_state === 'open',
       },
       is_live_open: {
         type: GraphQLBoolean,
-        resolve: (sale) =>
-          auctionState(sale) === 'live',
+        resolve: ({ auction_state, live_start_at }) => {
+          const liveStart = moment(live_start_at);
+          return (
+            auction_state === 'open' &&
+            (moment().isAfter(liveStart) || moment().isSame(liveStart))
+          );
+        },
       },
       is_closed: {
         type: GraphQLBoolean,
-        resolve: (sale) =>
-          auctionState(sale) === 'closed',
+        resolve: ({ auction_state }) =>
+          auction_state === 'closed',
       },
       is_with_buyers_premium: {
         type: GraphQLBoolean,
@@ -116,12 +106,12 @@ const SaleType = new GraphQLObjectType({
       },
       auction_state: {
         type: GraphQLString,
-        resolve: auctionState,
+        resolve: ({ auction_state }) => auction_state,
         deprecationReason: 'Favor `status` for consistency with other models',
       },
       status: {
         type: GraphQLString,
-        resolve: auctionState,
+        resolve: ({ auction_state }) => auction_state,
       },
       registration_ends_at: date,
       start_at: date,
