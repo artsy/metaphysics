@@ -155,7 +155,7 @@ const ArtistType = new GraphQLObjectType({
           formatted_bday = formatted_bday && formatted_bday.replace(/born/i, 'b.');
 
           if ((!isNaN(deathday) && deathday)) {
-            formatted_bday = `${formatted_bday}–${deathday.match(/\d+/)}`;
+            formatted_bday = `${formatted_bday.replace('b. ', '')}–${deathday.match(/\d+/)}`;
           }
 
           if (nationality && formatted_bday) {

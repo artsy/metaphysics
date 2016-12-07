@@ -239,6 +239,29 @@ describe('Artist type', () => {
         });
     });
 
+    it('returns birthday-deathday if deathday is present', () => {
+      artist.nationality = 'Martian';
+      artist.birthday = '2000';
+      artist.deathday = '2012';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              formatted_nationality_and_birthday: 'Martian, 2000–2012',
+            },
+          });
+        });
+    });
+
     it('returns null if neither are provided', () => {
       const query = `
         {
