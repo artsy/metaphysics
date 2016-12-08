@@ -65,6 +65,9 @@ const ShowField = {
     is_reference: {
       type: GraphQLBoolean,
     },
+    visible_to_public: {
+      type: GraphQLBoolean,
+    },
     sort: PartnerShowSorts,
   },
   resolve: ({ id }, options) => {
@@ -385,6 +388,7 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: true,
               at_a_fair: false,
+              visible_to_public: false,
               size: options.size,
             }),
             // Highest tier solo gallery shows
@@ -396,6 +400,7 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: true,
               at_a_fair: false,
+              visible_to_public: false,
               size: options.size,
             }),
             // Highest tier group institutional shows
@@ -407,6 +412,7 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: false,
               at_a_fair: false,
+              visible_to_public: false,
               size: options.size,
             }),
             // Highest tier group gallery shows
@@ -418,6 +424,7 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: true,
               solo_show: false,
               at_a_fair: false,
+              visible_to_public: false,
               size: options.size,
             }),
             // Lower tier solo institutional shows
@@ -429,6 +436,7 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: false,
               solo_show: true,
               at_a_fair: false,
+              visible_to_public: false,
               size: options.size,
             }),
             // Lower tier solo gallery shows
@@ -440,6 +448,7 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: false,
               solo_show: true,
               at_a_fair: false,
+              visible_to_public: false,
               size: options.size,
             }),
             // Lower tier group institutional shows
@@ -451,6 +460,7 @@ const ArtistType = new GraphQLObjectType({
               highest_tier: false,
               solo_show: false,
               at_a_fair: false,
+              visible_to_public: false,
               size: options.size,
             }),
             // Lower tier group gallery shows
@@ -462,6 +472,7 @@ const ArtistType = new GraphQLObjectType({
               is_reference: true,
               solo_show: false,
               at_a_fair: false,
+              visible_to_public: false,
               size: options.size,
             }),
             // Fair booths
@@ -469,6 +480,7 @@ const ArtistType = new GraphQLObjectType({
               artist_id: id,
               sort: '-end_at',
               at_a_fair: true,
+              visible_to_public: false,
               size: options.size,
             }),
           ]).then(allShows => take(concat(...allShows), options.size));
