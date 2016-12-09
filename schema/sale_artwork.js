@@ -11,7 +11,7 @@ import money, { amount } from './fields/money';
 import numeral from './fields/numeral';
 import gravity from '../lib/loaders/gravity';
 import Artwork from './artwork';
-import Sale, { auctionState } from './sale';
+import Sale from './sale';
 import { GravityIDFields } from './object_identification';
 import {
   GraphQLObjectType,
@@ -29,7 +29,7 @@ export const isBiddable = (sale, { artwork: { sold } }) => {
   return (
     !sold &&
     sale.is_auction &&
-    auctionState(sale) === 'open'
+    sale.auction_state === 'open'
   );
 };
 

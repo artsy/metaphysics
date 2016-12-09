@@ -239,6 +239,29 @@ describe('Artist type', () => {
         });
     });
 
+    it('returns birthday-deathday if deathday is present', () => {
+      artist.nationality = 'Martian';
+      artist.birthday = '2000';
+      artist.deathday = '2012';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              formatted_nationality_and_birthday: 'Martian, 2000–2012',
+            },
+          });
+        });
+    });
+
     it('returns null if neither are provided', () => {
       const query = `
         {
@@ -303,7 +326,7 @@ describe('Artist type', () => {
           const query = `
             {
               artist(id: "foo-bar") {
-                biography_blurb(partner_bio: true) {
+                biography_blurb(partner_bio: true, format: HTML) {
                   text
                   credit
                   partner_id
@@ -317,7 +340,7 @@ describe('Artist type', () => {
               expect(data).toEqual({
                 artist: {
                   biography_blurb: {
-                    text: 'new catty bio',
+                    text: '<p>new catty bio</p>\n',
                     credit: 'Submitted by Catty Partner',
                     partner_id: 'catty-partner',
                   },
