@@ -88,6 +88,10 @@ const FairType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
     },
+    name_without_year: {
+      type: GraphQLString,
+      resolve: ({ name }) => name.replace(/\s([0-9])+$/, ''),
+    },
     tagline: {
       type: GraphQLString,
     },
