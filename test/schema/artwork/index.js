@@ -559,5 +559,24 @@ describe('Artwork type', () => {
           });
         });
     });
+
+    it('returns false if artwork price is a range with multiple editions.', () => {
+      artwork.price = '$200 - $300';
+      artwork.edition_sets = [{}];
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_price_range: false,
+            },
+          });
+        });
+    });
   });
 });
