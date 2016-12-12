@@ -43,8 +43,12 @@ const is_inquireable = ({ inquireable, acquireable }) => {
   return (inquireable && !acquireable);
 };
 
-const is_price_range = (price) => {
+const has_price_range = (price) => {
   return new RegExp(/\-/).test(price);
+};
+
+const has_multiple_editions = (edition_sets) => {
+  return edition_sets && edition_sets.length > 0;
 };
 
 let Artwork;
@@ -157,7 +161,7 @@ const ArtworkType = new GraphQLObjectType({
       is_purchasable: {
         type: GraphQLBoolean,
         description: 'True for inquireable artworks that have an exact price.',
-        resolve: (artwork) => (is_inquireable(artwork) && !is_price_range(artwork.price)),
+        resolve: (artwork) => (is_inquireable(artwork) && !has_price_range(artwork.price)),
       },
       is_inquireable: {
         type: GraphQLBoolean,
@@ -281,7 +285,7 @@ const ArtworkType = new GraphQLObjectType({
       },
       is_price_range: {
         type: GraphQLBoolean,
-        resolve: (artwork) => is_price_range(artwork.price),
+        resolve: ({ price, edition_sets }) => has_price_range(price) && !has_multiple_editions(edition_sets), // eslint-disable-line max-len
       },
       availability: {
         type: GraphQLString,
