@@ -74,6 +74,7 @@ const ArtworkType = new GraphQLObjectType({
       },
       title: {
         type: GraphQLString,
+        resolve: ({ title }) => _.isEmpty(title) ? 'Untitled' : title,
       },
       category: {
         type: GraphQLString,
