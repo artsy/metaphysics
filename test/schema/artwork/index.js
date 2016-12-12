@@ -579,4 +579,48 @@ describe('Artwork type', () => {
         });
     });
   });
+
+  describe('A title', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          title
+        }
+      }
+    `;
+
+    it('is Untitled when its title is null', () => {
+      artwork.title = null;
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              title: 'Untitled',
+            },
+          });
+        });
+    });
+
+    it('is Untitled title when its title is empty', () => {
+      artwork.title = '';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              title: 'Untitled',
+            },
+          });
+        });
+    });
+  });
 });
