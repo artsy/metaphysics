@@ -1,3 +1,5 @@
+// @flow
+
 import { map, omit } from 'lodash';
 import Partner from '../partner';
 import AggregationCount from './aggregation_count';

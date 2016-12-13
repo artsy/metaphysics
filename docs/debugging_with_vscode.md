@@ -2,6 +2,12 @@
 
 If you want an overview of how VS Code differs from traditional TextMate clones, read Orta's [post on the Artsy blog](http://artsy.github.io/blog/2016/08/15/vscode/).
 
+## Types
+
+We get partial typing by default through Flow, and the graphql module by default.
+
+To get more extensive typing you need to install [flow-typed](https://github.com/flowtype/flow-typed), via `yarn global add flow-typed`. Then run `flow-typed install` in the root directory.
+
 ## Running Metaphysics
 
 You can _optionally_ run Metaphysics inside your editor, this is done via the task "Start Node Foreman in Dev". To run it trigger "Build Mode" in VS Code (defaults to `cmd + shift + b`.) To close the server, either close the window - or run the command "Tasks: Terminate running tasks".

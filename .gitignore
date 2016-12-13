@@ -6,3 +6,4 @@ dump.rdb
 npm-debug.log
 newrelic_agent.log
 .vscode/.browse.VC.db
+flow-typed

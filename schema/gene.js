@@ -1,3 +1,7 @@
+// @flow
+
+import type { GraphQLFieldConfig } from 'graphql';
+
 import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
@@ -60,7 +64,7 @@ const GeneType = new GraphQLObjectType({
   },
 });
 
-const Gene = {
+const Gene: GraphQLFieldConfig<GeneType, *> = {
   type: GeneType,
   args: {
     id: {
