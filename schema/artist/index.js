@@ -1,11 +1,9 @@
 import {
   assign,
   compact,
-  concat,
   defaults,
   first,
   has,
-  take,
 } from 'lodash';
 import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
