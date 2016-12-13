@@ -188,13 +188,9 @@ async-each@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/async-each/-/async-each-1.0.1.tgz#19d386a1d9edc6e7c1c85d388aedbcc56d33602d"
 
-async@0.2.9:
+async@0.2.9, async@0.2.x, async@~0.2.6, async@~0.2.9:
   version "0.2.9"
   resolved "https://registry.yarnpkg.com/async/-/async-0.2.9.tgz#df63060fbf3d33286a76aaf6d55a2986d9ff8619"
-
-async@0.2.x, async@~0.2.6, async@~0.2.9:
-  version "0.2.10"
-  resolved "https://registry.yarnpkg.com/async/-/async-0.2.10.tgz#b6bbe0b0674b9d719708ca38de8c237cb526c3d1"
 
 async@1.x, async@^1.4.0, async@^1.4.2:
   version "1.5.2"
@@ -1659,6 +1655,10 @@ flatiron@~0.4.2:
     director "1.2.7"
     optimist "0.6.0"
     prompt "0.2.14"
+
+flow-bin@^0.37.0:
+  version "0.37.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.37.0.tgz#456ebbd472d20d2d970560cea0a6b3c648878307"
 
 for-in@^0.1.5:
   version "0.1.6"
