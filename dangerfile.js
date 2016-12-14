@@ -5,7 +5,7 @@ const fs = require('fs');
 
 // Move all JS files towards using flow
 const changes = danger.git.created_files.concat(danger.git.modified_files);
-const unFlowedFiles = changes.filter(path => !path.startWith('test/') && path.endWith('js'))
+const unFlowedFiles = changes.filter(path => !path.startsWith('test/') && path.endsWith('js'))
   .filter(filepath => {
     const content = fs.readFileSync(filepath);
     return !content.includes('@flow');
