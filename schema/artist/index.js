@@ -426,7 +426,7 @@ const ArtistType = new GraphQLObjectType({
         resolve: ({ id }, options) => {
           return gravity('related/sales', defaults(options, {
             artist_id: id,
-            sort: '-end_at',
+            sort: 'timely_at,name',
           }));
         },
       },
