@@ -1,11 +1,9 @@
 import {
   assign,
   compact,
-  concat,
   defaults,
   first,
   has,
-  take,
 } from 'lodash';
 import { exclude } from '../../lib/helpers';
 import cached from '../fields/cached';
@@ -377,113 +375,15 @@ const ArtistType = new GraphQLObjectType({
           },
         },
         type: new GraphQLList(Show.type),
+        description: 'Custom-sorted list of shows for an artist, in order of significance.',
         resolve: ({ id }, options) => {
-          return Promise.all([
-            // Highest tier solo institutional shows
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              is_institution: true,
-              is_reference: true,
-              highest_tier: true,
-              solo_show: true,
-              at_a_fair: false,
-              visible_to_public: false,
-              size: options.size,
-            }),
-            // Highest tier solo gallery shows
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              is_institution: false,
-              is_reference: true,
-              highest_tier: true,
-              solo_show: true,
-              at_a_fair: false,
-              visible_to_public: false,
-              size: options.size,
-            }),
-            // Highest tier group institutional shows
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              is_institution: true,
-              is_reference: true,
-              highest_tier: true,
-              solo_show: false,
-              at_a_fair: false,
-              visible_to_public: false,
-              size: options.size,
-            }),
-            // Highest tier group gallery shows
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              is_institution: false,
-              is_reference: true,
-              highest_tier: true,
-              solo_show: false,
-              at_a_fair: false,
-              visible_to_public: false,
-              size: options.size,
-            }),
-            // Lower tier solo institutional shows
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              is_institution: true,
-              is_reference: true,
-              highest_tier: false,
-              solo_show: true,
-              at_a_fair: false,
-              visible_to_public: false,
-              size: options.size,
-            }),
-            // Lower tier solo gallery shows
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              is_institution: false,
-              is_reference: true,
-              highest_tier: false,
-              solo_show: true,
-              at_a_fair: false,
-              visible_to_public: false,
-              size: options.size,
-            }),
-            // Lower tier group institutional shows
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              is_institution: true,
-              is_reference: true,
-              highest_tier: false,
-              solo_show: false,
-              at_a_fair: false,
-              visible_to_public: false,
-              size: options.size,
-            }),
-            // Lower tier group gallery shows
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              is_institution: false,
-              highest_tier: false,
-              is_reference: true,
-              solo_show: false,
-              at_a_fair: false,
-              visible_to_public: false,
-              size: options.size,
-            }),
-            // Fair booths
-            gravity('related/shows', {
-              artist_id: id,
-              sort: '-end_at',
-              at_a_fair: true,
-              visible_to_public: false,
-              size: options.size,
-            }),
-          ]).then(allShows => take(concat(...allShows), options.size));
+          return gravity('related/shows', {
+            artist_id: id,
+            sort: '-relevance,-start_at',
+            is_reference: true,
+            visible_to_public: false,
+            size: options.size,
+          }).then(shows => { return shows; });
         },
       },
 
