@@ -4,11 +4,11 @@ import { danger, fail, warn, markdown } from 'danger';
 const fs = require('fs');
 
 // Move all JS files towards using flow
-const changes = danger.git.created_files.concat(danger.git.modified_files);
-const unFlowedFiles = changes.filter(path => !path.startsWith('test/') && path.endsWith('js'))
+const changedFiles = danger.git.created_files.concat(danger.git.modified_files);
+const unFlowedFiles = changedFiles.filter(path => !path.startsWith('test/') && path.endsWith('js'))
   .filter(filepath => {
     const content = fs.readFileSync(filepath);
-    return !content.includes('@flow');
+    return content.includes('@flow');
   });
 
 if (unFlowedFiles.length > 0) {
@@ -23,8 +23,8 @@ if (unFlowedFiles.length > 0) {
 }
 
 // Request a CHANGELOG entry
-const hasChangelog = danger.git.modified_files.includes('changelog.md');
-if (!hasChangelog) { fail('Please add a changelog entry for your changes.'); }
+const hasChangelog = changedFiles.includes('changelog.md');
+if (!hasChangelog) { fail('Please add a changelog entry for your changedFiles.'); }
 
 // Politely ask for their name on the entry too
 const changelogDiff = danger.git.diffForFile('changelog.md');
