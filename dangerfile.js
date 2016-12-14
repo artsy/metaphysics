@@ -18,7 +18,7 @@ if (unFlowedFiles.length > 0) {
     ' * [What is Flow?](https://code.facebook.com/posts/1505962329687926/flow-a-new-static-type-checker-for-javascript/)',
     ' * [Danger\'s flow glossary](https://github.com/danger/danger-js/blob/master/docs/js_glossary.md)',
   ];
-  markdown('If you are new to Flow, here are some resources: \n\n' + flowLinks.join('\n'));
+  markdown('--- \n\n If you are new to Flow, here are some resources: \n\n' + flowLinks.join('\n'));
   warn(`These new JS files do not have Flow enabled: ${unFlowedFiles.join(', ')}`);
 }
 
