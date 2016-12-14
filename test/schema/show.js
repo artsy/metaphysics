@@ -67,7 +67,7 @@ describe('Show type', () => {
         });
     });
 
-    it('returns an empty string when the name is null', () => {
+    it('returns null when the name is null', () => {
       const query = `
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -80,7 +80,7 @@ describe('Show type', () => {
         .then(data => {
           expect(data).toEqual({
             show: {
-              name: '',
+              name: null,
             },
           });
         });

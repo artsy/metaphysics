@@ -71,7 +71,7 @@ const ShowType = new GraphQLObjectType({
       type: GraphQLString,
       description: 'The exhibition title',
       resolve: ({ name }) =>
-        isExisty(name) ? name.trim() : '',
+        isExisty(name) ? name.trim() : name,
     },
     description: {
       type: GraphQLString,
