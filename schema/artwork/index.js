@@ -164,6 +164,7 @@ const ArtworkType = new GraphQLObjectType({
         description: 'True for inquireable artworks that have an exact price.',
         resolve: (artwork) => {
           return (
+            !has_multiple_editions(artwork.edition_sets) &&
             is_inquireable(artwork) &&
             isExisty(artwork.price) &&
             !has_price_range(artwork.price)

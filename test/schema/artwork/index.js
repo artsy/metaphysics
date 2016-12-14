@@ -9,14 +9,7 @@ describe('Artwork type', () => {
   const partner = { id: 'existy' };
   const sale = { id: 'existy' };
 
-  const artwork = {
-    id: 'richard-prince-untitled-portrait',
-    title: 'Untitled (Portrait)',
-    forsale: true,
-    acquireable: false,
-    artists: [],
-    sale_ids: ['sale-id-not-auction', 'sale-id-auction'],
-  };
+  let artwork = null;
 
   const artworkImages = [
     {
@@ -48,6 +41,14 @@ describe('Artwork type', () => {
   ];
 
   beforeEach(() => {
+    artwork = {
+      id: 'richard-prince-untitled-portrait',
+      title: 'Untitled (Portrait)',
+      forsale: true,
+      acquireable: false,
+      artists: [],
+      sale_ids: ['sale-id-not-auction', 'sale-id-auction'],
+    };
     gravity = sinon.stub();
     Artwork.__Rewire__('gravity', gravity);
     Context.__Rewire__('gravity', gravity);
@@ -137,6 +138,26 @@ describe('Artwork type', () => {
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_purchasable: true,
+            },
+          });
+        });
+    });
+
+    it('is not purchasable if it has multiple edition sets', () => {
+      artwork.inquireable = true;
+      artwork.price = '$420';
+      artwork.edition_sets = [{}];
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_purchasable: false,
             },
           });
         });
@@ -335,7 +356,6 @@ describe('Artwork type', () => {
   });
 
   describe('#is_buy_nowable', () => {
-    const response = assign({}, artwork, { acquireable: true });
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
@@ -346,10 +366,11 @@ describe('Artwork type', () => {
     `;
 
     it('is true if the artwork is acquireable and in an open auction with no bids', () => {
+      artwork.acquireable = true;
       gravity
         // Artwork
         .onCall(0)
-        .returns(Promise.resolve(response))
+        .returns(Promise.resolve(assign({}, artwork)))
         // Sales
         .onCall(1)
         .returns(Promise.resolve([{ id: 'sale-id' }]))
@@ -432,11 +453,13 @@ describe('Artwork type', () => {
         }
       `;
 
-      const response = assign({}, artwork, { can_share_image: false });
-
-      beforeEach(() => gravity.returns(Promise.resolve(response)));
-
       it('returns false if the artwork is not shareable', () => {
+        artwork.can_share_image = false;
+        gravity
+          // Artwork
+          .onCall(0)
+          .returns(Promise.resolve(assign({}, artwork)));
+
         return runQuery(query)
           .then(data => {
             expect(data.artwork.is_shareable).toBe(false);
@@ -520,11 +543,13 @@ describe('Artwork type', () => {
         }
       `;
 
-      const response = assign({}, artwork, { signature: 'Signature: Foo *bar*' });
-
-      beforeEach(() => gravity.returns(Promise.resolve(response)));
-
       it('removes the hardcoded signature label if present', () => {
+        artwork.signature = 'Signature: Foo *bar*';
+        gravity
+          // Artwork
+          .onCall(0)
+          .returns(Promise.resolve(assign({}, artwork)));
+
         return runQuery(query)
           .then(({ artwork: { signature } }) => {
             expect(signature).toBe('<p>Foo <em>bar</em></p>\n');
