@@ -11,6 +11,9 @@
   "rules": {
     "camelcase": 0
   },
+  "ignore": [
+    "/flow-typed/npm/*"
+  ],
   "globals": {
     "expect": false,
     "runQuery": false,

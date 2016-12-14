@@ -1,3 +1,6 @@
+// @flow
+import type { GraphQLFieldConfig } from 'graphql';
+
 import {
   assign,
   compact,
@@ -387,13 +390,15 @@ const ArtistType = new GraphQLObjectType({
         },
       },
 
-      partner_shows: Object.assign({
+      partner_shows: {
         type: new GraphQLList(PartnerShow.type),
         deprecationReason: 'Prefer to use shows attribute',
-      }, ShowField),
-      shows: Object.assign({
+        ...ShowField,
+      },
+      shows: {
         type: new GraphQLList(Show.type),
-      }, ShowField),
+        ...ShowField,
+      },
 
       partner_artists: {
         type: new GraphQLList(PartnerArtist.type),
@@ -449,7 +454,7 @@ const ArtistType = new GraphQLObjectType({
   },
 });
 
-const Artist = {
+const Artist: GraphQLFieldConfig<ArtistType, *> = {
   type: ArtistType,
   description: 'An Artist',
   args: {

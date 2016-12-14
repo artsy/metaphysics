@@ -1,5 +1,6 @@
 import { assign } from 'lodash';
 
+
 describe('Artist type', () => {
   const Artist = schema.__get__('Artist');
   let artist = null;

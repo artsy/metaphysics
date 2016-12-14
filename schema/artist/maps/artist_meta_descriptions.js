@@ -1,3 +1,4 @@
+// @flow
 /* eslint-disable */
 export default {
   'cindy-sherman': 'Browse the best of Cindy Sherman, including artwork for sale, her latest shows & events, biography, and exclusive Cindy Sherman articles.',

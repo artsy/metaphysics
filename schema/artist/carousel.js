@@ -1,3 +1,6 @@
+// @flow
+import type { GraphQLFieldConfig } from 'graphql';
+
 import _ from 'lodash';
 import Image from '../image';
 import gravity from '../../lib/loaders/gravity';
@@ -17,7 +20,7 @@ const ArtistCarouselType = new GraphQLObjectType({
   },
 });
 
-const ArtistCarousel = {
+const ArtistCarousel: GraphQLFieldConfig<ArtistCarouselType, *> = {
   type: ArtistCarouselType,
   resolve: (artist) => {
     return Promise.all([
