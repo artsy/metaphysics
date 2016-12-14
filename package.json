@@ -16,6 +16,7 @@
     "watch": "jest --watch",
     "lint": "eslint .",
     "flow": "flow check",
+    "danger": "danger",
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js"
@@ -64,6 +65,7 @@
     "babel-jest": "^16.0.0",
     "babel-plugin-rewire": "1.0.0-beta-2",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
+    "danger": "^0.6.9",
     "deep-equal": "^1.0.1",
     "dotenv": "^2.0.0",
     "eslint": "^1.10.3",
