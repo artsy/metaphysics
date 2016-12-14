@@ -66,6 +66,25 @@ describe('Show type', () => {
           });
         });
     });
+
+    it('returns an empty string when the title is null', () => {
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            name
+          }
+        }
+      `;
+      showData.name = null;
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            show: {
+              name: '',
+            },
+          });
+        });
+    });
   });
 
   describe('city', () => {
