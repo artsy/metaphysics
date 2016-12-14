@@ -8,6 +8,7 @@ import {
 import {
   enhance,
   existyValue,
+  isExisty,
 } from '../../lib/helpers';
 import cached from '../fields/cached';
 import { markdown } from '../fields/markdown';
@@ -161,7 +162,14 @@ const ArtworkType = new GraphQLObjectType({
       is_purchasable: {
         type: GraphQLBoolean,
         description: 'True for inquireable artworks that have an exact price.',
-        resolve: (artwork) => (is_inquireable(artwork) && !has_price_range(artwork.price)),
+        resolve: (artwork) => {
+          return (
+            !has_multiple_editions(artwork.edition_sets) &&
+            is_inquireable(artwork) &&
+            isExisty(artwork.price) &&
+            !has_price_range(artwork.price)
+          );
+        },
       },
       is_inquireable: {
         type: GraphQLBoolean,
