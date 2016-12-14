@@ -40,6 +40,12 @@ export default {
       ELIGIBLE_SALE_ARTWORKS_COUNT_DESC: {
         value: '-eligible_sale_artworks_count',
       },
+      TIMELY_AT_NAME_ASC: {
+        value: 'timely_at,name',
+      },
+      TIMELY_AT_NAME_DESC: {
+        value: '-timely_at,name',
+      },
     },
   }),
 };

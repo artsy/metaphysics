@@ -22,7 +22,7 @@ export const featuredFair = () => {
 };
 
 export const featuredAuction = () => {
-  return gravity('sales', { live: true, size: 1, sort: 'end_at' }).then((sales) => {
+  return gravity('sales', { live: true, size: 1, sort: 'timely_at,name' }).then((sales) => {
     if (sales.length) {
       return first(sales);
     }
