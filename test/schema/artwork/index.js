@@ -179,6 +179,25 @@ describe('Artwork type', () => {
           });
         });
     });
+
+    it('is not purchasable if it is inquireable with a blank price', () => {
+      artwork.inquireable = true;
+      artwork.price = '';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_purchasable: false,
+            },
+          });
+        });
+    });
   });
 
   describe('#images', () => {
