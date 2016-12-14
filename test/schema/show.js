@@ -67,7 +67,7 @@ describe('Show type', () => {
         });
     });
 
-    it('returns an empty string when the title is null', () => {
+    it('returns an empty string when the name is null', () => {
       const query = `
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
