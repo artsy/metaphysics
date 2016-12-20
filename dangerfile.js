@@ -24,11 +24,17 @@ if (unFlowedFiles.length > 0) {
 
 // Request a CHANGELOG entry
 const hasChangelog = changedFiles.includes('changelog.md');
-if (!hasChangelog) { fail('Please add a changelog entry for your changedFiles.'); }
+const declaredTrivial = danger.pr.title.indexOf('trivial') !== -1;
 
-// Politely ask for their name on the entry too
-const changelogDiff = danger.git.diffForFile('changelog.md');
-const contributorName = danger.github.pr.user.login;
-if (changelogDiff && changelogDiff.indexOf(contributorName) === -1) {
-  warn('Please add your GitHub name to "' + contributorName + '" the changelog entry.');
+if (!hasChangelog && !declaredTrivial) {
+  fail('Please add a changelog entry noting your changes.');
+}
+
+if (hasChangelog) {
+  // Politely ask for their name on the entry too
+  const changelogDiff = danger.git.diffForFile('changelog.md');
+  const contributorName = danger.github.pr.user.login;
+  if (changelogDiff && changelogDiff.indexOf(contributorName) === -1) {
+    warn('Please add your GitHub name ("' + contributorName + '") to the changelog entry.');
+  }
 }
