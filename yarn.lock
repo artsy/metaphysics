@@ -1140,9 +1140,9 @@ d@^0.1.1, d@~0.1.1:
   dependencies:
     es5-ext "~0.10.2"
 
-danger@^0.6.9:
-  version "0.6.9"
-  resolved "https://registry.yarnpkg.com/danger/-/danger-0.6.9.tgz#a2cbe22f6eb288ca15860b4a856da39e2cd5a95d"
+danger@^0.6.10:
+  version "0.6.10"
+  resolved "https://registry.yarnpkg.com/danger/-/danger-0.6.10.tgz#5c969f4009ed52ec4b31985c8664ef7d6714bd52"
   dependencies:
     babel-polyfill "^6.16.0"
     commander "^2.9.0"

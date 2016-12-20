@@ -10,6 +10,7 @@ describe('Artist Statuses', () => {
       artworks_count: 42,
       partner_shows_count: 42,
       published_artworks_count: 42,
+      displayable_partner_shows_count: 0,
     };
 
     Artist.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(artist)));
@@ -38,7 +39,7 @@ describe('Artist Statuses', () => {
           artist: {
             statuses: {
               artworks: true,
-              shows: true,
+              shows: false,
               cv: true,
             },
           },
