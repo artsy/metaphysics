@@ -7,7 +7,7 @@ const fs = require('fs');
 // our slack bot works correctly.
 const someoneAssigned = danger.github.pr.assignee;
 if (someoneAssigned === null) {
-  fail('Please set a reviewer');
+  fail('Please assign someone to merge this PR, and optionally include people who should review.');
 }
 
 // Move all JS files towards using flow
