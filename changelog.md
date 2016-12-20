@@ -9,4 +9,5 @@
 
 #### Fixes
 
+* [#507](https://github.com/artsy/metaphysics/pull/507): Update artist status for shows to use displayable_partner_shows_count. - [@mzikherman](https://github.com/mzikherman).
 * [#504](https://github.com/artsy/metaphysics/pull/504): Don't crash on nil show names. - [@mzikherman](https://github.com/mzikherman).
