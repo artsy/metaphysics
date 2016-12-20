@@ -14,7 +14,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     shows: {
       type: GraphQLBoolean,
-      resolve: ({ partner_shows_count }) => partner_shows_count > 0,
+      resolve: ({ displayable_partner_shows_count }) => displayable_partner_shows_count > 0,
     },
     cv: {
       type: GraphQLBoolean,
