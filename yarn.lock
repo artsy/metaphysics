@@ -1140,6 +1140,15 @@ d@^0.1.1, d@~0.1.1:
   dependencies:
     es5-ext "~0.10.2"
 
+danger@^0.6.9:
+  version "0.6.9"
+  resolved "https://registry.yarnpkg.com/danger/-/danger-0.6.9.tgz#a2cbe22f6eb288ca15860b4a856da39e2cd5a95d"
+  dependencies:
+    babel-polyfill "^6.16.0"
+    commander "^2.9.0"
+    node-fetch "^1.6.3"
+    parse-diff "^0.4.0"
+
 dashdash@^1.12.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/dashdash/-/dashdash-1.14.1.tgz#853cfa0f7cbe2fed5de20326b8dd581035f6e2f0"
@@ -3142,7 +3151,7 @@ node-emoji@^1.4.1:
   dependencies:
     string.prototype.codepointat "^0.2.0"
 
-node-fetch@^1.0.1:
+node-fetch@^1.0.1, node-fetch@^1.6.3:
   version "1.6.3"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.6.3.tgz#dc234edd6489982d58e8f0db4f695029abcd8c04"
   dependencies:
@@ -3375,6 +3384,10 @@ package-json@^1.0.0:
   dependencies:
     got "^3.2.0"
     registry-url "^3.0.0"
+
+parse-diff@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/parse-diff/-/parse-diff-0.4.0.tgz#9ce35bcce8fc0b7c58f46d71113394fc0b4982dd"
 
 parse-glob@^3.0.4:
   version "3.0.4"
