@@ -263,7 +263,28 @@ describe('Artist type', () => {
         });
     });
 
-    it('returns null if neither are provided', () => {
+    it('returns null if neither birthday, deathday, nor nationality are provided', () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              formatted_nationality_and_birthday: null,
+            },
+          });
+        });
+    });
+
+    it('returns null if neither birthday nor nationality are provided', () => {
+      artist.deathday = '2016';
+
       const query = `
         {
           artist(id: "foo-bar") {
