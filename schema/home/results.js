@@ -79,6 +79,13 @@ const moduleResults = {
       }
     });
   },
+  followed_artist: ({ params }) => {
+    return gravity('filter/artworks', {
+      artist_id: params.followed_artist_id,
+      for_sale: true,
+      size: RESULTS_SIZE,
+    }).then(({ hits }) => hits);
+  },
   related_artists: ({ params }) => {
     return gravity('filter/artworks', {
       artist_id: params.related_artist_id,

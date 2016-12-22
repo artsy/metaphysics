@@ -4,7 +4,7 @@ import {
   clone,
   first,
   forEach,
-  sample,
+  sampleSize,
   shuffle,
   slice,
   sortBy,
@@ -51,11 +51,11 @@ export const geneArtworks = (id, size) => {
   });
 };
 
-export const relatedArtist = (accessToken, userID) => {
+export const relatedArtists = (accessToken, userID) => {
   return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`, {
     exclude_artists_without_forsale_artworks: true,
     exclude_followed_artists: true,
-  }).then(sample);
+  }).then((results) => { return sampleSize(results, 2); });
 };
 
 export const popularArtists = () => {
