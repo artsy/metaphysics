@@ -1,4 +1,5 @@
 import newrelic from 'artsy-newrelic';
+import OpticsAgent from 'optics-agent';
 import xapp from 'artsy-xapp';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -25,6 +26,9 @@ const app = express();
 const port = PORT || 3000;
 
 app.use(newrelic);
+
+OpticsAgent.instrumentSchema(schema);
+app.use(OpticsAgent.middleware());
 
 if (NODE_ENV === 'production') {
   app.set('forceSSLOptions', { trustXFPHeader: true }).use(forceSSL);
@@ -67,6 +71,9 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
       userID,
     },
     formatError: graphqlErrorHandler(request.body),
+    context: {
+      opticsContext: OpticsAgent.context(request),
+    },
   };
 }));
 
