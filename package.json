@@ -53,6 +53,7 @@
     "moment-timezone": "^0.5.5",
     "morgan": "^1.6.1",
     "numeral": "^1.5.3",
+    "optics-agent": "^1.0.3",
     "qs": "^5.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
