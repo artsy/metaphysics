@@ -3328,9 +3328,9 @@ onetime@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-1.1.0.tgz#a1f7838f8314c516f05ecefcbc4ccfe04b4ed789"
 
-optics-agent@^1.0.3:
+optics-agent@alloy/optics-agent-js#dont-introduce-uncatchable-promises_build:
   version "1.0.3"
-  resolved "https://registry.yarnpkg.com/optics-agent/-/optics-agent-1.0.3.tgz#146229fd40f6950d2f7dabde5bb8209e6f4af62b"
+  resolved "https://codeload.github.com/alloy/optics-agent-js/tar.gz/4537ea59dd2c73d83c0b94d519b31f39a656a852"
   dependencies:
     graphql-tools "^0.7.2"
     on-finished "^2.3.0"
