@@ -7,6 +7,7 @@ import {
   sampleSize,
   shuffle,
   slice,
+  filter, 
   sortBy,
 } from 'lodash';
 import blacklist from '../../lib/artist_blacklist';
@@ -55,7 +56,13 @@ export const relatedArtists = (accessToken, userID) => {
   return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`, {
     exclude_artists_without_forsale_artworks: true,
     exclude_followed_artists: true,
-  }).then((results) => { return sampleSize(results, 2); });
+    size: 20,
+  }).then((results) => {
+    const filteredResults = filter(results, (result) => {
+      return result.sim_artist.forsale_artworks_count > 0;
+    });
+    return sampleSize(filteredResults, 2);
+  });
 };
 
 export const popularArtists = () => {
