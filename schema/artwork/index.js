@@ -435,20 +435,23 @@ const ArtworkType = new GraphQLObjectType({
       },
       sale_artwork: {
         type: SaleArtwork.type,
-        resolve: ({ id }) =>
-          gravity('related/sales', { artwork: [id], active: true, size: 1 })
-            .then(_.first)
-            .then(sale => {
-              if (!sale) return null;
-              return gravity(`sale/${sale.id}/sale_artwork/${id}`);
-            })
-            .catch(() => null),
+        resolve: ({ id, sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            const sale_id = _.first(sale_ids);
+            return gravity(`sale/${sale_id}/sale_artwork/${id}`);
+          }
+          return null;
+        },
       },
       sale: {
         type: Sale.type,
-        resolve: ({ id }) =>
-          gravity('related/sales', { artwork: [id], active: true, size: 1 })
-            .then(_.first),
+        resolve: ({ sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            const sale_id = _.first(sale_ids);
+            return gravity(`sale/${sale_id}`);
+          }
+          return null;
+        },
       },
       fair: {
         type: Fair.type,
