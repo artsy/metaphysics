@@ -7,7 +7,7 @@ import {
   sampleSize,
   shuffle,
   slice,
-  filter, 
+  filter,
   sortBy,
 } from 'lodash';
 import blacklist from '../../lib/artist_blacklist';
