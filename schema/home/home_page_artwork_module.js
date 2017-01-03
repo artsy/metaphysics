@@ -89,6 +89,8 @@ const HomePageArtworkModule = {
         return gravity(`gene/${id}`).then(gene => {
           return { key, display, params: { id, gene } };
         });
+      case 'followed_artist':
+        return { key, display, params: { followed_artist_id } };
       case 'related_artists':
         return { key, display, params: { followed_artist_id, related_artist_id } };
       default:

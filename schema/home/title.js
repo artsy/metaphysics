@@ -27,6 +27,11 @@ const moduleTitle = {
       }
     });
   },
+  followed_artist: ({ params }) => {
+    return gravity(`artist/${params.followed_artist_id}`).then((artist) => {
+      return `Works by ${artist.name}`;
+    });
+  },
   related_artists: ({ params }) => {
     return gravity(`artist/${params.related_artist_id}`).then((artist) => {
       return `Works by ${artist.name}`;

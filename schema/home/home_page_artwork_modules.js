@@ -18,7 +18,7 @@ import {
 import { HomePageArtworkModuleType } from './home_page_artwork_module';
 import loggedOutModules from './logged_out_modules';
 import addGenericGenes from './add_generic_genes';
-import { featuredFair, featuredAuction, relatedArtist, followedGenes } from './fetch';
+import { featuredFair, featuredAuction, relatedArtists, followedGenes } from './fetch';
 
 const filterModules = (modules, max_rails) => {
   const allModules = addGenericGenes(filter(modules, ['display', true]));
@@ -85,6 +85,9 @@ const HomePageArtworkModuleTypes = new GraphQLEnumType({
     CURRENT_FAIRS: {
       value: 'current_fairs',
     },
+    FOLLOWED_ARTIST: {
+      value: 'followed_artist',
+    },
     RELATED_ARTISTS: {
       value: 'related_artists',
     },
@@ -139,18 +142,34 @@ const HomePageArtworkModules = {
             const relatedArtistIndex = findIndex(modules, { key: 'related_artists' });
 
             if (relatedArtistIndex > -1) {
-              return Promise.resolve(relatedArtist(accessToken, userID))
-                .then((artistPair) => {
-                  if (artistPair) {
-                    const { artist, sim_artist } = artistPair;
+              return Promise.resolve(relatedArtists(accessToken, userID))
+                .then((artistPairs) => {
+                  // relatedArtist now returns 2 random artist pairs
+                  // we will use one for the related_artist rail and one for
+                  // the followed_artist rail
+                  if (artistPairs) {
+                    const { artist, sim_artist } = artistPairs[0];
 
                     const relatedArtistModuleParams = {
                       followed_artist_id: sim_artist.id,
                       related_artist_id: artist.id,
                     };
+
+                    modules.splice(
+                      relatedArtistIndex,
+                      0,
+                      {
+                        key: 'followed_artist',
+                        display: true,
+                        params: {
+                          followed_artist_id: artistPairs[1].sim_artist.id,
+                        },
+                      }
+                    );
+
                     return set(
                       modules,
-                      `[${relatedArtistIndex}].params`,
+                      `[${relatedArtistIndex + 1}].params`,
                       relatedArtistModuleParams
                     );
                   }

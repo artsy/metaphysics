@@ -8,7 +8,7 @@ describe('HomePageArtworkModules', () => {
     let gravity;
     let modules;
     let relatedArtistsResponse;
-    let relatedArtist;
+    let relatedArtists;
 
     beforeEach(() => {
       modules = {
@@ -23,23 +23,29 @@ describe('HomePageArtworkModules', () => {
         genes: false,
       };
 
-      relatedArtistsResponse = {
-        sim_artist: { id: 'pablo-picasso' },
-        artist: { id: 'charles-broskoski' },
-      };
+      relatedArtistsResponse = [
+        {
+          sim_artist: { id: 'pablo-picasso' },
+          artist: { id: 'charles-broskoski' },
+        },
+        {
+          sim_artist: { id: 'ann-craven' },
+          artist: { id: 'margaret-lee' },
+        },
+      ];
 
       gravity = sinon.stub();
       gravity.with = sinon.stub().returns(gravity);
-      relatedArtist = sinon.stub();
+      relatedArtists = sinon.stub();
 
       HomePageArtworkModules.__Rewire__('gravity', gravity);
-      HomePageArtworkModules.__Rewire__('relatedArtist', relatedArtist);
+      HomePageArtworkModules.__Rewire__('relatedArtists', relatedArtists);
 
       gravity
         // Modules fetch
         .onCall(0)
         .returns(Promise.resolve(modules));
-      relatedArtist
+      relatedArtists
         .onCall(0)
         .returns(Promise.resolve(relatedArtistsResponse));
     });
@@ -72,6 +78,7 @@ describe('HomePageArtworkModules', () => {
           'saved_works',
           'recommended_works',
           'current_fairs',
+          'followed_artist',
           'related_artists',
           'generic_gene',
           'generic_gene',
@@ -109,6 +116,7 @@ describe('HomePageArtworkModules', () => {
           'followed_galleries',
           'saved_works',
           'current_fairs',
+          'followed_artist',
           'related_artists',
         ]);
       });

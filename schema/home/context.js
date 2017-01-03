@@ -49,7 +49,17 @@ export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
       type: Artist.type,
     },
   }),
-  isTypeOf: ({ context_type }) => context_type === 'Artist',
+  isTypeOf: ({ context_type }) => context_type === 'RelatedArtist',
+});
+
+export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType({
+  name: 'HomePageModuleContextFollowedArtist',
+  fields: () => ({
+    artist: {
+      type: Artist.type,
+    },
+  }),
+  isTypeOf: ({ context_type }) => context_type === 'FollowedArtist',
 });
 
 export const moduleContext = {
@@ -78,13 +88,21 @@ export const moduleContext = {
       return assign({}, fair, { context_type: 'Fair' });
     });
   },
+  followed_artist: ({ params }) => {
+    return gravity(`artist/${params.followed_artist_id}`).then((artist) => {
+      return assign({}, {
+        context_type: 'FollowedArtist',
+        artist,
+      });
+    });
+  },
   related_artists: ({ params }) => {
     return Promise.all([
       gravity(`artist/${params.related_artist_id}`),
       gravity(`artist/${params.followed_artist_id}`),
     ]).then(([related_artist, follow_artist]) => {
       return assign({}, {
-        context_type: 'Artist',
+        context_type: 'RelatedArtist',
         based_on: follow_artist,
         artist: related_artist,
       });
@@ -116,6 +134,7 @@ export default {
       HomePageModuleContextTrendingType,
       HomePageModuleContextFollowArtistsType,
       HomePageModuleContextRelatedArtistType,
+      HomePageModuleContextFollowedArtistType,
     ],
   }),
   resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {
