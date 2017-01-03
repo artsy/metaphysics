@@ -4,9 +4,10 @@ import {
   clone,
   first,
   forEach,
-  sample,
+  sampleSize,
   shuffle,
   slice,
+  filter,
   sortBy,
 } from 'lodash';
 import blacklist from '../../lib/artist_blacklist';
@@ -51,11 +52,17 @@ export const geneArtworks = (id, size) => {
   });
 };
 
-export const relatedArtist = (accessToken, userID) => {
+export const relatedArtists = (accessToken, userID) => {
   return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`, {
     exclude_artists_without_forsale_artworks: true,
     exclude_followed_artists: true,
-  }).then(sample);
+    size: 20,
+  }).then((results) => {
+    const filteredResults = filter(results, (result) => {
+      return result.sim_artist.forsale_artworks_count > 0;
+    });
+    return sampleSize(filteredResults, 2);
+  });
 };
 
 export const popularArtists = () => {
