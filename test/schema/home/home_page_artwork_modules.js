@@ -93,6 +93,55 @@ describe('HomePageArtworkModules', () => {
       });
     });
 
+    it('shows skips the followed_artist module if no 2nd pair is returned', () => {
+      relatedArtistsResponse = [
+        {
+          sim_artist: { id: 'pablo-picasso' },
+          artist: { id: 'charles-broskoski' },
+        },
+      ];
+
+      relatedArtists
+        .onCall(0)
+        .returns(Promise.resolve(relatedArtistsResponse));
+
+      const query = `
+        {
+          home_page {
+            artwork_modules {
+              key
+              params {
+                related_artist_id
+                followed_artist_id
+              }
+            }
+          }
+        }
+      `;
+
+      return runAuthenticatedQuery(query).then(({ home_page }) => {
+        const keys = map(home_page.artwork_modules, 'key');
+
+        // the default module response is 8 keys
+        expect(keys).toEqual([
+          'followed_galleries',
+          'saved_works',
+          'recommended_works',
+          'current_fairs',
+          'related_artists',
+          'generic_gene',
+          'generic_gene',
+          'generic_gene',
+        ]);
+
+        const relatedArtistsModule = find(home_page.artwork_modules, { key: 'related_artists' });
+        expect(relatedArtistsModule.params).toEqual({
+          related_artist_id: 'charles-broskoski',
+          followed_artist_id: 'pablo-picasso',
+        });
+      });
+    });
+
     it('takes a preferred order of modules', () => {
       const query = `
         {
