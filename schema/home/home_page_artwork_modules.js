@@ -155,17 +155,19 @@ const HomePageArtworkModules = {
                       related_artist_id: artist.id,
                     };
 
-                    modules.splice(
-                      relatedArtistIndex,
-                      0,
-                      {
-                        key: 'followed_artist',
-                        display: true,
-                        params: {
-                          followed_artist_id: artistPairs[1].sim_artist.id,
-                        },
-                      }
-                    );
+                    if (artistPairs[1]) {
+                      modules.splice(
+                        relatedArtistIndex,
+                        0,
+                        {
+                          key: 'followed_artist',
+                          display: true,
+                          params: {
+                            followed_artist_id: artistPairs[1].sim_artist.id,
+                          },
+                        }
+                      );
+                    }
 
                     return set(
                       modules,
