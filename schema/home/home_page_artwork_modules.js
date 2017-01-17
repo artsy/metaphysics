@@ -139,7 +139,7 @@ const HomePageArtworkModules = {
             // For the related artists rail, we need to fetch a random
             // set of followed artist + related artist initially
             // and pass it along so that any placeholder titles are consistent
-            const relatedArtistIndex = findIndex(modules, { key: 'related_artists' });
+            let relatedArtistIndex = findIndex(modules, { key: 'related_artists' });
 
             if (relatedArtistIndex > -1) {
               return Promise.resolve(relatedArtists(accessToken, userID))
@@ -155,21 +155,24 @@ const HomePageArtworkModules = {
                       related_artist_id: artist.id,
                     };
 
-                    modules.splice(
-                      relatedArtistIndex,
-                      0,
-                      {
-                        key: 'followed_artist',
-                        display: true,
-                        params: {
-                          followed_artist_id: artistPairs[1].sim_artist.id,
-                        },
-                      }
-                    );
+                    if (artistPairs[1]) {
+                      modules.splice(
+                        relatedArtistIndex,
+                        0,
+                        {
+                          key: 'followed_artist',
+                          display: true,
+                          params: {
+                            followed_artist_id: artistPairs[1].sim_artist.id,
+                          },
+                        }
+                      );
+                      relatedArtistIndex++;
+                    }
 
                     return set(
                       modules,
-                      `[${relatedArtistIndex + 1}].params`,
+                      `[${relatedArtistIndex}].params`,
                       relatedArtistModuleParams
                     );
                   }

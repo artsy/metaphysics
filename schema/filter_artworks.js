@@ -3,6 +3,7 @@ import { map, omit, keys } from 'lodash';
 import { isExisty } from '../lib/helpers';
 import Artwork from './artwork';
 import Artist from './artist';
+import numeral from './fields/numeral';
 import {
   ArtworksAggregationResultsType,
   ArtworksAggregation,
@@ -26,10 +27,24 @@ export const FilterArtworksType = new GraphQLObjectType({
     total: {
       type: GraphQLInt,
       resolve: ({ aggregations }) => aggregations.total.value,
+      deprecationReason: 'Favor `counts.total`',
     },
     followed_artists_total: {
       type: GraphQLInt,
       resolve: ({ aggregations }) => aggregations.followed_artists.value,
+      deprecationReason: 'Favor `favor counts.followed_artists`',
+    },
+    counts: {
+      type: new GraphQLObjectType({
+        name: 'FilterArtworksCounts',
+        fields: {
+          total: numeral(({ aggregations }) =>
+            aggregations.total.value),
+          followed_artists: numeral(({ aggregations }) =>
+            aggregations.followed_artists.value),
+        },
+      }),
+      resolve: (artist) => artist,
     },
     merchandisable_artists: {
       type: new GraphQLList(Artist.type),
@@ -130,6 +145,9 @@ function filterArtworks(primaryKey) {
       },
       sort: {
         type: GraphQLString,
+      },
+      sale_id: {
+        type: GraphQLID,
       },
     },
     resolve: (root, options, request, { rootValue: { accessToken } }) => {
