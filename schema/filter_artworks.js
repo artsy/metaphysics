@@ -146,6 +146,9 @@ function filterArtworks(primaryKey) {
       sort: {
         type: GraphQLString,
       },
+      sale_id: {
+        type: GraphQLID,
+      },
     },
     resolve: (root, options, request, { rootValue: { accessToken } }) => {
       const gravityOptions = Object.assign({}, options);
