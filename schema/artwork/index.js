@@ -99,7 +99,7 @@ const ArtworkType = new GraphQLObjectType({
           return _.compact([
             (artist && artist.name),
             (title && `‘${title}’`),
-            date,
+            date
           ]).join(', ');
       },
       website: {
