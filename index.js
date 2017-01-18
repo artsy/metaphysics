@@ -13,7 +13,6 @@ import config from './config';
 import { info, error } from './lib/loggers';
 import auth from './lib/auth';
 import graphqlErrorHandler from './lib/graphql-error-handler';
-
 global.Promise = Bluebird;
 
 const {
@@ -62,12 +61,18 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
   const accessToken = request.headers['x-access-token'];
   const userID = request.headers['x-user-id'];
 
+  let timezone;
+  if (request.headers.timezone && request.headers.timezone.split(';')[2].length) {
+    timezone = request.headers.timezone.split(';')[2];
+  }
+
   return {
     schema,
     graphiql: true,
     rootValue: {
       accessToken,
       userID,
+      timezone,
     },
     formatError: graphqlErrorHandler(request.body),
   };
