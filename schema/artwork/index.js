@@ -93,6 +93,16 @@ const ArtworkType = new GraphQLObjectType({
       image_rights: {
         type: GraphQLString,
       },
+      image_title: {
+        type: GraphQLString,
+        resolve: ({ artist, title, date }) => {
+          return _.compact([
+            (artist && artist.name),
+            (title && `‘${title}’`),
+            date,
+          ]).join(', ');
+        },
+      },
       website: {
         type: GraphQLString,
         resolve: artwork =>
