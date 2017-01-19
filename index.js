@@ -61,9 +61,9 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
   const accessToken = request.headers['x-access-token'];
   const userID = request.headers['x-user-id'];
 
-  let timezone;
+  let defaultTimezone;
   if (request.headers.timezone && request.headers.timezone.split(';')[2].length) {
-    timezone = request.headers.timezone.split(';')[2];
+    defaultTimezone = request.headers.timezone.split(';')[2];
   }
 
   return {
@@ -72,7 +72,7 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
     rootValue: {
       accessToken,
       userID,
-      timezone,
+      defaultTimezone,
     },
     formatError: graphqlErrorHandler(request.body),
   };
