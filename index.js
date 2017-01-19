@@ -60,10 +60,10 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
 
   const accessToken = request.headers['x-access-token'];
   const userID = request.headers['x-user-id'];
-
+  const tz = request.headers['x-timezone'];
   let defaultTimezone;
-  if (request.headers.timezone && request.headers.timezone.split(';')[2].length) {
-    defaultTimezone = request.headers.timezone.split(';')[2];
+  if (tz && tz.split(';')[2].length) {
+    defaultTimezone = tz.split(';')[2];
   }
 
   return {
