@@ -53,9 +53,10 @@ app.get('/favicon.ico', (req, res) => {
 });
 
 app.all('/graphql', (req, res) => res.redirect('/'));
+auth(app);
 
 app.use(bodyParser.json());
-app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
+app.use('/', cors(), morgan('combined'), graphqlHTTP(request => {
   info('----------');
 
   loaders.clearAll();

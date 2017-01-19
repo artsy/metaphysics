@@ -2,6 +2,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Start Debugging",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/babel-cli/bin/babel-node.js",
+            "args": [
+                "${workspaceRoot}/index.js"
+            ]
+        },
+        {
             "name": "Attach Debugger",
             "type": "node",
             "request": "attach",
