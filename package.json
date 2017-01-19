@@ -55,6 +55,8 @@
     "morgan": "^1.6.1",
     "numeral": "^1.5.3",
     "optics-agent": "alloy/optics-agent-js#dont-introduce-uncatchable-promises_build",
+    "passport": "^0.3.2",
+    "passport-oauth2": "git://github.com/craigspaeth/passport-oauth2.git",
     "qs": "^5.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
