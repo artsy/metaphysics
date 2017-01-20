@@ -2904,9 +2904,9 @@ media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
 
-memjs@^0.9.0:
-  version "0.9.1"
-  resolved "https://registry.yarnpkg.com/memjs/-/memjs-0.9.1.tgz#2c2abcc18231e1eb310d13b0f9a265d374ef4903"
+memjs@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/memjs/-/memjs-0.10.0.tgz#5dd549c8c8561aaca7a13e8339f4a7cd88c65efd"
 
 merge-descriptors@1.0.1:
   version "1.0.1"
