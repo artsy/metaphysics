@@ -19,6 +19,7 @@ export default {
     },
     timezone: {
       type: GraphQLString,
+      description: 'Specify a time zone for this field only, otherwise falls back to the timezone set in `X-TIMEZONE` header',
     },
     convert_to_utc: {
       type: GraphQLBoolean,
