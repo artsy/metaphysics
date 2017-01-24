@@ -8,6 +8,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
+import { shuffle } from 'lodash';
 
 const HomePageHeroUnitType = new GraphQLObjectType({
   name: 'HomePageHeroUnit',
@@ -24,6 +25,21 @@ const HomePageHeroUnitType = new GraphQLObjectType({
     title: {
       type: GraphQLString,
       resolve: ({ mobile_title }) => mobile_title,
+    },
+    type: {
+      type: GraphQLString,
+    },
+    name: {
+      type: GraphQLString,
+    },
+    link_color_hover_hex: {
+      type: GraphQLString,
+    },
+    link_text: {
+      type: GraphQLString,
+    },
+    credit_line: {
+      type: GraphQLString,
     },
     background_image_url: {
       type: GraphQLString,
@@ -78,7 +94,7 @@ const HomePageHeroUnits = {
     const params = { enabled: true };
     params[platform] = true;
     return gravity('site_hero_units', params).then(units => {
-      return units.map(unit => Object.assign({ platform }, unit));
+      return shuffle(units.map(unit => Object.assign({ platform }, unit)));
     });
   },
 };
