@@ -22,14 +22,23 @@ const HomePageHeroUnitType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: ({ link }) => link,
     },
+    description: {
+      type: GraphQLString
+    },
     title: {
       type: GraphQLString,
       resolve: ({ mobile_title }) => mobile_title,
+    },
+    title_image_url: {
+      type: GraphQLString,
     },
     type: {
       type: GraphQLString,
     },
     name: {
+      type: GraphQLString,
+    },
+    menu_color_class: {
       type: GraphQLString,
     },
     link_color_hover_hex: {
