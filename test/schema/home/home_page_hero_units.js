@@ -7,9 +7,12 @@ describe('HomePageHeroUnits', () => {
     id: 'artrio-2016-number-3',
     link: '/artrio-2016',
     heading: 'Featured Fair',
+    name: 'ArtRio 2016',
     mobile_title: 'ArtRio 2016',
     background_image_url: 'wide.jpg',
     background_image_mobile_url: 'narrow.jpg',
+    description: 'Discover works on your laptop',
+    mobile_description: 'Discover works on your phone',
   }];
 
   beforeEach(() => {
@@ -21,7 +24,31 @@ describe('HomePageHeroUnits', () => {
     HomePageHeroUnits.__ResetDependency__('gravity');
   });
 
-  ['mobile', 'desktop', 'martsy'].forEach(platform => {
+  ['mobile', 'desktop'].forEach(platform => {
+    it(`picks subtitle for ${platform}`, () => {
+      const params = { enabled: true };
+      params[platform] = true;
+      gravity.withArgs('site_hero_units', params).returns(Promise.resolve(payload));
+
+      const query = `
+        {
+          home_page {
+            hero_units(platform: ${platform.toUpperCase()}) {
+              subtitle
+            }
+          }
+        }
+      `;
+
+      return runQuery(query).then(({ home_page: { hero_units } }) => {
+        if (platform === 'desktop') {
+          expect(hero_units[0].subtitle).toEqual('Discover works on your laptop');
+        } else {
+          expect(hero_units[0].subtitle).toEqual('Discover works on your phone');
+        }
+      });
+    });
+
     it(`returns enabled hero units for ${platform} only`, () => {
       const params = { enabled: true };
       params[platform] = true;

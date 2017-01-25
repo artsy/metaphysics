@@ -7,13 +7,43 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLBoolean,
 } from 'graphql';
+import { shuffle } from 'lodash';
 
 const HomePageHeroUnitType = new GraphQLObjectType({
   name: 'HomePageHeroUnit',
   fields: {
     ...GravityIDFields,
     cached,
+    mode: {
+      type: new GraphQLEnumType({
+        name: 'HomePageHeroUnitMode',
+        values: {
+          LEFT_DARK: {
+            value: 'left white',
+          },
+          LEFT_LIGHT: {
+            value: 'left black',
+          },
+          CENTERED_DARK: {
+            value: 'center white',
+          },
+          CENTERED_LIGHT: {
+            value: 'center black',
+          },
+          RIGHT_DARK: {
+            value: 'right white',
+          },
+          RIGHT_LIGHT: {
+            value: 'right black',
+          },
+        },
+      }),
+      resolve: ({ type, menu_color_class }) => {
+        return type.toLowerCase() + ' ' + menu_color_class.toLowerCase();
+      },
+    },
     heading: {
       type: GraphQLString,
     },
@@ -23,7 +53,32 @@ const HomePageHeroUnitType = new GraphQLObjectType({
     },
     title: {
       type: GraphQLString,
-      resolve: ({ mobile_title }) => mobile_title,
+      resolve: ({ mobile_title, name, platform }) => {
+        return platform === 'desktop' ? name : mobile_title;
+      },
+    },
+    title_image_url: {
+      args: {
+        retina: {
+          type: GraphQLBoolean,
+        },
+      },
+      type: GraphQLString,
+      resolve: ({ title_image_url, title_image_retina_url, retina }) => {
+        return retina ? title_image_retina_url : title_image_url;
+      },
+    },
+    subtitle: {
+      type: GraphQLString,
+      resolve: ({ mobile_description, description, platform }) => {
+        return platform === 'desktop' ? description : mobile_description;
+      },
+    },
+    link_text: {
+      type: GraphQLString,
+    },
+    credit_line: {
+      type: GraphQLString,
     },
     background_image_url: {
       type: GraphQLString,
@@ -78,7 +133,7 @@ const HomePageHeroUnits = {
     const params = { enabled: true };
     params[platform] = true;
     return gravity('site_hero_units', params).then(units => {
-      return units.map(unit => Object.assign({ platform }, unit));
+      return shuffle(units.map(unit => Object.assign({ platform }, unit)));
     });
   },
 };
