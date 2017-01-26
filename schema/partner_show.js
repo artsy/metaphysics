@@ -92,6 +92,7 @@ const PartnerShowType = new GraphQLObjectType({
     press_release: markdown(),
     start_at: date,
     end_at: date,
+    created_at: date,
     exhibition_period: {
       type: GraphQLString,
       description: 'A formatted description of the start to end dates',
