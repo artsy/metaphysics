@@ -88,6 +88,9 @@ function filterArtworks(primaryKey) {
       artist_id: {
         type: GraphQLString,
       },
+      artist_ids: {
+        type: new GraphQLList(GraphQLString),
+      },
       color: {
         type: GraphQLString,
       },
