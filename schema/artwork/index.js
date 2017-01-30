@@ -448,7 +448,8 @@ const ArtworkType = new GraphQLObjectType({
         resolve: ({ id, sale_ids }) => {
           if (sale_ids && sale_ids.length > 0) {
             const sale_id = _.first(sale_ids);
-            return gravity(`sale/${sale_id}/sale_artwork/${id}`);
+            // don't error if the sale/artwork is unpublished
+            return gravity(`sale/${sale_id}/sale_artwork/${id}`).catch(() => null);
           }
           return null;
         },
@@ -458,7 +459,8 @@ const ArtworkType = new GraphQLObjectType({
         resolve: ({ sale_ids }) => {
           if (sale_ids && sale_ids.length > 0) {
             const sale_id = _.first(sale_ids);
-            return gravity(`sale/${sale_id}`);
+            // don't error if the sale is unpublished
+            return gravity(`sale/${sale_id}`).catch(() => null);
           }
           return null;
         },
