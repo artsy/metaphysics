@@ -17,9 +17,11 @@ export default {
     format: {
       type: GraphQLString,
     },
+    // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
+    // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: {
       type: GraphQLString,
-      description: 'Specify a time zone for this field only, otherwise falls back to the timezone set in `X-TIMEZONE` header',
+      description: 'Specify a tz datbase time zone, otherwise falls back to the timezone set in `X-TIMEZONE` header',
     },
     convert_to_utc: {
       type: GraphQLBoolean,
