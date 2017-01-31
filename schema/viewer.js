@@ -28,20 +28,24 @@
  * additional fields below.
  */
 
+import CausalityJWT from './causality_jwt';
+import Me from './me';
 import Sales from './sales';
 import { GraphQLObjectType } from 'graphql';
 
 const ViewerType = new GraphQLObjectType({
   name: 'Viewer',
-  description: 'A Viewer',
+  description: 'A wildcard used to support complex root queries in Relay',
   fields: () => ({
+    causality_jwt: CausalityJWT,
+    me: Me,
     sales: Sales,
   }),
 });
 
 const Viewer = {
   type: ViewerType,
-  description: 'A "Viewer" wildcard used to support complex root queries in Relay',
+  description: 'A wildcard used to support complex root queries in Relay',
   resolve: x => x,
 };
 
