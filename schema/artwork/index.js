@@ -177,7 +177,8 @@ const ArtworkType = new GraphQLObjectType({
             !has_multiple_editions(artwork.edition_sets) &&
             is_inquireable(artwork) &&
             isExisty(artwork.price) &&
-            !has_price_range(artwork.price)
+            !has_price_range(artwork.price) &&
+            artwork.forsale
           );
         },
       },
