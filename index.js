@@ -13,7 +13,8 @@ import config from './config';
 import { info, error } from './lib/loggers';
 import auth from './lib/auth';
 import graphqlErrorHandler from './lib/graphql-error-handler';
-
+import moment from 'moment';
+import * as tz from 'moment-timezone'; // eslint-disable-line no-unused-vars
 global.Promise = Bluebird;
 
 const {
@@ -61,6 +62,13 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
 
   const accessToken = request.headers['x-access-token'];
   const userID = request.headers['x-user-id'];
+  const timezone = request.headers['x-timezone'];
+  // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
+  // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  let defaultTimezone;
+  if (moment.tz.zone(timezone)) {
+    defaultTimezone = timezone;
+  }
 
   return {
     schema,
@@ -68,6 +76,7 @@ app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
     rootValue: {
       accessToken,
       userID,
+      defaultTimezone,
     },
     formatError: graphqlErrorHandler(request.body),
   };
