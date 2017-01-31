@@ -311,6 +311,19 @@ const ArtworkType = new GraphQLObjectType({
       },
       sale_message: {
         type: GraphQLString,
+        resolve: (artwork) => {
+          const sale_message = artwork.sale_message;
+          if (artwork.availability === 'on hold') {
+            if (artwork.price) {
+              return `${artwork.price}, on hold`;
+            }
+            return 'On hold';
+          }
+          if (sale_message && (sale_message === 'Not for sale' || sale_message.indexOf('Sold') > -1)) { // eslint-disable-line max-len
+            return '';
+          }
+          return sale_message;
+        },
       },
       artist: {
         type: Artist.type,
