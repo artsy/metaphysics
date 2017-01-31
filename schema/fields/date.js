@@ -21,8 +21,7 @@ export default {
     // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: {
       type: GraphQLString,
-      description: 'Specify a tz datbase time zone, otherwise falls back \
-      to the timezone set in `X-TIMEZONE` header',
+      description: 'Specify a tz database time zone, otherwise falls back to `X-TIMEZONE` header',
     },
     convert_to_utc: {
       type: GraphQLBoolean,
