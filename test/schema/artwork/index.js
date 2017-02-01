@@ -452,7 +452,7 @@ describe('Artwork type', () => {
           expect(data).toEqual({
             artwork: {
               id: 'richard-prince-untitled-portrait',
-              contact_message: 'Hello, I am interested in placing a bid on this work. Please send me more information.',
+              contact_message: 'Hello, I am interested in placing a bid on this work. Please send me more information.', // eslint-disable-line max-len
             },
           });
         });
@@ -470,7 +470,7 @@ describe('Artwork type', () => {
           expect(data).toEqual({
             artwork: {
               id: 'richard-prince-untitled-portrait',
-              contact_message: 'Hi, I’m interested in similar works by this artist. Could you please let me know if you have anything available?',
+              contact_message: 'Hi, I’m interested in similar works by this artist. Could you please let me know if you have anything available?', // eslint-disable-line max-len
             },
           });
         });
@@ -487,7 +487,7 @@ describe('Artwork type', () => {
           expect(data).toEqual({
             artwork: {
               id: 'richard-prince-untitled-portrait',
-              contact_message: 'Hi, I’m interested in purchasing this work. Could you please provide more information about the piece?',
+              contact_message: 'Hi, I’m interested in purchasing this work. Could you please provide more information about the piece?', // eslint-disable-line max-len
             },
           });
         });
