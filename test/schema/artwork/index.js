@@ -324,12 +324,12 @@ describe('Artwork type', () => {
     });
   });
 
-  describe('#sale_message', () => {
+  describe('#sale_message (formatted)', () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
           id
-          sale_message
+          sale_message(format: true)
         }
       }
     `;
