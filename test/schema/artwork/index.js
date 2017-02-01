@@ -476,7 +476,8 @@ describe('Artwork type', () => {
         });
     });
 
-    it('returns custom text for all other works', () => {
+    it('returns custom text for an on hold work', () => {
+      artwork.availability = 'on hold'
       gravity
         // Artwork
         .onCall(0)
@@ -488,6 +489,24 @@ describe('Artwork type', () => {
             artwork: {
               id: 'richard-prince-untitled-portrait',
               contact_message: 'Hi, I’m interested in purchasing this work. Could you please provide more information about the piece?', // eslint-disable-line max-len
+            },
+          });
+        });
+    });
+
+    it('returns nothing for a not for sale work', () => {
+      artwork.availability = 'not for sale'
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              contact_message: null,
             },
           });
         });
