@@ -220,10 +220,12 @@ const ArtworkType = new GraphQLObjectType({
               'Could you please let me know if you have anything available?',
             ].join(' ');
           }
-          return [
-            'Hi, I’m interested in purchasing this work.',
-            'Could you please provide more information about the piece?',
-          ].join(' ');
+          if (availability !== 'not for sale') {
+            return [
+              'Hi, I’m interested in purchasing this work.',
+              'Could you please provide more information about the piece?',
+            ].join(' ');
+          }
         },
       },
       is_in_auction: {
