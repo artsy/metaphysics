@@ -477,7 +477,7 @@ describe('Artwork type', () => {
     });
 
     it('returns custom text for an on hold work', () => {
-      artwork.availability = 'on hold'
+      artwork.availability = 'on hold';
       gravity
         // Artwork
         .onCall(0)
@@ -495,7 +495,7 @@ describe('Artwork type', () => {
     });
 
     it('returns nothing for a not for sale work', () => {
-      artwork.availability = 'not for sale'
+      artwork.availability = 'not for sale';
       gravity
         // Artwork
         .onCall(0)
