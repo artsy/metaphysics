@@ -319,24 +319,18 @@ const ArtworkType = new GraphQLObjectType({
       },
       sale_message: {
         type: GraphQLString,
-        args: {
-          format: {
-            type: GraphQLBoolean,
-            default: false,
-            description: 'Show a formatted response instead of the one that comes from gravity',
-          },
-        },
-        resolve: (artwork, { format }) => {
-          const sale_message = artwork.sale_message;
-          if (!format) { return sale_message; }
-          if (artwork.availability === 'on hold') {
-            if (artwork.price) {
-              return `${artwork.price}, on hold`;
+        resolve: ({ sale_message, availability, price }) => {
+          if (availability === 'on hold') {
+            if (price) {
+              return `${price}, on hold`;
             }
             return 'On hold';
           }
-          if (sale_message && (sale_message === 'Not for sale' || sale_message.indexOf('Sold') > -1)) { // eslint-disable-line max-len
+          if (availability === 'not for sale') {
             return '';
+          }
+          if (sale_message && sale_message.indexOf('Sold') > -1) {
+            return 'Sold';
           }
           return sale_message;
         },
