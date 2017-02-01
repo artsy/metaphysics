@@ -430,6 +430,70 @@ describe('Artwork type', () => {
     });
   });
 
+  describe('#contact_message', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          contact_message
+        }
+      }
+    `;
+
+    it('returns custom text for an auction partner type', () => {
+      artwork.partner = { type: 'Auction' };
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              contact_message: 'Hello, I am interested in placing a bid on this work. Please send me more information.', // eslint-disable-line max-len
+            },
+          });
+        });
+    });
+
+    it('returns custom text for a sold work', () => {
+      artwork.availability = 'sold';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              contact_message: 'Hi, I’m interested in similar works by this artist. Could you please let me know if you have anything available?', // eslint-disable-line max-len
+            },
+          });
+        });
+    });
+
+    it('returns custom text for all other works', () => {
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              contact_message: 'Hi, I’m interested in purchasing this work. Could you please provide more information about the piece?', // eslint-disable-line max-len
+            },
+          });
+        });
+    });
+  });
+
   describe('#is_biddable', () => {
     const query = `
       {

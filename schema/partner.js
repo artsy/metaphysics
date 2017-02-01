@@ -126,6 +126,7 @@ const PartnerType = new GraphQLObjectType({
       },
       contact_message: {
         type: GraphQLString,
+        deprecationReason: 'Prefer artwork contact_message to handle availability-based prompts.',
         resolve: ({ type }) => {
           if (type === 'Auction') {
             return [

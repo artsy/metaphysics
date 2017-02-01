@@ -204,6 +204,28 @@ const ArtworkType = new GraphQLObjectType({
             }).catch(() => false);
         },
       },
+      contact_message: {
+        type: GraphQLString,
+        description: 'Pre-filled inquiry text',
+        resolve: ({ partner, availability }) => {
+          if (partner && partner.type === 'Auction') {
+            return [
+              'Hello, I am interested in placing a bid on this work.',
+              'Please send me more information.',
+            ].join(' ');
+          }
+          if (availability === 'sold') {
+            return [
+              'Hi, I’m interested in similar works by this artist.',
+              'Could you please let me know if you have anything available?',
+            ].join(' ');
+          }
+          return [
+            'Hi, I’m interested in purchasing this work.',
+            'Could you please provide more information about the piece?',
+          ].join(' ');
+        },
+      },
       is_in_auction: {
         type: GraphQLBoolean,
         description: 'Is this artwork part of an auction?',
