@@ -309,8 +309,37 @@ const ArtworkType = new GraphQLObjectType({
       availability: {
         type: GraphQLString,
       },
+      is_on_hold: {
+        type: GraphQLString,
+        resolve: ({ availability }) => availability === 'on hold',
+      },
+      is_not_for_sale: {
+        type: GraphQLString,
+        resolve: ({ availability }) => availability === 'not for sale',
+      },
       sale_message: {
         type: GraphQLString,
+        args: {
+          format: {
+            type: GraphQLBoolean,
+            default: false,
+            description: 'Show a formatted response instead of the one that comes from gravity',
+          },
+        },
+        resolve: (artwork, { format }) => {
+          const sale_message = artwork.sale_message;
+          if (!format) { return sale_message; }
+          if (artwork.availability === 'on hold') {
+            if (artwork.price) {
+              return `${artwork.price}, on hold`;
+            }
+            return 'On hold';
+          }
+          if (sale_message && (sale_message === 'Not for sale' || sale_message.indexOf('Sold') > -1)) { // eslint-disable-line max-len
+            return '';
+          }
+          return sale_message;
+        },
       },
       artist: {
         type: Artist.type,

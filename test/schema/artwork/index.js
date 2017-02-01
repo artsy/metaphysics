@@ -324,6 +324,93 @@ describe('Artwork type', () => {
     });
   });
 
+  describe('#sale_message (formatted)', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          sale_message(format: true)
+        }
+      }
+    `;
+
+    it('returns an "On hold" if work is on hold with no price', () => {
+      artwork.sale_message = 'Not for sale';
+      artwork.price = null;
+      artwork.availability = 'on hold';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              sale_message: 'On hold',
+            },
+          });
+        });
+    });
+
+    it('returns an "[Price], on hold" if work is on hold with a price', () => {
+      artwork.sale_message = 'Not for sale';
+      artwork.price = '$420,000';
+      artwork.availability = 'on hold';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              sale_message: '$420,000, on hold',
+            },
+          });
+        });
+    });
+
+    it('returns an empty string if work is sold', () => {
+      artwork.sale_message = '$420,000 - Sold';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              sale_message: '',
+            },
+          });
+        });
+    });
+
+    it('returns an empty string if work is not for sale', () => {
+      artwork.sale_message = 'Not for sale';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              sale_message: '',
+            },
+          });
+        });
+    });
+  });
+
   describe('#is_biddable', () => {
     const query = `
       {
