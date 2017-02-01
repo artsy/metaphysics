@@ -315,7 +315,7 @@ const ArtworkType = new GraphQLObjectType({
       },
       is_not_for_sale: {
         type: GraphQLString,
-        resolve: ({ sale_message }) => sale_message === 'Not for sale',
+        resolve: ({ availability }) => availability === 'not for sale',
       },
       sale_message: {
         type: GraphQLString,
