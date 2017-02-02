@@ -392,7 +392,7 @@ describe('Artwork type', () => {
         });
     });
 
-    it('returns an empty string if work is not for sale', () => {
+    it('returns null if work is not for sale', () => {
       artwork.availability = 'not for sale';
       gravity
         // Artwork
@@ -404,7 +404,7 @@ describe('Artwork type', () => {
           expect(data).toEqual({
             artwork: {
               id: 'richard-prince-untitled-portrait',
-              sale_message: '',
+              sale_message: null,
             },
           });
         });
