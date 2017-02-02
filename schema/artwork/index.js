@@ -351,7 +351,7 @@ const ArtworkType = new GraphQLObjectType({
             return 'On hold';
           }
           if (availability === 'not for sale') {
-            return '';
+            return null;
           }
           if (sale_message && sale_message.indexOf('Sold') > -1) {
             return 'Sold';
