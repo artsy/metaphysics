@@ -1,6 +1,10 @@
 // @flow
 import type { GraphQLFieldConfig } from 'graphql';
-
+import { pageable, getPagingParameters } from 'relay-cursor-paging';
+import { 
+  connectionDefinitions,
+  connectionFromArraySlice,
+} from 'graphql-relay';
 import {
   assign,
   compact,
@@ -15,7 +19,6 @@ import { markdown, formatMarkdownValue } from '../fields/markdown';
 import numeral from '../fields/numeral';
 import Image from '../image';
 import Article from '../article';
-import Artwork from '../artwork';
 import PartnerArtist from '../partner_artist';
 import Meta from './meta';
 import PartnerShow from '../partner_show';
@@ -40,6 +43,8 @@ import {
   GraphQLInt,
   GraphQLEnumType,
 } from 'graphql';
+
+import info from '../../lib/loggers';
 
 // TODO Get rid of this when we remove the deprecated PartnerShow in favour of Show.
 const ShowField = {
@@ -78,6 +83,8 @@ const ShowField = {
     }));
   },
 };
+
+import Artwork from '../artwork';
 
 const ArtistType = new GraphQLObjectType({
   name: 'Artist',
@@ -278,6 +285,18 @@ const ArtistType = new GraphQLObjectType({
         }),
         resolve: (artist) => artist,
       },
+      _artworks: {
+        type: connectionDefinitions({ nodeType: Artwork.type }).connectionType,
+        args: pageable(),
+        resolve: ({ id, published_artworks_count }, options) => {
+          const { limit: size, offset } = getPagingParameters(options);
+          return gravity(`artist/${id}/artworks`, { size, offset })
+            .then((artworks) => connectionFromArraySlice(artworks, options, {
+              arrayLength: published_artworks_count,
+              sliceStart: offset,
+            }));
+        },
+      },
       artworks: {
         type: new GraphQLList(Artwork.type),
         args: {
@@ -312,7 +331,7 @@ const ArtistType = new GraphQLObjectType({
         },
         resolve: ({ id }, options) =>
           gravity(`artist/${id}/artworks`, options)
-            .then(exclude(options.exclude, 'id')),
+            .then(exclude(options.exclude, 'id'))
       },
       formatted_artworks_count: {
         type: GraphQLString,
