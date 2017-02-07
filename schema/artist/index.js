@@ -1,7 +1,7 @@
 // @flow
-import type { GraphQLFieldConfig } from 'graphql';
+import type { GraphQLFieldConfig } from 'graphql'; 
 import { pageable, getPagingParameters } from 'relay-cursor-paging';
-import { 
+import {
   connectionDefinitions,
   connectionFromArraySlice,
 } from 'graphql-relay';
