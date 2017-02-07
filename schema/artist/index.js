@@ -44,8 +44,6 @@ import {
   GraphQLEnumType,
 } from 'graphql';
 
-import info from '../../lib/loggers';
-
 // TODO Get rid of this when we remove the deprecated PartnerShow in favour of Show.
 const ShowField = {
   args: {
