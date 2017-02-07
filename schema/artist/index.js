@@ -331,7 +331,7 @@ const ArtistType = new GraphQLObjectType({
         },
         resolve: ({ id }, options) =>
           gravity(`artist/${id}/artworks`, options)
-            .then(exclude(options.exclude, 'id'))
+            .then(exclude(options.exclude, 'id')),
       },
       formatted_artworks_count: {
         type: GraphQLString,
