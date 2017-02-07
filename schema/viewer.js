@@ -30,6 +30,7 @@
 
 import CausalityJWT from './causality_jwt';
 import Me from './me';
+import Sale from './sale';
 import Sales from './sales';
 import { GraphQLObjectType } from 'graphql';
 
@@ -39,6 +40,7 @@ const ViewerType = new GraphQLObjectType({
   fields: () => ({
     causality_jwt: CausalityJWT,
     me: Me,
+    sale: Sale,
     sales: Sales,
   }),
 });
