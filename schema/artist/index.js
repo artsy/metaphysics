@@ -283,7 +283,7 @@ const ArtistType = new GraphQLObjectType({
         }),
         resolve: (artist) => artist,
       },
-      _artworks: {
+      artworks_connection: {
         type: connectionDefinitions({ nodeType: Artwork.type }).connectionType,
         args: pageable(),
         resolve: ({ id, published_artworks_count }, options) => {
