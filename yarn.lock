@@ -2,6 +2,16 @@
 # yarn lockfile v1
 
 
+"@types/graphql-relay@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@types/graphql-relay/-/graphql-relay-0.4.0.tgz#9a033958f2ef0b03a79d82c3da2a91df02a632ee"
+  dependencies:
+    "@types/graphql" "*"
+
+"@types/graphql@*":
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.8.6.tgz#b34fb880493ba835b0c067024ee70130d6f9bb68"
+
 abab@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/abab/-/abab-1.0.3.tgz#b81de5f7274ec4e756d797cd834f303642724e5d"
@@ -3572,6 +3582,12 @@ regjsparser@^0.1.4:
   resolved "https://registry.yarnpkg.com/regjsparser/-/regjsparser-0.1.5.tgz#7ee8f84dc6fa792d3fd0ae228d24bd949ead205c"
   dependencies:
     jsesc "~0.5.0"
+
+relay-cursor-paging@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/relay-cursor-paging/-/relay-cursor-paging-0.2.0.tgz#e005e393dee4145ca123fc910b16017bac64b06b"
+  dependencies:
+    "@types/graphql-relay" "^0.4.0"
 
 repeat-element@^1.1.2:
   version "1.1.2"
