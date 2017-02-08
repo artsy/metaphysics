@@ -4,6 +4,7 @@ import ArtistSorts from './sorts/artist_sorts';
 import {
   GraphQLList,
   GraphQLInt,
+  GraphQLID,
 } from 'graphql';
 
 const Artists = {
@@ -13,7 +14,14 @@ const Artists = {
     size: {
       type: GraphQLInt,
     },
+    sale_id: {
+      type: GraphQLID,
+    },
     sort: ArtistSorts,
+    page: {
+      type: GraphQLInt,
+      defaultValue: 1,
+    },
   },
   resolve: (root, options) => gravity('artists', options),
 };
