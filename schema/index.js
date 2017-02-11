@@ -26,7 +26,6 @@ import SaleArtwork from './sale_artwork';
 import Search from './search';
 import Show from './show';
 import TrendingArtists from './trending';
-import Viewer from './viewer';
 import Me from './me';
 import CausalityJWT from './causality_jwt';
 import ObjectIdentification from './object_identification';
@@ -68,7 +67,6 @@ const schema = new GraphQLSchema({
       search: Search,
       show: Show,
       trending_artists: TrendingArtists,
-      viewer: Viewer,
       me: Me,
       causality_jwt: CausalityJWT,
     },
