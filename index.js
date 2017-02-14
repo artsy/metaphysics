@@ -1,6 +1,5 @@
 import Bluebird from 'bluebird';
 import newrelic from 'artsy-newrelic';
-import OpticsAgent from 'optics-agent';
 import xapp from 'artsy-xapp';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -14,7 +13,8 @@ import config from './config';
 import { info, error } from './lib/loggers';
 import auth from './lib/auth';
 import graphqlErrorHandler from './lib/graphql-error-handler';
-
+import moment from 'moment';
+import * as tz from 'moment-timezone'; // eslint-disable-line no-unused-vars
 global.Promise = Bluebird;
 
 const {
@@ -29,9 +29,6 @@ const app = express();
 const port = PORT || 3000;
 
 app.use(newrelic);
-
-OpticsAgent.instrumentSchema(schema);
-app.use(OpticsAgent.middleware());
 
 if (NODE_ENV === 'production') {
   app.set('forceSSLOptions', { trustXFPHeader: true }).use(forceSSL);
@@ -66,6 +63,13 @@ app.use('/', cors(), morgan('combined'), graphqlHTTP(request => {
 
   const accessToken = request.headers['x-access-token'];
   const userID = request.headers['x-user-id'];
+  const timezone = request.headers['x-timezone'];
+  // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
+  // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  let defaultTimezone;
+  if (moment.tz.zone(timezone)) {
+    defaultTimezone = timezone;
+  }
 
   return {
     schema,
@@ -73,11 +77,9 @@ app.use('/', cors(), morgan('combined'), graphqlHTTP(request => {
     rootValue: {
       accessToken,
       userID,
+      defaultTimezone,
     },
     formatError: graphqlErrorHandler(request.body),
-    context: {
-      opticsContext: OpticsAgent.context(request),
-    },
   };
 }));
 

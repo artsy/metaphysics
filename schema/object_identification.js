@@ -1,28 +1,31 @@
-// To support a type, it should:
-// * specify that it implements the Node interface
-// * add the Node `__id` fields
-// * implement a `isTypeOf` function that from a payload determines if the payload is of that type
-// * add to the below `SupportedTypes` list.
-//
-// Example:
-//
-//   import { has } from 'lodash';
-//   import {
-//     GlobalIDField,
-//     NodeInterface,
-//   } from './object_identification';
-//
-//   const ArtworkType = new GraphQLObjectType({
-//     ...
-//     interfaces: [NodeInterface],
-//     isTypeOf: (obj) => has(obj, 'title') && has(obj, 'artists'),
-//     fields: () => {
-//       return {
-//         __id: GlobalIDField,
-//         ...
-//       };
-//     },
-//   });
+/**
+ * To support a type, it should:
+ *
+ * - specify that it implements the Node interface
+ * - add the Node `__id` fields
+ * - implement a `isTypeOf` function that from a payload determines if the
+ *   payload is of that type
+ * - add to the below `SupportedTypes` list.
+ *
+ * @example
+ *
+ * import { has } from 'lodash';
+ *
+ * import {
+ *   GlobalIDField,
+ *   NodeInterface,
+ * } from './object_identification';
+ *
+ * const ArtworkType = new GraphQLObjectType({
+ *   ...
+ *   interfaces: [NodeInterface],
+ *   isTypeOf: (obj) => has(obj, 'title') && has(obj, 'artists'),
+ *   fields: () => ({
+ *     __id: GlobalIDField,
+ *     ...
+ *   }),
+ * });
+ */
 
 import { basename } from 'path';
 import _ from 'lodash';

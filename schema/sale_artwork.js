@@ -201,6 +201,10 @@ const SaleArtworkType = new GraphQLObjectType({
           },
         }),
       },
+      estimate_cents: {
+        type: GraphQLInt,
+        description: 'Singular estimate field, if specified',
+      },
       low_estimate_cents: {
         type: GraphQLInt,
         deprecationReason: 'Favor `low_estimate`',

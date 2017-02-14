@@ -219,6 +219,26 @@ describe('Artwork type', () => {
           });
         });
     });
+
+    it('is not purchasable if it is inquireable w/ an exact price but not for sale', () => {
+      artwork.inquireable = true;
+      artwork.price = '$420';
+      artwork.forsale = false;
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artwork)));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              is_purchasable: false,
+            },
+          });
+        });
+    });
   });
 
   describe('#images', () => {
@@ -298,6 +318,195 @@ describe('Artwork type', () => {
             artwork: {
               id: 'richard-prince-untitled-portrait',
               is_in_auction: false,
+            },
+          });
+        });
+    });
+  });
+
+  describe('#sale_message', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          sale_message
+        }
+      }
+    `;
+
+    it('returns "On hold" if work is on hold with no price', () => {
+      artwork.sale_message = 'Not for sale';
+      artwork.price = null;
+      artwork.availability = 'on hold';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              sale_message: 'On hold',
+            },
+          });
+        });
+    });
+
+    it('returns "[Price], on hold" if work is on hold with a price', () => {
+      artwork.sale_message = 'Not for sale';
+      artwork.price = '$420,000';
+      artwork.availability = 'on hold';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              sale_message: '$420,000, on hold',
+            },
+          });
+        });
+    });
+
+    it('returns "Sold" if work is sold', () => {
+      artwork.sale_message = '$420,000 - Sold';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              sale_message: 'Sold',
+            },
+          });
+        });
+    });
+
+    it('returns null if work is not for sale', () => {
+      artwork.availability = 'not for sale';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              sale_message: null,
+            },
+          });
+        });
+    });
+
+    it('returns the gravity sale_message if for sale', () => {
+      artwork.availability = 'for sale';
+      artwork.sale_message = 'something from gravity';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              sale_message: 'something from gravity',
+            },
+          });
+        });
+    });
+  });
+
+  describe('#contact_message', () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          contact_message
+        }
+      }
+    `;
+
+    it('returns custom text for an auction partner type', () => {
+      artwork.partner = { type: 'Auction' };
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              contact_message: 'Hello, I am interested in placing a bid on this work. Please send me more information.', // eslint-disable-line max-len
+            },
+          });
+        });
+    });
+
+    it('returns custom text for a sold work', () => {
+      artwork.availability = 'sold';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              contact_message: 'Hi, I’m interested in similar works by this artist. Could you please let me know if you have anything available?', // eslint-disable-line max-len
+            },
+          });
+        });
+    });
+
+    it('returns custom text for an on hold work', () => {
+      artwork.availability = 'on hold';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              contact_message: 'Hi, I’m interested in purchasing this work. Could you please provide more information about the piece?', // eslint-disable-line max-len
+            },
+          });
+        });
+    });
+
+    it('returns nothing for a not for sale work', () => {
+      artwork.availability = 'not for sale';
+      gravity
+        // Artwork
+        .onCall(0)
+        .returns(Promise.resolve(artwork));
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artwork: {
+              id: 'richard-prince-untitled-portrait',
+              contact_message: null,
             },
           });
         });

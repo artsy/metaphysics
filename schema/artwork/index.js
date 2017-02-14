@@ -93,6 +93,16 @@ const ArtworkType = new GraphQLObjectType({
       image_rights: {
         type: GraphQLString,
       },
+      image_title: {
+        type: GraphQLString,
+        resolve: ({ artist, title, date }) => {
+          return _.compact([
+            (artist && artist.name),
+            (title && `‘${title}’`),
+            date,
+          ]).join(', ');
+        },
+      },
       website: {
         type: GraphQLString,
         resolve: artwork =>
@@ -167,7 +177,8 @@ const ArtworkType = new GraphQLObjectType({
             !has_multiple_editions(artwork.edition_sets) &&
             is_inquireable(artwork) &&
             isExisty(artwork.price) &&
-            !has_price_range(artwork.price)
+            !has_price_range(artwork.price) &&
+            artwork.forsale
           );
         },
       },
@@ -191,6 +202,30 @@ const ArtworkType = new GraphQLObjectType({
                 !sales.length
               );
             }).catch(() => false);
+        },
+      },
+      contact_message: {
+        type: GraphQLString,
+        description: 'Pre-filled inquiry text',
+        resolve: ({ partner, availability }) => {
+          if (partner && partner.type === 'Auction') {
+            return [
+              'Hello, I am interested in placing a bid on this work.',
+              'Please send me more information.',
+            ].join(' ');
+          }
+          if (availability === 'sold') {
+            return [
+              'Hi, I’m interested in similar works by this artist.',
+              'Could you please let me know if you have anything available?',
+            ].join(' ');
+          }
+          if (availability !== 'not for sale') {
+            return [
+              'Hi, I’m interested in purchasing this work.',
+              'Could you please provide more information about the piece?',
+            ].join(' ');
+          }
         },
       },
       is_in_auction: {
@@ -298,8 +333,31 @@ const ArtworkType = new GraphQLObjectType({
       availability: {
         type: GraphQLString,
       },
+      is_on_hold: {
+        type: GraphQLString,
+        resolve: ({ availability }) => availability === 'on hold',
+      },
+      is_not_for_sale: {
+        type: GraphQLString,
+        resolve: ({ availability }) => availability === 'not for sale',
+      },
       sale_message: {
         type: GraphQLString,
+        resolve: ({ sale_message, availability, price }) => {
+          if (availability === 'on hold') {
+            if (price) {
+              return `${price}, on hold`;
+            }
+            return 'On hold';
+          }
+          if (availability === 'not for sale') {
+            return null;
+          }
+          if (sale_message && sale_message.indexOf('Sold') > -1) {
+            return 'Sold';
+          }
+          return sale_message;
+        },
       },
       artist: {
         type: Artist.type,
@@ -438,7 +496,8 @@ const ArtworkType = new GraphQLObjectType({
         resolve: ({ id, sale_ids }) => {
           if (sale_ids && sale_ids.length > 0) {
             const sale_id = _.first(sale_ids);
-            return gravity(`sale/${sale_id}/sale_artwork/${id}`);
+            // don't error if the sale/artwork is unpublished
+            return gravity(`sale/${sale_id}/sale_artwork/${id}`).catch(() => null);
           }
           return null;
         },
@@ -448,7 +507,8 @@ const ArtworkType = new GraphQLObjectType({
         resolve: ({ sale_ids }) => {
           if (sale_ids && sale_ids.length > 0) {
             const sale_id = _.first(sale_ids);
-            return gravity(`sale/${sale_id}`);
+            // don't error if the sale is unpublished
+            return gravity(`sale/${sale_id}`).catch(() => null);
           }
           return null;
         },

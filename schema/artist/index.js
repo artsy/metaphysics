@@ -1,6 +1,10 @@
 // @flow
 import type { GraphQLFieldConfig } from 'graphql';
-
+import { pageable, getPagingParameters } from 'relay-cursor-paging';
+import {
+  connectionDefinitions,
+  connectionFromArraySlice,
+} from 'graphql-relay';
 import {
   assign,
   compact,
@@ -27,6 +31,7 @@ import PartnerShowSorts from '../sorts/partner_show_sorts';
 import SaleSorts from '../sale/sorts';
 import ArtistCarousel from './carousel';
 import ArtistStatuses from './statuses';
+import ArtistArtworksFilters from './artwork_filters';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
 import total from '../../lib/loaders/total';
@@ -38,7 +43,6 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLInt,
-  GraphQLEnumType,
 } from 'graphql';
 
 // TODO Get rid of this when we remove the deprecated PartnerShow in favour of Show.
@@ -278,6 +282,31 @@ const ArtistType = new GraphQLObjectType({
         }),
         resolve: (artist) => artist,
       },
+      artworks_connection: {
+        type: connectionDefinitions({ nodeType: Artwork.type }).connectionType,
+        args: pageable({
+          sort: ArtworkSorts,
+          filter: {
+            type: new GraphQLList(ArtistArtworksFilters),
+          },
+          published: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
+        }),
+        resolve: ({ id, published_artworks_count }, options) => {
+          // Convert `after` cursors to page params
+          const { limit: size, offset } = getPagingParameters(options);
+          // Construct an object of all the params gravity will listen to
+          const { sort, filter, published } = options;
+          const gravityArgs = { size, offset, sort, filter, published };
+          return gravity(`artist/${id}/artworks`, gravityArgs)
+            .then((artworks) => connectionFromArraySlice(artworks, options, {
+              arrayLength: published_artworks_count,
+              sliceStart: offset,
+            }));
+        },
+      },
       artworks: {
         type: new GraphQLList(Artwork.type),
         args: {
@@ -294,17 +323,7 @@ const ArtistType = new GraphQLObjectType({
             defaultValue: true,
           },
           filter: {
-            type: new GraphQLList(new GraphQLEnumType({
-              name: 'ArtistArtworksFilters',
-              values: {
-                IS_FOR_SALE: {
-                  value: 'for_sale',
-                },
-                IS_NOT_FOR_SALE: {
-                  value: 'not_for_sale',
-                },
-              },
-            })),
+            type: new GraphQLList(ArtistArtworksFilters),
           },
           exclude: {
             type: new GraphQLList(GraphQLString),
