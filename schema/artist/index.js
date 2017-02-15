@@ -45,6 +45,18 @@ import {
   GraphQLInt,
 } from 'graphql';
 
+const artistArtworkArrayLength = (artist, [filter]) => {
+  let length;
+  if (filter === 'for_sale') {
+    length = artist.forsale_artworks_count;
+  } else if (filter === 'not_for_sale') {
+    length = artist.published_artworks_count - artist.forsale_artworks_count;
+  } else {
+    length = artist.published_artworks_count;
+  }
+  return length;
+};
+
 // TODO Get rid of this when we remove the deprecated PartnerShow in favour of Show.
 const ShowField = {
   args: {
@@ -294,15 +306,16 @@ const ArtistType = new GraphQLObjectType({
             defaultValue: true,
           },
         }),
-        resolve: ({ id, published_artworks_count }, options) => {
+        resolve: (artist, options) => {
           // Convert `after` cursors to page params
           const { limit: size, offset } = getPagingParameters(options);
           // Construct an object of all the params gravity will listen to
           const { sort, filter, published } = options;
           const gravityArgs = { size, offset, sort, filter, published };
-          return gravity(`artist/${id}/artworks`, gravityArgs)
+          console.log('artistArtworkArrayLength(artist, filter)', artistArtworkArrayLength(artist, filter));
+          return gravity(`artist/${artist.id}/artworks`, gravityArgs)
             .then((artworks) => connectionFromArraySlice(artworks, options, {
-              arrayLength: published_artworks_count,
+              arrayLength: artistArtworkArrayLength(artist, filter),
               sliceStart: offset,
             }));
         },
