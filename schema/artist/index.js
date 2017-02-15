@@ -312,7 +312,6 @@ const ArtistType = new GraphQLObjectType({
           // Construct an object of all the params gravity will listen to
           const { sort, filter, published } = options;
           const gravityArgs = { size, offset, sort, filter, published };
-          console.log('artistArtworkArrayLength(artist, filter)', artistArtworkArrayLength(artist, filter));
           return gravity(`artist/${artist.id}/artworks`, gravityArgs)
             .then((artworks) => connectionFromArraySlice(artworks, options, {
               arrayLength: artistArtworkArrayLength(artist, filter),
