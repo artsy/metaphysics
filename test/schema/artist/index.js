@@ -304,6 +304,101 @@ describe('Artist type', () => {
     });
   });
 
+  describe('artworks_connection', () => {
+    beforeEach(() => {
+      Artist.__ResetDependency__('gravity');
+      const gravity = sinon.stub();
+      Artist.__Rewire__('gravity', gravity);
+      artist.published_artworks_count = 20;
+      artist.forsale_artworks_count = 20;
+      gravity
+        // Artist
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artist)))
+        // 20 artworks
+        .onCall(1)
+        .returns(Promise.resolve(Array(20)));
+    });
+    it('does not have a next page when the requested amount exceeds the count', () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            artworks_connection(first: 40) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              artworks_connection: {
+                pageInfo: {
+                  hasNextPage: false,
+                },
+              },
+            },
+          });
+        });
+    });
+    it('does not have a next page when the requested amount exceeds the count (w/ filter)', () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            artworks_connection(first: 20, filter: IS_FOR_SALE) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              artworks_connection: {
+                pageInfo: {
+                  hasNextPage: false,
+                },
+              },
+            },
+          });
+        });
+    });
+    it('has a next page when the amount requested is less than the count', () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            artworks_connection(first: 10, filter: IS_FOR_SALE) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              artworks_connection: {
+                pageInfo: {
+                  hasNextPage: true,
+                },
+              },
+            },
+          });
+        });
+    });
+  });
+
   describe('biography_blurb', () => {
     it('returns the blurb if present', () => {
       artist.blurb = 'catty blurb';

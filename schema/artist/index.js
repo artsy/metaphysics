@@ -45,11 +45,11 @@ import {
   GraphQLInt,
 } from 'graphql';
 
-const artistArtworkArrayLength = (artist, [filter]) => {
+const artistArtworkArrayLength = (artist, filter) => {
   let length;
-  if (filter === 'for_sale') {
+  if (first(filter) === 'for_sale') {
     length = artist.forsale_artworks_count;
-  } else if (filter === 'not_for_sale') {
+  } else if (first(filter) === 'not_for_sale') {
     length = artist.published_artworks_count - artist.forsale_artworks_count;
   } else {
     length = artist.published_artworks_count;
