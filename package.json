@@ -11,7 +11,7 @@
   "scripts": {
     "start": "yarn run dev",
     "verbose-dev": "DEBUG=verbose,info,error nf start --procfile Procfile.dev",
-    "dev": "DEBUG=info,error nf start --procfile Procfile.dev",
+    "dev": "DEBUG=info,error nf start --procfile Procfile.dev --env .env.dev",
     "staging": "DEBUG=info,error nf start --procfile Procfile.dev --env .env.staging",
     "test": "yarn run lint && jest",
     "watch": "jest --watch",
@@ -41,6 +41,7 @@
     "express": "^4.13.3",
     "express-force-ssl": "^0.3.0",
     "express-graphql": "^0.6.1",
+    "express-session": "^1.15.1",
     "forever": "^0.15.3",
     "graphiql": "^0.8.0",
     "graphql": "^0.8.2",
