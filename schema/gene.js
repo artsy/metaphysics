@@ -1,6 +1,6 @@
 // @flow
 import type { GraphQLFieldConfig } from 'graphql';
-import { pageable, getPagingParameters } from 'relay-cursor-paging';
+import { pageable } from 'relay-cursor-paging';
 import { connectionFromArraySlice } from 'graphql-relay';
 import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
