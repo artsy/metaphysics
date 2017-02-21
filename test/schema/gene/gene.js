@@ -43,6 +43,85 @@ describe('Gene', () => {
     });
   });
 
+  describe('artworks_connection', () => {
+    const Gene = schema.__get__('Gene');
+
+    beforeEach(() => {
+      Gene.__ResetDependency__('gravity');
+      const gravity = sinon.stub();
+      gravity.with = sinon.stub().returns(gravity);
+      const gene = { id: '500-1000-ce', browseable: true, family: '' };
+      gravity
+        // Gene
+        .onCall(0)
+        .returns(Promise.resolve(Object.assign({}, gene)))
+        // 20 artworks
+        .onCall(1)
+        .returns(Promise.resolve({
+          hits: Array(20),
+          aggregations: {
+            total: {
+              value: 20,
+            },
+          },
+        }));
+
+      Gene.__Rewire__('gravity', gravity);
+    });
+    it('does not have a next page when the requested amount exceeds the count', () => {
+      const query = `
+        {
+          gene(id: "500-1000-ce") {
+            artworks_connection(first: 40) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            gene: {
+              artworks_connection: {
+                pageInfo: {
+                  hasNextPage: false,
+                },
+              },
+            },
+          });
+        });
+    });
+    it('has a next page when the amount requested is less than the count', () => {
+      const query = `
+        {
+          gene(id: "500-1000-ce") {
+            artworks_connection(first: 10) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            gene: {
+              artworks_connection: {
+                pageInfo: {
+                  hasNextPage: true,
+                },
+              },
+            },
+          });
+        });
+    });
+  });
+
   // The key distinction here is that because the query contains
   // metadata about the gene, then gravity will have to be called,
   // and in the test mocked out. Whereas above, it does not need

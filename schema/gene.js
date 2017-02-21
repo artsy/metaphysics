@@ -39,8 +39,12 @@ const GeneType = new GraphQLObjectType({
         if (options.medium === '*') {
           delete gravityOptions.medium;
         }
+        // Manually set the gene_id to the current id
+        gravityOptions.gene_id = id;
+        console.log('gravityOptions.offset', gravityOptions.offset);
         return gravity.with(accessToken)('filter/artworks', gravityOptions)
           .then((response) => {
+            console.log('response.aggregations.total.value', response.aggregations.total.value);
             return connectionFromArraySlice(response.hits, options, {
               arrayLength: response.aggregations.total.value,
               sliceStart: gravityOptions.offset,
