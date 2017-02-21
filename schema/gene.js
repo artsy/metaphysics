@@ -39,7 +39,6 @@ const GeneType = new GraphQLObjectType({
         if (options.medium === '*') {
           delete gravityOptions.medium;
         }
-        // Construct an object of all the params gravity will listen to
         return gravity.with(accessToken)('filter/artworks', gravityOptions)
           .then((response) => {
             return connectionFromArraySlice(response.hits, options, {
