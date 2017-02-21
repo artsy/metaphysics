@@ -42,4 +42,17 @@ describe('auth middleware', () => {
       process.env.NODE_NEV = 'test';
     });
   });
+
+  describe('json request', () => {
+    let next;
+
+    beforeEach(() => {
+      next = sinon.stub();
+    });
+
+    it('nexts', () => {
+      middleware.authenticateOrLogin({ accepts: sinon.stub().returns('json') }, null, next);
+      expect(next.called).toBeTruthy();
+    });
+  });
 });
