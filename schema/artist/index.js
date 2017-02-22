@@ -1,10 +1,7 @@
 // @flow
 import type { GraphQLFieldConfig } from 'graphql';
 import { pageable, getPagingParameters } from 'relay-cursor-paging';
-import {
-  connectionDefinitions,
-  connectionFromArraySlice,
-} from 'graphql-relay';
+import { connectionFromArraySlice } from 'graphql-relay';
 import {
   assign,
   compact,
@@ -19,7 +16,7 @@ import { markdown, formatMarkdownValue } from '../fields/markdown';
 import numeral from '../fields/numeral';
 import Image from '../image';
 import Article from '../article';
-import Artwork from '../artwork';
+import Artwork, { artworkConnection } from '../artwork';
 import PartnerArtist from '../partner_artist';
 import Meta from './meta';
 import PartnerShow from '../partner_show';
@@ -295,7 +292,7 @@ const ArtistType = new GraphQLObjectType({
         resolve: (artist) => artist,
       },
       artworks_connection: {
-        type: connectionDefinitions({ nodeType: Artwork.type }).connectionType,
+        type: artworkConnection,
         args: pageable({
           sort: ArtworkSorts,
           filter: {

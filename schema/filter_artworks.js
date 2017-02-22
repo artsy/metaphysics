@@ -67,6 +67,85 @@ export const FilterArtworksType = new GraphQLObjectType({
   }),
 });
 
+export const filterArtworksArgs = {
+  aggregation_partner_cities: {
+    type: new GraphQLList(GraphQLString),
+  },
+  aggregations: {
+    type: new GraphQLList(ArtworksAggregation),
+  },
+  artist_id: {
+    type: GraphQLString,
+  },
+  artist_ids: {
+    type: new GraphQLList(GraphQLString),
+  },
+  color: {
+    type: GraphQLString,
+  },
+  dimension_range: {
+    type: GraphQLString,
+  },
+  extra_aggregation_gene_ids: {
+    type: new GraphQLList(GraphQLString),
+  },
+  include_artworks_by_followed_artists: {
+    type: GraphQLBoolean,
+  },
+  for_sale: {
+    type: GraphQLBoolean,
+  },
+  gene_id: {
+    type: GraphQLString,
+  },
+  gene_ids: {
+    type: new GraphQLList(GraphQLString),
+  },
+  height: {
+    type: GraphQLString,
+  },
+  width: {
+    type: GraphQLString,
+  },
+  medium: {
+    type: GraphQLString,
+    description: 'A string from the list of allocations, or * to denote all mediums',
+  },
+  period: {
+    type: GraphQLString,
+  },
+  periods: {
+    type: new GraphQLList(GraphQLString),
+  },
+  major_periods: {
+    type: new GraphQLList(GraphQLString),
+  },
+  partner_id: {
+    type: GraphQLID,
+  },
+  partner_cities: {
+    type: new GraphQLList(GraphQLString),
+  },
+  price_range: {
+    type: GraphQLString,
+  },
+  estimate_range: {
+    type: GraphQLString,
+  },
+  page: {
+    type: GraphQLInt,
+  },
+  size: {
+    type: GraphQLInt,
+  },
+  sort: {
+    type: GraphQLString,
+  },
+  sale_id: {
+    type: GraphQLID,
+  },
+};
+
 // Support passing in your own primary key
 // so that you can nest this function into another.
 
@@ -78,84 +157,7 @@ function filterArtworks(primaryKey) {
   return {
     type: FilterArtworksType,
     description: 'Artworks Elastic Search results',
-    args: {
-      aggregation_partner_cities: {
-        type: new GraphQLList(GraphQLString),
-      },
-      aggregations: {
-        type: new GraphQLList(ArtworksAggregation),
-      },
-      artist_id: {
-        type: GraphQLString,
-      },
-      artist_ids: {
-        type: new GraphQLList(GraphQLString),
-      },
-      color: {
-        type: GraphQLString,
-      },
-      dimension_range: {
-        type: GraphQLString,
-      },
-      extra_aggregation_gene_ids: {
-        type: new GraphQLList(GraphQLString),
-      },
-      include_artworks_by_followed_artists: {
-        type: GraphQLBoolean,
-      },
-      for_sale: {
-        type: GraphQLBoolean,
-      },
-      gene_id: {
-        type: GraphQLString,
-      },
-      gene_ids: {
-        type: new GraphQLList(GraphQLString),
-      },
-      height: {
-        type: GraphQLString,
-      },
-      width: {
-        type: GraphQLString,
-      },
-      medium: {
-        type: GraphQLString,
-        description: 'A string from the list of allocations, or * to denote all mediums',
-      },
-      period: {
-        type: GraphQLString,
-      },
-      periods: {
-        type: new GraphQLList(GraphQLString),
-      },
-      major_periods: {
-        type: new GraphQLList(GraphQLString),
-      },
-      partner_id: {
-        type: GraphQLID,
-      },
-      partner_cities: {
-        type: new GraphQLList(GraphQLString),
-      },
-      price_range: {
-        type: GraphQLString,
-      },
-      estimate_range: {
-        type: GraphQLString,
-      },
-      page: {
-        type: GraphQLInt,
-      },
-      size: {
-        type: GraphQLInt,
-      },
-      sort: {
-        type: GraphQLString,
-      },
-      sale_id: {
-        type: GraphQLID,
-      },
-    },
+    args: filterArtworksArgs,
     resolve: (root, options, request, { rootValue: { accessToken } }) => {
       const gravityOptions = Object.assign({}, options);
       if (primaryKey) {

@@ -10,6 +10,7 @@ import {
   existyValue,
   isExisty,
 } from '../../lib/helpers';
+import { connectionDefinitions } from 'graphql-relay';
 import cached from '../fields/cached';
 import { markdown } from '../fields/markdown';
 import Article from '../article';
@@ -592,3 +593,5 @@ Artwork = {
 };
 
 export default Artwork;
+
+export const artworkConnection = connectionDefinitions({ nodeType: Artwork.type }).connectionType;

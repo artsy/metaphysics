@@ -1,14 +1,15 @@
 // @flow
-
 import type { GraphQLFieldConfig } from 'graphql';
-
+import { pageable } from 'relay-cursor-paging';
+import { connectionFromArraySlice } from 'graphql-relay';
 import _ from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
+import { artworkConnection } from './artwork';
 import Artist from './artist';
 import Image from './image';
-import filterArtworks from './filter_artworks';
-import { queriedForFieldsOtherThanBlacklisted } from '../lib/helpers';
+import filterArtworks, { filterArtworksArgs } from './filter_artworks';
+import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from '../lib/helpers';
 import { GravityIDFields, NodeInterface } from './object_identification';
 import {
   GraphQLObjectType,
@@ -26,6 +27,29 @@ const GeneType = new GraphQLObjectType({
     ...GravityIDFields,
     cached,
     filtered_artworks: filterArtworks('gene_id'),
+    artworks_connection: {
+      type: artworkConnection,
+      args: pageable(filterArtworksArgs),
+      resolve: ({ id }, options, request, { rootValue: { accessToken } }) => {
+        const gravityOptions = parseRelayOptions(options);
+        // Do some massaging of the options for ElasticSearch
+        gravityOptions.aggregations = options.aggregations || [];
+        gravityOptions.aggregations.push('total');
+        // Remove medium if we are trying to get all mediums
+        if (options.medium === '*') {
+          delete gravityOptions.medium;
+        }
+        // Manually set the gene_id to the current id
+        gravityOptions.gene_id = id;
+        return gravity.with(accessToken)('filter/artworks', gravityOptions)
+          .then((response) => {
+            return connectionFromArraySlice(response.hits, options, {
+              arrayLength: response.aggregations.total.value,
+              sliceStart: gravityOptions.offset,
+            });
+          });
+      },
+    },
     href: {
       type: GraphQLString,
       resolve: ({ id }) => `gene/${id}`,
