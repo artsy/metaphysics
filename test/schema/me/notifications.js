@@ -27,11 +27,15 @@ describe('Me', () => {
       const query = `
         {
           me {
-            notifications {
-              status
-              date(format: "YYYY")
-              artworks {
-                title
+            notifications_connection(first: 1) {
+              edges {
+                node {
+                  status
+                  date(format: "YYYY")
+                  artworks {
+                    title
+                  }
+                }
               }
             }
           }
@@ -43,10 +47,19 @@ describe('Me', () => {
       const artwork1 = assign({}, artworkStub, { title: 'Artwork1' });
       const artwork2 = assign({}, artworkStub, { title: 'Artwork2' });
 
+      const expectedData = {
+        node: {
+          status: 'READ',
+          date: '2017',
+          artworks: [{ title: 'Artwork1' }, { title: 'Artwork2' }],
+        },
+      };
+
       gravity
         // Feed fetch
         .onCall(1)
         .returns(Promise.resolve({
+          total_unread: 2,
           feed: [
             {
               status: 'read',
@@ -61,14 +74,8 @@ describe('Me', () => {
         .returns(Promise.resolve([artwork1, artwork2]));
 
       return runAuthenticatedQuery(query)
-      .then(({ me: { notifications } }) => {
-        expect(notifications).toEqual([
-          {
-            status: 'READ',
-            date: '2017',
-            artworks: [{ title: 'Artwork1' }, { title: 'Artwork2' }],
-          },
-        ]);
+      .then(({ me: { notifications_connection: { edges } } }) => {
+        expect(edges).toEqual([expectedData]);
       });
     });
   });

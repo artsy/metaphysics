@@ -40,7 +40,7 @@ const Me = new GraphQLObjectType({
     sale_registrations: SaleRegistrations,
     follow_artists: FollowArtists,
     suggested_artists: SuggestedArtists,
-    notifications: Notifications,
+    notifications_connection: Notifications,
   },
 });
 
