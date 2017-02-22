@@ -5,6 +5,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import express from 'express';
 import forceSSL from 'express-force-ssl';
+import session from 'express-session';
 import graphqlHTTP from 'express-graphql';
 import bodyParser from 'body-parser';
 import schema from './schema';
@@ -27,12 +28,20 @@ const {
 
 const app = express();
 const port = PORT || 3000;
+const sess = {
+  secret: GRAVITY_SECRET,
+  cookie: {},
+};
 
 app.use(newrelic);
 
 if (NODE_ENV === 'production') {
   app.set('forceSSLOptions', { trustXFPHeader: true }).use(forceSSL);
+  app.set('trust proxy', 1);
+  sess.cookie.secure = true;
 }
+
+app.use(session(sess));
 
 xapp.on('error', (err) => {
   error(err);
@@ -53,9 +62,10 @@ app.get('/favicon.ico', (req, res) => {
 });
 
 app.all('/graphql', (req, res) => res.redirect('/'));
+auth(app);
 
 app.use(bodyParser.json());
-app.use('/', auth, cors(), morgan('combined'), graphqlHTTP(request => {
+app.use('/', cors(), morgan('combined'), graphqlHTTP(request => {
   info('----------');
 
   loaders.clearAll();
