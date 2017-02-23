@@ -57,8 +57,8 @@ const Notifications = {
     if (!accessToken) return null;
     const gravityOptions = parseRelayOptions(options);
     return gravity.with(accessToken)('me/notifications/feed', omit(gravityOptions, 'offset'))
-      .then(({ feed, total_unread }) => connectionFromArraySlice(feed, options, {
-        arrayLength: total_unread,
+      .then(({ feed, total }) => connectionFromArraySlice(feed, options, {
+        arrayLength: total,
         sliceStart: gravityOptions.offset,
       }));
   },
