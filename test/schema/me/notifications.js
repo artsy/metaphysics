@@ -23,15 +23,22 @@ describe('Me', () => {
       Notifications.__ResetDependency__('gravity');
     });
 
-    it('returns notification feed items', () => {
+    it('returns notification feed items w/ Relay pagination', () => {
       const query = `
         {
           me {
-            notifications {
-              status
-              date(format: "YYYY")
-              artworks {
-                title
+            notifications_connection(first: 1) {
+              pageInfo {
+                hasNextPage
+              }
+              edges {
+                node {
+                  status
+                  date(format: "YYYY")
+                  artworks {
+                    title
+                  }
+                }
               }
             }
           }
@@ -43,10 +50,24 @@ describe('Me', () => {
       const artwork1 = assign({}, artworkStub, { title: 'Artwork1' });
       const artwork2 = assign({}, artworkStub, { title: 'Artwork2' });
 
+      const expectedConnectionData = {
+        pageInfo: {
+          hasNextPage: true,
+        },
+        edges: [{
+          node: {
+            status: 'READ',
+            date: '2017',
+            artworks: [{ title: 'Artwork1' }, { title: 'Artwork2' }],
+          },
+        }],
+      };
+
       gravity
         // Feed fetch
         .onCall(1)
         .returns(Promise.resolve({
+          total: 2,
           feed: [
             {
               status: 'read',
@@ -61,14 +82,8 @@ describe('Me', () => {
         .returns(Promise.resolve([artwork1, artwork2]));
 
       return runAuthenticatedQuery(query)
-      .then(({ me: { notifications } }) => {
-        expect(notifications).toEqual([
-          {
-            status: 'READ',
-            date: '2017',
-            artworks: [{ title: 'Artwork1' }, { title: 'Artwork2' }],
-          },
-        ]);
+      .then(({ me: { notifications_connection } }) => {
+        expect(notifications_connection).toEqual(expectedConnectionData);
       });
     });
   });
