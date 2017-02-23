@@ -4,7 +4,6 @@ import ArtistSorts from './sorts/artist_sorts';
 import {
   GraphQLList,
   GraphQLInt,
-  GraphQLID,
 } from 'graphql';
 
 const Artists = {
@@ -13,9 +12,6 @@ const Artists = {
   args: {
     size: {
       type: GraphQLInt,
-    },
-    sale_id: {
-      type: GraphQLID,
     },
     sort: ArtistSorts,
     page: {
