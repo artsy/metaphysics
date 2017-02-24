@@ -22,49 +22,10 @@ export const ArtworkInquiryRequestType = new GraphQLObjectType({
     id: {
       type: GraphQLID,
     },
-    inquirer: {
-      type: new GraphQLObjectType({
-        name: 'ArtworkInquiryRequestInquirer',
-        fields: () => ({
-          id: { type: GraphQLID },
-          name: { type: GraphQLString, }
-        }),
-      })
-    },
     artwork: {
       type: Artwork.type,
       resolve: ({ inquireable }) => inquireable,
     },
-    statuses: {
-      type: new GraphQLList(
-        new GraphQLObjectType({
-          name: 'ArtworkInquiryRequestStatus',
-          fields: () => ({
-            id: { type: GraphQLID },
-            title: { type: GraphQLString },
-            note: { type: GraphQLString },
-            created_at: date
-          }),
-        })
-      ),
-    },
-    status: {
-      type: GraphQLInt,
-    },
-    user_reported_outcome: {
-      type: new GraphQLEnumType({
-        name: 'UserReportedOutcome',
-        values: {
-          PURCHASED: { value: 'purchased' },
-          STILL_CONSIDERING: { value: 'still_considering' },
-          HIGH_PRICE: { value: 'high_price' },
-          LOST_INTEREST: { value: 'lost_interest' },
-          WORK_UNAVAILABLE: { value: 'work_unavailable' },
-          OTHER: { value: 'other' },
-        },
-      }),
-    },
-    created_at: date,
   }),
 });
 
