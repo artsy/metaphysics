@@ -8,7 +8,7 @@ import {
 import {
   GraphQLObjectType,
   GraphQLID,
-  GraphQLNonNull
+  GraphQLNonNull,
 } from 'graphql';
 
 export const ArtworkInquiryType = new GraphQLObjectType({
@@ -32,12 +32,12 @@ export default {
     if (!accessToken) return null;
     const { limit: size, offset } = getPagingParameters(options);
     const gravityArgs = { size, offset, inquireable_type: 'artwork', total_count: true };
-    return gravity.with(accessToken, { headers: true })('me/inquiry_requests', gravityArgs )
-      .then (({ body, headers }) => {
+    return gravity.with(accessToken, { headers: true })('me/inquiry_requests', gravityArgs)
+      .then(({ body, headers }) => {
         return connectionFromArraySlice(body, options, {
           arrayLength: headers['x-total-count'],
           sliceStart: offset,
         });
       });
-  }
+  },
 };

@@ -42,7 +42,7 @@ const Me = new GraphQLObjectType({
     follow_artists: FollowArtists,
     suggested_artists: SuggestedArtists,
     notifications_connection: Notifications,
-    artwork_inquiries: ArtworkInquiries
+    artwork_inquiries: ArtworkInquiries,
   },
 });
 
