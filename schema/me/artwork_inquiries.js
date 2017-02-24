@@ -11,8 +11,8 @@ import {
   GraphQLNonNull
 } from 'graphql';
 
-export const ArtworkInquiryRequestType = new GraphQLObjectType({
-  name: 'ArtworkInquiryRequest',
+export const ArtworkInquiryType = new GraphQLObjectType({
+  name: 'ArtworkInquiry',
   fields: () => ({
     id: {
       type: GraphQLID,
@@ -25,7 +25,7 @@ export const ArtworkInquiryRequestType = new GraphQLObjectType({
 });
 
 export default {
-  type: connectionDefinitions({ nodeType: ArtworkInquiryRequestType }).connectionType,
+  type: connectionDefinitions({ nodeType: ArtworkInquiryType }).connectionType,
   args: pageable({}),
   description: 'A list of the current user’s inquiry requests',
   resolve: (root, options, request, { rootValue: { accessToken } }) => {

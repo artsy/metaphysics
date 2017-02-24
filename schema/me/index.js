@@ -9,6 +9,7 @@ import SaleRegistrations from './sale_registrations';
 import SuggestedArtists from './suggested_artists';
 import FollowArtists from './follow_artists';
 import Notifications from './notifications';
+import ArtworkInquiries from './artwork_inquiries';
 import { IDFields } from '../object_identification';
 import {
   GraphQLString,
@@ -41,6 +42,7 @@ const Me = new GraphQLObjectType({
     follow_artists: FollowArtists,
     suggested_artists: SuggestedArtists,
     notifications_connection: Notifications,
+    artwork_inquiries: ArtworkInquiries
   },
 });
 
