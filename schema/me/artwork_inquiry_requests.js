@@ -1,5 +1,4 @@
 import gravity from '../../lib/loaders/gravity';
-import date from '../fields/date'
 import Artwork from '../artwork/index';
 import { pageable, getPagingParameters } from 'relay-cursor-paging';
 import {
@@ -7,13 +6,9 @@ import {
   connectionFromArraySlice,
 } from 'graphql-relay';
 import {
-  GraphQLList,
-  GraphQLInt,
-  GraphQLBoolean,
   GraphQLObjectType,
-  GraphQLString,
   GraphQLID,
-  GraphQLEnumType
+  GraphQLNonNull
 } from 'graphql';
 
 export const ArtworkInquiryRequestType = new GraphQLObjectType({
@@ -23,7 +18,7 @@ export const ArtworkInquiryRequestType = new GraphQLObjectType({
       type: GraphQLID,
     },
     artwork: {
-      type: Artwork.type,
+      type: new GraphQLNonNull(Artwork.type),
       resolve: ({ inquireable }) => inquireable,
     },
   }),
@@ -36,13 +31,13 @@ export default {
   resolve: (root, options, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null;
     const { limit: size, offset } = getPagingParameters(options);
-    const gravityArgs = { size, offset, inquireable_type: 'artwork', total_count: true }
+    const gravityArgs = { size, offset, inquireable_type: 'artwork', total_count: true };
     return gravity.with(accessToken, { headers: true })('me/inquiry_requests', gravityArgs )
       .then (({ body, headers }) => {
         return connectionFromArraySlice(body, options, {
           arrayLength: headers['x-total-count'],
           sliceStart: offset,
-        })
+        });
       });
   }
 };
