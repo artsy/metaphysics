@@ -4,6 +4,10 @@ import { isExisty } from '../lib/helpers';
 import Artwork from './artwork';
 import Artist from './artist';
 import numeral from './fields/numeral';
+import { artworkConnection } from './artwork';
+import { pageable } from 'relay-cursor-paging';
+import { parseRelayOptions } from '../lib/helpers';
+import { connectionFromArraySlice } from 'graphql-relay';
 import {
   ArtworksAggregationResultsType,
   ArtworksAggregation,
@@ -23,6 +27,20 @@ export const FilterArtworksType = new GraphQLObjectType({
     hits: {
       description: 'Artwork results.',
       type: new GraphQLList(Artwork.type),
+    },
+    artworks_connection: {
+      type: artworkConnection,
+      args: pageable(),
+      resolve: ({ hits, aggregations }, options) => {
+        if ((!aggregations && !aggregations.total)) {
+          throw new Error('This query must contain the total aggregation');
+        }
+        const relayOptions = parseRelayOptions(options);
+        return connectionFromArraySlice(hits, options, {
+          arrayLength: aggregations.total.value,
+          sliceStart: relayOptions.offset,
+        });
+      },
     },
     total: {
       type: GraphQLInt,
