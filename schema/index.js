@@ -28,6 +28,7 @@ import Show from './show';
 import TrendingArtists from './trending';
 import Me from './me';
 import CausalityJWT from './causality_jwt';
+import Viewer from './viewer';
 import ObjectIdentification from './object_identification';
 import {
   GraphQLSchema,
@@ -69,6 +70,7 @@ const schema = new GraphQLSchema({
       trending_artists: TrendingArtists,
       me: Me,
       causality_jwt: CausalityJWT,
+      viewer: Viewer,
     },
   }),
 });
