@@ -13,13 +13,13 @@ const SearchType = new GraphQLObjectType({
   name: 'Search',
   fields: () => ({
     cached,
-    total: {
-      type: GraphQLInt,
-      resolve: (response) => response.searchInformation.totalResults,
-    },
     results: {
       type: new GraphQLList(SearchResult.type),
       resolve: ({ items }) => items,
+    },
+    total: {
+      type: GraphQLInt,
+      resolve: (response) => response.searchInformation.totalResults,
     },
   }),
 });

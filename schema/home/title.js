@@ -8,18 +8,6 @@ import { GraphQLString } from 'graphql';
 
 const moduleTitle = {
   active_bids: () => 'Your Active Bids',
-  popular_artists: () => 'Works by Popular Artists',
-  followed_artists: () => 'Works by Artists you Follow',
-  followed_galleries: () => 'Works from Galleries You Follow',
-  saved_works: () => 'Recently Saved Works',
-  recommended_works: () => 'Recommended Works for You',
-  live_auctions: () => {
-    return featuredAuction().then((auction) => {
-      if (auction) {
-        return `Current Auction: ${auction.name}`;
-      }
-    });
-  },
   current_fairs: () => {
     return featuredFair().then((fair) => {
       if (fair) {
@@ -32,10 +20,10 @@ const moduleTitle = {
       return `Works by ${artist.name}`;
     });
   },
-  related_artists: ({ params }) => {
-    return gravity(`artist/${params.related_artist_id}`).then((artist) => {
-      return `Works by ${artist.name}`;
-    });
+  followed_artists: () => 'Works by Artists you Follow',
+  followed_galleries: () => 'Works from Galleries You Follow',
+  generic_gene: ({ params }) => {
+    return params.title;
   },
   genes: ({ accessToken, params: { gene } }) => {
     if (gene) {
@@ -48,9 +36,21 @@ const moduleTitle = {
       }
     });
   },
-  generic_gene: ({ params }) => {
-    return params.title;
+  live_auctions: () => {
+    return featuredAuction().then((auction) => {
+      if (auction) {
+        return `Current Auction: ${auction.name}`;
+      }
+    });
   },
+  popular_artists: () => 'Works by Popular Artists',
+  recommended_works: () => 'Recommended Works for You',
+  related_artists: ({ params }) => {
+    return gravity(`artist/${params.related_artist_id}`).then((artist) => {
+      return `Works by ${artist.name}`;
+    });
+  },
+  saved_works: () => 'Recently Saved Works',
 };
 
 export default {

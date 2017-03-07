@@ -129,12 +129,12 @@ export default {
     name: 'HomePageModuleContext',
     types: [
       HomePageModuleContextFairType,
-      HomePageModuleContextSaleType,
-      HomePageModuleContextGeneType,
-      HomePageModuleContextTrendingType,
       HomePageModuleContextFollowArtistsType,
-      HomePageModuleContextRelatedArtistType,
       HomePageModuleContextFollowedArtistType,
+      HomePageModuleContextGeneType,
+      HomePageModuleContextRelatedArtistType,
+      HomePageModuleContextSaleType,
+      HomePageModuleContextTrendingType,
     ],
   }),
   resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {

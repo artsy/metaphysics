@@ -14,6 +14,10 @@ export function date(rawDate, format, timezone) {
 export default {
   type: GraphQLString,
   args: {
+    convert_to_utc: {
+      type: GraphQLBoolean,
+      deprecationReason: 'Use timezone instead',
+    },
     format: {
       type: GraphQLString,
     },
@@ -22,10 +26,6 @@ export default {
     timezone: {
       type: GraphQLString,
       description: 'Specify a tz database time zone, otherwise falls back to `X-TIMEZONE` header',
-    },
-    convert_to_utc: {
-      type: GraphQLBoolean,
-      deprecationReason: 'Use timezone instead',
     },
   },
   resolve: (obj,

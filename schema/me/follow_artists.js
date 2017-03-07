@@ -40,10 +40,10 @@ export default {
   type: FollowArtists,
   description: 'A list of the current user’s artist follows',
   args: {
-    size: {
+    page: {
       type: GraphQLInt,
     },
-    page: {
+    size: {
       type: GraphQLInt,
     },
   },

@@ -18,6 +18,21 @@ import { parseRelayOptions } from '../../lib/helpers';
 const NotificationsFeedItemType = new GraphQLObjectType({
   name: 'NotificationsFeedItem',
   fields: () => ({
+    artists: {
+      type: GraphQLString,
+      resolve: ({ actors }) => actors,
+    },
+    artworks: {
+      type: new GraphQLList(Artwork.type),
+      description: 'List of artworks in this notification bundle',
+      resolve: ({ object_ids }) => {
+        return gravity('artworks', { ids: object_ids });
+      },
+    },
+    date,
+    message: {
+      type: GraphQLString,
+    },
     status: {
       type: new GraphQLEnumType({
         name: 'NotificationsFeedItemStatus',
@@ -30,21 +45,6 @@ const NotificationsFeedItemType = new GraphQLObjectType({
           },
         },
       }),
-    },
-    artists: {
-      type: GraphQLString,
-      resolve: ({ actors }) => actors,
-    },
-    message: {
-      type: GraphQLString,
-    },
-    date,
-    artworks: {
-      type: new GraphQLList(Artwork.type),
-      description: 'List of artworks in this notification bundle',
-      resolve: ({ object_ids }) => {
-        return gravity('artworks', { ids: object_ids });
-      },
     },
   }),
 });

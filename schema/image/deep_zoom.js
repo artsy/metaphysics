@@ -25,25 +25,9 @@ const DeepZoomType = new GraphQLObjectType({
       type: new GraphQLObjectType({
         name: 'DeepZoomImage',
         fields: {
-          xmlns: {
-            type: GraphQLString,
-            resolve: () => 'http://schemas.microsoft.com/deepzoom/2008',
-          },
-          Url: {
-            type: GraphQLString,
-            resolve: ({ tile_base_url }) => {
-              return tile_base_url
-                // Ensure trailing slash
-                .replace(/\/?$/, '/');
-            },
-          },
           Format: {
             type: GraphQLString,
             resolve: ({ tile_format }) => tile_format,
-          },
-          TileSize: {
-            type: GraphQLInt,
-            resolve: ({ tile_size }) => tile_size,
           },
           Overlap: {
             type: GraphQLInt,
@@ -64,6 +48,22 @@ const DeepZoomType = new GraphQLObjectType({
                 },
               },
             }),
+          },
+          TileSize: {
+            type: GraphQLInt,
+            resolve: ({ tile_size }) => tile_size,
+          },
+          Url: {
+            type: GraphQLString,
+            resolve: ({ tile_base_url }) => {
+              return tile_base_url
+              // Ensure trailing slash
+              .replace(/\/?$/, '/');
+            },
+          },
+          xmlns: {
+            type: GraphQLString,
+            resolve: () => 'http://schemas.microsoft.com/deepzoom/2008',
           },
         },
       }),

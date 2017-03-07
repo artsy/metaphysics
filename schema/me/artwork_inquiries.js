@@ -14,12 +14,12 @@ import {
 export const ArtworkInquiryType = new GraphQLObjectType({
   name: 'ArtworkInquiry',
   fields: () => ({
-    id: {
-      type: GraphQLID,
-    },
     artwork: {
       type: new GraphQLNonNull(Artwork.type),
       resolve: ({ inquireable }) => inquireable,
+    },
+    id: {
+      type: GraphQLID,
     },
   }),
 });

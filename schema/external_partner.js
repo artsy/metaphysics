@@ -12,13 +12,13 @@ const ExternalPartnerType = new GraphQLObjectType({
   fields: () => {
     return {
       ...IDFields,
-      name: {
-        type: GraphQLString,
-        resolve: ({ name }) => name.trim(),
-      },
       city: {
         type: GraphQLString,
         resolve: ({ city }) => city,
+      },
+      name: {
+        type: GraphQLString,
+        resolve: ({ name }) => name.trim(),
       },
     };
   },

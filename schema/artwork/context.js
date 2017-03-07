@@ -35,9 +35,9 @@ export const ArtworkContextType = new GraphQLUnionType({
   name: 'ArtworkContext',
   types: [
     ArtworkContextAuctionType,
-    ArtworkContextSaleType,
     ArtworkContextFairType,
     ArtworkContextPartnerShowType,
+    ArtworkContextSaleType,
   ],
 });
 

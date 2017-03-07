@@ -35,9 +35,7 @@ export const HomePageArtworkModuleType = new GraphQLObjectType({
         return toGlobalId('HomePageArtworkModule', JSON.stringify(payload));
       },
     },
-    key: {
-      type: GraphQLString,
-    },
+    context: Context,
     display: {
       type: GraphQLString,
       deprecationReason: 'Favor `is_`-prefixed Booleans (*and* this should be a Boolean)',
@@ -46,10 +44,12 @@ export const HomePageArtworkModuleType = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve: ({ display }) => display,
     },
+    key: {
+      type: GraphQLString,
+    },
     params: Params,
-    context: Context,
-    title: Title,
     results: Results,
+    title: Title,
   }),
 });
 
@@ -57,22 +57,22 @@ const HomePageArtworkModule = {
   type: HomePageArtworkModuleType,
   description: 'Single artwork module to show on the home screen',
   args: {
-    key: {
+    followed_artist_id: {
       type: GraphQLString,
-      description: 'Module key',
-    },
-    id: {
-      type: GraphQLString,
-      description: 'ID of generic gene rail to target',
+      description: 'ID of followed artist to target for related artist rails',
     },
     generic_gene_id: {
       type: GraphQLString,
       description: 'ID of generic gene rail to target',
       deprecationReason: 'Favor more specific `generic_gene_id`',
     },
-    followed_artist_id: {
+    id: {
       type: GraphQLString,
-      description: 'ID of followed artist to target for related artist rails',
+      description: 'ID of generic gene rail to target',
+    },
+    key: {
+      type: GraphQLString,
+      description: 'Module key',
     },
     related_artist_id: {
       type: GraphQLString,

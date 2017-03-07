@@ -20,29 +20,29 @@ const Me = new GraphQLObjectType({
   name: 'Me',
   fields: {
     ...IDFields,
-    type: {
-      type: GraphQLString,
-    },
+    artwork_inquiries_connection: ArtworkInquiries,
+    bidders: Bidders,
+    bidder_status: BidderStatus,
+    bidder_positions: BidderPositions,
     created_at: date,
     email: {
       type: GraphQLString,
     },
+    follow_artists: FollowArtists,
+    lot_standing: LotStanding,
+    lot_standings: LotStandings,
     name: {
       type: GraphQLString,
     },
+    notifications_connection: Notifications,
     paddle_number: {
       type: GraphQLString,
     },
-    bidders: Bidders,
-    bidder_status: BidderStatus,
-    bidder_positions: BidderPositions,
-    lot_standing: LotStanding,
-    lot_standings: LotStandings,
     sale_registrations: SaleRegistrations,
-    follow_artists: FollowArtists,
     suggested_artists: SuggestedArtists,
-    notifications_connection: Notifications,
-    artwork_inquiries_connection: ArtworkInquiries,
+    type: {
+      type: GraphQLString,
+    },
   },
 });
 

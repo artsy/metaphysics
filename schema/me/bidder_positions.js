@@ -11,13 +11,13 @@ export default {
   type: new GraphQLList(BidderPosition.type),
   description: "A list of the current user's bidder positions",
   args: {
-    current: {
-      type: GraphQLBoolean,
-      description: 'Only the most recent bidder positions per artwork.',
-    },
     artwork_id: {
       type: GraphQLString,
       description: 'Only the bidder positions on a specific artwork',
+    },
+    current: {
+      type: GraphQLBoolean,
+      description: 'Only the most recent bidder positions per artwork.',
     },
     sale_id: {
       type: GraphQLString,

@@ -11,24 +11,24 @@ const ArtworkLayerType = new GraphQLObjectType({
   name: 'ArtworkLayer',
   fields: () => ({
     ...IDFields,
-    type: {
-      type: GraphQLString,
+    artworks: {
+      type: new GraphQLList(Artwork.type),
+      resolve: ({ id, type, artwork_id }) => {
+        return gravity(`related/layer/${type}/${id}/artworks`, { artwork: [artwork_id] });
+      },
     },
-    name: {
+    description: {
       type: GraphQLString,
     },
     href: {
       type: GraphQLString,
       resolve: ({ more_info_url }) => more_info_url,
     },
-    description: {
+    name: {
       type: GraphQLString,
     },
-    artworks: {
-      type: new GraphQLList(Artwork.type),
-      resolve: ({ id, type, artwork_id }) => {
-        return gravity(`related/layer/${type}/${id}/artworks`, { artwork: [artwork_id] });
-      },
+    type: {
+      type: GraphQLString,
     },
   }),
 });

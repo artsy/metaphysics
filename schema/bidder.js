@@ -15,11 +15,11 @@ const BidderType = new GraphQLObjectType({
     pin: {
       type: GraphQLString,
     },
-    sale: {
-      type: Sale.type,
-    },
     qualified_for_bidding: {
       type: GraphQLBoolean,
+    },
+    sale: {
+      type: Sale.type,
     },
   }),
 });

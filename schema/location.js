@@ -14,6 +14,12 @@ const LocationType = new GraphQLObjectType({
   fields: () => ({
     ...IDFields,
     cached,
+    address: {
+      type: GraphQLString,
+    },
+    address_2: {
+      type: GraphQLString,
+    },
     city: {
       type: GraphQLString,
       resolve: ({ city }) => existyValue(city),
@@ -34,28 +40,22 @@ const LocationType = new GraphQLObjectType({
         },
       }),
     },
+    day_schedules: {
+      type: new GraphQLList(DayScheduleType),
+      resolve: ({ day_schedules }) => day_schedules,
+    },
     display: {
-      type: GraphQLString,
-    },
-    address: {
-      type: GraphQLString,
-    },
-    address_2: {
-      type: GraphQLString,
-    },
-    postal_code: {
-      type: GraphQLString,
-    },
-    state: {
       type: GraphQLString,
     },
     phone: {
       type: GraphQLString,
       resolve: ({ phone }) => existyValue(phone),
     },
-    day_schedules: {
-      type: new GraphQLList(DayScheduleType),
-      resolve: ({ day_schedules }) => day_schedules,
+    postal_code: {
+      type: GraphQLString,
+    },
+    state: {
+      type: GraphQLString,
     },
   }),
 });

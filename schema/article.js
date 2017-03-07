@@ -18,32 +18,32 @@ const ArticleType = new GraphQLObjectType({
   fields: () => ({
     ...IDFields,
     cached,
-    title: {
+    author: {
+      type: AuthorType,
+      resolve: ({ author }) => author,
+    },
+    href: {
       type: GraphQLString,
+      resolve: ({ slug }) => `/article/${slug}`,
     },
     published_at: date,
-    updated_at: date,
+    slug: {
+      type: GraphQLString,
+    },
     thumbnail_title: {
       type: GraphQLString,
     },
     thumbnail_teaser: {
       type: GraphQLString,
     },
-    author: {
-      type: AuthorType,
-      resolve: ({ author }) => author,
-    },
     thumbnail_image: {
       type: Image.type,
       resolve: ({ thumbnail_image }) => Image.resolve(thumbnail_image),
     },
-    slug: {
+    title: {
       type: GraphQLString,
     },
-    href: {
-      type: GraphQLString,
-      resolve: ({ slug }) => `/article/${slug}`,
-    },
+    updated_at: date,
   }),
 });
 

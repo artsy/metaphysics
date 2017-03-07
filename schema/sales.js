@@ -11,11 +11,13 @@ const Sales = {
   type: new GraphQLList(Sale.type),
   description: 'A list of Sales',
   args: {
-    size: {
-      type: GraphQLInt,
-    },
     is_auction: {
       description: 'Limit by auction.',
+      type: GraphQLBoolean,
+      defaultValue: true,
+    },
+    live: {
+      description: 'Limit by live status.',
       type: GraphQLBoolean,
       defaultValue: true,
     },
@@ -24,10 +26,8 @@ const Sales = {
       type: GraphQLBoolean,
       defaultValue: true,
     },
-    live: {
-      description: 'Limit by live status.',
-      type: GraphQLBoolean,
-      defaultValue: true,
+    size: {
+      type: GraphQLInt,
     },
     sort: SaleSorts,
   },

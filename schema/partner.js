@@ -34,66 +34,6 @@ const PartnerType = new GraphQLObjectType({
     return {
       ...GravityIDFields,
       cached,
-      name: {
-        type: GraphQLString,
-        resolve: ({ name }) => name.trim(),
-      },
-      collecting_institution: {
-        type: GraphQLString,
-      },
-      is_default_profile_public: {
-        type: GraphQLBoolean,
-        resolve: ({ default_profile_public }) => default_profile_public,
-      },
-      has_fair_partnership: {
-        type: GraphQLBoolean,
-        resolve: ({ has_fair_partnership }) => has_fair_partnership,
-      },
-      type: {
-        type: GraphQLString,
-        resolve: ({ name, type }) => {
-          const exceptions = {
-            Auction: 'Auction House',
-            Brand: name,
-            'Institutional Seller': 'Institution',
-          };
-
-          return exceptions[type] || type;
-        },
-      },
-      href: {
-        type: GraphQLString,
-        resolve: ({ type, default_profile_id }) =>
-          type === 'Auction' ? `/auction/${default_profile_id}` : `/${default_profile_id}`,
-      },
-      is_linkable: {
-        type: GraphQLBoolean,
-        resolve: ({ default_profile_id, default_profile_public, type }) =>
-          default_profile_id && default_profile_public && type !== 'Auction',
-      },
-      is_pre_qualify: {
-        type: GraphQLBoolean,
-        resolve: ({ pre_qualify }) => pre_qualify,
-      },
-      initials: initials('name'),
-      default_profile_id: {
-        type: GraphQLString,
-      },
-      profile: {
-        type: Profile.type,
-        resolve: ({ default_profile_id }) =>
-          gravity(`profile/${default_profile_id}`)
-            .catch(() => null),
-      },
-      shows: {
-        type: PartnerShows.type,
-        args: omit(PartnerShows.args, 'partner_id'),
-        resolve: ({ _id }, options) => {
-          return PartnerShows.resolve(null, assign({}, options, {
-            partner_id: _id,
-          }));
-        },
-      },
       artworks: {
         type: new GraphQLList(Artwork.type),
         args: {
@@ -114,15 +54,8 @@ const PartnerType = new GraphQLObjectType({
           })).then(exclude(options.exclude, 'id'));
         },
       },
-      locations: {
-        type: new GraphQLList(Location.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-            defaultValue: 25,
-          },
-        },
-        resolve: ({ id }, options) => gravity(`partner/${id}/locations`, options),
+      collecting_institution: {
+        type: GraphQLString,
       },
       contact_message: {
         type: GraphQLString,
@@ -169,6 +102,73 @@ const PartnerType = new GraphQLObjectType({
           },
         }),
         resolve: (artist) => artist,
+      },
+      default_profile_id: {
+        type: GraphQLString,
+      },
+      has_fair_partnership: {
+        type: GraphQLBoolean,
+        resolve: ({ has_fair_partnership }) => has_fair_partnership,
+      },
+      href: {
+        type: GraphQLString,
+        resolve: ({ type, default_profile_id }) =>
+          type === 'Auction' ? `/auction/${default_profile_id}` : `/${default_profile_id}`,
+      },
+      initials: initials('name'),
+      is_default_profile_public: {
+        type: GraphQLBoolean,
+        resolve: ({ default_profile_public }) => default_profile_public,
+      },
+      is_linkable: {
+        type: GraphQLBoolean,
+        resolve: ({ default_profile_id, default_profile_public, type }) =>
+          default_profile_id && default_profile_public && type !== 'Auction',
+      },
+      is_pre_qualify: {
+        type: GraphQLBoolean,
+        resolve: ({ pre_qualify }) => pre_qualify,
+      },
+      locations: {
+        type: new GraphQLList(Location.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+            defaultValue: 25,
+          },
+        },
+        resolve: ({ id }, options) => gravity(`partner/${id}/locations`, options),
+      },
+      name: {
+        type: GraphQLString,
+        resolve: ({ name }) => name.trim(),
+      },
+      profile: {
+        type: Profile.type,
+        resolve: ({ default_profile_id }) =>
+          gravity(`profile/${default_profile_id}`)
+            .catch(() => null),
+      },
+      shows: {
+        type: PartnerShows.type,
+        args: omit(PartnerShows.args, 'partner_id'),
+        resolve: ({ _id }, options) => {
+          return PartnerShows.resolve(null, assign({}, options, {
+            partner_id: _id,
+          }));
+        },
+      },
+      type: {
+        type: GraphQLString,
+        resolve: ({ name, type }) => {
+          const exceptions = {
+            Auction: 'Auction House',
+            Brand: name,
+            'Institutional Seller': 'Institution',
+          };
+
+          return exceptions[type] || type;
+        },
       },
     };
   },
