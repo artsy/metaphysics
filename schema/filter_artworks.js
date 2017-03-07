@@ -32,7 +32,7 @@ export const FilterArtworksType = new GraphQLObjectType({
       type: artworkConnection,
       args: pageable(),
       resolve: ({ hits, aggregations }, options) => {
-        if ((!aggregations && !aggregations.total)) {
+        if (!aggregations || !aggregations.total) {
           throw new Error('This query must contain the total aggregation');
         }
         const relayOptions = parseRelayOptions(options);
