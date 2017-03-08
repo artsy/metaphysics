@@ -6,14 +6,13 @@ import {
 } from 'graphql-relay';
 import date from '../fields/date';
 import Artwork from '../artwork';
-import Image from '../image';
 import {
   GraphQLEnumType,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
 } from 'graphql';
-import { omit, first } from 'lodash';
+import { omit } from 'lodash';
 import { parseRelayOptions } from '../../lib/helpers';
 
 const NotificationsFeedItemType = new GraphQLObjectType({
@@ -48,8 +47,8 @@ const NotificationsFeedItemType = new GraphQLObjectType({
       }),
     },
     image: {
-      type: Image.type,
-      resolve: (({ object }) => first(object.images)),
+      type: GraphQLString,
+      resolve: ({ object }) => object.artist.image_url,
     },
   }),
 });
