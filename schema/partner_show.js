@@ -52,10 +52,17 @@ const PartnerShowType = new GraphQLObjectType({
     artworks: {
       type: new GraphQLList(Artwork.type),
       args: {
-        size: {
-          type: GraphQLInt,
-          description: 'Number of artworks to return',
-          defaultValue: 25,
+        all: {
+          type: GraphQLBoolean,
+          default: false,
+        },
+        exclude: {
+          type: new GraphQLList(GraphQLString),
+          description: 'List of artwork IDs to exclude from the response (irrespective of size)',
+        },
+        for_sale: {
+          type: GraphQLBoolean,
+          default: false,
         },
         published: {
           type: GraphQLBoolean,
@@ -65,17 +72,10 @@ const PartnerShowType = new GraphQLObjectType({
           type: GraphQLInt,
           defaultValue: 1,
         },
-        all: {
-          type: GraphQLBoolean,
-          default: false,
-        },
-        for_sale: {
-          type: GraphQLBoolean,
-          default: false,
-        },
-        exclude: {
-          type: new GraphQLList(GraphQLString),
-          description: 'List of artwork IDs to exclude from the response (irrespective of size)',
+        size: {
+          type: GraphQLInt,
+          description: 'Number of artworks to return',
+          defaultValue: 25,
         },
       },
       resolve: (show, options) => {
