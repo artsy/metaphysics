@@ -15,30 +15,30 @@ const PartnerShows = {
   type: new GraphQLList(PartnerShow.type),
   description: 'A list of PartnerShows',
   args: {
-    size: {
-      type: GraphQLInt,
-    },
-    sort: PartnerShowSorts,
-    status: EventStatus,
-    fair_id: {
-      type: GraphQLString,
-    },
-    partner_id: {
-      type: GraphQLString,
-    },
-    near: {
-      type: Near,
+    at_a_fair: {
+      type: GraphQLBoolean,
     },
     displayable: {
       type: GraphQLBoolean,
       defaultValue: true,
     },
+    fair_id: {
+      type: GraphQLString,
+    },
     featured: {
       type: GraphQLBoolean,
     },
-    at_a_fair: {
-      type: GraphQLBoolean,
+    near: {
+      type: Near,
     },
+    partner_id: {
+      type: GraphQLString,
+    },
+    size: {
+      type: GraphQLInt,
+    },
+    sort: PartnerShowSorts,
+    status: EventStatus,
   },
   resolve: (root, options) => {
     if (options.near) {

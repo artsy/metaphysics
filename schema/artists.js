@@ -10,14 +10,14 @@ const Artists = {
   type: new GraphQLList(Artist.type),
   description: 'A list of Artists',
   args: {
-    size: {
-      type: GraphQLInt,
-    },
-    sort: ArtistSorts,
     page: {
       type: GraphQLInt,
       defaultValue: 1,
     },
+    size: {
+      type: GraphQLInt,
+    },
+    sort: ArtistSorts,
   },
   resolve: (root, options) => gravity('artists', options),
 };

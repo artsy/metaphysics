@@ -13,11 +13,11 @@ export const AggregationCountType = new GraphQLObjectType({
   description: 'One item in an aggregation',
   fields: {
     ...IDFields,
-    name: {
-      type: GraphQLString,
-    },
     count: {
       type: GraphQLInt,
+    },
+    name: {
+      type: GraphQLString,
     },
   },
 });

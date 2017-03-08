@@ -33,15 +33,6 @@ const partnerDescription = ({ partner: { name }, forsale }) => {
 const ArtworkMetaType = new GraphQLObjectType({
   name: 'ArtworkMeta',
   fields: {
-    title: {
-      type: GraphQLString,
-      resolve: artwork => join(' | ', [
-        artistNames(artwork),
-        titleWithDate(artwork),
-        forSaleIndication(artwork),
-        'Artsy',
-      ]),
-    },
     description: {
       type: GraphQLString,
       args: {
@@ -66,6 +57,15 @@ const ArtworkMetaType = new GraphQLObjectType({
           'medium',
           'tall',
         ]),
+    },
+    title: {
+      type: GraphQLString,
+      resolve: artwork => join(' | ', [
+        artistNames(artwork),
+        titleWithDate(artwork),
+        forSaleIndication(artwork),
+        'Artsy',
+      ]),
     },
   },
 });

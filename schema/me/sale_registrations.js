@@ -12,11 +12,11 @@ import {
 export const SaleRegistrationType = new GraphQLObjectType({
   name: 'SaleRegistration',
   fields: () => ({
-    is_registered: {
-      type: GraphQLBoolean,
-    },
     bidder: {
       type: Bidder.type,
+    },
+    is_registered: {
+      type: GraphQLBoolean,
     },
     sale: {
       type: Sale.type,

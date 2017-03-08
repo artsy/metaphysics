@@ -14,6 +14,12 @@ const PartnerArtistType = new GraphQLObjectType({
   name: 'PartnerArtist',
   fields: () => ({
     ...IDFields,
+    artist: {
+      type: Artist.type,
+    },
+    biography: {
+      type: GraphQLString,
+    },
     counts: {
       type: new GraphQLObjectType({
         name: 'PartnerArtistCounts',
@@ -33,20 +39,14 @@ const PartnerArtistType = new GraphQLObjectType({
     is_represented_by: {
       type: GraphQLBoolean,
     },
-    sortable_id: {
-      type: GraphQLString,
-    },
     is_use_default_biography: {
       type: GraphQLBoolean,
-    },
-    biography: {
-      type: GraphQLString,
     },
     partner: {
       type: Partner.type,
     },
-    artist: {
-      type: Artist.type,
+    sortable_id: {
+      type: GraphQLString,
     },
   }),
 });
@@ -55,13 +55,13 @@ const PartnerArtist = {
   type: PartnerArtistType,
   description: 'A PartnerArtist',
   args: {
-    partner_id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Partner',
-    },
     artist_id: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The slug or ID of the Artist',
+    },
+    partner_id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The slug or ID of the Partner',
     },
   },
   resolve: (root, { partner_id, artist_id }) =>

@@ -9,10 +9,10 @@ export default {
   type: LotStandingType,
   description: 'The current user\'s status relating to bids on artworks',
   args: {
-    sale_id: {
+    artwork_id: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    artwork_id: {
+    sale_id: {
       type: new GraphQLNonNull(GraphQLString),
     },
   },

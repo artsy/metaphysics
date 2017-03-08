@@ -67,35 +67,35 @@ const HomePageArtworkModuleTypes = new GraphQLEnumType({
     ACTIVE_BIDS: {
       value: 'active_bids',
     },
-    FOLLOWED_ARTISTS: {
-      value: 'followed_artists',
-    },
-    FOLLOWED_GALLERIES: {
-      value: 'followed_galleries',
-    },
-    SAVED_WORKS: {
-      value: 'saved_works',
-    },
-    RECOMMENDED_WORKS: {
-      value: 'recommended_works',
-    },
-    LIVE_AUCTIONS: {
-      value: 'live_auctions',
-    },
     CURRENT_FAIRS: {
       value: 'current_fairs',
     },
     FOLLOWED_ARTIST: {
       value: 'followed_artist',
     },
-    RELATED_ARTISTS: {
-      value: 'related_artists',
+    FOLLOWED_ARTISTS: {
+      value: 'followed_artists',
+    },
+    FOLLOWED_GALLERIES: {
+      value: 'followed_galleries',
     },
     FOLLOWED_GENES: {
       value: 'genes',
     },
     GENERIC_GENES: {
       value: 'generic_gene',
+    },
+    LIVE_AUCTIONS: {
+      value: 'live_auctions',
+    },
+    RECOMMENDED_WORKS: {
+      value: 'recommended_works',
+    },
+    RELATED_ARTISTS: {
+      value: 'related_artists',
+    },
+    SAVED_WORKS: {
+      value: 'saved_works',
     },
   },
 });
@@ -104,15 +104,15 @@ const HomePageArtworkModules = {
   type: new GraphQLList(HomePageArtworkModuleType),
   description: 'Artwork modules to show on the home screen',
   args: {
-    max_rails: {
-      type: GraphQLInt,
-      description: 'Maximum number of modules to return, disable limit with a negative number',
-      defaultValue: 8,
-    },
     max_followed_gene_rails: {
       type: GraphQLInt,
       description: 'Maximum number of followed genes to return, disable with a negative number',
       defaultValue: 1,
+    },
+    max_rails: {
+      type: GraphQLInt,
+      description: 'Maximum number of modules to return, disable limit with a negative number',
+      defaultValue: 8,
     },
     order: {
       type: new GraphQLList(HomePageArtworkModuleTypes),

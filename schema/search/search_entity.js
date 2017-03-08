@@ -33,8 +33,8 @@ export const SearchEntityType = new GraphQLUnionType({
   types: [
     ArtistSearchEntityType,
     ArtworkSearchEntityType,
-    ProfileSearchEntityType,
     PartnerShowSearchEntityType,
+    ProfileSearchEntityType,
   ],
 });
 

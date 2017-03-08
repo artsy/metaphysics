@@ -4,13 +4,9 @@ export default {
   type: new GraphQLEnumType({
     name: 'ArtworkSorts',
     values: {
-      title_asc: {
+      availability_desc: {
         deprecationReason: 'use capital enums',
-        value: 'title',
-      },
-      title_desc: {
-        deprecationReason: 'use capital enums',
-        value: '-title',
+        value: '-availability',
       },
       created_at_asc: {
         deprecationReason: 'use capital enums',
@@ -48,15 +44,16 @@ export default {
         deprecationReason: 'use capital enums',
         value: '-partner_updated_at',
       },
-      availability_desc: {
+      title_asc: {
         deprecationReason: 'use capital enums',
-        value: '-availability',
-      },
-      TITLE_ASC: {
         value: 'title',
       },
-      TITLE_DESC: {
+      title_desc: {
+        deprecationReason: 'use capital enums',
         value: '-title',
+      },
+      AVAILABILITY_DESC: {
+        value: '-availability',
       },
       CREATED_AT_ASC: {
         value: 'created_at',
@@ -76,17 +73,20 @@ export default {
       MERCHANDISABILITY_DESC: {
         value: '-merchandisability',
       },
+      PARTNER_UPDATED_AT_DESC: {
+        value: '-partner_updated_at',
+      },
       PUBLISHED_AT_ASC: {
         value: 'published_at',
       },
       PUBLISHED_AT_DESC: {
         value: '-published_at',
       },
-      PARTNER_UPDATED_AT_DESC: {
-        value: '-partner_updated_at',
+      TITLE_ASC: {
+        value: 'title',
       },
-      AVAILABILITY_DESC: {
-        value: '-availability',
+      TITLE_DESC: {
+        value: '-title',
       },
     },
   }),

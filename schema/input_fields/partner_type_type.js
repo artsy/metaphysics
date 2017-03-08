@@ -6,17 +6,14 @@ export default new GraphQLEnumType({
     AUCTION: {
       value: 'PartnerAuction',
     },
+    BRAND: {
+      value: 'PartnerBrand',
+    },
     DEMO: {
       value: 'PartnerDemo',
     },
     GALLERY: {
       value: 'PartnerGallery',
-    },
-    PRIVATE_COLLECTOR: {
-      value: 'PartnerPrivateCollector',
-    },
-    PRIVATE_DEALER: {
-      value: 'PartnerPrivateDealer',
     },
     INSTITUTION: {
       value: 'PartnerInstitution',
@@ -24,8 +21,11 @@ export default new GraphQLEnumType({
     INSTITUTIONAL_SELLER: {
       value: 'PartnerInstitutionalSeller',
     },
-    BRAND: {
-      value: 'PartnerBrand',
+    PRIVATE_COLLECTOR: {
+      value: 'PartnerPrivateCollector',
+    },
+    PRIVATE_DEALER: {
+      value: 'PartnerPrivateDealer',
     },
   },
 });

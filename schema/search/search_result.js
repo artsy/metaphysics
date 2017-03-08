@@ -31,19 +31,25 @@ export const parseId = ({ link }) => {
 const SearchResultType = new GraphQLObjectType({
   name: 'SearchResult',
   fields: () => ({
+    entity: {
+      type: SearchEntityType,
+      resolve: (searchResult) => {
+        const id = parseId(searchResult);
+        const type = parseOgType(searchResult);
+        return gravity(routing(type, id).api)
+          .then(response => {
+            response.type = type; // eslint-disable-line no-param-reassign
+            return response;
+          });
+      },
+    },
     id: {
       type: GraphQLID,
       resolve: parseId,
     },
-    title: {
-      type: GraphQLString,
-    },
     href: {
       type: GraphQLString,
       resolve: ({ link }) => url.parse(link).path,
-    },
-    snippet: {
-      type: GraphQLString,
     },
     image: {
       type: Image.type,
@@ -58,21 +64,15 @@ const SearchResultType = new GraphQLObjectType({
         });
       },
     },
+    snippet: {
+      type: GraphQLString,
+    },
+    title: {
+      type: GraphQLString,
+    },
     type: {
       type: GraphQLString,
       resolve: parseOgType,
-    },
-    entity: {
-      type: SearchEntityType,
-      resolve: (searchResult) => {
-        const id = parseId(searchResult);
-        const type = parseOgType(searchResult);
-        return gravity(routing(type, id).api)
-          .then(response => {
-            response.type = type; // eslint-disable-line no-param-reassign
-            return response;
-          });
-      },
     },
   }),
 });

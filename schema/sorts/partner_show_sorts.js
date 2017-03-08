@@ -20,14 +20,6 @@ export default {
         deprecationReason: 'use capital enums',
         value: '-end_at',
       },
-      start_at_asc: {
-        deprecationReason: 'use capital enums',
-        value: 'start_at',
-      },
-      start_at_desc: {
-        deprecationReason: 'use capital enums',
-        value: '-start_at',
-      },
       name_asc: {
         deprecationReason: 'use capital enums',
         value: 'name',
@@ -44,6 +36,14 @@ export default {
         deprecationReason: 'use capital enums',
         value: '-publish_at',
       },
+      start_at_asc: {
+        deprecationReason: 'use capital enums',
+        value: 'start_at',
+      },
+      start_at_desc: {
+        deprecationReason: 'use capital enums',
+        value: '-start_at',
+      },
       CREATED_AT_ASC: {
         value: 'created_at',
       },
@@ -56,12 +56,6 @@ export default {
       END_AT_DESC: {
         value: '-end_at',
       },
-      START_AT_ASC: {
-        value: 'start_at',
-      },
-      START_AT_DESC: {
-        value: '-start_at',
-      },
       NAME_ASC: {
         value: 'name',
       },
@@ -73,6 +67,12 @@ export default {
       },
       PUBLISH_AT_DESC: {
         value: '-publish_at',
+      },
+      START_AT_ASC: {
+        value: 'start_at',
+      },
+      START_AT_DESC: {
+        value: '-start_at',
       },
     },
   }),

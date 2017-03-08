@@ -12,10 +12,6 @@ export default {
   type: GraphQLString,
   description: 'Creates, and authorizes, a JWT custom for Causality',
   args: {
-    sale_id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The id of the auction to participate in',
-    },
     role: {
       type: new GraphQLEnumType({
         name: 'Role',
@@ -25,6 +21,10 @@ export default {
         },
       }),
       description: '',
+    },
+    sale_id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The id of the auction to participate in',
     },
   },
   resolve: (root, options, request, { rootValue: { accessToken } }) => {

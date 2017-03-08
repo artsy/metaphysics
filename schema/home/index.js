@@ -11,10 +11,10 @@ import {
 const HomePageType = new GraphQLObjectType({
   name: 'HomePage',
   fields: {
-    artwork_module: HomePageArtworkModule,
-    artwork_modules: HomePageArtworkModules,
     artist_module: HomePageArtistModule,
     artist_modules: HomePageArtistModules,
+    artwork_module: HomePageArtworkModule,
+    artwork_modules: HomePageArtworkModules,
     hero_units: HomePageHeroUnits,
   },
 });

@@ -57,14 +57,14 @@ const artistArtworkArrayLength = (artist, filter) => {
 // TODO Get rid of this when we remove the deprecated PartnerShow in favour of Show.
 const ShowField = {
   args: {
-    at_a_fair: {
-      type: GraphQLBoolean,
-    },
     active: {
       type: GraphQLBoolean,
     },
-    status: {
-      type: GraphQLString,
+    at_a_fair: {
+      type: GraphQLBoolean,
+    },
+    is_reference: {
+      type: GraphQLBoolean,
     },
     size: {
       type: GraphQLInt,
@@ -73,10 +73,10 @@ const ShowField = {
     solo_show: {
       type: GraphQLBoolean,
     },
-    top_tier: {
-      type: GraphQLBoolean,
+    status: {
+      type: GraphQLString,
     },
-    is_reference: {
+    top_tier: {
       type: GraphQLBoolean,
     },
     visible_to_public: {
@@ -100,220 +100,39 @@ const ArtistType = new GraphQLObjectType({
     return {
       ...GravityIDFields,
       cached,
-      href: {
-        type: GraphQLString,
-        resolve: (artist) => `/artist/${artist.id}`,
-      },
-      sortable_id: {
-        type: GraphQLString,
-        description: 'Use this attribute to sort by when sorting a collection of Artists',
-      },
-      name: {
-        type: GraphQLString,
-      },
-      initials: initials('name'),
-      gender: {
-        type: GraphQLString,
-      },
-      years: {
-        type: GraphQLString,
-      },
-      is_public: {
-        type: GraphQLBoolean,
-        resolve: artist => artist.public,
-      },
-      is_consignable: {
-        type: GraphQLBoolean,
-        resolve: ({ consignable }) => consignable,
-      },
-      public: {
-        type: GraphQLBoolean,
-        deprecationReason: 'Favor `is_`-prefixed boolean attributes',
-      },
-      consignable: {
-        type: GraphQLBoolean,
-        deprecationReason: 'Favor `is_`-prefixed boolean attributes',
-      },
-      is_display_auction_link: {
-        type: GraphQLBoolean,
-        description: 'Only specific Artists should show a link to auction results.',
-        resolve: ({ display_auction_link }) => display_auction_link,
-      },
-      display_auction_link: {
-        type: GraphQLBoolean,
-        deprecationReason: 'Favor `is_`-prefixed boolean attributes',
-      },
-      has_metadata: {
-        type: GraphQLBoolean,
-        resolve: ({ blurb, nationality, years, hometown, location }) => {
-          return !!(blurb || nationality || years || hometown || location);
-        },
-      },
-      hometown: {
-        type: GraphQLString,
-      },
-      location: {
-        type: GraphQLString,
-      },
-      nationality: {
-        type: GraphQLString,
-      },
-      birthday: {
-        type: GraphQLString,
-      },
-      deathday: {
-        type: GraphQLString,
-      },
-      formatted_nationality_and_birthday: {
-        type: GraphQLString,
-        description: 'A string of the form "Nationality, Birthday (or Birthday-Deathday)"',
-        resolve: ({ birthday, nationality, deathday }) => {
-          let formatted_bday = (!isNaN(birthday) && birthday) ? 'b. ' + birthday : birthday;
-          formatted_bday = formatted_bday && formatted_bday.replace(/born/i, 'b.');
-
-          if ((!isNaN(deathday) && deathday && formatted_bday)) {
-            formatted_bday = `${formatted_bday.replace('b. ', '')}–${deathday.match(/\d+/)}`;
-          }
-
-          if (nationality && formatted_bday) {
-            return nationality + ', ' + formatted_bday;
-          }
-
-          return nationality || formatted_bday;
-        },
-      },
-      biography: {
-        type: Article.type,
-        description: 'The Artist biography article written by Artsy',
-        resolve: ({ _id }) => {
-          return positron('articles', {
-            published: true,
-            biography_for_artist_id: _id,
-            limit: 1,
-          }).then(articles => first(articles.results));
-        },
-      },
       alternate_names: {
         type: new GraphQLList(GraphQLString),
       },
-      meta: Meta,
-      blurb: {
-        args: markdown().args,
-        type: GraphQLString,
-        resolve: ({ blurb }, { format }) => {
-          if (blurb.length) {
-            return formatMarkdownValue(blurb, format);
-          }
+      articles: {
+        args: {
+          sort: ArticleSorts,
+          limit: {
+            type: GraphQLInt,
+          },
         },
+        type: new GraphQLList(Article.type),
+        resolve: ({ _id }, options) =>
+        positron('articles', defaults(options, {
+          artist_id: _id,
+          published: true,
+        })).then(({ results }) => results),
       },
-      biography_blurb: {
-        args: assign({
-          partner_bio: {
-            type: GraphQLBoolean,
-            description: 'If true, will return featured bio over Artsy one.',
-            defaultValue: false,
+      artists: {
+        type: new GraphQLList(Artist.type), // eslint-disable-line no-use-before-define
+        args: {
+          size: {
+            type: GraphQLInt,
+            description: 'The number of Artists to return',
           },
-        }, markdown().args),
-        type: new GraphQLObjectType({
-          name: 'ArtistBlurb',
-          fields: {
-            text: {
-              type: GraphQLString,
-              resolve: ({ text }) => text,
-            },
-            credit: {
-              type: GraphQLString,
-              resolve: ({ credit }) => credit,
-            },
-            partner_id: {
-              type: GraphQLString,
-              resolve: ({ partner_id }) => partner_id,
-              description: 'The partner id of the partner who submitted the featured bio.',
-            },
-          },
-        }),
-        resolve: ({ blurb, id }, { format, partner_bio }) => {
-          if (!partner_bio && blurb && blurb.length) {
-            return { text: formatMarkdownValue(blurb, format) };
-          }
-          return gravity(`artist/${id}/partner_artists`, {
-            size: 1,
-            featured: true,
-          }).then((partner_artists) => {
-            if (partner_artists && partner_artists.length) {
-              const { biography, partner } = first(partner_artists);
-              return {
-                text: formatMarkdownValue(biography, format),
-                credit: `Submitted by ${partner.name}`,
-                partner_id: partner.id,
-              };
-            }
-            return { text: formatMarkdownValue(blurb, format) };
-          });
-        },
-      },
-      is_shareable: {
-        type: GraphQLBoolean,
-        resolve: (artist) => artist.published_artworks_count > 0,
-      },
-      bio: {
-        type: GraphQLString,
-        resolve: ({ nationality, years, hometown, location }) => {
-          return compact([
-            nationality,
-            years,
-            hometown,
-            (location ? `based in ${location}` : undefined),
-          ]).join(', ');
-        },
-      },
-      counts: {
-        type: new GraphQLObjectType({
-          name: 'ArtistCounts',
-          fields: {
-            artworks: numeral(({ published_artworks_count }) =>
-              published_artworks_count),
-            follows: numeral(({ follow_count }) =>
-              follow_count),
-            for_sale_artworks: numeral(({ forsale_artworks_count }) =>
-              forsale_artworks_count),
-            partner_shows: numeral(({ partner_shows_count }) =>
-              partner_shows_count),
-            related_artists: numeral(({ id }) =>
-              total(`related/layer/main/artists`, { artist: id })),
-            articles: numeral(({ _id }) =>
-              positron('articles', {
-                artist_id: _id,
-                published: true,
-                limit: 1,
-              }).then(({ count }) => count)),
-          },
-        }),
-        resolve: (artist) => artist,
-      },
-      artworks_connection: {
-        type: artworkConnection,
-        args: pageable({
-          sort: ArtworkSorts,
-          filter: {
-            type: new GraphQLList(ArtistArtworksFilters),
-          },
-          published: {
+          exclude_artists_without_artworks: {
             type: GraphQLBoolean,
             defaultValue: true,
           },
-        }),
+        },
         resolve: (artist, options) => {
-          // Convert `after` cursors to page params
-          const { limit: size, offset } = getPagingParameters(options);
-          // Construct an object of all the params gravity will listen to
-          const { sort, filter, published } = options;
-          const gravityArgs = { size, offset, sort, filter, published };
-          return gravity(`artist/${artist.id}/artworks`, gravityArgs)
-            .then((artworks) => connectionFromArraySlice(artworks, options, {
-              arrayLength: artistArtworkArrayLength(artist, filter),
-              sliceStart: offset,
-            }));
+          return gravity(`related/layer/main/artists`, defaults(options, {
+            artist: [artist.id],
+          }));
         },
       },
       artworks: {
@@ -342,38 +161,112 @@ const ArtistType = new GraphQLObjectType({
           gravity(`artist/${id}/artworks`, options)
             .then(exclude(options.exclude, 'id')),
       },
-      formatted_artworks_count: {
-        type: GraphQLString,
-        description: 'A string showing the total number of works and those for sale',
-        resolve: ({ published_artworks_count, forsale_artworks_count }) => {
-          let totalWorks = null;
-          if (published_artworks_count) {
-            totalWorks = published_artworks_count +
-              (published_artworks_count > 1 ? ' works' : ' work');
-          }
-          const forSaleWorks = forsale_artworks_count ? forsale_artworks_count + ' for sale' : null;
-          return (forSaleWorks && totalWorks) ? (totalWorks + ', ' + forSaleWorks) : totalWorks;
-        },
-      },
-      image: Image,
-      artists: {
-        type: new GraphQLList(Artist.type), // eslint-disable-line no-use-before-define
-        args: {
-          size: {
-            type: GraphQLInt,
-            description: 'The number of Artists to return',
+      artworks_connection: {
+        type: artworkConnection,
+        args: pageable({
+          sort: ArtworkSorts,
+          filter: {
+            type: new GraphQLList(ArtistArtworksFilters),
           },
-          exclude_artists_without_artworks: {
+          published: {
             type: GraphQLBoolean,
             defaultValue: true,
           },
-        },
+        }),
         resolve: (artist, options) => {
-          return gravity(`related/layer/main/artists`, defaults(options, {
-            artist: [artist.id],
-          }));
+          // Convert `after` cursors to page params
+          const { limit: size, offset } = getPagingParameters(options);
+          // Construct an object of all the params gravity will listen to
+          const { sort, filter, published } = options;
+          const gravityArgs = { size, offset, sort, filter, published };
+          return gravity(`artist/${artist.id}/artworks`, gravityArgs)
+            .then((artworks) => connectionFromArraySlice(artworks, options, {
+              arrayLength: artistArtworkArrayLength(artist, filter),
+              sliceStart: offset,
+            }));
         },
       },
+      bio: {
+        type: GraphQLString,
+        resolve: ({ nationality, years, hometown, location }) => {
+          return compact([
+            nationality,
+            years,
+            hometown,
+            (location ? `based in ${location}` : undefined),
+          ]).join(', ');
+        },
+      },
+      biography: {
+        type: Article.type,
+        description: 'The Artist biography article written by Artsy',
+        resolve: ({ _id }) => {
+          return positron('articles', {
+            published: true,
+            biography_for_artist_id: _id,
+            limit: 1,
+          }).then(articles => first(articles.results));
+        },
+      },
+      biography_blurb: {
+        args: assign({
+          partner_bio: {
+            type: GraphQLBoolean,
+            description: 'If true, will return featured bio over Artsy one.',
+            defaultValue: false,
+          },
+        }, markdown().args),
+        type: new GraphQLObjectType({
+          name: 'ArtistBlurb',
+          fields: {
+            credit: {
+              type: GraphQLString,
+              resolve: ({ credit }) => credit,
+            },
+            text: {
+              type: GraphQLString,
+              resolve: ({ text }) => text,
+            },
+            partner_id: {
+              type: GraphQLString,
+              resolve: ({ partner_id }) => partner_id,
+              description: 'The partner id of the partner who submitted the featured bio.',
+            },
+          },
+        }),
+        resolve: ({ blurb, id }, { format, partner_bio }) => {
+          if (!partner_bio && blurb && blurb.length) {
+            return { text: formatMarkdownValue(blurb, format) };
+          }
+          return gravity(`artist/${id}/partner_artists`, {
+            size: 1,
+            featured: true,
+          }).then((partner_artists) => {
+            if (partner_artists && partner_artists.length) {
+              const { biography, partner } = first(partner_artists);
+              return {
+                text: formatMarkdownValue(biography, format),
+                credit: `Submitted by ${partner.name}`,
+                partner_id: partner.id,
+              };
+            }
+            return { text: formatMarkdownValue(blurb, format) };
+          });
+        },
+      },
+      birthday: {
+        type: GraphQLString,
+      },
+      blurb: {
+        args: markdown().args,
+        type: GraphQLString,
+        resolve: ({ blurb }, { format }) => {
+          if (blurb.length) {
+            return formatMarkdownValue(blurb, format);
+          }
+        },
+      },
+      carousel: ArtistCarousel,
       contemporary: {
         type: new GraphQLList(Artist.type), // eslint-disable-line no-use-before-define
         args: {
@@ -392,11 +285,41 @@ const ArtistType = new GraphQLObjectType({
           }));
         },
       },
-
-      carousel: ArtistCarousel,
-
-      statuses: ArtistStatuses,
-
+      consignable: {
+        type: GraphQLBoolean,
+        deprecationReason: 'Favor `is_`-prefixed boolean attributes',
+      },
+      counts: {
+        type: new GraphQLObjectType({
+          name: 'ArtistCounts',
+          fields: {
+            artworks: numeral(({ published_artworks_count }) =>
+              published_artworks_count),
+            follows: numeral(({ follow_count }) =>
+              follow_count),
+            for_sale_artworks: numeral(({ forsale_artworks_count }) =>
+              forsale_artworks_count),
+            partner_shows: numeral(({ partner_shows_count }) =>
+              partner_shows_count),
+            related_artists: numeral(({ id }) =>
+              total(`related/layer/main/artists`, { artist: id })),
+            articles: numeral(({ _id }) =>
+              positron('articles', {
+                artist_id: _id,
+                published: true,
+                limit: 1,
+              }).then(({ count }) => count)),
+          },
+        }),
+        resolve: (artist) => artist,
+      },
+      deathday: {
+        type: GraphQLString,
+      },
+      display_auction_link: {
+        type: GraphQLBoolean,
+        deprecationReason: 'Favor `is_`-prefixed boolean attributes',
+      },
       exhibition_highlights: {
         args: {
           size: {
@@ -417,17 +340,82 @@ const ArtistType = new GraphQLObjectType({
           }).then(shows => { return shows; });
         },
       },
-
-      partner_shows: {
-        type: new GraphQLList(PartnerShow.type),
-        deprecationReason: 'Prefer to use shows attribute',
-        ...ShowField,
+      formatted_artworks_count: {
+        type: GraphQLString,
+        description: 'A string showing the total number of works and those for sale',
+        resolve: ({ published_artworks_count, forsale_artworks_count }) => {
+          let totalWorks = null;
+          if (published_artworks_count) {
+            totalWorks = published_artworks_count +
+            (published_artworks_count > 1 ? ' works' : ' work');
+          }
+          const forSaleWorks = forsale_artworks_count ? forsale_artworks_count + ' for sale' : null;
+          return (forSaleWorks && totalWorks) ? (totalWorks + ', ' + forSaleWorks) : totalWorks;
+        },
       },
-      shows: {
-        type: new GraphQLList(Show.type),
-        ...ShowField,
-      },
+      formatted_nationality_and_birthday: {
+        type: GraphQLString,
+        description: 'A string of the form "Nationality, Birthday (or Birthday-Deathday)"',
+        resolve: ({ birthday, nationality, deathday }) => {
+          let formatted_bday = (!isNaN(birthday) && birthday) ? 'b. ' + birthday : birthday;
+          formatted_bday = formatted_bday && formatted_bday.replace(/born/i, 'b.');
 
+          if ((!isNaN(deathday) && deathday && formatted_bday)) {
+            formatted_bday = `${formatted_bday.replace('b. ', '')}–${deathday.match(/\d+/)}`;
+          }
+
+          if (nationality && formatted_bday) {
+            return nationality + ', ' + formatted_bday;
+          }
+
+          return nationality || formatted_bday;
+        },
+      },
+      gender: {
+        type: GraphQLString,
+      },
+      href: {
+        type: GraphQLString,
+        resolve: (artist) => `/artist/${artist.id}`,
+      },
+      has_metadata: {
+        type: GraphQLBoolean,
+        resolve: ({ blurb, nationality, years, hometown, location }) => {
+          return !!(blurb || nationality || years || hometown || location);
+        },
+      },
+      hometown: {
+        type: GraphQLString,
+      },
+      image: Image,
+      initials: initials('name'),
+      is_consignable: {
+        type: GraphQLBoolean,
+        resolve: ({ consignable }) => consignable,
+      },
+      is_display_auction_link: {
+        type: GraphQLBoolean,
+        description: 'Only specific Artists should show a link to auction results.',
+        resolve: ({ display_auction_link }) => display_auction_link,
+      },
+      is_public: {
+        type: GraphQLBoolean,
+        resolve: artist => artist.public,
+      },
+      is_shareable: {
+        type: GraphQLBoolean,
+        resolve: (artist) => artist.published_artworks_count > 0,
+      },
+      location: {
+        type: GraphQLString,
+      },
+      meta: Meta,
+      nationality: {
+        type: GraphQLString,
+      },
+      name: {
+        type: GraphQLString,
+      },
       partner_artists: {
         type: new GraphQLList(PartnerArtist.type),
         args: {
@@ -440,7 +428,15 @@ const ArtistType = new GraphQLObjectType({
           return gravity(`artist/${id}/partner_artists`, options);
         },
       },
-
+      partner_shows: {
+        type: new GraphQLList(PartnerShow.type),
+        deprecationReason: 'Prefer to use shows attribute',
+        ...ShowField,
+      },
+      public: {
+        type: GraphQLBoolean,
+        deprecationReason: 'Favor `is_`-prefixed boolean attributes',
+      },
       sales: {
         type: new GraphQLList(Sale.type),
         args: {
@@ -463,20 +459,17 @@ const ArtistType = new GraphQLObjectType({
           }));
         },
       },
-
-      articles: {
-        args: {
-          sort: ArticleSorts,
-          limit: {
-            type: GraphQLInt,
-          },
-        },
-        type: new GraphQLList(Article.type),
-        resolve: ({ _id }, options) =>
-          positron('articles', defaults(options, {
-            artist_id: _id,
-            published: true,
-          })).then(({ results }) => results),
+      shows: {
+        type: new GraphQLList(Show.type),
+        ...ShowField,
+      },
+      sortable_id: {
+        type: GraphQLString,
+        description: 'Use this attribute to sort by when sorting a collection of Artists',
+      },
+      statuses: ArtistStatuses,
+      years: {
+        type: GraphQLString,
       },
     };
   },

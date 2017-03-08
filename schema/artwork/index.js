@@ -63,146 +63,71 @@ const ArtworkType = new GraphQLObjectType({
     return {
       ...GravityIDFields,
       cached,
-      to_s: {
-        type: GraphQLString,
-        resolve: ({ artist, title, date, partner }) => {
-          return _.compact([
-            (artist && artist.name),
-            (title && `‘${title}’`),
-            date,
-            (partner && partner.name),
-          ]).join(', ');
-        },
-      },
-      href: {
-        type: GraphQLString,
-        resolve: ({ id }) => `/artwork/${id}`,
-      },
-      title: {
-        type: GraphQLString,
-        resolve: ({ title }) => _.isEmpty(title) ? 'Untitled' : title,
-      },
-      category: {
-        type: GraphQLString,
-      },
-      medium: {
-        type: GraphQLString,
-      },
-      date: {
-        type: GraphQLString,
-      },
-      image_rights: {
-        type: GraphQLString,
-      },
-      image_title: {
-        type: GraphQLString,
-        resolve: ({ artist, title, date }) => {
-          return _.compact([
-            (artist && artist.name),
-            (title && `‘${title}’`),
-            date,
-          ]).join(', ');
-        },
-      },
-      website: {
-        type: GraphQLString,
-        resolve: artwork =>
-          isEmbeddedVideo(artwork) ? null : artwork.website,
-      },
-      collecting_institution: {
-        type: GraphQLString,
-        resolve: ({ collecting_institution }) =>
-          existyValue(collecting_institution),
-      },
-      partner: {
-        type: Partner.type,
+      additional_information: markdown(),
+      artist: {
+        type: Artist.type,
         args: {
           shallow: {
             type: GraphQLBoolean,
             description: 'Use whatever is in the original response instead of making a request',
           },
         },
-        resolve: ({ partner }, { shallow }) => {
-          if (shallow) return partner;
-          return gravity(`partner/${partner.id}`)
+        resolve: ({ artist }, { shallow }) => {
+          if (!artist) return null;
+          if (shallow) return artist;
+          return gravity(`artist/${artist.id}`)
             .catch(() => null);
         },
       },
-      embed: {
-        type: GraphQLString,
-        description: 'Returns an HTML string representing the embedded content (video)',
+      artists: {
+        type: new GraphQLList(Artist.type),
         args: {
-          width: {
-            type: GraphQLInt,
-            defaultValue: 853,
-          },
-          height: {
-            type: GraphQLInt,
-            defaultValue: 450,
-          },
-          autoplay: {
+          shallow: {
             type: GraphQLBoolean,
-            defaultValue: false,
+            description: 'Use whatever is in the original response instead of making a request',
           },
         },
-        resolve: ({ website }, options) =>
-          isEmbeddedVideo ? embed(website, options) : null,
+        resolve: ({ artists }, { shallow }) => {
+          if (shallow) return artists;
+          return Promise.all(
+            artists.map(artist => gravity(`/artist/${artist.id}`))
+          ).catch(() => []);
+        },
+      },
+      artist_names: {
+        type: GraphQLString,
+        resolve: (artwork) => artistNames(artwork),
+      },
+      articles: {
+        type: new GraphQLList(Article.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+          },
+        },
+        resolve: ({ _id }, { size }) =>
+          positron('articles', { artwork_id: _id, published: true, limit: size })
+            .then(({ results }) => results),
+      },
+      availability: {
+        type: GraphQLString,
       },
       can_share_image: {
         type: GraphQLBoolean,
         deprecationReason: 'Favor `is_`-prefixed boolean attributes',
       },
-      is_embeddable_video: {
-        type: GraphQLBoolean,
-        resolve: isEmbeddedVideo,
+      category: {
+        type: GraphQLString,
       },
-      is_shareable: {
-        type: GraphQLBoolean,
-        resolve: ({ can_share_image }) => can_share_image,
+      collecting_institution: {
+        type: GraphQLString,
+        resolve: ({ collecting_institution }) =>
+        existyValue(collecting_institution),
       },
-      is_hangable: {
-        type: GraphQLBoolean,
-        resolve: (artwork) => {
-          return (
-            !_.includes(artwork.category, 'sculpture', 'installation', 'design') &&
-            isTwoDimensional(artwork) &&
-            !isTooBig(artwork)
-          );
-        },
-      },
-      is_purchasable: {
-        type: GraphQLBoolean,
-        description: 'True for inquireable artworks that have an exact price.',
-        resolve: (artwork) => {
-          return (
-            !has_multiple_editions(artwork.edition_sets) &&
-            is_inquireable(artwork) &&
-            isExisty(artwork.price) &&
-            !has_price_range(artwork.price) &&
-            artwork.forsale
-          );
-        },
-      },
-      is_inquireable: {
-        type: GraphQLBoolean,
-        description: 'Do we want to encourage inquiries on this work?',
-        resolve: (artwork) => is_inquireable(artwork),
-      },
-      is_contactable: {
-        type: GraphQLBoolean,
-        description: 'Are we able to display a contact form on artwork pages?',
-        deprecationReason: 'Prefer to use is_inquireable',
-        resolve: (artwork) => {
-          return gravity('related/sales', { size: 1, active: true, artwork: [artwork.id] })
-            .then(sales => {
-              return (
-                artwork.forsale &&
-                !_.isEmpty(artwork.partner) &&
-                !artwork.acquireable &&
-                !artwork.partner.has_limited_fair_partnership &&
-                !sales.length
-              );
-            }).catch(() => false);
+      contact_label: {
+        type: GraphQLString,
+        resolve: ({ partner }) => {
+          return (partner.type === 'Gallery') ? 'Gallery' : 'Seller';
         },
       },
       contact_message: {
@@ -229,29 +154,110 @@ const ArtworkType = new GraphQLObjectType({
           }
         },
       },
-      is_in_auction: {
-        type: GraphQLBoolean,
-        description: 'Is this artwork part of an auction?',
-        resolve: ({ sale_ids }) => {
-          if (sale_ids && sale_ids.length > 0) {
-            return gravity('sales', { id: sale_ids, is_auction: true })
-              .then(sales => {
-                return sales.length > 0;
-              });
+      context: Context,
+      cultural_maker: {
+        type: GraphQLString,
+      },
+      date: {
+        type: GraphQLString,
+      },
+      description: markdown(({ blurb }) => blurb),
+      dimensions: Dimensions,
+      embed: {
+        type: GraphQLString,
+        description: 'Returns an HTML string representing the embedded content (video)',
+        args: {
+          width: {
+            type: GraphQLInt,
+            defaultValue: 853,
+          },
+          height: {
+            type: GraphQLInt,
+            defaultValue: 450,
+          },
+          autoplay: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+          },
+        },
+        resolve: ({ website }, options) =>
+        isEmbeddedVideo ? embed(website, options) : null,
+      },
+      edition_of: {
+        type: GraphQLString,
+        resolve: ({ unique, edition_sets }) => {
+          if (unique) return 'Unique';
+          if (edition_sets && edition_sets.length === 1) {
+            return _.first(edition_sets).editions;
           }
-          return false;
         },
       },
-      is_in_show: {
-        type: GraphQLBoolean,
-        description: 'Is this artwork part of a current show',
-        resolve: ({ id }) =>
-          gravity('related/shows', { active: true, size: 1, artwork: [id] })
-            .then(shows => shows.length > 0),
+      edition_sets: {
+        type: new GraphQLList(EditionSet.type),
+        resolve: ({ edition_sets }) => edition_sets,
       },
-      is_for_sale: {
+      exhibition_history: markdown(),
+      fair: {
+        type: Fair.type,
+        resolve: ({ id }) =>
+        gravity('related/fairs', { artwork: [id], size: 1 })
+        .then(_.first),
+      },
+      highlights: {
+        type: new GraphQLList(Highlight),
+        description: 'Returns the highlighted shows and articles',
+        resolve: ({ id, _id }) =>
+          Promise
+            .all([
+              gravity('related/shows', { artwork: [id], size: 1, at_a_fair: false }),
+              positron('articles', { artwork_id: _id, published: true, limit: 1 })
+                .then(({ results }) => results),
+            ])
+            .then(([shows, articles]) => {
+              const highlightedShows = enhance(shows, { highlight_type: 'Show' });
+              const highlightedArticles = enhance(articles, { highlight_type: 'Article' });
+              return highlightedShows.concat(highlightedArticles);
+            }),
+      },
+      href: {
+        type: GraphQLString,
+        resolve: ({ id }) => `/artwork/${id}`,
+      },
+      image: {
+        type: Image.type,
+        resolve: ({ images }) => {
+          return Image.resolve(getDefault(images));
+        },
+      },
+      image_rights: {
+        type: GraphQLString,
+      },
+      image_title: {
+        type: GraphQLString,
+        resolve: ({ artist, title, date }) => {
+          return _.compact([
+            (artist && artist.name),
+            (title && `‘${title}’`),
+            date,
+          ]).join(', ');
+        },
+      },
+      images: {
+        type: new GraphQLList(Image.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+          },
+        },
+        resolve: ({ images }, { size }) => {
+          const sorted = _.sortBy(images, 'position');
+          return Image.resolve(size ? _.take(sorted, size) : sorted);
+        },
+      },
+      is_acquireable: {
         type: GraphQLBoolean,
-        resolve: ({ forsale }) => forsale,
+        description: 'Whether work can be purchased through e-commerce',
+        resolve: ({ acquireable }) => acquireable,
       },
       is_biddable: {
         type: GraphQLBoolean,
@@ -259,30 +265,12 @@ const ArtworkType = new GraphQLObjectType({
         resolve: ({ sale_ids }) => {
           if (sale_ids && sale_ids.length > 0) {
             return gravity('sales', { id: sale_ids, is_auction: true, live: true })
-              .then(sales => {
-                return sales.length > 0;
-              });
+            .then(sales => {
+              return sales.length > 0;
+            });
           }
           return false;
         },
-      },
-      is_unique: {
-        type: GraphQLBoolean,
-        resolve: ({ unique }) => unique,
-      },
-      is_sold: {
-        type: GraphQLBoolean,
-        resolve: ({ sold }) => sold,
-      },
-      is_ecommerce: {
-        type: GraphQLBoolean,
-        deprecationReason: 'Should not be used to determine anything UI-level',
-        resolve: ({ ecommerce }) => ecommerce,
-      },
-      is_acquireable: {
-        type: GraphQLBoolean,
-        description: 'Whether work can be purchased through e-commerce',
-        resolve: ({ acquireable }) => acquireable,
       },
       is_buy_nowable: {
         type: GraphQLBoolean,
@@ -294,18 +282,18 @@ const ArtworkType = new GraphQLObjectType({
               is_auction: true,
               auction_state: 'open',
             })
-              .then(_.first)
-              .then(sale => {
-                if (!sale) return [false];
+            .then(_.first)
+            .then(sale => {
+              if (!sale) return [false];
 
-                return gravity(`sale/${sale.id}/sale_artwork/${id}`)
-                  .then(saleArtwork => [sale, saleArtwork]);
-              })
-              .then(([sale, saleArtwork]) => {
-                if (!sale) return false;
+              return gravity(`sale/${sale.id}/sale_artwork/${id}`)
+              .then(saleArtwork => [sale, saleArtwork]);
+            })
+            .then(([sale, saleArtwork]) => {
+              if (!sale) return false;
 
-                return saleArtwork.bidder_positions_count < 1;
-              });
+              return saleArtwork.bidder_positions_count < 1;
+            });
           }
           return false;
         },
@@ -319,9 +307,82 @@ const ArtworkType = new GraphQLObjectType({
           );
         },
       },
+      is_contactable: {
+        type: GraphQLBoolean,
+        description: 'Are we able to display a contact form on artwork pages?',
+        deprecationReason: 'Prefer to use is_inquireable',
+        resolve: (artwork) => {
+          return gravity('related/sales', { size: 1, active: true, artwork: [artwork.id] })
+          .then(sales => {
+            return (
+              artwork.forsale &&
+              !_.isEmpty(artwork.partner) &&
+              !artwork.acquireable &&
+              !artwork.partner.has_limited_fair_partnership &&
+              !sales.length
+            );
+          }).catch(() => false);
+        },
+      },
       is_downloadable: {
         type: GraphQLBoolean,
         resolve: ({ images }) => _.first(images).downloadable,
+      },
+      is_embeddable_video: {
+        type: GraphQLBoolean,
+        resolve: isEmbeddedVideo,
+      },
+      is_ecommerce: {
+        type: GraphQLBoolean,
+        deprecationReason: 'Should not be used to determine anything UI-level',
+        resolve: ({ ecommerce }) => ecommerce,
+      },
+      is_for_sale: {
+        type: GraphQLBoolean,
+        resolve: ({ forsale }) => forsale,
+      },
+      is_hangable: {
+        type: GraphQLBoolean,
+        resolve: (artwork) => {
+          return (
+            !_.includes(artwork.category, 'sculpture', 'installation', 'design') &&
+            isTwoDimensional(artwork) &&
+            !isTooBig(artwork)
+          );
+        },
+      },
+      is_inquireable: {
+        type: GraphQLBoolean,
+        description: 'Do we want to encourage inquiries on this work?',
+        resolve: (artwork) => is_inquireable(artwork),
+      },
+      is_in_auction: {
+        type: GraphQLBoolean,
+        description: 'Is this artwork part of an auction?',
+        resolve: ({ sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            return gravity('sales', { id: sale_ids, is_auction: true })
+            .then(sales => {
+              return sales.length > 0;
+            });
+          }
+          return false;
+        },
+      },
+      is_in_show: {
+        type: GraphQLBoolean,
+        description: 'Is this artwork part of a current show',
+        resolve: ({ id }) =>
+        gravity('related/shows', { active: true, size: 1, artwork: [id] })
+        .then(shows => shows.length > 0),
+      },
+      is_not_for_sale: {
+        type: GraphQLString,
+        resolve: ({ availability }) => availability === 'not for sale',
+      },
+      is_on_hold: {
+        type: GraphQLString,
+        resolve: ({ availability }) => availability === 'on hold',
       },
       is_price_hidden: {
         type: GraphQLBoolean,
@@ -331,16 +392,108 @@ const ArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ price, edition_sets }) => has_price_range(price) && !has_multiple_editions(edition_sets), // eslint-disable-line max-len
       },
-      availability: {
+      is_purchasable: {
+        type: GraphQLBoolean,
+        description: 'True for inquireable artworks that have an exact price.',
+        resolve: (artwork) => {
+          return (
+            !has_multiple_editions(artwork.edition_sets) &&
+            is_inquireable(artwork) &&
+            isExisty(artwork.price) &&
+            !has_price_range(artwork.price) &&
+            artwork.forsale
+          );
+        },
+      },
+      is_shareable: {
+        type: GraphQLBoolean,
+        resolve: ({ can_share_image }) => can_share_image,
+      },
+      is_sold: {
+        type: GraphQLBoolean,
+        resolve: ({ sold }) => sold,
+      },
+      is_unique: {
+        type: GraphQLBoolean,
+        resolve: ({ unique }) => unique,
+      },
+      layer: {
+        type: ArtworkLayer.type,
+        args: {
+          id: {
+            type: GraphQLString,
+          },
+        },
+        resolve: (artwork, { id }) =>
+          artworkLayers(artwork.id)
+            .then(layers =>
+              !!id ? _.find(layers, { id }) : _.first(layers)
+            ),
+      },
+      layers: {
+        type: ArtworkLayers.type,
+        resolve: ({ id }) => artworkLayers(id),
+      },
+      literature: markdown(({ literature }) =>
+        literature.replace(/^literature:\s+/i, '')
+      ),
+      manufacturer: markdown(),
+      medium: {
         type: GraphQLString,
       },
-      is_on_hold: {
-        type: GraphQLString,
-        resolve: ({ availability }) => availability === 'on hold',
+      meta: Meta,
+      partner: {
+        type: Partner.type,
+        args: {
+          shallow: {
+            type: GraphQLBoolean,
+            description: 'Use whatever is in the original response instead of making a request',
+          },
+        },
+        resolve: ({ partner }, { shallow }) => {
+          if (shallow) return partner;
+          return gravity(`partner/${partner.id}`)
+            .catch(() => null);
+        },
       },
-      is_not_for_sale: {
+      price: {
         type: GraphQLString,
-        resolve: ({ availability }) => availability === 'not for sale',
+      },
+      provenance: markdown(({ provenance }) =>
+        provenance.replace(/^provenance:\s+/i, '')
+      ),
+      publisher: markdown(),
+      related: {
+        type: new GraphQLList(Artwork.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+          },
+        },
+        resolve: ({ _id }, { size }) =>
+          gravity('related/artworks', { artwork_id: _id, size }),
+      },
+      sale: {
+        type: Sale.type,
+        resolve: ({ sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            const sale_id = _.first(sale_ids);
+            // don't error if the sale is unpublished
+            return gravity(`sale/${sale_id}`).catch(() => null);
+          }
+          return null;
+        },
+      },
+      sale_artwork: {
+        type: SaleArtwork.type,
+        resolve: ({ id, sale_ids }) => {
+          if (sale_ids && sale_ids.length > 0) {
+            const sale_id = _.first(sale_ids);
+            // don't error if the sale/artwork is unpublished
+            return gravity(`sale/${sale_id}/sale_artwork/${id}`).catch(() => null);
+          }
+          return null;
+        },
       },
       sale_message: {
         type: GraphQLString,
@@ -360,118 +513,7 @@ const ArtworkType = new GraphQLObjectType({
           return sale_message;
         },
       },
-      artist: {
-        type: Artist.type,
-        args: {
-          shallow: {
-            type: GraphQLBoolean,
-            description: 'Use whatever is in the original response instead of making a request',
-          },
-        },
-        resolve: ({ artist }, { shallow }) => {
-          if (!artist) return null;
-          if (shallow) return artist;
-          return gravity(`artist/${artist.id}`)
-            .catch(() => null);
-        },
-      },
-      price: {
-        type: GraphQLString,
-      },
-      contact_label: {
-        type: GraphQLString,
-        resolve: ({ partner }) => {
-          return (partner.type === 'Gallery') ? 'Gallery' : 'Seller';
-        },
-      },
-      cultural_maker: {
-        type: GraphQLString,
-      },
-      artists: {
-        type: new GraphQLList(Artist.type),
-        args: {
-          shallow: {
-            type: GraphQLBoolean,
-            description: 'Use whatever is in the original response instead of making a request',
-          },
-        },
-        resolve: ({ artists }, { shallow }) => {
-          if (shallow) return artists;
-          return Promise.all(
-            artists.map(artist => gravity(`/artist/${artist.id}`))
-          ).catch(() => []);
-        },
-      },
-      artist_names: {
-        type: GraphQLString,
-        resolve: (artwork) => artistNames(artwork),
-      },
-      dimensions: Dimensions,
-      image: {
-        type: Image.type,
-        resolve: ({ images }) => {
-          return Image.resolve(getDefault(images));
-        },
-      },
-      images: {
-        type: new GraphQLList(Image.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-          },
-        },
-        resolve: ({ images }, { size }) => {
-          const sorted = _.sortBy(images, 'position');
-          return Image.resolve(size ? _.take(sorted, size) : sorted);
-        },
-      },
-      context: Context,
-      highlights: {
-        type: new GraphQLList(Highlight),
-        description: 'Returns the highlighted shows and articles',
-        resolve: ({ id, _id }) =>
-          Promise
-            .all([
-              gravity('related/shows', { artwork: [id], size: 1, at_a_fair: false }),
-              positron('articles', { artwork_id: _id, published: true, limit: 1 })
-                .then(({ results }) => results),
-            ])
-            .then(([shows, articles]) => {
-              const highlightedShows = enhance(shows, { highlight_type: 'Show' });
-              const highlightedArticles = enhance(articles, { highlight_type: 'Article' });
-              return highlightedShows.concat(highlightedArticles);
-            }),
-      },
-      articles: {
-        type: new GraphQLList(Article.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-          },
-        },
-        resolve: ({ _id }, { size }) =>
-          positron('articles', { artwork_id: _id, published: true, limit: size })
-            .then(({ results }) => results),
-      },
-      shows: {
-        type: new GraphQLList(PartnerShow.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-          },
-          active: {
-            type: GraphQLBoolean,
-          },
-          at_a_fair: {
-            type: GraphQLBoolean,
-          },
-          sort: {
-            type: PartnerShowSorts.type,
-          },
-        },
-        resolve: ({ id }, { size, active, sort, at_a_fair }) =>
-          gravity('related/shows', { artwork: [id], active, size, sort, at_a_fair }),
-      },
+      series: markdown(),
       show: {
         type: PartnerShow.type,
         args: {
@@ -492,89 +534,47 @@ const ArtworkType = new GraphQLObjectType({
           gravity('related/shows', { artwork: [id], size: 1, active, sort, at_a_fair })
             .then(_.first),
       },
-      sale_artwork: {
-        type: SaleArtwork.type,
-        resolve: ({ id, sale_ids }) => {
-          if (sale_ids && sale_ids.length > 0) {
-            const sale_id = _.first(sale_ids);
-            // don't error if the sale/artwork is unpublished
-            return gravity(`sale/${sale_id}/sale_artwork/${id}`).catch(() => null);
-          }
-          return null;
-        },
-      },
-      sale: {
-        type: Sale.type,
-        resolve: ({ sale_ids }) => {
-          if (sale_ids && sale_ids.length > 0) {
-            const sale_id = _.first(sale_ids);
-            // don't error if the sale is unpublished
-            return gravity(`sale/${sale_id}`).catch(() => null);
-          }
-          return null;
-        },
-      },
-      fair: {
-        type: Fair.type,
-        resolve: ({ id }) =>
-          gravity('related/fairs', { artwork: [id], size: 1 })
-            .then(_.first),
-      },
-      edition_of: {
-        type: GraphQLString,
-        resolve: ({ unique, edition_sets }) => {
-          if (unique) return 'Unique';
-          if (edition_sets && edition_sets.length === 1) {
-            return _.first(edition_sets).editions;
-          }
-        },
-      },
-      edition_sets: {
-        type: new GraphQLList(EditionSet.type),
-        resolve: ({ edition_sets }) => edition_sets,
-      },
-      description: markdown(({ blurb }) => blurb),
-      exhibition_history: markdown(),
-      provenance: markdown(({ provenance }) =>
-        provenance.replace(/^provenance:\s+/i, '')
-      ),
-      signature: markdown(({ signature }) =>
-        signature.replace(/^signature:\s+/i, '')
-      ),
-      additional_information: markdown(),
-      literature: markdown(({ literature }) =>
-        literature.replace(/^literature:\s+/i, '')
-      ),
-      publisher: markdown(),
-      manufacturer: markdown(),
-      series: markdown(),
-      meta: Meta,
-      related: {
-        type: new GraphQLList(Artwork.type),
+      shows: {
+        type: new GraphQLList(PartnerShow.type),
         args: {
           size: {
             type: GraphQLInt,
           },
-        },
-        resolve: ({ _id }, { size }) =>
-          gravity('related/artworks', { artwork_id: _id, size }),
-      },
-      layer: {
-        type: ArtworkLayer.type,
-        args: {
-          id: {
-            type: GraphQLString,
+          active: {
+            type: GraphQLBoolean,
+          },
+          at_a_fair: {
+            type: GraphQLBoolean,
+          },
+          sort: {
+            type: PartnerShowSorts.type,
           },
         },
-        resolve: (artwork, { id }) =>
-          artworkLayers(artwork.id)
-            .then(layers =>
-              !!id ? _.find(layers, { id }) : _.first(layers)
-            ),
+        resolve: ({ id }, { size, active, sort, at_a_fair }) =>
+        gravity('related/shows', { artwork: [id], active, size, sort, at_a_fair }),
       },
-      layers: {
-        type: ArtworkLayers.type,
-        resolve: ({ id }) => artworkLayers(id),
+      signature: markdown(({ signature }) =>
+        signature.replace(/^signature:\s+/i, '')
+      ),
+      title: {
+        type: GraphQLString,
+        resolve: ({ title }) => _.isEmpty(title) ? 'Untitled' : title,
+      },
+      to_s: {
+        type: GraphQLString,
+        resolve: ({ artist, title, date, partner }) => {
+          return _.compact([
+            (artist && artist.name),
+            (title && `‘${title}’`),
+            date,
+            (partner && partner.name),
+          ]).join(', ');
+        },
+      },
+      website: {
+        type: GraphQLString,
+        resolve: artwork =>
+        isEmbeddedVideo(artwork) ? null : artwork.website,
       },
     };
   },

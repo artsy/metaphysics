@@ -27,13 +27,13 @@ export default {
       type: GraphQLBoolean,
       description: 'Exclude artists the user already follows',
     },
-    size: {
-      type: GraphQLInt,
-      description: 'Amount of artists to return',
-    },
     page: {
       type: GraphQLInt,
       description: 'Pagination, need I say more?',
+    },
+    size: {
+      type: GraphQLInt,
+      description: 'Amount of artists to return',
     },
   },
   resolve: (root, options, request, { rootValue: { accessToken } }) => {

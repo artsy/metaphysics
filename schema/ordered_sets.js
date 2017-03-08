@@ -15,13 +15,10 @@ const OrderedSetType = new GraphQLObjectType({
   fields: () => ({
     ...IDFields,
     cached,
-    key: {
-      type: GraphQLString,
-    },
-    name: {
-      type: GraphQLString,
-    },
     description: {
+      type: GraphQLString,
+    },
+    key: {
       type: GraphQLString,
     },
     item_type: {
@@ -38,6 +35,9 @@ const OrderedSetType = new GraphQLObjectType({
             });
           });
       },
+    },
+    name: {
+      type: GraphQLString,
     },
   }),
 });

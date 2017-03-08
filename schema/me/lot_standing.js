@@ -21,11 +21,13 @@ export const isHighestBidder = (lotStanding) =>
 export const LotStandingType = new GraphQLObjectType({
   name: 'LotStanding',
   fields: () => ({
+    active_bid: {
+      type: BidderPosition.type,
+      description: 'Your bid if it is currently winning',
+      resolve: (lotStanding) => isHighestBidder(lotStanding) ? lotStanding.leading_position : null,
+    },
     bidder: {
       type: Bidder.type,
-    },
-    sale_artwork: {
-      type: SaleArtwork.type,
     },
     is_highest_bidder: {
       type: GraphQLBoolean,
@@ -37,15 +39,13 @@ export const LotStandingType = new GraphQLObjectType({
       description: 'You are the leading bidder without regard to reserve',
       resolve: isLeadingBidder,
     },
-    active_bid: {
-      type: BidderPosition.type,
-      description: 'Your bid if it is currently winning',
-      resolve: (lotStanding) => isHighestBidder(lotStanding) ? lotStanding.leading_position : null,
-    },
     most_recent_bid: {
       type: BidderPosition.type,
       description: 'Your most recent bid—which is not necessarily winning (may be higher or lower)',
       resolve: ({ max_position }) => max_position,
+    },
+    sale_artwork: {
+      type: SaleArtwork.type,
     },
   }),
 });
@@ -54,10 +54,10 @@ export default {
   type: LotStandingType,
   description: 'The current user\'s status relating to bids on artworks',
   args: {
-    sale_id: {
+    artwork_id: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    artwork_id: {
+    sale_id: {
       type: new GraphQLNonNull(GraphQLString),
     },
   },

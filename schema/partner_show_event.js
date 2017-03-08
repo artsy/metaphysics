@@ -7,17 +7,17 @@ import {
 const PartnerShowEventType = new GraphQLObjectType({
   name: 'PartnerShowEventType',
   fields: {
-    title: {
-      type: GraphQLString,
-    },
-    description: {
-      type: GraphQLString,
-    },
     event_type: {
       type: GraphQLString,
       resolve: ({ event_type }) => {
         return (event_type === 'Other') ? 'Event' : event_type;
       },
+    },
+    description: {
+      type: GraphQLString,
+    },
+    title: {
+      type: GraphQLString,
     },
     start_at: date,
     end_at: date,

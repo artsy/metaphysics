@@ -11,26 +11,26 @@ import {
 export const ArtworksAggregation = new GraphQLEnumType({
   name: 'ArtworkAggregation',
   values: {
-    PRICE_RANGE: {
-      value: 'price_range',
-    },
-    DIMENSION_RANGE: {
-      value: 'dimension_range',
+    ARTIST: {
+      value: 'artist',
     },
     COLOR: {
       value: 'color',
     },
-    PERIOD: {
-      value: 'period',
+    DIMENSION_RANGE: {
+      value: 'dimension_range',
+    },
+    FOLLOWED_ARTISTS: {
+      value: 'followed_artists',
     },
     MAJOR_PERIOD: {
       value: 'major_period',
     },
-    PARTNER_CITY: {
-      value: 'partner_city',
-    },
     MEDIUM: {
       value: 'medium',
+    },
+    MERCHANDISABLE_ARTISTS: {
+      value: 'merchandisable_artists',
     },
     GALLERY: {
       value: 'gallery',
@@ -38,17 +38,17 @@ export const ArtworksAggregation = new GraphQLEnumType({
     INSTITUTION: {
       value: 'institution',
     },
+    PARTNER_CITY: {
+      value: 'partner_city',
+    },
+    PERIOD: {
+      value: 'period',
+    },
+    PRICE_RANGE: {
+      value: 'price_range',
+    },
     TOTAL: {
       value: 'total',
-    },
-    ARTIST: {
-      value: 'artist',
-    },
-    FOLLOWED_ARTISTS: {
-      value: 'followed_artists',
-    },
-    MERCHANDISABLE_ARTISTS: {
-      value: 'merchandisable_artists',
     },
   },
 });
@@ -65,9 +65,6 @@ export const ArtworksAggregationResultsType = new GraphQLObjectType({
   name: 'ArtworksAggregationResults',
   description: 'The results for one of the requested aggregations',
   fields: () => ({
-    slice: {
-      type: ArtworksAggregation,
-    },
     counts: {
       type: new GraphQLList(AggregationCount.type),
       resolve: ({ counts, slice }) => {
@@ -76,6 +73,9 @@ export const ArtworksAggregationResultsType = new GraphQLObjectType({
         if (!sort) sort = sorts.default;
         return sort ? sort(mapped) : mapped;
       },
+    },
+    slice: {
+      type: ArtworksAggregation,
     },
   }),
 });

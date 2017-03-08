@@ -13,15 +13,15 @@ const Partners = {
   type: new GraphQLList(Partner.type),
   description: 'A list of Partners',
   args: {
-    size: {
-      type: GraphQLInt,
+    default_profile_public: {
+      type: GraphQLBoolean,
     },
-    page: {
-      type: GraphQLInt,
+    eligible_for_carousel: {
+      type: GraphQLBoolean,
     },
-    near: {
-      type: GraphQLString,
-      description: 'Coordinates to find partners closest to',
+    eligible_for_listing: {
+      type: GraphQLBoolean,
+      description: 'Indicates an active subscription',
     },
     eligible_for_primary_bucket: {
       type: GraphQLBoolean,
@@ -31,18 +31,25 @@ const Partners = {
       type: GraphQLBoolean,
       description: 'Indicates tier 3/4 for gallery, 2 for institution',
     },
-    eligible_for_listing: {
-      type: GraphQLBoolean,
-      description: 'Indicates an active subscription',
-    },
-    eligible_for_carousel: {
-      type: GraphQLBoolean,
-    },
     has_full_profile: {
       type: GraphQLBoolean,
     },
-    default_profile_public: {
-      type: GraphQLBoolean,
+    near: {
+      type: GraphQLString,
+      description: 'Coordinates to find partners closest to',
+    },
+    page: {
+      type: GraphQLInt,
+    },
+    partner_categories: {
+      type: new GraphQLList(GraphQLString),
+      description: `
+        Only return partners of the specified partner categories.
+        Accepts list of slugs.
+      `,
+    },
+    size: {
+      type: GraphQLInt,
     },
     sort: {
       type: new GraphQLEnumType({
@@ -75,19 +82,12 @@ const Partners = {
         },
       }),
     },
-    partner_categories: {
-      type: new GraphQLList(GraphQLString),
-      description: `
-        Only return partners of the specified partner categories.
-        Accepts list of slugs.
-      `,
-    },
-    type: {
-      type: new GraphQLList(PartnerTypeType),
-    },
     term: {
       type: GraphQLString,
       description: 'term used for searching Partners',
+    },
+    type: {
+      type: new GraphQLList(PartnerTypeType),
     },
   },
   resolve: (root, options) => gravity('partners', options),

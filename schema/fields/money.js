@@ -11,13 +11,6 @@ export const amount = resolve => ({
   type: GraphQLString,
   description: 'A formatted price with various currency formatting options.',
   args: {
-    symbol: {
-      type: GraphQLString,
-    },
-    thousand: {
-      type: GraphQLString,
-      defaultValue: ',',
-    },
     decimal: {
       type: GraphQLString,
       defaultValue: '.',
@@ -30,6 +23,13 @@ export const amount = resolve => ({
     precision: {
       type: GraphQLInt,
       defaultValue: 0,
+    },
+    symbol: {
+      type: GraphQLString,
+    },
+    thousand: {
+      type: GraphQLString,
+      defaultValue: ',',
     },
   },
   resolve: (obj, options) => {
@@ -47,6 +47,7 @@ const money = ({ name, resolve }) => ({
   type: new GraphQLObjectType({
     name,
     fields: {
+      amount: amount(obj => resolve(obj).cents),
       cents: {
         type: GraphQLFloat,
         description: 'An amount of money expressed in cents.',
@@ -65,7 +66,6 @@ const money = ({ name, resolve }) => ({
           return display;
         },
       },
-      amount: amount(obj => resolve(obj).cents),
     },
   }),
 });

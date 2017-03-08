@@ -26,7 +26,14 @@ const GeneType = new GraphQLObjectType({
   fields: {
     ...GravityIDFields,
     cached,
-    filtered_artworks: filterArtworks('gene_id'),
+    artists: {
+      type: new GraphQLList(Artist.type),
+      resolve: ({ id }) => {
+        return gravity(`gene/${id}/artists`, {
+          exclude_artists_without_artworks: true,
+        });
+      },
+    },
     artworks_connection: {
       type: artworkConnection,
       args: pageable(filterArtworksArgs),
@@ -50,24 +57,17 @@ const GeneType = new GraphQLObjectType({
           });
       },
     },
+    description: {
+      type: GraphQLString,
+    },
+    filtered_artworks: filterArtworks('gene_id'),
     href: {
       type: GraphQLString,
       resolve: ({ id }) => `gene/${id}`,
     },
+    image: Image,
     name: {
       type: GraphQLString,
-    },
-    description: {
-      type: GraphQLString,
-    },
-    image: Image,
-    artists: {
-      type: new GraphQLList(Artist.type),
-      resolve: ({ id }) => {
-        return gravity(`gene/${id}/artists`, {
-          exclude_artists_without_artworks: true,
-        });
-      },
     },
     trending_artists: {
       type: new GraphQLList(Artist.type),
