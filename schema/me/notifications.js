@@ -6,6 +6,7 @@ import {
 } from 'graphql-relay';
 import date from '../fields/date';
 import Artwork from '../artwork';
+import Image from '../image';
 import {
   GraphQLEnumType,
   GraphQLList,
@@ -45,6 +46,10 @@ const NotificationsFeedItemType = new GraphQLObjectType({
           },
         },
       }),
+    },
+    image: {
+      type: Image.type,
+      resolve: ({ object }) => object.artists.count > 0 && Image.resolve(object.artists[0]),
     },
   }),
 });
