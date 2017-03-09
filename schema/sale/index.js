@@ -1,15 +1,16 @@
-import { map } from 'lodash';
-import { exclude } from '../../lib/helpers';
-import moment from 'moment';
-import gravity from '../../lib/loaders/gravity';
+import Artwork from '../artwork';
+import Image from '../image/index';
+import Profile from '../profile';
+import SaleArtwork from '../sale_artwork';
 import cached from '../fields/cached';
 import date from '../fields/date';
-import Artwork from '../artwork';
-import SaleArtwork from '../sale_artwork';
-import Profile from '../profile';
-import Image from '../image/index';
-import { amount } from '../fields/money';
+import gravity from '../../lib/loaders/gravity';
+import moment from 'moment';
 import { GravityIDFields } from '../object_identification';
+import { amount } from '../fields/money';
+import { exclude } from '../../lib/helpers';
+import { map } from 'lodash';
+
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -124,6 +125,9 @@ const SaleType = new GraphQLObjectType({
       },
       description: {
         type: GraphQLString,
+      },
+      eligible_sale_artworks_count: {
+        type: GraphQLInt,
       },
       end_at: date,
       event_start_at: date,
