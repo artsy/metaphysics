@@ -157,8 +157,8 @@ const ArtistType = new GraphQLObjectType({
             type: new GraphQLList(GraphQLString),
           },
         },
-        resolve: ({ id }, options) =>
-          gravity(`artist/${id}/artworks`, options)
+        resolve: ({ id }, options, request, { rootValue: { artistArtworksLoader } }) =>
+          artistArtworksLoader(id, options)
             .then(exclude(options.exclude, 'id')),
       },
       artworks_connection: {
@@ -484,7 +484,9 @@ const Artist: GraphQLFieldConfig<ArtistType, *> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { id }) => gravity(`artist/${id}`),
+  resolve: (root, { id }, request, { rootValue: { artistLoader } }) => {
+    return artistLoader(id);
+  },
 };
 
 export default Artist;
