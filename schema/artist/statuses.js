@@ -1,5 +1,4 @@
 import total from '../../lib/loaders/total';
-import positron from '../../lib/loaders/positron';
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -20,13 +19,12 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     articles: {
       type: GraphQLBoolean,
-      resolve: ({ _id }) => {
-        return positron('articles', {
+      resolve: ({ _id }, options, request, { rootValue: { articlesLoader } }) =>
+        articlesLoader(_id, {
           artist_id: _id,
           published: true,
           limit: 0,
-        }).then(({ count }) => count > 0);
-      },
+        }).then(({ count }) => count > 0),
     },
     artworks: {
       type: GraphQLBoolean,
@@ -40,13 +38,12 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     biography: {
       type: GraphQLBoolean,
-      resolve: ({ _id }) => {
-        return positron('articles', {
+      resolve: ({ _id }, options, request, { rootValue: { articlesLoader } }) =>
+        articlesLoader(_id, {
           published: true,
           biography_for_artist_id: _id,
           limit: 0,
-        }).then(({ count }) => count > 0);
-      },
+        }).then(({ count }) => count > 0),
     },
     contemporary: {
       type: GraphQLBoolean,
