@@ -7,15 +7,15 @@ import normalize, { grab, setVersion } from '../../../schema/image/normalize';
 
 describe('grab', () => {
   it('grabs the first value for a set of possible keys', () => {
-    grab({ foo: 'bar' }, 'foo').should.equal('bar');
-    grab({ bar: 'baz' }, ['foo', 'bar']).should.equal('baz');
-    grab({ foo: 'bar', bar: 'baz' }, ['foo', 'bar', 'baz']).should.equal('bar');
+    expect(grab({ foo: 'bar' }, 'foo')).toBe('bar');
+    expect(grab({ bar: 'baz' }, ['foo', 'bar'])).toBe('baz');
+    expect(grab({ foo: 'bar', bar: 'baz' }, ['foo', 'bar', 'baz'])).toBe('bar');
   });
 
   it('returns undefined when unable to find a value', () => {
-    isUndefined(grab({ foo: 'bar' }, 'baz')).should.be.true();
-    isUndefined(grab({}, 'baz')).should.be.true();
-    isUndefined(grab(null, 'baz')).should.be.true();
+    expect(isUndefined(grab({ foo: 'bar' }, 'baz'))).toBe(true);
+    expect(isUndefined(grab({}, 'baz'))).toBe(true);
+    expect(isUndefined(grab(null, 'baz'))).toBe(true);
   });
 });
 
@@ -33,23 +33,23 @@ describe('setVersion', () => {
   };
 
   it('works with JPGs', () => {
-    setVersion(image, ['large'])
-      .should.equal('https://xxx.cloudfront.net/xxx/large.jpg');
+    expect(setVersion(image, ['large']))
+      .toBe('https://xxx.cloudfront.net/xxx/large.jpg');
   });
 
   it('works with PNGs', () => {
-    setVersion(image, ['icon'])
-      .should.equal('https://xxx.cloudfront.net/xxx/icon.png');
+    expect(setVersion(image, ['icon']))
+      .toBe('https://xxx.cloudfront.net/xxx/icon.png');
   });
 
   it('supports a prioritized list of versions', () => {
-    setVersion(image, ['version_that_will_fall_thru_because_it_doesnt_exist', 'icon'])
-      .should.equal('https://xxx.cloudfront.net/xxx/icon.png');
+    expect(setVersion(image, ['version_that_will_fall_thru_because_it_doesnt_exist', 'icon']))
+      .toBe('https://xxx.cloudfront.net/xxx/icon.png');
   });
 
   it('falls back to any existy version', () => {
-    setVersion(image, ['garbage'])
-      .should.equal('https://xxx.cloudfront.net/xxx/large.jpg');
+    expect(setVersion(image, ['garbage']))
+      .toBe('https://xxx.cloudfront.net/xxx/large.jpg');
   });
 });
 
@@ -88,36 +88,36 @@ describe('image response normalization', () => {
     }];
 
     it('rejects a bad response', () => {
-      normalize(badResponse).should.have.lengthOf(0);
-      isNull(normalize(first(badResponse))).should.be.true();
+      expect(normalize(badResponse).length).toBe(0);
+      expect(isNull(normalize(first(badResponse)))).toBe(true);
     });
 
     it('allows a good response through', () => {
-      normalize(goodResponse).should.have.lengthOf(1);
+      expect(normalize(goodResponse).length).toBe(1);
     });
 
     it('allows a weird response through', () => {
-      normalize(weirdResponse).should.have.lengthOf(1);
+      expect(normalize(weirdResponse).length).toBe(1);
     });
 
     it('normalizes the keys', () => {
       const normalized = normalize(first(weirdResponse));
-      normalized.image_url.should.equal('https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/:version.jpg');
-      normalized.image_versions.should.eql(['tall']);
+      expect(normalized.image_url).toBe('https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/:version.jpg');
+      expect(normalized.image_versions).toEqual(['tall']);
     });
 
     it('normalizes bare URLs', () => {
       const normalized = normalize('https://xxx.cloudfront.net/xxx/cat.jpg');
-      normalized.image_url.should.equal('https://xxx.cloudfront.net/xxx/cat.jpg');
+      expect(normalized.image_url).toBe('https://xxx.cloudfront.net/xxx/cat.jpg');
     });
 
     it('doesn\'t blow up on images without a ":version" substring', () => {
       const normalized = normalize({ image_url: 'https://xxx.cloudfront.net/xxx/cat.jpg' });
-      normalized.image_url.should.equal('https://xxx.cloudfront.net/xxx/cat.jpg');
+      expect(normalized.image_url).toBe('https://xxx.cloudfront.net/xxx/cat.jpg');
     });
 
     it('removes bad responses from mixed response', () => {
-      normalize(badResponse.concat(goodResponse)).should.have.lengthOf(1);
+      expect(normalize(badResponse.concat(goodResponse)).length).toBe(1);
     });
   });
 });

@@ -8,44 +8,10 @@ import {
 const ArtistStatusesType = new GraphQLObjectType({
   name: 'ArtistStatuses',
   fields: {
-    artworks: {
-      type: GraphQLBoolean,
-      resolve: ({ published_artworks_count }) => published_artworks_count > 0,
-    },
-    shows: {
-      type: GraphQLBoolean,
-      resolve: ({ id }) => {
-        return total(`related/shows`, {
-          artist_id: id,
-          displayable: true,
-          size: 0,
-        }).then(count => count > 0);
-      },
-    },
-    cv: {
-      type: GraphQLBoolean,
-      resolve: ({ id }) => {
-        return total(`related/shows`, {
-          artist_id: id,
-          displayable: true,
-          size: 0,
-        }).then(count => count > 15);
-      },
-    },
     artists: {
       type: GraphQLBoolean,
       resolve: ({ id }) => {
         return total(`related/layer/main/artists`, {
-          exclude_artists_without_artworks: true,
-          artist: [id],
-          size: 0,
-        }).then(count => count > 0);
-      },
-    },
-    contemporary: {
-      type: GraphQLBoolean,
-      resolve: ({ id }) => {
-        return total(`related/layer/contemporary/artists`, {
           exclude_artists_without_artworks: true,
           artist: [id],
           size: 0,
@@ -63,6 +29,10 @@ const ArtistStatusesType = new GraphQLObjectType({
         }).then(({ count }) => count > 0);
       },
     },
+    artworks: {
+      type: GraphQLBoolean,
+      resolve: ({ published_artworks_count }) => published_artworks_count > 0,
+    },
     auction_lots: {
       type: GraphQLBoolean,
       resolve: ({ display_auction_link, hide_auction_link }) => {
@@ -78,6 +48,24 @@ const ArtistStatusesType = new GraphQLObjectType({
           limit: 0,
         }).then(({ count }) => count > 0);
       },
+    },
+    contemporary: {
+      type: GraphQLBoolean,
+      resolve: ({ id }) => {
+        return total(`related/layer/contemporary/artists`, {
+          exclude_artists_without_artworks: true,
+          artist: [id],
+          size: 0,
+        }).then(count => count > 0);
+      },
+    },
+    cv: {
+      type: GraphQLBoolean,
+      resolve: ({ partner_shows_count }) => partner_shows_count > 15,
+    },
+    shows: {
+      type: GraphQLBoolean,
+      resolve: ({ displayable_partner_shows_count }) => displayable_partner_shows_count > 0,
     },
   },
 });

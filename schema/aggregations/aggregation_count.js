@@ -1,3 +1,6 @@
+// @flow
+import type { GraphQLFieldConfig } from 'graphql';
+
 import { IDFields } from '../object_identification';
 import {
   GraphQLObjectType,
@@ -10,16 +13,16 @@ export const AggregationCountType = new GraphQLObjectType({
   description: 'One item in an aggregation',
   fields: {
     ...IDFields,
-    name: {
-      type: GraphQLString,
-    },
     count: {
       type: GraphQLInt,
+    },
+    name: {
+      type: GraphQLString,
     },
   },
 });
 
-export default {
+export default ({
   type: AggregationCountType,
   resolve: ({ name, count }, id) => ({ id, name, count }),
-};
+}: GraphQLFieldConfig<AggregationCountType, any>);

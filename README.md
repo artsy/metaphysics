@@ -4,7 +4,7 @@ Metaphysics is a [GraphQL](http://graphql.org)-compliant API for the Artsy v1 AP
 
 It is built on `express`, `express-graphql`, and `graphql`. With `graphiql` providing a sandbox to work with.
 
-It is currently used in production from the `/artists/` route on [artsy.net](https://artsy.net/artists). To see it's usage, check out  [`force-public/apps/artists/routes.coffee`](https://github.com/artsy/force-public/blob/f60e582dd115bc794964e3db8e26a870c54e1bfd/apps/artists/routes.coffee#L6-L53).
+It is currently used in production all over the place in [Artsy.net](http://github.com/artsy/force/), and the [Artsy iOS App](http://github.com/artsy/eigen)
 
 ### Meta
 
@@ -12,28 +12,31 @@ It is currently used in production from the `/artists/` route on [artsy.net](htt
 * __Production:__ [metaphysics-production.artsy.net](https://metaphysics-production.artsy.net/)
 * __Staging:__ [metaphysics-staging.artsy.net](https://metaphysics-staging.artsy.net/)
 * __CI:__ [Semaphore](https://semaphoreapp.com/artsy-it/metaphysics/)
-* __Point People:__ [@dzucconi](https://github.com/dzucconi) & [@broskoski](https://github.com/broskoski)
+* __Point People:__ [@alloy](https://github.com/alloy) & [@mzikherman](https://github.com/mzikherman)
 
 ### Getting Setup
 
 Set up your `.env` file based on our example `.env.test` (the variables you must change for development are separated at the bottom).
 
-Install memcached if you haven't:
-```
+Install memcached and Yarn if you don't already have them:
+``` sh
 brew install memcached
+npm install -g yarn
 ```
 
 To start up a development server, clone this repo and run:
 
 ``` sh
-npm install
+yarn install
 npm run dev
 ```
+
+If you are using VS Code, you can read [debugging with VS Code](docs/debugging_with_vscode.md) to get inline debugging.
 
 ### Testing
 
 `npm test` to run the entire suite
-`npm run spec test/your/path/to/file.js` to run a single spec
+`npm run watch` to spin up the test watcher
 
 ### Deployment
 
@@ -41,7 +44,12 @@ PRs merged to master are deployed to staging via Semaphore.
 
 We then use the heroku [pipelines](https://blog.heroku.com/archives/2013/7/10/heroku-pipelines-beta) to deploy to production when happy with staging.
 
-Add the staging instance as a git remote named `staging`, then promote using the command:
+Add the staging instance as a git remote named `staging`:
+```sh
+git remote add staging git@heroku.com:artsy-metaphysics-staging.git
+```
+
+Then promote using the command:
 
 ``` sh
 $ heroku pipelines:promote -r staging

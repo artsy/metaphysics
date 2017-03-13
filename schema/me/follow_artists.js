@@ -24,8 +24,8 @@ const FollowArtists = new GraphQLObjectType({
         fields: {
           artists: {
             type: GraphQLInt,
-            resolve: (data, options, { rootValue: { accessToken } }) => {
-              return getTotal('me/follow/artists?total_count=true', accessToken)
+            resolve: (data, options, request, { rootValue: { accessToken } }) => {
+              return getTotal('me/follow/artists', accessToken, { total_count: true })
                 .then(({ body: { total } }) => total);
             },
           },
@@ -40,14 +40,14 @@ export default {
   type: FollowArtists,
   description: 'A list of the current user’s artist follows',
   args: {
-    size: {
-      type: GraphQLInt,
-    },
     page: {
       type: GraphQLInt,
     },
+    size: {
+      type: GraphQLInt,
+    },
   },
-  resolve: (root, options, { rootValue: { accessToken } }) => {
+  resolve: (root, options, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null;
     return gravity.with(accessToken)('me/follow/artists', options);
   },

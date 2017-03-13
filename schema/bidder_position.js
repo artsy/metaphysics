@@ -18,43 +18,13 @@ const BidderPositionType = new GraphQLObjectType({
     created_at: date,
     updated_at: date,
     processed_at: date,
-    is_active: {
-      type: GraphQLBoolean,
-      resolve: ({ active }) => active,
+    display_max_bid_amount_dollars: {
+      type: GraphQLString,
+      deprecationReason: 'Favor `max_bid`',
     },
-    is_retracted: {
-      type: GraphQLBoolean,
-      resolve: ({ retracted }) => retracted,
-    },
-    is_with_bid_max: {
-      type: GraphQLBoolean,
-      resolve: ({ bid_max }) => bid_max,
-    },
-    is_winning: {
-      type: GraphQLBoolean,
-      resolve: (position) =>
-        gravity(`sale_artwork/${position.sale_artwork_id}`)
-          .then(saleArtwork =>
-            get(saleArtwork, 'highest_bid.id') === get(position, 'highest_bid.id')
-          ),
-    },
-    max_bid: money({
-      name: 'BidderPositionMaxBid',
-      resolve: ({ display_max_bid_amount_dollars, max_bid_amount_cents }) => ({
-        cents: max_bid_amount_cents,
-        display: display_max_bid_amount_dollars,
-      }),
-    }),
-    suggested_next_bid: money({
-      name: 'BidderPositionSuggestedNextBid',
-      resolve: ({ display_suggested_next_bid_dollars, suggested_next_bid_cents }) => ({
-        cents: suggested_next_bid_cents,
-        display: display_suggested_next_bid_dollars,
-      }),
-    }),
-    sale_artwork: {
-      type: SaleArtwork.type,
-      resolve: position => gravity(`sale_artwork/${position.sale_artwork_id}`),
+    display_suggested_next_bid_dollars: {
+      type: GraphQLString,
+      deprecationReason: 'Favor `suggested_next_bid`',
     },
     highest_bid: {
       type: new GraphQLObjectType({
@@ -89,18 +59,48 @@ const BidderPositionType = new GraphQLObjectType({
         },
       }),
     },
-    display_max_bid_amount_dollars: {
-      type: GraphQLString,
-      deprecationReason: 'Favor `max_bid`',
+    is_active: {
+      type: GraphQLBoolean,
+      resolve: ({ active }) => active,
     },
-    display_suggested_next_bid_dollars: {
-      type: GraphQLString,
-      deprecationReason: 'Favor `suggested_next_bid`',
+    is_retracted: {
+      type: GraphQLBoolean,
+      resolve: ({ retracted }) => retracted,
     },
+    is_with_bid_max: {
+      type: GraphQLBoolean,
+      resolve: ({ bid_max }) => bid_max,
+    },
+    is_winning: {
+      type: GraphQLBoolean,
+      resolve: (position) =>
+        gravity(`sale_artwork/${position.sale_artwork_id}`)
+          .then(saleArtwork =>
+            get(saleArtwork, 'highest_bid.id') === get(position, 'highest_bid.id')
+          ),
+    },
+    max_bid: money({
+      name: 'BidderPositionMaxBid',
+      resolve: ({ display_max_bid_amount_dollars, max_bid_amount_cents }) => ({
+        cents: max_bid_amount_cents,
+        display: display_max_bid_amount_dollars,
+      }),
+    }),
     max_bid_amount_cents: {
       type: GraphQLInt,
       deprecationReason: 'Favor `max_bid`',
     },
+    sale_artwork: {
+      type: SaleArtwork.type,
+      resolve: position => gravity(`sale_artwork/${position.sale_artwork_id}`),
+    },
+    suggested_next_bid: money({
+      name: 'BidderPositionSuggestedNextBid',
+      resolve: ({ display_suggested_next_bid_dollars, suggested_next_bid_cents }) => ({
+        cents: suggested_next_bid_cents,
+        display: display_suggested_next_bid_dollars,
+      }),
+    }),
     suggested_next_bid_cents: {
       type: GraphQLInt,
       deprecationReason: 'Favor `suggested_next_bid`',

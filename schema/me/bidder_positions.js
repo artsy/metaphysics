@@ -11,20 +11,20 @@ export default {
   type: new GraphQLList(BidderPosition.type),
   description: "A list of the current user's bidder positions",
   args: {
-    current: {
-      type: GraphQLBoolean,
-      description: 'Only the most recent bidder positions per artwork.',
-    },
     artwork_id: {
       type: GraphQLString,
       description: 'Only the bidder positions on a specific artwork',
+    },
+    current: {
+      type: GraphQLBoolean,
+      description: 'Only the most recent bidder positions per artwork.',
     },
     sale_id: {
       type: GraphQLString,
       description: 'Only the bidder positions for a specific auction',
     },
   },
-  resolve: (root, { current, artwork_id, sale_id }, { rootValue: { accessToken } }) => {
+  resolve: (root, { current, artwork_id, sale_id }, request, { rootValue: { accessToken } }) => {
     return gravity
       .with(accessToken)('me/bidder_positions', {
         artwork_id,

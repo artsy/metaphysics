@@ -12,10 +12,6 @@ export default {
   type: GraphQLString,
   description: 'Creates, and authorizes, a JWT custom for Causality',
   args: {
-    sale_id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The id of the auction to participate in',
-    },
     role: {
       type: new GraphQLEnumType({
         name: 'Role',
@@ -26,8 +22,12 @@ export default {
       }),
       description: '',
     },
+    sale_id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The id of the auction to participate in',
+    },
   },
-  resolve: (root, options, { rootValue: { accessToken } }) => {
+  resolve: (root, options, request, { rootValue: { accessToken } }) => {
     // Observer role for logged out users
     if (!accessToken) {
       return gravity(`sale/${options.sale_id}`).then((sale) =>
@@ -48,7 +48,7 @@ export default {
         gravity.with(accessToken)('me'),
         gravity.with(accessToken)('me/bidders', { sale_id: options.sale_id }),
       ]).then(([sale, me, bidders]) => {
-        if (bidders.length) {
+        if (bidders.length && bidders[0].qualified_for_bidding) {
           return jwt.encode({
             aud: 'auctions',
             role: 'bidder',

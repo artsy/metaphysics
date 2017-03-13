@@ -15,23 +15,29 @@ const Fairs = {
   type: new GraphQLList(Fair.type),
   description: 'A list of Fairs',
   args: {
-    size: {
-      type: GraphQLInt,
-    },
-    page: {
-      type: GraphQLInt,
-    },
-    sort: FairSorts,
-    status: EventStatus,
     fair_organizer_id: {
       type: GraphQLString,
-    },
-    near: {
-      type: Near,
     },
     has_full_feature: {
       type: GraphQLBoolean,
     },
+    has_homepage_section: {
+      type: GraphQLBoolean,
+    },
+    has_listing: {
+      type: GraphQLBoolean,
+    },
+    near: {
+      type: Near,
+    },
+    page: {
+      type: GraphQLInt,
+    },
+    size: {
+      type: GraphQLInt,
+    },
+    sort: FairSorts,
+    status: EventStatus,
   },
   resolve: (root, options) => {
     if (options.near) {

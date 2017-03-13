@@ -28,23 +28,31 @@ export const getDefault = images => {
 const ImageType = new GraphQLObjectType({
   name: 'Image',
   fields: () => ({
-    id: {
-      description: 'A type-specific ID.',
+    aspect_ratio: {
+      type: GraphQLFloat,
+    },
+    caption: {
       type: GraphQLString,
     },
+    cropped: CroppedUrl,
+    deep_zoom: DeepZoom,
     href: {
       type: GraphQLString,
-    },
-    title: {
-      type: GraphQLString,
-    },
-    width: {
-      type: GraphQLInt,
-      resolve: ({ original_width }) => original_width,
     },
     height: {
       type: GraphQLInt,
       resolve: ({ original_height }) => original_height,
+    },
+    id: {
+      description: 'A type-specific ID.',
+      type: GraphQLString,
+    },
+    is_default: {
+      type: GraphQLBoolean,
+    },
+    is_zoomable: {
+      type: GraphQLBoolean,
+      resolve: isZoomable,
     },
     orientation: {
       type: GraphQLString,
@@ -53,35 +61,27 @@ const ImageType = new GraphQLObjectType({
         return (original_width > original_height) ? 'landscape' : 'portrait';
       },
     },
-    aspect_ratio: {
-      type: GraphQLFloat,
-    },
-    versions: {
-      type: new GraphQLList(GraphQLString),
-      resolve: ({ image_versions }) => image_versions,
-    },
-    caption: {
-      type: GraphQLString,
-    },
-    is_default: {
-      type: GraphQLBoolean,
-    },
-    position: {
-      type: GraphQLInt,
-    },
-    url: VersionedUrl,
-    cropped: CroppedUrl,
-    resized: ResizedUrl,
-    deep_zoom: DeepZoom,
-    is_zoomable: {
-      type: GraphQLBoolean,
-      resolve: isZoomable,
-    },
     placeholder: {
       type: GraphQLString,
       description: 'Value to use when `padding-bottom` for fluid image placeholders',
       resolve: ({ original_height, original_width }) =>
         `${(original_height / original_width) * 100}%`,
+    },
+    position: {
+      type: GraphQLInt,
+    },
+    resized: ResizedUrl,
+    title: {
+      type: GraphQLString,
+    },
+    width: {
+      type: GraphQLInt,
+      resolve: ({ original_width }) => original_width,
+    },
+    url: VersionedUrl,
+    versions: {
+      type: new GraphQLList(GraphQLString),
+      resolve: ({ image_versions }) => image_versions,
     },
   }),
 });

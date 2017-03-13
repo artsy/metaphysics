@@ -1,0 +1,10 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "editor.rulers": [100],
+    "editor.tabSize": 2,
+    "javascript.validate.enable": false,
+    "flow.useNPMPackagedFlow": true,
+    "search.exclude": {
+        "flow-typed": true
+    }
+}

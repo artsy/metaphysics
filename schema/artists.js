@@ -10,6 +10,10 @@ const Artists = {
   type: new GraphQLList(Artist.type),
   description: 'A list of Artists',
   args: {
+    page: {
+      type: GraphQLInt,
+      defaultValue: 1,
+    },
     size: {
       type: GraphQLInt,
     },

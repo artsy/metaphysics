@@ -4,9 +4,7 @@ import {
   featuredAuction,
   featuredFair,
   featuredGene,
-  iconicArtists,
-  relatedArtist,
-  followedArtist,
+  popularArtists,
 } from './fetch';
 import Fair from '../fair';
 import Sale from '../sale/index';
@@ -51,25 +49,35 @@ export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
       type: Artist.type,
     },
   }),
-  isTypeOf: ({ context_type }) => context_type === 'Artist',
+  isTypeOf: ({ context_type }) => context_type === 'RelatedArtist',
+});
+
+export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType({
+  name: 'HomePageModuleContextFollowedArtist',
+  fields: () => ({
+    artist: {
+      type: Artist.type,
+    },
+  }),
+  isTypeOf: ({ context_type }) => context_type === 'FollowedArtist',
 });
 
 export const moduleContext = {
-  iconic_artists: () => {
-    return iconicArtists().then((trending) => {
+  popular_artists: () => {
+    return popularArtists().then((trending) => {
       return assign({}, trending, { context_type: 'Trending' });
     });
   },
-  active_bids: () => false,
+  active_bids: () => null,
   followed_artists: ({ accessToken }) => {
     return gravity.with(accessToken)('me/follow/artists', { size: 9, page: 1 })
       .then((artists) => {
         return assign({}, { artists }, { context_type: 'FollowArtists' });
       });
   },
-  followed_galleries: () => false,
-  saved_works: () => false,
-  recommended_works: () => false,
+  followed_galleries: () => null,
+  saved_works: () => null,
+  recommended_works: () => null,
   live_auctions: () => {
     return featuredAuction().then((sale) => {
       return assign({}, sale, { context_type: 'Sale' });
@@ -80,18 +88,33 @@ export const moduleContext = {
       return assign({}, fair, { context_type: 'Fair' });
     });
   },
-  related_artists: ({ accessToken }) => {
-    return followedArtist(accessToken).then((follow) => {
-      return relatedArtist(accessToken).then((artist) => ({
-        context_type: 'Artist',
-        based_on: follow,
+  followed_artist: ({ params }) => {
+    return gravity(`artist/${params.followed_artist_id}`).then((artist) => {
+      return assign({}, {
+        context_type: 'FollowedArtist',
         artist,
-      }));
+      });
     });
   },
-  genes: ({ accessToken }) => {
-    return featuredGene(accessToken).then((gene) => {
+  related_artists: ({ params }) => {
+    return Promise.all([
+      gravity(`artist/${params.related_artist_id}`),
+      gravity(`artist/${params.followed_artist_id}`),
+    ]).then(([related_artist, follow_artist]) => {
+      return assign({}, {
+        context_type: 'RelatedArtist',
+        based_on: follow_artist,
+        artist: related_artist,
+      });
+    });
+  },
+  genes: ({ accessToken, params: { gene } }) => {
+    if (gene) {
       return assign({}, gene, { context_type: 'Gene' });
+    }
+    // Backward compatibility for Force.
+    return featuredGene(accessToken).then((fetchedGene) => {
+      return assign({}, fetchedGene, { context_type: 'Gene' });
     });
   },
   generic_gene: ({ params }) => {
@@ -106,14 +129,15 @@ export default {
     name: 'HomePageModuleContext',
     types: [
       HomePageModuleContextFairType,
-      HomePageModuleContextSaleType,
-      HomePageModuleContextGeneType,
-      HomePageModuleContextTrendingType,
       HomePageModuleContextFollowArtistsType,
+      HomePageModuleContextFollowedArtistType,
+      HomePageModuleContextGeneType,
       HomePageModuleContextRelatedArtistType,
+      HomePageModuleContextSaleType,
+      HomePageModuleContextTrendingType,
     ],
   }),
-  resolve: ({ key, display, params }, options, { rootValue: { accessToken } }) => {
-    return moduleContext[key]({ accessToken, params });
+  resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {
+    return moduleContext[key]({ accessToken, params: (params || {}) });
   },
 };

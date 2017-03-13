@@ -12,6 +12,7 @@ export default {
       },
       markdown: { // Deprecated
         value: 'markdown',
+        deprecationReason: 'deprecated',
       },
     },
   }),

@@ -10,17 +10,17 @@ export default {
       _ID_DESC: {
         value: '-_id',
       },
-      NAME_ASC: {
-        value: 'name',
-      },
-      NAME_DESC: {
-        value: '-name',
-      },
       CREATED_AT_ASC: {
         value: 'created_at',
       },
       CREATED_AT_DESC: {
         value: '-created_at',
+      },
+      ELIGIBLE_SALE_ARTWORKS_COUNT_ASC: {
+        value: 'eligible_sale_artworks_count',
+      },
+      ELIGIBLE_SALE_ARTWORKS_COUNT_DESC: {
+        value: '-eligible_sale_artworks_count',
       },
       END_AT_ASC: {
         value: 'end_at',
@@ -28,17 +28,23 @@ export default {
       END_AT_DESC: {
         value: '-end_at',
       },
+      NAME_ASC: {
+        value: 'name',
+      },
+      NAME_DESC: {
+        value: '-name',
+      },
       START_AT_ASC: {
         value: 'start_at',
       },
       START_AT_DESC: {
         value: '-start_at',
       },
-      ELIGIBLE_SALE_ARTWORKS_COUNT_ASC: {
-        value: 'eligible_sale_artworks_count',
+      TIMELY_AT_NAME_ASC: {
+        value: 'timely_at,name',
       },
-      ELIGIBLE_SALE_ARTWORKS_COUNT_DESC: {
-        value: '-eligible_sale_artworks_count',
+      TIMELY_AT_NAME_DESC: {
+        value: '-timely_at,name',
       },
     },
   }),

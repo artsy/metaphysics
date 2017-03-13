@@ -14,13 +14,6 @@ export const metaName = (artist) => {
 const ArtistMetaType = new GraphQLObjectType({
   name: 'ArtistMeta',
   fields: {
-    title: {
-      type: GraphQLString,
-      resolve: (artist) => {
-        const count = artist.published_artworks_count;
-        return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`;
-      },
-    },
     description: {
       type: GraphQLString,
       resolve: (artist) => {
@@ -32,7 +25,14 @@ const ArtistMetaType = new GraphQLObjectType({
           `Find the latest shows, biography, and artworks for sale by ${metaName(artist)}`,
           blurb,
         ]).join('. ');
-        return truncate(description, 200);
+        return truncate(description, 157);
+      },
+    },
+    title: {
+      type: GraphQLString,
+      resolve: (artist) => {
+        const count = artist.published_artworks_count;
+        return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`;
       },
     },
   },

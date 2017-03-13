@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Start Debugging",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/node_modules/babel-cli/bin/babel-node.js",
+            "args": [
+                "${workspaceRoot}/index.js"
+            ]
+        },
+        {
+            "name": "Attach Debugger",
+            "type": "node",
+            "request": "attach",
+            "port": 5858,
+            "address": "localhost",
+            "restart": true,
+            "sourceMaps": false,
+            "outFiles": [],
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": null
+        },
+        {
+            "name": "Run Tests With Debugger (slower, use npm run watch for normal work)",
+            "type": "node",
+            "request": "launch",
+            "port": 5858,
+            "address": "localhost",
+            "stopOnEntry": false,
+            "runtimeExecutable": null,
+            "runtimeArgs": [
+                "--debug-brk",
+                "./node_modules/.bin/jest",
+                "-i"
+            ],
+            "cwd": "${workspaceRoot}"
+        }
+    ]
+}

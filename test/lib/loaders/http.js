@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 
-import sinon from 'sinon';
 import cache from '../../../lib/cache';
 import httpLoader from '../../../lib/loaders/http';
 
@@ -12,9 +11,9 @@ describe('Loaders', () => {
           .returns(Promise.reject(new Error('Something went wrong')));
 
         const loader = httpLoader(api);
-
-        return loader.load('/foo/bar')
-          .should.be.rejectedWith('Something went wrong');
+        return loader.load('/foo/bar').catch(e => {
+          expect(e.message).toEqual('Something went wrong');
+        });
       });
     });
 
@@ -39,12 +38,12 @@ describe('Loaders', () => {
             ])
           )
           .then(([data, memoized, cached]) => {
-            api.callCount.should.equal(1);
-            api.args[0][0].should.equal('/my/cached/request');
+            expect(api.callCount).toBe(1);
+            expect(api.args[0][0]).toBe('/my/cached/request');
 
-            data.ok.should.be.true();
-            memoized.ok.should.be.true();
-            cached.ok.should.be.true();
+            expect(data.ok).toBe(true);
+            expect(memoized.ok).toBe(true);
+            expect(cached.ok).toBe(true);
           });
       });
     });

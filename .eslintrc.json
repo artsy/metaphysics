@@ -2,12 +2,24 @@
   "env": {
     "browser": true,
     "node": true,
-    "mocha": true,
+    "jest": true,
+    "jasmine": true,
     "es6": true
   },
   "extends": "airbnb",
   "parser": "babel-eslint",
   "rules": {
     "camelcase": 0
+  },
+  "ignore": [
+    "/flow-typed/npm/*"
+  ],
+  "globals": {
+    "expect": false,
+    "runQuery": false,
+    "runAuthenticatedQuery": false,
+    "schema": false,
+    "sinon": false,
+    "expectPromiseRejectionToMatch": false
   }
 }

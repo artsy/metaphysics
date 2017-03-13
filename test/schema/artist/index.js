@@ -1,6 +1,5 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
+import { assign } from 'lodash';
+
 
 describe('Artist type', () => {
   const Artist = schema.__get__('Artist');
@@ -14,6 +13,7 @@ describe('Artist type', () => {
       blurb: null,
       birthday: null,
       artworks_count: 42,
+      partner_shows_count: 42,
     };
 
     Artist.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(artist)));
@@ -38,11 +38,11 @@ describe('Artist type', () => {
   });
 
   it('fetches an artist by ID', () => {
-    return graphql(schema, '{ artist(id: "foo-bar") { id, name } }')
-      .then(({ data }) => {
-        Artist.__get__('gravity').args[0][0].should.equal('artist/foo-bar');
-        data.artist.id.should.equal('foo-bar');
-        data.artist.name.should.equal('Foo Bar');
+    return runQuery('{ artist(id: "foo-bar") { id, name } }')
+      .then(data => {
+        expect(Artist.__get__('gravity').args[0][0]).toBe('artist/foo-bar');
+        expect(data.artist.id).toBe('foo-bar');
+        expect(data.artist.name).toBe('Foo Bar');
       });
   });
 
@@ -57,9 +57,9 @@ describe('Artist type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).toEqual({
           artist: {
             counts: {
               partner_shows: 42,
@@ -80,9 +80,9 @@ describe('Artist type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).toEqual({
           artist: {
             counts: {
               related_artists: 42,
@@ -103,9 +103,9 @@ describe('Artist type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).toEqual({
           artist: {
             counts: {
               articles: 22,
@@ -124,9 +124,9 @@ describe('Artist type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).toEqual({
           artist: {
             has_metadata: false,
           },
@@ -145,9 +145,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: 'b. 2000',
             },
@@ -166,9 +166,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: 'b. 2000',
             },
@@ -187,9 +187,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: 'Est. 2000',
             },
@@ -209,9 +209,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: 'Martian, b. 2000',
             },
@@ -230,9 +230,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: 'Martian',
             },
@@ -240,7 +240,11 @@ describe('Artist type', () => {
         });
     });
 
-    it('returns null if neither are provided', () => {
+    it('returns birthday-deathday if deathday is present', () => {
+      artist.nationality = 'Martian';
+      artist.birthday = '2000';
+      artist.deathday = '2012';
+
       const query = `
         {
           artist(id: "foo-bar") {
@@ -249,11 +253,319 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              formatted_nationality_and_birthday: 'Martian, 2000–2012',
+            },
+          });
+        });
+    });
+
+    it('returns null if neither birthday, deathday, nor nationality are provided', () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
             artist: {
               formatted_nationality_and_birthday: null,
+            },
+          });
+        });
+    });
+
+    it('returns null if neither birthday nor nationality are provided', () => {
+      artist.deathday = '2016';
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            formatted_nationality_and_birthday
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              formatted_nationality_and_birthday: null,
+            },
+          });
+        });
+    });
+  });
+
+  describe('artworks_connection', () => {
+    beforeEach(() => {
+      Artist.__ResetDependency__('gravity');
+      const gravity = sinon.stub();
+      Artist.__Rewire__('gravity', gravity);
+      artist.published_artworks_count = 20;
+      artist.forsale_artworks_count = 20;
+      gravity
+        // Artist
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artist)))
+        // 20 artworks
+        .onCall(1)
+        .returns(Promise.resolve(Array(20)));
+    });
+    it('does not have a next page when the requested amount exceeds the count', () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            artworks_connection(first: 40) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              artworks_connection: {
+                pageInfo: {
+                  hasNextPage: false,
+                },
+              },
+            },
+          });
+        });
+    });
+    it('does not have a next page when the requested amount exceeds the count (w/ filter)', () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            artworks_connection(first: 20, filter: IS_FOR_SALE) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              artworks_connection: {
+                pageInfo: {
+                  hasNextPage: false,
+                },
+              },
+            },
+          });
+        });
+    });
+    it('has a next page when the amount requested is less than the count', () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            artworks_connection(first: 10, filter: IS_FOR_SALE) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              artworks_connection: {
+                pageInfo: {
+                  hasNextPage: true,
+                },
+              },
+            },
+          });
+        });
+    });
+  });
+
+  describe('biography_blurb', () => {
+    it('returns the blurb if present', () => {
+      artist.blurb = 'catty blurb';
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            blurb
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              blurb: 'catty blurb',
+            },
+          });
+        });
+    });
+  });
+
+  describe('biography_blurb', () => {
+    describe('with partner_bio set to true', () => {
+      describe('with a featured partner bio', () => {
+        beforeEach(() => {
+          Artist.__ResetDependency__('gravity');
+          const gravity = sinon.stub();
+          Artist.__Rewire__('gravity', gravity);
+          gravity
+            // Artist
+            .onCall(0)
+            .returns(Promise.resolve(assign({}, artist)))
+            // PartnerArtist
+            .onCall(1)
+            .returns(Promise.resolve([assign({}, {
+              biography: 'new catty bio',
+              partner: { name: 'Catty Partner', id: 'catty-partner' },
+            })]));
+        });
+        afterEach(() => {
+          const query = `
+            {
+              artist(id: "foo-bar") {
+                biography_blurb(partner_bio: true, format: HTML) {
+                  text
+                  credit
+                  partner_id
+                }
+              }
+            }
+          `;
+
+          return runQuery(query)
+            .then(data => {
+              expect(data).toEqual({
+                artist: {
+                  biography_blurb: {
+                    text: '<p>new catty bio</p>\n',
+                    credit: 'Submitted by Catty Partner',
+                    partner_id: 'catty-partner',
+                  },
+                },
+              });
+            });
+        });
+        it('returns the featured partner bio without an artsy blurb', () => {
+        });
+
+        it('returns the featured partner bio with an artsy blurb', () => {
+          artist.blurb = 'artsy blurb';
+        });
+      });
+      describe('without a featured partner bio', () => {
+        it('returns the artsy blurb if there is no featured partner bio', () => {
+          artist.blurb = 'artsy blurb';
+          const query = `
+            {
+              artist(id: "foo-bar") {
+                biography_blurb(partner_bio: true) {
+                  text
+                  credit
+                  partner_id
+                }
+              }
+            }
+          `;
+
+          return runQuery(query)
+            .then(data => {
+              expect(data).toEqual({
+                artist: {
+                  biography_blurb: {
+                    text: 'artsy blurb',
+                    credit: null,
+                    partner_id: null,
+                  },
+                },
+              });
+            });
+        });
+      });
+    });
+    it('returns the blurb if present', () => {
+      artist.blurb = 'catty blurb';
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            biography_blurb {
+              text
+              credit
+              partner_id
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              biography_blurb: {
+                text: 'catty blurb',
+                credit: null,
+                partner_id: null,
+              },
+            },
+          });
+        });
+    });
+
+    it('returns the featured bio if there is no Artsy one', () => {
+      Artist.__ResetDependency__('gravity');
+      const gravity = sinon.stub();
+      Artist.__Rewire__('gravity', gravity);
+      gravity
+        // Artist
+        .onCall(0)
+        .returns(Promise.resolve(assign({}, artist)))
+        // PartnerArtist
+        .onCall(1)
+        .returns(Promise.resolve([assign({}, {
+          biography: 'new catty bio',
+          partner: { name: 'Catty Partner', id: 'catty-partner' },
+        })]));
+
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            biography_blurb {
+              text
+              credit
+              partner_id
+            }
+          }
+        }
+      `;
+
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            artist: {
+              biography_blurb: {
+                text: 'new catty bio',
+                credit: 'Submitted by Catty Partner',
+                partner_id: 'catty-partner',
+              },
             },
           });
         });
@@ -272,9 +584,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
             artist: {
               formatted_artworks_count: '42 works, 21 for sale',
             },
@@ -294,9 +606,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
             artist: {
               formatted_artworks_count: '42 works',
             },
@@ -316,9 +628,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
             artist: {
               formatted_artworks_count: null,
             },
@@ -338,9 +650,9 @@ describe('Artist type', () => {
         }
       `;
 
-      return graphql(schema, query)
-        .then(({ data }) => {
-          data.should.eql({
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
             artist: {
               formatted_artworks_count: '1 work',
             },

@@ -5,18 +5,17 @@ import Artwork from './artwork';
 import Artworks from './artworks';
 import Artist from './artist';
 import Artists from './artists';
+import ExternalPartner from './external_partner';
 import Fair from './fair';
 import Fairs from './fairs';
 import Gene from './gene';
 import HomePage from './home';
-import HomePageModules from './home/home_page_modules';
-import HomePageModule from './home/home_page_module';
 import OrderedSets from './ordered_sets';
 import Profile from './profile';
 import Partner from './partner';
 import Partners from './partners';
 import FilterPartners from './filter_partners';
-import FilterArtworks from './filter_artworks';
+import filterArtworks from './filter_artworks';
 import PartnerCategory from './partner_category';
 import PartnerCategories from './partner_categories';
 import PartnerShow from './partner_show';
@@ -25,9 +24,11 @@ import Sale from './sale/index';
 import Sales from './sales';
 import SaleArtwork from './sale_artwork';
 import Search from './search';
+import Show from './show';
 import TrendingArtists from './trending';
 import Me from './me';
 import CausalityJWT from './causality_jwt';
+import Viewer from './viewer';
 import ObjectIdentification from './object_identification';
 import {
   GraphQLSchema,
@@ -38,37 +39,38 @@ const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-      node: ObjectIdentification.NodeField,
-      status: Status,
       article: Article,
       articles: Articles,
       artwork: Artwork,
       artworks: Artworks,
       artist: Artist,
       artists: Artists,
+      causality_jwt: CausalityJWT,
+      external_partner: ExternalPartner,
       fair: Fair,
       fairs: Fairs,
+      filter_partners: FilterPartners,
+      filter_artworks: filterArtworks(),
       gene: Gene,
       home_page: HomePage,
-      home_page_modules: HomePageModules,
-      home_page_module: HomePageModule,
-      profile: Profile,
+      me: Me,
+      node: ObjectIdentification.NodeField,
       ordered_sets: OrderedSets,
       partner: Partner,
-      partners: Partners,
-      filter_partners: FilterPartners,
-      filter_artworks: FilterArtworks,
-      partner_category: PartnerCategory,
       partner_categories: PartnerCategories,
+      partner_category: PartnerCategory,
       partner_show: PartnerShow,
       partner_shows: PartnerShows,
+      partners: Partners,
+      profile: Profile,
       sale: Sale,
-      sales: Sales,
       sale_artwork: SaleArtwork,
+      sales: Sales,
       search: Search,
+      show: Show,
+      status: Status,
       trending_artists: TrendingArtists,
-      me: Me,
-      causality_jwt: CausalityJWT,
+      viewer: Viewer,
     },
   }),
 });

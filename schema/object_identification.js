@@ -1,28 +1,31 @@
-// To support a type, it should:
-// * specify that it implements the Node interface
-// * add the Node `__id` fields
-// * implement a `isTypeOf` function that from a payload determines if the payload is of that type
-// * add to the below `SupportedTypes` list.
-//
-// Example:
-//
-//   import { has } from 'lodash';
-//   import {
-//     GlobalIDField,
-//     NodeInterface,
-//   } from './object_identification';
-//
-//   const ArtworkType = new GraphQLObjectType({
-//     ...
-//     interfaces: [NodeInterface],
-//     isTypeOf: (obj) => has(obj, 'title') && has(obj, 'artists'),
-//     fields: () => {
-//       return {
-//         __id: GlobalIDField,
-//         ...
-//       };
-//     },
-//   });
+/**
+ * To support a type, it should:
+ *
+ * - specify that it implements the Node interface
+ * - add the Node `__id` fields
+ * - implement a `isTypeOf` function that from a payload determines if the
+ *   payload is of that type
+ * - add to the below `SupportedTypes` list.
+ *
+ * @example
+ *
+ * import { has } from 'lodash';
+ *
+ * import {
+ *   GlobalIDField,
+ *   NodeInterface,
+ * } from './object_identification';
+ *
+ * const ArtworkType = new GraphQLObjectType({
+ *   ...
+ *   interfaces: [NodeInterface],
+ *   isTypeOf: (obj) => has(obj, 'title') && has(obj, 'artists'),
+ *   fields: () => ({
+ *     __id: GlobalIDField,
+ *     ...
+ *   }),
+ * });
+ */
 
 import { basename } from 'path';
 import _ from 'lodash';
@@ -47,6 +50,7 @@ const SupportedTypes = {
     './home/home_page_artist_module',
     './partner',
     './partner_show',
+    './gene',
   ],
 };
 
@@ -98,7 +102,7 @@ const NodeField = {
     if (_.includes(SupportedTypes.types, type)) {
       const payload = type.includes('HomePage') ? JSON.parse(id) : { id };
       // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
-      return SupportedTypes.typeModules[type].resolve(null, payload);
+      return SupportedTypes.typeModules[type].resolve(null, payload, {}, {});
     }
   },
 };
@@ -109,7 +113,7 @@ export const GlobalIDField = {
   type: new GraphQLNonNull(GraphQLID),
   // Ensure we never encode a null `id`, as it would silently work. Instead return `null`, so that
   // e.g. Relay will complain about the result not matching the type specified in the schema.
-  resolve: (obj, args, info) => obj.id && toGlobalId(info.parentType.name, obj.id),
+  resolve: (obj, args, request, info) => obj.id && toGlobalId(info.parentType.name, obj.id),
 };
 
 export const IDFields = {

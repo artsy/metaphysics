@@ -1,15 +1,13 @@
-import sinon from 'sinon';
 import moment from 'moment';
-import { graphql } from 'graphql';
-import schema from '../../schema';
 
 describe('PartnerShow type', () => {
   const PartnerShow = schema.__get__('PartnerShow');
   let total = null;
+  let gravity = null;
   let showData = null;
 
   beforeEach(() => {
-    const gravity = sinon.stub();
+    gravity = sinon.stub();
     total = sinon.stub();
 
     showData = {
@@ -22,6 +20,7 @@ describe('PartnerShow type', () => {
         id: 'new-museum',
       },
       display_on_partner_profile: true,
+      eligible_artworks_count: 8,
     };
     gravity.returns(Promise.resolve(showData));
 
@@ -45,12 +44,12 @@ describe('PartnerShow type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        PartnerShow.__get__('gravity').args[0][0]
-          .should.equal('show/new-museum-1-2015-triennial-surround-audience');
+    return runQuery(query)
+      .then(data => {
+        expect(PartnerShow.__get__('gravity').args[0][0])
+          .toBe('show/new-museum-1-2015-triennial-surround-audience');
 
-        data.should.eql({
+        expect(data).toEqual({
           partner_show: {
             id: 'new-museum-1-2015-triennial-surround-audience',
             start_at: 'Wednesday, February 25th 2015, 12:00:00 pm',
@@ -69,9 +68,9 @@ describe('PartnerShow type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).toEqual({
           partner_show: {
             exhibition_period: 'Feb 25 – May 24, 2015',
           },
@@ -90,9 +89,9 @@ describe('PartnerShow type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).toEqual({
           partner_show: {
             status_update: 'Closing tomorrow',
           },
@@ -109,12 +108,12 @@ describe('PartnerShow type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        PartnerShow.__get__('gravity').args[0][0]
-          .should.equal('show/new-museum-1-2015-triennial-surround-audience');
+    return runQuery(query)
+      .then(data => {
+        expect(PartnerShow.__get__('gravity').args[0][0])
+          .toBe('show/new-museum-1-2015-triennial-surround-audience');
 
-        data.should.eql({
+        expect(data).toEqual({
           partner_show: {
             press_release: '<p><strong>foo</strong> <em>bar</em></p>\n',
           },
@@ -137,12 +136,35 @@ describe('PartnerShow type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).toEqual({
           partner_show: {
             counts: {
               artworks: 42,
+            },
+          },
+        });
+      });
+  });
+
+  it('includes the total number of eligible artworks', () => {
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          counts {
+            eligible_artworks
+          }
+        }
+      }
+    `;
+
+    return runQuery(query)
+      .then(data => {
+        expect(data).toEqual({
+          partner_show: {
+            counts: {
+              eligible_artworks: 8,
             },
           },
         });
@@ -164,14 +186,37 @@ describe('PartnerShow type', () => {
       }
     `;
 
-    return graphql(schema, query)
-      .then(({ data }) => {
-        data.should.eql({
+    return runQuery(query)
+      .then(data => {
+        expect(data).toEqual({
           partner_show: {
             counts: {
               artworks: 2,
             },
           },
+        });
+      });
+  });
+
+  it('does not return errors when there is no cover image', () => {
+    gravity
+      .onCall(1)
+      .returns(Promise.resolve([]));
+
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          cover_image {
+            id
+          }
+        }
+      }
+    `;
+
+    return runQuery(query)
+      .then(({ partner_show }) => {
+        expect(partner_show).toEqual({
+          cover_image: null,
         });
       });
   });

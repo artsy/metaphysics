@@ -35,9 +35,9 @@ export const ArtworkContextType = new GraphQLUnionType({
   name: 'ArtworkContext',
   types: [
     ArtworkContextAuctionType,
-    ArtworkContextSaleType,
     ArtworkContextFairType,
     ArtworkContextPartnerShowType,
+    ArtworkContextSaleType,
   ],
 });
 
@@ -46,29 +46,38 @@ const choose = flow(compact, first);
 export default {
   type: ArtworkContextType,
   description: 'Returns the associated Fair/Sale/PartnerShow',
-  resolve: ({ id }) =>
-    Promise
-      .all([
-        gravity('related/sales', { artwork: [id], size: 1, active: false })
-          .then(first)
-          .then(sale => {
-            if (!sale) return null;
-            return assign({ context_type: sale.is_auction ? 'Auction' : 'Sale' }, sale);
-          }),
+  resolve: ({ id, sale_ids }) => {
+    let sale_promise = Promise.resolve(null);
+    if (sale_ids && sale_ids.length > 0) {
+      sale_promise = gravity('sales', { id: sale_ids })
+        .then(first)
+        .then(sale => {
+          if (!sale) return null;
+          return assign({ context_type: sale.is_auction ? 'Auction' : 'Sale' }, sale);
+        });
+    }
 
-        gravity('related/fairs', { artwork: [id], size: 1 }) // API only returns `active: true`
-          .then(first)
-          .then(fair => {
-            if (!fair || fair && !fair.has_full_feature) return null;
-            return assign({ context_type: 'Fair' }, fair);
-          }),
+    const fair_promise = gravity('related/fairs', { artwork: [id], size: 1 })
+      .then(first)
+      .then(fair => {
+        if (!fair || fair && !fair.has_full_feature) return null;
+        return assign({ context_type: 'Fair' }, fair);
+      });
 
-        gravity('related/shows', { artwork: [id], size: 1, active: false, at_a_fair: false })
-          .then(first)
-          .then(show => {
-            if (!show) return null;
-            return assign({ context_type: 'PartnerShow' }, show);
-          }),
-      ])
-      .then(choose),
+    const show_promise = gravity('related/shows', {
+      artwork: [id],
+      size: 1,
+      active: false,
+      at_a_fair: false,
+    })
+      .then(first)
+      .then(show => {
+        if (!show) return null;
+        return assign({ context_type: 'PartnerShow' }, show);
+      });
+
+    return Promise
+      .all([sale_promise, fair_promise, show_promise])
+      .then(choose);
+  },
 };

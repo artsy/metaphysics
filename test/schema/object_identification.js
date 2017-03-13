@@ -1,8 +1,5 @@
 import _ from 'lodash';
-import sinon from 'sinon';
-import { graphql } from 'graphql';
 import { toGlobalId } from 'graphql-relay';
-import schema from '../../schema';
 
 describe('Object Identification', () => {
   const tests = {
@@ -65,10 +62,10 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
+        return runQuery(query).then(data => {
           const expectedData = {};
           expectedData[fieldName] = { __id: toGlobalId(typeName, 'foo-bar') };
-          data.should.eql(expectedData);
+          expect(data).toEqual(expectedData);
         });
       });
 
@@ -84,8 +81,8 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).toEqual({
             node: {
               __typename: typeName,
               id: 'foo-bar',
@@ -100,22 +97,22 @@ describe('Object Identification', () => {
     describe('with a specific module', () => {
       const globalId = toGlobalId(
         'HomePageArtworkModule',
-        JSON.stringify({ key: 'iconic_artists' })
+        JSON.stringify({ key: 'popular_artists' })
       );
 
       it('generates a Global ID', () => {
         const query = `
           {
             home_page {
-              artwork_module(key: "iconic_artists") {
+              artwork_module(key: "popular_artists") {
                 __id
               }
             }
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).toEqual({
             home_page: {
               artwork_module: {
                 __id: globalId,
@@ -137,11 +134,11 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).toEqual({
             node: {
               __typename: 'HomePageArtworkModule',
-              key: 'iconic_artists',
+              key: 'popular_artists',
             },
           });
         });
@@ -151,7 +148,7 @@ describe('Object Identification', () => {
     describe('with a generic gene', () => {
       const globalId = toGlobalId(
         'HomePageArtworkModule',
-        JSON.stringify({ key: 'generic_gene', id: 'abstract-art' })
+        JSON.stringify({ id: 'abstract-art', key: 'generic_gene' })
       );
 
       it('generates a Global ID', () => {
@@ -165,8 +162,8 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).toEqual({
             home_page: {
               artwork_module: {
                 __id: globalId,
@@ -191,8 +188,8 @@ describe('Object Identification', () => {
           }
         `;
 
-        return graphql(schema, query).then(({ data }) => {
-          data.should.eql({
+        return runQuery(query).then(data => {
+          expect(data).toEqual({
             node: {
               __typename: 'HomePageArtworkModule',
               key: 'generic_gene',
@@ -204,27 +201,92 @@ describe('Object Identification', () => {
         });
       });
     });
+
+    describe('with a related artist', () => {
+      const globalId = toGlobalId(
+        'HomePageArtworkModule',
+        JSON.stringify({
+          followed_artist_id: 'pablo-picasso',
+          related_artist_id: 'charles-broskoski',
+          key: 'related_artists',
+        })
+      );
+
+      it('generates a Global ID', () => {
+        const query = `
+          {
+            home_page {
+              artwork_module(key: "related_artists",
+                             related_artist_id: "charles-broskoski",
+                             followed_artist_id: "pablo-picasso") {
+                __id
+              }
+            }
+          }
+        `;
+
+        return runQuery(query).then(data => {
+          expect(data).toEqual({
+            home_page: {
+              artwork_module: {
+                __id: globalId,
+              },
+            },
+          });
+        });
+      });
+
+      it('resolves a node', () => {
+        const query = `
+          {
+            node(__id: "${globalId}") {
+              __typename
+              ... on HomePageArtworkModule {
+                key
+                params {
+                  related_artist_id
+                  followed_artist_id
+                }
+              }
+            }
+          }
+        `;
+
+        return runQuery(query).then(data => {
+          expect(data).toEqual({
+            node: {
+              __typename: 'HomePageArtworkModule',
+              key: 'related_artists',
+              params: {
+                related_artist_id: 'charles-broskoski',
+                followed_artist_id: 'pablo-picasso',
+              },
+            },
+          });
+        });
+      });
+    });
   });
 
   describe('for a HomePageArtistModule', () => {
     const globalId = toGlobalId(
       'HomePageArtistModule',
-      JSON.stringify({ key: 'trending' })
+      JSON.stringify({ key: 'TRENDING' })
     );
 
     it('generates a Global ID', () => {
       const query = `
         {
           home_page {
-            artist_module(key: "trending") {
+            artist_module(key: TRENDING) {
               __id
             }
           }
         }
       `;
 
-      return graphql(schema, query).then(({ data }) => {
-        data.should.eql({
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
           home_page: {
             artist_module: {
               __id: globalId,
@@ -246,11 +308,11 @@ describe('Object Identification', () => {
         }
       `;
 
-      return graphql(schema, query).then(({ data }) => {
-        data.should.eql({
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
           node: {
             __typename: 'HomePageArtistModule',
-            key: 'trending',
+            key: 'TRENDING',
           },
         });
       });

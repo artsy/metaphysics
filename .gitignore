@@ -1,7 +1,10 @@
 .env
 .env.staging
 .DS_Store
+build
 node_modules
 dump.rdb
 npm-debug.log
 newrelic_agent.log
+.vscode/.browse.VC.db
+flow-typed

@@ -7,8 +7,14 @@ import {
 const HomePageModuleParams = new GraphQLObjectType({
   name: 'HomePageModulesParams',
   fields: {
+    followed_artist_id: {
+      type: GraphQLID,
+    },
     gene_id: {
       type: GraphQLString,
+    },
+    id: {
+      type: GraphQLID,
     },
     medium: {
       type: GraphQLString,
@@ -16,7 +22,7 @@ const HomePageModuleParams = new GraphQLObjectType({
     price_range: {
       type: GraphQLString,
     },
-    id: {
+    related_artist_id: {
       type: GraphQLID,
     },
   },

@@ -1,7 +1,3 @@
-import sinon from 'sinon';
-import { graphql } from 'graphql';
-import schema from '../../../schema';
-
 describe('BidderStatus type', () => {
   const Me = schema.__get__('Me');
   const BidderStatus = Me.__get__('BidderStatus');
@@ -29,34 +25,40 @@ describe('BidderStatus type', () => {
         id: 'damon',
         name: 'damon',
       }))
-      // SaleArtwork fetch
+      // LotStanding fetch
       .onCall(1)
-      .returns(Promise.resolve({
-        id: 'untitled',
-        highest_bid: {
-          id: 'highest-bid-id',
-        },
-      }))
-      // BidderPositions fetch
-      .onCall(2)
       .returns(Promise.resolve([
         {
-          id: 0,
-          max_bid_amount_cents: 90000,
-          sale_artwork_id: 'foo',
-          highest_bid: null,
+          sale_artwork: {
+            id: 'untitled',
+            reserve_status: 'reserve_met',
+          },
+          max_position: {
+            id: 0,
+            max_bid_amount_cents: 90000,
+            sale_artwork_id: 'untitled',
+          },
+          leading_position: {
+            id: 0,
+            max_bid_amount_cents: 90000,
+            sale_artwork_id: 'untitled',
+          },
         },
         {
-          id: 1,
-          max_bid_amount_cents: 80000,
-          sale_artwork_id: 'foo',
-          highest_bid: { id: 'highest-bid-id' },
-        },
-        {
-          id: 2,
-          max_bid_amount_cents: 70000,
-          sale_artwork_id: 'bar',
-          highest_bid: { id: 'not-highest-bid-anymore' },
+          sale_artwork: {
+            id: 'untitled-2',
+            reserve_status: 'reserve_met',
+          },
+          max_position: {
+            id: 1,
+            max_bid_amount_cents: 100000,
+            sale_artwork_id: 'untitled-2',
+          },
+          leading_position: {
+            id: 2,
+            max_bid_amount_cents: 100000,
+            sale_artwork_id: 'untitled-2',
+          },
         },
       ]));
 
@@ -76,13 +78,13 @@ describe('BidderStatus type', () => {
       }
     `;
 
-    return graphql(schema, query, { accessToken: 'xxx' })
-      .then(({ data: { me } }) => {
-        me.should.eql({
+    return runAuthenticatedQuery(query)
+      .then(({ me }) => {
+        expect(me).toEqual({
           bidder_status: {
             is_highest_bidder: true,
             most_recent_bid: { id: '0' },
-            active_bid: { id: '1' },
+            active_bid: { id: '0' },
           },
         });
       });
@@ -96,34 +98,24 @@ describe('BidderStatus type', () => {
         id: 'damon',
         name: 'damon',
       }))
-      // SaleArtwork fetch
+      // LotStanding fetch
       .onCall(1)
-      .returns(Promise.resolve({
-        id: 'untitled',
-        highest_bid: {
-          id: 'highest-bid-id',
-        },
-      }))
-      // BidderPositions fetch
-      .onCall(2)
       .returns(Promise.resolve([
         {
-          id: 0,
-          max_bid_amount_cents: 90000,
-          sale_artwork_id: 'foo',
-          highest_bid: null,
-        },
-        {
-          id: 1,
-          max_bid_amount_cents: 80000,
-          sale_artwork_id: 'foo',
-          highest_bid: { id: 'not-highest-bid-id' },
-        },
-        {
-          id: 2,
-          max_bid_amount_cents: 70000,
-          sale_artwork_id: 'bar',
-          highest_bid: { id: 'not-highest-bid-anymore' },
+          sale_artwork: {
+            id: 'untitled',
+            reserve_status: 'reserve_not_met',
+          },
+          max_position: {
+            id: 0,
+            max_bid_amount_cents: 90000,
+            sale_artwork_id: 'untitled',
+          },
+          leading_position: {
+            id: 0,
+            max_bid_amount_cents: 90000,
+            sale_artwork_id: 'untitled',
+          },
         },
       ]));
 
@@ -143,9 +135,9 @@ describe('BidderStatus type', () => {
       }
     `;
 
-    return graphql(schema, query, { accessToken: 'xxx' })
-      .then(({ data: { me } }) => {
-        me.should.eql({
+    return runAuthenticatedQuery(query)
+      .then(({ me }) => {
+        expect(me).toEqual({
           bidder_status: {
             is_highest_bidder: false,
             most_recent_bid: { id: '0' },

@@ -15,10 +15,10 @@ const PartnerCategoryType = new GraphQLObjectType({
   fields: () => ({
     ...IDFields,
     cached,
+    category_type: CategoryType,
     name: {
       type: GraphQLString,
     },
-    category_type: CategoryType,
     partners: {
       type: Partners.type,
       args: Partners.args,

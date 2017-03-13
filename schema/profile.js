@@ -16,27 +16,6 @@ const ProfileType = new GraphQLObjectType({
   fields: () => ({
     ...GravityIDFields,
     cached,
-    name: {
-      type: GraphQLString,
-      resolve: ({ owner }) => owner.name,
-    },
-    image: {
-      type: Image.type,
-      resolve: ({ cover_image }) => Image.resolve(cover_image),
-    },
-    initials: initials('owner.name'),
-    icon: {
-      type: Image.type,
-      resolve: ({ icon }) => Image.resolve(icon),
-    },
-    href: {
-      type: GraphQLString,
-      resolve: ({ id }) => `/${id}`,
-    },
-    is_published: {
-      type: GraphQLBoolean,
-      resolve: ({ published }) => published,
-    },
     bio: {
       type: GraphQLString,
     },
@@ -48,6 +27,27 @@ const ProfileType = new GraphQLObjectType({
           follows: numeral(({ follows_count }) => follows_count),
         },
       }),
+    },
+    href: {
+      type: GraphQLString,
+      resolve: ({ id }) => `/${id}`,
+    },
+    icon: {
+      type: Image.type,
+      resolve: ({ icon }) => Image.resolve(icon),
+    },
+    image: {
+      type: Image.type,
+      resolve: ({ cover_image }) => Image.resolve(cover_image),
+    },
+    initials: initials('owner.name'),
+    is_published: {
+      type: GraphQLBoolean,
+      resolve: ({ published }) => published,
+    },
+    name: {
+      type: GraphQLString,
+      resolve: ({ owner }) => owner.name,
     },
   }),
 });

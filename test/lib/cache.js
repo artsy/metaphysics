@@ -2,19 +2,21 @@ import cache from '../../lib/cache';
 
 describe('Cache', () => {
   describe('when connection to Redis fails', () => {
-    before(() => {
+    beforeAll(() => {
       cache.__Rewire__('client', {
         get: (key, cb) => cb(new Error('connect ECONNREFUSED')),
       });
     });
 
-    after(() => {
+    afterAll(() => {
       cache.__ResetDependency__('client');
     });
 
     describe('#get', () => {
       it('falls through with a rejection', () => {
-        return cache.get('foobar').should.be.rejected();
+        return cache.get('foobar').catch(e => {
+          expect(e.message).toEqual('connect ECONNREFUSED');
+        });
       });
     });
   });
@@ -31,8 +33,8 @@ describe('Cache', () => {
 
       it('parses the data and resolves the promise', () => {
         return cache.get('get_foo').then(data => {
-          data.bar.should.equal('baz');
-        }).should.be.fulfilled();
+          expect(data.bar).toBe('baz');
+        });
       });
     });
 
@@ -44,8 +46,8 @@ describe('Cache', () => {
           client.get('set_foo', (err, data) => {
             const parsed = JSON.parse(data);
 
-            parsed.bar.should.equal('baz');
-            parsed.cached.should.be.instanceOf(Number);
+            expect(parsed.bar).toBe('baz');
+            expect(typeof parsed.cached).toBe('number');
 
             done();
           });
@@ -59,9 +61,9 @@ describe('Cache', () => {
           client.get('set_bar', (err, data) => {
             const parsed = JSON.parse(data);
 
-            parsed.should.have.lengthOf(1);
-            parsed[0].baz.should.equal('qux');
-            parsed[0].cached.should.be.instanceOf(Number);
+            expect(parsed.length).toBe(1);
+            expect(parsed[0].baz).toBe('qux');
+            expect(typeof parsed[0].cached).toBe('number');
 
             done();
           });
