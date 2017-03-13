@@ -59,6 +59,7 @@ const ArtistStatusesType = new GraphQLObjectType({
           artist_id: _id,
           published: true,
           limit: 0,
+          count: true,
         }).then(({ count }) => count > 0);
       },
     },
