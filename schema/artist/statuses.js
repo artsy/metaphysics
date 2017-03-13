@@ -26,7 +26,6 @@ const ArtistStatusesType = new GraphQLObjectType({
           limit: 0,
           count: true,
         }).then(({ count }) => count > 0),
-      },
     },
     artworks: {
       type: GraphQLBoolean,
