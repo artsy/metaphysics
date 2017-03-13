@@ -1,6 +1,6 @@
 describe('Artist Statuses', () => {
-  const Artist = schema.__get__('Artist');
   let artist = null;
+  let rootValue = null;
 
   beforeEach(() => {
     artist = {
@@ -13,11 +13,9 @@ describe('Artist Statuses', () => {
       displayable_partner_shows_count: 0,
     };
 
-    Artist.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(artist)));
-  });
-
-  afterEach(() => {
-    Artist.__ResetDependency__('gravity');
+    rootValue = {
+      artistLoader: sinon.stub().returns(Promise.resolve(artist)),
+    };
   });
 
   it('returns statuses for artworks, shows and cv', () => {
@@ -33,7 +31,7 @@ describe('Artist Statuses', () => {
       }
     `;
 
-    return runQuery(query)
+    return runQuery(query, rootValue)
       .then(data => {
         expect(data).toEqual({
           artist: {

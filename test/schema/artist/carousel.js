@@ -1,55 +1,48 @@
 describe('ArtistCarousel type', () => {
-  const Artist = schema.__get__('Artist');
-  const ArtistCarousel = Artist.__get__('ArtistCarousel');
+  let artist = null;
+  let rootValue = null;
 
   beforeEach(() => {
-    Artist.__Rewire__('gravity', sinon.stub().returns(
-      Promise.resolve({
-        id: 'foo-bar',
-        name: 'Foo Bar',
-        birthday: null,
-        artworks_count: null,
-      })
-    ));
-  });
-
-  afterEach(() => {
-    Artist.__ResetDependency__('gravity');
+    artist = {
+      id: 'foo-bar',
+      name: 'Foo Bar',
+      birthday: null,
+      artworks_count: null,
+    };
+    rootValue = {
+      artistLoader: sinon.stub().returns(Promise.resolve(artist)),
+    };
   });
 
   describe('with artworks, no shows', () => {
     beforeEach(() => {
-      const gravity = sinon.stub();
+      rootValue.relatedShowsLoader = sinon.stub()
+        .withArgs(artist.id, {
+          sort: '-end_at',
+          displayable: true,
+          solo_show: true,
+          top_tier: true,
+        })
+        .returns(Promise.resolve([]));
 
-      gravity
-        // Shows
-        .onCall(0)
-        .returns(Promise.resolve([]))
-        // Artworks
-        .onCall(1)
-        .returns(
-          Promise.resolve(
-            [{ id: 'foo-bar-artwork-1', images: [
-              {
-                original_height: 2333,
-                original_width: 3500,
-                image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
-                image_versions: ['large'],
-              },
-            ] }]
-          )
-        );
-
-      ArtistCarousel.__Rewire__('gravity', gravity);
+      rootValue.artistArtworksLoader = sinon.stub()
+        .withArgs(artist.id, {
+          size: 7,
+          sort: '-iconicity',
+          published: true,
+        })
+        .returns(Promise.resolve([{
+          id: 'foo-bar-artwork-1',
+          images: [{
+            original_height: 2333,
+            original_width: 3500,
+            image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
+            image_versions: ['large'],
+          }],
+        }]));
     });
-
-    afterEach(() => {
-      ArtistCarousel.__ResetDependency__('gravity');
-    });
-
 
     it('fetches an artist by ID', () => {
-      const gravity = ArtistCarousel.__get__('gravity');
       const query = `
         {
           artist(id: "foo-bar") {
@@ -68,20 +61,8 @@ describe('ArtistCarousel type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
-          expect(gravity.args[0][0]).toBe('related/shows');
-          expect(gravity.args[0][1]).toEqual({
-            artist_id: 'foo-bar',
-            sort: '-end_at',
-            displayable: true,
-            solo_show: true,
-            top_tier: true,
-          });
-
-          expect(gravity.args[1][0]).toBe('artist/foo-bar/artworks');
-          expect(gravity.args[1][1]).toEqual({ size: 7, sort: '-iconicity', published: true });
-
           expect(data.artist.carousel).toEqual({
             images: [
               {

@@ -1,9 +1,7 @@
-import { assign } from 'lodash';
-
-
 describe('Artist type', () => {
   const Artist = schema.__get__('Artist');
   let artist = null;
+  let rootValue = null;
 
   beforeEach(() => {
     artist = {
@@ -16,7 +14,9 @@ describe('Artist type', () => {
       partner_shows_count: 42,
     };
 
-    Artist.__Rewire__('gravity', sinon.stub().returns(Promise.resolve(artist)));
+    rootValue = {
+      artistLoader: sinon.stub().withArgs(artist.id).returns(Promise.resolve(artist)),
+    };
 
     Artist.__Rewire__('positron', sinon.stub().returns(
       Promise.resolve({
@@ -32,15 +32,13 @@ describe('Artist type', () => {
   });
 
   afterEach(() => {
-    Artist.__ResetDependency__('gravity');
     Artist.__ResetDependency__('total');
     Artist.__ResetDependency__('positron');
   });
 
   it('fetches an artist by ID', () => {
-    return runQuery('{ artist(id: "foo-bar") { id, name } }')
+    return runQuery('{ artist(id: "foo-bar") { id, name } }', rootValue)
       .then(data => {
-        expect(Artist.__get__('gravity').args[0][0]).toBe('artist/foo-bar');
         expect(data.artist.id).toBe('foo-bar');
         expect(data.artist.name).toBe('Foo Bar');
       });
@@ -57,7 +55,7 @@ describe('Artist type', () => {
       }
     `;
 
-    return runQuery(query)
+    return runQuery(query, rootValue)
       .then(data => {
         expect(data).toEqual({
           artist: {
@@ -80,7 +78,7 @@ describe('Artist type', () => {
       }
     `;
 
-    return runQuery(query)
+    return runQuery(query, rootValue)
       .then(data => {
         expect(data).toEqual({
           artist: {
@@ -103,7 +101,7 @@ describe('Artist type', () => {
       }
     `;
 
-    return runQuery(query)
+    return runQuery(query, rootValue)
       .then(data => {
         expect(data).toEqual({
           artist: {
@@ -124,7 +122,7 @@ describe('Artist type', () => {
       }
     `;
 
-    return runQuery(query)
+    return runQuery(query, rootValue)
       .then(data => {
         expect(data).toEqual({
           artist: {
@@ -133,6 +131,7 @@ describe('Artist type', () => {
         });
       });
   });
+
   describe('when formatting nationality and birthday string', () => {
     it('replaces born with b.', () => {
       artist.birthday = 'Born 2000';
@@ -145,7 +144,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -166,7 +165,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -187,7 +186,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -209,7 +208,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -230,7 +229,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -253,7 +252,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -272,7 +271,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -293,7 +292,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -306,19 +305,13 @@ describe('Artist type', () => {
 
   describe('artworks_connection', () => {
     beforeEach(() => {
-      Artist.__ResetDependency__('gravity');
-      const gravity = sinon.stub();
-      Artist.__Rewire__('gravity', gravity);
-      artist.published_artworks_count = 20;
-      artist.forsale_artworks_count = 20;
-      gravity
-        // Artist
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artist)))
-        // 20 artworks
-        .onCall(1)
-        .returns(Promise.resolve(Array(20)));
+      const count = 20;
+      artist.published_artworks_count = count;
+      artist.forsale_artworks_count = count;
+      const artworks = Promise.resolve(Array(count));
+      rootValue.artistArtworksLoader = sinon.stub().withArgs(artist.id).returns(artworks);
     });
+
     it('does not have a next page when the requested amount exceeds the count', () => {
       const query = `
         {
@@ -332,7 +325,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -345,6 +338,7 @@ describe('Artist type', () => {
           });
         });
     });
+
     it('does not have a next page when the requested amount exceeds the count (w/ filter)', () => {
       const query = `
         {
@@ -358,7 +352,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -371,6 +365,7 @@ describe('Artist type', () => {
           });
         });
     });
+
     it('has a next page when the amount requested is less than the count', () => {
       const query = `
         {
@@ -384,7 +379,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -410,7 +405,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -425,20 +420,13 @@ describe('Artist type', () => {
     describe('with partner_bio set to true', () => {
       describe('with a featured partner bio', () => {
         beforeEach(() => {
-          Artist.__ResetDependency__('gravity');
-          const gravity = sinon.stub();
-          Artist.__Rewire__('gravity', gravity);
-          gravity
-            // Artist
-            .onCall(0)
-            .returns(Promise.resolve(assign({}, artist)))
-            // PartnerArtist
-            .onCall(1)
-            .returns(Promise.resolve([assign({}, {
-              biography: 'new catty bio',
-              partner: { name: 'Catty Partner', id: 'catty-partner' },
-            })]));
+          const partnerArtists = Promise.resolve([{
+            biography: 'new catty bio',
+            partner: { name: 'Catty Partner', id: 'catty-partner' },
+          }]);
+          rootValue.partnerArtistsLoader = sinon.stub().withArgs(artist.id).returns(partnerArtists);
         });
+
         afterEach(() => {
           const query = `
             {
@@ -452,7 +440,7 @@ describe('Artist type', () => {
             }
           `;
 
-          return runQuery(query)
+          return runQuery(query, rootValue)
             .then(data => {
               expect(data).toEqual({
                 artist: {
@@ -472,8 +460,11 @@ describe('Artist type', () => {
           artist.blurb = 'artsy blurb';
         });
       });
+
       describe('without a featured partner bio', () => {
         it('returns the artsy blurb if there is no featured partner bio', () => {
+          rootValue.partnerArtistsLoader = sinon.stub().returns(Promise.resolve([]));
+
           artist.blurb = 'artsy blurb';
           const query = `
             {
@@ -487,7 +478,7 @@ describe('Artist type', () => {
             }
           `;
 
-          return runQuery(query)
+          return runQuery(query, rootValue)
             .then(data => {
               expect(data).toEqual({
                 artist: {
@@ -502,6 +493,7 @@ describe('Artist type', () => {
         });
       });
     });
+
     it('returns the blurb if present', () => {
       artist.blurb = 'catty blurb';
       const query = `
@@ -516,7 +508,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -531,19 +523,11 @@ describe('Artist type', () => {
     });
 
     it('returns the featured bio if there is no Artsy one', () => {
-      Artist.__ResetDependency__('gravity');
-      const gravity = sinon.stub();
-      Artist.__Rewire__('gravity', gravity);
-      gravity
-        // Artist
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artist)))
-        // PartnerArtist
-        .onCall(1)
-        .returns(Promise.resolve([assign({}, {
-          biography: 'new catty bio',
-          partner: { name: 'Catty Partner', id: 'catty-partner' },
-        })]));
+      const partnerArtists = Promise.resolve([{
+        biography: 'new catty bio',
+        partner: { name: 'Catty Partner', id: 'catty-partner' },
+      }]);
+      rootValue.partnerArtistsLoader = sinon.stub().withArgs(artist.id).returns(partnerArtists);
 
       const query = `
         {
@@ -557,7 +541,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -571,6 +555,7 @@ describe('Artist type', () => {
         });
     });
   });
+
   describe('concerning works count', () => {
     it('returns a formatted description including works for sale', () => {
       artist.published_artworks_count = 42;
@@ -584,7 +569,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -606,7 +591,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -628,7 +613,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
@@ -650,7 +635,7 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artist: {
