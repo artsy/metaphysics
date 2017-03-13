@@ -305,6 +305,7 @@ const ArtistType = new GraphQLObjectType({
                 artist_id: _id,
                 published: true,
                 limit: 1,
+                count: true,
               }).then(({ count }) => count)),
           },
         }),
