@@ -19,10 +19,13 @@ export const AggregationCountType = new GraphQLObjectType({
     name: {
       type: GraphQLString,
     },
+    sortable_id: {
+      type: GraphQLString,
+    },
   },
 });
 
 export default ({
   type: AggregationCountType,
-  resolve: ({ name, count }, id) => ({ id, name, count }),
+  resolve: ({ name, count, sortable_id }, id) => ({ id, sortable_id, name, count }),
 }: GraphQLFieldConfig<AggregationCountType, any>);
