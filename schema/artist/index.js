@@ -29,7 +29,6 @@ import SaleSorts from '../sale/sorts';
 import ArtistCarousel from './carousel';
 import ArtistStatuses from './statuses';
 import ArtistArtworksFilters from './artwork_filters';
-import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
 import total from '../../lib/loaders/total';
 import { GravityIDFields, NodeInterface } from '../object_identification';
@@ -84,8 +83,8 @@ const ShowField = {
     },
     sort: PartnerShowSorts,
   },
-  resolve: ({ id }, options) => {
-    return gravity('related/shows', defaults(options, {
+  resolve: ({ id }, options, request, { rootValue: { relatedShowsLoader } }) => {
+    return relatedShowsLoader(id, defaults(options, {
       artist_id: id,
       sort: '-end_at',
     }));
@@ -111,11 +110,11 @@ const ArtistType = new GraphQLObjectType({
           },
         },
         type: new GraphQLList(Article.type),
-        resolve: ({ _id }, options) =>
-        positron('articles', defaults(options, {
-          artist_id: _id,
-          published: true,
-        })).then(({ results }) => results),
+        resolve: ({ _id }, options, request, { rootValue: { articlesLoader } }) =>
+          articlesLoader(_id, defaults(options, {
+            artist_id: _id,
+            published: true,
+          })).then(({ results }) => results),
       },
       artists: {
         type: new GraphQLList(Artist.type), // eslint-disable-line no-use-before-define
@@ -129,11 +128,10 @@ const ArtistType = new GraphQLObjectType({
             defaultValue: true,
           },
         },
-        resolve: (artist, options) => {
-          return gravity(`related/layer/main/artists`, defaults(options, {
-            artist: [artist.id],
-          }));
-        },
+        resolve: ({ id }, options, request, { rootValue: { relatedMainArtistsLoader } }) =>
+          relatedMainArtistsLoader(id, defaults(options, {
+            artist: [id],
+          })),
       },
       artworks: {
         type: new GraphQLList(Artwork.type),
@@ -157,8 +155,8 @@ const ArtistType = new GraphQLObjectType({
             type: new GraphQLList(GraphQLString),
           },
         },
-        resolve: ({ id }, options) =>
-          gravity(`artist/${id}/artworks`, options)
+        resolve: ({ id }, options, request, { rootValue: { artistArtworksLoader } }) =>
+          artistArtworksLoader(id, options)
             .then(exclude(options.exclude, 'id')),
       },
       artworks_connection: {
@@ -173,13 +171,13 @@ const ArtistType = new GraphQLObjectType({
             defaultValue: true,
           },
         }),
-        resolve: (artist, options) => {
+        resolve: (artist, options, request, { rootValue: { artistArtworksLoader } }) => {
           // Convert `after` cursors to page params
           const { limit: size, offset } = getPagingParameters(options);
           // Construct an object of all the params gravity will listen to
           const { sort, filter, published } = options;
           const gravityArgs = { size, offset, sort, filter, published };
-          return gravity(`artist/${artist.id}/artworks`, gravityArgs)
+          return artistArtworksLoader(artist.id, gravityArgs)
             .then((artworks) => connectionFromArraySlice(artworks, options, {
               arrayLength: artistArtworkArrayLength(artist, filter),
               sliceStart: offset,
@@ -200,13 +198,12 @@ const ArtistType = new GraphQLObjectType({
       biography: {
         type: Article.type,
         description: 'The Artist biography article written by Artsy',
-        resolve: ({ _id }) => {
-          return positron('articles', {
+        resolve: ({ _id }, options, request, { rootValue: { articlesLoader } }) =>
+          articlesLoader(_id, {
             published: true,
             biography_for_artist_id: _id,
             limit: 1,
-          }).then(articles => first(articles.results));
-        },
+          }).then(articles => first(articles.results)),
       },
       biography_blurb: {
         args: assign({
@@ -234,11 +231,12 @@ const ArtistType = new GraphQLObjectType({
             },
           },
         }),
-        resolve: ({ blurb, id }, { format, partner_bio }) => {
+        resolve: ({ blurb, id }, { format, partner_bio }, request, {
+          rootValue: { partnerArtistsLoader } }) => {
           if (!partner_bio && blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) };
           }
-          return gravity(`artist/${id}/partner_artists`, {
+          return partnerArtistsLoader(id, {
             size: 1,
             featured: true,
           }).then((partner_artists) => {
@@ -279,11 +277,10 @@ const ArtistType = new GraphQLObjectType({
             defaultValue: true,
           },
         },
-        resolve: (artist, options) => {
-          return gravity(`related/layer/contemporary/artists`, defaults(options, {
-            artist: [artist.id],
-          }));
-        },
+        resolve: ({ id }, options, request, { rootValue: { relatedContemporaryArtistsLoader } }) =>
+          relatedContemporaryArtistsLoader(id, defaults(options, {
+            artist: [id],
+          })),
       },
       consignable: {
         type: GraphQLBoolean,
@@ -331,8 +328,8 @@ const ArtistType = new GraphQLObjectType({
         },
         type: new GraphQLList(Show.type),
         description: 'Custom-sorted list of shows for an artist, in order of significance.',
-        resolve: ({ id }, options) => {
-          return gravity('related/shows', {
+        resolve: ({ id }, options, request, { rootValue: { relatedShowsLoader } }) => {
+          return relatedShowsLoader(id, {
             artist_id: id,
             sort: '-relevance,-start_at',
             is_reference: true,
@@ -425,9 +422,8 @@ const ArtistType = new GraphQLObjectType({
             description: 'The number of PartnerArtists to return',
           },
         },
-        resolve: ({ id }, options) => {
-          return gravity(`artist/${id}/partner_artists`, options);
-        },
+        resolve: ({ id }, options, request, { rootValue: { partnerArtistsLoader } }) =>
+          partnerArtistsLoader(id, options),
       },
       partner_shows: {
         type: new GraphQLList(PartnerShow.type),
@@ -453,12 +449,11 @@ const ArtistType = new GraphQLObjectType({
           },
           sort: SaleSorts,
         },
-        resolve: ({ id }, options) => {
-          return gravity('related/sales', defaults(options, {
+        resolve: ({ id }, options, request, { rootValue: { relatedSalesLoader } }) =>
+          relatedSalesLoader(id, defaults(options, {
             artist_id: id,
             sort: 'timely_at,name',
-          }));
-        },
+          })),
       },
       shows: {
         type: new GraphQLList(Show.type),
@@ -485,7 +480,9 @@ const Artist: GraphQLFieldConfig<ArtistType, *> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { id }) => gravity(`artist/${id}`),
+  resolve: (root, { id }, request, { rootValue: { artistLoader } }) => {
+    return artistLoader(id);
+  },
 };
 
 export default Artist;

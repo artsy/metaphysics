@@ -10,6 +10,7 @@ import graphqlHTTP from 'express-graphql';
 import bodyParser from 'body-parser';
 import schema from './schema';
 import loaders from './lib/loaders';
+import perTypeLoaders from './lib/loaders/per_type';
 import config from './config';
 import { info, error } from './lib/loggers';
 import auth from './lib/auth';
@@ -87,6 +88,7 @@ app.use('/', cors(), morgan('combined'), graphqlHTTP(request => {
       accessToken,
       userID,
       defaultTimezone,
+      ...perTypeLoaders(),
     },
     formatError: graphqlErrorHandler(request.body),
   };

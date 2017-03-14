@@ -3,7 +3,6 @@ import type { GraphQLFieldConfig } from 'graphql';
 
 import _ from 'lodash';
 import Image from '../image';
-import gravity from '../../lib/loaders/gravity';
 import { error } from '../../lib/loggers';
 import {
   GraphQLObjectType,
@@ -22,16 +21,21 @@ const ArtistCarouselType = new GraphQLObjectType({
 
 const ArtistCarousel: GraphQLFieldConfig<ArtistCarouselType, *> = {
   type: ArtistCarouselType,
-  resolve: (artist) => {
+  resolve: ({ id }, options, request, {
+    rootValue: {
+      artistArtworksLoader,
+      partnerShowImagesLoader,
+      relatedShowsLoader,
+    } }) => {
     return Promise.all([
-      gravity('related/shows', {
-        artist_id: artist.id,
+      relatedShowsLoader(id, {
+        artist_id: id,
         sort: '-end_at',
         displayable: true,
         solo_show: true,
         top_tier: true,
       }),
-      gravity(`artist/${artist.id}/artworks`, {
+      artistArtworksLoader(id, {
         size: 7,
         sort: '-iconicity',
         published: true,
@@ -39,7 +43,7 @@ const ArtistCarousel: GraphQLFieldConfig<ArtistCarouselType, *> = {
     ]).then(([shows, artworks]) => {
       const elligibleShows = shows.filter(show => show.images_count > 0);
       return Promise.all(
-        elligibleShows.map(show => gravity(`partner_show/${show.id}/images`, { size: 1 }))
+        elligibleShows.map(show => partnerShowImagesLoader(show.id, { size: 1 }))
       )
       .then(showImages => {
         return _.zip(elligibleShows, showImages).map(([show, images]) => {

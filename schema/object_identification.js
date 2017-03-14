@@ -97,12 +97,12 @@ const NodeField = {
       description: 'The ID of the object',
     },
   },
-  resolve: (root, { __id }) => {
+  resolve: (root, { __id }, request, rootValue) => {
     const { type, id } = fromGlobalId(__id);
     if (_.includes(SupportedTypes.types, type)) {
       const payload = type.includes('HomePage') ? JSON.parse(id) : { id };
       // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
-      return SupportedTypes.typeModules[type].resolve(null, payload, {}, {});
+      return SupportedTypes.typeModules[type].resolve(null, payload, request, rootValue);
     }
   },
 };

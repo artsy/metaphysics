@@ -2,17 +2,71 @@ import _ from 'lodash';
 import { toGlobalId } from 'graphql-relay';
 
 describe('Object Identification', () => {
+  // TODO As we add more loaders, remove the old tests at the bottom of this file and add them here.
+  const loaderTests = {
+    Artist: {
+      artistLoader: {
+        id: 'foo-bar',
+        birthday: null,
+        artworks_count: 42,
+      },
+    },
+  };
+
+  _.keys(loaderTests).forEach(typeName => {
+    const fieldName = _.snakeCase(typeName);
+    const loaderName = _.keys(loaderTests[typeName])[0];
+    const payload = loaderTests[typeName][loaderName];
+    const rootValue = {
+      [loaderName]: sinon.stub().withArgs(payload.id).returns(Promise.resolve(payload)),
+    };
+
+    describe(`for a ${typeName}`, () => {
+      it('generates a Global ID', () => {
+        const query = `
+          {
+            ${fieldName}(id: "foo-bar") {
+              __id
+            }
+          }
+        `;
+
+        return runQuery(query, rootValue).then(data => {
+          const expectedData = {};
+          expectedData[fieldName] = { __id: toGlobalId(typeName, 'foo-bar') };
+          expect(data).toEqual(expectedData);
+        });
+      });
+
+      it('resolves a node', () => {
+        const query = `
+          {
+            node(__id: "${toGlobalId(typeName, 'foo-bar')}") {
+              __typename
+              ... on ${typeName} {
+                id
+              }
+            }
+          }
+        `;
+
+        return runQuery(query, rootValue).then(data => {
+          expect(data).toEqual({
+            node: {
+              __typename: typeName,
+              id: 'foo-bar',
+            },
+          });
+        });
+      });
+    });
+  });
+
   const tests = {
     Article: {
       positron: {
         title: 'Nightlife at the Foo Bar',
         author: 'Artsy Editorial',
-      },
-    },
-    Artist: {
-      gravity: {
-        birthday: null,
-        artworks_count: 42,
       },
     },
     Artwork: {
