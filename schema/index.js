@@ -16,6 +16,7 @@ import Partner from './partner';
 import Partners from './partners';
 import FilterPartners from './filter_partners';
 import filterArtworks from './filter_artworks';
+import FilterSaleArtworks from './filter_sale_artworks';
 import PartnerCategory from './partner_category';
 import PartnerCategories from './partner_categories';
 import PartnerShow from './partner_show';
@@ -51,6 +52,7 @@ const schema = new GraphQLSchema({
       fairs: Fairs,
       filter_partners: FilterPartners,
       filter_artworks: filterArtworks(),
+      filter_sale_artworks: FilterSaleArtworks,
       gene: Gene,
       home_page: HomePage,
       me: Me,
