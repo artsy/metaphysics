@@ -55,4 +55,17 @@ describe('auth middleware', () => {
       expect(next.called).toBeTruthy();
     });
   });
+
+  describe('options request', () => {
+    let next;
+
+    beforeEach(() => {
+      next = sinon.stub();
+    });
+
+    it('nexts', () => {
+      middleware.authenticateOrLogin({ method: 'OPTIONS' }, null, next);
+      expect(next.called).toBeTruthy();
+    });
+  });
 });
