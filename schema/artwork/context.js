@@ -5,7 +5,6 @@ import {
   flow,
   compact,
 } from 'lodash';
-import gravity from '../../lib/loaders/gravity';
 import Fair from '../fair';
 import Sale from '../sale/index';
 import PartnerShow from '../partner_show';
@@ -46,10 +45,15 @@ const choose = flow(compact, first);
 export default {
   type: ArtworkContextType,
   description: 'Returns the associated Fair/Sale/PartnerShow',
-  resolve: ({ id, sale_ids }) => {
+  resolve: ({ id, sale_ids }, options, request, {
+    rootValue: {
+      salesLoader,
+      relatedFairsLoader,
+      relatedShowsLoader,
+    } }) => {
     let sale_promise = Promise.resolve(null);
     if (sale_ids && sale_ids.length > 0) {
-      sale_promise = gravity('sales', { id: sale_ids })
+      sale_promise = salesLoader(id, { id: sale_ids })
         .then(first)
         .then(sale => {
           if (!sale) return null;
@@ -57,14 +61,14 @@ export default {
         });
     }
 
-    const fair_promise = gravity('related/fairs', { artwork: [id], size: 1 })
+    const fair_promise = relatedFairsLoader(id, { artwork: [id], size: 1 })
       .then(first)
       .then(fair => {
         if (!fair || fair && !fair.has_full_feature) return null;
         return assign({ context_type: 'Fair' }, fair);
       });
 
-    const show_promise = gravity('related/shows', {
+    const show_promise = relatedShowsLoader(id, {
       artwork: [id],
       size: 1,
       active: false,
