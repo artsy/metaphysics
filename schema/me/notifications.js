@@ -49,7 +49,7 @@ const NotificationsFeedItemType = new GraphQLObjectType({
     },
     image: {
       type: Image.type,
-      resolve: ({ object }) => object.artists.count > 0 && Image.resolve(object.artists[0]),
+      resolve: ({ object }) => object.artists.length > 0 && Image.resolve(object.artists[0]),
     },
   }),
 });
