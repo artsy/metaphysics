@@ -87,10 +87,11 @@ const ArtworkType = new GraphQLObjectType({
             description: 'Use whatever is in the original response instead of making a request',
           },
         },
-        resolve: ({ artists }, { shallow }, request, { rootValue: { artistsLoader } }) => {
+        resolve: ({ artists }, { shallow }, request, { rootValue: { artistLoader } }) => {
           if (shallow) return artists;
-          const ids = artists.map(artist => artist._id);
-          return artistsLoader(null, { ids }).catch(() => []);
+          return Promise.all(
+            artists.map(artist => artistLoader(artist.id))
+          ).catch(() => []);
         },
       },
       artist_names: {
