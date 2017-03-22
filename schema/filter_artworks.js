@@ -162,6 +162,9 @@ export const filterArtworksArgs = {
   sort: {
     type: GraphQLString,
   },
+  keyword: {
+    type: GraphQLString,
+  },
 };
 
 // Support passing in your own primary key

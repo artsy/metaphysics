@@ -38,6 +38,9 @@ describe('Me', () => {
                   artworks {
                     title
                   }
+                  image {
+                    url
+                  }
                 }
               }
             }
@@ -57,6 +60,9 @@ describe('Me', () => {
         edges: [{
           node: {
             status: 'READ',
+            image: {
+              url: 'cloudfront.url',
+            },
             date: '2017',
             artworks: [{ title: 'Artwork1' }, { title: 'Artwork2' }],
           },
@@ -71,6 +77,7 @@ describe('Me', () => {
           feed: [
             {
               status: 'read',
+              object: { artists: [{ image_url: 'cloudfront.url' }] },
               object_ids: ['artwork1', 'artwork2'],
               date: '2017-02-17T17:19:44.000Z',
             },
