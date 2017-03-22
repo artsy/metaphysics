@@ -4,12 +4,12 @@ import moment from 'moment';
 describe('Artwork type', () => {
   let gravity;
   const Artwork = schema.__get__('Artwork');
-  const Context = Artwork.__get__('Context');
 
   const partner = { id: 'existy' };
   const sale = { id: 'existy' };
 
   let artwork = null;
+  let rootValue = null;
 
   const artworkImages = [
     {
@@ -49,14 +49,17 @@ describe('Artwork type', () => {
       artists: [],
       sale_ids: ['sale-id-not-auction', 'sale-id-auction'],
     };
+
     gravity = sinon.stub();
     Artwork.__Rewire__('gravity', gravity);
-    Context.__Rewire__('gravity', gravity);
+
+    rootValue = {
+      artworkLoader: sinon.stub().withArgs(artwork.id).returns(Promise.resolve(artwork)),
+    };
   });
 
   afterEach(() => {
     Artwork.__ResetDependency__('gravity');
-    Context.__ResetDependency__('gravity');
   });
 
   describe('#is_contactable', () => {
@@ -69,18 +72,15 @@ describe('Artwork type', () => {
       }
     `;
 
-    it('is contactable if it meets all requirements', () => {
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork, {
-          partner,
-        })))
-        // Sales
-        .onCall(1)
-        .returns(Promise.resolve([]));
+    beforeEach(() => {
+      artwork.partner = partner;
+    });
 
-      return runQuery(query)
+    it('is contactable if it meets all requirements', () => {
+      const noSales = Promise.resolve([]);
+      rootValue.relatedSalesLoader = sinon.stub().returns(noSales);
+
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -92,17 +92,10 @@ describe('Artwork type', () => {
     });
 
     it('is not contactable if it has related sales', () => {
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork, {
-          partner,
-        })))
-        // Sales
-        .onCall(1)
-        .returns(Promise.resolve([sale]));
+      const sales = Promise.resolve([sale]);
+      rootValue.relatedSalesLoader = sinon.stub().returns(sales);
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -127,12 +120,8 @@ describe('Artwork type', () => {
     it('is purchasable if it is inquireable with an exact price', () => {
       artwork.inquireable = true;
       artwork.price = '$420';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -147,12 +136,8 @@ describe('Artwork type', () => {
       artwork.inquireable = true;
       artwork.price = '$420';
       artwork.edition_sets = [{}];
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -166,12 +151,8 @@ describe('Artwork type', () => {
     it('is not purchasable if it is inquireable without an exact price', () => {
       artwork.inquireable = true;
       artwork.price = '$420 - $500';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -185,12 +166,8 @@ describe('Artwork type', () => {
     it('is not purchasable if it is not inquireable with an exact price', () => {
       artwork.inquireable = false;
       artwork.price = '$420';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -204,12 +181,8 @@ describe('Artwork type', () => {
     it('is not purchasable if it is inquireable with a blank price', () => {
       artwork.inquireable = true;
       artwork.price = '';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -224,12 +197,8 @@ describe('Artwork type', () => {
       artwork.inquireable = true;
       artwork.price = '$420';
       artwork.forsale = false;
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -253,11 +222,9 @@ describe('Artwork type', () => {
     `;
 
     it('returns the first default image', () => {
-      gravity
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork, { images: artworkImages })));
+      artwork.images = artworkImages;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -281,18 +248,13 @@ describe('Artwork type', () => {
     `;
 
     it('is true if the artwork has any sales that are auctions', () => {
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork))
-        // Sales
-        .onCall(1)
-        .returns(Promise.resolve([
-          assign({}, sale, { is_auction: false }),
-          assign({}, sale, { is_auction: true }),
-        ]));
+      const sales = [
+        assign({}, sale, { is_auction: false }),
+        assign({}, sale, { is_auction: true }),
+      ];
+      rootValue.salesLoader = sinon.stub().returns(Promise.resolve(sales));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -304,15 +266,9 @@ describe('Artwork type', () => {
     });
 
     it('is false if the artwork is not in any sales that are auctions', () => {
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork))
-        // Sales
-        .onCall(1)
-        .returns(Promise.resolve([]));
+      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -338,12 +294,8 @@ describe('Artwork type', () => {
       artwork.sale_message = 'Not for sale';
       artwork.price = null;
       artwork.availability = 'on hold';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -358,12 +310,8 @@ describe('Artwork type', () => {
       artwork.sale_message = 'Not for sale';
       artwork.price = '$420,000';
       artwork.availability = 'on hold';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -376,12 +324,8 @@ describe('Artwork type', () => {
 
     it('returns "Sold" if work is sold', () => {
       artwork.sale_message = '$420,000 - Sold';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -394,12 +338,8 @@ describe('Artwork type', () => {
 
     it('returns null if work is not for sale', () => {
       artwork.availability = 'not for sale';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -413,12 +353,8 @@ describe('Artwork type', () => {
     it('returns the gravity sale_message if for sale', () => {
       artwork.availability = 'for sale';
       artwork.sale_message = 'something from gravity';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -442,12 +378,8 @@ describe('Artwork type', () => {
 
     it('returns custom text for an auction partner type', () => {
       artwork.partner = { type: 'Auction' };
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -460,12 +392,8 @@ describe('Artwork type', () => {
 
     it('returns custom text for a sold work', () => {
       artwork.availability = 'sold';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -478,12 +406,8 @@ describe('Artwork type', () => {
 
     it('returns custom text for an on hold work', () => {
       artwork.availability = 'on hold';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -496,12 +420,8 @@ describe('Artwork type', () => {
 
     it('returns nothing for a not for sale work', () => {
       artwork.availability = 'not for sale';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -524,15 +444,9 @@ describe('Artwork type', () => {
     `;
 
     it('is true if the artwork has any sales that are open auctions', () => {
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork))
-        // Sales
-        .onCall(1)
-        .returns(Promise.resolve([{}]));
+      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([{}]));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -544,15 +458,9 @@ describe('Artwork type', () => {
     });
 
     it('is false if the artwork is not in any sales that are auctions', () => {
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork))
-        // Sales
-        .onCall(1)
-        .returns(Promise.resolve([]));
+      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -576,18 +484,14 @@ describe('Artwork type', () => {
 
     it('is true if the artwork is acquireable and in an open auction with no bids', () => {
       artwork.acquireable = true;
+      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([{ id: 'sale-id' }]));
+
       gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)))
-        // Sales
-        .onCall(1)
-        .returns(Promise.resolve([{ id: 'sale-id' }]))
         // Sale Artwork
-        .onCall(2)
+        .onCall(0)
         .returns(Promise.resolve({ bidder_positions_count: 0 }));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -601,24 +505,14 @@ describe('Artwork type', () => {
 
   describe('#context', () => {
     it('returns either one Fair, Sale, or PartnerShow', () => {
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(artwork))
-        // Sales
-        .onCall(1)
-        .returns(Promise.resolve([
-          assign({}, sale, {
-            is_auction: true,
-            name: 'Y2K',
-            end_at: moment.utc('1999-12-31').format(),
-          }),
-        ]))
-        // Fairs
-        .onCall(2)
-        .returns(Promise.resolve([]))
-        .onCall(3)
-        .returns(Promise.resolve([]));
+      const relatedSale = assign({}, sale, {
+        is_auction: true,
+        name: 'Y2K',
+        end_at: moment.utc('1999-12-31').format(),
+      });
+      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([relatedSale]));
+      rootValue.relatedFairsLoader = sinon.stub().returns(Promise.resolve([]));
+      rootValue.relatedShowsLoader = sinon.stub().returns(Promise.resolve([]));
 
       const query = `
         {
@@ -639,7 +533,7 @@ describe('Artwork type', () => {
         }
       `;
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data.artwork.banner).toEqual({
             __typename: 'ArtworkContextAuction',
@@ -664,12 +558,8 @@ describe('Artwork type', () => {
 
       it('returns false if the artwork is not shareable', () => {
         artwork.can_share_image = false;
-        gravity
-          // Artwork
-          .onCall(0)
-          .returns(Promise.resolve(assign({}, artwork)));
 
-        return runQuery(query)
+        return runQuery(query, rootValue)
           .then(data => {
             expect(data.artwork.is_shareable).toBe(false);
           });
@@ -688,9 +578,10 @@ describe('Artwork type', () => {
 
       describe('if the artwork is able to be used with "View in Room"', () => {
         it('is hangable if the artwork is 2d and has reasonable dimensions', () => {
-          const response = assign({ width: 100, height: 100 }, artwork);
-          gravity.returns(Promise.resolve(response));
-          return runQuery(query)
+          artwork.width = 100;
+          artwork.height = 100;
+
+          return runQuery(query, rootValue)
             .then(data => {
               expect(data.artwork.is_hangable).toBe(true);
             });
@@ -699,40 +590,42 @@ describe('Artwork type', () => {
 
       describe('if the artwork is not able to be used with "View in Room"', () => {
         it('is not hangable if the category is not applicable to wall display', () => {
-          const response = assign({
-            category: 'sculpture',
-            width: 100,
-            height: 100,
-          }, artwork);
-          gravity.returns(Promise.resolve(response));
-          return runQuery(query)
+          artwork.category = 'sculpture';
+          artwork.width = 100;
+          artwork.height = 100;
+
+          return runQuery(query, rootValue)
             .then(data => {
               expect(data.artwork.is_hangable).toBe(false);
             });
         });
 
         it('is not hangable if the work is 3d', () => {
-          const response = assign({ width: 100, height: 100, depth: 100 }, artwork);
-          gravity.returns(Promise.resolve(response));
-          return runQuery(query)
+          artwork.width = 100;
+          artwork.height = 100;
+          artwork.depth = 100;
+
+          return runQuery(query, rootValue)
             .then(data => {
               expect(data.artwork.is_hangable).toBe(false);
             });
         });
 
         it('is not hangable if the dimensions are unreasonably large', () => {
-          const response = assign({ width: '10000', height: '10000', metric: 'cm' }, artwork);
-          gravity.returns(Promise.resolve(response));
-          return runQuery(query)
+          artwork.width = '10000';
+          artwork.height = '10000';
+          artwork.metric = 'cm';
+
+          return runQuery(query, rootValue)
             .then(data => {
               expect(data.artwork.is_hangable).toBe(false);
             });
         });
 
         it('is not hangable if there is no dimensions', () => {
-          const response = assign({ dimensions: {} }, artwork);
-          gravity.returns(Promise.resolve(response));
-          return runQuery(query)
+          artwork.dimensions = {};
+
+          return runQuery(query, rootValue)
             .then(data => {
               expect(data.artwork.is_hangable).toBe(false);
             });
@@ -754,12 +647,8 @@ describe('Artwork type', () => {
 
       it('removes the hardcoded signature label if present', () => {
         artwork.signature = 'Signature: Foo *bar*';
-        gravity
-          // Artwork
-          .onCall(0)
-          .returns(Promise.resolve(assign({}, artwork)));
 
-        return runQuery(query)
+        return runQuery(query, rootValue)
           .then(({ artwork: { signature } }) => {
             expect(signature).toBe('<p>Foo <em>bar</em></p>\n');
           });
@@ -779,12 +668,8 @@ describe('Artwork type', () => {
 
     it('returns true if artwork price is a range.', () => {
       artwork.price = '$200 - $300';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -797,12 +682,8 @@ describe('Artwork type', () => {
 
     it('returns false if artwork price is not a range.', () => {
       artwork.price = '$1000';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -816,12 +697,8 @@ describe('Artwork type', () => {
     it('returns false if artwork price is a range with multiple editions.', () => {
       artwork.price = '$200 - $300';
       artwork.edition_sets = [{}];
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -844,12 +721,8 @@ describe('Artwork type', () => {
 
     it('is Untitled when its title is null', () => {
       artwork.title = null;
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
@@ -861,12 +734,8 @@ describe('Artwork type', () => {
 
     it('is Untitled title when its title is empty', () => {
       artwork.title = '';
-      gravity
-        // Artwork
-        .onCall(0)
-        .returns(Promise.resolve(assign({}, artwork)));
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data).toEqual({
             artwork: {
