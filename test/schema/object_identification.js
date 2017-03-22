@@ -11,6 +11,13 @@ describe('Object Identification', () => {
         artworks_count: 42,
       },
     },
+    Artwork: {
+      artworkLoader: {
+        id: 'foo-bar',
+        title: 'Foo Bar',
+        artists: null,
+      },
+    },
   };
 
   _.keys(loaderTests).forEach(typeName => {
@@ -67,12 +74,6 @@ describe('Object Identification', () => {
       positron: {
         title: 'Nightlife at the Foo Bar',
         author: 'Artsy Editorial',
-      },
-    },
-    Artwork: {
-      gravity: {
-        title: 'For baz',
-        artists: null,
       },
     },
     Partner: {

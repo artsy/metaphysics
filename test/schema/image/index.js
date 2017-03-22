@@ -22,7 +22,6 @@ describe('getDefault', () => {
 });
 
 describe('Image type', () => {
-  const Artwork = schema.__get__('Artwork');
   const image = {
     image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
     image_versions: [
@@ -35,24 +34,19 @@ describe('Image type', () => {
     },
   };
 
+  let artwork = null;
+  let rootValue = null;
+
   beforeEach(() => {
-    const gravity = sinon.stub();
-
-    gravity
-      // Artwork
-      .onCall(0)
-      .returns(Promise.resolve({
-        id: 'richard-prince-untitled-portrait',
-        title: 'untitled-portrait',
-        artists: [],
-        images: [image],
-      }));
-
-    Artwork.__Rewire__('gravity', gravity);
-  });
-
-  afterEach(() => {
-    Artwork.__ResetDependency__('gravity');
+    artwork = {
+      id: 'richard-prince-untitled-portrait',
+      title: 'untitled-portrait',
+      artists: [],
+      images: [image],
+    };
+    rootValue = {
+      artworkLoader: sinon.stub().withArgs(artwork.id).returns(Promise.resolve(artwork)),
+    };
   });
 
   describe('#orientation', () => {
@@ -67,7 +61,7 @@ describe('Image type', () => {
     it('is square by default (when there is no image geometry)', () => {
       assign(image, { original_width: null, original_height: null });
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data.artwork.image.orientation).toBe('square');
         });
@@ -76,7 +70,7 @@ describe('Image type', () => {
     it('detects portrait', () => {
       assign(image, { original_width: 1000, original_height: 1500 });
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data.artwork.image.orientation).toBe('portrait');
         });
@@ -85,7 +79,7 @@ describe('Image type', () => {
     it('detects landscape', () => {
       assign(image, { original_width: 2000, original_height: 1500 });
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data.artwork.image.orientation).toBe('landscape');
         });
@@ -94,7 +88,7 @@ describe('Image type', () => {
     it('detects square', () => {
       assign(image, { original_width: 2000, original_height: 2000 });
 
-      return runQuery(query)
+      return runQuery(query, rootValue)
         .then(data => {
           expect(data.artwork.image.orientation).toBe('square');
         });
