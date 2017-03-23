@@ -223,6 +223,9 @@ const SaleType = new GraphQLObjectType({
         resolve: (sale, { id }) =>
           gravity(`sale/${sale.id}/sale_artwork/${id}`),
       },
+      symbol: {
+        type: GraphQLString,
+      },
     };
   },
 });
