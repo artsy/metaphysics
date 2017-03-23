@@ -147,9 +147,6 @@ export const filterArtworksArgs = {
   price_range: {
     type: GraphQLString,
   },
-  estimate_range: {
-    type: GraphQLString,
-  },
   page: {
     type: GraphQLInt,
   },
