@@ -11,9 +11,6 @@ import {
 export const ArtworksAggregation = new GraphQLEnumType({
   name: 'ArtworkAggregation',
   values: {
-    ARTIST: {
-      value: 'artist',
-    },
     COLOR: {
       value: 'color',
     },
