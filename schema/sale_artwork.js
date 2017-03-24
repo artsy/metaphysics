@@ -178,6 +178,9 @@ const SaleArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ reserve_status }) => reserve_status !== 'no_reserve',
       },
+      lot_label: {
+        type: GraphQLString,
+      },
       lot_number: {
         type: GraphQLString,
       },
