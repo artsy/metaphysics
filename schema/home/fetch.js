@@ -24,7 +24,9 @@ export const featuredFair = () => {
 };
 
 export const activeSaleArtworks = (accessToken) => {
-  return gravity.with(accessToken)('me/lot_standings').then((results) => {
+  return gravity.with(accessToken)('me/lot_standings', {
+    live: true,
+  }).then((results) => {
     return results.map((result) => result.sale_artwork);
   }).then((sale_artworks) => map(sale_artworks, 'artwork'));
 };
