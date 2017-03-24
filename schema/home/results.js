@@ -1,6 +1,7 @@
 import gravity from '../../lib/loaders/gravity';
 import uncachedGravity from '../../lib/apis/gravity';
 import {
+  activeSaleArtworks,
   featuredAuction,
   featuredFair,
   featuredGene,
@@ -17,7 +18,7 @@ import {
 const RESULTS_SIZE = 20;
 
 const moduleResults = {
-  active_bids: () => [],
+  active_bids: ({ accessToken }) => activeSaleArtworks(accessToken),
   current_fairs: () => {
     return featuredFair().then((fair) => {
       if (fair) {
