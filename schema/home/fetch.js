@@ -4,6 +4,7 @@ import {
   clone,
   first,
   forEach,
+  map,
   sampleSize,
   shuffle,
   slice,
@@ -20,6 +21,14 @@ export const featuredFair = () => {
       ));
     }
   });
+};
+
+export const activeSaleArtworks = (accessToken) => {
+  return gravity.with(accessToken)('me/bidder_positions').then((results) => {
+    return Promise.all(results.map(({ sale_artwork_id }) =>
+      gravity(`sale_artwork/${sale_artwork_id}`))
+    );
+  }).then((sale_artworks) => map(sale_artworks, 'artwork'));
 };
 
 export const featuredAuction = () => {
