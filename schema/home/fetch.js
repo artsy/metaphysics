@@ -24,10 +24,8 @@ export const featuredFair = () => {
 };
 
 export const activeSaleArtworks = (accessToken) => {
-  return gravity.with(accessToken)('me/bidder_positions').then((results) => {
-    return Promise.all(results.map(({ sale_artwork_id }) =>
-      gravity(`sale_artwork/${sale_artwork_id}`))
-    );
+  return gravity.with(accessToken)('me/lot_standings').then((results) => {
+    return results.map((result) => result.sale_artwork);
   }).then((sale_artworks) => map(sale_artworks, 'artwork'));
 };
 
