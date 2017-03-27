@@ -183,6 +183,7 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       lot_number: {
         type: GraphQLString,
+        deprecationReason: 'Favor `lot_label`',
       },
       low_estimate: money({
         name: 'SaleArtworkLowEstimate',
