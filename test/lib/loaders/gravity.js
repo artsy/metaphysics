@@ -4,7 +4,7 @@ describe('gravity', () => {
   afterEach(() => gravity.__ResetDependency__('gravity'));
 
   describe('with authentication', () => {
-    it('loads the path and passes in the token', () => {
+    it('loads the path and passes in the token and options', () => {
       const api = sinon.stub().returns(Promise.resolve({ body: { ok: true } }));
       gravity.__Rewire__('gravity', api);
 
@@ -15,9 +15,9 @@ describe('gravity', () => {
       ])
         .then(responses => {
           expect(api.args).toEqual([
-            ['foo/bar?ids%5B%5D=baz', 'xxx'],
-            ['foo/bar?ids%5B%5D=baz', 'yyy'],
-            ['foo/bar?ids%5B%5D=baz', 'zzz'],
+            ['foo/bar?ids%5B%5D=baz', 'xxx', {}],
+            ['foo/bar?ids%5B%5D=baz', 'yyy', {}],
+            ['foo/bar?ids%5B%5D=baz', 'zzz', {}],
           ]);
           expect(responses).toEqual([
             { ok: true },
