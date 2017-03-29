@@ -20,7 +20,7 @@ export default {
   },
   resolve: (root, { buyer_outcome, id }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null;
-    return gravity.authenticatedPost(accessToken)('me/token', {
+    return gravity.with(accessToken, { method: 'POST' })('me/token', {
       client_application_id: IMPULSE_APPLICATION_ID,
     }).then(data => {
       return impulse.with(data.token, { method: 'PUT' })(`conversations/${id}`, { buyer_outcome })

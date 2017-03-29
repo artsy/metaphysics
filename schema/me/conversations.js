@@ -72,7 +72,7 @@ export default {
   },
   resolve: (root, option, request, { rootValue: { accessToken, userID } }) => {
     if (!accessToken) return null;
-    return gravity.authenticatedPost(accessToken)('me/token', {
+    return gravity.with(accessToken, { method: 'POST' })('me/token', {
       client_application_id: IMPULSE_APPLICATION_ID,
     }).then(data => {
       return impulse.with(data.token)('conversations', {

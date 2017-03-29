@@ -7,7 +7,6 @@ describe('Me', () => {
 
     beforeEach(() => {
       gravity.with = sinon.stub().returns(gravity);
-      gravity.authenticatedPost = sinon.stub().returns(gravity);
       impulse.with = sinon.stub().returns(impulse);
 
       Me.__Rewire__('gravity', gravity);
