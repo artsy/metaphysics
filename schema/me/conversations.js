@@ -6,6 +6,8 @@ import {
   GraphQLString,
   GraphQLList,
   GraphQLInt,
+  GraphQLBoolean,
+  GraphQLNonNull,
 } from 'graphql';
 const { IMPULSE_APPLICATION_ID } = process.env;
 
@@ -22,33 +24,44 @@ const ConversationType = new GraphQLObjectType({
       type: GraphQLString,
     },
     from_id: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     from_type: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    from_name: {
+      type: new GraphQLNonNull(GraphQLString),
     },
     from_email: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     to_id: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     to_type: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    to_name: {
+      type: new GraphQLNonNull(GraphQLString),
     },
     buyer_outcome: {
       type: GraphQLString,
     },
     buyer_outcome_at: date,
+    created_at: date,
+
     initial_message: {
       type: GraphQLString,
+    },
+    purchase_request: {
+      type: GraphQLBoolean,
     },
   },
 });
 
 export default {
   type: new GraphQLList(ConversationType),
-  decription: 'Converations for the user. First a token from gravity is requested.',
+  decription: 'Conversations, usually between a user and partner.',
   args: {
     page: {
       type: GraphQLInt,
