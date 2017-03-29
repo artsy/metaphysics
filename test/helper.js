@@ -47,7 +47,7 @@ global.runAuthenticatedQuery = (query) => {
  * Ensuring that promises fail is actually a little bit tricky,
  * see https://github.com/facebook/jest/issues/2129
  *
- * So until this is built into Jest, then this wil ldo for now 👍
+ * So until this is built into Jest, then this will do for now 👍
  */
 global.expectPromiseRejectionToMatch = (promise, failureMessage) => {
   return new Promise((resolve, reject) => {

@@ -28,6 +28,7 @@ import Search from './search';
 import Show from './show';
 import TrendingArtists from './trending';
 import Me from './me';
+import UpdateConversation from './me/update_conversation';
 import CausalityJWT from './causality_jwt';
 import Viewer from './viewer';
 import ObjectIdentification from './object_identification';
@@ -37,6 +38,12 @@ import {
 } from 'graphql';
 
 const schema = new GraphQLSchema({
+  mutation: new GraphQLObjectType({
+    name: 'RootMutationType',
+    fields: {
+      updateConversation: UpdateConversation,
+    },
+  }),
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
