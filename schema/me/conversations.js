@@ -11,7 +11,7 @@ import {
 } from 'graphql';
 const { IMPULSE_APPLICATION_ID } = process.env;
 
-const ConversationType = new GraphQLObjectType({
+export const ConversationType = new GraphQLObjectType({
   name: 'ConversationType',
   description: 'A conversation.',
   fields: {
