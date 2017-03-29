@@ -9,6 +9,7 @@ import SaleRegistrations from './sale_registrations';
 import SuggestedArtists from './suggested_artists';
 import FollowArtists from './follow_artists';
 import Notifications from './notifications';
+import Conversations from './conversations';
 import ArtworkInquiries from './artwork_inquiries';
 import { IDFields } from '../object_identification';
 import {
@@ -24,6 +25,7 @@ const Me = new GraphQLObjectType({
     bidders: Bidders,
     bidder_status: BidderStatus,
     bidder_positions: BidderPositions,
+    conversations: Conversations,
     created_at: date,
     email: {
       type: GraphQLString,
