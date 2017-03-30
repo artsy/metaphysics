@@ -90,6 +90,12 @@ const SaleType = new GraphQLObjectType({
             .then(exclude(options.exclude, 'id'));
         },
       },
+      associated_sale: {
+        type: SaleType,
+        resolve: ({ associated_sale }) => {
+          return gravity(`sale/${associated_sale.id}`);
+        },
+      },
       auction_state: {
         type: GraphQLString,
         resolve: ({ auction_state }) => auction_state,
