@@ -21,7 +21,7 @@ export default {
   }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null;
     return gravity.with(accessToken, {
-      method: 'POST',
+      method: 'PUT',
     })('me/collector_profile', { loyalty_applicant, professional_buyer });
   },
 };
