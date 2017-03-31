@@ -93,7 +93,10 @@ const SaleType = new GraphQLObjectType({
       associated_sale: {
         type: SaleType,
         resolve: ({ associated_sale }) => {
-          return gravity(`sale/${associated_sale.id}`);
+          if (associated_sale && associated_sale.id) {
+            return gravity(`sale/${associated_sale.id}`);
+          }
+          return null;
         },
       },
       auction_state: {

@@ -167,4 +167,46 @@ describe('Sale type', () => {
         });
     });
   });
+
+  describe('associated sale', () => {
+    const query = `
+      {
+        sale(id: "foo-foo") {
+          _id
+          associated_sale{
+            id
+          }
+        }
+      }
+    `;
+
+    it('does not error, but returns null for associated sale', () => {
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            sale: {
+              _id: '123',
+              associated_sale: null,
+            },
+          });
+        });
+    });
+
+    it('returns the associated sale', () => {
+      sale.associated_sale = {
+        id: 'foo-foo',
+      };
+      return runQuery(query)
+        .then(data => {
+          expect(data).toEqual({
+            sale: {
+              _id: '123',
+              associated_sale: {
+                id: 'foo-foo',
+              },
+            },
+          });
+        });
+    });
+  });
 });
