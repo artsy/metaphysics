@@ -6,6 +6,8 @@ import Image from './image';
 import date from './fields/date';
 import { IDFields, NodeInterface } from './object_identification';
 import {
+  GraphQLInt,
+  GraphQLList,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -21,6 +23,13 @@ const ArticleType = new GraphQLObjectType({
     author: {
       type: AuthorType,
       resolve: ({ author }) => author,
+    },
+    channel_id: {
+      type: GraphQLString,
+    },
+    contributing_authors: {
+      type: new GraphQLList(AuthorType),
+      resolve: ({ contributing_authors }) => contributing_authors,
     },
     href: {
       type: GraphQLString,
@@ -39,6 +48,9 @@ const ArticleType = new GraphQLObjectType({
     thumbnail_image: {
       type: Image.type,
       resolve: ({ thumbnail_image }) => Image.resolve(thumbnail_image),
+    },
+    tier: {
+      type: GraphQLInt,
     },
     title: {
       type: GraphQLString,
