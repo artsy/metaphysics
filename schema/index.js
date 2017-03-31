@@ -29,6 +29,7 @@ import Show from './show';
 import TrendingArtists from './trending';
 import Me from './me';
 import UpdateConversation from './me/update_conversation';
+import UpdateCollectorProfile from './me/update_collector_profile';
 import CausalityJWT from './causality_jwt';
 import Viewer from './viewer';
 import ObjectIdentification from './object_identification';
@@ -41,6 +42,7 @@ const schema = new GraphQLSchema({
   mutation: new GraphQLObjectType({
     name: 'RootMutationType',
     fields: {
+      updateCollectorProfile: UpdateCollectorProfile,
       updateConversation: UpdateConversation,
     },
   }),
