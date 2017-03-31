@@ -11,6 +11,9 @@ const Articles = {
   type: new GraphQLList(Article.type),
   description: 'A list of Articles',
   args: {
+    auction_id: {
+      type: GraphQLString,
+    },
     published: {
       type: GraphQLBoolean,
       defaultValue: true,
