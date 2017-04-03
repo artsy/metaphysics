@@ -1,6 +1,6 @@
 import impulse from '../../lib/loaders/impulse';
 import gravity from '../../lib/loaders/gravity';
-import { ConversationType } from './conversations';
+import { ConversationType, BuyerOutcomeTypes } from './conversations';
 import {
   GraphQLString,
   GraphQLNonNull,
@@ -12,7 +12,7 @@ export default {
   decription: 'Updating buyer outcome of a conversation.',
   args: {
     buyer_outcome: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: new GraphQLNonNull(BuyerOutcomeTypes),
     },
     id: {
       type: new GraphQLNonNull(GraphQLString),
