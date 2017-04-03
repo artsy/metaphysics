@@ -34,6 +34,7 @@ describe('Me', () => {
                   artwork {
                     title
                   }
+                  impulse_conversation_id
                 }
               }
             }
@@ -49,8 +50,8 @@ describe('Me', () => {
           hasNextPage: true,
         },
         edges: [
-          { node: { artwork: { title: 'Artwork 1' } } },
-          { node: { artwork: { title: 'Artwork 2' } } },
+          { node: { artwork: { title: 'Artwork 1' }, impulse_conversation_id: '420' } },
+          { node: { artwork: { title: 'Artwork 2' }, impulse_conversation_id: null } },
         ],
       };
 
@@ -59,7 +60,15 @@ describe('Me', () => {
         .onCall(1)
         .returns(Promise.resolve({
           headers: { 'x-total-count': 3 },
-          body: [{ inquireable: artwork1 }, { inquireable: artwork2 }],
+          body: [
+            {
+              inquireable: artwork1,
+              impulse_conversation_id: '420',
+            },
+            {
+              inquireable: artwork2,
+            },
+          ],
         }));
 
       return runAuthenticatedQuery(query)
