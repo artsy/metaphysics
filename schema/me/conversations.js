@@ -8,8 +8,36 @@ import {
   GraphQLInt,
   GraphQLBoolean,
   GraphQLNonNull,
+  GraphQLEnumType,
 } from 'graphql';
 const { IMPULSE_APPLICATION_ID } = process.env;
+
+export const BuyerOutcomeTypes = new GraphQLEnumType({
+  name: 'BuyerOutcomeTypes',
+  values: {
+    PURCHASED: {
+      value: 'purchased',
+    },
+    STILL_CONSIDERING: {
+      value: 'still_considering',
+    },
+    HIGH_PRICE: {
+      value: 'high_price',
+    },
+    LOST_INTEREST: {
+      value: 'lost_interest',
+    },
+    WORK_UNAVAILABLE: {
+      value: 'work_unavailable',
+    },
+    OTHER: {
+      value: 'other',
+    },
+    BLANK: {
+      value: '',
+    },
+  },
+});
 
 export const ConversationType = new GraphQLObjectType({
   name: 'ConversationType',

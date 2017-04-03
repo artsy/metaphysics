@@ -19,7 +19,7 @@ describe('UpdateConversation', () => {
   it('updates and returns a conversation', () => {
     const mutation = `
       mutation {
-        updateConversation(id: "3", buyer_outcome: "too expensive") {
+        updateConversation(id: "3", buyer_outcome: HIGH_PRICE) {
           id
           initial_message
           from_email
