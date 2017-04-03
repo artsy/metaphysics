@@ -13,9 +13,10 @@ describe('UpdateCollectorProfile', () => {
   });
 
   it('updates and returns a collector profile', () => {
+    /* eslint-disable max-len */
     const mutation = `
       mutation {
-        updateCollectorProfile(professional_buyer: true, loyalty_applicant: true) {
+        updateCollectorProfile(professional_buyer: true, loyalty_applicant: true, self_reported_purchases: "trust me i buy art") {
           id
           name
           email
@@ -23,6 +24,7 @@ describe('UpdateCollectorProfile', () => {
         }
       }
     `;
+    /* eslint-enable max-len */
 
     const collectorProfile = {
       id: '3',
