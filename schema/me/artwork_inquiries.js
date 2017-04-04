@@ -9,6 +9,7 @@ import {
   GraphQLObjectType,
   GraphQLID,
   GraphQLNonNull,
+  GraphQLString,
 } from 'graphql';
 
 export const ArtworkInquiryType = new GraphQLObjectType({
@@ -20,6 +21,9 @@ export const ArtworkInquiryType = new GraphQLObjectType({
     },
     id: {
       type: GraphQLID,
+    },
+    impulse_conversation_id: {
+      type: GraphQLString,
     },
   }),
 });
