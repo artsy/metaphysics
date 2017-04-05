@@ -33,6 +33,7 @@ describe('Me', () => {
               }
               edges {
                 node {
+                  __id
                   status
                   date(format: "YYYY")
                   artworks {
@@ -59,6 +60,7 @@ describe('Me', () => {
         },
         edges: [{
           node: {
+            __id: 'Tm90aWZpY2F0aW9uc0ZlZWRJdGVtOnVuaXF1ZS1pZC15bw==',
             status: 'READ',
             image: {
               url: 'cloudfront.url',
@@ -80,6 +82,8 @@ describe('Me', () => {
               object: { artists: [{ image_url: 'cloudfront.url' }] },
               object_ids: ['artwork1', 'artwork2'],
               date: '2017-02-17T17:19:44.000Z',
+              actors: 'Cats are the best actors.',
+              id: 'unique-id-yo',
             },
           ],
         }))
