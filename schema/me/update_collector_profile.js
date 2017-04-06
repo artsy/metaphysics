@@ -1,14 +1,15 @@
 import gravity from '../../lib/loaders/gravity';
-import { CollectorProfileType } from './collector_profile';
+import { CollectorProfileFields } from './collector_profile';
 import {
   GraphQLBoolean,
   GraphQLString,
 } from 'graphql';
+import { mutationWithClientMutationId } from 'graphql-relay';
 
-export default {
-  type: CollectorProfileType,
+export default mutationWithClientMutationId({
+  name: 'UpdateCollectorProfile',
   decription: 'Updating a collector profile (loyalty applicant status).',
-  args: {
+  inputFields: {
     loyalty_applicant: {
       type: GraphQLBoolean,
     },
@@ -19,7 +20,8 @@ export default {
       type: GraphQLString,
     },
   },
-  resolve: (root, {
+  outputFields: CollectorProfileFields,
+  mutateAndGetPayload: ({
     loyalty_applicant,
     professional_buyer,
     self_reported_purchases,
@@ -29,4 +31,4 @@ export default {
       method: 'PUT',
     })('me/collector_profile', { loyalty_applicant, professional_buyer, self_reported_purchases });
   },
-};
+});
