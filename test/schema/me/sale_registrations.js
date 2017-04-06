@@ -6,18 +6,10 @@ describe('Me', () => {
 
     beforeEach(() => {
       gravity.with = sinon.stub().returns(gravity);
-
-      Me.__Rewire__('gravity', gravity);
       SaleRegistrations.__Rewire__('gravity', gravity);
-
-      gravity
-        // Me fetch
-        .onCall(0)
-        .returns(Promise.resolve({}));
     });
 
     afterEach(() => {
-      Me.__ResetDependency__('gravity');
       SaleRegistrations.__ResetDependency__('gravity');
     });
 
@@ -37,16 +29,16 @@ describe('Me', () => {
 
       gravity
         // Sale fetch
-        .onCall(1)
+        .onCall(0)
         .returns(Promise.resolve([
           { name: 'Foo Sale' },
           { name: 'Bar Sale' },
         ]))
 
         // Registration fetches
-        .onCall(2)
+        .onCall(1)
         .returns(Promise.resolve([]))
-        .onCall(3)
+        .onCall(2)
         .returns(Promise.resolve([{ id: 'bidder-id' }]));
 
       return runAuthenticatedQuery(query)

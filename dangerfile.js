@@ -22,7 +22,7 @@ if (unFlowedFiles.length > 0) {
   const flowLinks = [
     ' * [Main Site](https://flowtype.org)',
     ' * [Types](https://flowtype.org/docs/quick-reference.html#primitives)',
-    ' * [What is Flow?](https://code.facebook.com/posts/1505962329687926/flow-a-new-static-type-checker-for-javascript/)',
+    ' * [What is Flow?](https://code.facebook.com/posts/1505962329687926/flow-a-new-static-type-checker-for-javascript/)', // eslint-disable-line
     ' * [Danger\'s flow glossary](https://github.com/danger/danger-js/blob/master/docs/js_glossary.md)',
   ];
   markdown('--- \n\n If you are new to Flow, here are some resources: \n\n' + flowLinks.join('\n'));

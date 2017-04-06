@@ -12,14 +12,18 @@ import Notifications from './notifications';
 import Conversations from './conversations';
 import CollectorProfile from './collector_profile';
 import ArtworkInquiries from './artwork_inquiries';
-import { IDFields } from '../object_identification';
+import { IDFields, NodeInterface } from '../object_identification';
+import { queriedForFieldsOtherThanBlacklisted } from '../../lib/helpers';
 import {
   GraphQLString,
   GraphQLObjectType,
 } from 'graphql';
+import { has } from 'lodash';
 
 const Me = new GraphQLObjectType({
   name: 'Me',
+  interfaces: [NodeInterface],
+  isTypeOf: (obj) => has(obj, 'email') && has(obj, 'is_collector'),
   fields: {
     ...IDFields,
     artwork_inquiries_connection: ArtworkInquiries,
@@ -52,9 +56,23 @@ const Me = new GraphQLObjectType({
 
 export default {
   type: Me,
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
+  resolve: (root, options, request, { rootValue: { accessToken, userID }, fieldNodes }) => {
     if (!accessToken) return null;
-    return gravity.with(accessToken)('me')
-      .catch(() => null);
+
+    const blacklistedFields = [
+      'id', '__id',
+      'follow_artists', 'suggested_artists',
+      'bidders', 'bidder_positions', 'bidder_status', 'lot_standing', 'lot_standings', 'sale_registrations',
+      'conversations', 'collector_profile',
+      'artwork_inquiries_connection', 'notifications_connection',
+    ];
+    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+      return gravity.with(accessToken)('me')
+        .catch(() => null);
+    }
+
+    // The email and is_collector are here so that the type system's `isTypeOf`
+    // resolves correctly when we're skipping gravity data
+    return { id: userID, email: null, is_collector: null };
   },
 };

@@ -6,18 +6,10 @@ describe('Me', () => {
 
     beforeEach(() => {
       gravity.with = sinon.stub().returns(gravity);
-
-      Me.__Rewire__('gravity', gravity);
       CollectorProfile.__Rewire__('gravity', gravity);
-
-      gravity
-        // Me fetch
-        .onCall(0)
-        .returns(Promise.resolve({}));
     });
 
     afterEach(() => {
-      Me.__ResetDependency__('gravity');
       CollectorProfile.__ResetDependency__('gravity');
     });
 
@@ -50,7 +42,6 @@ describe('Me', () => {
       };
 
       gravity
-        .onCall(1)
         .returns(Promise.resolve(collectorProfile));
 
       return runAuthenticatedQuery(query)

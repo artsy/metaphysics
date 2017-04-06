@@ -8,18 +8,10 @@ describe('Me', () => {
     beforeEach(() => {
       gravity = sinon.stub();
       gravity.with = sinon.stub().returns(gravity);
-
-      Me.__Rewire__('gravity', gravity);
       Bidders.__Rewire__('gravity', gravity);
-
-      gravity
-        // Me fetch
-        .onCall(0)
-        .returns(Promise.resolve({}));
     });
 
     afterEach(() => {
-      Me.__ResetDependency__('gravity');
       Bidders.__ResetDependency__('gravity');
     });
 

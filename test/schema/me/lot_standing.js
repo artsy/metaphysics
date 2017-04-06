@@ -7,26 +7,15 @@ describe('LotStanding type', () => {
   beforeEach(() => {
     gravity = sinon.stub();
     gravity.with = sinon.stub().returns(gravity);
-
-    Me.__Rewire__('gravity', gravity);
     LotStanding.__Rewire__('gravity', gravity);
   });
 
   afterEach(() => {
-    Me.__ResetDependency__('gravity');
     LotStanding.__ResetDependency__('gravity');
   });
 
   it('returns the correct state when you are the high bidder and reserve is met', () => {
     gravity
-      // Me fetch
-      .onCall(0)
-      .returns(Promise.resolve({
-        id: 'damon',
-        name: 'damon',
-      }))
-      // LotStanding fetch
-      .onCall(1)
       .returns(Promise.resolve([
         {
           sale_artwork: {
@@ -92,14 +81,6 @@ describe('LotStanding type', () => {
 
   it('returns the correct state when you are outbid on a work & reserve is met', () => {
     gravity
-      // Me fetch
-      .onCall(0)
-      .returns(Promise.resolve({
-        id: 'damon',
-        name: 'damon',
-      }))
-      // LotStanding fetch
-      .onCall(1)
       .returns(Promise.resolve([
         {
           sale_artwork: {
@@ -147,14 +128,6 @@ describe('LotStanding type', () => {
 
   it('returns the correct state when you are the top bid but reserve is not met', () => {
     gravity
-      // Me fetch
-      .onCall(0)
-      .returns(Promise.resolve({
-        id: 'damon',
-        name: 'damon',
-      }))
-      // LotStanding fetch
-      .onCall(1)
       .returns(Promise.resolve([
         {
           sale_artwork: {

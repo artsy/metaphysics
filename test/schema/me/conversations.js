@@ -9,18 +9,11 @@ describe('Me', () => {
       gravity.with = sinon.stub().returns(gravity);
       impulse.with = sinon.stub().returns(impulse);
 
-      Me.__Rewire__('gravity', gravity);
       Conversations.__Rewire__('gravity', gravity);
       Conversations.__Rewire__('impulse', impulse);
-
-      gravity
-        // Me fetch
-        .onCall(0)
-        .returns(Promise.resolve({}));
     });
 
     afterEach(() => {
-      Me.__ResetDependency__('gravity');
       Conversations.__ResetDependency__('gravity');
       Conversations.__ResetDependency__('impulse');
     });
@@ -63,8 +56,7 @@ describe('Me', () => {
       ];
 
       gravity
-        // Token request
-        .onCall(1)
+        .onCall(0)
         .returns(Promise.resolve({ token: 'token' }));
 
       impulse
