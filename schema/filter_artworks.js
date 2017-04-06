@@ -159,6 +159,9 @@ export const filterArtworksArgs = {
   sort: {
     type: GraphQLString,
   },
+  tag_id: {
+    type: GraphQLString,
+  },
   keyword: {
     type: GraphQLString,
   },
