@@ -6,9 +6,7 @@ import {
 } from 'graphql';
 import { mutationWithClientMutationId } from 'graphql-relay';
 
-let UpdateCollectorProfile;
-
-UpdateCollectorProfile = mutationWithClientMutationId({
+export default mutationWithClientMutationId({
   name: 'UpdateCollectorProfile',
   decription: 'Updating a collector profile (loyalty applicant status).',
   inputFields: {
@@ -34,5 +32,3 @@ UpdateCollectorProfile = mutationWithClientMutationId({
     })('me/collector_profile', { loyalty_applicant, professional_buyer, self_reported_purchases });
   },
 });
-
-export default UpdateCollectorProfile;
