@@ -13,6 +13,7 @@ import Conversations from './conversations';
 import CollectorProfile from './collector_profile';
 import ArtworkInquiries from './artwork_inquiries';
 import { IDFields, NodeInterface } from '../object_identification';
+import { queriedForFieldsOtherThanBlacklisted } from '../../lib/helpers';
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -55,9 +56,19 @@ const Me = new GraphQLObjectType({
 
 export default {
   type: Me,
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
+  resolve: (root, options, request, { rootValue: { accessToken, userID }, fieldNodes }) => {
     if (!accessToken) return null;
-    return gravity.with(accessToken)('me')
-      .catch(() => null);
+
+    // If you are just making a notifications call ( e.g. if paginating )
+    // do not make a Gravity call for the user data.
+    const blacklistedFields = ['notifications_connection', 'id', '__id'];
+    if (!fieldNodes || queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+      return gravity.with(accessToken)('me')
+        .catch(() => null);
+    }
+
+    // The email and is_collector are here so that the type system's `isTypeOf`
+    // resolves correctly when we're skipping gravity data
+    return { id: userID, email: null, is_collector: null };
   },
 };

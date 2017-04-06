@@ -74,6 +74,23 @@ Object.defineProperty(SupportedTypes, 'typeModules', { get: () => {
 } });
 /* eslint-enable no-param-reassign */
 
+const isSupportedType = _.includes.bind(null, SupportedTypes.types);
+
+function argumentsForChild(type, id) {
+  return type.includes('HomePage') ? JSON.parse(id) : { id };
+}
+
+function rootValueForChild(rootValue) {
+  const selections = rootValue.fieldNodes[0].selectionSet.selections;
+  let fragment = _.find(selections, selection => {
+    return selection.kind === 'InlineFragment' || selection.kind === 'FragmentSpread';
+  });
+  if (fragment && fragment.kind === 'FragmentSpread') {
+    fragment = rootValue.fragments[fragment.name.value];
+  }
+  return _.assign({}, rootValue, { fieldNodes: fragment && [fragment] });
+}
+
 // Because we use a custom Node ID, we duplicate and slightly adjust the code from:
 // https://github.com/graphql/graphql-relay-js/blob/master/src/node/node.js
 
@@ -98,12 +115,12 @@ const NodeField = {
       description: 'The ID of the object',
     },
   },
+  // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
   resolve: (root, { __id }, request, rootValue) => {
     const { type, id } = fromGlobalId(__id);
-    if (_.includes(SupportedTypes.types, type)) {
-      const payload = type.includes('HomePage') ? JSON.parse(id) : { id };
-      // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
-      return SupportedTypes.typeModules[type].resolve(null, payload, request, rootValue);
+    if (isSupportedType(type)) {
+      const { resolve } = SupportedTypes.typeModules[type];
+      return resolve(null, argumentsForChild(type, id), request, rootValueForChild(rootValue));
     }
   },
 };

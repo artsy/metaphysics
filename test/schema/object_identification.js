@@ -149,10 +149,7 @@ describe('Object Identification', () => {
   });
 
   describe('for the Me field', () => {
-    const globalId = toGlobalId(
-      'Me',
-      'user-42'
-    );
+    const globalId = toGlobalId('Me', 'user-42');
 
     it('generates a Global ID', () => {
       const query = `
@@ -415,6 +412,54 @@ describe('Object Identification', () => {
           node: {
             __typename: 'HomePageArtistModule',
             key: 'TRENDING',
+          },
+        });
+      });
+    });
+  });
+
+  // These test that the proper AST is passed on by testing that the `Me` type doesn’t make any
+  // gravity calls (as the `Me` type’s `resolve` function is optimised to not make a request when
+  // only the `id` field is requested).
+  describe('concerning passing the proper AST to resolvers', () => {
+    const globalId = toGlobalId('Me', 'user-42');
+
+    it('should pass the proper inline fragment AST', () => {
+      const query = `
+        {
+          node(__id: "${globalId}") {
+            ... on Me {
+              id
+            }
+          }
+        }
+      `;
+
+      return runAuthenticatedQuery(query).then(data => {
+        expect(data).toEqual({
+          node: {
+            id: 'user-42',
+          },
+        });
+      });
+    });
+
+    it('should pass the proper spread fragment AST', () => {
+      const query = `
+        {
+          node(__id: "${globalId}") {
+            ... fields
+          }
+        }
+        fragment fields on Me {
+          id
+        }
+      `;
+
+      return runAuthenticatedQuery(query).then(data => {
+        expect(data).toEqual({
+          node: {
+            id: 'user-42',
           },
         });
       });
