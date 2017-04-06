@@ -148,6 +148,53 @@ describe('Object Identification', () => {
     });
   });
 
+  describe('for the Me field', () => {
+    const globalId = toGlobalId(
+      'Me',
+      'user-42'
+    );
+
+    it('generates a Global ID', () => {
+      const query = `
+        {
+          me {
+            __id
+          }
+        }
+      `;
+
+      return runAuthenticatedQuery(query).then(data => {
+        expect(data).toEqual({
+          me: {
+            __id: globalId,
+          },
+        });
+      });
+    });
+
+    it('resolves a node', () => {
+      const query = `
+        {
+          node(__id: "${globalId}") {
+            __typename
+            ... on Me {
+              id
+            }
+          }
+        }
+      `;
+
+      return runAuthenticatedQuery(query).then(data => {
+        expect(data).toEqual({
+          node: {
+            __typename: 'Me',
+            id: 'user-42',
+          },
+        });
+      });
+    });
+  });
+
   describe('for a HomePageArtworkModule', () => {
     describe('with a specific module', () => {
       const globalId = toGlobalId(
