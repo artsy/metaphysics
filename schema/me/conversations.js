@@ -39,52 +39,54 @@ export const BuyerOutcomeTypes = new GraphQLEnumType({
   },
 });
 
+export const ConversationFields = {
+  id: {
+    description: 'Impulse id.',
+    type: GraphQLString,
+  },
+  inquiry_id: {
+    description: 'Gravity inquiry id.',
+    type: GraphQLString,
+  },
+  from_id: {
+    type: new GraphQLNonNull(GraphQLString),
+  },
+  from_type: {
+    type: new GraphQLNonNull(GraphQLString),
+  },
+  from_name: {
+    type: new GraphQLNonNull(GraphQLString),
+  },
+  from_email: {
+    type: new GraphQLNonNull(GraphQLString),
+  },
+  to_id: {
+    type: new GraphQLNonNull(GraphQLString),
+  },
+  to_type: {
+    type: new GraphQLNonNull(GraphQLString),
+  },
+  to_name: {
+    type: new GraphQLNonNull(GraphQLString),
+  },
+  buyer_outcome: {
+    type: GraphQLString,
+  },
+  buyer_outcome_at: date,
+  created_at: date,
+
+  initial_message: {
+    type: GraphQLString,
+  },
+  purchase_request: {
+    type: GraphQLBoolean,
+  },
+};
+
 export const ConversationType = new GraphQLObjectType({
   name: 'ConversationType',
   description: 'A conversation.',
-  fields: {
-    id: {
-      description: 'Impulse id.',
-      type: GraphQLString,
-    },
-    inquiry_id: {
-      description: 'Gravity inquiry id.',
-      type: GraphQLString,
-    },
-    from_id: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    from_type: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    from_name: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    from_email: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    to_id: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    to_type: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    to_name: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    buyer_outcome: {
-      type: GraphQLString,
-    },
-    buyer_outcome_at: date,
-    created_at: date,
-
-    initial_message: {
-      type: GraphQLString,
-    },
-    purchase_request: {
-      type: GraphQLBoolean,
-    },
-  },
+  fields: ConversationFields,
 });
 
 export default {
