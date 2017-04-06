@@ -8,18 +8,10 @@ describe('Me', () => {
 
     beforeEach(() => {
       gravity.with = sinon.stub().returns(gravity);
-
-      Me.__Rewire__('gravity', gravity);
       Notifications.__Rewire__('gravity', gravity);
-
-      gravity
-        // Me fetch
-        .onCall(0)
-        .returns(Promise.resolve({}));
     });
 
     afterEach(() => {
-      Me.__ResetDependency__('gravity');
       Notifications.__ResetDependency__('gravity');
     });
 
@@ -73,7 +65,7 @@ describe('Me', () => {
 
       gravity
         // Feed fetch
-        .onCall(1)
+        .onCall(0)
         .returns(Promise.resolve({
           total: 2,
           feed: [
@@ -89,7 +81,7 @@ describe('Me', () => {
         }))
 
         // Artwork fetches
-        .onCall(2)
+        .onCall(1)
         .returns(Promise.resolve([artwork1, artwork2]));
 
       return runAuthenticatedQuery(query)

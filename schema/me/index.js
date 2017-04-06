@@ -59,9 +59,13 @@ export default {
   resolve: (root, options, request, { rootValue: { accessToken, userID }, fieldNodes }) => {
     if (!accessToken) return null;
 
-    // If you are just making a notifications call ( e.g. if paginating )
-    // do not make a Gravity call for the user data.
-    const blacklistedFields = ['notifications_connection', 'id', '__id'];
+    const blacklistedFields = [
+      'id', '__id',
+      'follow_artists', 'suggested_artists',
+      'bidders', 'bidder_positions', 'bidder_status', 'lot_standing', 'lot_standings', 'sale_registrations',
+      'conversations', 'collector_profile',
+      'artwork_inquiries_connection', 'notifications_connection',
+    ];
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return gravity.with(accessToken)('me')
         .catch(() => null);

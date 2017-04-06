@@ -7,26 +7,16 @@ describe('BidderStatus type', () => {
   beforeEach(() => {
     gravity = sinon.stub();
     gravity.with = sinon.stub().returns(gravity);
-
-    Me.__Rewire__('gravity', gravity);
     BidderStatus.__Rewire__('gravity', gravity);
   });
 
   afterEach(() => {
-    Me.__ResetDependency__('gravity');
     BidderStatus.__ResetDependency__('gravity');
   });
 
   it('returns the correct state when you are the high bidder on a work', () => {
     gravity
-      // Me fetch
-      .onCall(0)
-      .returns(Promise.resolve({
-        id: 'damon',
-        name: 'damon',
-      }))
       // LotStanding fetch
-      .onCall(1)
       .returns(Promise.resolve([
         {
           sale_artwork: {
@@ -92,14 +82,8 @@ describe('BidderStatus type', () => {
 
   it('returns the correct state when you are outbid on a work', () => {
     gravity
-      // Me fetch
-      .onCall(0)
-      .returns(Promise.resolve({
-        id: 'damon',
-        name: 'damon',
-      }))
       // LotStanding fetch
-      .onCall(1)
+      .onCall(0)
       .returns(Promise.resolve([
         {
           sale_artwork: {

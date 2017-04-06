@@ -6,18 +6,10 @@ describe('Me', () => {
 
     beforeEach(() => {
       gravity.with = sinon.stub().returns(gravity);
-
-      Me.__Rewire__('gravity', gravity);
       ArtworkInquiries.__Rewire__('gravity', gravity);
-
-      gravity
-        // Me fetch
-        .onCall(0)
-        .returns(Promise.resolve({}));
     });
 
     afterEach(() => {
-      Me.__ResetDependency__('gravity');
       ArtworkInquiries.__ResetDependency__('gravity');
     });
 
@@ -56,8 +48,6 @@ describe('Me', () => {
       };
 
       gravity
-        // Feed fetch
-        .onCall(1)
         .returns(Promise.resolve({
           headers: { 'x-total-count': 3 },
           body: [

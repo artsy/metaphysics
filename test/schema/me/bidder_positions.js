@@ -17,14 +17,8 @@ describe('Me type', () => {
     gravity.with = sinon.stub().returns(gravity);
 
     gravity
-      // Me fetch
-      .onCall(0)
-      .returns(Promise.resolve({
-        id: 'craig',
-        name: 'craig',
-      }))
       // Bidder positions fetch
-      .onCall(1)
+      .onCall(0)
       .returns(Promise.resolve([
         {
           id: 0,
@@ -63,7 +57,7 @@ describe('Me type', () => {
       if (i === 0) id = 'foo';
       if (i === 1) id = 'bar';
       if (i === 2) id = 'baz';
-      gravity.onCall(i + 2)
+      gravity.onCall(i + 1)
       .returns(Promise.resolve({
         id,
         _id: id,
@@ -73,7 +67,7 @@ describe('Me type', () => {
     });
     // Sale fetches
     times(3, (i) => {
-      gravity.onCall(i + 5)
+      gravity.onCall(i + 4)
       .returns(Promise.resolve({
         id: i === 1 ? 'bar-auction' : 'else-auction',
         auction_state: i === 1 ? 'closed' : 'open',
@@ -86,13 +80,11 @@ describe('Me type', () => {
       artwork: { title: 'Andy Warhol Skull' },
     }));
 
-    Me.__Rewire__('gravity', gravity);
     BidderPositions.__Rewire__('gravity', gravity);
     BidderPosition.__Rewire__('gravity', gravity2);
   });
 
   afterEach(() => {
-    Me.__ResetDependency__('gravity');
     BidderPositions.__ResetDependency__('gravity');
     BidderPosition.__ResetDependency__('gravity');
   });
@@ -109,7 +101,6 @@ describe('Me type', () => {
     `;
     return runAuthenticatedQuery(query)
       .then(data => {
-        expect(Me.__get__('gravity').args[1][0]).toBe('me/bidder_positions');
         expect(map(data.me.bidder_positions, 'id').join('')).toEqual('01234');
       });
   });
@@ -126,7 +117,6 @@ describe('Me type', () => {
     `;
     return runAuthenticatedQuery(query)
       .then(data => {
-        expect(Me.__get__('gravity').args[1][0]).toBe('me/bidder_positions');
         expect(map(data.me.bidder_positions, 'id').join('')).toEqual('14');
       });
   });
@@ -141,7 +131,7 @@ describe('Me type', () => {
         }
       }
     `;
-    gravity.onCall(4).returns(Promise.reject(new Error('Forbidden')));
+    gravity.onCall(3).returns(Promise.reject(new Error('Forbidden')));
     return runAuthenticatedQuery(query)
       .then(data => {
         expect(map(data.me.bidder_positions, 'id').join('')).toEqual('1');
@@ -161,7 +151,6 @@ describe('Me type', () => {
     `;
     return runAuthenticatedQuery(query)
       .then(data => {
-        expect(Me.__get__('gravity').args[1][0]).toBe('me/bidder_positions');
         expect(data.me.bidder_positions[2].is_winning).toEqual(true);
       });
   });
