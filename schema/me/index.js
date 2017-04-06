@@ -62,7 +62,7 @@ export default {
     // If you are just making a notifications call ( e.g. if paginating )
     // do not make a Gravity call for the user data.
     const blacklistedFields = ['notifications_connection', 'id', '__id'];
-    if (!fieldNodes || queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return gravity.with(accessToken)('me')
         .catch(() => null);
     }
