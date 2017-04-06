@@ -46,11 +46,12 @@ const SupportedTypes = {
     './article',
     './artist',
     './artwork',
+    './gene',
     './home/home_page_artwork_module',
     './home/home_page_artist_module',
+    './me',
     './partner',
     './partner_show',
-    './gene',
   ],
 };
 

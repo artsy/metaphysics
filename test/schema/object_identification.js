@@ -148,6 +148,70 @@ describe('Object Identification', () => {
     });
   });
 
+  describe('for the Me field', () => {
+    const globalId = toGlobalId(
+      'Me',
+      '5501de167261696e34610200'
+    );
+
+    const me = schema.__get__('Me');
+    let gravity;
+
+    beforeEach(() => {
+      gravity = sinon.stub().returns(Promise.resolve({
+        id: '5501de167261696e34610200',
+        email: 'email@artsy.net',
+        is_collector: true,
+      }));
+      gravity.with = () => gravity;
+      me.__Rewire__('gravity', gravity);
+    });
+
+    afterEach(() => {
+      me.__ResetDependency__('gravity');
+    });
+
+    it('generates a Global ID', () => {
+      const query = `
+        {
+          me {
+            __id
+          }
+        }
+      `;
+
+      return runAuthenticatedQuery(query).then(data => {
+        expect(data).toEqual({
+          me: {
+            __id: globalId,
+          },
+        });
+      });
+    });
+
+    it('resolves a node', () => {
+      const query = `
+        {
+          node(__id: "${globalId}") {
+            __typename
+            ... on Me {
+              id
+            }
+          }
+        }
+      `;
+
+      return runAuthenticatedQuery(query).then(data => {
+        expect(data).toEqual({
+          node: {
+            __typename: 'Me',
+            id: '5501de167261696e34610200',
+          },
+        });
+      });
+    });
+  });
+
   describe('for a HomePageArtworkModule', () => {
     describe('with a specific module', () => {
       const globalId = toGlobalId(
