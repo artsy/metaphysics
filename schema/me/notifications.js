@@ -26,6 +26,11 @@ const NotificationsFeedItemType = new GraphQLObjectType({
   isTypeOf: (obj) => has(obj, 'actors') && has(obj, 'object_ids'),
   fields: () => ({
     __id: GlobalIDField,
+    artistRef: {
+      type: GraphQLString,
+      description: 'An href for the artist associated with this bundle',
+      resolve: ({ object }) => object.artists.length > 0 && `/artist/${object.artists[0].id}`,
+    },
     artists: {
       type: GraphQLString,
       resolve: ({ actors }) => actors,
@@ -38,6 +43,10 @@ const NotificationsFeedItemType = new GraphQLObjectType({
       },
     },
     date,
+    image: {
+      type: Image.type,
+      resolve: ({ object }) => object.artists.length > 0 && Image.resolve(object.artists[0]),
+    },
     message: {
       type: GraphQLString,
     },
@@ -53,10 +62,6 @@ const NotificationsFeedItemType = new GraphQLObjectType({
           },
         },
       }),
-    },
-    image: {
-      type: Image.type,
-      resolve: ({ object }) => object.artists.length > 0 && Image.resolve(object.artists[0]),
     },
   }),
 });
