@@ -19,10 +19,12 @@ describe('UpdateConversation', () => {
   it('updates and returns a conversation', () => {
     const mutation = `
       mutation {
-        updateConversation(input: { id: "3", buyer_outcome: HIGH_PRICE }) {
-          id
-          initial_message
-          from_email
+        updateConversation(input: { ids: ["3"], buyer_outcome: HIGH_PRICE }) {
+          conversations {
+            id
+            initial_message
+            from_email
+          }
         }
       }
     `;
@@ -34,9 +36,11 @@ describe('UpdateConversation', () => {
     };
 
     const expectedConversationData = {
-      id: '3',
-      initial_message: 'omg im sooo interested',
-      from_email: 'percy@cat.com',
+      conversations: [{
+        id: '3',
+        initial_message: 'omg im sooo interested',
+        from_email: 'percy@cat.com',
+      }],
     };
 
     gravity

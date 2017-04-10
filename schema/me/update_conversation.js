@@ -1,7 +1,8 @@
 import impulse from '../../lib/loaders/impulse';
 import gravity from '../../lib/loaders/gravity';
-import { ConversationFields, BuyerOutcomeTypes } from './conversations';
+import { ConversationType, BuyerOutcomeTypes } from './conversations';
 import {
+  GraphQLList,
   GraphQLString,
   GraphQLNonNull,
 } from 'graphql';
@@ -15,20 +16,27 @@ export default mutationWithClientMutationId({
     buyer_outcome: {
       type: new GraphQLNonNull(BuyerOutcomeTypes),
     },
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
+    ids: {
+      type: new GraphQLList(GraphQLString),
     },
   },
-  outputFields: ConversationFields,
-  mutateAndGetPayload: ({ buyer_outcome, id }, request, { rootValue: { accessToken } }) => {
+  outputFields: {
+    conversations: {
+      type: new GraphQLList(ConversationType),
+      resolve: (conversations) => conversations,
+    },
+  },
+  mutateAndGetPayload: ({ buyer_outcome, ids }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null;
     return gravity.with(accessToken, { method: 'POST' })('me/token', {
       client_application_id: IMPULSE_APPLICATION_ID,
     }).then(data => {
-      return impulse.with(data.token, { method: 'PUT' })(`conversations/${id}`, { buyer_outcome })
-        .then(impulseData => {
-          return impulseData;
-        });
+      return Promise.all(
+        ids.map(id => impulse.with(data.token, { method: 'PUT' })(`conversations/${id}`, { buyer_outcome }))
+      )
+      .then(conversations => {
+        return conversations;
+      });
     });
   },
 });
