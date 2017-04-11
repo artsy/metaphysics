@@ -31,12 +31,58 @@ import Me from './me';
 import UpdateConversation from './me/update_conversation';
 import UpdateCollectorProfile from './me/update_collector_profile';
 import CausalityJWT from './causality_jwt';
-import Viewer from './viewer';
 import ObjectIdentification from './object_identification';
 import {
   GraphQLSchema,
   GraphQLObjectType,
 } from 'graphql';
+
+const rootFields = {
+  article: Article,
+  articles: Articles,
+  artwork: Artwork,
+  artworks: Artworks,
+  artist: Artist,
+  artists: Artists,
+  causality_jwt: CausalityJWT,
+  external_partner: ExternalPartner,
+  fair: Fair,
+  fairs: Fairs,
+  filter_partners: FilterPartners,
+  filter_artworks: filterArtworks(),
+  filter_sale_artworks: FilterSaleArtworks,
+  gene: Gene,
+  home_page: HomePage,
+  me: Me,
+  node: ObjectIdentification.NodeField,
+  ordered_sets: OrderedSets,
+  partner: Partner,
+  partner_categories: PartnerCategories,
+  partner_category: PartnerCategory,
+  partner_show: PartnerShow,
+  partner_shows: PartnerShows,
+  partners: Partners,
+  profile: Profile,
+  sale: Sale,
+  sale_artwork: SaleArtwork,
+  sales: Sales,
+  search: Search,
+  show: Show,
+  status: Status,
+  trending_artists: TrendingArtists,
+};
+
+const ViewerType = new GraphQLObjectType({
+  name: 'Viewer',
+  description: 'A wildcard used to support complex root queries in Relay',
+  fields: rootFields,
+});
+
+const Viewer = {
+  type: ViewerType,
+  description: 'A wildcard used to support complex root queries in Relay',
+  resolve: x => x,
+};
 
 const schema = new GraphQLSchema({
   mutation: new GraphQLObjectType({
@@ -49,38 +95,7 @@ const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-      article: Article,
-      articles: Articles,
-      artwork: Artwork,
-      artworks: Artworks,
-      artist: Artist,
-      artists: Artists,
-      causality_jwt: CausalityJWT,
-      external_partner: ExternalPartner,
-      fair: Fair,
-      fairs: Fairs,
-      filter_partners: FilterPartners,
-      filter_artworks: filterArtworks(),
-      filter_sale_artworks: FilterSaleArtworks,
-      gene: Gene,
-      home_page: HomePage,
-      me: Me,
-      node: ObjectIdentification.NodeField,
-      ordered_sets: OrderedSets,
-      partner: Partner,
-      partner_categories: PartnerCategories,
-      partner_category: PartnerCategory,
-      partner_show: PartnerShow,
-      partner_shows: PartnerShows,
-      partners: Partners,
-      profile: Profile,
-      sale: Sale,
-      sale_artwork: SaleArtwork,
-      sales: Sales,
-      search: Search,
-      show: Show,
-      status: Status,
-      trending_artists: TrendingArtists,
+      ...rootFields,
       viewer: Viewer,
     },
   }),
