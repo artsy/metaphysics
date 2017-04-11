@@ -55,7 +55,7 @@ const has_multiple_editions = (edition_sets) => {
 
 let Artwork;
 
-const ArtworkType = new GraphQLObjectType({
+export const ArtworkType = new GraphQLObjectType({
   name: 'Artwork',
   interfaces: [NodeInterface],
   isTypeOf: (obj) => _.has(obj, 'title') && _.has(obj, 'artists'),
