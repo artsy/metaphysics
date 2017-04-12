@@ -30,6 +30,7 @@ import TrendingArtists from './trending';
 import Me from './me';
 import UpdateConversation from './me/update_conversation';
 import UpdateCollectorProfile from './me/update_collector_profile';
+import SaveArtwork from './me/save_artwork';
 import CausalityJWT from './causality_jwt';
 import ObjectIdentification from './object_identification';
 import {
@@ -90,6 +91,7 @@ const schema = new GraphQLSchema({
     fields: {
       updateCollectorProfile: UpdateCollectorProfile,
       updateConversation: UpdateConversation,
+      saveArtwork: SaveArtwork,
     },
   }),
   query: new GraphQLObjectType({
