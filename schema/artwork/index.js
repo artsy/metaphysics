@@ -413,8 +413,8 @@ export const artworkFields = () => {
       resolve: ({ id }, {}, request, { rootValue: {
         accessToken, userID } }) => {
         if (!accessToken) return false;
-        return savedArtworkLoader
-          .load(id, { userID, accessToken })
+        return savedArtworkLoader(userID, accessToken)
+          .load(id)
           .then(({ is_saved }) => is_saved);
       },
     },
