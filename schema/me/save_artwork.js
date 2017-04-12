@@ -1,7 +1,7 @@
 import gravity from '../../lib/loaders/gravity';
 import { GraphQLString, GraphQLBoolean } from 'graphql';
 import { mutationWithClientMutationId } from 'graphql-relay';
-import { ArtworkType } from '../artwork/index';
+import { artworkFields } from '../artwork/index';
 
 export default mutationWithClientMutationId({
   name: 'SaveArtwork',
@@ -14,7 +14,7 @@ export default mutationWithClientMutationId({
       type: GraphQLBoolean,
     },
   },
-  outputFields: ArtworkType.getFields(),
+  outputFields: artworkFields(),
   mutateAndGetPayload: ({
     artwork_id,
     remove,
