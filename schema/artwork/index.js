@@ -31,6 +31,7 @@ import ArtworkLayer from './layer';
 import ArtworkLayers, { artworkLayers } from './layers';
 import gravity from '../../lib/loaders/gravity';
 import positron from '../../lib/loaders/positron';
+import savedArtworkLoader from '../../lib/loaders/saved_artwork';
 import { GravityIDFields, NodeInterface } from '../object_identification';
 import {
   GraphQLObjectType,
@@ -405,6 +406,16 @@ export const artworkFields = () => {
           !has_price_range(artwork.price) &&
           artwork.forsale
         );
+      },
+    },
+    is_saved: {
+      type: GraphQLBoolean,
+      resolve: ({ id }, {}, request, { rootValue: {
+        accessToken, userID } }) => {
+        if (!accessToken) return false;
+        return savedArtworkLoader
+          .load(id, { userID, accessToken })
+          .then(({ is_saved }) => is_saved);
       },
     },
     is_shareable: {
