@@ -190,6 +190,9 @@ const SaleType = new GraphQLObjectType({
         resolve: ({ profile }) => profile,
       },
       registration_ends_at: date,
+      require_bidder_approval: {
+        type: GraphQLBoolean,
+      },
       sale_artworks: {
         type: new GraphQLList(SaleArtwork.type),
         args: {
