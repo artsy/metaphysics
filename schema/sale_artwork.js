@@ -93,6 +93,7 @@ const SaleArtworkType = new GraphQLObjectType({
       current_bid: money({
         name: 'SaleArtworkCurrentBid',
         resolve: saleArtwork => ({
+          ...GravityIDFields,
           cents: saleArtwork.highest_bid_amount_cents || saleArtwork.opening_bid_cents,
           display: (
             saleArtwork.display_highest_bid_amount_dollars ||
