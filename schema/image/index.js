@@ -47,12 +47,30 @@ const ImageType = new GraphQLObjectType({
       description: 'A type-specific ID.',
       type: GraphQLString,
     },
+    image_url: {
+      type: GraphQLString,
+    },
+    image_versions: {
+      type: new GraphQLList(GraphQLString),
+    },
     is_default: {
       type: GraphQLBoolean,
     },
     is_zoomable: {
       type: GraphQLBoolean,
       resolve: isZoomable,
+    },
+    max_tiled_height: {
+      type: GraphQLInt,
+    },
+    max_tiled_width: {
+      type: GraphQLInt,
+    },
+    original_height: {
+      type: GraphQLInt,
+    },
+    original_width: {
+      type: GraphQLInt,
     },
     orientation: {
       type: GraphQLString,
@@ -71,6 +89,15 @@ const ImageType = new GraphQLObjectType({
       type: GraphQLInt,
     },
     resized: ResizedUrl,
+    tile_base_url: {
+      type: GraphQLString,
+    },
+    tile_format: {
+      type: GraphQLString,
+    },
+    tile_size: {
+      type: GraphQLInt,
+    },
     title: {
       type: GraphQLString,
     },
