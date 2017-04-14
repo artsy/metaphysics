@@ -96,14 +96,11 @@ const FairType = new GraphQLObjectType({
       type: FairOrganizerType,
     },
     has_published_organizer_profile: {
-      type: GraphQLBoolean,
+      type: new GraphQLNonNull(GraphQLBoolean),
       resolve: ({ organizer }) => {
         const id = organizer && organizer.profile_id;
         if (id === null) return false;
-        return gravity(`profile/${id}`)
-        .then(profile => {
-          return profile && profile.published;
-        });
+        return gravity(`profile/${id}`).then(profile => profile && profile.published && !profile.private);
       },
     },
     published: {
