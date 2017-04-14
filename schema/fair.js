@@ -95,6 +95,17 @@ const FairType = new GraphQLObjectType({
     organizer: {
       type: FairOrganizerType,
     },
+    has_published_organizer_profile: {
+      type: GraphQLBoolean,
+      resolve: ({ organizer }) => {
+        const id = organizer && organizer.profile_id;
+        if (id === null) return false;
+        return gravity(`profile/${id}`)
+        .then(profile => {
+          return profile && profile.published;
+        });
+      },
+    },
     published: {
       type: GraphQLBoolean,
       deprecationReason: 'Prefix Boolean returning fields with `is_`',
