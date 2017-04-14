@@ -2,7 +2,7 @@ import Bluebird from 'bluebird';
 import newrelic from 'artsy-newrelic';
 import xapp from 'artsy-xapp';
 import cors from 'cors';
-import morgan from 'morgan';
+import morgan from 'artsy-morgan';
 import express from 'express';
 import forceSSL from 'express-force-ssl';
 import session from 'express-session';
@@ -66,7 +66,7 @@ app.all('/graphql', (req, res) => res.redirect('/'));
 auth(app);
 
 app.use(bodyParser.json());
-app.use('/', cors(), morgan('combined'), graphqlHTTP(request => {
+app.use('/', cors(), morgan, graphqlHTTP(request => {
   info('----------');
 
   loaders.clearAll();

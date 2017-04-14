@@ -27,6 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "accounting": "^0.4.1",
+    "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
     "artsy-newrelic": "^1.0.0",
     "artsy-xapp": "^1.0.4",
     "babel-core": "^6.2.4",
@@ -53,7 +54,6 @@
     "memjs": "^0.10.0",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
-    "morgan": "^1.6.1",
     "numeral": "^1.5.3",
     "passport": "^0.3.2",
     "passport-oauth2": "git://github.com/craigspaeth/passport-oauth2.git",
