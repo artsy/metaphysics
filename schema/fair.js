@@ -22,6 +22,9 @@ const FairOrganizerType = new GraphQLObjectType({
     },
     profile: {
       type: Profile.type,
+      resolve: ({ profile_id }) => {
+        return gravity(`profile/${profile_id}`).catch(() => null);
+      },
     },
   },
 });
