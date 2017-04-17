@@ -39,6 +39,7 @@ const BidIncrement = new GraphQLObjectType({
 const BuyersPremium = new GraphQLObjectType({
   name: 'BuyersPremium',
   fields: {
+    ...GravityIDFields,
     amount: amount(({ cents }) => cents),
     cents: {
       type: GraphQLInt,
