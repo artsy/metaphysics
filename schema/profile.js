@@ -49,6 +49,10 @@ const ProfileType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: ({ owner }) => owner.name,
     },
+    is_publically_visible: {
+      type: GraphQLBoolean,
+      resolve: (profile) => profile && profile.published && !profile.private,
+    },
   }),
 });
 
