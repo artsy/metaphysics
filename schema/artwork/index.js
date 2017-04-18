@@ -58,6 +58,7 @@ let Artwork;
 
 export const artworkFields = () => {
   return {
+    ...GravityIDFields,
     additional_information: markdown(),
     artist: {
       type: Artist.type,
@@ -604,7 +605,6 @@ export const ArtworkType = new GraphQLObjectType({
   isTypeOf: (obj) => _.has(obj, 'title') && _.has(obj, 'artists'),
   fields: () => {
     return {
-      ...GravityIDFields,
       ...artworkFields(),
       cached,
     };
