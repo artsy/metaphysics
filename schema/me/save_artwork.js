@@ -23,6 +23,8 @@ export default mutationWithClientMutationId({
     const saveMethod = remove ? 'DELETE' : 'POST';
     return gravity.with(accessToken, {
       method: saveMethod,
-    })(`/collection/saved-artwork/artwork/${artwork_id}`, { user_id: userID });
+    })(`/collection/saved-artwork/artwork/${artwork_id}`, {
+      user_id: userID,
+    }).then(() => gravity(`artwork/${artwork_id}`));
   },
 });
