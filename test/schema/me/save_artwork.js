@@ -34,9 +34,7 @@ describe('SaveArtwork', () => {
       title: 'Slow Verb',
     };
 
-    gravity
-      .onCall(0)
-      .returns(Promise.resolve(artwork));
+    gravity.returns(Promise.resolve(artwork));
 
     return runAuthenticatedQuery(mutation)
     .then(({ saveArtwork }) => {
