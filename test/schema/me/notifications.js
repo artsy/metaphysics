@@ -28,6 +28,7 @@ describe('Me', () => {
                   __id
                   status
                   date(format: "YYYY")
+                  artistRef
                   artworks {
                     title
                   }
@@ -58,6 +59,7 @@ describe('Me', () => {
               url: 'cloudfront.url',
             },
             date: '2017',
+            artistRef: '/artist/some-lady',
             artworks: [{ title: 'Artwork1' }, { title: 'Artwork2' }],
           },
         }],
@@ -71,7 +73,7 @@ describe('Me', () => {
           feed: [
             {
               status: 'read',
-              object: { artists: [{ image_url: 'cloudfront.url' }] },
+              object: { artists: [{ image_url: 'cloudfront.url', id: 'some-lady' }] },
               object_ids: ['artwork1', 'artwork2'],
               date: '2017-02-17T17:19:44.000Z',
               actors: 'Cats are the best actors.',
