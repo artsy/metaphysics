@@ -12,7 +12,7 @@ describe('SaveArtwork', () => {
     SaveArtwork.__ResetDependency__('gravity');
   });
 
-  xit('saves an artwork', () => {
+  it('saves an artwork', () => {
     /* eslint-disable max-len */
     const mutation = `
       mutation {
@@ -29,6 +29,7 @@ describe('SaveArtwork', () => {
     const artwork = {
       date: '2015',
       title: 'Slow Verb',
+      artists: [],
     };
 
     const expectedArtworkData = {
