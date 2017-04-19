@@ -17,8 +17,10 @@ describe('SaveArtwork', () => {
     const mutation = `
       mutation {
         saveArtwork(input: { artwork_id: "damon-zucconi-slow-verb" }) {
-          date
-          title
+          artwork {
+            date
+            title
+          }
         }
       }
     `;
@@ -27,12 +29,16 @@ describe('SaveArtwork', () => {
     const artwork = {
       date: '2015',
       title: 'Slow Verb',
+      artists: [],
     };
 
     const expectedArtworkData = {
-      date: '2015',
-      title: 'Slow Verb',
+      artwork: {
+        date: '2015',
+        title: 'Slow Verb',
+      },
     };
+
 
     gravity.returns(Promise.resolve(artwork));
 

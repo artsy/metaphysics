@@ -1,7 +1,7 @@
 import gravity from '../../lib/loaders/gravity';
 import { GraphQLString, GraphQLBoolean } from 'graphql';
 import { mutationWithClientMutationId } from 'graphql-relay';
-import { artworkFields } from '../artwork/index';
+import { ArtworkType } from '../artwork/index';
 
 export default mutationWithClientMutationId({
   name: 'SaveArtwork',
@@ -14,17 +14,22 @@ export default mutationWithClientMutationId({
       type: GraphQLBoolean,
     },
   },
-  outputFields: artworkFields(),
+  outputFields: {
+    artwork: {
+      type: ArtworkType,
+      resolve: ({ artwork_id }) => gravity(`artwork/${artwork_id}`),
+    },
+  },
   mutateAndGetPayload: ({
     artwork_id,
     remove,
   }, request, { rootValue: { accessToken, userID } }) => {
-    if (!accessToken) return null;
+    if (!accessToken) return new Error('You need to be signed in to perform this action');
     const saveMethod = remove ? 'DELETE' : 'POST';
     return gravity.with(accessToken, {
       method: saveMethod,
     })(`/collection/saved-artwork/artwork/${artwork_id}`, {
       user_id: userID,
-    }).then(() => gravity(`artwork/${artwork_id}`));
+    }).then(() => ({ artwork_id }));
   },
 });
