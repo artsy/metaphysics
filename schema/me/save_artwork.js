@@ -19,7 +19,7 @@ export default mutationWithClientMutationId({
     artwork_id,
     remove,
   }, request, { rootValue: { accessToken, userID } }) => {
-    if (!accessToken) return null;
+    if (!accessToken) return new Error('You need to be signed in to perform this action');
     const saveMethod = remove ? 'DELETE' : 'POST';
     return gravity.with(accessToken, {
       method: saveMethod,
