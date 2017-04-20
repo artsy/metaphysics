@@ -73,11 +73,12 @@ const BidderPositionType = new GraphQLObjectType({
     },
     is_winning: {
       type: GraphQLBoolean,
-      resolve: (position) =>
-        gravity(`sale_artwork/${position.sale_artwork_id}`)
-          .then(saleArtwork =>
-            get(saleArtwork, 'highest_bid.id') === get(position, 'highest_bid.id')
-          ),
+      resolve: position =>
+        gravity(`sale_artwork/${position.sale_artwork_id}`).then(
+          saleArtwork =>
+            get(saleArtwork, 'highest_bid.id') ===
+            get(position, 'highest_bid.id')
+        ),
     },
     max_bid: money({
       name: 'BidderPositionMaxBid',
@@ -96,7 +97,10 @@ const BidderPositionType = new GraphQLObjectType({
     },
     suggested_next_bid: money({
       name: 'BidderPositionSuggestedNextBid',
-      resolve: ({ display_suggested_next_bid_dollars, suggested_next_bid_cents }) => ({
+      resolve: ({
+        display_suggested_next_bid_dollars,
+        suggested_next_bid_cents,
+      }) => ({
         cents: suggested_next_bid_cents,
         display: display_suggested_next_bid_dollars,
       }),

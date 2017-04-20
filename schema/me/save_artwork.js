@@ -20,16 +20,20 @@ export default mutationWithClientMutationId({
       resolve: ({ artwork_id }) => gravity(`artwork/${artwork_id}`),
     },
   },
-  mutateAndGetPayload: ({
-    artwork_id,
-    remove,
-  }, request, { rootValue: { accessToken, userID } }) => {
-    if (!accessToken) return new Error('You need to be signed in to perform this action');
+  mutateAndGetPayload: (
+    { artwork_id, remove },
+    request,
+    { rootValue: { accessToken, userID } }
+  ) => {
+    if (!accessToken)
+      return new Error('You need to be signed in to perform this action');
     const saveMethod = remove ? 'DELETE' : 'POST';
-    return gravity.with(accessToken, {
-      method: saveMethod,
-    })(`/collection/saved-artwork/artwork/${artwork_id}`, {
-      user_id: userID,
-    }).then(() => ({ artwork_id }));
+    return gravity
+      .with(accessToken, {
+        method: saveMethod,
+      })(`/collection/saved-artwork/artwork/${artwork_id}`, {
+        user_id: userID,
+      })
+      .then(() => ({ artwork_id }));
   },
 });

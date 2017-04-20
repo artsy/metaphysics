@@ -10,13 +10,13 @@ import {
   GraphQLBoolean,
 } from 'graphql';
 
-
 // is leading human bidder
-export const isLeadingBidder = (lotStanding) => isExisty(lotStanding.leading_position);
+export const isLeadingBidder = lotStanding =>
+  isExisty(lotStanding.leading_position);
 
-export const isHighestBidder = (lotStanding) =>
-  isLeadingBidder(lotStanding)
-    && lotStanding.sale_artwork.reserve_status !== 'reserve_not_met';
+export const isHighestBidder = lotStanding =>
+  isLeadingBidder(lotStanding) &&
+  lotStanding.sale_artwork.reserve_status !== 'reserve_not_met';
 
 export const LotStandingType = new GraphQLObjectType({
   name: 'LotStanding',
@@ -24,7 +24,8 @@ export const LotStandingType = new GraphQLObjectType({
     active_bid: {
       type: BidderPosition.type,
       description: 'Your bid if it is currently winning',
-      resolve: (lotStanding) => isHighestBidder(lotStanding) ? lotStanding.leading_position : null,
+      resolve: lotStanding =>
+        (isHighestBidder(lotStanding) ? lotStanding.leading_position : null),
     },
     bidder: {
       type: Bidder.type,
@@ -52,7 +53,7 @@ export const LotStandingType = new GraphQLObjectType({
 
 export default {
   type: LotStandingType,
-  description: 'The current user\'s status relating to bids on artworks',
+  description: "The current user's status relating to bids on artworks",
   args: {
     artwork_id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -61,16 +62,19 @@ export default {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { sale_id, artwork_id }, request, { rootValue: { accessToken } }) =>
-    Promise
-      .all([
-        gravity.with(accessToken)('me/lot_standings', {
-          sale_id,
-          artwork_id,
-        }),
-      ])
-      .then(([lotStanding]) => {
-        if (lotStanding.length === 0) return null;
-        return lotStanding[0];
+  resolve: (
+    root,
+    { sale_id, artwork_id },
+    request,
+    { rootValue: { accessToken } }
+  ) =>
+    Promise.all([
+      gravity.with(accessToken)('me/lot_standings', {
+        sale_id,
+        artwork_id,
       }),
+    ]).then(([lotStanding]) => {
+      if (lotStanding.length === 0) return null;
+      return lotStanding[0];
+    }),
 };

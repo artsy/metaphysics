@@ -57,14 +57,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              name: 'Whitespace Abounds',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            name: 'Whitespace Abounds',
+          },
         });
+      });
     });
 
     it('returns null when the name is null', () => {
@@ -76,14 +75,13 @@ describe('Show type', () => {
         }
       `;
       showData.name = null;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              name: null,
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            name: null,
+          },
         });
+      });
     });
   });
 
@@ -98,14 +96,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              city: 'Quonochontaug',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            city: 'Quonochontaug',
+          },
         });
+      });
     });
     it('returns the partner_city if one is set', () => {
       showData.partner_city = 'Quonochontaug';
@@ -117,14 +114,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              city: 'Quonochontaug',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            city: 'Quonochontaug',
+          },
         });
+      });
     });
   });
 
@@ -138,14 +134,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              kind: 'fair',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            kind: 'fair',
+          },
         });
+      });
     });
     it('returns solo when only one artist in a ref show', () => {
       showData.artists = [];
@@ -157,14 +152,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              kind: 'solo',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            kind: 'solo',
+          },
         });
+      });
     });
     it('returns group when more than one artist in a ref show', () => {
       showData.artists = [];
@@ -176,14 +170,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              kind: 'group',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            kind: 'group',
+          },
         });
+      });
     });
     it('returns solo when only one artist', () => {
       showData.artists = [{ id: 'foo' }];
@@ -195,14 +188,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              kind: 'solo',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            kind: 'solo',
+          },
         });
+      });
     });
     it('returns group when more than one artist in a regular show', () => {
       showData.artists = [{ id: 'foo' }, { id: 'bar' }];
@@ -214,14 +206,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              kind: 'group',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            kind: 'group',
+          },
         });
+      });
     });
     it('returns group when only one artist but the show is flagged as group', () => {
       showData.artists = [{ id: 'foo' }];
@@ -234,14 +225,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              kind: 'group',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            kind: 'group',
+          },
         });
+      });
     });
   });
 
@@ -255,14 +245,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              href: '/show/new-museum-1-2015-triennial-surround-audience',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            href: '/show/new-museum-1-2015-triennial-surround-audience',
+          },
         });
+      });
     });
     it('returns null for a reference show', () => {
       const query = `
@@ -272,14 +261,13 @@ describe('Show type', () => {
           }
         }
       `;
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            show: {
-              href: null,
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          show: {
+            href: null,
+          },
         });
+      });
     });
   });
 
@@ -297,16 +285,15 @@ describe('Show type', () => {
         }
       }
     `;
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          show: {
-            partner: {
-              name: 'Galaxy Partner',
-            },
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          partner: {
+            name: 'Galaxy Partner',
           },
-        });
+        },
       });
+    });
   });
 
   it('doesnt crash when no partner info is present', () => {
@@ -323,14 +310,13 @@ describe('Show type', () => {
         }
       }
     `;
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          show: {
-            partner: null,
-          },
-        });
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          partner: null,
+        },
       });
+    });
   });
 
   it('includes a formattable start and end date', () => {
@@ -344,19 +330,19 @@ describe('Show type', () => {
       }
     `;
 
-    return runQuery(query)
-      .then(data => {
-        expect(Show.__get__('gravity').args[0][0])
-          .toBe('show/new-museum-1-2015-triennial-surround-audience');
+    return runQuery(query).then(data => {
+      expect(Show.__get__('gravity').args[0][0]).toBe(
+        'show/new-museum-1-2015-triennial-surround-audience'
+      );
 
-        expect(data).toEqual({
-          show: {
-            id: 'new-museum-1-2015-triennial-surround-audience',
-            start_at: 'Wednesday, February 25th 2015, 12:00:00 pm',
-            end_at: '2015',
-          },
-        });
+      expect(data).toEqual({
+        show: {
+          id: 'new-museum-1-2015-triennial-surround-audience',
+          start_at: 'Wednesday, February 25th 2015, 12:00:00 pm',
+          end_at: '2015',
+        },
       });
+    });
   });
 
   it('includes a formatted exhibition period', () => {
@@ -368,14 +354,13 @@ describe('Show type', () => {
       }
     `;
 
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          show: {
-            exhibition_period: 'Feb 25 – May 24, 2015',
-          },
-        });
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          exhibition_period: 'Feb 25 – May 24, 2015',
+        },
       });
+    });
   });
 
   it('includes an update on upcoming status changes', () => {
@@ -389,14 +374,13 @@ describe('Show type', () => {
       }
     `;
 
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          show: {
-            status_update: 'Closing tomorrow',
-          },
-        });
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          status_update: 'Closing tomorrow',
+        },
       });
+    });
   });
 
   it('includes the html version of markdown', () => {
@@ -408,23 +392,21 @@ describe('Show type', () => {
       }
     `;
 
-    return runQuery(query)
-      .then(data => {
-        expect(Show.__get__('gravity').args[0][0])
-          .toBe('show/new-museum-1-2015-triennial-surround-audience');
+    return runQuery(query).then(data => {
+      expect(Show.__get__('gravity').args[0][0]).toBe(
+        'show/new-museum-1-2015-triennial-surround-audience'
+      );
 
-        expect(data).toEqual({
-          show: {
-            press_release: '<p><strong>foo</strong> <em>bar</em></p>\n',
-          },
-        });
+      expect(data).toEqual({
+        show: {
+          press_release: '<p><strong>foo</strong> <em>bar</em></p>\n',
+        },
       });
+    });
   });
 
   it('includes the total number of artworks', () => {
-    total
-      .onCall(0)
-      .returns(Promise.resolve(42));
+    total.onCall(0).returns(Promise.resolve(42));
 
     const query = `
       {
@@ -436,16 +418,15 @@ describe('Show type', () => {
       }
     `;
 
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          show: {
-            counts: {
-              artworks: 42,
-            },
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          counts: {
+            artworks: 42,
           },
-        });
+        },
       });
+    });
   });
 
   it('includes the total number of eligible artworks', () => {
@@ -459,22 +440,19 @@ describe('Show type', () => {
       }
     `;
 
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          show: {
-            counts: {
-              eligible_artworks: 8,
-            },
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          counts: {
+            eligible_artworks: 8,
           },
-        });
+        },
       });
+    });
   });
 
   it('includes the number of artworks by a specific artist', () => {
-    total
-      .onCall(0)
-      .returns(Promise.resolve(2));
+    total.onCall(0).returns(Promise.resolve(2));
 
     const query = `
       {
@@ -486,22 +464,19 @@ describe('Show type', () => {
       }
     `;
 
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          show: {
-            counts: {
-              artworks: 2,
-            },
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          counts: {
+            artworks: 2,
           },
-        });
+        },
       });
+    });
   });
 
   it('does not return errors when there is no cover image', () => {
-    gravity
-      .onCall(1)
-      .returns(Promise.resolve([]));
+    gravity.onCall(1).returns(Promise.resolve([]));
 
     const query = `
       {
@@ -513,11 +488,10 @@ describe('Show type', () => {
       }
     `;
 
-    return runQuery(query)
-      .then(({ show }) => {
-        expect(show).toEqual({
-          cover_image: null,
-        });
+    return runQuery(query).then(({ show }) => {
+      expect(show).toEqual({
+        cover_image: null,
       });
+    });
   });
 });

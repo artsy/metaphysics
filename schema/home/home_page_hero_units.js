@@ -98,11 +98,18 @@ const HomePageHeroUnitType = new GraphQLObjectType({
           }),
         },
       },
-      resolve: ({ platform, background_image_url, background_image_mobile_url }, { version }) => {
+      resolve: (
+        { platform, background_image_url, background_image_mobile_url },
+        { version }
+      ) => {
         if (version) {
-          return version === 'wide' ? background_image_url : background_image_mobile_url;
+          return version === 'wide'
+            ? background_image_url
+            : background_image_mobile_url;
         }
-        return platform === 'desktop' ? background_image_url : background_image_mobile_url;
+        return platform === 'desktop'
+          ? background_image_url
+          : background_image_mobile_url;
       },
     },
   },
@@ -113,20 +120,22 @@ const HomePageHeroUnits = {
   description: 'A list of enabled hero units to show on the requested platform',
   args: {
     platform: {
-      type: new GraphQLNonNull(new GraphQLEnumType({
-        name: 'HomePageHeroUnitPlatform',
-        values: {
-          MOBILE: {
-            value: 'mobile',
+      type: new GraphQLNonNull(
+        new GraphQLEnumType({
+          name: 'HomePageHeroUnitPlatform',
+          values: {
+            MOBILE: {
+              value: 'mobile',
+            },
+            DESKTOP: {
+              value: 'desktop',
+            },
+            MARTSY: {
+              value: 'martsy',
+            },
           },
-          DESKTOP: {
-            value: 'desktop',
-          },
-          MARTSY: {
-            value: 'martsy',
-          },
-        },
-      })),
+        })
+      ),
     },
   },
   resolve: (_, { platform }) => {

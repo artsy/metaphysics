@@ -28,7 +28,8 @@ export default {
       description: 'Specify a tz database time zone, otherwise falls back to `X-TIMEZONE` header',
     },
   },
-  resolve: (obj,
+  resolve: (
+    obj,
     { format, timezone, ignoreTimezone },
     request,
     { fieldName, rootValue: { defaultTimezone } }

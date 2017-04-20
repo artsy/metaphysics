@@ -1,8 +1,4 @@
-import {
-  GraphQLInt,
-  GraphQLString,
-  GraphQLObjectType,
-} from 'graphql';
+import { GraphQLInt, GraphQLString, GraphQLObjectType } from 'graphql';
 
 const DayScheduleType = new GraphQLObjectType({
   name: 'DaySchedule',

@@ -4,10 +4,7 @@ import type { GraphQLFieldConfig } from 'graphql';
 import _ from 'lodash';
 import Image from '../image';
 import { error } from '../../lib/loggers';
-import {
-  GraphQLObjectType,
-  GraphQLList,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLList } from 'graphql';
 
 const ArtistCarouselType = new GraphQLObjectType({
   name: 'ArtistCarousel',
@@ -41,26 +38,34 @@ const ArtistCarousel: GraphQLFieldConfig<ArtistCarouselType, *> = {
         sort: '-iconicity',
         published: true,
       }),
-    ]).then(([shows, artworks]) => {
-      const elligibleShows = shows.filter(show => show.images_count > 0);
-      return Promise.all(
-        elligibleShows.map(show => partnerShowImagesLoader(show.id, { size: 1 }))
-      )
-      .then(showImages => {
-        return _.zip(elligibleShows, showImages).map(([show, images]) => {
-          return _.assign({ href: `/show/${show.id}`, title: show.name }, _.first(images));
-        });
-      })
-      .then(showsWithImages => {
-        return showsWithImages.concat(
-          artworks.map(artwork => {
-            return _.assign({ href: `/artwork/${artwork.id}`, title: artwork.title },
-              _.first(artwork.images));
+    ])
+      .then(([shows, artworks]) => {
+        const elligibleShows = shows.filter(show => show.images_count > 0);
+        return Promise.all(
+          elligibleShows.map(show =>
+            partnerShowImagesLoader(show.id, { size: 1 })
+          )
+        )
+          .then(showImages => {
+            return _.zip(elligibleShows, showImages).map(([show, images]) => {
+              return _.assign(
+                { href: `/show/${show.id}`, title: show.name },
+                _.first(images)
+              );
+            });
           })
-        );
-      });
-    })
-    .catch(error);
+          .then(showsWithImages => {
+            return showsWithImages.concat(
+              artworks.map(artwork => {
+                return _.assign(
+                  { href: `/artwork/${artwork.id}`, title: artwork.title },
+                  _.first(artwork.images)
+                );
+              })
+            );
+          });
+      })
+      .catch(error);
   },
 };
 

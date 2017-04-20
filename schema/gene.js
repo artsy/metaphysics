@@ -9,7 +9,10 @@ import { artworkConnection } from './artwork';
 import Artist from './artist';
 import Image from './image';
 import filterArtworks, { filterArtworksArgs } from './filter_artworks';
-import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from '../lib/helpers';
+import {
+  queriedForFieldsOtherThanBlacklisted,
+  parseRelayOptions,
+} from '../lib/helpers';
 import { GravityIDFields, NodeInterface } from './object_identification';
 import {
   GraphQLObjectType,
@@ -22,7 +25,7 @@ import {
 const GeneType = new GraphQLObjectType({
   name: 'Gene',
   interfaces: [NodeInterface],
-  isTypeOf: (obj) => _.has(obj, 'family') && _.has(obj, 'browseable'),
+  isTypeOf: obj => _.has(obj, 'family') && _.has(obj, 'browseable'),
   fields: {
     ...GravityIDFields,
     cached,
@@ -48,8 +51,9 @@ const GeneType = new GraphQLObjectType({
         }
         // Manually set the gene_id to the current id
         gravityOptions.gene_id = id;
-        return gravity.with(accessToken)('filter/artworks', gravityOptions)
-          .then((response) => {
+        return gravity
+          .with(accessToken)('filter/artworks', gravityOptions)
+          .then(response => {
             return connectionFromArraySlice(response.hits, options, {
               arrayLength: response.aggregations.total.value,
               sliceStart: gravityOptions.offset,
@@ -80,7 +84,8 @@ const GeneType = new GraphQLObjectType({
         return gravity(`artists/trending`, {
           gene: id,
         }).then(artists => {
-          if (_.has(options, 'sample')) return _.take(_.shuffle(artists), options.sample);
+          if (_.has(options, 'sample'))
+            return _.take(_.shuffle(artists), options.sample);
           return artists;
         });
       },

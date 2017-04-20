@@ -17,11 +17,9 @@ const TrendingArtistsType = new GraphQLObjectType({
   fields: () => ({
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: (results) => {
+      resolve: results => {
         const ids = without(keys(results), 'cached', 'context_type');
-        return Promise.all(
-          ids.map(id => gravity(`/artist/${id}`))
-        );
+        return Promise.all(ids.map(id => gravity(`/artist/${id}`)));
       },
     },
   }),

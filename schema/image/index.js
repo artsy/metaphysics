@@ -1,8 +1,4 @@
-import {
-  find,
-  first,
-  isArray,
-} from 'lodash';
+import { find, first, isArray } from 'lodash';
 import VersionedUrl from './versioned';
 import CroppedUrl from './cropped';
 import ResizedUrl from './resized';
@@ -76,14 +72,14 @@ const ImageType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: ({ original_height, original_width }) => {
         if (original_width === original_height) return 'square';
-        return (original_width > original_height) ? 'landscape' : 'portrait';
+        return original_width > original_height ? 'landscape' : 'portrait';
       },
     },
     placeholder: {
       type: GraphQLString,
       description: 'Value to use when `padding-bottom` for fluid image placeholders',
       resolve: ({ original_height, original_width }) =>
-        `${(original_height / original_width) * 100}%`,
+        `${original_height / original_width * 100}%`,
     },
     position: {
       type: GraphQLInt,

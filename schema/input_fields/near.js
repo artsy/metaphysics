@@ -1,8 +1,4 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLNonNull,
-  GraphQLFloat,
-} from 'graphql';
+import { GraphQLInputObjectType, GraphQLNonNull, GraphQLFloat } from 'graphql';
 
 const Near = new GraphQLInputObjectType({
   name: 'Near',

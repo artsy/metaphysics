@@ -1,12 +1,6 @@
 import moment from 'moment';
-import {
-  isExisty,
-  exclude,
-} from '../lib/helpers';
-import {
-  find,
-  has,
-} from 'lodash';
+import { isExisty, exclude } from '../lib/helpers';
+import { find, has } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import total from '../lib/loaders/total';
 import numeral from './fields/numeral';
@@ -41,7 +35,8 @@ const PartnerShowType = new GraphQLObjectType({
   name: 'PartnerShow',
   deprecationReason: 'Prefer to use Show schema',
   interfaces: [NodeInterface],
-  isTypeOf: (obj) => has(obj, 'partner') && has(obj, 'display_on_partner_profile'),
+  isTypeOf: obj =>
+    has(obj, 'partner') && has(obj, 'display_on_partner_profile'),
   fields: () => ({
     ...GravityIDFields,
     cached,
@@ -89,8 +84,7 @@ const PartnerShowType = new GraphQLObjectType({
           fetch = gravity(path, options);
         }
 
-        return fetch
-          .then(exclude(options.exclude, 'id'));
+        return fetch.then(exclude(options.exclude, 'id'));
       },
     },
     counts: {
@@ -106,14 +100,18 @@ const PartnerShowType = new GraphQLObjectType({
               },
             },
             resolve: ({ id, partner }, options) => {
-              return total(`partner/${partner.id}/show/${id}/artworks`, options);
+              return total(
+                `partner/${partner.id}/show/${id}/artworks`,
+                options
+              );
             },
           },
-          eligible_artworks: numeral(({ eligible_artworks_count }) =>
-            eligible_artworks_count),
+          eligible_artworks: numeral(
+            ({ eligible_artworks_count }) => eligible_artworks_count
+          ),
         },
       }),
-      resolve: (partner_show) => partner_show,
+      resolve: partner_show => partner_show,
     },
     cover_image: {
       type: Image.type,
@@ -122,13 +120,16 @@ const PartnerShowType = new GraphQLObjectType({
           return Image.resolve({ image_versions, image_url });
         }
 
-        return partner && gravity(`partner/${partner.id}/show/${id}/artworks`, {
-          size: 1,
-          published: true,
-        }).then(artworks => {
-          const artwork = artworks[0];
-          return artwork && Image.resolve(getDefault(artwork.images));
-        });
+        return (
+          partner &&
+          gravity(`partner/${partner.id}/show/${id}/artworks`, {
+            size: 1,
+            published: true,
+          }).then(artworks => {
+            const artwork = artworks[0];
+            return artwork && Image.resolve(getDefault(artwork.images));
+          })
+        );
       },
     },
     created_at: date,
@@ -146,8 +147,9 @@ const PartnerShowType = new GraphQLObjectType({
         // Gravity redirects from /api/v1/show/:id => /api/v1/partner/:partner_id/show/:show_id
         // this creates issues where events will remain cached. Fetch the non-redirected
         // route to circumvent this
-        gravity(`partner/${partner.id}/show/${id}`)
-          .then(({ events }) => events),
+        gravity(`partner/${partner.id}/show/${id}`).then(
+          ({ events }) => events
+        ),
     },
     exhibition_period: {
       type: GraphQLString,
@@ -178,8 +180,9 @@ const PartnerShowType = new GraphQLObjectType({
         },
       },
       resolve: ({ id }, options) => {
-        return gravity(`partner_show/${id}/images`, options)
-          .then(Image.resolve);
+        return gravity(`partner_show/${id}/images`, options).then(
+          Image.resolve
+        );
       },
     },
     is_active: {
@@ -201,7 +204,7 @@ const PartnerShowType = new GraphQLObjectType({
     },
     kind: {
       type: GraphQLString,
-      resolve: (show) => {
+      resolve: show => {
         if (show.artists) return kind(show);
         return gravity(`partner/${show.partner.id}/show/${show.id}`).then(kind);
       },
@@ -219,10 +222,9 @@ const PartnerShowType = new GraphQLObjectType({
 
         return gravity(`partner/${partner.id}/show/${id}/artworks`, {
           published: true,
-        })
-          .then(artworks => {
-            Image.resolve(getDefault(find(artworks, { can_share_image: true })));
-          });
+        }).then(artworks => {
+          Image.resolve(getDefault(find(artworks, { can_share_image: true })));
+        });
       },
     },
     name: {
@@ -252,8 +254,7 @@ const PartnerShowType = new GraphQLObjectType({
     },
     type: {
       type: GraphQLString,
-      resolve: ({ fair }) =>
-      isExisty(fair) ? 'Fair Booth' : 'Show',
+      resolve: ({ fair }) => (isExisty(fair) ? 'Fair Booth' : 'Show'),
     },
   }),
 });
@@ -268,11 +269,10 @@ const PartnerShow = {
     },
   },
   resolve: (root, { id }) => {
-    return gravity(`show/${id}`)
-      .then(show => {
-        if (!show.displayable) return new Error('Show Not Found');
-        return show;
-      });
+    return gravity(`show/${id}`).then(show => {
+      if (!show.displayable) return new Error('Show Not Found');
+      return show;
+    });
   },
 };
 

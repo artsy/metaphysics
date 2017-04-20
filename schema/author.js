@@ -1,8 +1,5 @@
 import { IDFields } from './object_identification';
-import {
-  GraphQLString,
-  GraphQLObjectType,
-} from 'graphql';
+import { GraphQLString, GraphQLObjectType } from 'graphql';
 
 const AuthorType = new GraphQLObjectType({
   name: 'Author',

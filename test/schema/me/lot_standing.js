@@ -15,8 +15,8 @@ describe('LotStanding type', () => {
   });
 
   it('returns the correct state when you are the high bidder and reserve is met', () => {
-    gravity
-      .returns(Promise.resolve([
+    gravity.returns(
+      Promise.resolve([
         {
           sale_artwork: {
             id: 'untitled',
@@ -49,7 +49,8 @@ describe('LotStanding type', () => {
             sale_artwork_id: 'untitled-2',
           },
         },
-      ]));
+      ])
+    );
 
     const query = `
       {
@@ -67,21 +68,20 @@ describe('LotStanding type', () => {
       }
     `;
 
-    return runAuthenticatedQuery(query)
-      .then(({ me }) => {
-        expect(me).toEqual({
-          lot_standing: {
-            is_highest_bidder: true,
-            most_recent_bid: { id: '0' },
-            active_bid: { id: '0' },
-          },
-        });
+    return runAuthenticatedQuery(query).then(({ me }) => {
+      expect(me).toEqual({
+        lot_standing: {
+          is_highest_bidder: true,
+          most_recent_bid: { id: '0' },
+          active_bid: { id: '0' },
+        },
       });
+    });
   });
 
   it('returns the correct state when you are outbid on a work & reserve is met', () => {
-    gravity
-      .returns(Promise.resolve([
+    gravity.returns(
+      Promise.resolve([
         {
           sale_artwork: {
             id: 'untitled',
@@ -94,7 +94,8 @@ describe('LotStanding type', () => {
           },
           leading_position: null,
         },
-      ]));
+      ])
+    );
 
     const query = `
       {
@@ -113,22 +114,21 @@ describe('LotStanding type', () => {
       }
     `;
 
-    return runAuthenticatedQuery(query)
-      .then(({ me }) => {
-        expect(me).toEqual({
-          lot_standing: {
-            is_highest_bidder: false,
-            is_leading_bidder: false,
-            most_recent_bid: { id: '0' },
-            active_bid: null,
-          },
-        });
+    return runAuthenticatedQuery(query).then(({ me }) => {
+      expect(me).toEqual({
+        lot_standing: {
+          is_highest_bidder: false,
+          is_leading_bidder: false,
+          most_recent_bid: { id: '0' },
+          active_bid: null,
+        },
       });
+    });
   });
 
   it('returns the correct state when you are the top bid but reserve is not met', () => {
-    gravity
-      .returns(Promise.resolve([
+    gravity.returns(
+      Promise.resolve([
         {
           sale_artwork: {
             id: 'untitled',
@@ -145,7 +145,8 @@ describe('LotStanding type', () => {
             sale_artwork_id: 'untitled',
           },
         },
-      ]));
+      ])
+    );
 
     const query = `
       {
@@ -164,16 +165,15 @@ describe('LotStanding type', () => {
       }
     `;
 
-    return runAuthenticatedQuery(query)
-      .then(({ me }) => {
-        expect(me).toEqual({
-          lot_standing: {
-            is_highest_bidder: false,
-            is_leading_bidder: true,
-            most_recent_bid: { id: '0' },
-            active_bid: null,
-          },
-        });
+    return runAuthenticatedQuery(query).then(({ me }) => {
+      expect(me).toEqual({
+        lot_standing: {
+          is_highest_bidder: false,
+          is_leading_bidder: true,
+          most_recent_bid: { id: '0' },
+          active_bid: null,
+        },
       });
+    });
   });
 });

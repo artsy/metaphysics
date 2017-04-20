@@ -1,8 +1,4 @@
-import {
-  assign,
-  has,
-  omit,
-} from 'lodash';
+import { assign, has, omit } from 'lodash';
 import { exclude } from '../lib/helpers';
 import gravity from '../lib/loaders/gravity';
 import cached from './fields/cached';
@@ -26,7 +22,8 @@ import {
 const PartnerType = new GraphQLObjectType({
   name: 'Partner',
   interfaces: [NodeInterface],
-  isTypeOf: (obj) => has(obj, 'has_full_profile') && has(obj, 'profile_banner_display'),
+  isTypeOf: obj =>
+    has(obj, 'has_full_profile') && has(obj, 'profile_banner_display'),
   fields: () => {
     // Prevent circular dependency
     const PartnerShows = require('./partner_shows').default;
@@ -49,9 +46,12 @@ const PartnerType = new GraphQLObjectType({
           },
         },
         resolve: ({ id }, options) => {
-          return gravity(`partner/${id}/artworks`, assign({}, options, {
-            published: true,
-          })).then(exclude(options.exclude, 'id'));
+          return gravity(
+            `partner/${id}/artworks`,
+            assign({}, options, {
+              published: true,
+            })
+          ).then(exclude(options.exclude, 'id'));
         },
       },
       collecting_institution: {
@@ -77,31 +77,39 @@ const PartnerType = new GraphQLObjectType({
         type: new GraphQLObjectType({
           name: 'PartnerCounts',
           fields: {
-            artworks: numeral(({ artworks_count }) =>
-              artworks_count),
-            artists: numeral(({ artists_count }) =>
-              artists_count),
-            partner_artists: numeral(({ partner_artists_count }) =>
-              partner_artists_count),
-            eligible_artworks: numeral(({ eligible_artworks_count }) =>
-              eligible_artworks_count),
-            published_for_sale_artworks: numeral(({ published_for_sale_artworks_count }) =>
-              published_for_sale_artworks_count),
-            published_not_for_sale_artworks: numeral(({ published_not_for_sale_artworks_count }) =>
-              published_not_for_sale_artworks_count),
-            shows: numeral(({ shows_count }) =>
-              shows_count),
-            displayable_shows: numeral(({ displayable_shows_count }) =>
-              displayable_shows_count),
-            current_displayable_shows: numeral(({ current_displayable_shows_count }) =>
-              current_displayable_shows_count),
-            artist_documents: numeral(({ artist_documents_count }) =>
-              artist_documents_count),
-            partner_show_documents: numeral(({ partner_show_documents_count }) =>
-              partner_show_documents_count),
+            artworks: numeral(({ artworks_count }) => artworks_count),
+            artists: numeral(({ artists_count }) => artists_count),
+            partner_artists: numeral(
+              ({ partner_artists_count }) => partner_artists_count
+            ),
+            eligible_artworks: numeral(
+              ({ eligible_artworks_count }) => eligible_artworks_count
+            ),
+            published_for_sale_artworks: numeral(
+              ({ published_for_sale_artworks_count }) =>
+                published_for_sale_artworks_count
+            ),
+            published_not_for_sale_artworks: numeral(
+              ({ published_not_for_sale_artworks_count }) =>
+                published_not_for_sale_artworks_count
+            ),
+            shows: numeral(({ shows_count }) => shows_count),
+            displayable_shows: numeral(
+              ({ displayable_shows_count }) => displayable_shows_count
+            ),
+            current_displayable_shows: numeral(
+              ({ current_displayable_shows_count }) =>
+                current_displayable_shows_count
+            ),
+            artist_documents: numeral(
+              ({ artist_documents_count }) => artist_documents_count
+            ),
+            partner_show_documents: numeral(
+              ({ partner_show_documents_count }) => partner_show_documents_count
+            ),
           },
         }),
-        resolve: (artist) => artist,
+        resolve: artist => artist,
       },
       default_profile_id: {
         type: GraphQLString,
@@ -113,7 +121,9 @@ const PartnerType = new GraphQLObjectType({
       href: {
         type: GraphQLString,
         resolve: ({ type, default_profile_id }) =>
-          type === 'Auction' ? `/auction/${default_profile_id}` : `/${default_profile_id}`,
+          (type === 'Auction'
+            ? `/auction/${default_profile_id}`
+            : `/${default_profile_id}`),
       },
       initials: initials('name'),
       is_default_profile_public: {
@@ -137,7 +147,8 @@ const PartnerType = new GraphQLObjectType({
             defaultValue: 25,
           },
         },
-        resolve: ({ id }, options) => gravity(`partner/${id}/locations`, options),
+        resolve: ({ id }, options) =>
+          gravity(`partner/${id}/locations`, options),
       },
       name: {
         type: GraphQLString,
@@ -146,16 +157,18 @@ const PartnerType = new GraphQLObjectType({
       profile: {
         type: Profile.type,
         resolve: ({ default_profile_id }) =>
-          gravity(`profile/${default_profile_id}`)
-            .catch(() => null),
+          gravity(`profile/${default_profile_id}`).catch(() => null),
       },
       shows: {
         type: PartnerShows.type,
         args: omit(PartnerShows.args, 'partner_id'),
         resolve: ({ _id }, options) => {
-          return PartnerShows.resolve(null, assign({}, options, {
-            partner_id: _id,
-          }));
+          return PartnerShows.resolve(
+            null,
+            assign({}, options, {
+              partner_id: _id,
+            })
+          );
         },
       },
       type: {

@@ -1,11 +1,7 @@
 import gravity from '../lib/loaders/gravity';
 import Sale from './sale/index';
 import SaleSorts from './sale/sorts';
-import {
-  GraphQLList,
-  GraphQLInt,
-  GraphQLBoolean,
-} from 'graphql';
+import { GraphQLList, GraphQLInt, GraphQLBoolean } from 'graphql';
 
 const Sales = {
   type: new GraphQLList(Sale.type),
@@ -31,8 +27,7 @@ const Sales = {
     },
     sort: SaleSorts,
   },
-  resolve: (root, options) =>
-    gravity('sales', options),
+  resolve: (root, options) => gravity('sales', options),
 };
 
 export default Sales;

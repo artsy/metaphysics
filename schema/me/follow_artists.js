@@ -2,18 +2,14 @@ import gravity from '../../lib/loaders/gravity';
 import { map } from 'lodash';
 import { total as getTotal } from '../../lib/loaders/total';
 import Artist from '../artist';
-import {
-  GraphQLInt,
-  GraphQLList,
-  GraphQLObjectType,
-} from 'graphql';
+import { GraphQLInt, GraphQLList, GraphQLObjectType } from 'graphql';
 
 const FollowArtists = new GraphQLObjectType({
   name: 'FollowArtists',
   fields: {
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: (data) => {
+      resolve: data => {
         const artists = data.artists ? data.artists : data;
         return map(artists, 'artist');
       },
@@ -24,14 +20,20 @@ const FollowArtists = new GraphQLObjectType({
         fields: {
           artists: {
             type: GraphQLInt,
-            resolve: (data, options, request, { rootValue: { accessToken } }) => {
-              return getTotal('me/follow/artists', accessToken, { total_count: true })
-                .then(({ body: { total } }) => total);
+            resolve: (
+              data,
+              options,
+              request,
+              { rootValue: { accessToken } }
+            ) => {
+              return getTotal('me/follow/artists', accessToken, {
+                total_count: true,
+              }).then(({ body: { total } }) => total);
             },
           },
         },
       }),
-      resolve: (follows) => follows,
+      resolve: follows => follows,
     },
   },
 });

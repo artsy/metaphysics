@@ -5,7 +5,7 @@ import marked from 'marked';
 
 export function formatMarkdownValue(value, format) {
   if (format === 'html' || format === 'markdown') {
-    const renderer = new marked.Renderer;
+    const renderer = new marked.Renderer();
     marked.setOptions({
       renderer,
       gfm: true,

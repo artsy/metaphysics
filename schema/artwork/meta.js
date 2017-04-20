@@ -1,29 +1,19 @@
 import { map } from 'lodash';
-import {
-  join,
-  truncate,
-} from '../../lib/helpers';
+import { join, truncate } from '../../lib/helpers';
 import { getDefault } from '../image';
 import { setVersion } from '../image/normalize';
-import {
-  GraphQLInt,
-  GraphQLString,
-  GraphQLObjectType,
-} from 'graphql';
+import { GraphQLInt, GraphQLString, GraphQLObjectType } from 'graphql';
 
-const titleWithDate = ({ title, date }) => join(' ', [
-  title,
-  date ? `(${date})` : undefined,
-]);
+const titleWithDate = ({ title, date }) =>
+  join(' ', [title, date ? `(${date})` : undefined]);
 
 export const artistNames = artwork =>
   artwork.cultural_maker || map(artwork.artists, 'name').join(', ');
 
 const forSaleIndication = artwork =>
-  artwork.forsale ? 'Available for Sale' : undefined;
+  (artwork.forsale ? 'Available for Sale' : undefined);
 
-const dimensions = artwork =>
-  artwork.dimensions[artwork.metric];
+const dimensions = artwork => artwork.dimensions[artwork.metric];
 
 const partnerDescription = ({ partner: { name }, forsale }) => {
   if (!name) return undefined;
@@ -41,31 +31,32 @@ const ArtworkMetaType = new GraphQLObjectType({
           defaultValue: 155,
         },
       },
-      resolve: (artwork, { limit }) => truncate(join(', ', [
-        partnerDescription(artwork),
-        artistNames(artwork),
-        titleWithDate(artwork),
-        artwork.medium,
-        dimensions(artwork),
-      ]), limit),
+      resolve: (artwork, { limit }) =>
+        truncate(
+          join(', ', [
+            partnerDescription(artwork),
+            artistNames(artwork),
+            titleWithDate(artwork),
+            artwork.medium,
+            dimensions(artwork),
+          ]),
+          limit
+        ),
     },
     image: {
       type: GraphQLString,
       resolve: ({ images }) =>
-        setVersion(getDefault(images), [
-          'large',
-          'medium',
-          'tall',
-        ]),
+        setVersion(getDefault(images), ['large', 'medium', 'tall']),
     },
     title: {
       type: GraphQLString,
-      resolve: artwork => join(' | ', [
-        artistNames(artwork),
-        titleWithDate(artwork),
-        forSaleIndication(artwork),
-        'Artsy',
-      ]),
+      resolve: artwork =>
+        join(' | ', [
+          artistNames(artwork),
+          titleWithDate(artwork),
+          forSaleIndication(artwork),
+          'Artsy',
+        ]),
     },
   },
 });

@@ -41,11 +41,11 @@ describe('Me', () => {
         self_reported_purchases: 'treats',
       };
 
-      gravity
-        .returns(Promise.resolve(collectorProfile));
+      gravity.returns(Promise.resolve(collectorProfile));
 
-      return runAuthenticatedQuery(query)
-      .then(({ me: { collector_profile } }) => {
+      return runAuthenticatedQuery(
+        query
+      ).then(({ me: { collector_profile } }) => {
         expect(collector_profile).toEqual(expectedProfileData);
       });
     });

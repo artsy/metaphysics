@@ -1,7 +1,4 @@
-import {
-  GraphQLObjectType,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLString } from 'graphql';
 
 const Dimensions = new GraphQLObjectType({
   name: 'dimensions',

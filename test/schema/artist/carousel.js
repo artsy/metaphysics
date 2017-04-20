@@ -16,7 +16,8 @@ describe('ArtistCarousel type', () => {
 
   describe('with artworks, no shows', () => {
     beforeEach(() => {
-      rootValue.relatedShowsLoader = sinon.stub()
+      rootValue.relatedShowsLoader = sinon
+        .stub()
         .withArgs(artist.id, {
           sort: '-end_at',
           displayable: true,
@@ -25,21 +26,28 @@ describe('ArtistCarousel type', () => {
         })
         .returns(Promise.resolve([]));
 
-      rootValue.artistArtworksLoader = sinon.stub()
+      rootValue.artistArtworksLoader = sinon
+        .stub()
         .withArgs(artist.id, {
           size: 7,
           sort: '-iconicity',
           published: true,
         })
-        .returns(Promise.resolve([{
-          id: 'foo-bar-artwork-1',
-          images: [{
-            original_height: 2333,
-            original_width: 3500,
-            image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
-            image_versions: ['large'],
-          }],
-        }]));
+        .returns(
+          Promise.resolve([
+            {
+              id: 'foo-bar-artwork-1',
+              images: [
+                {
+                  original_height: 2333,
+                  original_width: 3500,
+                  image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
+                  image_versions: ['large'],
+                },
+              ],
+            },
+          ])
+        );
     });
 
     it('fetches an artist by ID', () => {
@@ -61,21 +69,20 @@ describe('ArtistCarousel type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data.artist.carousel).toEqual({
-            images: [
-              {
-                href: '/artwork/foo-bar-artwork-1',
-                resized: {
-                  height: 199,
-                  width: 300,
-                  url: 'https://gemini.cloudfront.test/?resize_to=fit&width=300&height=199&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg', // eslint-disable-line
-                },
+      return runQuery(query, rootValue).then(data => {
+        expect(data.artist.carousel).toEqual({
+          images: [
+            {
+              href: '/artwork/foo-bar-artwork-1',
+              resized: {
+                height: 199,
+                width: 300,
+                url: 'https://gemini.cloudfront.test/?resize_to=fit&width=300&height=199&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg', // eslint-disable-line
               },
-            ],
-          });
+            },
+          ],
         });
+      });
     });
   });
 });

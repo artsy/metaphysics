@@ -5,10 +5,7 @@ import {
   FilterPartnersType,
   PartnersAggregation,
 } from './aggregations/filter_partners_aggregation';
-import {
-  GraphQLList,
-  GraphQLNonNull,
-} from 'graphql';
+import { GraphQLList, GraphQLNonNull } from 'graphql';
 
 const FilterPartners = {
   type: FilterPartnersType,

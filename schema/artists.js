@@ -1,10 +1,7 @@
 import gravity from '../lib/loaders/gravity';
 import Artist from './artist';
 import ArtistSorts from './sorts/artist_sorts';
-import {
-  GraphQLList,
-  GraphQLInt,
-} from 'graphql';
+import { GraphQLList, GraphQLInt } from 'graphql';
 
 const Artists = {
   type: new GraphQLList(Artist.type),

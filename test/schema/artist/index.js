@@ -15,19 +15,23 @@ describe('Artist type', () => {
     };
 
     rootValue = {
-      artistLoader: sinon.stub().withArgs(artist.id).returns(Promise.resolve(artist)),
+      artistLoader: sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(Promise.resolve(artist)),
     };
 
-    Artist.__Rewire__('positron', sinon.stub().returns(
-      Promise.resolve({
-        count: 22,
-      })
-    ));
+    Artist.__Rewire__(
+      'positron',
+      sinon.stub().returns(
+        Promise.resolve({
+          count: 22,
+        })
+      )
+    );
 
     const total = sinon.stub();
-    total
-      .onCall(0)
-      .returns(Promise.resolve(42));
+    total.onCall(0).returns(Promise.resolve(42));
     Artist.__Rewire__('total', total);
   });
 
@@ -37,11 +41,13 @@ describe('Artist type', () => {
   });
 
   it('fetches an artist by ID', () => {
-    return runQuery('{ artist(id: "foo-bar") { id, name } }', rootValue)
-      .then(data => {
-        expect(data.artist.id).toBe('foo-bar');
-        expect(data.artist.name).toBe('Foo Bar');
-      });
+    return runQuery(
+      '{ artist(id: "foo-bar") { id, name } }',
+      rootValue
+    ).then(data => {
+      expect(data.artist.id).toBe('foo-bar');
+      expect(data.artist.name).toBe('Foo Bar');
+    });
   });
 
   it('returns the total number of partner shows for an artist', () => {
@@ -55,16 +61,15 @@ describe('Artist type', () => {
       }
     `;
 
-    return runQuery(query, rootValue)
-      .then(data => {
-        expect(data).toEqual({
-          artist: {
-            counts: {
-              partner_shows: 42,
-            },
+    return runQuery(query, rootValue).then(data => {
+      expect(data).toEqual({
+        artist: {
+          counts: {
+            partner_shows: 42,
           },
-        });
+        },
       });
+    });
   });
 
   it('returns the total number of related artists for an artist', () => {
@@ -78,16 +83,15 @@ describe('Artist type', () => {
       }
     `;
 
-    return runQuery(query, rootValue)
-      .then(data => {
-        expect(data).toEqual({
-          artist: {
-            counts: {
-              related_artists: 42,
-            },
+    return runQuery(query, rootValue).then(data => {
+      expect(data).toEqual({
+        artist: {
+          counts: {
+            related_artists: 42,
           },
-        });
+        },
       });
+    });
   });
 
   it('returns the total number of related articles for an artist', () => {
@@ -101,16 +105,15 @@ describe('Artist type', () => {
       }
     `;
 
-    return runQuery(query, rootValue)
-      .then(data => {
-        expect(data).toEqual({
-          artist: {
-            counts: {
-              articles: 22,
-            },
+    return runQuery(query, rootValue).then(data => {
+      expect(data).toEqual({
+        artist: {
+          counts: {
+            articles: 22,
           },
-        });
+        },
       });
+    });
   });
 
   it('returns false if artist has no metadata', () => {
@@ -122,14 +125,13 @@ describe('Artist type', () => {
       }
     `;
 
-    return runQuery(query, rootValue)
-      .then(data => {
-        expect(data).toEqual({
-          artist: {
-            has_metadata: false,
-          },
-        });
+    return runQuery(query, rootValue).then(data => {
+      expect(data).toEqual({
+        artist: {
+          has_metadata: false,
+        },
       });
+    });
   });
 
   describe('when formatting nationality and birthday string', () => {
@@ -144,14 +146,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_nationality_and_birthday: 'b. 2000',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_nationality_and_birthday: 'b. 2000',
+          },
         });
+      });
     });
 
     it('adds b. to birthday if only a date is provided', () => {
@@ -165,14 +166,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_nationality_and_birthday: 'b. 2000',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_nationality_and_birthday: 'b. 2000',
+          },
         });
+      });
     });
 
     it('does not change birthday if birthday contains Est.', () => {
@@ -186,14 +186,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_nationality_and_birthday: 'Est. 2000',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_nationality_and_birthday: 'Est. 2000',
+          },
         });
+      });
     });
 
     it('returns both if both are provided', () => {
@@ -208,14 +207,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_nationality_and_birthday: 'Martian, b. 2000',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_nationality_and_birthday: 'Martian, b. 2000',
+          },
         });
+      });
     });
 
     it('returns only nationality if no birthday is provided', () => {
@@ -229,14 +227,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_nationality_and_birthday: 'Martian',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_nationality_and_birthday: 'Martian',
+          },
         });
+      });
     });
 
     it('returns birthday-deathday if deathday is present', () => {
@@ -252,14 +249,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_nationality_and_birthday: 'Martian, 2000–2012',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_nationality_and_birthday: 'Martian, 2000–2012',
+          },
         });
+      });
     });
 
     it('returns null if neither birthday, deathday, nor nationality are provided', () => {
@@ -271,14 +267,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_nationality_and_birthday: null,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_nationality_and_birthday: null,
+          },
         });
+      });
     });
 
     it('returns null if neither birthday nor nationality are provided', () => {
@@ -292,14 +287,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_nationality_and_birthday: null,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_nationality_and_birthday: null,
+          },
         });
+      });
     });
   });
 
@@ -309,7 +303,10 @@ describe('Artist type', () => {
       artist.published_artworks_count = count;
       artist.forsale_artworks_count = count;
       const artworks = Promise.resolve(Array(count));
-      rootValue.artistArtworksLoader = sinon.stub().withArgs(artist.id).returns(artworks);
+      rootValue.artistArtworksLoader = sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(artworks);
     });
 
     it('does not have a next page when the requested amount exceeds the count', () => {
@@ -325,18 +322,17 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              artworks_connection: {
-                pageInfo: {
-                  hasNextPage: false,
-                },
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            artworks_connection: {
+              pageInfo: {
+                hasNextPage: false,
               },
             },
-          });
+          },
         });
+      });
     });
 
     it('does not have a next page when the requested amount exceeds the count (w/ filter)', () => {
@@ -352,18 +348,17 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              artworks_connection: {
-                pageInfo: {
-                  hasNextPage: false,
-                },
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            artworks_connection: {
+              pageInfo: {
+                hasNextPage: false,
               },
             },
-          });
+          },
         });
+      });
     });
 
     it('has a next page when the amount requested is less than the count', () => {
@@ -379,18 +374,17 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              artworks_connection: {
-                pageInfo: {
-                  hasNextPage: true,
-                },
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            artworks_connection: {
+              pageInfo: {
+                hasNextPage: true,
               },
             },
-          });
+          },
         });
+      });
     });
   });
 
@@ -405,14 +399,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              blurb: 'catty blurb',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            blurb: 'catty blurb',
+          },
         });
+      });
     });
   });
 
@@ -420,11 +413,16 @@ describe('Artist type', () => {
     describe('with partner_bio set to true', () => {
       describe('with a featured partner bio', () => {
         beforeEach(() => {
-          const partnerArtists = Promise.resolve([{
-            biography: 'new catty bio',
-            partner: { name: 'Catty Partner', id: 'catty-partner' },
-          }]);
-          rootValue.partnerArtistsLoader = sinon.stub().withArgs(artist.id).returns(partnerArtists);
+          const partnerArtists = Promise.resolve([
+            {
+              biography: 'new catty bio',
+              partner: { name: 'Catty Partner', id: 'catty-partner' },
+            },
+          ]);
+          rootValue.partnerArtistsLoader = sinon
+            .stub()
+            .withArgs(artist.id)
+            .returns(partnerArtists);
         });
 
         afterEach(() => {
@@ -440,21 +438,19 @@ describe('Artist type', () => {
             }
           `;
 
-          return runQuery(query, rootValue)
-            .then(data => {
-              expect(data).toEqual({
-                artist: {
-                  biography_blurb: {
-                    text: '<p>new catty bio</p>\n',
-                    credit: 'Submitted by Catty Partner',
-                    partner_id: 'catty-partner',
-                  },
+          return runQuery(query, rootValue).then(data => {
+            expect(data).toEqual({
+              artist: {
+                biography_blurb: {
+                  text: '<p>new catty bio</p>\n',
+                  credit: 'Submitted by Catty Partner',
+                  partner_id: 'catty-partner',
                 },
-              });
+              },
             });
+          });
         });
-        it('returns the featured partner bio without an artsy blurb', () => {
-        });
+        it('returns the featured partner bio without an artsy blurb', () => {});
 
         it('returns the featured partner bio with an artsy blurb', () => {
           artist.blurb = 'artsy blurb';
@@ -463,7 +459,9 @@ describe('Artist type', () => {
 
       describe('without a featured partner bio', () => {
         it('returns the artsy blurb if there is no featured partner bio', () => {
-          rootValue.partnerArtistsLoader = sinon.stub().returns(Promise.resolve([]));
+          rootValue.partnerArtistsLoader = sinon
+            .stub()
+            .returns(Promise.resolve([]));
 
           artist.blurb = 'artsy blurb';
           const query = `
@@ -478,18 +476,17 @@ describe('Artist type', () => {
             }
           `;
 
-          return runQuery(query, rootValue)
-            .then(data => {
-              expect(data).toEqual({
-                artist: {
-                  biography_blurb: {
-                    text: 'artsy blurb',
-                    credit: null,
-                    partner_id: null,
-                  },
+          return runQuery(query, rootValue).then(data => {
+            expect(data).toEqual({
+              artist: {
+                biography_blurb: {
+                  text: 'artsy blurb',
+                  credit: null,
+                  partner_id: null,
                 },
-              });
+              },
             });
+          });
         });
       });
     });
@@ -508,26 +505,30 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              biography_blurb: {
-                text: 'catty blurb',
-                credit: null,
-                partner_id: null,
-              },
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            biography_blurb: {
+              text: 'catty blurb',
+              credit: null,
+              partner_id: null,
             },
-          });
+          },
         });
+      });
     });
 
     it('returns the featured bio if there is no Artsy one', () => {
-      const partnerArtists = Promise.resolve([{
-        biography: 'new catty bio',
-        partner: { name: 'Catty Partner', id: 'catty-partner' },
-      }]);
-      rootValue.partnerArtistsLoader = sinon.stub().withArgs(artist.id).returns(partnerArtists);
+      const partnerArtists = Promise.resolve([
+        {
+          biography: 'new catty bio',
+          partner: { name: 'Catty Partner', id: 'catty-partner' },
+        },
+      ]);
+      rootValue.partnerArtistsLoader = sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(partnerArtists);
 
       const query = `
         {
@@ -541,18 +542,17 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              biography_blurb: {
-                text: 'new catty bio',
-                credit: 'Submitted by Catty Partner',
-                partner_id: 'catty-partner',
-              },
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            biography_blurb: {
+              text: 'new catty bio',
+              credit: 'Submitted by Catty Partner',
+              partner_id: 'catty-partner',
             },
-          });
+          },
         });
+      });
     });
   });
 
@@ -569,14 +569,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_artworks_count: '42 works, 21 for sale',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_artworks_count: '42 works, 21 for sale',
+          },
         });
+      });
     });
 
     it('returns only works if none are for sale', () => {
@@ -591,14 +590,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_artworks_count: '42 works',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_artworks_count: '42 works',
+          },
         });
+      });
     });
 
     it('returns null when there are no works', () => {
@@ -613,14 +611,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_artworks_count: null,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_artworks_count: null,
+          },
         });
+      });
     });
 
     it('returns a singular string if only one work for sale', () => {
@@ -635,14 +632,13 @@ describe('Artist type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artist: {
-              formatted_artworks_count: '1 work',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            formatted_artworks_count: '1 work',
+          },
         });
+      });
     });
   });
 });

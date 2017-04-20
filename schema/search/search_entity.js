@@ -3,9 +3,7 @@ import Artist from '../artist';
 import Artwork from '../artwork';
 import Profile from '../profile';
 import PartnerShow from '../partner_show';
-import {
-  GraphQLUnionType,
-} from 'graphql';
+import { GraphQLUnionType } from 'graphql';
 
 export const ArtistSearchEntityType = _.create(Artist.type, {
   name: 'ArtistSearchEntity',
@@ -16,7 +14,6 @@ export const ArtworkSearchEntityType = _.create(Artwork.type, {
   name: 'ArtworkSearchEntity',
   isTypeOf: ({ type }) => type === 'Artwork',
 });
-
 
 export const ProfileSearchEntityType = _.create(Profile.type, {
   name: 'ProfileSearchEntity',

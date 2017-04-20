@@ -10,7 +10,8 @@ export default {
       PLAIN: {
         value: 'plain',
       },
-      markdown: { // Deprecated
+      markdown: {
+        // Deprecated
         value: 'markdown',
         deprecationReason: 'deprecated',
       },

@@ -1,10 +1,4 @@
-import {
-  assign,
-  compact,
-  find,
-  times,
-  last,
-} from 'lodash';
+import { assign, compact, find, times, last } from 'lodash';
 import cached from './fields/cached';
 import date from './fields/date';
 import money, { amount } from './fields/money';
@@ -26,11 +20,7 @@ import {
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = process.env;
 
 export const isBiddable = (sale, { artwork: { sold } }) => {
-  return (
-    !sold &&
-    sale.is_auction &&
-    sale.auction_state === 'open'
-  );
+  return !sold && sale.is_auction && sale.auction_state === 'open';
 };
 
 const SaleArtworkType = new GraphQLObjectType({
@@ -50,22 +40,24 @@ const SaleArtworkType = new GraphQLObjectType({
       bid_increments: {
         type: new GraphQLList(GraphQLInt),
         resolve: ({ minimum_next_bid_cents, sale_id }) => {
-          return gravity(`sale/${sale_id}`).then((sale) => {
+          return gravity(`sale/${sale_id}`).then(sale => {
             return gravity('increments', {
               key: sale.increment_strategy,
-            }).then((incrs) => {
+            }).then(incrs => {
               const incr = incrs[0].increments;
               const increments = [minimum_next_bid_cents];
               times(100, () => {
                 const bid = last(increments);
-                const bucket = find(incr, (inc) =>
-                  bid >= inc.from && bid <= inc.to
-                ) || last(incr);
+                const bucket =
+                  find(incr, inc => bid >= inc.from && bid <= inc.to) ||
+                  last(incr);
                 const nextBid = bid + bucket.amount;
-                if (nextBid > BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT) return increments;
+                if (nextBid > BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT)
+                  return increments;
                 if (!bucket.to) return increments.push(nextBid);
-                const nextBidBucket = find(incr, (inc) =>
-                  nextBid >= inc.from && nextBid <= inc.to
+                const nextBidBucket = find(
+                  incr,
+                  inc => nextBid >= inc.from && nextBid <= inc.to
                 );
                 if (!nextBidBucket) return increments.push(nextBid);
                 if (nextBid === nextBidBucket.from) increments.push(nextBid);
@@ -81,8 +73,9 @@ const SaleArtworkType = new GraphQLObjectType({
         type: new GraphQLObjectType({
           name: 'SaleArtworkCounts',
           fields: {
-            bidder_positions: numeral(({ bidder_positions_count }) =>
-              bidder_positions_count),
+            bidder_positions: numeral(
+              ({ bidder_positions_count }) => bidder_positions_count
+            ),
           },
         }),
       },
@@ -94,11 +87,10 @@ const SaleArtworkType = new GraphQLObjectType({
         name: 'SaleArtworkCurrentBid',
         resolve: saleArtwork => ({
           ...GravityIDFields,
-          cents: saleArtwork.highest_bid_amount_cents || saleArtwork.opening_bid_cents,
-          display: (
-            saleArtwork.display_highest_bid_amount_dollars ||
-            saleArtwork.display_opening_bid_dollars
-          ),
+          cents: saleArtwork.highest_bid_amount_cents ||
+            saleArtwork.opening_bid_cents,
+          display: saleArtwork.display_highest_bid_amount_dollars ||
+            saleArtwork.display_opening_bid_dollars,
         }),
       }),
       estimate: {
@@ -108,10 +100,12 @@ const SaleArtworkType = new GraphQLObjectType({
           display_high_estimate_dollars,
           display_estimate_dollars,
         }) => {
-          return compact([
-            display_low_estimate_dollars,
-            display_high_estimate_dollars,
-          ]).join('–') || display_estimate_dollars;
+          return (
+            compact([
+              display_low_estimate_dollars,
+              display_high_estimate_dollars,
+            ]).join('–') || display_estimate_dollars
+          );
         },
       },
       estimate_cents: {
@@ -156,8 +150,7 @@ const SaleArtworkType = new GraphQLObjectType({
             },
           },
         }),
-        resolve: ({ symbol, highest_bid }) =>
-          assign({ symbol }, highest_bid),
+        resolve: ({ symbol, highest_bid }) => assign({ symbol }, highest_bid),
       },
       is_bid_on: {
         type: GraphQLBoolean,
@@ -171,8 +164,9 @@ const SaleArtworkType = new GraphQLObjectType({
             return isBiddable(saleArtwork.sale, saleArtwork);
           }
 
-          return gravity(`sale/${saleArtwork.sale_id}`)
-            .then(sale => isBiddable(sale, saleArtwork));
+          return gravity(`sale/${saleArtwork.sale_id}`).then(sale =>
+            isBiddable(sale, saleArtwork)
+          );
         },
       },
       is_with_reserve: {
@@ -199,7 +193,10 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       minimum_next_bid: money({
         name: 'SaleArtworkMinimumNextBid',
-        resolve: ({ display_minimum_next_bid_dollars, minimum_next_bid_cents }) => ({
+        resolve: ({
+          display_minimum_next_bid_dollars,
+          minimum_next_bid_cents,
+        }) => ({
           cents: minimum_next_bid_cents,
           display: display_minimum_next_bid_dollars,
         }),
@@ -234,9 +231,15 @@ const SaleArtworkType = new GraphQLObjectType({
         resolve: ({ bidder_positions_count, reserve_status }) => {
           if (reserve_status === 'reserve_met') {
             return 'Reserve met';
-          } else if (bidder_positions_count === 0 && reserve_status === 'reserve_not_met') {
+          } else if (
+            bidder_positions_count === 0 &&
+            reserve_status === 'reserve_not_met'
+          ) {
             return 'This work has a reserve';
-          } else if (bidder_positions_count > 0 && reserve_status === 'reserve_not_met') {
+          } else if (
+            bidder_positions_count > 0 &&
+            reserve_status === 'reserve_not_met'
+          ) {
             return 'Reserve not met';
           }
           return null;

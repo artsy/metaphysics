@@ -14,9 +14,11 @@ describe('auth middleware', () => {
 
   describe('#authenticateWithUser', () => {
     it('returns true for users with valid artsy accounts, false for anything else', () => {
-      expect(middleware.authenticateWithUser({
-        user: { email: 'john@artsymail.com' },
-      })).toBeTruthy();
+      expect(
+        middleware.authenticateWithUser({
+          user: { email: 'john@artsymail.com' },
+        })
+      ).toBeTruthy();
 
       expect(middleware.authenticateWithUser({})).toBeFalsy();
       expect(middleware.authenticateWithUser('garbage')).toBeFalsy();
@@ -25,17 +27,23 @@ describe('auth middleware', () => {
     it('checks if user is admin in production', () => {
       process.env.NODE_ENV = 'production';
 
-      expect(middleware.authenticateWithUser({
-        user: { email: 'john@artsymail.com', type: 'Admin' },
-      })).toBeTruthy();
+      expect(
+        middleware.authenticateWithUser({
+          user: { email: 'john@artsymail.com', type: 'Admin' },
+        })
+      ).toBeTruthy();
 
-      expect(middleware.authenticateWithUser({
-        user: { email: 'ellen@gmail.com' } },
-      )).toBeFalsy();
+      expect(
+        middleware.authenticateWithUser({
+          user: { email: 'ellen@gmail.com' },
+        })
+      ).toBeFalsy();
 
-      expect(middleware.authenticateWithUser({
-        user: { email: 'john@artsymail.com', roles: ['user', 'admin'] },
-      })).toBeTruthy();
+      expect(
+        middleware.authenticateWithUser({
+          user: { email: 'john@artsymail.com', roles: ['user', 'admin'] },
+        })
+      ).toBeTruthy();
 
       expect(middleware.authenticateWithUser({ user: {} })).toBeFalsy();
 
@@ -51,7 +59,11 @@ describe('auth middleware', () => {
     });
 
     it('nexts', () => {
-      middleware.authenticateOrLogin({ accepts: sinon.stub().returns('json') }, null, next);
+      middleware.authenticateOrLogin(
+        { accepts: sinon.stub().returns('json') },
+        null,
+        next
+      );
       expect(next.called).toBeTruthy();
     });
   });

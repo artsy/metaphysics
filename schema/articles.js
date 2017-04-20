@@ -1,11 +1,7 @@
 import positron from '../lib/loaders/positron';
 import Article from './article';
 import ArticleSorts from './sorts/article_sorts';
-import {
-  GraphQLString,
-  GraphQLBoolean,
-  GraphQLList,
-} from 'graphql';
+import { GraphQLString, GraphQLBoolean, GraphQLList } from 'graphql';
 
 const Articles = {
   type: new GraphQLList(Article.type),

@@ -81,7 +81,8 @@ const SaleType = new GraphQLObjectType({
           const invert = saleArtworks => map(saleArtworks, 'artwork');
 
           if (options.all) {
-            return gravity.all(`sale/${id}/sale_artworks`, options)
+            return gravity
+              .all(`sale/${id}/sale_artworks`, options)
               .then(invert)
               .then(exclude(options.exclude, 'id'));
           }
@@ -108,9 +109,10 @@ const SaleType = new GraphQLObjectType({
       bid_increments: {
         type: new GraphQLList(BidIncrement),
         description: 'A bid increment policy that explains minimum bids in ranges.',
-        resolve: (sale) =>
-          gravity(`increments`, { key: sale.increment_strategy })
-            .then((incs) => incs[0].increments),
+        resolve: sale =>
+          gravity(`increments`, { key: sale.increment_strategy }).then(
+            incs => incs[0].increments
+          ),
       },
       buyers_premium: {
         type: new GraphQLList(BuyersPremium),
@@ -158,13 +160,11 @@ const SaleType = new GraphQLObjectType({
       },
       is_closed: {
         type: GraphQLBoolean,
-        resolve: ({ auction_state }) =>
-        auction_state === 'closed',
+        resolve: ({ auction_state }) => auction_state === 'closed',
       },
       is_open: {
         type: GraphQLBoolean,
-        resolve: ({ auction_state }) =>
-          auction_state === 'open',
+        resolve: ({ auction_state }) => auction_state === 'open',
       },
       is_live_open: {
         type: GraphQLBoolean,
@@ -178,8 +178,7 @@ const SaleType = new GraphQLObjectType({
       },
       is_preview: {
         type: GraphQLBoolean,
-        resolve: ({ auction_state }) =>
-        auction_state === 'preview',
+        resolve: ({ auction_state }) => auction_state === 'preview',
       },
       is_with_buyers_premium: {
         type: GraphQLBoolean,

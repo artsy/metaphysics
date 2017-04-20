@@ -22,25 +22,37 @@ describe('HomePageArtistModule', () => {
     const gravity = sinon.stub();
     gravity.with = sinon.stub().returns(gravity);
 
-    gravity.withArgs('artists/trending').returns(Promise.resolve([{
-      id: 'trending',
-      birthday: null,
-      artworks_count: null,
-    }]));
+    gravity.withArgs('artists/trending').returns(
+      Promise.resolve([
+        {
+          id: 'trending',
+          birthday: null,
+          artworks_count: null,
+        },
+      ])
+    );
 
-    gravity.withArgs('artists/popular').returns(Promise.resolve([{
-      id: 'popular',
-      birthday: null,
-      artworks_count: null,
-    }]));
+    gravity.withArgs('artists/popular').returns(
+      Promise.resolve([
+        {
+          id: 'popular',
+          birthday: null,
+          artworks_count: null,
+        },
+      ])
+    );
 
-    gravity.withArgs('user/user-42/suggested/similar/artists').returns(Promise.resolve([{
-      artist: {
-        id: 'suggested',
-        birthday: null,
-        artworks_count: null,
-      },
-    }]));
+    gravity.withArgs('user/user-42/suggested/similar/artists').returns(
+      Promise.resolve([
+        {
+          artist: {
+            id: 'suggested',
+            birthday: null,
+            artworks_count: null,
+          },
+        },
+      ])
+    );
 
     HomePageArtistModule.__Rewire__('gravity', gravity);
   });
@@ -49,7 +61,7 @@ describe('HomePageArtistModule', () => {
     HomePageArtistModule.__ResetDependency__('gravity');
   });
 
-  const shared = (queryRunner) => {
+  const shared = queryRunner => {
     it('returns trending artists', () => {
       return queryRunner(query('TRENDING')).then(({ home_page }) => {
         expect(home_page.artist_module.results).toEqual([{ id: 'trending' }]);

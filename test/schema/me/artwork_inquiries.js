@@ -42,13 +42,23 @@ describe('Me', () => {
           hasNextPage: true,
         },
         edges: [
-          { node: { artwork: { title: 'Artwork 1' }, impulse_conversation_id: '420' } },
-          { node: { artwork: { title: 'Artwork 2' }, impulse_conversation_id: null } },
+          {
+            node: {
+              artwork: { title: 'Artwork 1' },
+              impulse_conversation_id: '420',
+            },
+          },
+          {
+            node: {
+              artwork: { title: 'Artwork 2' },
+              impulse_conversation_id: null,
+            },
+          },
         ],
       };
 
-      gravity
-        .returns(Promise.resolve({
+      gravity.returns(
+        Promise.resolve({
           headers: { 'x-total-count': 3 },
           body: [
             {
@@ -59,10 +69,12 @@ describe('Me', () => {
               inquireable: artwork2,
             },
           ],
-        }));
+        })
+      );
 
-      return runAuthenticatedQuery(query)
-      .then(({ me: { artwork_inquiries_connection } }) => {
+      return runAuthenticatedQuery(
+        query
+      ).then(({ me: { artwork_inquiries_connection } }) => {
         expect(artwork_inquiries_connection).toEqual(expectedConnectionData);
       });
     });

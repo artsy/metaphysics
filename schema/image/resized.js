@@ -15,9 +15,12 @@ export const resizedImageUrl = (image, options) => {
   });
 
   const desired = _.pick(opts, 'width', 'height');
-  const factor = _.min(_.map(desired, (value, attr) => {
-    return value / image[`original_${attr}`];
-  })) || Infinity;
+  const factor =
+    _.min(
+      _.map(desired, (value, attr) => {
+        return value / image[`original_${attr}`];
+      })
+    ) || Infinity;
 
   let width = null;
   let height = null;
@@ -28,7 +31,7 @@ export const resizedImageUrl = (image, options) => {
   }
 
   const src = setVersion(image, opts.version);
-  const url = proxy(src, 'resize', (width || opts.width), (height || opts.height));
+  const url = proxy(src, 'resize', width || opts.width, height || opts.height);
 
   return {
     factor,

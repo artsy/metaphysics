@@ -1,10 +1,4 @@
-import {
-  assign,
-  create,
-  first,
-  flow,
-  compact,
-} from 'lodash';
+import { assign, create, first, flow, compact } from 'lodash';
 import Fair from '../fair';
 import Sale from '../sale/index';
 import PartnerShow from '../partner_show';
@@ -45,26 +39,29 @@ const choose = flow(compact, first);
 export default {
   type: ArtworkContextType,
   description: 'Returns the associated Fair/Sale/PartnerShow',
-  resolve: ({ id, sale_ids }, options, request, {
-    rootValue: {
-      salesLoader,
-      relatedFairsLoader,
-      relatedShowsLoader,
-    } }) => {
+  resolve: (
+    { id, sale_ids },
+    options,
+    request,
+    { rootValue: { salesLoader, relatedFairsLoader, relatedShowsLoader } }
+  ) => {
     let sale_promise = Promise.resolve(null);
     if (sale_ids && sale_ids.length > 0) {
       sale_promise = salesLoader(id, { id: sale_ids })
         .then(first)
         .then(sale => {
           if (!sale) return null;
-          return assign({ context_type: sale.is_auction ? 'Auction' : 'Sale' }, sale);
+          return assign(
+            { context_type: sale.is_auction ? 'Auction' : 'Sale' },
+            sale
+          );
         });
     }
 
     const fair_promise = relatedFairsLoader(id, { artwork: [id], size: 1 })
       .then(first)
       .then(fair => {
-        if (!fair || fair && !fair.has_full_feature) return null;
+        if (!fair || (fair && !fair.has_full_feature)) return null;
         return assign({ context_type: 'Fair' }, fair);
       });
 
@@ -80,8 +77,6 @@ export default {
         return assign({ context_type: 'PartnerShow' }, show);
       });
 
-    return Promise
-      .all([sale_promise, fair_promise, show_promise])
-      .then(choose);
+    return Promise.all([sale_promise, fair_promise, show_promise]).then(choose);
   },
 };

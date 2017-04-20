@@ -1,7 +1,4 @@
-import {
-  keys,
-  isUndefined,
-} from 'lodash';
+import { keys, isUndefined } from 'lodash';
 import request from 'request';
 import deepEqual from 'deep-equal';
 
@@ -11,13 +8,15 @@ const {
 } = process.env;
 
 const get = (url, options) => {
-  return new Promise((resolve, reject) => request(url, options, (err, response) => {
-    if (err) return reject(err);
-    resolve(JSON.parse(response.body));
-  }));
+  return new Promise((resolve, reject) =>
+    request(url, options, (err, response) => {
+      if (err) return reject(err);
+      resolve(JSON.parse(response.body));
+    })
+  );
 };
 
-const metaphysics = (endpoint) => (query, vars = {}) => {
+const metaphysics = endpoint => (query, vars = {}) => {
   const variables = JSON.stringify(vars);
   return get(endpoint, { method: 'GET', qs: { query, variables } });
 };
@@ -149,11 +148,10 @@ describe('Integration specs', () => {
     `;
 
     it('makes the query without error', () => {
-      return staging(query)
-        .then(({ errors, data }) => {
-          isUndefined(errors).should.be.true();
-          keys(data).should.eql(['featured_artists', 'featured_genes']);
-        });
+      return staging(query).then(({ errors, data }) => {
+        isUndefined(errors).should.be.true();
+        keys(data).should.eql(['featured_artists', 'featured_genes']);
+      });
     });
   });
 });

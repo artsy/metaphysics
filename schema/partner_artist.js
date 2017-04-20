@@ -24,13 +24,16 @@ const PartnerArtistType = new GraphQLObjectType({
       type: new GraphQLObjectType({
         name: 'PartnerArtistCounts',
         fields: {
-          artworks: numeral(({ published_artworks_count }) =>
-            published_artworks_count),
-          for_sale_artworks: numeral(({ published_for_sale_artworks_count }) =>
-            published_for_sale_artworks_count),
+          artworks: numeral(
+            ({ published_artworks_count }) => published_artworks_count
+          ),
+          for_sale_artworks: numeral(
+            ({ published_for_sale_artworks_count }) =>
+              published_for_sale_artworks_count
+          ),
         },
       }),
-      resolve: (partner_artist) => partner_artist,
+      resolve: partner_artist => partner_artist,
     },
     is_display_on_partner_profile: {
       type: GraphQLBoolean,

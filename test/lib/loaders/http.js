@@ -7,7 +7,8 @@ describe('Loaders', () => {
   describe('http', () => {
     describe('error', () => {
       it('propagates the error through rejection if the API rejects', () => {
-        const api = sinon.stub()
+        const api = sinon
+          .stub()
           .returns(Promise.reject(new Error('Something went wrong')));
 
         const loader = httpLoader(api);
@@ -19,12 +20,13 @@ describe('Loaders', () => {
 
     describe('success', () => {
       it('accepts an API function and returns a generic data loader for making cached HTTP requests', () => {
-        const api = sinon.stub()
-          .returns(Promise.resolve({
+        const api = sinon.stub().returns(
+          Promise.resolve({
             body: {
               ok: true,
             },
-          }));
+          })
+        );
 
         const loader = httpLoader(api);
 

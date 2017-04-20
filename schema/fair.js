@@ -52,14 +52,14 @@ const FairType = new GraphQLObjectType({
     href: {
       type: GraphQLString,
       resolve: ({ default_profile_id, organizer }) => {
-        const id = default_profile_id || organizer && organizer.profile_id;
+        const id = default_profile_id || (organizer && organizer.profile_id);
         return `/${id}`;
       },
     },
     image: Image,
     is_active: {
       type: GraphQLBoolean,
-      description: 'Are we currently in the fair\'s active period?',
+      description: "Are we currently in the fair's active period?",
       resolve: ({ autopublish_artworks_at, end_at }) => {
         const start = moment.utc(autopublish_artworks_at).subtract(7, 'days');
         const end = moment.utc(end_at).add(14, 'days');
@@ -76,10 +76,9 @@ const FairType = new GraphQLObjectType({
         if (location) {
           return location;
         } else if (published) {
-          return gravity(`fair/${id}`, options)
-            .then(fair => {
-              return fair.location;
-            });
+          return gravity(`fair/${id}`, options).then(fair => {
+            return fair.location;
+          });
         }
         return null;
       },
@@ -90,10 +89,12 @@ const FairType = new GraphQLObjectType({
     profile: {
       type: Profile.type,
       resolve: ({ default_profile_id, organizer }) => {
-        const id = default_profile_id || organizer && organizer.profile_id;
-        return gravity(`profile/${id}`)
-          // Some profiles are private and return 403
-          .catch(() => null);
+        const id = default_profile_id || (organizer && organizer.profile_id);
+        return (
+          gravity(`profile/${id}`)
+            // Some profiles are private and return 403
+            .catch(() => null)
+        );
       },
     },
     start_at: date,

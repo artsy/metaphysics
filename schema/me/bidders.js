@@ -1,9 +1,6 @@
 import gravity from '../../lib/loaders/gravity';
 import Bidder from '../bidder';
-import {
-  GraphQLList,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLList, GraphQLString } from 'graphql';
 
 export default {
   type: new GraphQLList(Bidder.type),

@@ -4,9 +4,7 @@ import HomePageArtistModule from './home_page_artist_module';
 import HomePageArtistModules from './home_page_artist_modules';
 import HomePageHeroUnits from './home_page_hero_units';
 
-import {
-  GraphQLObjectType,
-} from 'graphql';
+import { GraphQLObjectType } from 'graphql';
 
 const HomePageType = new GraphQLObjectType({
   name: 'HomePage',

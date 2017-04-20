@@ -41,13 +41,15 @@ const PartnerShows = {
     status: EventStatus,
   },
   resolve: (root, options) => {
+    let gravityOptions = options;
     if (options.near) {
-      options = _.assign(options, { // eslint-disable-line no-param-reassign
+      gravityOptions = _.assign(options, {
+        // eslint-disable-line no-param-reassign
         near: `${options.near.lat},${options.near.lng}`,
         max_distance: options.near.max_distance,
       });
     }
-    return gravity('shows', options);
+    return gravity('shows', gravityOptions);
   },
 };
 

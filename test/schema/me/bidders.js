@@ -28,20 +28,12 @@ describe('Me', () => {
 
       gravity
         .withArgs('me/bidders', {})
-        .returns(Promise.resolve([
-          { id: 'Foo ID' },
-          { id: 'Bar ID' },
-        ]));
+        .returns(Promise.resolve([{ id: 'Foo ID' }, { id: 'Bar ID' }]));
 
-      return runAuthenticatedQuery(query)
-      .then(({ me: { bidders } }) => {
-        expect(bidders).toEqual([
-            { id: 'Foo ID' },
-            { id: 'Bar ID' },
-        ]);
+      return runAuthenticatedQuery(query).then(({ me: { bidders } }) => {
+        expect(bidders).toEqual([{ id: 'Foo ID' }, { id: 'Bar ID' }]);
       });
     });
-
 
     it('returns bidder ids for the requested sale', () => {
       const query = `
@@ -56,17 +48,10 @@ describe('Me', () => {
 
       gravity
         .withArgs('me/bidders', { sale_id: 'the-fun-sale' })
-        .returns(Promise.resolve([
-          { id: 'Foo ID' },
-          { id: 'Bar ID' },
-        ]));
+        .returns(Promise.resolve([{ id: 'Foo ID' }, { id: 'Bar ID' }]));
 
-      return runAuthenticatedQuery(query)
-      .then(({ me: { bidders } }) => {
-        expect(bidders).toEqual([
-            { id: 'Foo ID' },
-            { id: 'Bar ID' },
-        ]);
+      return runAuthenticatedQuery(query).then(({ me: { bidders } }) => {
+        expect(bidders).toEqual([{ id: 'Foo ID' }, { id: 'Bar ID' }]);
       });
     });
   });

@@ -7,44 +7,52 @@ describe('PartnerShows type', () => {
 
     gravity
       .onCall(0)
-      .returns(Promise.resolve([
-        {
-          id: 'new-museum-solo-show',
-          partner: {
-            id: 'new-museum',
+      .returns(
+        Promise.resolve([
+          {
+            id: 'new-museum-solo-show',
+            partner: {
+              id: 'new-museum',
+            },
+            display_on_partner_profile: true,
           },
-          display_on_partner_profile: true,
-        },
-        {
-          id: 'new-museum-group-show',
-          partner: {
-            id: 'new-museum',
+          {
+            id: 'new-museum-group-show',
+            partner: {
+              id: 'new-museum',
+            },
+            display_on_partner_profile: true,
           },
-          display_on_partner_profile: true,
-        },
-        {
-          id: 'new-museum-fair-booth',
-          partner: {
-            id: 'new-museum',
+          {
+            id: 'new-museum-fair-booth',
+            partner: {
+              id: 'new-museum',
+            },
+            display_on_partner_profile: true,
           },
-          display_on_partner_profile: true,
-        },
-      ]))
+        ])
+      )
       .onCall(1)
-      .returns(Promise.resolve({
-        artists: [{}],
-        fair: null,
-      }))
+      .returns(
+        Promise.resolve({
+          artists: [{}],
+          fair: null,
+        })
+      )
       .onCall(2)
-      .returns(Promise.resolve({
-        artists: [{}, {}],
-        fair: null,
-      }))
+      .returns(
+        Promise.resolve({
+          artists: [{}, {}],
+          fair: null,
+        })
+      )
       .onCall(3)
-      .returns(Promise.resolve({
-        artists: [{}],
-        fair: { id: 'existy' },
-      }));
+      .returns(
+        Promise.resolve({
+          artists: [{}],
+          fair: { id: 'existy' },
+        })
+      );
 
     PartnerShows.__Rewire__('gravity', gravity);
     PartnerShow.__Rewire__('gravity', gravity);
@@ -66,16 +74,15 @@ describe('PartnerShows type', () => {
         }
       `;
 
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            partner_shows: [
-              { id: 'new-museum-solo-show', kind: 'solo' },
-              { id: 'new-museum-group-show', kind: 'group' },
-              { id: 'new-museum-fair-booth', kind: 'fair' },
-            ],
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          partner_shows: [
+            { id: 'new-museum-solo-show', kind: 'solo' },
+            { id: 'new-museum-group-show', kind: 'group' },
+            { id: 'new-museum-fair-booth', kind: 'fair' },
+          ],
         });
+      });
     });
   });
 });

@@ -1,8 +1,5 @@
 import { get, take } from 'lodash';
-import {
-  GraphQLString,
-  GraphQLInt,
-} from 'graphql';
+import { GraphQLString, GraphQLInt } from 'graphql';
 
 export function initials(string = '', length = 3) {
   if (!string) return null;
@@ -11,7 +8,7 @@ export function initials(string = '', length = 3) {
   return take(string.match(/\b\w/g, ''), length).join('').toUpperCase();
 }
 
-export default (attr) => ({
+export default attr => ({
   type: GraphQLString,
   args: {
     length: {
@@ -19,6 +16,5 @@ export default (attr) => ({
       defaultValue: 3,
     },
   },
-  resolve: (obj, { length }) =>
-    initials(get(obj, attr), length),
+  resolve: (obj, { length }) => initials(get(obj, attr), length),
 });

@@ -1,10 +1,6 @@
 import gravity from '../../lib/loaders/gravity';
 import LotStanding from './lot_standing';
-import {
-  GraphQLList,
-  GraphQLBoolean,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLList, GraphQLBoolean, GraphQLString } from 'graphql';
 
 export default {
   type: new GraphQLList(LotStanding.type),
@@ -27,12 +23,12 @@ export default {
       description: 'Only the lot standings for a specific auction',
     },
   },
-  resolve: (root, {
-    active_positions,
-    artwork_id,
-    live,
-    sale_id,
-  }, request, { rootValue: { accessToken } }) => {
+  resolve: (
+    root,
+    { active_positions, artwork_id, live, sale_id },
+    request,
+    { rootValue: { accessToken } }
+  ) => {
     return gravity
       .with(accessToken)('me/lot_standings', {
         active_positions,
@@ -40,7 +36,7 @@ export default {
         live,
         sale_id,
       })
-      .then((lotStandings) => {
+      .then(lotStandings => {
         return lotStandings;
       });
   },

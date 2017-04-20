@@ -2,11 +2,7 @@
 import type { GraphQLFieldConfig } from 'graphql';
 
 import { IDFields } from '../object_identification';
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 
 export const AggregationCountType = new GraphQLObjectType({
   name: 'AggregationCount',
@@ -27,5 +23,10 @@ export const AggregationCountType = new GraphQLObjectType({
 
 export default ({
   type: AggregationCountType,
-  resolve: ({ name, count, sortable_id }, id) => ({ id, sortable_id, name, count }),
+  resolve: ({ name, count, sortable_id }, id) => ({
+    id,
+    sortable_id,
+    name,
+    count,
+  }),
 }: GraphQLFieldConfig<AggregationCountType, any>);

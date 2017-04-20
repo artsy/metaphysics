@@ -1,11 +1,7 @@
 import Artwork from './index';
 import gravity from '../../lib/loaders/gravity';
 import { IDFields } from '../object_identification';
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLList,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLList } from 'graphql';
 
 const ArtworkLayerType = new GraphQLObjectType({
   name: 'ArtworkLayer',
@@ -14,7 +10,9 @@ const ArtworkLayerType = new GraphQLObjectType({
     artworks: {
       type: new GraphQLList(Artwork.type),
       resolve: ({ id, type, artwork_id }) => {
-        return gravity(`related/layer/${type}/${id}/artworks`, { artwork: [artwork_id] });
+        return gravity(`related/layer/${type}/${id}/artworks`, {
+          artwork: [artwork_id],
+        });
       },
     },
     description: {

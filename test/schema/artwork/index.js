@@ -16,10 +16,7 @@ describe('Artwork type', () => {
       is_default: false,
       id: '56b6311876143f4e82000188',
       image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
-      image_versions: [
-        'icon',
-        'large',
-      ],
+      image_versions: ['icon', 'large'],
       image_urls: {
         icon: 'https://xxx.cloudfront.net/xxx/icon.png',
         large: 'https://xxx.cloudfront.net/xxx/large.jpg',
@@ -29,10 +26,7 @@ describe('Artwork type', () => {
       is_default: true,
       id: '56b64ed2cd530e670c0000b2',
       image_url: 'https://xxx.cloudfront.net/xxx/:version.jpg',
-      image_versions: [
-        'icon',
-        'large',
-      ],
+      image_versions: ['icon', 'large'],
       image_urls: {
         icon: 'https://xxx.cloudfront.net/xxx/icon.png',
         large: 'https://xxx.cloudfront.net/xxx/large.jpg',
@@ -54,7 +48,10 @@ describe('Artwork type', () => {
     Artwork.__Rewire__('gravity', gravity);
 
     rootValue = {
-      artworkLoader: sinon.stub().withArgs(artwork.id).returns(Promise.resolve(artwork)),
+      artworkLoader: sinon
+        .stub()
+        .withArgs(artwork.id)
+        .returns(Promise.resolve(artwork)),
     };
   });
 
@@ -80,30 +77,28 @@ describe('Artwork type', () => {
       const noSales = Promise.resolve([]);
       rootValue.relatedSalesLoader = sinon.stub().returns(noSales);
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_contactable: true,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_contactable: true,
+          },
         });
+      });
     });
 
     it('is not contactable if it has related sales', () => {
       const sales = Promise.resolve([sale]);
       rootValue.relatedSalesLoader = sinon.stub().returns(sales);
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_contactable: false,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_contactable: false,
+          },
         });
+      });
     });
   });
 
@@ -121,15 +116,14 @@ describe('Artwork type', () => {
       artwork.inquireable = true;
       artwork.price = '$420';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_purchasable: true,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_purchasable: true,
+          },
         });
+      });
     });
 
     it('is not purchasable if it has multiple edition sets', () => {
@@ -137,60 +131,56 @@ describe('Artwork type', () => {
       artwork.price = '$420';
       artwork.edition_sets = [{}];
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_purchasable: false,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_purchasable: false,
+          },
         });
+      });
     });
 
     it('is not purchasable if it is inquireable without an exact price', () => {
       artwork.inquireable = true;
       artwork.price = '$420 - $500';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_purchasable: false,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_purchasable: false,
+          },
         });
+      });
     });
 
     it('is not purchasable if it is not inquireable with an exact price', () => {
       artwork.inquireable = false;
       artwork.price = '$420';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_purchasable: false,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_purchasable: false,
+          },
         });
+      });
     });
 
     it('is not purchasable if it is inquireable with a blank price', () => {
       artwork.inquireable = true;
       artwork.price = '';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_purchasable: false,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_purchasable: false,
+          },
         });
+      });
     });
 
     it('is not purchasable if it is inquireable w/ an exact price but not for sale', () => {
@@ -198,15 +188,14 @@ describe('Artwork type', () => {
       artwork.price = '$420';
       artwork.forsale = false;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_purchasable: false,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_purchasable: false,
+          },
         });
+      });
     });
   });
 
@@ -224,16 +213,15 @@ describe('Artwork type', () => {
     it('returns the first default image', () => {
       artwork.images = artworkImages;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              image: {
-                id: '56b64ed2cd530e670c0000b2',
-              },
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            image: {
+              id: '56b64ed2cd530e670c0000b2',
             },
-          });
+          },
         });
+      });
     });
   });
 
@@ -254,29 +242,27 @@ describe('Artwork type', () => {
       ];
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve(sales));
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_in_auction: true,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_in_auction: true,
+          },
         });
+      });
     });
 
     it('is false if the artwork is not in any sales that are auctions', () => {
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]));
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_in_auction: false,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_in_auction: false,
+          },
         });
+      });
     });
   });
 
@@ -295,15 +281,14 @@ describe('Artwork type', () => {
       artwork.price = null;
       artwork.availability = 'on hold';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              sale_message: 'On hold',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            sale_message: 'On hold',
+          },
         });
+      });
     });
 
     it('returns "[Price], on hold" if work is on hold with a price', () => {
@@ -311,58 +296,54 @@ describe('Artwork type', () => {
       artwork.price = '$420,000';
       artwork.availability = 'on hold';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              sale_message: '$420,000, on hold',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            sale_message: '$420,000, on hold',
+          },
         });
+      });
     });
 
     it('returns "Sold" if work is sold', () => {
       artwork.sale_message = '$420,000 - Sold';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              sale_message: 'Sold',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            sale_message: 'Sold',
+          },
         });
+      });
     });
 
     it('returns null if work is not for sale', () => {
       artwork.availability = 'not for sale';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              sale_message: null,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            sale_message: null,
+          },
         });
+      });
     });
 
     it('returns the gravity sale_message if for sale', () => {
       artwork.availability = 'for sale';
       artwork.sale_message = 'something from gravity';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              sale_message: 'something from gravity',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            sale_message: 'something from gravity',
+          },
         });
+      });
     });
   });
 
@@ -379,57 +360,53 @@ describe('Artwork type', () => {
     it('returns custom text for an auction partner type', () => {
       artwork.partner = { type: 'Auction' };
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              contact_message: 'Hello, I am interested in placing a bid on this work. Please send me more information.', // eslint-disable-line max-len
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            contact_message: 'Hello, I am interested in placing a bid on this work. Please send me more information.', // eslint-disable-line max-len
+          },
         });
+      });
     });
 
     it('returns custom text for a sold work', () => {
       artwork.availability = 'sold';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              contact_message: 'Hi, I’m interested in similar works by this artist. Could you please let me know if you have anything available?', // eslint-disable-line max-len
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            contact_message: 'Hi, I’m interested in similar works by this artist. Could you please let me know if you have anything available?', // eslint-disable-line max-len
+          },
         });
+      });
     });
 
     it('returns custom text for an on hold work', () => {
       artwork.availability = 'on hold';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              contact_message: 'Hi, I’m interested in purchasing this work. Could you please provide more information about the piece?', // eslint-disable-line max-len
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            contact_message: 'Hi, I’m interested in purchasing this work. Could you please provide more information about the piece?', // eslint-disable-line max-len
+          },
         });
+      });
     });
 
     it('returns nothing for a not for sale work', () => {
       artwork.availability = 'not for sale';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              contact_message: null,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            contact_message: null,
+          },
         });
+      });
     });
   });
 
@@ -446,29 +423,27 @@ describe('Artwork type', () => {
     it('is true if the artwork has any sales that are open auctions', () => {
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([{}]));
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_biddable: true,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_biddable: true,
+          },
         });
+      });
     });
 
     it('is false if the artwork is not in any sales that are auctions', () => {
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]));
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_biddable: false,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_biddable: false,
+          },
         });
+      });
     });
   });
 
@@ -484,22 +459,23 @@ describe('Artwork type', () => {
 
     it('is true if the artwork is acquireable and in an open auction with no bids', () => {
       artwork.acquireable = true;
-      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([{ id: 'sale-id' }]));
+      rootValue.salesLoader = sinon
+        .stub()
+        .returns(Promise.resolve([{ id: 'sale-id' }]));
 
       gravity
         // Sale Artwork
         .onCall(0)
         .returns(Promise.resolve({ bidder_positions_count: 0 }));
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_buy_nowable: true,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_buy_nowable: true,
+          },
         });
+      });
     });
   });
 
@@ -510,7 +486,9 @@ describe('Artwork type', () => {
         name: 'Y2K',
         end_at: moment.utc('1999-12-31').format(),
       });
-      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([relatedSale]));
+      rootValue.salesLoader = sinon
+        .stub()
+        .returns(Promise.resolve([relatedSale]));
       rootValue.relatedFairsLoader = sinon.stub().returns(Promise.resolve([]));
       rootValue.relatedShowsLoader = sinon.stub().returns(Promise.resolve([]));
 
@@ -533,15 +511,14 @@ describe('Artwork type', () => {
         }
       `;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data.artwork.banner).toEqual({
-            __typename: 'ArtworkContextAuction',
-            name: 'Y2K',
-            href: '/auction/existy',
-            end_at: '31:12:1999',
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data.artwork.banner).toEqual({
+          __typename: 'ArtworkContextAuction',
+          name: 'Y2K',
+          href: '/auction/existy',
+          end_at: '31:12:1999',
         });
+      });
     });
   });
 
@@ -559,10 +536,9 @@ describe('Artwork type', () => {
       it('returns false if the artwork is not shareable', () => {
         artwork.can_share_image = false;
 
-        return runQuery(query, rootValue)
-          .then(data => {
-            expect(data.artwork.is_shareable).toBe(false);
-          });
+        return runQuery(query, rootValue).then(data => {
+          expect(data.artwork.is_shareable).toBe(false);
+        });
       });
     });
 
@@ -581,10 +557,9 @@ describe('Artwork type', () => {
           artwork.width = 100;
           artwork.height = 100;
 
-          return runQuery(query, rootValue)
-            .then(data => {
-              expect(data.artwork.is_hangable).toBe(true);
-            });
+          return runQuery(query, rootValue).then(data => {
+            expect(data.artwork.is_hangable).toBe(true);
+          });
         });
       });
 
@@ -594,10 +569,9 @@ describe('Artwork type', () => {
           artwork.width = 100;
           artwork.height = 100;
 
-          return runQuery(query, rootValue)
-            .then(data => {
-              expect(data.artwork.is_hangable).toBe(false);
-            });
+          return runQuery(query, rootValue).then(data => {
+            expect(data.artwork.is_hangable).toBe(false);
+          });
         });
 
         it('is not hangable if the work is 3d', () => {
@@ -605,10 +579,9 @@ describe('Artwork type', () => {
           artwork.height = 100;
           artwork.depth = 100;
 
-          return runQuery(query, rootValue)
-            .then(data => {
-              expect(data.artwork.is_hangable).toBe(false);
-            });
+          return runQuery(query, rootValue).then(data => {
+            expect(data.artwork.is_hangable).toBe(false);
+          });
         });
 
         it('is not hangable if the dimensions are unreasonably large', () => {
@@ -616,19 +589,17 @@ describe('Artwork type', () => {
           artwork.height = '10000';
           artwork.metric = 'cm';
 
-          return runQuery(query, rootValue)
-            .then(data => {
-              expect(data.artwork.is_hangable).toBe(false);
-            });
+          return runQuery(query, rootValue).then(data => {
+            expect(data.artwork.is_hangable).toBe(false);
+          });
         });
 
         it('is not hangable if there is no dimensions', () => {
           artwork.dimensions = {};
 
-          return runQuery(query, rootValue)
-            .then(data => {
-              expect(data.artwork.is_hangable).toBe(false);
-            });
+          return runQuery(query, rootValue).then(data => {
+            expect(data.artwork.is_hangable).toBe(false);
+          });
         });
       });
     });
@@ -648,10 +619,9 @@ describe('Artwork type', () => {
       it('removes the hardcoded signature label if present', () => {
         artwork.signature = 'Signature: Foo *bar*';
 
-        return runQuery(query, rootValue)
-          .then(({ artwork: { signature } }) => {
-            expect(signature).toBe('<p>Foo <em>bar</em></p>\n');
-          });
+        return runQuery(query, rootValue).then(({ artwork: { signature } }) => {
+          expect(signature).toBe('<p>Foo <em>bar</em></p>\n');
+        });
       });
     });
   });
@@ -669,44 +639,41 @@ describe('Artwork type', () => {
     it('returns true if artwork price is a range.', () => {
       artwork.price = '$200 - $300';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_price_range: true,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_price_range: true,
+          },
         });
+      });
     });
 
     it('returns false if artwork price is not a range.', () => {
       artwork.price = '$1000';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_price_range: false,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_price_range: false,
+          },
         });
+      });
     });
 
     it('returns false if artwork price is a range with multiple editions.', () => {
       artwork.price = '$200 - $300';
       artwork.edition_sets = [{}];
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              id: 'richard-prince-untitled-portrait',
-              is_price_range: false,
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: 'richard-prince-untitled-portrait',
+            is_price_range: false,
+          },
         });
+      });
     });
   });
 
@@ -722,27 +689,25 @@ describe('Artwork type', () => {
     it('is Untitled when its title is null', () => {
       artwork.title = null;
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              title: 'Untitled',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            title: 'Untitled',
+          },
         });
+      });
     });
 
     it('is Untitled title when its title is empty', () => {
       artwork.title = '';
 
-      return runQuery(query, rootValue)
-        .then(data => {
-          expect(data).toEqual({
-            artwork: {
-              title: 'Untitled',
-            },
-          });
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            title: 'Untitled',
+          },
         });
+      });
     });
   });
 });

@@ -2,11 +2,7 @@
 
 import { map, orderBy } from 'lodash';
 import AggregationCount from './aggregation_count';
-import {
-  GraphQLObjectType,
-  GraphQLEnumType,
-  GraphQLList,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLEnumType, GraphQLList } from 'graphql';
 
 export const SaleArtworksAggregation = new GraphQLEnumType({
   name: 'SaleArtworkAggregation',
@@ -27,8 +23,8 @@ export const SaleArtworksAggregation = new GraphQLEnumType({
 });
 
 const sorts = {
-  default: (counts) => orderBy(counts, ['count'], ['desc']),
-  artist: (counts) => orderBy(counts, ['sortable_id', 'count'], ['asc', 'desc']),
+  default: counts => orderBy(counts, ['count'], ['desc']),
+  artist: counts => orderBy(counts, ['sortable_id', 'count'], ['asc', 'desc']),
 };
 
 export const SaleArtworksAggregationResultsType = new GraphQLObjectType({

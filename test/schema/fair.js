@@ -45,25 +45,22 @@ describe('Fair type', () => {
       private: false,
     };
 
-    gravity
-      .onCall(1)
-      .returns(Promise.resolve(profileData));
+    gravity.onCall(1).returns(Promise.resolve(profileData));
 
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          fair: {
-            id: 'the-armory-show-2017',
-            name: 'The Armory Show 2017',
-            organizer: {
-              profile_id: 'the-armory-show',
-              profile: {
-                is_publically_visible: true,
-              },
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        fair: {
+          id: 'the-armory-show-2017',
+          name: 'The Armory Show 2017',
+          organizer: {
+            profile_id: 'the-armory-show',
+            profile: {
+              is_publically_visible: true,
             },
           },
-        });
+        },
       });
+    });
   });
 
   it('is_publically_visible returns false when profile is not published', () => {
@@ -73,25 +70,22 @@ describe('Fair type', () => {
       private: false,
     };
 
-    gravity
-      .onCall(1)
-      .returns(Promise.resolve(unpublishedProfileData));
+    gravity.onCall(1).returns(Promise.resolve(unpublishedProfileData));
 
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          fair: {
-            id: 'the-armory-show-2017',
-            name: 'The Armory Show 2017',
-            organizer: {
-              profile_id: 'the-armory-show',
-              profile: {
-                is_publically_visible: false,
-              },
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        fair: {
+          id: 'the-armory-show-2017',
+          name: 'The Armory Show 2017',
+          organizer: {
+            profile_id: 'the-armory-show',
+            profile: {
+              is_publically_visible: false,
             },
           },
-        });
+        },
       });
+    });
   });
 
   it('is_publically_visible returns false when profile is not published', () => {
@@ -101,24 +95,21 @@ describe('Fair type', () => {
       private: false,
     };
 
-    gravity
-      .onCall(1)
-      .returns(Promise.resolve(privateProfileData));
+    gravity.onCall(1).returns(Promise.resolve(privateProfileData));
 
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          fair: {
-            id: 'the-armory-show-2017',
-            name: 'The Armory Show 2017',
-            organizer: {
-              profile_id: 'the-armory-show',
-              profile: {
-                is_publically_visible: false,
-              },
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        fair: {
+          id: 'the-armory-show-2017',
+          name: 'The Armory Show 2017',
+          organizer: {
+            profile_id: 'the-armory-show',
+            profile: {
+              is_publically_visible: false,
             },
           },
-        });
+        },
       });
+    });
   });
 });

@@ -55,16 +55,15 @@ describe('Me', () => {
         },
       ];
 
-      gravity
-        .onCall(0)
-        .returns(Promise.resolve({ token: 'token' }));
+      gravity.onCall(0).returns(Promise.resolve({ token: 'token' }));
 
       impulse
         .onCall(0)
-        .returns(Promise.resolve({ conversations: [conversation1, conversation2] }));
+        .returns(
+          Promise.resolve({ conversations: [conversation1, conversation2] })
+        );
 
-      return runAuthenticatedQuery(query)
-      .then(({ me: { conversations } }) => {
+      return runAuthenticatedQuery(query).then(({ me: { conversations } }) => {
         expect(conversations).toEqual(expectedConversationData);
       });
     });

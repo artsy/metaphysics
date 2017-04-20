@@ -69,16 +69,19 @@ export const params = [
   },
 ];
 
-export default (modules) => {
+export default modules => {
   const clonedParams = clone(params);
-  return concat(modules, times(10, () => {
-    const index = Math.floor(Math.random() * clonedParams.length);
-    const moduleParams = clonedParams[index];
-    clonedParams.splice(index, 1);
-    return {
-      key: 'generic_gene',
-      display: true,
-      params: moduleParams,
-    };
-  }));
+  return concat(
+    modules,
+    times(10, () => {
+      const index = Math.floor(Math.random() * clonedParams.length);
+      const moduleParams = clonedParams[index];
+      clonedParams.splice(index, 1);
+      return {
+        key: 'generic_gene',
+        display: true,
+        params: moduleParams,
+      };
+    })
+  );
 };

@@ -4,8 +4,7 @@ import { Kind } from 'graphql/language';
 
 const FormattedNumber = new GraphQLScalarType({
   name: 'FormattedNumber',
-  description:
-    'The `FormattedNumber` type represents a number that can optionally be returned' +
+  description: 'The `FormattedNumber` type represents a number that can optionally be returned' +
     'as a formatted String. It does not try to coerce the type.',
   serialize: x => x,
   parseValue: x => x,

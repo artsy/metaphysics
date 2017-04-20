@@ -1,13 +1,6 @@
 import moment from 'moment';
-import {
-  isExisty,
-  exclude,
-  existyValue,
-} from '../lib/helpers';
-import {
-  find,
-  has,
-} from 'lodash';
+import { isExisty, exclude, existyValue } from '../lib/helpers';
+import { find, has } from 'lodash';
 import gravity from '../lib/loaders/gravity';
 import total from '../lib/loaders/total';
 import numeral from './fields/numeral';
@@ -36,12 +29,17 @@ import {
 
 const kind = ({ artists, fair, artists_without_artworks, group }) => {
   if (isExisty(fair)) return 'fair';
-  if (group ||
-      artists.length > 1 ||
-      (artists_without_artworks && artists_without_artworks.length > 1)) {
+  if (
+    group ||
+    artists.length > 1 ||
+    (artists_without_artworks && artists_without_artworks.length > 1)
+  ) {
     return 'group';
   }
-  if (artists.length === 1 || (artists_without_artworks && artists_without_artworks.length === 1)) {
+  if (
+    artists.length === 1 ||
+    (artists_without_artworks && artists_without_artworks.length === 1)
+  ) {
     return 'solo';
   }
 };
@@ -49,7 +47,8 @@ const kind = ({ artists, fair, artists_without_artworks, group }) => {
 const ShowType = new GraphQLObjectType({
   name: 'Show',
   interfaces: [NodeInterface],
-  isTypeOf: (obj) => has(obj, 'is_reference') && has(obj, 'display_on_partner_profile'),
+  isTypeOf: obj =>
+    has(obj, 'is_reference') && has(obj, 'display_on_partner_profile'),
   fields: () => ({
     ...GravityIDFields,
     cached,
@@ -97,8 +96,7 @@ const ShowType = new GraphQLObjectType({
           fetch = gravity(path, options);
         }
 
-        return fetch
-          .then(exclude(options.exclude, 'id'));
+        return fetch.then(exclude(options.exclude, 'id'));
       },
     },
     artists_without_artworks: {
@@ -125,11 +123,10 @@ const ShowType = new GraphQLObjectType({
           return gravity(`partner/${partner.id}/show/${id}/artworks`, {
             size: 1,
             published: true,
-          })
-            .then(artworks => {
-              const artwork = artworks[0];
-              return artwork && Image.resolve(getDefault(artwork.images));
-            });
+          }).then(artworks => {
+            const artwork = artworks[0];
+            return artwork && Image.resolve(getDefault(artwork.images));
+          });
         }
       },
     },
@@ -146,14 +143,18 @@ const ShowType = new GraphQLObjectType({
               },
             },
             resolve: ({ id, partner }, options) => {
-              return total(`partner/${partner.id}/show/${id}/artworks`, options);
+              return total(
+                `partner/${partner.id}/show/${id}/artworks`,
+                options
+              );
             },
           },
-          eligible_artworks: numeral(({ eligible_artworks_count }) =>
-            eligible_artworks_count),
+          eligible_artworks: numeral(
+            ({ eligible_artworks_count }) => eligible_artworks_count
+          ),
         },
       }),
-      resolve: (partner_show) => partner_show,
+      resolve: partner_show => partner_show,
     },
     description: {
       type: GraphQLString,
@@ -169,8 +170,9 @@ const ShowType = new GraphQLObjectType({
         // Gravity redirects from /api/v1/show/:id => /api/v1/partner/:partner_id/show/:show_id
         // this creates issues where events will remain cached. Fetch the non-redirected
         // route to circumvent this
-        gravity(`partner/${partner.id}/show/${id}`)
-          .then(({ events }) => events),
+        gravity(`partner/${partner.id}/show/${id}`).then(
+          ({ events }) => events
+        ),
     },
     exhibition_period: {
       type: GraphQLString,
@@ -204,8 +206,9 @@ const ShowType = new GraphQLObjectType({
         },
       },
       resolve: ({ id }, options) => {
-        return gravity(`partner_show/${id}/images`, options)
-          .then(Image.resolve);
+        return gravity(`partner_show/${id}/images`, options).then(
+          Image.resolve
+        );
       },
     },
     is_active: {
@@ -231,7 +234,7 @@ const ShowType = new GraphQLObjectType({
     },
     kind: {
       type: GraphQLString,
-      resolve: (show) => {
+      resolve: show => {
         if (show.artists || show.artists_without_artworks) return kind(show);
         return gravity(`partner/${show.partner.id}/show/${show.id}`).then(kind);
       },
@@ -249,26 +252,21 @@ const ShowType = new GraphQLObjectType({
 
         return gravity(`partner/${partner.id}/show/${id}/artworks`, {
           published: true,
-        })
-          .then(artworks => {
-            Image.resolve(getDefault(find(artworks, { can_share_image: true })));
-          });
+        }).then(artworks => {
+          Image.resolve(getDefault(find(artworks, { can_share_image: true })));
+        });
       },
     },
     name: {
       type: GraphQLString,
       description: 'The exhibition title',
-      resolve: ({ name }) =>
-        isExisty(name) ? name.trim() : name,
+      resolve: ({ name }) => (isExisty(name) ? name.trim() : name),
     },
     partner: {
       type: new GraphQLUnionType({
         name: 'PartnerTypes',
-        types: [
-          Partner.type,
-          ExternalPartner.type,
-        ],
-        resolveType: (value) => {
+        types: [Partner.type, ExternalPartner.type],
+        resolveType: value => {
           if (value._links) {
             return ExternalPartner.type;
           }
@@ -303,8 +301,7 @@ const ShowType = new GraphQLObjectType({
     },
     type: {
       type: GraphQLString,
-      resolve: ({ fair }) =>
-      isExisty(fair) ? 'Fair Booth' : 'Show',
+      resolve: ({ fair }) => (isExisty(fair) ? 'Fair Booth' : 'Show'),
     },
   }),
 });
@@ -321,9 +318,11 @@ const Show = {
   resolve: (root, { id }) => {
     return gravity(`show/${id}`)
       .then(show => {
-        if (!show.displayable && !show.is_reference) return new Error('Show Not Found');
+        if (!show.displayable && !show.is_reference)
+          return new Error('Show Not Found');
         return show;
-      }).catch(() => null);
+      })
+      .catch(() => null);
   },
 };
 

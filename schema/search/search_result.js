@@ -5,11 +5,7 @@ import routing from '../../lib/routing';
 import gravity from '../../lib/loaders/gravity';
 import Image from '../image';
 import SearchEntityType from './search_entity';
-import {
-  GraphQLID,
-  GraphQLString,
-  GraphQLObjectType,
-} from 'graphql';
+import { GraphQLID, GraphQLString, GraphQLObjectType } from 'graphql';
 
 export const parseOgType = ({ pagemap }) => {
   const ogType = _.get(pagemap, ['metatags', '0', 'og:type'], '');
@@ -33,14 +29,13 @@ const SearchResultType = new GraphQLObjectType({
   fields: () => ({
     entity: {
       type: SearchEntityType,
-      resolve: (searchResult) => {
+      resolve: searchResult => {
         const id = parseId(searchResult);
         const type = parseOgType(searchResult);
-        return gravity(routing(type, id).api)
-          .then(response => {
-            response.type = type; // eslint-disable-line no-param-reassign
-            return response;
-          });
+        return gravity(routing(type, id).api).then(response => {
+          response.type = type; // eslint-disable-line no-param-reassign
+          return response;
+        });
       },
     },
     id: {

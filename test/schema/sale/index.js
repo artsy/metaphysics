@@ -33,76 +33,72 @@ describe('Sale type', () => {
 
     it('returns the correct values when the sale is closed', () => {
       sale.auction_state = 'closed';
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            sale: {
-              _id: '123',
-              is_preview: false,
-              is_open: false,
-              is_live_open: false,
-              is_closed: true,
-              auction_state: 'closed',
-              status: 'closed',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            _id: '123',
+            is_preview: false,
+            is_open: false,
+            is_live_open: false,
+            is_closed: true,
+            auction_state: 'closed',
+            status: 'closed',
+          },
         });
+      });
     });
 
     it('returns the correct values when the sale is in preview mode', () => {
       sale.auction_state = 'preview';
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            sale: {
-              _id: '123',
-              is_preview: true,
-              is_open: false,
-              is_live_open: false,
-              is_closed: false,
-              auction_state: 'preview',
-              status: 'preview',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            _id: '123',
+            is_preview: true,
+            is_open: false,
+            is_live_open: false,
+            is_closed: false,
+            auction_state: 'preview',
+            status: 'preview',
+          },
         });
+      });
     });
 
     it('returns the correct values when the sale is open', () => {
       sale.auction_state = 'open';
       sale.live_start_at = moment().add(2, 'days');
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            sale: {
-              _id: '123',
-              is_preview: false,
-              is_open: true,
-              is_live_open: false,
-              is_closed: false,
-              auction_state: 'open',
-              status: 'open',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            _id: '123',
+            is_preview: false,
+            is_open: true,
+            is_live_open: false,
+            is_closed: false,
+            auction_state: 'open',
+            status: 'open',
+          },
         });
+      });
     });
 
     it('returns the correct values when the sale is in live mode', () => {
       sale.auction_state = 'open';
       sale.live_start_at = moment().subtract(2, 'days');
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            sale: {
-              _id: '123',
-              is_preview: false,
-              is_open: true,
-              is_live_open: true,
-              is_closed: false,
-              auction_state: 'open',
-              status: 'open',
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            _id: '123',
+            is_preview: false,
+            is_open: true,
+            is_live_open: true,
+            is_closed: false,
+            auction_state: 'open',
+            status: 'open',
+          },
         });
+      });
     });
   });
 
@@ -120,15 +116,14 @@ describe('Sale type', () => {
         }
       `;
 
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            sale: {
-              _id: '123',
-              buyers_premium: null,
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            _id: '123',
+            buyers_premium: null,
+          },
         });
+      });
     });
 
     it('returns a valid object if there is a complete buyers premium', () => {
@@ -153,18 +148,19 @@ describe('Sale type', () => {
         }
       `;
 
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            sale: {
-              _id: '123',
-              buyers_premium: [{
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            _id: '123',
+            buyers_premium: [
+              {
                 amount: '$100',
                 cents: 10000,
-              }],
-            },
-          });
+              },
+            ],
+          },
         });
+      });
     });
   });
 
@@ -181,32 +177,30 @@ describe('Sale type', () => {
     `;
 
     it('does not error, but returns null for associated sale', () => {
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            sale: {
-              _id: '123',
-              associated_sale: null,
-            },
-          });
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            _id: '123',
+            associated_sale: null,
+          },
         });
+      });
     });
 
     it('returns the associated sale', () => {
       sale.associated_sale = {
         id: 'foo-foo',
       };
-      return runQuery(query)
-        .then(data => {
-          expect(data).toEqual({
-            sale: {
-              _id: '123',
-              associated_sale: {
-                id: 'foo-foo',
-              },
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            _id: '123',
+            associated_sale: {
+              id: 'foo-foo',
             },
-          });
+          },
         });
+      });
     });
   });
 });

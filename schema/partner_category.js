@@ -4,11 +4,7 @@ import cached from './fields/cached';
 import Partners from './partners';
 import CategoryType from './input_fields/category_type';
 import { IDFields } from './object_identification';
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-} from 'graphql';
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from 'graphql';
 
 const PartnerCategoryType = new GraphQLObjectType({
   name: 'PartnerCategory',
@@ -22,9 +18,13 @@ const PartnerCategoryType = new GraphQLObjectType({
     partners: {
       type: Partners.type,
       args: Partners.args,
-      resolve: ({ id }, options) => gravity('partners', _.defaults(options, {
-        partner_categories: [id],
-      })),
+      resolve: ({ id }, options) =>
+        gravity(
+          'partners',
+          _.defaults(options, {
+            partner_categories: [id],
+          })
+        ),
     },
   }),
 });

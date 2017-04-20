@@ -16,7 +16,7 @@ import {
 const ArticleType = new GraphQLObjectType({
   name: 'Article',
   interfaces: [NodeInterface],
-  isTypeOf: (obj) => has(obj, 'title') && has(obj, 'author'),
+  isTypeOf: obj => has(obj, 'title') && has(obj, 'author'),
   fields: () => ({
     ...IDFields,
     cached,

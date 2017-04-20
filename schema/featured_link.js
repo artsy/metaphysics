@@ -1,9 +1,6 @@
 import initials from './fields/initials';
 import Image from './image';
-import {
-  GraphQLString,
-  GraphQLObjectType,
-} from 'graphql';
+import { GraphQLString, GraphQLObjectType } from 'graphql';
 
 const FeaturedLinkType = new GraphQLObjectType({
   name: 'FeaturedLink',

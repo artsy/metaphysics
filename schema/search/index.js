@@ -19,7 +19,7 @@ const SearchType = new GraphQLObjectType({
     },
     total: {
       type: GraphQLInt,
-      resolve: (response) => response.searchInformation.totalResults,
+      resolve: response => response.searchInformation.totalResults,
     },
   }),
 });

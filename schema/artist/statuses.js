@@ -1,8 +1,5 @@
 import total from '../../lib/loaders/total';
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLBoolean } from 'graphql';
 
 const ArtistStatusesType = new GraphQLObjectType({
   name: 'ArtistStatuses',
@@ -62,14 +59,15 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     shows: {
       type: GraphQLBoolean,
-      resolve: ({ displayable_partner_shows_count }) => displayable_partner_shows_count > 0,
+      resolve: ({ displayable_partner_shows_count }) =>
+        displayable_partner_shows_count > 0,
     },
   },
 });
 
 const ArtistStatuses = {
   type: ArtistStatusesType,
-  resolve: (artist) => artist,
+  resolve: artist => artist,
 };
 
 export default ArtistStatuses;

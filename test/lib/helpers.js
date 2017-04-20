@@ -1,9 +1,4 @@
-import {
-  exclude,
-  toKey,
-  isExisty,
-  stripTags,
-} from '../../lib/helpers';
+import { exclude, toKey, isExisty, stripTags } from '../../lib/helpers';
 
 describe('exclude', () => {
   const xs = [
@@ -13,47 +8,45 @@ describe('exclude', () => {
   ];
 
   it('excludes objects given a list of values and which property to match against', () => {
-    expect(exclude(['foo', 'baz'], 'id')(xs))
-      .toEqual([
-        { id: 'bar', name: 'Bar' },
-      ]);
+    expect(exclude(['foo', 'baz'], 'id')(xs)).toEqual([
+      { id: 'bar', name: 'Bar' },
+    ]);
   });
 
   it('simply returns the list if invoked without arguments', () => {
-    expect(exclude()(xs))
-      .toEqual(xs);
+    expect(exclude()(xs)).toEqual(xs);
   });
 });
 
 describe('toKey', () => {
   it('returns a stringified key given a path', () => {
-    expect(toKey('foo/bar'))
-      .toBe('foo/bar?');
+    expect(toKey('foo/bar')).toBe('foo/bar?');
   });
 
   it('returns a stringified key given a path and an option', () => {
-    expect(toKey('foo/bar', { sort: 'asc' }))
-      .toBe('foo/bar?sort=asc');
+    expect(toKey('foo/bar', { sort: 'asc' })).toBe('foo/bar?sort=asc');
   });
 
   it('returns a stringified key given a path and multiple options', () => {
-    expect(toKey('foo/bar', {
-      sort: 'asc',
-      sleep: false,
-      size: 10,
-    }))
-      .toBe('foo/bar?size=10&sleep=false&sort=asc');
+    expect(
+      toKey('foo/bar', {
+        sort: 'asc',
+        sleep: false,
+        size: 10,
+      })
+    ).toBe('foo/bar?size=10&sleep=false&sort=asc');
   });
 
   it('sorts the option keys in alphabetical order', () => {
-    expect(toKey('foo/bar', {
-      a: 3,
-      z: 'whatever',
-      b: 99,
-      d: false,
-      c: 0,
-    }))
-      .toBe('foo/bar?a=3&b=99&c=0&d=false&z=whatever');
+    expect(
+      toKey('foo/bar', {
+        a: 3,
+        z: 'whatever',
+        b: 99,
+        d: false,
+        c: 0,
+      })
+    ).toBe('foo/bar?a=3&b=99&c=0&d=false&z=whatever');
   });
 });
 

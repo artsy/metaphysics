@@ -1,9 +1,6 @@
 import gravity from '../lib/loaders/gravity';
 import Artwork from './artwork';
-import {
-  GraphQLList,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLList, GraphQLString } from 'graphql';
 
 const Artworks = {
   type: new GraphQLList(Artwork.type),

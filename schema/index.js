@@ -33,10 +33,7 @@ import UpdateCollectorProfile from './me/update_collector_profile';
 import SaveArtwork from './me/save_artwork';
 import CausalityJWT from './causality_jwt';
 import ObjectIdentification from './object_identification';
-import {
-  GraphQLSchema,
-  GraphQLObjectType,
-} from 'graphql';
+import { GraphQLSchema, GraphQLObjectType } from 'graphql';
 
 const rootFields = {
   article: Article,

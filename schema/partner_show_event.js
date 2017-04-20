@@ -1,8 +1,5 @@
 import date from './fields/date';
-import {
-  GraphQLString,
-  GraphQLObjectType,
-} from 'graphql';
+import { GraphQLString, GraphQLObjectType } from 'graphql';
 
 const PartnerShowEventType = new GraphQLObjectType({
   name: 'PartnerShowEventType',
@@ -10,7 +7,7 @@ const PartnerShowEventType = new GraphQLObjectType({
     event_type: {
       type: GraphQLString,
       resolve: ({ event_type }) => {
-        return (event_type === 'Other') ? 'Event' : event_type;
+        return event_type === 'Other' ? 'Event' : event_type;
       },
     },
     description: {

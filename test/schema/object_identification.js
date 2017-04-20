@@ -25,7 +25,10 @@ describe('Object Identification', () => {
     const loaderName = _.keys(loaderTests[typeName])[0];
     const payload = loaderTests[typeName][loaderName];
     const rootValue = {
-      [loaderName]: sinon.stub().withArgs(payload.id).returns(Promise.resolve(payload)),
+      [loaderName]: sinon
+        .stub()
+        .withArgs(payload.id)
+        .returns(Promise.resolve(payload)),
     };
 
     describe(`for a ${typeName}`, () => {
@@ -91,7 +94,7 @@ describe('Object Identification', () => {
     },
   };
 
-  _.keys(tests).forEach((typeName) => {
+  _.keys(tests).forEach(typeName => {
     describe(`for a ${typeName}`, () => {
       const fieldName = _.snakeCase(typeName);
       const type = schema.__get__(typeName);
@@ -99,9 +102,12 @@ describe('Object Identification', () => {
       const payload = tests[typeName][api];
 
       beforeEach(() => {
-        type.__Rewire__(api, sinon.stub().returns(
-          Promise.resolve(_.assign({ id: 'foo-bar' }, payload))
-        ));
+        type.__Rewire__(
+          api,
+          sinon
+            .stub()
+            .returns(Promise.resolve(_.assign({ id: 'foo-bar' }, payload)))
+        );
       });
 
       afterEach(() => {

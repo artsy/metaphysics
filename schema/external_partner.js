@@ -1,11 +1,7 @@
 import galaxy from '../lib/loaders/galaxy';
 import { IDFields } from './object_identification';
 
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-} from 'graphql';
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from 'graphql';
 
 const ExternalPartnerType = new GraphQLObjectType({
   name: 'ExternalPartner',
@@ -33,7 +29,7 @@ const ExternalPartner = {
       description: 'The ID of the Partner',
     },
   },
-  resolve: (id) => galaxy(`galleries/${id}`),
+  resolve: id => galaxy(`galleries/${id}`),
 };
 
 export default ExternalPartner;

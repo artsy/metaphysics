@@ -31,15 +31,14 @@ describe('Profile type', () => {
   `;
 
   it('is_publically_visible returns true when profile is published', () => {
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          profile: {
-            id: 'the-armory-show',
-            is_publically_visible: true,
-          },
-        });
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        profile: {
+          id: 'the-armory-show',
+          is_publically_visible: true,
+        },
       });
+    });
   });
 });
 
@@ -76,14 +75,13 @@ describe('Profile type', () => {
   `;
 
   it('is_publically_visible returns false when profile is private', () => {
-    return runQuery(query)
-      .then(data => {
-        expect(data).toEqual({
-          profile: {
-            id: 'the-armory-show',
-            is_publically_visible: false,
-          },
-        });
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        profile: {
+          id: 'the-armory-show',
+          is_publically_visible: false,
+        },
       });
+    });
   });
 });

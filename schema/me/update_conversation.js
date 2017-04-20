@@ -1,11 +1,7 @@
 import impulse from '../../lib/loaders/impulse';
 import gravity from '../../lib/loaders/gravity';
 import { ConversationType, BuyerOutcomeTypes } from './conversations';
-import {
-  GraphQLList,
-  GraphQLString,
-  GraphQLNonNull,
-} from 'graphql';
+import { GraphQLList, GraphQLString, GraphQLNonNull } from 'graphql';
 const { IMPULSE_APPLICATION_ID } = process.env;
 import { mutationWithClientMutationId } from 'graphql-relay';
 
@@ -23,20 +19,29 @@ export default mutationWithClientMutationId({
   outputFields: {
     conversations: {
       type: new GraphQLList(ConversationType),
-      resolve: (conversations) => conversations,
+      resolve: conversations => conversations,
     },
   },
-  mutateAndGetPayload: ({ buyer_outcome, ids }, request, { rootValue: { accessToken } }) => {
+  mutateAndGetPayload: (
+    { buyer_outcome, ids },
+    request,
+    { rootValue: { accessToken } }
+  ) => {
     if (!accessToken) return null;
-    return gravity.with(accessToken, { method: 'POST' })('me/token', {
-      client_application_id: IMPULSE_APPLICATION_ID,
-    }).then(data => {
-      return Promise.all(
-        ids.map(id => impulse.with(data.token, { method: 'PUT' })(`conversations/${id}`, { buyer_outcome }))
-      )
-      .then(conversations => {
-        return conversations;
+    return gravity
+      .with(accessToken, { method: 'POST' })('me/token', {
+        client_application_id: IMPULSE_APPLICATION_ID,
+      })
+      .then(data => {
+        return Promise.all(
+          ids.map(id =>
+            impulse.with(data.token, { method: 'PUT' })(`conversations/${id}`, {
+              buyer_outcome,
+            })
+          )
+        ).then(conversations => {
+          return conversations;
+        });
       });
-    });
   },
 });

@@ -1,8 +1,4 @@
-import {
-  chain,
-  find,
-  has,
-} from 'lodash';
+import { chain, find, has } from 'lodash';
 import gravity from '../../lib/loaders/gravity';
 import { params as genericGenes } from './add_generic_genes';
 import Results from './results';
@@ -24,14 +20,17 @@ let possibleArgs;
 export const HomePageArtworkModuleType = new GraphQLObjectType({
   name: 'HomePageArtworkModule',
   interfaces: [NodeInterface],
-  isTypeOf: (obj) => has(obj, 'key') && has(obj, 'display'),
+  isTypeOf: obj => has(obj, 'key') && has(obj, 'display'),
   fields: () => ({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       description: 'A globally unique ID.',
       resolve: ({ key, params }) => {
         // Compose this ID from params that `resolve` uses to identify a rail later on.
-        const payload = chain(params).pick(possibleArgs).set('key', key).value();
+        const payload = chain(params)
+          .pick(possibleArgs)
+          .set('key', key)
+          .value();
         return toGlobalId('HomePageArtworkModule', JSON.stringify(payload));
       },
     },
@@ -92,7 +91,11 @@ const HomePageArtworkModule = {
       case 'followed_artist':
         return { key, display, params: { followed_artist_id } };
       case 'related_artists':
-        return { key, display, params: { followed_artist_id, related_artist_id } };
+        return {
+          key,
+          display,
+          params: { followed_artist_id, related_artist_id },
+        };
       default:
         return { key, display, params: {} };
     }

@@ -1,4 +1,4 @@
-export default(auction, fair) => {
+export default (auction, fair) => {
   const modules = [
     {
       key: 'current_fairs',

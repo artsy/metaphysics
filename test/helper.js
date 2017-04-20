@@ -39,7 +39,7 @@ global.runQuery = (query, rootValue = { accessToken: null, userID: null }) => {
  *
  * @see runQuery
  */
-global.runAuthenticatedQuery = (query) => {
+global.runAuthenticatedQuery = query => {
   return runQuery(query, { accessToken: 'secret', userID: 'user-42' });
 };
 

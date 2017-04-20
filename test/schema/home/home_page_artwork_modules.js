@@ -45,9 +45,7 @@ describe('HomePageArtworkModules', () => {
         // Modules fetch
         .onCall(0)
         .returns(Promise.resolve(modules));
-      relatedArtists
-        .onCall(0)
-        .returns(Promise.resolve(relatedArtistsResponse));
+      relatedArtists.onCall(0).returns(Promise.resolve(relatedArtistsResponse));
     });
 
     afterEach(() => {
@@ -85,7 +83,9 @@ describe('HomePageArtworkModules', () => {
           'generic_gene',
         ]);
 
-        const relatedArtistsModule = find(home_page.artwork_modules, { key: 'related_artists' });
+        const relatedArtistsModule = find(home_page.artwork_modules, {
+          key: 'related_artists',
+        });
         expect(relatedArtistsModule.params).toEqual({
           related_artist_id: 'charles-broskoski',
           followed_artist_id: 'pablo-picasso',
@@ -101,9 +101,7 @@ describe('HomePageArtworkModules', () => {
         },
       ];
 
-      relatedArtists
-        .onCall(0)
-        .returns(Promise.resolve(relatedArtistsResponse));
+      relatedArtists.onCall(0).returns(Promise.resolve(relatedArtistsResponse));
 
       const query = `
         {
@@ -134,7 +132,9 @@ describe('HomePageArtworkModules', () => {
           'generic_gene',
         ]);
 
-        const relatedArtistsModule = find(home_page.artwork_modules, { key: 'related_artists' });
+        const relatedArtistsModule = find(home_page.artwork_modules, {
+          key: 'related_artists',
+        });
         expect(relatedArtistsModule.params).toEqual({
           related_artist_id: 'charles-broskoski',
           followed_artist_id: 'pablo-picasso',
@@ -153,7 +153,9 @@ describe('HomePageArtworkModules', () => {
         }
       `;
 
-      return runAuthenticatedQuery(query).then(({ home_page: { artwork_modules } }) => {
+      return runAuthenticatedQuery(
+        query
+      ).then(({ home_page: { artwork_modules } }) => {
         // The order of rails not included in the preferred order list is left as-is from Gravity’s
         // modules endpoint response. Rails in the preferred order list that aren’t even included in
         // Gravity’s response do not lead to an error (the FOLLOWED_ARTISTS rail).

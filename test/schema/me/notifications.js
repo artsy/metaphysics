@@ -50,42 +50,46 @@ describe('Me', () => {
         pageInfo: {
           hasNextPage: true,
         },
-        edges: [{
-          node: {
-            __id: 'Tm90aWZpY2F0aW9uc0ZlZWRJdGVtOnVuaXF1ZS1pZC15bw==',
-            status: 'READ',
-            image: {
-              url: 'cloudfront.url',
+        edges: [
+          {
+            node: {
+              __id: 'Tm90aWZpY2F0aW9uc0ZlZWRJdGVtOnVuaXF1ZS1pZC15bw==',
+              status: 'READ',
+              image: {
+                url: 'cloudfront.url',
+              },
+              date: '2017',
+              artworks: [{ title: 'Artwork1' }, { title: 'Artwork2' }],
             },
-            date: '2017',
-            artworks: [{ title: 'Artwork1' }, { title: 'Artwork2' }],
           },
-        }],
+        ],
       };
 
       gravity
         // Feed fetch
         .onCall(0)
-        .returns(Promise.resolve({
-          total: 2,
-          feed: [
-            {
-              status: 'read',
-              object: { artists: [{ image_url: 'cloudfront.url' }] },
-              object_ids: ['artwork1', 'artwork2'],
-              date: '2017-02-17T17:19:44.000Z',
-              actors: 'Cats are the best actors.',
-              id: 'unique-id-yo',
-            },
-          ],
-        }))
-
+        .returns(
+          Promise.resolve({
+            total: 2,
+            feed: [
+              {
+                status: 'read',
+                object: { artists: [{ image_url: 'cloudfront.url' }] },
+                object_ids: ['artwork1', 'artwork2'],
+                date: '2017-02-17T17:19:44.000Z',
+                actors: 'Cats are the best actors.',
+                id: 'unique-id-yo',
+              },
+            ],
+          })
+        )
         // Artwork fetches
         .onCall(1)
         .returns(Promise.resolve([artwork1, artwork2]));
 
-      return runAuthenticatedQuery(query)
-      .then(({ me: { notifications_connection } }) => {
+      return runAuthenticatedQuery(
+        query
+      ).then(({ me: { notifications_connection } }) => {
         expect(notifications_connection).toEqual(expectedConnectionData);
       });
     });

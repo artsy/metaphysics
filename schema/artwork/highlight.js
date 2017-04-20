@@ -15,10 +15,7 @@ export const HighlightedArticleType = create(Article.type, {
 
 export const HighlightType = new GraphQLUnionType({
   name: 'Highlighted',
-  types: [
-    HighlightedShowType,
-    HighlightedArticleType,
-  ],
+  types: [HighlightedShowType, HighlightedArticleType],
 });
 
 export default HighlightType;

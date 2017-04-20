@@ -40,12 +40,11 @@ describe('UpdateCollectorProfile', () => {
       self_reported_purchases: 'treats',
     };
 
-    gravity
-      .onCall(0)
-      .returns(Promise.resolve(collectorProfile));
+    gravity.onCall(0).returns(Promise.resolve(collectorProfile));
 
-    return runAuthenticatedQuery(mutation)
-    .then(({ updateCollectorProfile }) => {
+    return runAuthenticatedQuery(
+      mutation
+    ).then(({ updateCollectorProfile }) => {
       expect(updateCollectorProfile).toEqual(expectedProfileData);
     });
   });

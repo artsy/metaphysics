@@ -1,8 +1,4 @@
-import {
-  GraphQLObjectType,
-  GraphQLID,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLID, GraphQLString } from 'graphql';
 
 const HomePageModuleParams = new GraphQLObjectType({
   name: 'HomePageModulesParams',

@@ -13,7 +13,9 @@ describe('APIs', () => {
       fetch.__Rewire__('request', request);
 
       return galaxy('foo/bar').then(() => {
-        expect(request.args[0][0]).toBe('https://galaxy-staging-herokuapp.com/foo/bar');
+        expect(request.args[0][0]).toBe(
+          'https://galaxy-staging-herokuapp.com/foo/bar'
+        );
         expect(request.args[0][1]).toEqual({
           headers: {
             Accept: 'application/vnd.galaxy-public+json',
@@ -27,7 +29,9 @@ describe('APIs', () => {
     });
 
     it('resolves when there is a successful JSON response', () => {
-      const request = sinon.stub().yields(null, { statusCode: 200, body: { foo: 'bar' } });
+      const request = sinon
+        .stub()
+        .yields(null, { statusCode: 200, body: { foo: 'bar' } });
       fetch.__Rewire__('request', request);
 
       return galaxy('foo/bar').then(({ body: { foo } }) => {
@@ -54,17 +58,24 @@ describe('APIs', () => {
     });
 
     it('rejects API errors', () => {
-      const request = sinon.stub().yields(null, { statusCode: 400, body: 'Unauthorized' });
+      const request = sinon
+        .stub()
+        .yields(null, { statusCode: 400, body: 'Unauthorized' });
       fetch.__Rewire__('request', request);
 
       return expectPromiseRejectionToMatch(galaxy('foo/bar'), 'Unauthorized');
     });
 
     it('rejects parse errors', () => {
-      const request = sinon.stub().yields(null, { statusCode: 200, body: 'not json' });
+      const request = sinon
+        .stub()
+        .yields(null, { statusCode: 200, body: 'not json' });
       fetch.__Rewire__('request', request);
 
-      return expectPromiseRejectionToMatch(galaxy('foo/bar'), /Unexpected token/);
+      return expectPromiseRejectionToMatch(
+        galaxy('foo/bar'),
+        /Unexpected token/
+      );
     });
   });
 });

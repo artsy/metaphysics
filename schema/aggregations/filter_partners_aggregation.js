@@ -45,7 +45,10 @@ export const FilterPartnersType = new GraphQLObjectType({
     aggregations: {
       type: new GraphQLList(PartnersAggregationResultsType),
       resolve: ({ aggregations }) =>
-      map(omit(aggregations, ['total']), (counts, slice) => ({ slice, counts })),
+        map(omit(aggregations, ['total']), (counts, slice) => ({
+          slice,
+          counts,
+        })),
     },
     hits: {
       type: new GraphQLList(Partner.type),

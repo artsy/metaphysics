@@ -31,17 +31,16 @@ describe('Artist Statuses', () => {
       }
     `;
 
-    return runQuery(query, rootValue)
-      .then(data => {
-        expect(data).toEqual({
-          artist: {
-            statuses: {
-              artworks: true,
-              shows: false,
-              cv: true,
-            },
+    return runQuery(query, rootValue).then(data => {
+      expect(data).toEqual({
+        artist: {
+          statuses: {
+            artworks: true,
+            shows: false,
+            cv: true,
           },
-        });
+        },
       });
+    });
   });
 });

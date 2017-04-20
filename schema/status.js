@@ -1,8 +1,5 @@
 import gravity from '../lib/apis/gravity'; // Uncached
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLBoolean } from 'graphql';
 
 const StatusType = new GraphQLObjectType({
   name: 'Status',
@@ -15,9 +12,9 @@ const StatusType = new GraphQLObjectType({
           ping: {
             type: GraphQLBoolean,
             resolve: () =>
-              gravity('system/ping')
-                .then(({ body: { ping } }) =>
-                  ping === 'pong'),
+              gravity('system/ping').then(
+                ({ body: { ping } }) => ping === 'pong'
+              ),
           },
         },
       }),

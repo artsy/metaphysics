@@ -28,8 +28,14 @@ export const FilterArtworksType = new GraphQLObjectType({
       description: 'Returns aggregation counts for the given filter query.',
       type: new GraphQLList(ArtworksAggregationResultsType),
       resolve: ({ aggregations }) => {
-        const whitelistedAggregations = omit(aggregations, ['total', 'followed_artists']);
-        return map(whitelistedAggregations, (counts, slice) => ({ slice, counts }));
+        const whitelistedAggregations = omit(aggregations, [
+          'total',
+          'followed_artists',
+        ]);
+        return map(whitelistedAggregations, (counts, slice) => ({
+          slice,
+          counts,
+        }));
       },
     },
     artworks_connection: {
@@ -50,13 +56,13 @@ export const FilterArtworksType = new GraphQLObjectType({
       type: new GraphQLObjectType({
         name: 'FilterArtworksCounts',
         fields: {
-          total: numeral(({ aggregations }) =>
-          aggregations.total.value),
-          followed_artists: numeral(({ aggregations }) =>
-          aggregations.followed_artists.value),
+          total: numeral(({ aggregations }) => aggregations.total.value),
+          followed_artists: numeral(
+            ({ aggregations }) => aggregations.followed_artists.value
+          ),
         },
       }),
-      resolve: (artist) => artist,
+      resolve: artist => artist,
     },
     followed_artists_total: {
       type: GraphQLInt,
@@ -74,7 +80,9 @@ export const FilterArtworksType = new GraphQLObjectType({
         if (!isExisty(aggregations.merchandisable_artists)) {
           return null;
         }
-        return gravity(`artists`, { ids: keys(aggregations.merchandisable_artists) });
+        return gravity(`artists`, {
+          ids: keys(aggregations.merchandisable_artists),
+        });
       },
     },
     total: {

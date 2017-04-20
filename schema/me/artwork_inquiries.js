@@ -1,10 +1,7 @@
 import gravity from '../../lib/loaders/gravity';
 import Artwork from '../artwork/index';
 import { pageable, getPagingParameters } from 'relay-cursor-paging';
-import {
-  connectionDefinitions,
-  connectionFromArraySlice,
-} from 'graphql-relay';
+import { connectionDefinitions, connectionFromArraySlice } from 'graphql-relay';
 import {
   GraphQLObjectType,
   GraphQLID,
@@ -35,8 +32,14 @@ export default {
   resolve: (root, options, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null;
     const { limit: size, offset } = getPagingParameters(options);
-    const gravityArgs = { size, offset, inquireable_type: 'artwork', total_count: true };
-    return gravity.with(accessToken, { headers: true })('me/inquiry_requests', gravityArgs)
+    const gravityArgs = {
+      size,
+      offset,
+      inquireable_type: 'artwork',
+      total_count: true,
+    };
+    return gravity
+      .with(accessToken, { headers: true })('me/inquiry_requests', gravityArgs)
       .then(({ body, headers }) => {
         return connectionFromArraySlice(body, options, {
           arrayLength: headers['x-total-count'],

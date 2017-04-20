@@ -20,7 +20,7 @@ const ProfileType = new GraphQLObjectType({
       type: GraphQLString,
     },
     counts: {
-      resolve: (profile) => profile,
+      resolve: profile => profile,
       type: new GraphQLObjectType({
         name: 'ProfileCounts',
         fields: {
@@ -51,7 +51,7 @@ const ProfileType = new GraphQLObjectType({
     },
     is_publically_visible: {
       type: GraphQLBoolean,
-      resolve: (profile) => profile && profile.published && !profile.private,
+      resolve: profile => profile && profile.published && !profile.private,
     },
   }),
 });

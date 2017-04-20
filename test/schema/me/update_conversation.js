@@ -36,23 +36,20 @@ describe('UpdateConversation', () => {
     };
 
     const expectedConversationData = {
-      conversations: [{
-        id: '3',
-        initial_message: 'omg im sooo interested',
-        from_email: 'percy@cat.com',
-      }],
+      conversations: [
+        {
+          id: '3',
+          initial_message: 'omg im sooo interested',
+          from_email: 'percy@cat.com',
+        },
+      ],
     };
 
-    gravity
-      .onCall(0)
-      .returns(Promise.resolve({ token: 'token' }));
+    gravity.onCall(0).returns(Promise.resolve({ token: 'token' }));
 
-    impulse
-      .onCall(0)
-      .returns(Promise.resolve(conversation));
+    impulse.onCall(0).returns(Promise.resolve(conversation));
 
-    return runAuthenticatedQuery(mutation)
-    .then(({ updateConversation }) => {
+    return runAuthenticatedQuery(mutation).then(({ updateConversation }) => {
       expect(updateConversation).toEqual(expectedConversationData);
     });
   });

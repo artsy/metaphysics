@@ -27,13 +27,12 @@ const OrderedSetType = new GraphQLObjectType({
     items: {
       type: new GraphQLList(ItemType),
       resolve: ({ id, item_type }) => {
-        return gravity(`set/${id}/items`)
-          .then(items => {
-            return items.map(item => {
-              item.item_type = item_type; // eslint-disable-line no-param-reassign
-              return item;
-            });
+        return gravity(`set/${id}/items`).then(items => {
+          return items.map(item => {
+            item.item_type = item_type; // eslint-disable-line no-param-reassign
+            return item;
           });
+        });
       },
     },
     name: {

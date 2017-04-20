@@ -11,17 +11,13 @@ export function isZoomable(image) {
   );
 }
 
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
 
 const DeepZoomType = new GraphQLObjectType({
   name: 'DeepZoom',
   fields: {
     Image: {
-      resolve: (image) => image,
+      resolve: image => image,
       type: new GraphQLObjectType({
         name: 'DeepZoomImage',
         fields: {
@@ -34,7 +30,7 @@ const DeepZoomType = new GraphQLObjectType({
             resolve: ({ tile_overlap }) => tile_overlap,
           },
           Size: {
-            resolve: (image) => image,
+            resolve: image => image,
             type: new GraphQLObjectType({
               name: 'DeepZoomImageSize',
               fields: {
@@ -56,9 +52,11 @@ const DeepZoomType = new GraphQLObjectType({
           Url: {
             type: GraphQLString,
             resolve: ({ tile_base_url }) => {
-              return tile_base_url
-              // Ensure trailing slash
-              .replace(/\/?$/, '/');
+              return (
+                tile_base_url
+                  // Ensure trailing slash
+                  .replace(/\/?$/, '/')
+              );
             },
           },
           xmlns: {
@@ -73,6 +71,5 @@ const DeepZoomType = new GraphQLObjectType({
 
 export default {
   type: DeepZoomType,
-  resolve: (image) =>
-    isZoomable(image) ? image : null,
+  resolve: image => (isZoomable(image) ? image : null),
 };
