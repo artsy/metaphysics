@@ -480,7 +480,8 @@ const Artist: GraphQLFieldConfig<ArtistType, *> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { id }, request, { rootValue: { artistLoader } }) => {
+  resolve: (root, { id }, request, resolver) => {
+    const { artistLoader } = (resolver.rootValue: any);
     return artistLoader(id);
   },
 };

@@ -21,12 +21,13 @@ const ArtistCarouselType = new GraphQLObjectType({
 
 const ArtistCarousel: GraphQLFieldConfig<ArtistCarouselType, *> = {
   type: ArtistCarouselType,
-  resolve: ({ id }, options, request, {
-    rootValue: {
+  resolve: ({ id }, options, request, resolver) => {
+    const {
       artistArtworksLoader,
       partnerShowImagesLoader,
       relatedShowsLoader,
-    } }) => {
+    } = (resolver.rootValue: any);
+
     return Promise.all([
       relatedShowsLoader(id, {
         artist_id: id,
