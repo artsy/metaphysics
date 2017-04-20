@@ -6,6 +6,7 @@
 		"christian-kohler.npm-intellisense",
 		"dbaeumer.vscode-eslint",
 		"flowtype.flow-for-vscode",
-		"Orta.vscode-jest"
+		"Orta.vscode-jest",
+		"esbenp.prettier-vscode"
 	]
 }

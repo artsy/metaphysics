@@ -6,5 +6,9 @@
     "flow.useNPMPackagedFlow": true,
     "search.exclude": {
         "flow-typed": true
-    }
+    },
+    "editor.formatOnSave": true,
+    "prettier.singleQuote": true,
+    "prettier.trailingComma": "es5",
+    "prettier.parser": "flow"
 }
