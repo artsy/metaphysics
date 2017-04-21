@@ -1,32 +1,28 @@
-import {
-  keys,
-  isUndefined,
-} from 'lodash';
-import request from 'request';
-import deepEqual from 'deep-equal';
+import { keys, isUndefined } from "lodash"
+import request from "request"
+import deepEqual from "deep-equal"
 
-const {
-  METAPHYSICS_STAGING_ENDPOINT,
-  METAPHYSICS_PRODUCTION_ENDPOINT,
-} = process.env;
+const { METAPHYSICS_STAGING_ENDPOINT, METAPHYSICS_PRODUCTION_ENDPOINT } = process.env
 
 const get = (url, options) => {
-  return new Promise((resolve, reject) => request(url, options, (err, response) => {
-    if (err) return reject(err);
-    resolve(JSON.parse(response.body));
-  }));
-};
+  return new Promise((resolve, reject) =>
+    request(url, options, (err, response) => {
+      if (err) return reject(err)
+      resolve(JSON.parse(response.body))
+    })
+  )
+}
 
-const metaphysics = (endpoint) => (query, vars = {}) => {
-  const variables = JSON.stringify(vars);
-  return get(endpoint, { method: 'GET', qs: { query, variables } });
-};
+const metaphysics = endpoint => (query, vars = {}) => {
+  const variables = JSON.stringify(vars)
+  return get(endpoint, { method: "GET", qs: { query, variables } })
+}
 
-const staging = metaphysics(METAPHYSICS_STAGING_ENDPOINT);
-const production = metaphysics(METAPHYSICS_PRODUCTION_ENDPOINT);
+const staging = metaphysics(METAPHYSICS_STAGING_ENDPOINT)
+const production = metaphysics(METAPHYSICS_PRODUCTION_ENDPOINT)
 
-describe('Integration specs', () => {
-  xdescribe('/artwork', () => {
+describe("Integration specs", () => {
+  xdescribe("/artwork", () => {
     const query = `
       query artwork($id: String!) {
         artwork(id: $id) {
@@ -91,19 +87,19 @@ describe('Integration specs', () => {
           href
         }
       }
-    `;
+    `
 
-    it('is in sync with production', () => {
+    it("is in sync with production", () => {
       return Promise.all([
-        staging(query, { id: 'cindy-sherman-untitled' }),
-        production(query, { id: 'cindy-sherman-untitled' }),
+        staging(query, { id: "cindy-sherman-untitled" }),
+        production(query, { id: "cindy-sherman-untitled" }),
       ]).then(([stagingResponse, productionResponse]) => {
-        deepEqual(stagingResponse, productionResponse).should.be.true();
-      });
-    });
-  });
+        deepEqual(stagingResponse, productionResponse).should.be.true()
+      })
+    })
+  })
 
-  describe('/artists', () => {
+  describe("/artists", () => {
     const query = `
       {
         featured_artists: ordered_sets(key: "homepage:featured-artists") {
@@ -146,14 +142,13 @@ describe('Integration specs', () => {
           }
         }
       }
-    `;
+    `
 
-    it('makes the query without error', () => {
-      return staging(query)
-        .then(({ errors, data }) => {
-          isUndefined(errors).should.be.true();
-          keys(data).should.eql(['featured_artists', 'featured_genes']);
-        });
-    });
-  });
-});
+    it("makes the query without error", () => {
+      return staging(query).then(({ errors, data }) => {
+        isUndefined(errors).should.be.true()
+        keys(data).should.eql(["featured_artists", "featured_genes"])
+      })
+    })
+  })
+})

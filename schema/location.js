@@ -1,16 +1,11 @@
-import { existyValue } from '../lib/helpers';
-import cached from './fields/cached';
-import DayScheduleType from './day_schedule';
-import { IDFields } from './object_identification';
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLFloat,
-  GraphQLList,
-} from 'graphql';
+import { existyValue } from "../lib/helpers"
+import cached from "./fields/cached"
+import DayScheduleType from "./day_schedule"
+import { IDFields } from "./object_identification"
+import { GraphQLString, GraphQLObjectType, GraphQLFloat, GraphQLList } from "graphql"
 
 const LocationType = new GraphQLObjectType({
-  name: 'Location',
+  name: "Location",
   fields: () => ({
     ...IDFields,
     cached,
@@ -29,7 +24,7 @@ const LocationType = new GraphQLObjectType({
     },
     coordinates: {
       type: new GraphQLObjectType({
-        name: 'coordinates',
+        name: "coordinates",
         fields: {
           lat: {
             type: GraphQLFloat,
@@ -58,11 +53,11 @@ const LocationType = new GraphQLObjectType({
       type: GraphQLString,
     },
   }),
-});
+})
 
 const Location = {
   type: LocationType,
-  description: 'A Location',
-};
+  description: "A Location",
+}
 
-export default Location;
+export default Location

@@ -1,60 +1,44 @@
-import _ from 'lodash';
-import {
-  isTwoDimensional,
-  isTooBig,
-  isEmbeddedVideo,
-  embed,
-} from './utilities';
-import {
-  enhance,
-  existyValue,
-  isExisty,
-} from '../../lib/helpers';
-import { connectionDefinitions } from 'graphql-relay';
-import cached from '../fields/cached';
-import { markdown } from '../fields/markdown';
-import Article from '../article';
-import Artist from '../artist';
-import Image, { getDefault } from '../image';
-import Fair from '../fair';
-import Sale from '../sale';
-import SaleArtwork from '../sale_artwork';
-import PartnerShow from '../partner_show';
-import PartnerShowSorts from '../sorts/partner_show_sorts';
-import Partner from '../partner';
-import Context from './context';
-import Meta, { artistNames } from './meta';
-import Highlight from './highlight';
-import Dimensions from '../dimensions';
-import EditionSet from '../edition_set';
-import ArtworkLayer from './layer';
-import ArtworkLayers, { artworkLayers } from './layers';
-import gravity from '../../lib/loaders/gravity';
-import positron from '../../lib/loaders/positron';
-import savedArtworkLoader from '../../lib/loaders/saved_artwork';
-import { GravityIDFields, NodeInterface } from '../object_identification';
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt,
-} from 'graphql';
+import _ from "lodash"
+import { isTwoDimensional, isTooBig, isEmbeddedVideo, embed } from "./utilities"
+import { enhance, existyValue, isExisty } from "../../lib/helpers"
+import { connectionDefinitions } from "graphql-relay"
+import cached from "../fields/cached"
+import { markdown } from "../fields/markdown"
+import Article from "../article"
+import Artist from "../artist"
+import Image, { getDefault } from "../image"
+import Fair from "../fair"
+import Sale from "../sale"
+import SaleArtwork from "../sale_artwork"
+import PartnerShow from "../partner_show"
+import PartnerShowSorts from "../sorts/partner_show_sorts"
+import Partner from "../partner"
+import Context from "./context"
+import Meta, { artistNames } from "./meta"
+import Highlight from "./highlight"
+import Dimensions from "../dimensions"
+import EditionSet from "../edition_set"
+import ArtworkLayer from "./layer"
+import ArtworkLayers, { artworkLayers } from "./layers"
+import gravity from "../../lib/loaders/gravity"
+import positron from "../../lib/loaders/positron"
+import savedArtworkLoader from "../../lib/loaders/saved_artwork"
+import { GravityIDFields, NodeInterface } from "../object_identification"
+import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
 
 const is_inquireable = ({ inquireable, acquireable }) => {
-  return (inquireable && !acquireable);
-};
+  return inquireable && !acquireable
+}
 
-const has_price_range = (price) => {
-  return new RegExp(/\-/).test(price);
-};
+const has_price_range = price => {
+  return new RegExp(/\-/).test(price)
+}
 
-const has_multiple_editions = (edition_sets) => {
-  return edition_sets && edition_sets.length > 0;
-};
+const has_multiple_editions = edition_sets => {
+  return edition_sets && edition_sets.length > 0
+}
 
-let Artwork;
+let Artwork
 
 export const artworkFields = () => {
   return {
@@ -65,14 +49,13 @@ export const artworkFields = () => {
       args: {
         shallow: {
           type: GraphQLBoolean,
-          description: 'Use whatever is in the original response instead of making a request',
+          description: "Use whatever is in the original response instead of making a request",
         },
       },
       resolve: ({ artist }, { shallow }, request, { rootValue: { artistLoader } }) => {
-        if (!artist) return null;
-        if (shallow) return artist;
-        return artistLoader(artist.id)
-          .catch(() => null);
+        if (!artist) return null
+        if (shallow) return artist
+        return artistLoader(artist.id).catch(() => null)
       },
     },
     artists: {
@@ -80,19 +63,17 @@ export const artworkFields = () => {
       args: {
         shallow: {
           type: GraphQLBoolean,
-          description: 'Use whatever is in the original response instead of making a request',
+          description: "Use whatever is in the original response instead of making a request",
         },
       },
       resolve: ({ artists }, { shallow }, request, { rootValue: { artistLoader } }) => {
-        if (shallow) return artists;
-        return Promise.all(
-          artists.map(artist => artistLoader(artist.id))
-        ).catch(() => []);
+        if (shallow) return artists
+        return Promise.all(artists.map(artist => artistLoader(artist.id))).catch(() => [])
       },
     },
     artist_names: {
       type: GraphQLString,
-      resolve: (artwork) => artistNames(artwork),
+      resolve: artwork => artistNames(artwork),
     },
     articles: {
       type: new GraphQLList(Article.type),
@@ -102,51 +83,50 @@ export const artworkFields = () => {
         },
       },
       resolve: ({ _id }, { size }) =>
-        positron('articles', { artwork_id: _id, published: true, limit: size })
-          .then(({ results }) => results),
+        positron("articles", {
+          artwork_id: _id,
+          published: true,
+          limit: size,
+        }).then(({ results }) => results),
     },
     availability: {
       type: GraphQLString,
     },
     can_share_image: {
       type: GraphQLBoolean,
-      deprecationReason: 'Favor `is_`-prefixed boolean attributes',
+      deprecationReason: "Favor `is_`-prefixed boolean attributes",
     },
     category: {
       type: GraphQLString,
     },
     collecting_institution: {
       type: GraphQLString,
-      resolve: ({ collecting_institution }) =>
-      existyValue(collecting_institution),
+      resolve: ({ collecting_institution }) => existyValue(collecting_institution),
     },
     contact_label: {
       type: GraphQLString,
       resolve: ({ partner }) => {
-        return (partner.type === 'Gallery') ? 'Gallery' : 'Seller';
+        return partner.type === "Gallery" ? "Gallery" : "Seller"
       },
     },
     contact_message: {
       type: GraphQLString,
-      description: 'Pre-filled inquiry text',
+      description: "Pre-filled inquiry text",
       resolve: ({ partner, availability }) => {
-        if (partner && partner.type === 'Auction') {
-          return [
-            'Hello, I am interested in placing a bid on this work.',
-            'Please send me more information.',
-          ].join(' ');
+        if (partner && partner.type === "Auction") {
+          return ["Hello, I am interested in placing a bid on this work.", "Please send me more information."].join(" ")
         }
-        if (availability === 'sold') {
+        if (availability === "sold") {
           return [
-            'Hi, I’m interested in similar works by this artist.',
-            'Could you please let me know if you have anything available?',
-          ].join(' ');
+            "Hi, I’m interested in similar works by this artist.",
+            "Could you please let me know if you have anything available?",
+          ].join(" ")
         }
-        if (availability !== 'not for sale') {
+        if (availability !== "not for sale") {
           return [
-            'Hi, I’m interested in purchasing this work.',
-            'Could you please provide more information about the piece?',
-          ].join(' ');
+            "Hi, I’m interested in purchasing this work.",
+            "Could you please provide more information about the piece?",
+          ].join(" ")
         }
       },
     },
@@ -161,7 +141,7 @@ export const artworkFields = () => {
     dimensions: Dimensions,
     embed: {
       type: GraphQLString,
-      description: 'Returns an HTML string representing the embedded content (video)',
+      description: "Returns an HTML string representing the embedded content (video)",
       args: {
         width: {
           type: GraphQLInt,
@@ -176,15 +156,14 @@ export const artworkFields = () => {
           defaultValue: false,
         },
       },
-      resolve: ({ website }, options) =>
-      isEmbeddedVideo ? embed(website, options) : null,
+      resolve: ({ website }, options) => (isEmbeddedVideo ? embed(website, options) : null),
     },
     edition_of: {
       type: GraphQLString,
       resolve: ({ unique, edition_sets }) => {
-        if (unique) return 'Unique';
+        if (unique) return "Unique"
         if (edition_sets && edition_sets.length === 1) {
-          return _.first(edition_sets).editions;
+          return _.first(edition_sets).editions
         }
       },
     },
@@ -196,29 +175,27 @@ export const artworkFields = () => {
     fair: {
       type: Fair.type,
       resolve: ({ id }, options, request, { rootValue: { relatedFairsLoader } }) => {
-        return relatedFairsLoader(id, { artwork: [id], size: 1 })
-          .then(_.first);
+        return relatedFairsLoader(id, { artwork: [id], size: 1 }).then(_.first)
       },
     },
     highlights: {
       type: new GraphQLList(Highlight),
-      description: 'Returns the highlighted shows and articles',
-      resolve: ({ id, _id }, options, request, {
-        rootValue: {
-          relatedShowsLoader,
-          articlesLoader,
-        } }) =>
-        Promise
-          .all([
-            relatedShowsLoader(id, { artwork: [id], size: 1, at_a_fair: false }),
-            articlesLoader(_id, { artwork_id: _id, published: true, limit: 1 })
-              .then(({ results }) => results),
-          ])
-          .then(([shows, articles]) => {
-            const highlightedShows = enhance(shows, { highlight_type: 'Show' });
-            const highlightedArticles = enhance(articles, { highlight_type: 'Article' });
-            return highlightedShows.concat(highlightedArticles);
-          }),
+      description: "Returns the highlighted shows and articles",
+      resolve: ({ id, _id }, options, request, { rootValue: { relatedShowsLoader, articlesLoader } }) =>
+        Promise.all([
+          relatedShowsLoader(id, { artwork: [id], size: 1, at_a_fair: false }),
+          articlesLoader(_id, {
+            artwork_id: _id,
+            published: true,
+            limit: 1,
+          }).then(({ results }) => results),
+        ]).then(([shows, articles]) => {
+          const highlightedShows = enhance(shows, { highlight_type: "Show" })
+          const highlightedArticles = enhance(articles, {
+            highlight_type: "Article",
+          })
+          return highlightedShows.concat(highlightedArticles)
+        }),
     },
     href: {
       type: GraphQLString,
@@ -227,7 +204,7 @@ export const artworkFields = () => {
     image: {
       type: Image.type,
       resolve: ({ images }) => {
-        return Image.resolve(getDefault(images));
+        return Image.resolve(getDefault(images))
       },
     },
     image_rights: {
@@ -236,11 +213,7 @@ export const artworkFields = () => {
     image_title: {
       type: GraphQLString,
       resolve: ({ artist, title, date }) => {
-        return _.compact([
-          (artist && artist.name),
-          (title && `‘${title}’`),
-          date,
-        ]).join(', ');
+        return _.compact([artist && artist.name, title && `‘${title}’`, date]).join(", ")
       },
     },
     images: {
@@ -251,81 +224,82 @@ export const artworkFields = () => {
         },
       },
       resolve: ({ images }, { size }) => {
-        const sorted = _.sortBy(images, 'position');
-        return Image.resolve(size ? _.take(sorted, size) : sorted);
+        const sorted = _.sortBy(images, "position")
+        return Image.resolve(size ? _.take(sorted, size) : sorted)
       },
     },
     is_acquireable: {
       type: GraphQLBoolean,
-      description: 'Whether work can be purchased through e-commerce',
+      description: "Whether work can be purchased through e-commerce",
       resolve: ({ acquireable }) => acquireable,
     },
     is_biddable: {
       type: GraphQLBoolean,
-      description: 'Is this artwork part of an auction that is currently running?',
+      description: "Is this artwork part of an auction that is currently running?",
       resolve: ({ sale_ids }, options, request, { rootValue: { salesLoader } }) => {
         if (sale_ids && sale_ids.length > 0) {
-          return salesLoader(null, { id: sale_ids, is_auction: true, live: true })
-            .then(sales => {
-              return sales.length > 0;
-            });
+          return salesLoader(null, {
+            id: sale_ids,
+            is_auction: true,
+            live: true,
+          }).then(sales => {
+            return sales.length > 0
+          })
         }
-        return false;
+        return false
       },
     },
     is_buy_nowable: {
       type: GraphQLBoolean,
-      description: 'When in an auction, can the work be bought before any bids are placed',
-      resolve: ({ id, acquireable, sale_ids }, options, request, {
-        rootValue: {
-          salesLoader,
-        } }) => {
+      description: "When in an auction, can the work be bought before any bids are placed",
+      resolve: ({ id, acquireable, sale_ids }, options, request, { rootValue: { salesLoader } }) => {
         if (sale_ids && sale_ids.length > 0 && acquireable) {
           return salesLoader(id, {
             id: sale_ids,
             is_auction: true,
-            auction_state: 'open',
+            auction_state: "open",
           })
-          .then(_.first)
-          .then(sale => {
-            if (!sale) return [false];
+            .then(_.first)
+            .then(sale => {
+              if (!sale) return [false]
 
-            return gravity(`sale/${sale.id}/sale_artwork/${id}`)
-            .then(saleArtwork => [sale, saleArtwork]);
-          })
-          .then(([sale, saleArtwork]) => {
-            if (!sale) return false;
+              return gravity(`sale/${sale.id}/sale_artwork/${id}`).then(saleArtwork => [sale, saleArtwork])
+            })
+            .then(([sale, saleArtwork]) => {
+              if (!sale) return false
 
-            return saleArtwork.bidder_positions_count < 1;
-          });
+              return saleArtwork.bidder_positions_count < 1
+            })
         }
-        return false;
+        return false
       },
     },
     is_comparable_with_auction_results: {
       type: GraphQLBoolean,
       resolve: ({ comparables_count, category }) => {
-        return (
-          comparables_count > 0 &&
-          category !== 'Architecture'
-        );
+        return comparables_count > 0 && category !== "Architecture"
       },
     },
     is_contactable: {
       type: GraphQLBoolean,
-      description: 'Are we able to display a contact form on artwork pages?',
-      deprecationReason: 'Prefer to use is_inquireable',
+      description: "Are we able to display a contact form on artwork pages?",
+      deprecationReason: "Prefer to use is_inquireable",
       resolve: (artwork, options, request, { rootValue: { relatedSalesLoader } }) => {
-        return relatedSalesLoader(null, { size: 1, active: true, artwork: [artwork.id] })
-        .then(sales => {
-          return (
-            artwork.forsale &&
-            !_.isEmpty(artwork.partner) &&
-            !artwork.acquireable &&
-            !artwork.partner.has_limited_fair_partnership &&
-            !sales.length
-          );
-        }).catch(() => false);
+        return relatedSalesLoader(null, {
+          size: 1,
+          active: true,
+          artwork: [artwork.id],
+        })
+          .then(sales => {
+            return (
+              artwork.forsale &&
+              !_.isEmpty(artwork.partner) &&
+              !artwork.acquireable &&
+              !artwork.partner.has_limited_fair_partnership &&
+              !sales.length
+            )
+          })
+          .catch(() => false)
       },
     },
     is_downloadable: {
@@ -338,7 +312,7 @@ export const artworkFields = () => {
     },
     is_ecommerce: {
       type: GraphQLBoolean,
-      deprecationReason: 'Should not be used to determine anything UI-level',
+      deprecationReason: "Should not be used to determine anything UI-level",
       resolve: ({ ecommerce }) => ecommerce,
     },
     is_for_sale: {
@@ -347,46 +321,47 @@ export const artworkFields = () => {
     },
     is_hangable: {
       type: GraphQLBoolean,
-      resolve: (artwork) => {
+      resolve: artwork => {
         return (
-          !_.includes(artwork.category, 'sculpture', 'installation', 'design') &&
+          !_.includes(artwork.category, "sculpture", "installation", "design") &&
           isTwoDimensional(artwork) &&
           !isTooBig(artwork)
-        );
+        )
       },
     },
     is_inquireable: {
       type: GraphQLBoolean,
-      description: 'Do we want to encourage inquiries on this work?',
-      resolve: (artwork) => is_inquireable(artwork),
+      description: "Do we want to encourage inquiries on this work?",
+      resolve: artwork => is_inquireable(artwork),
     },
     is_in_auction: {
       type: GraphQLBoolean,
-      description: 'Is this artwork part of an auction?',
+      description: "Is this artwork part of an auction?",
       resolve: ({ sale_ids }, options, request, { rootValue: { salesLoader } }) => {
         if (sale_ids && sale_ids.length > 0) {
-          return salesLoader(null, { id: sale_ids, is_auction: true })
-          .then(sales => {
-            return sales.length > 0;
-          });
+          return salesLoader(null, {
+            id: sale_ids,
+            is_auction: true,
+          }).then(sales => {
+            return sales.length > 0
+          })
         }
-        return false;
+        return false
       },
     },
     is_in_show: {
       type: GraphQLBoolean,
-      description: 'Is this artwork part of a current show',
+      description: "Is this artwork part of a current show",
       resolve: ({ id }, options, request, { rootValue: { relatedShowsLoader } }) =>
-      relatedShowsLoader(null, { active: true, size: 1, artwork: [id] })
-      .then(shows => shows.length > 0),
+        relatedShowsLoader(null, { active: true, size: 1, artwork: [id] }).then(shows => shows.length > 0),
     },
     is_not_for_sale: {
       type: GraphQLString,
-      resolve: ({ availability }) => availability === 'not for sale',
+      resolve: ({ availability }) => availability === "not for sale",
     },
     is_on_hold: {
       type: GraphQLString,
-      resolve: ({ availability }) => availability === 'on hold',
+      resolve: ({ availability }) => availability === "on hold",
     },
     is_price_hidden: {
       type: GraphQLBoolean,
@@ -398,25 +373,22 @@ export const artworkFields = () => {
     },
     is_purchasable: {
       type: GraphQLBoolean,
-      description: 'True for inquireable artworks that have an exact price.',
-      resolve: (artwork) => {
+      description: "True for inquireable artworks that have an exact price.",
+      resolve: artwork => {
         return (
           !has_multiple_editions(artwork.edition_sets) &&
           is_inquireable(artwork) &&
           isExisty(artwork.price) &&
           !has_price_range(artwork.price) &&
           artwork.forsale
-        );
+        )
       },
     },
     is_saved: {
       type: GraphQLBoolean,
-      resolve: ({ id }, {}, request, { rootValue: {
-        accessToken, userID } }) => {
-        if (!accessToken) return false;
-        return savedArtworkLoader
-          .load(JSON.stringify({ id, userID, accessToken }))
-          .then(({ is_saved }) => is_saved);
+      resolve: ({ id }, {}, request, { rootValue: { accessToken, userID } }) => {
+        if (!accessToken) return false
+        return savedArtworkLoader.load(JSON.stringify({ id, userID, accessToken })).then(({ is_saved }) => is_saved)
       },
     },
     is_shareable: {
@@ -439,18 +411,13 @@ export const artworkFields = () => {
         },
       },
       resolve: (artwork, { id }) =>
-        artworkLayers(artwork.id)
-          .then(layers =>
-            !!id ? _.find(layers, { id }) : _.first(layers)
-          ),
+        artworkLayers(artwork.id).then(layers => (!!id ? _.find(layers, { id }) : _.first(layers))),
     },
     layers: {
       type: ArtworkLayers.type,
       resolve: ({ id }) => artworkLayers(id),
     },
-    literature: markdown(({ literature }) =>
-      literature.replace(/^literature:\s+/i, '')
-    ),
+    literature: markdown(({ literature }) => literature.replace(/^literature:\s+/i, "")),
     manufacturer: markdown(),
     medium: {
       type: GraphQLString,
@@ -461,21 +428,18 @@ export const artworkFields = () => {
       args: {
         shallow: {
           type: GraphQLBoolean,
-          description: 'Use whatever is in the original response instead of making a request',
+          description: "Use whatever is in the original response instead of making a request",
         },
       },
       resolve: ({ partner }, { shallow }, request, { rootValue: { partnerLoader } }) => {
-        if (shallow) return partner;
-        return partnerLoader(partner.id)
-          .catch(() => null);
+        if (shallow) return partner
+        return partnerLoader(partner.id).catch(() => null)
       },
     },
     price: {
       type: GraphQLString,
     },
-    provenance: markdown(({ provenance }) =>
-      provenance.replace(/^provenance:\s+/i, '')
-    ),
+    provenance: markdown(({ provenance }) => provenance.replace(/^provenance:\s+/i, "")),
     publisher: markdown(),
     related: {
       type: new GraphQLList(Artwork.type),
@@ -491,40 +455,40 @@ export const artworkFields = () => {
       type: Sale.type,
       resolve: ({ sale_ids }, options, request, { rootValue: { saleLoader } }) => {
         if (sale_ids && sale_ids.length > 0) {
-          const sale_id = _.first(sale_ids);
+          const sale_id = _.first(sale_ids)
           // don't error if the sale is unpublished
-          return saleLoader(sale_id).catch(() => null);
+          return saleLoader(sale_id).catch(() => null)
         }
-        return null;
+        return null
       },
     },
     sale_artwork: {
       type: SaleArtwork.type,
       resolve: ({ id, sale_ids }) => {
         if (sale_ids && sale_ids.length > 0) {
-          const sale_id = _.first(sale_ids);
+          const sale_id = _.first(sale_ids)
           // don't error if the sale/artwork is unpublished
-          return gravity(`sale/${sale_id}/sale_artwork/${id}`).catch(() => null);
+          return gravity(`sale/${sale_id}/sale_artwork/${id}`).catch(() => null)
         }
-        return null;
+        return null
       },
     },
     sale_message: {
       type: GraphQLString,
       resolve: ({ sale_message, availability, price }) => {
-        if (availability === 'on hold') {
+        if (availability === "on hold") {
           if (price) {
-            return `${price}, on hold`;
+            return `${price}, on hold`
           }
-          return 'On hold';
+          return "On hold"
         }
-        if (availability === 'not for sale') {
-          return null;
+        if (availability === "not for sale") {
+          return null
         }
-        if (sale_message && sale_message.indexOf('Sold') > -1) {
-          return 'Sold';
+        if (sale_message && sale_message.indexOf("Sold") > -1) {
+          return "Sold"
         }
-        return sale_message;
+        return sale_message
       },
     },
     series: markdown(),
@@ -544,12 +508,14 @@ export const artworkFields = () => {
           type: PartnerShowSorts.type,
         },
       },
-      resolve: ({ id }, { active, sort, at_a_fair }, request, {
-        rootValue: {
-          relatedShowsLoader,
-        } }) =>
-        relatedShowsLoader(null, { artwork: [id], size: 1, active, sort, at_a_fair })
-          .then(_.first),
+      resolve: ({ id }, { active, sort, at_a_fair }, request, { rootValue: { relatedShowsLoader } }) =>
+        relatedShowsLoader(null, {
+          artwork: [id],
+          size: 1,
+          active,
+          sort,
+          at_a_fair,
+        }).then(_.first),
     },
     shows: {
       type: new GraphQLList(PartnerShow.type),
@@ -567,63 +533,59 @@ export const artworkFields = () => {
           type: PartnerShowSorts.type,
         },
       },
-      resolve: ({ id }, { size, active, sort, at_a_fair }, request, {
-        rootValue: {
-          relatedShowsLoader,
-        } }) =>
-        relatedShowsLoader(null, { artwork: [id], active, size, sort, at_a_fair }),
+      resolve: ({ id }, { size, active, sort, at_a_fair }, request, { rootValue: { relatedShowsLoader } }) =>
+        relatedShowsLoader(null, {
+          artwork: [id],
+          active,
+          size,
+          sort,
+          at_a_fair,
+        }),
     },
-    signature: markdown(({ signature }) =>
-      signature.replace(/^signature:\s+/i, '')
-    ),
+    signature: markdown(({ signature }) => signature.replace(/^signature:\s+/i, "")),
     title: {
       type: GraphQLString,
-      resolve: ({ title }) => _.isEmpty(title) ? 'Untitled' : title,
+      resolve: ({ title }) => (_.isEmpty(title) ? "Untitled" : title),
     },
     to_s: {
       type: GraphQLString,
       resolve: ({ artist, title, date, partner }) => {
-        return _.compact([
-          (artist && artist.name),
-          (title && `‘${title}’`),
-          date,
-          (partner && partner.name),
-        ]).join(', ');
+        return _.compact([artist && artist.name, title && `‘${title}’`, date, partner && partner.name]).join(", ")
       },
     },
     website: {
       type: GraphQLString,
-      resolve: artwork =>
-      isEmbeddedVideo(artwork) ? null : artwork.website,
+      resolve: artwork => (isEmbeddedVideo(artwork) ? null : artwork.website),
     },
-  };
-};
+  }
+}
 
 export const ArtworkType = new GraphQLObjectType({
-  name: 'Artwork',
+  name: "Artwork",
   interfaces: [NodeInterface],
-  isTypeOf: (obj) => _.has(obj, 'title') && _.has(obj, 'artists'),
+  isTypeOf: obj => _.has(obj, "title") && _.has(obj, "artists"),
   fields: () => {
     return {
       ...artworkFields(),
       cached,
-    };
+    }
   },
-});
+})
 
 Artwork = {
   type: ArtworkType,
-  description: 'An Artwork',
+  description: "An Artwork",
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Artwork',
+      description: "The slug or ID of the Artwork",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { artworkLoader } }) =>
-    artworkLoader(id),
-};
+  resolve: (root, { id }, request, { rootValue: { artworkLoader } }) => artworkLoader(id),
+}
 
-export default Artwork;
+export default Artwork
 
-export const artworkConnection = connectionDefinitions({ nodeType: Artwork.type }).connectionType;
+export const artworkConnection = connectionDefinitions({
+  nodeType: Artwork.type,
+}).connectionType

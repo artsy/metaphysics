@@ -1,47 +1,40 @@
-import cached from '../fields/cached';
-import gravity from '../../lib/loaders/gravity';
-import { GravityIDFields } from '../object_identification';
-import {
-  GraphQLEnumType,
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLBoolean,
-} from 'graphql';
-import { shuffle } from 'lodash';
+import cached from "../fields/cached"
+import gravity from "../../lib/loaders/gravity"
+import { GravityIDFields } from "../object_identification"
+import { GraphQLEnumType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLBoolean } from "graphql"
+import { shuffle } from "lodash"
 
 const HomePageHeroUnitType = new GraphQLObjectType({
-  name: 'HomePageHeroUnit',
+  name: "HomePageHeroUnit",
   fields: {
     ...GravityIDFields,
     cached,
     mode: {
       type: new GraphQLEnumType({
-        name: 'HomePageHeroUnitMode',
+        name: "HomePageHeroUnitMode",
         values: {
           LEFT_DARK: {
-            value: 'left white',
+            value: "left white",
           },
           LEFT_LIGHT: {
-            value: 'left black',
+            value: "left black",
           },
           CENTERED_DARK: {
-            value: 'center white',
+            value: "center white",
           },
           CENTERED_LIGHT: {
-            value: 'center black',
+            value: "center black",
           },
           RIGHT_DARK: {
-            value: 'right white',
+            value: "right white",
           },
           RIGHT_LIGHT: {
-            value: 'right black',
+            value: "right black",
           },
         },
       }),
       resolve: ({ type, menu_color_class }) => {
-        return type.toLowerCase() + ' ' + menu_color_class.toLowerCase();
+        return type.toLowerCase() + " " + menu_color_class.toLowerCase()
       },
     },
     heading: {
@@ -54,7 +47,7 @@ const HomePageHeroUnitType = new GraphQLObjectType({
     title: {
       type: GraphQLString,
       resolve: ({ mobile_title, name, platform }) => {
-        return platform === 'desktop' ? name : mobile_title;
+        return platform === "desktop" ? name : mobile_title
       },
     },
     title_image_url: {
@@ -65,13 +58,13 @@ const HomePageHeroUnitType = new GraphQLObjectType({
       },
       type: GraphQLString,
       resolve: ({ title_image_url, title_image_retina_url, retina }) => {
-        return retina ? title_image_retina_url : title_image_url;
+        return retina ? title_image_retina_url : title_image_url
       },
     },
     subtitle: {
       type: GraphQLString,
       resolve: ({ mobile_description, description, platform }) => {
-        return platform === 'desktop' ? description : mobile_description;
+        return platform === "desktop" ? description : mobile_description
       },
     },
     link_text: {
@@ -82,17 +75,17 @@ const HomePageHeroUnitType = new GraphQLObjectType({
     },
     background_image_url: {
       type: GraphQLString,
-      description: 'The image to show, on desktop this defaults to the wide version.',
+      description: "The image to show, on desktop this defaults to the wide version.",
       args: {
         version: {
           type: new GraphQLEnumType({
-            name: 'HomePageHeroUnitImageVersion',
+            name: "HomePageHeroUnitImageVersion",
             values: {
               WIDE: {
-                value: 'wide',
+                value: "wide",
               },
               NARROW: {
-                value: 'narrow',
+                value: "narrow",
               },
             },
           }),
@@ -100,42 +93,44 @@ const HomePageHeroUnitType = new GraphQLObjectType({
       },
       resolve: ({ platform, background_image_url, background_image_mobile_url }, { version }) => {
         if (version) {
-          return version === 'wide' ? background_image_url : background_image_mobile_url;
+          return version === "wide" ? background_image_url : background_image_mobile_url
         }
-        return platform === 'desktop' ? background_image_url : background_image_mobile_url;
+        return platform === "desktop" ? background_image_url : background_image_mobile_url
       },
     },
   },
-});
+})
 
 const HomePageHeroUnits = {
   type: new GraphQLList(HomePageHeroUnitType),
-  description: 'A list of enabled hero units to show on the requested platform',
+  description: "A list of enabled hero units to show on the requested platform",
   args: {
     platform: {
-      type: new GraphQLNonNull(new GraphQLEnumType({
-        name: 'HomePageHeroUnitPlatform',
-        values: {
-          MOBILE: {
-            value: 'mobile',
+      type: new GraphQLNonNull(
+        new GraphQLEnumType({
+          name: "HomePageHeroUnitPlatform",
+          values: {
+            MOBILE: {
+              value: "mobile",
+            },
+            DESKTOP: {
+              value: "desktop",
+            },
+            MARTSY: {
+              value: "martsy",
+            },
           },
-          DESKTOP: {
-            value: 'desktop',
-          },
-          MARTSY: {
-            value: 'martsy',
-          },
-        },
-      })),
+        })
+      ),
     },
   },
   resolve: (_, { platform }) => {
-    const params = { enabled: true };
-    params[platform] = true;
-    return gravity('site_hero_units', params).then(units => {
-      return shuffle(units.map(unit => Object.assign({ platform }, unit)));
-    });
+    const params = { enabled: true }
+    params[platform] = true
+    return gravity("site_hero_units", params).then(units => {
+      return shuffle(units.map(unit => Object.assign({ platform }, unit)))
+    })
   },
-};
+}
 
-export default HomePageHeroUnits;
+export default HomePageHeroUnits

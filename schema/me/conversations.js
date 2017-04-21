@@ -1,6 +1,6 @@
-import date from '../fields/date';
-import impulse from '../../lib/loaders/impulse';
-import gravity from '../../lib/loaders/gravity';
+import date from "../fields/date"
+import impulse from "../../lib/loaders/impulse"
+import gravity from "../../lib/loaders/gravity"
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -9,43 +9,43 @@ import {
   GraphQLBoolean,
   GraphQLNonNull,
   GraphQLEnumType,
-} from 'graphql';
-const { IMPULSE_APPLICATION_ID } = process.env;
+} from "graphql"
+const { IMPULSE_APPLICATION_ID } = process.env
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
-  name: 'BuyerOutcomeTypes',
+  name: "BuyerOutcomeTypes",
   values: {
     PURCHASED: {
-      value: 'purchased',
+      value: "purchased",
     },
     STILL_CONSIDERING: {
-      value: 'still_considering',
+      value: "still_considering",
     },
     HIGH_PRICE: {
-      value: 'high_price',
+      value: "high_price",
     },
     LOST_INTEREST: {
-      value: 'lost_interest',
+      value: "lost_interest",
     },
     WORK_UNAVAILABLE: {
-      value: 'work_unavailable',
+      value: "work_unavailable",
     },
     OTHER: {
-      value: 'other',
+      value: "other",
     },
     BLANK: {
-      value: '',
+      value: "",
     },
   },
-});
+})
 
 export const ConversationFields = {
   id: {
-    description: 'Impulse id.',
+    description: "Impulse id.",
     type: GraphQLString,
   },
   inquiry_id: {
-    description: 'Gravity inquiry id.',
+    description: "Gravity inquiry id.",
     type: GraphQLString,
   },
   from_id: {
@@ -81,17 +81,17 @@ export const ConversationFields = {
   purchase_request: {
     type: GraphQLBoolean,
   },
-};
+}
 
 export const ConversationType = new GraphQLObjectType({
-  name: 'ConversationType',
-  description: 'A conversation.',
+  name: "ConversationType",
+  description: "A conversation.",
   fields: ConversationFields,
-});
+})
 
 export default {
   type: new GraphQLList(ConversationType),
-  decription: 'Conversations, usually between a user and partner.',
+  decription: "Conversations, usually between a user and partner.",
   args: {
     page: {
       type: GraphQLInt,
@@ -101,16 +101,20 @@ export default {
     },
   },
   resolve: (root, option, request, { rootValue: { accessToken, userID } }) => {
-    if (!accessToken) return null;
-    return gravity.with(accessToken, { method: 'POST' })('me/token', {
-      client_application_id: IMPULSE_APPLICATION_ID,
-    }).then(data => {
-      return impulse.with(data.token)('conversations', {
-        from_id: userID,
-        from_type: 'User',
-      }).then(impulseData => {
-        return impulseData.conversations;
-      });
-    });
+    if (!accessToken) return null
+    return gravity
+      .with(accessToken, { method: "POST" })("me/token", {
+        client_application_id: IMPULSE_APPLICATION_ID,
+      })
+      .then(data => {
+        return impulse
+          .with(data.token)("conversations", {
+            from_id: userID,
+            from_type: "User",
+          })
+          .then(impulseData => {
+            return impulseData.conversations
+          })
+      })
   },
-};
+}

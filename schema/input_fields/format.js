@@ -1,19 +1,20 @@
-import { GraphQLEnumType } from 'graphql';
+import { GraphQLEnumType } from "graphql"
 
 export default {
   type: new GraphQLEnumType({
-    name: 'Format',
+    name: "Format",
     values: {
       HTML: {
-        value: 'html',
+        value: "html",
       },
       PLAIN: {
-        value: 'plain',
+        value: "plain",
       },
-      markdown: { // Deprecated
-        value: 'markdown',
-        deprecationReason: 'deprecated',
+      markdown: {
+        // Deprecated
+        value: "markdown",
+        deprecationReason: "deprecated",
       },
     },
   }),
-};
+}

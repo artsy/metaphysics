@@ -1,17 +1,17 @@
-import qs from 'qs';
-import { isExisty } from '../../../lib/helpers';
+import qs from "qs"
+import { isExisty } from "../../../lib/helpers"
 
-const { GEMINI_ENDPOINT } = process.env;
+const { GEMINI_ENDPOINT } = process.env
 
 function resizeTo(mode, width, height) {
-  if (mode === 'crop') {
-    return 'fill';
+  if (mode === "crop") {
+    return "fill"
   } else if (isExisty(width) && !isExisty(height)) {
-    return 'width';
+    return "width"
   } else if (isExisty(height) && !isExisty(width)) {
-    return 'height';
+    return "height"
   }
-  return 'fit';
+  return "fit"
 }
 
 export default (src, mode, width, height) => {
@@ -21,7 +21,7 @@ export default (src, mode, width, height) => {
     height,
     quality: 95,
     src,
-  };
+  }
 
-  return `${GEMINI_ENDPOINT}/?${qs.stringify(options)}`;
-};
+  return `${GEMINI_ENDPOINT}/?${qs.stringify(options)}`
+}

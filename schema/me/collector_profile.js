@@ -1,11 +1,7 @@
-import date from '../fields/date';
-import gravity from '../../lib/loaders/gravity';
-import { IDFields } from '../object_identification';
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-} from 'graphql';
+import date from "../fields/date"
+import gravity from "../../lib/loaders/gravity"
+import { IDFields } from "../object_identification"
+import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
 
 export const CollectorProfileFields = {
   ...IDFields,
@@ -25,18 +21,18 @@ export const CollectorProfileFields = {
   loyalty_applicant_at: date,
   professional_buyer_at: date,
   professional_buyer_applied_at: date,
-};
+}
 
 export const CollectorProfileType = new GraphQLObjectType({
-  name: 'CollectorProfileType',
+  name: "CollectorProfileType",
   fields: CollectorProfileFields,
-});
+})
 
 export default {
   type: CollectorProfileType,
-  decription: 'A collector profile.',
+  decription: "A collector profile.",
   resolve: (root, option, request, { rootValue: { accessToken } }) => {
-    if (!accessToken) return null;
-    return gravity.with(accessToken)('me/collector_profile');
+    if (!accessToken) return null
+    return gravity.with(accessToken)("me/collector_profile")
   },
-};
+}

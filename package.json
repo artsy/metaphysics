@@ -21,7 +21,8 @@
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild": "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema"
+    "heroku-postbuild": "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
+    "pre-commit": "lint-staged"
   },
   "author": "",
   "license": "MIT",
@@ -80,7 +81,10 @@
     "expect.js": "^0.3.1",
     "flow-bin": "^0.37.0",
     "foreman": "^1.4.1",
+    "husky": "^0.13.3",
     "jest": "^19.0.2",
+    "lint-staged": "^3.4.0",
+    "prettier": "^1.2.2",
     "sinon": "^1.17.2"
   },
   "jest": {
@@ -91,5 +95,13 @@
       "/test/helper.js",
       "/test/__mocks__"
     ]
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add",
+      "jest --bail --findRelatedTests"
+    ]
   }
+
 }

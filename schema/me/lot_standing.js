@@ -1,58 +1,51 @@
-import { isExisty } from '../../lib/helpers';
-import gravity from '../../lib/loaders/gravity';
-import BidderPosition from '../bidder_position';
-import Bidder from '../bidder';
-import SaleArtwork from '../sale_artwork';
-import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLBoolean,
-} from 'graphql';
-
+import { isExisty } from "../../lib/helpers"
+import gravity from "../../lib/loaders/gravity"
+import BidderPosition from "../bidder_position"
+import Bidder from "../bidder"
+import SaleArtwork from "../sale_artwork"
+import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLBoolean } from "graphql"
 
 // is leading human bidder
-export const isLeadingBidder = (lotStanding) => isExisty(lotStanding.leading_position);
+export const isLeadingBidder = lotStanding => isExisty(lotStanding.leading_position)
 
-export const isHighestBidder = (lotStanding) =>
-  isLeadingBidder(lotStanding)
-    && lotStanding.sale_artwork.reserve_status !== 'reserve_not_met';
+export const isHighestBidder = lotStanding =>
+  isLeadingBidder(lotStanding) && lotStanding.sale_artwork.reserve_status !== "reserve_not_met"
 
 export const LotStandingType = new GraphQLObjectType({
-  name: 'LotStanding',
+  name: "LotStanding",
   fields: () => ({
     active_bid: {
       type: BidderPosition.type,
-      description: 'Your bid if it is currently winning',
-      resolve: (lotStanding) => isHighestBidder(lotStanding) ? lotStanding.leading_position : null,
+      description: "Your bid if it is currently winning",
+      resolve: lotStanding => (isHighestBidder(lotStanding) ? lotStanding.leading_position : null),
     },
     bidder: {
       type: Bidder.type,
     },
     is_highest_bidder: {
       type: GraphQLBoolean,
-      description: 'You are winning and reserve is met',
+      description: "You are winning and reserve is met",
       resolve: isHighestBidder,
     },
     is_leading_bidder: {
       type: GraphQLBoolean,
-      description: 'You are the leading bidder without regard to reserve',
+      description: "You are the leading bidder without regard to reserve",
       resolve: isLeadingBidder,
     },
     most_recent_bid: {
       type: BidderPosition.type,
-      description: 'Your most recent bid—which is not necessarily winning (may be higher or lower)',
+      description: "Your most recent bid—which is not necessarily winning (may be higher or lower)",
       resolve: ({ max_position }) => max_position,
     },
     sale_artwork: {
       type: SaleArtwork.type,
     },
   }),
-});
+})
 
 export default {
   type: LotStandingType,
-  description: 'The current user\'s status relating to bids on artworks',
+  description: "The current user's status relating to bids on artworks",
   args: {
     artwork_id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -62,15 +55,13 @@ export default {
     },
   },
   resolve: (root, { sale_id, artwork_id }, request, { rootValue: { accessToken } }) =>
-    Promise
-      .all([
-        gravity.with(accessToken)('me/lot_standings', {
-          sale_id,
-          artwork_id,
-        }),
-      ])
-      .then(([lotStanding]) => {
-        if (lotStanding.length === 0) return null;
-        return lotStanding[0];
+    Promise.all([
+      gravity.with(accessToken)("me/lot_standings", {
+        sale_id,
+        artwork_id,
       }),
-};
+    ]).then(([lotStanding]) => {
+      if (lotStanding.length === 0) return null
+      return lotStanding[0]
+    }),
+}

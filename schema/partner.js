@@ -1,35 +1,24 @@
-import {
-  assign,
-  has,
-  omit,
-} from 'lodash';
-import { exclude } from '../lib/helpers';
-import gravity from '../lib/loaders/gravity';
-import cached from './fields/cached';
-import initials from './fields/initials';
-import Profile from './profile';
-import Location from './location';
-import { GravityIDFields, NodeInterface } from './object_identification';
-import Artwork from './artwork';
-import numeral from './fields/numeral';
-import ArtworkSorts from './sorts/artwork_sorts';
+import { assign, has, omit } from "lodash"
+import { exclude } from "../lib/helpers"
+import gravity from "../lib/loaders/gravity"
+import cached from "./fields/cached"
+import initials from "./fields/initials"
+import Profile from "./profile"
+import Location from "./location"
+import { GravityIDFields, NodeInterface } from "./object_identification"
+import Artwork from "./artwork"
+import numeral from "./fields/numeral"
+import ArtworkSorts from "./sorts/artwork_sorts"
 
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLInt,
-  GraphQLList,
-  GraphQLBoolean,
-} from 'graphql';
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLInt, GraphQLList, GraphQLBoolean } from "graphql"
 
 const PartnerType = new GraphQLObjectType({
-  name: 'Partner',
+  name: "Partner",
   interfaces: [NodeInterface],
-  isTypeOf: (obj) => has(obj, 'has_full_profile') && has(obj, 'profile_banner_display'),
+  isTypeOf: obj => has(obj, "has_full_profile") && has(obj, "profile_banner_display"),
   fields: () => {
     // Prevent circular dependency
-    const PartnerShows = require('./partner_shows').default;
+    const PartnerShows = require("./partner_shows").default
 
     return {
       ...GravityIDFields,
@@ -49,9 +38,12 @@ const PartnerType = new GraphQLObjectType({
           },
         },
         resolve: ({ id }, options) => {
-          return gravity(`partner/${id}/artworks`, assign({}, options, {
-            published: true,
-          })).then(exclude(options.exclude, 'id'));
+          return gravity(
+            `partner/${id}/artworks`,
+            assign({}, options, {
+              published: true,
+            })
+          ).then(exclude(options.exclude, "id"))
         },
       },
       collecting_institution: {
@@ -59,49 +51,43 @@ const PartnerType = new GraphQLObjectType({
       },
       contact_message: {
         type: GraphQLString,
-        deprecationReason: 'Prefer artwork contact_message to handle availability-based prompts.',
+        deprecationReason: "Prefer artwork contact_message to handle availability-based prompts.",
         resolve: ({ type }) => {
-          if (type === 'Auction') {
-            return [
-              'Hello, I am interested in placing a bid on this work.',
-              'Please send me more information.',
-            ].join(' ');
+          if (type === "Auction") {
+            return ["Hello, I am interested in placing a bid on this work.", "Please send me more information."].join(
+              " "
+            )
           }
           return [
-            'Hi, I’m interested in purchasing this work.',
-            'Could you please provide more information about the piece?',
-          ].join(' ');
+            "Hi, I’m interested in purchasing this work.",
+            "Could you please provide more information about the piece?",
+          ].join(" ")
         },
       },
       counts: {
         type: new GraphQLObjectType({
-          name: 'PartnerCounts',
+          name: "PartnerCounts",
           fields: {
-            artworks: numeral(({ artworks_count }) =>
-              artworks_count),
-            artists: numeral(({ artists_count }) =>
-              artists_count),
-            partner_artists: numeral(({ partner_artists_count }) =>
-              partner_artists_count),
-            eligible_artworks: numeral(({ eligible_artworks_count }) =>
-              eligible_artworks_count),
-            published_for_sale_artworks: numeral(({ published_for_sale_artworks_count }) =>
-              published_for_sale_artworks_count),
-            published_not_for_sale_artworks: numeral(({ published_not_for_sale_artworks_count }) =>
-              published_not_for_sale_artworks_count),
-            shows: numeral(({ shows_count }) =>
-              shows_count),
-            displayable_shows: numeral(({ displayable_shows_count }) =>
-              displayable_shows_count),
-            current_displayable_shows: numeral(({ current_displayable_shows_count }) =>
-              current_displayable_shows_count),
-            artist_documents: numeral(({ artist_documents_count }) =>
-              artist_documents_count),
-            partner_show_documents: numeral(({ partner_show_documents_count }) =>
-              partner_show_documents_count),
+            artworks: numeral(({ artworks_count }) => artworks_count),
+            artists: numeral(({ artists_count }) => artists_count),
+            partner_artists: numeral(({ partner_artists_count }) => partner_artists_count),
+            eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
+            published_for_sale_artworks: numeral(
+              ({ published_for_sale_artworks_count }) => published_for_sale_artworks_count
+            ),
+            published_not_for_sale_artworks: numeral(
+              ({ published_not_for_sale_artworks_count }) => published_not_for_sale_artworks_count
+            ),
+            shows: numeral(({ shows_count }) => shows_count),
+            displayable_shows: numeral(({ displayable_shows_count }) => displayable_shows_count),
+            current_displayable_shows: numeral(
+              ({ current_displayable_shows_count }) => current_displayable_shows_count
+            ),
+            artist_documents: numeral(({ artist_documents_count }) => artist_documents_count),
+            partner_show_documents: numeral(({ partner_show_documents_count }) => partner_show_documents_count),
           },
         }),
-        resolve: (artist) => artist,
+        resolve: artist => artist,
       },
       default_profile_id: {
         type: GraphQLString,
@@ -113,9 +99,9 @@ const PartnerType = new GraphQLObjectType({
       href: {
         type: GraphQLString,
         resolve: ({ type, default_profile_id }) =>
-          type === 'Auction' ? `/auction/${default_profile_id}` : `/${default_profile_id}`,
+          (type === "Auction" ? `/auction/${default_profile_id}` : `/${default_profile_id}`),
       },
-      initials: initials('name'),
+      initials: initials("name"),
       is_default_profile_public: {
         type: GraphQLBoolean,
         resolve: ({ default_profile_public }) => default_profile_public,
@@ -123,7 +109,7 @@ const PartnerType = new GraphQLObjectType({
       is_linkable: {
         type: GraphQLBoolean,
         resolve: ({ default_profile_id, default_profile_public, type }) =>
-          default_profile_id && default_profile_public && type !== 'Auction',
+          default_profile_id && default_profile_public && type !== "Auction",
       },
       is_pre_qualify: {
         type: GraphQLBoolean,
@@ -145,45 +131,46 @@ const PartnerType = new GraphQLObjectType({
       },
       profile: {
         type: Profile.type,
-        resolve: ({ default_profile_id }) =>
-          gravity(`profile/${default_profile_id}`)
-            .catch(() => null),
+        resolve: ({ default_profile_id }) => gravity(`profile/${default_profile_id}`).catch(() => null),
       },
       shows: {
         type: PartnerShows.type,
-        args: omit(PartnerShows.args, 'partner_id'),
+        args: omit(PartnerShows.args, "partner_id"),
         resolve: ({ _id }, options) => {
-          return PartnerShows.resolve(null, assign({}, options, {
-            partner_id: _id,
-          }));
+          return PartnerShows.resolve(
+            null,
+            assign({}, options, {
+              partner_id: _id,
+            })
+          )
         },
       },
       type: {
         type: GraphQLString,
         resolve: ({ name, type }) => {
           const exceptions = {
-            Auction: 'Auction House',
+            Auction: "Auction House",
             Brand: name,
-            'Institutional Seller': 'Institution',
-          };
+            "Institutional Seller": "Institution",
+          }
 
-          return exceptions[type] || type;
+          return exceptions[type] || type
         },
       },
-    };
+    }
   },
-});
+})
 
 const Partner = {
   type: PartnerType,
-  description: 'A Partner',
+  description: "A Partner",
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Partner',
+      description: "The slug or ID of the Partner",
     },
   },
   resolve: (root, { id }) => gravity(`partner/${id}`),
-};
+}
 
-export default Partner;
+export default Partner
