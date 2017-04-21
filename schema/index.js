@@ -5,6 +5,7 @@ import Artwork from "./artwork"
 import Artworks from "./artworks"
 import Artist from "./artist"
 import Artists from "./artists"
+import Collections from "./collections"
 import ExternalPartner from "./external_partner"
 import Fair from "./fair"
 import Fairs from "./fairs"
@@ -43,6 +44,7 @@ const rootFields = {
   artist: Artist,
   artists: Artists,
   causality_jwt: CausalityJWT,
+  collections: Collections,
   external_partner: ExternalPartner,
   fair: Fair,
   fairs: Fairs,
