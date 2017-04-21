@@ -1,24 +1,24 @@
-describe('Artist Statuses', () => {
-  let artist = null;
-  let rootValue = null;
+describe("Artist Statuses", () => {
+  let artist = null
+  let rootValue = null
 
   beforeEach(() => {
     artist = {
-      id: 'foo-bar',
-      name: 'Foo Bar',
+      id: "foo-bar",
+      name: "Foo Bar",
       birthday: null,
       artworks_count: 42,
       partner_shows_count: 42,
       published_artworks_count: 42,
       displayable_partner_shows_count: 0,
-    };
+    }
 
     rootValue = {
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
-    };
-  });
+    }
+  })
 
-  it('returns statuses for artworks, shows and cv', () => {
+  it("returns statuses for artworks, shows and cv", () => {
     const query = `
       {
         artist(id: "foo-bar") {
@@ -29,7 +29,7 @@ describe('Artist Statuses', () => {
           }
         }
       }
-    `;
+    `
 
     return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
@@ -40,7 +40,7 @@ describe('Artist Statuses', () => {
             cv: true,
           },
         },
-      });
-    });
-  });
-});
+      })
+    })
+  })
+})

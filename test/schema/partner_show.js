@@ -1,39 +1,39 @@
-import moment from 'moment';
+import moment from "moment"
 
-describe('PartnerShow type', () => {
-  const PartnerShow = schema.__get__('PartnerShow');
-  let total = null;
-  let gravity = null;
-  let showData = null;
+describe("PartnerShow type", () => {
+  const PartnerShow = schema.__get__("PartnerShow")
+  let total = null
+  let gravity = null
+  let showData = null
 
   beforeEach(() => {
-    gravity = sinon.stub();
-    total = sinon.stub();
+    gravity = sinon.stub()
+    total = sinon.stub()
 
     showData = {
-      id: 'new-museum-1-2015-triennial-surround-audience',
-      start_at: '2015-02-25T12:00:00+00:00',
-      end_at: '2015-05-24T12:00:00+00:00',
-      press_release: '**foo** *bar*',
+      id: "new-museum-1-2015-triennial-surround-audience",
+      start_at: "2015-02-25T12:00:00+00:00",
+      end_at: "2015-05-24T12:00:00+00:00",
+      press_release: "**foo** *bar*",
       displayable: true,
       partner: {
-        id: 'new-museum',
+        id: "new-museum",
       },
       display_on_partner_profile: true,
       eligible_artworks_count: 8,
-    };
-    gravity.returns(Promise.resolve(showData));
+    }
+    gravity.returns(Promise.resolve(showData))
 
-    PartnerShow.__Rewire__('gravity', gravity);
-    PartnerShow.__Rewire__('total', total);
-  });
+    PartnerShow.__Rewire__("gravity", gravity)
+    PartnerShow.__Rewire__("total", total)
+  })
 
   afterEach(() => {
-    PartnerShow.__ResetDependency__('gravity');
-    PartnerShow.__ResetDependency__('total');
-  });
+    PartnerShow.__ResetDependency__("gravity")
+    PartnerShow.__ResetDependency__("total")
+  })
 
-  it('includes a formattable start and end date', () => {
+  it("includes a formattable start and end date", () => {
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -42,43 +42,41 @@ describe('PartnerShow type', () => {
           end_at(format: "YYYY")
         }
       }
-    `;
+    `
 
     return runQuery(query).then(data => {
-      expect(PartnerShow.__get__('gravity').args[0][0]).toBe(
-        'show/new-museum-1-2015-triennial-surround-audience'
-      );
+      expect(PartnerShow.__get__("gravity").args[0][0]).toBe("show/new-museum-1-2015-triennial-surround-audience")
 
       expect(data).toEqual({
         partner_show: {
-          id: 'new-museum-1-2015-triennial-surround-audience',
-          start_at: 'Wednesday, February 25th 2015, 12:00:00 pm',
-          end_at: '2015',
+          id: "new-museum-1-2015-triennial-surround-audience",
+          start_at: "Wednesday, February 25th 2015, 12:00:00 pm",
+          end_at: "2015",
         },
-      });
-    });
-  });
+      })
+    })
+  })
 
-  it('includes a formatted exhibition period', () => {
+  it("includes a formatted exhibition period", () => {
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
           exhibition_period
         }
       }
-    `;
+    `
 
     return runQuery(query).then(data => {
       expect(data).toEqual({
         partner_show: {
-          exhibition_period: 'Feb 25 – May 24, 2015',
+          exhibition_period: "Feb 25 – May 24, 2015",
         },
-      });
-    });
-  });
+      })
+    })
+  })
 
-  it('includes an update on upcoming status changes', () => {
-    showData.end_at = moment().add(1, 'd');
+  it("includes an update on upcoming status changes", () => {
+    showData.end_at = moment().add(1, "d")
 
     const query = `
       {
@@ -86,41 +84,39 @@ describe('PartnerShow type', () => {
           status_update
         }
       }
-    `;
+    `
 
     return runQuery(query).then(data => {
       expect(data).toEqual({
         partner_show: {
-          status_update: 'Closing tomorrow',
+          status_update: "Closing tomorrow",
         },
-      });
-    });
-  });
+      })
+    })
+  })
 
-  it('includes the html version of markdown', () => {
+  it("includes the html version of markdown", () => {
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
           press_release(format: markdown)
         }
       }
-    `;
+    `
 
     return runQuery(query).then(data => {
-      expect(PartnerShow.__get__('gravity').args[0][0]).toBe(
-        'show/new-museum-1-2015-triennial-surround-audience'
-      );
+      expect(PartnerShow.__get__("gravity").args[0][0]).toBe("show/new-museum-1-2015-triennial-surround-audience")
 
       expect(data).toEqual({
         partner_show: {
-          press_release: '<p><strong>foo</strong> <em>bar</em></p>\n',
+          press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
         },
-      });
-    });
-  });
+      })
+    })
+  })
 
-  it('includes the total number of artworks', () => {
-    total.onCall(0).returns(Promise.resolve(42));
+  it("includes the total number of artworks", () => {
+    total.onCall(0).returns(Promise.resolve(42))
 
     const query = `
       {
@@ -130,7 +126,7 @@ describe('PartnerShow type', () => {
           }
         }
       }
-    `;
+    `
 
     return runQuery(query).then(data => {
       expect(data).toEqual({
@@ -139,11 +135,11 @@ describe('PartnerShow type', () => {
             artworks: 42,
           },
         },
-      });
-    });
-  });
+      })
+    })
+  })
 
-  it('includes the total number of eligible artworks', () => {
+  it("includes the total number of eligible artworks", () => {
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -152,7 +148,7 @@ describe('PartnerShow type', () => {
           }
         }
       }
-    `;
+    `
 
     return runQuery(query).then(data => {
       expect(data).toEqual({
@@ -161,12 +157,12 @@ describe('PartnerShow type', () => {
             eligible_artworks: 8,
           },
         },
-      });
-    });
-  });
+      })
+    })
+  })
 
-  it('includes the number of artworks by a specific artist', () => {
-    total.onCall(0).returns(Promise.resolve(2));
+  it("includes the number of artworks by a specific artist", () => {
+    total.onCall(0).returns(Promise.resolve(2))
 
     const query = `
       {
@@ -176,7 +172,7 @@ describe('PartnerShow type', () => {
           }
         }
       }
-    `;
+    `
 
     return runQuery(query).then(data => {
       expect(data).toEqual({
@@ -185,12 +181,12 @@ describe('PartnerShow type', () => {
             artworks: 2,
           },
         },
-      });
-    });
-  });
+      })
+    })
+  })
 
-  it('does not return errors when there is no cover image', () => {
-    gravity.onCall(1).returns(Promise.resolve([]));
+  it("does not return errors when there is no cover image", () => {
+    gravity.onCall(1).returns(Promise.resolve([]))
 
     const query = `
       {
@@ -200,12 +196,12 @@ describe('PartnerShow type', () => {
           }
         }
       }
-    `;
+    `
 
     return runQuery(query).then(({ partner_show }) => {
       expect(partner_show).toEqual({
         cover_image: null,
-      });
-    });
-  });
-});
+      })
+    })
+  })
+})

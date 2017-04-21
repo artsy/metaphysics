@@ -1,4 +1,4 @@
-import { isExisty } from '../../lib/helpers';
+import { isExisty } from "../../lib/helpers"
 
 export function isZoomable(image) {
   return (
@@ -8,18 +8,18 @@ export function isZoomable(image) {
     isExisty(image.tile_format) &&
     isExisty(image.max_tiled_height) &&
     isExisty(image.max_tiled_width)
-  );
+  )
 }
 
-import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
 
 const DeepZoomType = new GraphQLObjectType({
-  name: 'DeepZoom',
+  name: "DeepZoom",
   fields: {
     Image: {
       resolve: image => image,
       type: new GraphQLObjectType({
-        name: 'DeepZoomImage',
+        name: "DeepZoomImage",
         fields: {
           Format: {
             type: GraphQLString,
@@ -32,7 +32,7 @@ const DeepZoomType = new GraphQLObjectType({
           Size: {
             resolve: image => image,
             type: new GraphQLObjectType({
-              name: 'DeepZoomImageSize',
+              name: "DeepZoomImageSize",
               fields: {
                 Width: {
                   type: GraphQLInt,
@@ -55,21 +55,21 @@ const DeepZoomType = new GraphQLObjectType({
               return (
                 tile_base_url
                   // Ensure trailing slash
-                  .replace(/\/?$/, '/')
-              );
+                  .replace(/\/?$/, "/")
+              )
             },
           },
           xmlns: {
             type: GraphQLString,
-            resolve: () => 'http://schemas.microsoft.com/deepzoom/2008',
+            resolve: () => "http://schemas.microsoft.com/deepzoom/2008",
           },
         },
       }),
     },
   },
-});
+})
 
 export default {
   type: DeepZoomType,
   resolve: image => (isZoomable(image) ? image : null),
-};
+}

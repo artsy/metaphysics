@@ -1,18 +1,13 @@
-import gravity from '../lib/loaders/gravity';
-import cached from './fields/cached';
-import initials from './fields/initials';
-import numeral from './fields/numeral';
-import Image from './image';
-import { GravityIDFields } from './object_identification';
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLBoolean,
-} from 'graphql';
+import gravity from "../lib/loaders/gravity"
+import cached from "./fields/cached"
+import initials from "./fields/initials"
+import numeral from "./fields/numeral"
+import Image from "./image"
+import { GravityIDFields } from "./object_identification"
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
 
 const ProfileType = new GraphQLObjectType({
-  name: 'Profile',
+  name: "Profile",
   fields: () => ({
     ...GravityIDFields,
     cached,
@@ -22,7 +17,7 @@ const ProfileType = new GraphQLObjectType({
     counts: {
       resolve: profile => profile,
       type: new GraphQLObjectType({
-        name: 'ProfileCounts',
+        name: "ProfileCounts",
         fields: {
           follows: numeral(({ follows_count }) => follows_count),
         },
@@ -40,7 +35,7 @@ const ProfileType = new GraphQLObjectType({
       type: Image.type,
       resolve: ({ cover_image }) => Image.resolve(cover_image),
     },
-    initials: initials('owner.name'),
+    initials: initials("owner.name"),
     is_published: {
       type: GraphQLBoolean,
       resolve: ({ published }) => published,
@@ -54,18 +49,18 @@ const ProfileType = new GraphQLObjectType({
       resolve: profile => profile && profile.published && !profile.private,
     },
   }),
-});
+})
 
 const Profile = {
   type: ProfileType,
-  description: 'A Profile',
+  description: "A Profile",
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Profile',
+      description: "The slug or ID of the Profile",
     },
   },
   resolve: (root, { id }) => gravity(`profile/${id}`),
-};
+}
 
-export default Profile;
+export default Profile

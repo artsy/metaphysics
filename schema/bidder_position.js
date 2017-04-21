@@ -1,18 +1,13 @@
-import { get } from 'lodash';
-import gravity from '../lib/loaders/gravity';
-import date from './fields/date';
-import money, { amount } from './fields/money';
-import SaleArtwork from './sale_artwork';
-import { IDFields } from './object_identification';
-import {
-  GraphQLInt,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLObjectType,
-} from 'graphql';
+import { get } from "lodash"
+import gravity from "../lib/loaders/gravity"
+import date from "./fields/date"
+import money, { amount } from "./fields/money"
+import SaleArtwork from "./sale_artwork"
+import { IDFields } from "./object_identification"
+import { GraphQLInt, GraphQLBoolean, GraphQLString, GraphQLObjectType } from "graphql"
 
 const BidderPositionType = new GraphQLObjectType({
-  name: 'BidderPosition',
+  name: "BidderPosition",
   fields: () => ({
     ...IDFields,
     created_at: date,
@@ -20,15 +15,15 @@ const BidderPositionType = new GraphQLObjectType({
     processed_at: date,
     display_max_bid_amount_dollars: {
       type: GraphQLString,
-      deprecationReason: 'Favor `max_bid`',
+      deprecationReason: "Favor `max_bid`",
     },
     display_suggested_next_bid_dollars: {
       type: GraphQLString,
-      deprecationReason: 'Favor `suggested_next_bid`',
+      deprecationReason: "Favor `suggested_next_bid`",
     },
     highest_bid: {
       type: new GraphQLObjectType({
-        name: 'HighestBid',
+        name: "HighestBid",
         fields: {
           ...IDFields,
           created_at: date,
@@ -50,11 +45,11 @@ const BidderPositionType = new GraphQLObjectType({
           },
           amount_cents: {
             type: GraphQLInt,
-            deprecationReason: 'Favor `cents`',
+            deprecationReason: "Favor `cents`",
           },
           display_amount_dollars: {
             type: GraphQLString,
-            deprecationReason: 'Favor `display`',
+            deprecationReason: "Favor `display`",
           },
         },
       }),
@@ -75,13 +70,11 @@ const BidderPositionType = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve: position =>
         gravity(`sale_artwork/${position.sale_artwork_id}`).then(
-          saleArtwork =>
-            get(saleArtwork, 'highest_bid.id') ===
-            get(position, 'highest_bid.id')
+          saleArtwork => get(saleArtwork, "highest_bid.id") === get(position, "highest_bid.id")
         ),
     },
     max_bid: money({
-      name: 'BidderPositionMaxBid',
+      name: "BidderPositionMaxBid",
       resolve: ({ display_max_bid_amount_dollars, max_bid_amount_cents }) => ({
         cents: max_bid_amount_cents,
         display: display_max_bid_amount_dollars,
@@ -89,32 +82,29 @@ const BidderPositionType = new GraphQLObjectType({
     }),
     max_bid_amount_cents: {
       type: GraphQLInt,
-      deprecationReason: 'Favor `max_bid`',
+      deprecationReason: "Favor `max_bid`",
     },
     sale_artwork: {
       type: SaleArtwork.type,
       resolve: position => gravity(`sale_artwork/${position.sale_artwork_id}`),
     },
     suggested_next_bid: money({
-      name: 'BidderPositionSuggestedNextBid',
-      resolve: ({
-        display_suggested_next_bid_dollars,
-        suggested_next_bid_cents,
-      }) => ({
+      name: "BidderPositionSuggestedNextBid",
+      resolve: ({ display_suggested_next_bid_dollars, suggested_next_bid_cents }) => ({
         cents: suggested_next_bid_cents,
         display: display_suggested_next_bid_dollars,
       }),
     }),
     suggested_next_bid_cents: {
       type: GraphQLInt,
-      deprecationReason: 'Favor `suggested_next_bid`',
+      deprecationReason: "Favor `suggested_next_bid`",
     },
   }),
-});
+})
 
 const BidderPosition = {
   type: BidderPositionType,
-  description: 'An BidderPosition',
-};
+  description: "An BidderPosition",
+}
 
-export default BidderPosition;
+export default BidderPosition

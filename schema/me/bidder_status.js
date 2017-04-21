@@ -1,6 +1,6 @@
-import gravity from '../../lib/loaders/gravity';
-import { LotStandingType } from './lot_standing';
-import { GraphQLNonNull, GraphQLString } from 'graphql';
+import gravity from "../../lib/loaders/gravity"
+import { LotStandingType } from "./lot_standing"
+import { GraphQLNonNull, GraphQLString } from "graphql"
 
 export default {
   type: LotStandingType,
@@ -13,19 +13,14 @@ export default {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (
-    root,
-    { sale_id, artwork_id },
-    request,
-    { rootValue: { accessToken } }
-  ) =>
+  resolve: (root, { sale_id, artwork_id }, request, { rootValue: { accessToken } }) =>
     Promise.all([
-      gravity.with(accessToken)('me/lot_standings', {
+      gravity.with(accessToken)("me/lot_standings", {
         sale_id,
         artwork_id,
       }),
     ]).then(([lotStanding]) => {
-      if (lotStanding.length === 0) return null;
-      return lotStanding[0];
+      if (lotStanding.length === 0) return null
+      return lotStanding[0]
     }),
-};
+}

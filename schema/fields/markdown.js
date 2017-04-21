@@ -1,11 +1,11 @@
-import Format from '../input_fields/format';
-import { GraphQLString } from 'graphql';
-import { isExisty } from '../../lib/helpers';
-import marked from 'marked';
+import Format from "../input_fields/format"
+import { GraphQLString } from "graphql"
+import { isExisty } from "../../lib/helpers"
+import marked from "marked"
 
 export function formatMarkdownValue(value, format) {
-  if (format === 'html' || format === 'markdown') {
-    const renderer = new marked.Renderer();
+  if (format === "html" || format === "markdown") {
+    const renderer = new marked.Renderer()
     marked.setOptions({
       renderer,
       gfm: true,
@@ -14,11 +14,11 @@ export function formatMarkdownValue(value, format) {
       pedantic: false,
       sanitize: false,
       smartypants: false,
-    });
-    return marked(value);
+    })
+    return marked(value)
   }
 
-  return value;
+  return value
 }
 
 export function markdown(fn) {
@@ -28,10 +28,10 @@ export function markdown(fn) {
       format: Format,
     },
     resolve: (obj, { format }, request, { fieldName }) => {
-      const value = fn ? fn(obj) : obj[fieldName];
+      const value = fn ? fn(obj) : obj[fieldName]
 
-      if (!isExisty(value)) return null;
-      return formatMarkdownValue(value, format);
+      if (!isExisty(value)) return null
+      return formatMarkdownValue(value, format)
     },
-  };
+  }
 }

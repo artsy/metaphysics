@@ -1,32 +1,26 @@
-import _ from 'lodash';
-import proxy from './proxies';
-import { setVersion } from './normalize';
-import {
-  GraphQLObjectType,
-  GraphQLInt,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLList,
-} from 'graphql';
+import _ from "lodash"
+import proxy from "./proxies"
+import { setVersion } from "./normalize"
+import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLNonNull, GraphQLList } from "graphql"
 
 export const croppedImageUrl = (image, options) => {
   const opts = _.defaults(options, {
-    version: ['large'],
-  });
+    version: ["large"],
+  })
 
-  const { width, height } = opts;
-  const src = setVersion(image, opts.version);
-  const url = proxy(src, 'crop', width, height);
+  const { width, height } = opts
+  const src = setVersion(image, opts.version)
+  const url = proxy(src, "crop", width, height)
 
   return {
     width,
     height,
     url,
-  };
-};
+  }
+}
 
 const CroppedImageUrlType = new GraphQLObjectType({
-  name: 'CroppedImageUrl',
+  name: "CroppedImageUrl",
   fields: {
     width: {
       type: GraphQLInt,
@@ -38,7 +32,7 @@ const CroppedImageUrlType = new GraphQLObjectType({
       type: GraphQLString,
     },
   },
-});
+})
 
 export default {
   args: {
@@ -54,4 +48,4 @@ export default {
   },
   type: CroppedImageUrlType,
   resolve: croppedImageUrl,
-};
+}

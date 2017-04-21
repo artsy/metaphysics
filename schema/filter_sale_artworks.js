@@ -1,55 +1,43 @@
-import gravity from '../lib/loaders/gravity';
-import { map, omit } from 'lodash';
-import SaleArtwork from './sale_artwork';
-import numeral from './fields/numeral';
+import gravity from "../lib/loaders/gravity"
+import { map, omit } from "lodash"
+import SaleArtwork from "./sale_artwork"
+import numeral from "./fields/numeral"
 import {
   SaleArtworksAggregationResultsType,
   SaleArtworksAggregation,
-} from './aggregations/filter_sale_artworks_aggregation';
-import {
-  GraphQLList,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLBoolean,
-  GraphQLInt,
-  GraphQLID,
-} from 'graphql';
+} from "./aggregations/filter_sale_artworks_aggregation"
+import { GraphQLList, GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLID } from "graphql"
 
 export const FilterSaleArtworksType = new GraphQLObjectType({
-  name: 'FilterSaleArtworks',
+  name: "FilterSaleArtworks",
   fields: () => ({
     aggregations: {
-      description: 'Returns aggregation counts for the given filter query.',
+      description: "Returns aggregation counts for the given filter query.",
       type: new GraphQLList(SaleArtworksAggregationResultsType),
       resolve: ({ aggregations }) => {
-        const whitelistedAggregations = omit(aggregations, [
-          'total',
-          'followed_artists',
-        ]);
+        const whitelistedAggregations = omit(aggregations, ["total", "followed_artists"])
         return map(whitelistedAggregations, (counts, slice) => ({
           slice,
           counts,
-        }));
+        }))
       },
     },
     counts: {
       type: new GraphQLObjectType({
-        name: 'FilterSaleArtworksCounts',
+        name: "FilterSaleArtworksCounts",
         fields: {
           total: numeral(({ aggregations }) => aggregations.total.value),
-          followed_artists: numeral(
-            ({ aggregations }) => aggregations.followed_artists.value
-          ),
+          followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
         },
       }),
       resolve: artist => artist,
     },
     hits: {
-      description: 'Sale Artwork results.',
+      description: "Sale Artwork results.",
       type: new GraphQLList(SaleArtwork.type),
     },
   }),
-});
+})
 
 export const filterSaleArtworksArgs = {
   aggregations: {
@@ -79,15 +67,15 @@ export const filterSaleArtworksArgs = {
   sort: {
     type: GraphQLString,
   },
-};
+}
 
 const FilterSaleArtworks = {
   type: FilterSaleArtworksType,
-  description: 'Sale Artworks Elastic Search results',
+  description: "Sale Artworks Elastic Search results",
   args: filterSaleArtworksArgs,
   resolve: (root, options, request, { rootValue: { accessToken } }) => {
-    return gravity.with(accessToken)('filter/sale_artworks', options);
+    return gravity.with(accessToken)("filter/sale_artworks", options)
   },
-};
+}
 
-export default FilterSaleArtworks;
+export default FilterSaleArtworks

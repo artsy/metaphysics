@@ -1,7 +1,7 @@
-import { GraphQLInt, GraphQLString, GraphQLObjectType } from 'graphql';
+import { GraphQLInt, GraphQLString, GraphQLObjectType } from "graphql"
 
 const DayScheduleType = new GraphQLObjectType({
-  name: 'DaySchedule',
+  name: "DaySchedule",
   fields: {
     start_time: {
       type: GraphQLInt,
@@ -13,6 +13,6 @@ const DayScheduleType = new GraphQLObjectType({
       type: GraphQLString,
     },
   },
-});
+})
 
-export default DayScheduleType;
+export default DayScheduleType

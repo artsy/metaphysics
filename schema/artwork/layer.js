@@ -1,10 +1,10 @@
-import Artwork from './index';
-import gravity from '../../lib/loaders/gravity';
-import { IDFields } from '../object_identification';
-import { GraphQLObjectType, GraphQLString, GraphQLList } from 'graphql';
+import Artwork from "./index"
+import gravity from "../../lib/loaders/gravity"
+import { IDFields } from "../object_identification"
+import { GraphQLObjectType, GraphQLString, GraphQLList } from "graphql"
 
 const ArtworkLayerType = new GraphQLObjectType({
-  name: 'ArtworkLayer',
+  name: "ArtworkLayer",
   fields: () => ({
     ...IDFields,
     artworks: {
@@ -12,7 +12,7 @@ const ArtworkLayerType = new GraphQLObjectType({
       resolve: ({ id, type, artwork_id }) => {
         return gravity(`related/layer/${type}/${id}/artworks`, {
           artwork: [artwork_id],
-        });
+        })
       },
     },
     description: {
@@ -29,8 +29,8 @@ const ArtworkLayerType = new GraphQLObjectType({
       type: GraphQLString,
     },
   }),
-});
+})
 
 export default {
   type: ArtworkLayerType,
-};
+}

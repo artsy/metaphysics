@@ -1,21 +1,21 @@
-import { assign } from 'lodash';
+import { assign } from "lodash"
 
-describe('Me', () => {
-  describe('Notifications', () => {
-    const gravity = sinon.stub();
-    const Me = schema.__get__('Me');
-    const Notifications = Me.__get__('Notifications');
+describe("Me", () => {
+  describe("Notifications", () => {
+    const gravity = sinon.stub()
+    const Me = schema.__get__("Me")
+    const Notifications = Me.__get__("Notifications")
 
     beforeEach(() => {
-      gravity.with = sinon.stub().returns(gravity);
-      Notifications.__Rewire__('gravity', gravity);
-    });
+      gravity.with = sinon.stub().returns(gravity)
+      Notifications.__Rewire__("gravity", gravity)
+    })
 
     afterEach(() => {
-      Notifications.__ResetDependency__('gravity');
-    });
+      Notifications.__ResetDependency__("gravity")
+    })
 
-    it('returns notification feed items w/ Relay pagination', () => {
+    it("returns notification feed items w/ Relay pagination", () => {
       const query = `
         {
           me {
@@ -39,12 +39,12 @@ describe('Me', () => {
             }
           }
         }
-      `;
+      `
 
-      const artworkStub = { artists: [] };
+      const artworkStub = { artists: [] }
 
-      const artwork1 = assign({}, artworkStub, { title: 'Artwork1' });
-      const artwork2 = assign({}, artworkStub, { title: 'Artwork2' });
+      const artwork1 = assign({}, artworkStub, { title: "Artwork1" })
+      const artwork2 = assign({}, artworkStub, { title: "Artwork2" })
 
       const expectedConnectionData = {
         pageInfo: {
@@ -53,17 +53,17 @@ describe('Me', () => {
         edges: [
           {
             node: {
-              __id: 'Tm90aWZpY2F0aW9uc0ZlZWRJdGVtOnVuaXF1ZS1pZC15bw==',
-              status: 'READ',
+              __id: "Tm90aWZpY2F0aW9uc0ZlZWRJdGVtOnVuaXF1ZS1pZC15bw==",
+              status: "READ",
               image: {
-                url: 'cloudfront.url',
+                url: "cloudfront.url",
               },
-              date: '2017',
-              artworks: [{ title: 'Artwork1' }, { title: 'Artwork2' }],
+              date: "2017",
+              artworks: [{ title: "Artwork1" }, { title: "Artwork2" }],
             },
           },
         ],
-      };
+      }
 
       gravity
         // Feed fetch
@@ -73,25 +73,23 @@ describe('Me', () => {
             total: 2,
             feed: [
               {
-                status: 'read',
-                object: { artists: [{ image_url: 'cloudfront.url' }] },
-                object_ids: ['artwork1', 'artwork2'],
-                date: '2017-02-17T17:19:44.000Z',
-                actors: 'Cats are the best actors.',
-                id: 'unique-id-yo',
+                status: "read",
+                object: { artists: [{ image_url: "cloudfront.url" }] },
+                object_ids: ["artwork1", "artwork2"],
+                date: "2017-02-17T17:19:44.000Z",
+                actors: "Cats are the best actors.",
+                id: "unique-id-yo",
               },
             ],
           })
         )
         // Artwork fetches
         .onCall(1)
-        .returns(Promise.resolve([artwork1, artwork2]));
+        .returns(Promise.resolve([artwork1, artwork2]))
 
-      return runAuthenticatedQuery(
-        query
-      ).then(({ me: { notifications_connection } }) => {
-        expect(notifications_connection).toEqual(expectedConnectionData);
-      });
-    });
-  });
-});
+      return runAuthenticatedQuery(query).then(({ me: { notifications_connection } }) => {
+        expect(notifications_connection).toEqual(expectedConnectionData)
+      })
+    })
+  })
+})

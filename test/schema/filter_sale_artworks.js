@@ -1,12 +1,12 @@
-describe('Filter Sale Artworks', () => {
-  const FilterSaleArtworks = schema.__get__('FilterSaleArtworks');
+describe("Filter Sale Artworks", () => {
+  const FilterSaleArtworks = schema.__get__("FilterSaleArtworks")
 
   beforeEach(() => {
-    const gravity = sinon.stub();
-    gravity.with = sinon.stub().returns(gravity);
+    const gravity = sinon.stub()
+    gravity.with = sinon.stub().returns(gravity)
     gravity
-      .withArgs('filter/sale_artworks', {
-        aggregations: ['total', 'medium', 'followed_artists', 'artist'],
+      .withArgs("filter/sale_artworks", {
+        aggregations: ["total", "medium", "followed_artists", "artist"],
       })
       .returns(
         Promise.resolve({
@@ -19,40 +19,40 @@ describe('Filter Sale Artworks', () => {
             },
             medium: {
               prints: {
-                name: 'Prints',
+                name: "Prints",
                 count: 123,
               },
               painting: {
-                name: 'Painting',
+                name: "Painting",
                 count: 24,
               },
             },
             artist: {
-              'andy-warhol': {
-                name: 'Andy Warhol',
-                sortable_id: 'warhol-andy',
+              "andy-warhol": {
+                name: "Andy Warhol",
+                sortable_id: "warhol-andy",
               },
-              'donald-judd': {
-                name: 'Donald Judd',
-                sortable_id: 'judd-donald',
+              "donald-judd": {
+                name: "Donald Judd",
+                sortable_id: "judd-donald",
               },
-              'kara-walker': {
-                name: 'Kara Walker',
-                sortable_id: 'walker-kara',
+              "kara-walker": {
+                name: "Kara Walker",
+                sortable_id: "walker-kara",
               },
             },
           },
         })
-      );
+      )
 
-    FilterSaleArtworks.__Rewire__('gravity', gravity);
-  });
+    FilterSaleArtworks.__Rewire__("gravity", gravity)
+  })
 
   afterEach(() => {
-    FilterSaleArtworks.__ResetDependency__('gravity');
-  });
+    FilterSaleArtworks.__ResetDependency__("gravity")
+  })
 
-  it('formats the counts and aggregations, and sorts the artists correctly', () => {
+  it("formats the counts and aggregations, and sorts the artists correctly", () => {
     const query = `
       {
         filter_sale_artworks(
@@ -72,41 +72,39 @@ describe('Filter Sale Artworks', () => {
           }
         }
       }
-    `;
+    `
 
-    return runQuery(
-      query
-    ).then(({ filter_sale_artworks: { aggregations, counts } }) => {
-      expect(counts).toEqual({ followed_artists: 2, total: 400 });
+    return runQuery(query).then(({ filter_sale_artworks: { aggregations, counts } }) => {
+      expect(counts).toEqual({ followed_artists: 2, total: 400 })
       expect(aggregations).toEqual([
         {
           counts: [
-            { id: 'prints', name: 'Prints', sortable_id: null },
-            { id: 'painting', name: 'Painting', sortable_id: null },
+            { id: "prints", name: "Prints", sortable_id: null },
+            { id: "painting", name: "Painting", sortable_id: null },
           ],
-          slice: 'MEDIUM',
+          slice: "MEDIUM",
         },
         {
           counts: [
             {
-              id: 'donald-judd',
-              name: 'Donald Judd',
-              sortable_id: 'judd-donald',
+              id: "donald-judd",
+              name: "Donald Judd",
+              sortable_id: "judd-donald",
             },
             {
-              id: 'kara-walker',
-              name: 'Kara Walker',
-              sortable_id: 'walker-kara',
+              id: "kara-walker",
+              name: "Kara Walker",
+              sortable_id: "walker-kara",
             },
             {
-              id: 'andy-warhol',
-              name: 'Andy Warhol',
-              sortable_id: 'warhol-andy',
+              id: "andy-warhol",
+              name: "Andy Warhol",
+              sortable_id: "warhol-andy",
             },
           ],
-          slice: 'ARTIST',
+          slice: "ARTIST",
         },
-      ]);
-    });
-  });
-});
+      ])
+    })
+  })
+})

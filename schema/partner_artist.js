@@ -1,17 +1,12 @@
-import gravity from '../lib/loaders/gravity';
-import Partner from './partner';
-import Artist from './artist/index';
-import numeral from './fields/numeral';
-import { IDFields } from './object_identification';
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLBoolean,
-} from 'graphql';
+import gravity from "../lib/loaders/gravity"
+import Partner from "./partner"
+import Artist from "./artist/index"
+import numeral from "./fields/numeral"
+import { IDFields } from "./object_identification"
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
 
 const PartnerArtistType = new GraphQLObjectType({
-  name: 'PartnerArtist',
+  name: "PartnerArtist",
   fields: () => ({
     ...IDFields,
     artist: {
@@ -22,15 +17,10 @@ const PartnerArtistType = new GraphQLObjectType({
     },
     counts: {
       type: new GraphQLObjectType({
-        name: 'PartnerArtistCounts',
+        name: "PartnerArtistCounts",
         fields: {
-          artworks: numeral(
-            ({ published_artworks_count }) => published_artworks_count
-          ),
-          for_sale_artworks: numeral(
-            ({ published_for_sale_artworks_count }) =>
-              published_for_sale_artworks_count
-          ),
+          artworks: numeral(({ published_artworks_count }) => published_artworks_count),
+          for_sale_artworks: numeral(({ published_for_sale_artworks_count }) => published_for_sale_artworks_count),
         },
       }),
       resolve: partner_artist => partner_artist,
@@ -52,23 +42,22 @@ const PartnerArtistType = new GraphQLObjectType({
       type: GraphQLString,
     },
   }),
-});
+})
 
 const PartnerArtist = {
   type: PartnerArtistType,
-  description: 'A PartnerArtist',
+  description: "A PartnerArtist",
   args: {
     artist_id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Artist',
+      description: "The slug or ID of the Artist",
     },
     partner_id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The slug or ID of the Partner',
+      description: "The slug or ID of the Partner",
     },
   },
-  resolve: (root, { partner_id, artist_id }) =>
-    gravity(`partner/${partner_id}/artist/${artist_id}`),
-};
+  resolve: (root, { partner_id, artist_id }) => gravity(`partner/${partner_id}/artist/${artist_id}`),
+}
 
-export default PartnerArtist;
+export default PartnerArtist

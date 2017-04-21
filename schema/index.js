@@ -1,39 +1,39 @@
-import Status from './status';
-import Article from './article';
-import Articles from './articles';
-import Artwork from './artwork';
-import Artworks from './artworks';
-import Artist from './artist';
-import Artists from './artists';
-import ExternalPartner from './external_partner';
-import Fair from './fair';
-import Fairs from './fairs';
-import Gene from './gene';
-import HomePage from './home';
-import OrderedSets from './ordered_sets';
-import Profile from './profile';
-import Partner from './partner';
-import Partners from './partners';
-import FilterPartners from './filter_partners';
-import filterArtworks from './filter_artworks';
-import FilterSaleArtworks from './filter_sale_artworks';
-import PartnerCategory from './partner_category';
-import PartnerCategories from './partner_categories';
-import PartnerShow from './partner_show';
-import PartnerShows from './partner_shows';
-import Sale from './sale/index';
-import Sales from './sales';
-import SaleArtwork from './sale_artwork';
-import Search from './search';
-import Show from './show';
-import TrendingArtists from './trending';
-import Me from './me';
-import UpdateConversation from './me/update_conversation';
-import UpdateCollectorProfile from './me/update_collector_profile';
-import SaveArtwork from './me/save_artwork';
-import CausalityJWT from './causality_jwt';
-import ObjectIdentification from './object_identification';
-import { GraphQLSchema, GraphQLObjectType } from 'graphql';
+import Status from "./status"
+import Article from "./article"
+import Articles from "./articles"
+import Artwork from "./artwork"
+import Artworks from "./artworks"
+import Artist from "./artist"
+import Artists from "./artists"
+import ExternalPartner from "./external_partner"
+import Fair from "./fair"
+import Fairs from "./fairs"
+import Gene from "./gene"
+import HomePage from "./home"
+import OrderedSets from "./ordered_sets"
+import Profile from "./profile"
+import Partner from "./partner"
+import Partners from "./partners"
+import FilterPartners from "./filter_partners"
+import filterArtworks from "./filter_artworks"
+import FilterSaleArtworks from "./filter_sale_artworks"
+import PartnerCategory from "./partner_category"
+import PartnerCategories from "./partner_categories"
+import PartnerShow from "./partner_show"
+import PartnerShows from "./partner_shows"
+import Sale from "./sale/index"
+import Sales from "./sales"
+import SaleArtwork from "./sale_artwork"
+import Search from "./search"
+import Show from "./show"
+import TrendingArtists from "./trending"
+import Me from "./me"
+import UpdateConversation from "./me/update_conversation"
+import UpdateCollectorProfile from "./me/update_collector_profile"
+import SaveArtwork from "./me/save_artwork"
+import CausalityJWT from "./causality_jwt"
+import ObjectIdentification from "./object_identification"
+import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
 const rootFields = {
   article: Article,
@@ -68,23 +68,23 @@ const rootFields = {
   show: Show,
   status: Status,
   trending_artists: TrendingArtists,
-};
+}
 
 const ViewerType = new GraphQLObjectType({
-  name: 'Viewer',
-  description: 'A wildcard used to support complex root queries in Relay',
+  name: "Viewer",
+  description: "A wildcard used to support complex root queries in Relay",
   fields: rootFields,
-});
+})
 
 const Viewer = {
   type: ViewerType,
-  description: 'A wildcard used to support complex root queries in Relay',
+  description: "A wildcard used to support complex root queries in Relay",
   resolve: x => x,
-};
+}
 
 const schema = new GraphQLSchema({
   mutation: new GraphQLObjectType({
-    name: 'RootMutationType',
+    name: "RootMutationType",
     fields: {
       updateCollectorProfile: UpdateCollectorProfile,
       updateConversation: UpdateConversation,
@@ -92,12 +92,12 @@ const schema = new GraphQLSchema({
     },
   }),
   query: new GraphQLObjectType({
-    name: 'RootQueryType',
+    name: "RootQueryType",
     fields: {
       ...rootFields,
       viewer: Viewer,
     },
   }),
-});
+})
 
-export default schema;
+export default schema

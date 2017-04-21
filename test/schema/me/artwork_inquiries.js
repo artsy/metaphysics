@@ -1,19 +1,19 @@
-describe('Me', () => {
-  describe('ArtworkInquiries', () => {
-    const gravity = sinon.stub();
-    const Me = schema.__get__('Me');
-    const ArtworkInquiries = Me.__get__('ArtworkInquiries');
+describe("Me", () => {
+  describe("ArtworkInquiries", () => {
+    const gravity = sinon.stub()
+    const Me = schema.__get__("Me")
+    const ArtworkInquiries = Me.__get__("ArtworkInquiries")
 
     beforeEach(() => {
-      gravity.with = sinon.stub().returns(gravity);
-      ArtworkInquiries.__Rewire__('gravity', gravity);
-    });
+      gravity.with = sinon.stub().returns(gravity)
+      ArtworkInquiries.__Rewire__("gravity", gravity)
+    })
 
     afterEach(() => {
-      ArtworkInquiries.__ResetDependency__('gravity');
-    });
+      ArtworkInquiries.__ResetDependency__("gravity")
+    })
 
-    it('returns notification feed items w/ Relay pagination', () => {
+    it("returns notification feed items w/ Relay pagination", () => {
       const query = `
         {
           me {
@@ -32,10 +32,10 @@ describe('Me', () => {
             }
           }
         }
-      `;
+      `
 
-      const artwork1 = { id: 'artwork1', title: 'Artwork 1', artists: [] };
-      const artwork2 = { id: 'artwork2', title: 'Artwork 2', artists: [] };
+      const artwork1 = { id: "artwork1", title: "Artwork 1", artists: [] }
+      const artwork2 = { id: "artwork2", title: "Artwork 2", artists: [] }
 
       const expectedConnectionData = {
         pageInfo: {
@@ -44,39 +44,37 @@ describe('Me', () => {
         edges: [
           {
             node: {
-              artwork: { title: 'Artwork 1' },
-              impulse_conversation_id: '420',
+              artwork: { title: "Artwork 1" },
+              impulse_conversation_id: "420",
             },
           },
           {
             node: {
-              artwork: { title: 'Artwork 2' },
+              artwork: { title: "Artwork 2" },
               impulse_conversation_id: null,
             },
           },
         ],
-      };
+      }
 
       gravity.returns(
         Promise.resolve({
-          headers: { 'x-total-count': 3 },
+          headers: { "x-total-count": 3 },
           body: [
             {
               inquireable: artwork1,
-              impulse_conversation_id: '420',
+              impulse_conversation_id: "420",
             },
             {
               inquireable: artwork2,
             },
           ],
         })
-      );
+      )
 
-      return runAuthenticatedQuery(
-        query
-      ).then(({ me: { artwork_inquiries_connection } }) => {
-        expect(artwork_inquiries_connection).toEqual(expectedConnectionData);
-      });
-    });
-  });
-});
+      return runAuthenticatedQuery(query).then(({ me: { artwork_inquiries_connection } }) => {
+        expect(artwork_inquiries_connection).toEqual(expectedConnectionData)
+      })
+    })
+  })
+})

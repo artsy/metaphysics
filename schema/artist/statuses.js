@@ -1,8 +1,8 @@
-import total from '../../lib/loaders/total';
-import { GraphQLObjectType, GraphQLBoolean } from 'graphql';
+import total from "../../lib/loaders/total"
+import { GraphQLObjectType, GraphQLBoolean } from "graphql"
 
 const ArtistStatusesType = new GraphQLObjectType({
-  name: 'ArtistStatuses',
+  name: "ArtistStatuses",
   fields: {
     artists: {
       type: GraphQLBoolean,
@@ -11,7 +11,7 @@ const ArtistStatusesType = new GraphQLObjectType({
           exclude_artists_without_artworks: true,
           artist: [id],
           size: 0,
-        }).then(count => count > 0);
+        }).then(count => count > 0)
       },
     },
     articles: {
@@ -31,7 +31,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     auction_lots: {
       type: GraphQLBoolean,
       resolve: ({ display_auction_link, hide_auction_link }) => {
-        return display_auction_link && !hide_auction_link;
+        return display_auction_link && !hide_auction_link
       },
     },
     biography: {
@@ -50,7 +50,7 @@ const ArtistStatusesType = new GraphQLObjectType({
           exclude_artists_without_artworks: true,
           artist: [id],
           size: 0,
-        }).then(count => count > 0);
+        }).then(count => count > 0)
       },
     },
     cv: {
@@ -59,15 +59,14 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     shows: {
       type: GraphQLBoolean,
-      resolve: ({ displayable_partner_shows_count }) =>
-        displayable_partner_shows_count > 0,
+      resolve: ({ displayable_partner_shows_count }) => displayable_partner_shows_count > 0,
     },
   },
-});
+})
 
 const ArtistStatuses = {
   type: ArtistStatusesType,
   resolve: artist => artist,
-};
+}
 
-export default ArtistStatuses;
+export default ArtistStatuses

@@ -1,15 +1,15 @@
-import { GraphQLEnumType } from 'graphql';
+import { GraphQLEnumType } from "graphql"
 
 export default {
   type: new GraphQLEnumType({
-    name: 'CategoryType',
+    name: "CategoryType",
     values: {
       GALLERY: {
-        value: 'Gallery',
+        value: "Gallery",
       },
       INSTITUTION: {
-        value: 'Institution',
+        value: "Institution",
       },
     },
   }),
-};
+}

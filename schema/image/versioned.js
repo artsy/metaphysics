@@ -1,9 +1,9 @@
-import { setVersion } from './normalize';
-import { GraphQLList, GraphQLString } from 'graphql';
+import { setVersion } from "./normalize"
+import { GraphQLList, GraphQLString } from "graphql"
 
 export const versionedImageUrl = (image, { version }) => {
-  return setVersion(image, version);
-};
+  return setVersion(image, version)
+}
 
 export default {
   args: {
@@ -13,4 +13,4 @@ export default {
   },
   type: GraphQLString,
   resolve: versionedImageUrl,
-};
+}

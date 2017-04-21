@@ -1,31 +1,31 @@
-import { GraphQLEnumType } from 'graphql';
+import { GraphQLEnumType } from "graphql"
 
 export default new GraphQLEnumType({
-  name: 'PartnerClassification',
+  name: "PartnerClassification",
   values: {
     AUCTION: {
-      value: 'PartnerAuction',
+      value: "PartnerAuction",
     },
     BRAND: {
-      value: 'PartnerBrand',
+      value: "PartnerBrand",
     },
     DEMO: {
-      value: 'PartnerDemo',
+      value: "PartnerDemo",
     },
     GALLERY: {
-      value: 'PartnerGallery',
+      value: "PartnerGallery",
     },
     INSTITUTION: {
-      value: 'PartnerInstitution',
+      value: "PartnerInstitution",
     },
     INSTITUTIONAL_SELLER: {
-      value: 'PartnerInstitutionalSeller',
+      value: "PartnerInstitutionalSeller",
     },
     PRIVATE_COLLECTOR: {
-      value: 'PartnerPrivateCollector',
+      value: "PartnerPrivateCollector",
     },
     PRIVATE_DEALER: {
-      value: 'PartnerPrivateDealer',
+      value: "PartnerPrivateDealer",
     },
   },
-});
+})

@@ -1,27 +1,24 @@
-import { map } from 'lodash';
-import { join, truncate } from '../../lib/helpers';
-import { getDefault } from '../image';
-import { setVersion } from '../image/normalize';
-import { GraphQLInt, GraphQLString, GraphQLObjectType } from 'graphql';
+import { map } from "lodash"
+import { join, truncate } from "../../lib/helpers"
+import { getDefault } from "../image"
+import { setVersion } from "../image/normalize"
+import { GraphQLInt, GraphQLString, GraphQLObjectType } from "graphql"
 
-const titleWithDate = ({ title, date }) =>
-  join(' ', [title, date ? `(${date})` : undefined]);
+const titleWithDate = ({ title, date }) => join(" ", [title, date ? `(${date})` : undefined])
 
-export const artistNames = artwork =>
-  artwork.cultural_maker || map(artwork.artists, 'name').join(', ');
+export const artistNames = artwork => artwork.cultural_maker || map(artwork.artists, "name").join(", ")
 
-const forSaleIndication = artwork =>
-  (artwork.forsale ? 'Available for Sale' : undefined);
+const forSaleIndication = artwork => (artwork.forsale ? "Available for Sale" : undefined)
 
-const dimensions = artwork => artwork.dimensions[artwork.metric];
+const dimensions = artwork => artwork.dimensions[artwork.metric]
 
 const partnerDescription = ({ partner: { name }, forsale }) => {
-  if (!name) return undefined;
-  return forsale ? `Available for sale from ${name}` : `From ${name}`;
-};
+  if (!name) return undefined
+  return forsale ? `Available for sale from ${name}` : `From ${name}`
+}
 
 const ArtworkMetaType = new GraphQLObjectType({
-  name: 'ArtworkMeta',
+  name: "ArtworkMeta",
   fields: {
     description: {
       type: GraphQLString,
@@ -33,7 +30,7 @@ const ArtworkMetaType = new GraphQLObjectType({
       },
       resolve: (artwork, { limit }) =>
         truncate(
-          join(', ', [
+          join(", ", [
             partnerDescription(artwork),
             artistNames(artwork),
             titleWithDate(artwork),
@@ -45,23 +42,17 @@ const ArtworkMetaType = new GraphQLObjectType({
     },
     image: {
       type: GraphQLString,
-      resolve: ({ images }) =>
-        setVersion(getDefault(images), ['large', 'medium', 'tall']),
+      resolve: ({ images }) => setVersion(getDefault(images), ["large", "medium", "tall"]),
     },
     title: {
       type: GraphQLString,
       resolve: artwork =>
-        join(' | ', [
-          artistNames(artwork),
-          titleWithDate(artwork),
-          forSaleIndication(artwork),
-          'Artsy',
-        ]),
+        join(" | ", [artistNames(artwork), titleWithDate(artwork), forSaleIndication(artwork), "Artsy"]),
     },
   },
-});
+})
 
 export default {
   type: ArtworkMetaType,
   resolve: x => x,
-};
+}
