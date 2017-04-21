@@ -6,10 +6,13 @@ import _ from "lodash"
 import gravity from "../lib/loaders/gravity"
 import cached from "./fields/cached"
 import { artworkConnection } from "./artwork"
-import filterArtworks, { filterArtworksArgs } from "./filter_artworks"
 import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "../lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean } from "graphql"
+
+// Note to developers working on collections, the staging server does not get a copy
+// of all artwork follows, so you will need to add some each week in order to have data 
+// to work with.
 
 const CollectionType = new GraphQLObjectType({
   name: "Collection",
@@ -30,7 +33,7 @@ const CollectionType = new GraphQLObjectType({
         delete gravityOptions.page
 
         return gravity
-          .with(accessToken, { headers: true })(`collections/artworks`, gravityOptions)
+          .with(accessToken, { headers: true })(`collection/${id}/artworks`, gravityOptions)
           .then(({ body, headers }) => {
             return connectionFromArraySlice(body, options, {
               arrayLength: headers["x-total-count"],
