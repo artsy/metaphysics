@@ -11,7 +11,7 @@ import { GravityIDFields, NodeInterface } from "./object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean } from "graphql"
 
 // Note to developers working on collections, the staging server does not get a copy
-// of all artwork follows, so you will need to add some each week in order to have data 
+// of all artwork follows, so you will need to add some each week in order to have data
 // to work with.
 
 const CollectionType = new GraphQLObjectType({
