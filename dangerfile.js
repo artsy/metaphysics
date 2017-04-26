@@ -12,21 +12,26 @@ if (someoneAssigned === null) {
 
 // Move all JS files towards using flow
 const changedFiles = danger.git.created_files.concat(danger.git.modified_files)
-// const unFlowedFiles = changedFiles.filter(path => !path.startsWith("test/") && path.endsWith("js")).filter(filepath => {
-//   const content = fs.readFileSync(filepath)
-//   return content.includes("@flow")
-// })
+const unFlowedFiles = changedFiles
+  .filter(path => !path.startsWith("test/") && path.endsWith("js"))
+  .filter(filepath => {
+    const content = fs.readFileSync(filepath)
+    if (content) {
+      return content.includes("@flow")
+    }
+    return false
+  })
 
-// if (unFlowedFiles.length > 0) {
-//   const flowLinks = [
-//     " * [Main Site](https://flowtype.org)",
-//     " * [Types](https://flowtype.org/docs/quick-reference.html#primitives)",
-//     " * [What is Flow?](https://code.facebook.com/posts/1505962329687926/flow-a-new-static-type-checker-for-javascript/)", // eslint-disable-line
-//     " * [Danger's flow glossary](https://github.com/danger/danger-js/blob/master/docs/js_glossary.md)",
-//   ]
-//   markdown("--- \n\n If you are new to Flow, here are some resources: \n\n" + flowLinks.join("\n"))
-//   warn(`These new JS files do not have Flow enabled: ${unFlowedFiles.join(", ")}`)
-// }
+if (unFlowedFiles.length > 0) {
+  const flowLinks = [
+    " * [Main Site](https://flowtype.org)", // eslint-disable-line
+    " * [Types](https://flowtype.org/docs/quick-reference.html#primitives)",// eslint-disable-line
+    " * [What is Flow?](https://code.facebook.com/posts/1505962329687926/flow-a-new-static-type-checker-for-javascript/)", // eslint-disable-line
+    " * [Danger's flow glossary](https://github.com/danger/danger-js/blob/master/docs/js_glossary.md)",// eslint-disable-line
+  ]
+  markdown("--- \n\n If you are new to Flow, here are some resources: \n\n" + flowLinks.join("\n"))
+  warn(`These new JS files do not have Flow enabled: ${unFlowedFiles.join(", ")}`)
+}
 
 // Request a CHANGELOG entry, but allow a PR to say it doesn't neeed one
 const hasChangelog = changedFiles.includes("changelog.md")
