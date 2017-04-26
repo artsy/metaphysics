@@ -1,15 +1,34 @@
 import gravity from "../lib/loaders/gravity"
-import { map, omit, keys, create } from "lodash"
+import { map, omit, keys, create, assign } from "lodash"
 import { isExisty } from "../lib/helpers"
 import Artwork from "./artwork"
 import Artist from "./artist"
+import Tag from "./tag"
 import numeral from "./fields/numeral"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
 import { parseRelayOptions } from "../lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
 import { ArtworksAggregationResultsType, ArtworksAggregation } from "./aggregations/filter_artworks_aggregation"
-import { GraphQLList, GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLID } from "graphql"
+import {
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLInt,
+  GraphQLID,
+  GraphQLUnionType,
+} from "graphql"
+
+const ArtworkFilterTagType = create(Tag.type, {
+  name: "ArtworkFilterTag",
+  isTypeOf: ({ context_type }) => context_type === "Tag",
+})
+
+export const ArtworkFilterFacetType = new GraphQLUnionType({
+  name: "ArtworkFilterFacet",
+  types: [ArtworkFilterTagType],
+})
 
 export const FilterArtworksType = new GraphQLObjectType({
   name: "FilterArtworks",
@@ -76,20 +95,17 @@ export const FilterArtworksType = new GraphQLObjectType({
       deprecationReason: "Favor `counts.total`",
     },
     facet: {
-      type: new GraphQLEnumType({
-        name: "ArtworkFilterFacetTypes",
-        values: 
-      }),
-      resolve: ({ gene_id, tag_id }) => {
-
-      }
+      type: ArtworkFilterFacetType,
+      resolve: ({ options }) => {
+        const { tag_id } = options
+        if (tag_id) {
+          return gravity(`tag/${tag_id}`)
+            .then(tag => assign({ context_type: "Tag" }, tag))
+        }
+        return null
+      },
     },
   }),
-})
-
-export const ArtworkFilterFacetType = new GraphQLUnionType({
-  name: "ArtworkContext",
-  types: [ArtworkContextAuctionType, ArtworkContextFairType, ArtworkContextPartnerShowType, ArtworkContextSaleType],
 })
 
 export const filterArtworksArgs = {
@@ -200,6 +216,7 @@ function filterArtworks(primaryKey) {
       }
 
       return gravity.with(accessToken)("filter/artworks", gravityOptions)
+        .then(response => assign({}, response, { options: gravityOptions }))
     },
   }
 }
