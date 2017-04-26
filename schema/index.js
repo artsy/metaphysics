@@ -9,6 +9,7 @@ import ExternalPartner from "./external_partner"
 import Fair from "./fair"
 import Fairs from "./fairs"
 import Gene from "./gene"
+import GeneFamily from "./gene_family"
 import HomePage from "./home"
 import OrderedSets from "./ordered_sets"
 import Profile from "./profile"
@@ -50,6 +51,7 @@ const rootFields = {
   filter_artworks: filterArtworks(),
   filter_sale_artworks: FilterSaleArtworks,
   gene: Gene,
+  gene_family: GeneFamily,
   home_page: HomePage,
   me: Me,
   node: ObjectIdentification.NodeField,
