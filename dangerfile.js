@@ -1,7 +1,6 @@
 // @flow
 
-import { danger, fail, warn, markdown } from "danger"
-const fs = require("fs")
+import { danger, fail, warn } from "danger"
 
 // Make sure we're using the assignee system so that
 // our slack bot works correctly.
