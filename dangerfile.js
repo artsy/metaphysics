@@ -16,10 +16,7 @@ const unFlowedFiles = changedFiles
   .filter(path => !path.startsWith("test/") && path.endsWith("js"))
   .filter(filepath => {
     const content = fs.readFileSync(filepath)
-    if (typeof content.includes === "function") {
-      return content.includes("@flow")
-    }
-    return true
+    return content && content.includes("@flow")
   })
 
 if (unFlowedFiles.length > 0) {
