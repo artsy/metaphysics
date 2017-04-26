@@ -3,6 +3,7 @@
 
 #### Features
 
+* [#622](https://github.com/artsy/metaphysics/pull/622): Adds Tag schema
 * [#499](https://github.com/artsy/metaphysics/pull/499): Adds initial Flow support. - [@orta](https://github.com/orta).
 * [#503](https://github.com/artsy/metaphysics/pull/503): Make works with multiple editions sets not purchasable. - [@mzikherman](https://github.com/mzikherman).
 * [#502](https://github.com/artsy/metaphysics/pull/502): Sort /sales and /related/sales by timely_at. - [@sweir27](https://github.com/sweir27).

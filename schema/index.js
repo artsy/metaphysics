@@ -26,6 +26,7 @@ import Sales from "./sales"
 import SaleArtwork from "./sale_artwork"
 import Search from "./search"
 import Show from "./show"
+import Tag from "./tag"
 import TrendingArtists from "./trending"
 import Me from "./me"
 import UpdateConversation from "./me/update_conversation"
@@ -67,6 +68,7 @@ const rootFields = {
   search: Search,
   show: Show,
   status: Status,
+  tag: Tag,
   trending_artists: TrendingArtists,
 }
 
