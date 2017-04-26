@@ -10,7 +10,7 @@ if (someoneAssigned === null) {
 }
 
 // Move all JS files towards using flow
-const changedFiles = danger.git.created_files.concat(danger.git.modified_files)
+// const changedFiles = danger.git.created_files.concat(danger.git.modified_files)
 
 // Request a CHANGELOG entry, but allow a PR to say it doesn't neeed one
 // const hasChangelog = changedFiles.includes("changelog.md")
