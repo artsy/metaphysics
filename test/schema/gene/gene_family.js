@@ -1,5 +1,9 @@
 describe("GeneFamily", () => {
   describe("A basic test", () => {
+    it("fails because it's a WIP", () => {
+      expect(false).toEqual(true)
+    })
+
     it("returns foo", () => {
       const query = `
         {
