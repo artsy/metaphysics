@@ -1,6 +1,6 @@
 // @flow
 
-import { danger, fail, warn } from "danger"
+import { danger, fail } from "danger"
 
 // Make sure we're using the assignee system so that
 // our slack bot works correctly.
