@@ -2,18 +2,18 @@ import type { GraphQLFieldConfig } from "graphql"
 import { GraphQLObjectType, GraphQLString } from "graphql"
 
 const GeneFamilyType = new GraphQLObjectType({
-  name: 'GeneFamily',
+  name: "GeneFamily",
   fields: {
     foo: {
-      type:  GraphQLString,
-    }
-  }
+      type: GraphQLString,
+    },
+  },
 })
 
 const GeneFamily: GraphQLFieldConfig<GeneFamilyType, *> = {
   type: GeneFamilyType,
   resolve: () => {
-    return { foo: 'foo' }
+    return { foo: "foo" }
   },
 }
 
