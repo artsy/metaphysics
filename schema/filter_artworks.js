@@ -1,5 +1,5 @@
 import gravity from "../lib/loaders/gravity"
-import { map, omit, keys } from "lodash"
+import { map, omit, keys, create } from "lodash"
 import { isExisty } from "../lib/helpers"
 import Artwork from "./artwork"
 import Artist from "./artist"
@@ -75,7 +75,21 @@ export const FilterArtworksType = new GraphQLObjectType({
       resolve: ({ aggregations }) => aggregations.total.value,
       deprecationReason: "Favor `counts.total`",
     },
+    facet: {
+      type: new GraphQLEnumType({
+        name: "ArtworkFilterFacetTypes",
+        values: 
+      }),
+      resolve: ({ gene_id, tag_id }) => {
+
+      }
+    },
   }),
+})
+
+export const ArtworkFilterFacetType = new GraphQLUnionType({
+  name: "ArtworkContext",
+  types: [ArtworkContextAuctionType, ArtworkContextFairType, ArtworkContextPartnerShowType, ArtworkContextSaleType],
 })
 
 export const filterArtworksArgs = {
