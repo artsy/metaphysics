@@ -268,7 +268,7 @@ export const artworkFields = () => {
             .then(([sale, saleArtwork]) => {
               if (!sale) return false
 
-              return saleArtwork.bidder_positions_count < 1
+              return !saleArtwork.sold
             })
         }
         return false
