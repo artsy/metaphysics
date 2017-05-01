@@ -251,25 +251,16 @@ export const artworkFields = () => {
     },
     is_buy_nowable: {
       type: GraphQLBoolean,
-      description: "When in an auction, can the work be bought before any bids are placed",
+      description: "When in an auction, can the work be bought immediately",
       resolve: ({ id, acquireable, sale_ids }, options, request, { rootValue: { salesLoader } }) => {
         if (sale_ids && sale_ids.length > 0 && acquireable) {
           return salesLoader(id, {
             id: sale_ids,
             is_auction: true,
-            auction_state: "open",
+            live: true,
+          }).then(sales => {
+            return sales.length > 0
           })
-            .then(_.first)
-            .then(sale => {
-              if (!sale) return [false]
-
-              return gravity(`sale/${sale.id}/sale_artwork/${id}`).then(saleArtwork => [sale, saleArtwork])
-            })
-            .then(([sale, saleArtwork]) => {
-              if (!sale) return false
-
-              return saleArtwork.bidder_positions_count < 1
-            })
         }
         return false
       },

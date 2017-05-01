@@ -440,7 +440,7 @@ describe("Artwork type", () => {
         }
       }
     `
-    it("is true if the artwork is acquireable and in an open auction with no bids", () => {
+    it("is true if the artwork is acquireable and in an open auction", () => {
       artwork.acquireable = true
       rootValue.salesLoader = sinon.stub().returns(
         Promise.resolve([
@@ -449,18 +449,43 @@ describe("Artwork type", () => {
           },
         ])
       )
-      gravity // Sale Artwork
-        .onCall(0)
-        .returns(
-          Promise.resolve({
-            bidder_positions_count: 0,
-          })
-        )
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
             is_buy_nowable: true,
+          },
+        })
+      })
+    })
+
+    it("is false if the artwork is not acquireable", () => {
+      artwork.acquireable = false
+      rootValue.salesLoader = sinon.stub().returns(
+        Promise.resolve([
+          {
+            id: "sale-id",
+          },
+        ])
+      )
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_buy_nowable: false,
+          },
+        })
+      })
+    })
+
+    it("is false if the artwork is acquireable but not in any open sales", () => {
+      artwork.acquireable = false
+      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]))
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_buy_nowable: false,
           },
         })
       })
