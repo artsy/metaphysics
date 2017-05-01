@@ -99,8 +99,7 @@ export const FilterArtworksType = new GraphQLObjectType({
       resolve: ({ options }) => {
         const { tag_id } = options
         if (tag_id) {
-          return gravity(`tag/${tag_id}`)
-            .then(tag => assign({ context_type: "Tag" }, tag))
+          return gravity(`tag/${tag_id}`).then(tag => assign({ context_type: "Tag" }, tag))
         }
         return null
       },
@@ -215,7 +214,8 @@ function filterArtworks(primaryKey) {
         delete gravityOptions.medium
       }
 
-      return gravity.with(accessToken)("filter/artworks", gravityOptions)
+      return gravity
+        .with(accessToken)("filter/artworks", gravityOptions)
         .then(response => assign({}, response, { options: gravityOptions }))
     },
   }

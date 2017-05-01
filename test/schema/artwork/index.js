@@ -480,9 +480,7 @@ describe("Artwork type", () => {
 
     it("is false if the artwork is acquireable but not in any open sales", () => {
       artwork.acquireable = false
-      rootValue.salesLoader = sinon.stub().returns(
-        Promise.resolve([])
-      )
+      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]))
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
