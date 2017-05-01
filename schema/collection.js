@@ -11,7 +11,7 @@ import { GravityIDFields, NodeInterface } from "./object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean } from "graphql"
 
 // Note to developers working on collections, the staging server does not get a copy
-// of all artwork follows, so you will need to add some each week in order to have data
+// of all artwork saves, so you will need to add some each week in order to have data
 // to work with.
 
 const CollectionType = new GraphQLObjectType({
@@ -68,8 +68,7 @@ const Collection: GraphQLFieldConfig<CollectionType, *> = {
     },
   },
   resolve: (root, { id }, request, { fieldNodes, rootValue }) => {
-    // If you are just making an artworks call ( e.g. if paginating )
-    // do not make a Gravity call for the gene data.
+    // Only make a grav call for the Collection if you need info from it
     const { accessToken, userID } = (rootValue: any)
     const blacklistedFields = ["artworks_connection", "id", "__id"]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {

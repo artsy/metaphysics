@@ -26,7 +26,7 @@ describe("Collections", () => {
       Collection.__ResetDependency__("gravity")
     })
 
-    it.skip("returns collection metadata", () => {
+    it("returns collection metadata", () => {
       gravity.withArgs("collection/saved-artwork", { user_id: null }).returns(Promise.resolve(gravityData))
 
       const query = `
