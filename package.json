@@ -21,7 +21,7 @@
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild": "node_modules/.bin/babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
+    "heroku-postbuild": "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
     "pre-commit": "lint-staged"
   },
   "author": "",
@@ -31,6 +31,7 @@
     "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
     "artsy-newrelic": "^1.0.0",
     "artsy-xapp": "^1.0.4",
+    "babel-cli": "^6.24.1",
     "babel-core": "^6.2.4",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
     "babel-preset-es2015": "^6.1.18",
@@ -66,7 +67,6 @@
     "source-map-support": "^0.4.3"
   },
   "devDependencies": {
-    "babel-cli": "^6.6.5",
     "babel-eslint": "^5.0.4",
     "babel-jest": "^16.0.0",
     "babel-plugin-rewire": "1.0.0-beta-2",
@@ -103,5 +103,4 @@
       "jest --bail --findRelatedTests"
     ]
   }
-
 }
