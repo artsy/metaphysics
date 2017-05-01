@@ -30,7 +30,7 @@ const CollectionType = new GraphQLObjectType({
         gravityOptions.total_count = true
         gravityOptions.user_id = userID
 
-        delete gravityOptions.page
+        delete gravityOptions.page // this can't also be used with the offset in gravity
         return gravity
           .with(accessToken, { headers: true })(`collection/${id}/artworks`, gravityOptions)
           .then(({ body, headers }) => {
