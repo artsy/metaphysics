@@ -11,7 +11,7 @@
   "scripts": {
     "start": "yarn run dev",
     "verbose-dev": "DEBUG=verbose,info,error nf start --procfile Procfile.dev",
-    "dev": "DEBUG=info,error nf start --procfile Procfile.dev",
+    "dev": "DEBUG=info,error nf start --procfile Procfile.dev -w",
     "staging": "DEBUG=info,error nf start --procfile Procfile.dev --env .env.staging",
     "test": "yarn run lint && jest",
     "watch": "jest --watch",
@@ -27,6 +27,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@types/jest": "^19.2.2",
     "accounting": "^0.4.1",
     "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
     "artsy-newrelic": "^1.0.0",
@@ -88,7 +89,7 @@
     "sinon": "^1.17.2"
   },
   "jest": {
-    "testRegex": "/test/.*",
+    "testRegex": "/test/.*.js$",
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
     "testPathIgnorePatterns": [
       "/node_modules/",
