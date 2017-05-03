@@ -1,5 +1,8 @@
 import moment from "moment"
 
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 describe("Show type", () => {
   const Show = schema.__get__("Show")
   const ExternalPartner = schema.__get__("ExternalPartner")
@@ -360,10 +363,8 @@ describe("Show type", () => {
       })
     })
   })
-
   it("includes an update on upcoming status changes", () => {
     showData.end_at = moment().add(1, "d")
-
     const query = `
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -371,7 +372,6 @@ describe("Show type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(data).toEqual({
         show: {
@@ -380,7 +380,6 @@ describe("Show type", () => {
       })
     })
   })
-
   it("includes the html version of markdown", () => {
     const query = `
       {
@@ -389,10 +388,8 @@ describe("Show type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(Show.__get__("gravity").args[0][0]).toBe("show/new-museum-1-2015-triennial-surround-audience")
-
       expect(data).toEqual({
         show: {
           press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
@@ -400,10 +397,8 @@ describe("Show type", () => {
       })
     })
   })
-
   it("includes the total number of artworks", () => {
     total.onCall(0).returns(Promise.resolve(42))
-
     const query = `
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -413,7 +408,6 @@ describe("Show type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(data).toEqual({
         show: {
@@ -424,7 +418,6 @@ describe("Show type", () => {
       })
     })
   })
-
   it("includes the total number of eligible artworks", () => {
     const query = `
       {
@@ -435,7 +428,6 @@ describe("Show type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(data).toEqual({
         show: {
@@ -446,10 +438,8 @@ describe("Show type", () => {
       })
     })
   })
-
   it("includes the number of artworks by a specific artist", () => {
     total.onCall(0).returns(Promise.resolve(2))
-
     const query = `
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -459,7 +449,6 @@ describe("Show type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(data).toEqual({
         show: {
@@ -470,10 +459,8 @@ describe("Show type", () => {
       })
     })
   })
-
   it("does not return errors when there is no cover image", () => {
     gravity.onCall(1).returns(Promise.resolve([]))
-
     const query = `
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -483,7 +470,6 @@ describe("Show type", () => {
         }
       }
     `
-
     return runQuery(query).then(({ show }) => {
       expect(show).toEqual({
         cover_image: null,

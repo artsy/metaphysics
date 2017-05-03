@@ -1,6 +1,9 @@
 import { resolve } from "path"
 import { readFileSync } from "fs"
 
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 const gravityData = {
   id: "saved-artwork",
   name: "Saved Artwork",

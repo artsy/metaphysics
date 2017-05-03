@@ -1,5 +1,8 @@
 import { map } from "lodash"
 
+import schema from "../../../schema"
+import { runQuery, runAuthenticatedQuery } from "../../utils"
+
 describe("HomePageArtistModules", () => {
   describe("concerning display", () => {
     const query = `

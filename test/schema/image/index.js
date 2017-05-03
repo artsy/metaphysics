@@ -1,6 +1,8 @@
 import { assign } from "lodash"
 import { getDefault } from "../../../schema/image"
 
+import { runQuery } from "../../utils"
+
 describe("getDefault", () => {
   it("returns the default image", () => {
     expect(

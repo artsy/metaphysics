@@ -1,3 +1,6 @@
+import schema from "../../../schema"
+import { runQuery } from "../../utils"
+
 describe("Artist type", () => {
   const Artist = schema.__get__("Artist")
   let artist = null

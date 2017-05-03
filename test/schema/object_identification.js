@@ -1,6 +1,9 @@
 import _ from "lodash"
 import { toGlobalId } from "graphql-relay"
 
+import schema from "../../schema"
+import { runQuery, runAuthenticatedQuery } from "../utils"
+
 describe("Object Identification", () => {
   // TODO As we add more loaders, remove the old tests at the bottom of this file and add them here.
   const loaderTests = {
@@ -85,27 +88,25 @@ describe("Object Identification", () => {
     PartnerShow: {
       gravity: {
         displayable: true, // this is only so that the show doesn’t get rejected
-        partner: { id: "for-baz" },
+        partner: {
+          id: "for-baz",
+        },
         display_on_partner_profile: true,
       },
     },
   }
-
   _.keys(tests).forEach(typeName => {
     describe(`for a ${typeName}`, () => {
       const fieldName = _.snakeCase(typeName)
       const type = schema.__get__(typeName)
       const api = _.keys(tests[typeName])[0]
       const payload = tests[typeName][api]
-
       beforeEach(() => {
         type.__Rewire__(api, sinon.stub().returns(Promise.resolve(_.assign({ id: "foo-bar" }, payload))))
       })
-
       afterEach(() => {
         type.__ResetDependency__(api)
       })
-
       it("generates a Global ID", () => {
         const query = `
           {
@@ -114,14 +115,14 @@ describe("Object Identification", () => {
             }
           }
         `
-
         return runQuery(query).then(data => {
           const expectedData = {}
-          expectedData[fieldName] = { __id: toGlobalId(typeName, "foo-bar") }
+          expectedData[fieldName] = {
+            __id: toGlobalId(typeName, "foo-bar"),
+          }
           expect(data).toEqual(expectedData)
         })
       })
-
       it("resolves a node", () => {
         const query = `
           {
@@ -133,7 +134,6 @@ describe("Object Identification", () => {
             }
           }
         `
-
         return runQuery(query).then(data => {
           expect(data).toEqual({
             node: {
@@ -145,10 +145,8 @@ describe("Object Identification", () => {
       })
     })
   })
-
   describe("for the Me field", () => {
     const globalId = toGlobalId("Me", "user-42")
-
     it("generates a Global ID", () => {
       const query = `
         {
@@ -157,7 +155,6 @@ describe("Object Identification", () => {
           }
         }
       `
-
       return runAuthenticatedQuery(query).then(data => {
         expect(data).toEqual({
           me: {
@@ -166,7 +163,6 @@ describe("Object Identification", () => {
         })
       })
     })
-
     it("resolves a node", () => {
       const query = `
         {
@@ -178,7 +174,6 @@ describe("Object Identification", () => {
           }
         }
       `
-
       return runAuthenticatedQuery(query).then(data => {
         expect(data).toEqual({
           node: {
@@ -189,11 +184,9 @@ describe("Object Identification", () => {
       })
     })
   })
-
   describe("for a HomePageArtworkModule", () => {
     describe("with a specific module", () => {
       const globalId = toGlobalId("HomePageArtworkModule", JSON.stringify({ key: "popular_artists" }))
-
       it("generates a Global ID", () => {
         const query = `
           {
@@ -204,7 +197,6 @@ describe("Object Identification", () => {
             }
           }
         `
-
         return runQuery(query).then(data => {
           expect(data).toEqual({
             home_page: {
@@ -215,7 +207,6 @@ describe("Object Identification", () => {
           })
         })
       })
-
       it("resolves a node", () => {
         const query = `
           {
@@ -227,7 +218,6 @@ describe("Object Identification", () => {
             }
           }
         `
-
         return runQuery(query).then(data => {
           expect(data).toEqual({
             node: {
@@ -238,10 +228,8 @@ describe("Object Identification", () => {
         })
       })
     })
-
     describe("with a generic gene", () => {
       const globalId = toGlobalId("HomePageArtworkModule", JSON.stringify({ id: "abstract-art", key: "generic_gene" }))
-
       it("generates a Global ID", () => {
         const query = `
           {
@@ -252,7 +240,6 @@ describe("Object Identification", () => {
             }
           }
         `
-
         return runQuery(query).then(data => {
           expect(data).toEqual({
             home_page: {
@@ -263,7 +250,6 @@ describe("Object Identification", () => {
           })
         })
       })
-
       it("resolves a node", () => {
         const query = `
           {
@@ -278,7 +264,6 @@ describe("Object Identification", () => {
             }
           }
         `
-
         return runQuery(query).then(data => {
           expect(data).toEqual({
             node: {
@@ -292,7 +277,6 @@ describe("Object Identification", () => {
         })
       })
     })
-
     describe("with a related artist", () => {
       const globalId = toGlobalId(
         "HomePageArtworkModule",
@@ -302,7 +286,6 @@ describe("Object Identification", () => {
           key: "related_artists",
         })
       )
-
       it("generates a Global ID", () => {
         const query = `
           {
@@ -315,7 +298,6 @@ describe("Object Identification", () => {
             }
           }
         `
-
         return runQuery(query).then(data => {
           expect(data).toEqual({
             home_page: {
@@ -326,7 +308,6 @@ describe("Object Identification", () => {
           })
         })
       })
-
       it("resolves a node", () => {
         const query = `
           {
@@ -342,7 +323,6 @@ describe("Object Identification", () => {
             }
           }
         `
-
         return runQuery(query).then(data => {
           expect(data).toEqual({
             node: {
@@ -358,10 +338,8 @@ describe("Object Identification", () => {
       })
     })
   })
-
   describe("for a HomePageArtistModule", () => {
     const globalId = toGlobalId("HomePageArtistModule", JSON.stringify({ key: "TRENDING" }))
-
     it("generates a Global ID", () => {
       const query = `
         {
@@ -372,7 +350,6 @@ describe("Object Identification", () => {
           }
         }
       `
-
       return runQuery(query).then(data => {
         expect(data).toEqual({
           home_page: {
@@ -383,7 +360,6 @@ describe("Object Identification", () => {
         })
       })
     })
-
     it("resolves a node", () => {
       const query = `
         {
@@ -395,7 +371,6 @@ describe("Object Identification", () => {
           }
         }
       `
-
       return runQuery(query).then(data => {
         expect(data).toEqual({
           node: {
@@ -405,14 +380,9 @@ describe("Object Identification", () => {
         })
       })
     })
-  })
-
-  // These test that the proper AST is passed on by testing that the `Me` type doesn’t make any
-  // gravity calls (as the `Me` type’s `resolve` function is optimised to not make a request when
-  // only the `id` field is requested).
+  }) // These test that the proper AST is passed on by testing that the `Me` type doesn’t make any // gravity calls (as the `Me` type’s `resolve` function is optimised to not make a request when // only the `id` field is requested).
   describe("concerning passing the proper AST to resolvers", () => {
     const globalId = toGlobalId("Me", "user-42")
-
     it("should pass the proper inline fragment AST", () => {
       const query = `
         {
@@ -423,7 +393,6 @@ describe("Object Identification", () => {
           }
         }
       `
-
       return runAuthenticatedQuery(query).then(data => {
         expect(data).toEqual({
           node: {
@@ -432,7 +401,6 @@ describe("Object Identification", () => {
         })
       })
     })
-
     it("should pass the proper spread fragment AST", () => {
       const query = `
         {
@@ -444,7 +412,6 @@ describe("Object Identification", () => {
           id
         }
       `
-
       return runAuthenticatedQuery(query).then(data => {
         expect(data).toEqual({
           node: {

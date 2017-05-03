@@ -1,6 +1,9 @@
 import jwt from "jwt-simple"
 import { omit } from "lodash"
 
+import schema from "../../schema"
+import { runQuery, runAuthenticatedQuery } from "../utils"
+
 const { HMAC_SECRET } = process.env
 
 describe("CausalityJWT", () => {

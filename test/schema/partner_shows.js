@@ -1,3 +1,6 @@
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 describe("PartnerShows type", () => {
   const PartnerShows = schema.__get__("PartnerShows")
   const PartnerShow = PartnerShows.__get__("PartnerShow")

@@ -1,5 +1,8 @@
 import { map, find } from "lodash"
 
+import schema from "../../../schema"
+import { runAuthenticatedQuery } from "../../utils"
+
 describe("HomePageArtworkModules", () => {
   describe("when signed in", () => {
     const HomePage = schema.__get__("HomePage")
@@ -171,7 +174,6 @@ describe("HomePageArtworkModules", () => {
       })
     })
   })
-
   describe("when signed-out", () => {
     // nothing for now
   })

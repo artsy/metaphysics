@@ -1,3 +1,6 @@
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 describe("Filter Sale Artworks", () => {
   const FilterSaleArtworks = schema.__get__("FilterSaleArtworks")
 

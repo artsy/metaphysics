@@ -1,5 +1,8 @@
 import moment from "moment"
 
+import schema from "../../../schema"
+import { runQuery } from "../../utils"
+
 describe("Sale type", () => {
   const Sale = schema.__get__("Sale")
 

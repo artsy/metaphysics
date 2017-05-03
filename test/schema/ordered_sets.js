@@ -1,3 +1,6 @@
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 describe("OrderedSets type", () => {
   const OrderedSets = schema.__get__("OrderedSets")
 

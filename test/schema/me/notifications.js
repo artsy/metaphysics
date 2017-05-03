@@ -1,5 +1,8 @@
 import { assign } from "lodash"
 
+import schema from "../../../schema"
+import { runAuthenticatedQuery } from "../../utils"
+
 describe("Me", () => {
   describe("Notifications", () => {
     const gravity = sinon.stub()
