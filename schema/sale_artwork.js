@@ -73,7 +73,7 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       currency: {
         type: GraphQLString,
-        description: "Currency abbreviation (e.g. \"USD\")",
+        description: `Currency abbreviation (e.g. "USD")`,
       },
       current_bid: money({
         name: "SaleArtworkCurrentBid",
@@ -231,7 +231,7 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       symbol: {
         type: GraphQLString,
-        description: "Currency symbol (e.g. \"$\")",
+        description: `Currency symbol (e.g. "$")`,
       },
     }
   },

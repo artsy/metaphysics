@@ -380,7 +380,12 @@ describe("Object Identification", () => {
         })
       })
     })
-  }) // These test that the proper AST is passed on by testing that the `Me` type doesn’t make any // gravity calls (as the `Me` type’s `resolve` function is optimised to not make a request when // only the `id` field is requested).
+  }) /*
+  * These test that the proper AST is passed on by testing that the `Me` type
+  * doesn’t make any gravity calls (as the `Me` type’s `resolve` function is
+  * optimised to not make a request when
+  * only the `id` field is requested).
+  */
   describe("concerning passing the proper AST to resolvers", () => {
     const globalId = toGlobalId("Me", "user-42")
     it("should pass the proper inline fragment AST", () => {
