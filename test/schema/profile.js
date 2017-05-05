@@ -1,3 +1,6 @@
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 describe("Profile type", () => {
   const Profile = schema.__get__("Profile")
   let gravity = null

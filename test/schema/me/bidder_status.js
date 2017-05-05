@@ -1,3 +1,6 @@
+import schema from "../../../schema"
+import { runAuthenticatedQuery } from "../../utils"
+
 describe("BidderStatus type", () => {
   const Me = schema.__get__("Me")
   const BidderStatus = Me.__get__("BidderStatus")

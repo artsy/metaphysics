@@ -1,3 +1,6 @@
+import schema from "../../../schema"
+import { runAuthenticatedQuery } from "../../utils"
+
 describe("UpdateCollectorProfile", () => {
   const gravity = sinon.stub()
   const UpdateCollectorProfile = schema.__get__("UpdateCollectorProfile")

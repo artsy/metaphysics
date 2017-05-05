@@ -1,3 +1,6 @@
+import schema from "../../../schema"
+import { runAuthenticatedQuery } from "../../utils"
+
 describe("UpdateConversation", () => {
   const gravity = sinon.stub()
   const impulse = sinon.stub()

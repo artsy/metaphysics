@@ -1,3 +1,6 @@
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 describe("Fair type", () => {
   const Fair = schema.__get__("Fair")
   let gravity = null

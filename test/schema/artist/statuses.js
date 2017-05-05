@@ -1,3 +1,5 @@
+import { runQuery } from "../../utils"
+
 describe("Artist Statuses", () => {
   let artist = null
   let rootValue = null

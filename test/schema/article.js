@@ -1,3 +1,6 @@
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 describe("Article type", () => {
   const Article = schema.__get__("Article")
   let positron = null
@@ -48,7 +51,7 @@ describe("Article type", () => {
   })
 
   it("returns an array of contributing authors", () => {
-    return runQuery("{ article(id: \"foo-bar\") { id, title, contributing_authors{ id, name } } }").then(data => {
+    return runQuery(`{ article(id: "foo-bar") { id, title, contributing_authors{ id, name } } }`).then(data => {
       expect(data.article.id).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
       expect(data.article.contributing_authors).toEqual([

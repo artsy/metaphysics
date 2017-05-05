@@ -1,3 +1,6 @@
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 describe("Filter Artworks", () => {
   describe(`Does not pass along the medium param if it is "*"`, () => {
     const Gene = schema.__get__("Gene")

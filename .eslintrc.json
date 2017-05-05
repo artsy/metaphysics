@@ -27,8 +27,6 @@
   ],
   "globals": {
     "expect": false,
-    "runQuery": false,
-    "runAuthenticatedQuery": false,
     "schema": false,
     "sinon": false,
     "expectPromiseRejectionToMatch": false

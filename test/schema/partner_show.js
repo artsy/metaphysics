@@ -1,5 +1,8 @@
 import moment from "moment"
 
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 describe("PartnerShow type", () => {
   const PartnerShow = schema.__get__("PartnerShow")
   let total = null
@@ -74,10 +77,8 @@ describe("PartnerShow type", () => {
       })
     })
   })
-
   it("includes an update on upcoming status changes", () => {
     showData.end_at = moment().add(1, "d")
-
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -85,7 +86,6 @@ describe("PartnerShow type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(data).toEqual({
         partner_show: {
@@ -94,7 +94,6 @@ describe("PartnerShow type", () => {
       })
     })
   })
-
   it("includes the html version of markdown", () => {
     const query = `
       {
@@ -103,10 +102,8 @@ describe("PartnerShow type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(PartnerShow.__get__("gravity").args[0][0]).toBe("show/new-museum-1-2015-triennial-surround-audience")
-
       expect(data).toEqual({
         partner_show: {
           press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
@@ -114,10 +111,8 @@ describe("PartnerShow type", () => {
       })
     })
   })
-
   it("includes the total number of artworks", () => {
     total.onCall(0).returns(Promise.resolve(42))
-
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -127,7 +122,6 @@ describe("PartnerShow type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(data).toEqual({
         partner_show: {
@@ -138,7 +132,6 @@ describe("PartnerShow type", () => {
       })
     })
   })
-
   it("includes the total number of eligible artworks", () => {
     const query = `
       {
@@ -149,7 +142,6 @@ describe("PartnerShow type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(data).toEqual({
         partner_show: {
@@ -160,10 +152,8 @@ describe("PartnerShow type", () => {
       })
     })
   })
-
   it("includes the number of artworks by a specific artist", () => {
     total.onCall(0).returns(Promise.resolve(2))
-
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -173,7 +163,6 @@ describe("PartnerShow type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(data).toEqual({
         partner_show: {
@@ -184,10 +173,8 @@ describe("PartnerShow type", () => {
       })
     })
   })
-
   it("does not return errors when there is no cover image", () => {
     gravity.onCall(1).returns(Promise.resolve([]))
-
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -197,7 +184,6 @@ describe("PartnerShow type", () => {
         }
       }
     `
-
     return runQuery(query).then(({ partner_show }) => {
       expect(partner_show).toEqual({
         cover_image: null,

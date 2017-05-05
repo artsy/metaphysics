@@ -94,14 +94,14 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/test/helper.js",
+      "/test/utils.js",
       "/test/__mocks__"
     ]
   },
   "lint-staged": {
     "*.js": [
       "prettier --write --trailing-comma es5 --print-width 120 --no-semi",
-      "git add",
-      "jest --bail --findRelatedTests"
+      "git add"
     ]
   }
 }

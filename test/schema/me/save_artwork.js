@@ -1,3 +1,6 @@
+import schema from "../../../schema"
+import { runAuthenticatedQuery } from "../../utils"
+
 describe("SaveArtwork", () => {
   const gravity = sinon.stub()
   const SaveArtwork = schema.__get__("SaveArtwork")

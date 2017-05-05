@@ -1,3 +1,6 @@
+import schema from "../../../schema"
+import { runQuery } from "../../utils"
+
 describe("HomePageArtworkModule", () => {
   const HomePage = schema.__get__("HomePage")
   const HomePageArtworkModule = HomePage.__get__("HomePageArtworkModule")
