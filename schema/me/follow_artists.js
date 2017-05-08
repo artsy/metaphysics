@@ -4,7 +4,7 @@ import { total as getTotal } from "../../lib/loaders/total"
 import Artist from "../artist"
 import { GraphQLInt, GraphQLList, GraphQLObjectType } from "graphql"
 
-const FollowArtists = new GraphQLObjectType({
+const FollowArtistsType = new GraphQLObjectType({
   name: "FollowArtists",
   fields: {
     artists: {
@@ -34,7 +34,7 @@ const FollowArtists = new GraphQLObjectType({
 })
 
 export default {
-  type: FollowArtists,
+  type: FollowArtistsType,
   description: "A list of the current user’s artist follows",
   args: {
     page: {

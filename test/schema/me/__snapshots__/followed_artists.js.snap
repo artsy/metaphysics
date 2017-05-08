@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Collections Handles getting collection metadata returns artworks for a collection 1`] = `
+Object {
+  "me": Object {
+    "followed_artists_connection": Object {
+      "edges": Array [
+        Object {
+          "node": Object {
+            "artist": Object {
+              "id": "bradley-theodore",
+              "name": "Bradley Theodore",
+            },
+          },
+        },
+      ],
+    },
+  },
+}
+`;
