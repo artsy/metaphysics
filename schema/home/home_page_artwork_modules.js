@@ -131,7 +131,7 @@ const HomePageArtworkModules = {
               // relatedArtist now returns 2 random artist pairs
               // we will use one for the related_artist rail and one for
               // the followed_artist rail
-              if (artistPairs) {
+              if (artistPairs && artistPairs.length) {
                 const { artist, sim_artist } = artistPairs[0]
 
                 const relatedArtistModuleParams = {

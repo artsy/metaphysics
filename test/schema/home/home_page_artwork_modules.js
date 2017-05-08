@@ -145,6 +145,37 @@ describe("HomePageArtworkModules", () => {
       })
     })
 
+    it("skips the followed_artist module if the pairs are empty", () => {
+      relatedArtists.onCall(0).returns(Promise.resolve([]))
+
+      const query = `
+        {
+          home_page {
+            artwork_modules {
+              key
+              params {
+                related_artist_id
+                followed_artist_id
+              }
+            }
+          }
+        }
+      `
+
+      return runAuthenticatedQuery(query).then(({ home_page }) => {
+        const keys = map(home_page.artwork_modules, "key")
+        expect(keys).toEqual([
+          "followed_galleries",
+          "saved_works",
+          "recommended_works",
+          "current_fairs",
+          "generic_gene",
+          "generic_gene",
+          "generic_gene",
+        ])
+      })
+    })
+
     it("takes a preferred order of modules", () => {
       const query = `
         {

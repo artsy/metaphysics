@@ -4,7 +4,7 @@ import { readFileSync } from "fs"
 import schema from "../../../schema"
 import { runQuery } from "../../utils"
 
-describe("me {} saved_artwork", () => {
+describe("me { saved_artwork", () => {
   describe("Handles getting collection metadata", () => {
     const Collection = schema.__get__("Collection")
     let gravity = null
