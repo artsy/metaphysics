@@ -62,6 +62,7 @@ export default {
       "id",
       "__id",
       "follow_artists",
+      "followed_artists_connection",
       "suggested_artists",
       "bidders",
       "bidder_positions",

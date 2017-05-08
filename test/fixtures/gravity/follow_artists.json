@@ -1,0 +1,37 @@
+[
+  {
+    "artist": {
+      "_id": "555271f87261694916290200",
+      "id": "bradley-theodore",
+      "sortable_id": "theodore-bradley",
+      "name": "Bradley Theodore",
+      "years": "",
+      "public": true,
+      "birthday": "",
+      "consignable": false,
+      "deathday": "",
+      "nationality": "",
+      "published_artworks_count": 160,
+      "forsale_artworks_count": 86,
+      "artworks_count": 212,
+      "original_width": null,
+      "original_height": null,
+      "image_url": "https://d32dm0rphc51dk.cloudfront.net/OcYkonYKNoEIvg__2jnZCA/:version.jpg",
+      "image_versions": [
+        "four_thirds",
+        "large",
+        "square",
+        "tall"
+      ],
+      "image_urls": {
+        "four_thirds": "https://d32dm0rphc51dk.cloudfront.net/OcYkonYKNoEIvg__2jnZCA/four_thirds.jpg",
+        "large": "https://d32dm0rphc51dk.cloudfront.net/OcYkonYKNoEIvg__2jnZCA/large.jpg",
+        "square": "https://d32dm0rphc51dk.cloudfront.net/OcYkonYKNoEIvg__2jnZCA/square.jpg",
+        "tall": "https://d32dm0rphc51dk.cloudfront.net/OcYkonYKNoEIvg__2jnZCA/tall.jpg"
+      }
+    },
+    "id": "59109d358b3b8114c26e453a",
+    "created_at": "2017-05-08T16:30:45+00:00",
+    "auto": null
+  }
+]
