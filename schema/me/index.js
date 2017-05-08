@@ -12,6 +12,7 @@ import Notifications from "./notifications"
 import Conversations from "./conversations"
 import CollectorProfile from "./collector_profile"
 import ArtworkInquiries from "./artwork_inquiries"
+import SavedArtworks from "./saved_artworks"
 import { IDFields, NodeInterface } from "../object_identification"
 import { queriedForFieldsOtherThanBlacklisted } from "../../lib/helpers"
 import { GraphQLString, GraphQLObjectType } from "graphql"
@@ -24,6 +25,7 @@ const Me = new GraphQLObjectType({
   fields: {
     ...IDFields,
     artwork_inquiries_connection: ArtworkInquiries,
+
     bidders: Bidders,
     bidder_status: BidderStatus,
     bidder_positions: BidderPositions,
@@ -44,6 +46,7 @@ const Me = new GraphQLObjectType({
       type: GraphQLString,
     },
     sale_registrations: SaleRegistrations,
+    saved_artworks: SavedArtworks,
     suggested_artists: SuggestedArtists,
     type: {
       type: GraphQLString,

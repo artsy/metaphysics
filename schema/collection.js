@@ -14,7 +14,7 @@ import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean } from
 // of all artwork saves, so you will need to add some each week in order to have data
 // to work with.
 
-const CollectionType = new GraphQLObjectType({
+export const CollectionType = new GraphQLObjectType({
   name: "Collection",
   interfaces: [NodeInterface],
   isTypeOf: obj => _.has(obj, "name") && _.has(obj, "private") && _.has(obj, "default"),
@@ -59,6 +59,19 @@ const CollectionType = new GraphQLObjectType({
   },
 })
 
+// This resolver is re-used by `me { saved_artworks }`
+export const collectionResolver = (fieldNodes: any, accessToken: string, userID: string, id: string) => {
+  const blacklistedFields = ["artworks_connection", "id", "__id"]
+
+  if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    return gravity.with(accessToken)(`collection/${id}`, { user_id: userID })
+  }
+
+  // These are here so that the type system's `isTypeOf`
+  // resolves correctly when we're skipping gravity data
+  return { id, name: null, private: null, default: null }
+}
+
 const Collection: GraphQLFieldConfig<CollectionType, *> = {
   type: CollectionType,
   args: {
@@ -70,14 +83,7 @@ const Collection: GraphQLFieldConfig<CollectionType, *> = {
   resolve: (root, { id }, request, { fieldNodes, rootValue }) => {
     // Only make a grav call for the Collection if you need info from it
     const { accessToken, userID } = (rootValue: any)
-    const blacklistedFields = ["artworks_connection", "id", "__id"]
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return gravity.with(accessToken)(`collection/${id}`, { user_id: userID })
-    }
-
-    // These are here so that the type system's `isTypeOf`
-    // resolves correctly when we're skipping gravity data
-    return { id, name: null, private: null, default: null }
+    return collectionResolver(fieldNodes, accessToken, userID, id)
   },
 }
 
