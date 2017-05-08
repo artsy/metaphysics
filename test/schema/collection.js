@@ -2,7 +2,7 @@ import { resolve } from "path"
 import { readFileSync } from "fs"
 
 import schema from "../../schema"
-import { runQuery } from "../utils"
+import { runAuthenticatedQuery } from "../utils"
 
 const gravityData = {
   id: "saved-artwork",
@@ -30,7 +30,7 @@ describe("Collections", () => {
     })
 
     it("returns collection metadata", () => {
-      gravity.withArgs("collection/saved-artwork", { user_id: null }).returns(Promise.resolve(gravityData))
+      gravity.withArgs("collection/saved-artwork", { user_id: "user-42" }).returns(Promise.resolve(gravityData))
 
       const query = `
         {
@@ -41,7 +41,7 @@ describe("Collections", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then(data => {
         expect(data).toMatchSnapshot()
       })
     })
@@ -50,7 +50,7 @@ describe("Collections", () => {
       const artworksPath = resolve("test", "fixtures", "gravity", "artworks_array.json")
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
       gravity
-        .withArgs("collection/saved-artwork/artworks", { size: 10, offset: 0, total_count: true, user_id: null })
+        .withArgs("collection/saved-artwork/artworks", { size: 10, offset: 0, total_count: true, user_id: "user-42" })
         .returns(Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } }))
 
       const query = `
@@ -67,7 +67,7 @@ describe("Collections", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then(data => {
         expect(data).toMatchSnapshot()
       })
     })

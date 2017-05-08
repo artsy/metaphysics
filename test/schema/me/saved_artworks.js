@@ -2,7 +2,7 @@ import { resolve } from "path"
 import { readFileSync } from "fs"
 
 import schema from "../../../schema"
-import { runQuery } from "../../utils"
+import { runAuthenticatedQuery } from "../../utils"
 
 describe("me { saved_artwork", () => {
   describe("Handles getting collection metadata", () => {
@@ -23,7 +23,7 @@ describe("me { saved_artwork", () => {
       const artworksPath = resolve("test", "fixtures", "gravity", "artworks_array.json")
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
       gravity
-        .withArgs("collection/saved-artwork/artworks", { size: 10, offset: 0, total_count: true, user_id: null })
+        .withArgs("collection/saved-artwork/artworks", { size: 10, offset: 0, total_count: true, user_id: "user-42" })
         .returns(Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } }))
 
       const query = `
@@ -42,7 +42,7 @@ describe("me { saved_artwork", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then(data => {
         expect(data).toMatchSnapshot()
       })
     })
