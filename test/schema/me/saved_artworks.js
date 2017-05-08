@@ -1,20 +1,10 @@
 import { resolve } from "path"
 import { readFileSync } from "fs"
 
-import schema from "../../schema"
-import { runAuthenticatedQuery } from "../utils"
+import schema from "../../../schema"
+import { runAuthenticatedQuery } from "../../utils"
 
-const gravityData = {
-  id: "saved-artwork",
-  name: "Saved Artwork",
-  default: true,
-  description: "",
-  image_url: null,
-  image_versions: null,
-  private: false,
-}
-
-describe("Collections", () => {
+describe("me { saved_artwork", () => {
   describe("Handles getting collection metadata", () => {
     const Collection = schema.__get__("Collection")
     let gravity = null
@@ -29,23 +19,6 @@ describe("Collections", () => {
       Collection.__ResetDependency__("gravity")
     })
 
-    it("returns collection metadata", () => {
-      gravity.withArgs("collection/saved-artwork", { user_id: "user-42" }).returns(Promise.resolve(gravityData))
-
-      const query = `
-        {
-          collection(id: "saved-artwork") {
-            name
-            private
-            default
-          }
-        }
-      `
-      return runAuthenticatedQuery(query).then(data => {
-        expect(data).toMatchSnapshot()
-      })
-    })
-
     it("returns artworks for a collection", () => {
       const artworksPath = resolve("test", "fixtures", "gravity", "artworks_array.json")
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
@@ -55,12 +28,14 @@ describe("Collections", () => {
 
       const query = `
         {
-          collection(id: "saved-artwork") {
-            artworks_connection(first:10) {
-              edges {
-                node {
-                  id
-                  title
+          me {
+            saved_artworks {
+              artworks_connection(first:10) {
+                edges {
+                  node {
+                    id
+                    title
+                  }
                 }
               }
             }
