@@ -25,7 +25,6 @@ const Me = new GraphQLObjectType({
   fields: {
     ...IDFields,
     artwork_inquiries_connection: ArtworkInquiries,
-
     bidders: Bidders,
     bidder_status: BidderStatus,
     bidder_positions: BidderPositions,
