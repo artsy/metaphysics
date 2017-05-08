@@ -1,3 +1,6 @@
+import schema from "../../schema"
+import { runQuery } from "../utils"
+
 describe("SaleArtwork type", () => {
   let gravity
   const SaleArtwork = schema.__get__("SaleArtwork")
@@ -30,14 +33,11 @@ describe("SaleArtwork type", () => {
         symbol: "€",
       })
     )
-
     SaleArtwork.__Rewire__("gravity", gravity)
   })
-
   afterEach(() => {
     SaleArtwork.__ResetDependency__("gravity")
   })
-
   it("formats money correctly", () => {
     const query = `
       {
@@ -65,7 +65,6 @@ describe("SaleArtwork type", () => {
         }
       }
     `
-
     return runQuery(query).then(data => {
       expect(SaleArtwork.__get__("gravity").args[0][0]).toBe("sale_artwork/54c7ed2a7261692bfa910200")
       expect(data).toEqual({
@@ -94,7 +93,6 @@ describe("SaleArtwork type", () => {
       })
     })
   })
-
   it("can return the bid increment", () => {
     gravity
       .onCall(1)
@@ -108,7 +106,18 @@ describe("SaleArtwork type", () => {
         Promise.resolve([
           {
             key: "default",
-            increments: [{ from: 0, to: 399999, amount: 5000 }, { from: 400000, to: 1000000, amount: 10000 }],
+            increments: [
+              {
+                from: 0,
+                to: 399999,
+                amount: 5000,
+              },
+              {
+                from: 400000,
+                to: 1000000,
+                amount: 10000,
+              },
+            ],
           },
         ])
       )
@@ -144,16 +153,13 @@ describe("SaleArtwork type", () => {
       ])
     })
   })
-
   describe("with a max amount set", () => {
     beforeEach(() => {
       SaleArtwork.__Rewire__("BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT", "400000")
     })
-
     afterEach(() => {
       SaleArtwork.__ResetDependency__("BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT")
     })
-
     it("does not return increments above the max allowed", () => {
       gravity
         .onCall(1)
@@ -167,7 +173,18 @@ describe("SaleArtwork type", () => {
           Promise.resolve([
             {
               key: "default",
-              increments: [{ from: 0, to: 399999, amount: 5000 }, { from: 400000, to: 1000000, amount: 10000 }],
+              increments: [
+                {
+                  from: 0,
+                  to: 399999,
+                  amount: 5000,
+                },
+                {
+                  from: 400000,
+                  to: 1000000,
+                  amount: 10000,
+                },
+              ],
             },
           ])
         )

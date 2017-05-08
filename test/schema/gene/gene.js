@@ -1,3 +1,6 @@
+import schema from "../../../schema"
+import { runQuery } from "../../utils"
+
 describe("Gene", () => {
   describe("For just querying the gene artworks", () => {
     const Gene = schema.__get__("Gene")

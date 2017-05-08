@@ -1,3 +1,6 @@
+import schema from "../../../schema"
+import { runAuthenticatedQuery } from "../../utils"
+
 describe("LotStanding type", () => {
   const Me = schema.__get__("Me")
   const LotStanding = Me.__get__("LotStanding")

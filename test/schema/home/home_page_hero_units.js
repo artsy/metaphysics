@@ -1,3 +1,6 @@
+import schema from "../../../schema"
+import { runQuery } from "../../utils"
+
 describe("HomePageHeroUnits", () => {
   const HomePage = schema.__get__("HomePage")
   const HomePageHeroUnits = HomePage.__get__("HomePageHeroUnits")

@@ -1,3 +1,5 @@
+import { runQuery } from "../../utils"
+
 describe("ArtistCarousel type", () => {
   let artist = null
   let rootValue = null

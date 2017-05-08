@@ -1,6 +1,9 @@
 import { assign } from "lodash"
 import moment from "moment"
 
+import schema from "../../../schema"
+import { runQuery } from "../../utils"
+
 describe("Artwork type", () => {
   let gravity
   const Artwork = schema.__get__("Artwork")
@@ -458,7 +461,6 @@ describe("Artwork type", () => {
         })
       })
     })
-
     it("is false if the artwork is not acquireable", () => {
       artwork.acquireable = false
       rootValue.salesLoader = sinon.stub().returns(
@@ -477,7 +479,6 @@ describe("Artwork type", () => {
         })
       })
     })
-
     it("is false if the artwork is acquireable but not in any open sales", () => {
       artwork.acquireable = false
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]))
