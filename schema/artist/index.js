@@ -346,7 +346,7 @@ const ArtistType = new GraphQLObjectType({
       },
       formatted_nationality_and_birthday: {
         type: GraphQLString,
-        description: "A string of the form \"Nationality, Birthday (or Birthday-Deathday)\"",
+        description: 'A string of the form "Nationality, Birthday (or Birthday-Deathday)"',
         resolve: ({ birthday, nationality, deathday }) => {
           let formatted_bday = !isNaN(birthday) && birthday ? "b. " + birthday : birthday
           formatted_bday = formatted_bday && formatted_bday.replace(/born/i, "b.")

@@ -8,6 +8,7 @@ import LotStandings from "./lot_standings"
 import SaleRegistrations from "./sale_registrations"
 import SuggestedArtists from "./suggested_artists"
 import FollowArtists from "./follow_artists"
+import FollowedArtists from "./followed_artists"
 import Notifications from "./notifications"
 import Conversations from "./conversations"
 import CollectorProfile from "./collector_profile"
@@ -34,6 +35,7 @@ const Me = new GraphQLObjectType({
       type: GraphQLString,
     },
     follow_artists: FollowArtists,
+    followed_artists_connection: FollowedArtists,
     lot_standing: LotStanding,
     lot_standings: LotStandings,
     name: {
