@@ -1,7 +1,4 @@
-const {
-  REQUEST_THROTTLE_MS,
-  REQUEST_TIMEOUT_MS,
-} = process.env;
+const { REQUEST_THROTTLE_MS, REQUEST_TIMEOUT_MS } = process.env;
 
 export default {
   REQUEST_THROTTLE_MS: Number(REQUEST_THROTTLE_MS) || 5000,

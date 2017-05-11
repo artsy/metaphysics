@@ -1,11 +1,7 @@
-import {
-  GraphQLObjectType,
-  GraphQLID,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLID, GraphQLString } from "graphql"
 
 const HomePageModuleParams = new GraphQLObjectType({
-  name: 'HomePageModulesParams',
+  name: "HomePageModulesParams",
   fields: {
     followed_artist_id: {
       type: GraphQLID,
@@ -26,9 +22,9 @@ const HomePageModuleParams = new GraphQLObjectType({
       type: GraphQLID,
     },
   },
-});
+})
 
 export default {
   type: HomePageModuleParams,
   resolve: ({ params }) => params,
-};
+}

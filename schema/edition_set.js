@@ -1,14 +1,10 @@
-import { isEmpty } from 'lodash';
-import { IDFields } from './object_identification';
-import Dimensions from './dimensions';
-import {
-  GraphQLString,
-  GraphQLBoolean,
-  GraphQLObjectType,
-} from 'graphql';
+import { isEmpty } from "lodash"
+import { IDFields } from "./object_identification"
+import Dimensions from "./dimensions"
+import { GraphQLString, GraphQLBoolean, GraphQLObjectType } from "graphql"
 
 const EditionSetType = new GraphQLObjectType({
-  name: 'EditionSet',
+  name: "EditionSet",
   fields: {
     ...IDFields,
     dimensions: Dimensions,
@@ -31,13 +27,13 @@ const EditionSetType = new GraphQLObjectType({
     price: {
       type: GraphQLString,
       resolve: ({ price, forsale }) => {
-        const fallback = forsale ? 'Available' : 'Not for Sale';
-        return !isEmpty(price) ? price : fallback;
+        const fallback = forsale ? "Available" : "Not for Sale"
+        return !isEmpty(price) ? price : fallback
       },
     },
   },
-});
+})
 
 export default {
   type: EditionSetType,
-};
+}

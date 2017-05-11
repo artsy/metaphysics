@@ -1,10 +1,7 @@
-import {
-  GraphQLObjectType,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLObjectType, GraphQLString } from "graphql"
 
 const Dimensions = new GraphQLObjectType({
-  name: 'dimensions',
+  name: "dimensions",
   fields: {
     in: {
       type: GraphQLString,
@@ -13,8 +10,8 @@ const Dimensions = new GraphQLObjectType({
       type: GraphQLString,
     },
   },
-});
+})
 
 export default {
   type: Dimensions,
-};
+}

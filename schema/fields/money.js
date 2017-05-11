@@ -1,24 +1,19 @@
-import { assign } from 'lodash';
-import { formatMoney } from 'accounting';
-import {
-  GraphQLString,
-  GraphQLInt,
-  GraphQLObjectType,
-  GraphQLFloat,
-} from 'graphql';
+import { assign } from "lodash"
+import { formatMoney } from "accounting"
+import { GraphQLString, GraphQLInt, GraphQLObjectType, GraphQLFloat } from "graphql"
 
 export const amount = resolve => ({
   type: GraphQLString,
-  description: 'A formatted price with various currency formatting options.',
+  description: "A formatted price with various currency formatting options.",
   args: {
     decimal: {
       type: GraphQLString,
-      defaultValue: '.',
+      defaultValue: ".",
     },
     format: {
       type: GraphQLString,
-      description: 'Allows control of symbol position (%v = value, %s = symbol)',
-      defaultValue: '%s%v',
+      description: "Allows control of symbol position (%v = value, %s = symbol)",
+      defaultValue: "%s%v",
     },
     precision: {
       type: GraphQLInt,
@@ -29,18 +24,21 @@ export const amount = resolve => ({
     },
     thousand: {
       type: GraphQLString,
-      defaultValue: ',',
+      defaultValue: ",",
     },
   },
   resolve: (obj, options) => {
-    const cents = resolve(obj);
-    if (!cents) return null;
-    const symbol = options.symbol || obj.symbol;
-    return formatMoney(cents / 100, assign({}, options, {
-      symbol,
-    }));
+    const cents = resolve(obj)
+    if (!cents) return null
+    const symbol = options.symbol || obj.symbol
+    return formatMoney(
+      cents / 100,
+      assign({}, options, {
+        symbol,
+      })
+    )
   },
-});
+})
 
 const money = ({ name, resolve }) => ({
   resolve: x => x,
@@ -50,24 +48,24 @@ const money = ({ name, resolve }) => ({
       amount: amount(obj => resolve(obj).cents),
       cents: {
         type: GraphQLFloat,
-        description: 'An amount of money expressed in cents.',
-        resolve: (obj) => {
-          const { cents } = resolve(obj);
-          if (!cents) return null;
-          return cents;
+        description: "An amount of money expressed in cents.",
+        resolve: obj => {
+          const { cents } = resolve(obj)
+          if (!cents) return null
+          return cents
         },
       },
       display: {
         type: GraphQLString,
-        description: 'A pre-formatted price.',
-        resolve: (obj) => {
-          const { display } = resolve(obj);
-          if (!display) return null;
-          return display;
+        description: "A pre-formatted price.",
+        resolve: obj => {
+          const { display } = resolve(obj)
+          if (!display) return null
+          return display
         },
       },
     },
   }),
-});
+})
 
-export default money;
+export default money

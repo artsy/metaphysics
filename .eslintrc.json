@@ -10,15 +10,23 @@
   "parser": "babel-eslint",
   "rules": {
     "camelcase": 0,
-    "max-len": [2, 120]
+    "max-len": [
+      2,
+      120
+    ],
+    "quotes": [
+      2,
+      "double"
+    ],
+    "semi": [
+      0
+    ]
   },
   "ignore": [
     "/flow-typed/npm/*"
   ],
   "globals": {
     "expect": false,
-    "runQuery": false,
-    "runAuthenticatedQuery": false,
     "schema": false,
     "sinon": false,
     "expectPromiseRejectionToMatch": false

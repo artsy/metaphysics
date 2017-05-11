@@ -1,33 +1,28 @@
 // @flow
 
-import { map, omit } from 'lodash';
-import Partner from '../partner';
-import AggregationCount from './aggregation_count';
-import {
-  GraphQLObjectType,
-  GraphQLEnumType,
-  GraphQLList,
-  GraphQLInt,
-} from 'graphql';
+import { map, omit } from "lodash"
+import Partner from "../partner"
+import AggregationCount from "./aggregation_count"
+import { GraphQLObjectType, GraphQLEnumType, GraphQLList, GraphQLInt } from "graphql"
 
 export const PartnersAggregation = new GraphQLEnumType({
-  name: 'PartnersAggregation',
+  name: "PartnersAggregation",
   values: {
     CATEGORY: {
-      value: 'partner_category',
+      value: "partner_category",
     },
     LOCATION: {
-      value: '',
+      value: "",
     },
     TOTAL: {
-      value: 'total',
+      value: "total",
     },
   },
-});
+})
 
 export const PartnersAggregationResultsType = new GraphQLObjectType({
-  name: 'PartnersAggregationResults',
-  description: 'The results for one of the requested aggregations',
+  name: "PartnersAggregationResults",
+  description: "The results for one of the requested aggregations",
   fields: () => ({
     counts: {
       type: new GraphQLList(AggregationCount.type),
@@ -37,15 +32,18 @@ export const PartnersAggregationResultsType = new GraphQLObjectType({
       type: PartnersAggregation,
     },
   }),
-});
+})
 
 export const FilterPartnersType = new GraphQLObjectType({
-  name: 'FilterPartners',
+  name: "FilterPartners",
   fields: () => ({
     aggregations: {
       type: new GraphQLList(PartnersAggregationResultsType),
       resolve: ({ aggregations }) =>
-      map(omit(aggregations, ['total']), (counts, slice) => ({ slice, counts })),
+        map(omit(aggregations, ["total"]), (counts, slice) => ({
+          slice,
+          counts,
+        })),
     },
     hits: {
       type: new GraphQLList(Partner.type),
@@ -55,4 +53,4 @@ export const FilterPartnersType = new GraphQLObjectType({
       resolve: ({ aggregations }) => aggregations.total.value,
     },
   }),
-});
+})

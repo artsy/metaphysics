@@ -1,23 +1,17 @@
-import gravity from '../lib/apis/gravity'; // Uncached
-import {
-  GraphQLObjectType,
-  GraphQLBoolean,
-} from 'graphql';
+import gravity from "../lib/apis/gravity" // Uncached
+import { GraphQLObjectType, GraphQLBoolean } from "graphql"
 
 const StatusType = new GraphQLObjectType({
-  name: 'Status',
+  name: "Status",
   fields: {
     gravity: {
       type: new GraphQLObjectType({
-        name: 'StatusGravity',
-        description: 'Gravity ping',
+        name: "StatusGravity",
+        description: "Gravity ping",
         fields: {
           ping: {
             type: GraphQLBoolean,
-            resolve: () =>
-              gravity('system/ping')
-                .then(({ body: { ping } }) =>
-                  ping === 'pong'),
+            resolve: () => gravity("system/ping").then(({ body: { ping } }) => ping === "pong"),
           },
         },
       }),
@@ -25,15 +19,15 @@ const StatusType = new GraphQLObjectType({
     },
     ping: {
       type: GraphQLBoolean,
-      description: 'Metaphysics ping',
+      description: "Metaphysics ping",
       resolve: () => true,
     },
   },
-});
+})
 
 const Status = {
   type: StatusType,
   resolve: () => ({}),
-};
+}
 
-export default Status;
+export default Status

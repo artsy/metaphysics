@@ -1,37 +1,37 @@
-import { GraphQLEnumType } from 'graphql';
+import { GraphQLEnumType } from "graphql"
 
 export default {
   type: new GraphQLEnumType({
-    name: 'EventStatus',
+    name: "EventStatus",
     values: {
       closed: {
-        value: 'closed',
-        deprecationReason: 'use capital enums',
+        value: "closed",
+        deprecationReason: "use capital enums",
       },
       current: {
-        value: 'current',
-        deprecationReason: 'use capital enums',
+        value: "current",
+        deprecationReason: "use capital enums",
       },
       running: {
-        value: 'running',
-        deprecationReason: 'use capital enums',
+        value: "running",
+        deprecationReason: "use capital enums",
       },
       upcoming: {
-        value: 'upcoming',
-        deprecationReason: 'use capital enums',
+        value: "upcoming",
+        deprecationReason: "use capital enums",
       },
       CLOSED: {
-        value: 'closed',
+        value: "closed",
       },
       CURRENT: {
-        value: 'current',
+        value: "current",
       },
       RUNNING: {
-        value: 'running',
+        value: "running",
       },
       UPCOMING: {
-        value: 'upcoming',
+        value: "upcoming",
       },
     },
   }),
-};
+}

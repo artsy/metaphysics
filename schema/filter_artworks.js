@@ -1,17 +1,15 @@
-import gravity from '../lib/loaders/gravity';
-import { map, omit, keys } from 'lodash';
-import { isExisty } from '../lib/helpers';
-import Artwork from './artwork';
-import Artist from './artist';
-import numeral from './fields/numeral';
-import { artworkConnection } from './artwork';
-import { pageable } from 'relay-cursor-paging';
-import { parseRelayOptions } from '../lib/helpers';
-import { connectionFromArraySlice } from 'graphql-relay';
-import {
-  ArtworksAggregationResultsType,
-  ArtworksAggregation,
-} from './aggregations/filter_artworks_aggregation';
+import gravity from "../lib/loaders/gravity"
+import { map, omit, keys, create, assign } from "lodash"
+import { isExisty } from "../lib/helpers"
+import Artwork from "./artwork"
+import Artist from "./artist"
+import Tag from "./tag"
+import numeral from "./fields/numeral"
+import { artworkConnection } from "./artwork"
+import { pageable } from "relay-cursor-paging"
+import { parseRelayOptions } from "../lib/helpers"
+import { connectionFromArraySlice } from "graphql-relay"
+import { ArtworksAggregationResultsType, ArtworksAggregation } from "./aggregations/filter_artworks_aggregation"
 import {
   GraphQLList,
   GraphQLObjectType,
@@ -19,17 +17,31 @@ import {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLID,
-} from 'graphql';
+  GraphQLUnionType,
+} from "graphql"
+
+const ArtworkFilterTagType = create(Tag.type, {
+  name: "ArtworkFilterTag",
+  isTypeOf: ({ context_type }) => context_type === "Tag",
+})
+
+export const ArtworkFilterFacetType = new GraphQLUnionType({
+  name: "ArtworkFilterFacet",
+  types: [ArtworkFilterTagType],
+})
 
 export const FilterArtworksType = new GraphQLObjectType({
-  name: 'FilterArtworks',
+  name: "FilterArtworks",
   fields: () => ({
     aggregations: {
-      description: 'Returns aggregation counts for the given filter query.',
+      description: "Returns aggregation counts for the given filter query.",
       type: new GraphQLList(ArtworksAggregationResultsType),
       resolve: ({ aggregations }) => {
-        const whitelistedAggregations = omit(aggregations, ['total', 'followed_artists']);
-        return map(whitelistedAggregations, (counts, slice) => ({ slice, counts }));
+        const whitelistedAggregations = omit(aggregations, ["total", "followed_artists"])
+        return map(whitelistedAggregations, (counts, slice) => ({
+          slice,
+          counts,
+        }))
       },
     },
     artworks_connection: {
@@ -37,53 +49,63 @@ export const FilterArtworksType = new GraphQLObjectType({
       args: pageable(),
       resolve: ({ hits, aggregations }, options) => {
         if (!aggregations || !aggregations.total) {
-          throw new Error('This query must contain the total aggregation');
+          throw new Error("This query must contain the total aggregation")
         }
-        const relayOptions = parseRelayOptions(options);
+        const relayOptions = parseRelayOptions(options)
         return connectionFromArraySlice(hits, options, {
           arrayLength: aggregations.total.value,
           sliceStart: relayOptions.offset,
-        });
+        })
       },
     },
     counts: {
       type: new GraphQLObjectType({
-        name: 'FilterArtworksCounts',
+        name: "FilterArtworksCounts",
         fields: {
-          total: numeral(({ aggregations }) =>
-          aggregations.total.value),
-          followed_artists: numeral(({ aggregations }) =>
-          aggregations.followed_artists.value),
+          total: numeral(({ aggregations }) => aggregations.total.value),
+          followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
         },
       }),
-      resolve: (artist) => artist,
+      resolve: artist => artist,
     },
     followed_artists_total: {
       type: GraphQLInt,
       resolve: ({ aggregations }) => aggregations.followed_artists.value,
-      deprecationReason: 'Favor `favor counts.followed_artists`',
+      deprecationReason: "Favor `favor counts.followed_artists`",
     },
     hits: {
-      description: 'Artwork results.',
+      description: "Artwork results.",
       type: new GraphQLList(Artwork.type),
     },
     merchandisable_artists: {
       type: new GraphQLList(Artist.type),
-      description: 'Returns a list of merchandisable artists sorted by merch score.',
+      description: "Returns a list of merchandisable artists sorted by merch score.",
       resolve: ({ aggregations }) => {
         if (!isExisty(aggregations.merchandisable_artists)) {
-          return null;
+          return null
         }
-        return gravity(`artists`, { ids: keys(aggregations.merchandisable_artists) });
+        return gravity(`artists`, {
+          ids: keys(aggregations.merchandisable_artists),
+        })
       },
     },
     total: {
       type: GraphQLInt,
       resolve: ({ aggregations }) => aggregations.total.value,
-      deprecationReason: 'Favor `counts.total`',
+      deprecationReason: "Favor `counts.total`",
+    },
+    facet: {
+      type: ArtworkFilterFacetType,
+      resolve: ({ options }) => {
+        const { tag_id } = options
+        if (tag_id) {
+          return gravity(`tag/${tag_id}`).then(tag => assign({ context_type: "Tag" }, tag))
+        }
+        return null
+      },
     },
   }),
-});
+})
 
 export const filterArtworksArgs = {
   aggregation_partner_cities: {
@@ -127,7 +149,7 @@ export const filterArtworksArgs = {
   },
   medium: {
     type: GraphQLString,
-    description: 'A string from the list of allocations, or * to denote all mediums',
+    description: "A string from the list of allocations, or * to denote all mediums",
   },
   period: {
     type: GraphQLString,
@@ -165,7 +187,7 @@ export const filterArtworksArgs = {
   keyword: {
     type: GraphQLString,
   },
-};
+}
 
 // Support passing in your own primary key
 // so that you can nest this function into another.
@@ -177,24 +199,26 @@ export const filterArtworksArgs = {
 function filterArtworks(primaryKey) {
   return {
     type: FilterArtworksType,
-    description: 'Artworks Elastic Search results',
+    description: "Artworks Elastic Search results",
     args: filterArtworksArgs,
     resolve: (root, options, request, { rootValue: { accessToken } }) => {
-      const gravityOptions = Object.assign({}, options);
+      const gravityOptions = Object.assign({}, options)
       if (primaryKey) {
-        gravityOptions[primaryKey] = root.id;
+        gravityOptions[primaryKey] = root.id
       }
 
       // Support queries that show all mediums using the medium param.
       // If you specify "*" it results in metaphysics removing the query option
       // making the graphQL queries between all and a subset of mediums the same shape.
-      if (options.medium === '*') {
-        delete gravityOptions.medium;
+      if (options.medium === "*") {
+        delete gravityOptions.medium
       }
 
-      return gravity.with(accessToken)('filter/artworks', gravityOptions);
+      return gravity
+        .with(accessToken)("filter/artworks", gravityOptions)
+        .then(response => assign({}, response, { options: gravityOptions }))
     },
-  };
+  }
 }
 
-export default filterArtworks;
+export default filterArtworks

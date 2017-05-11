@@ -1,95 +1,101 @@
-import {
-  map,
-  times,
-} from 'lodash';
+import { map, times } from "lodash"
 
-describe('Me type', () => {
-  const Me = schema.__get__('Me');
-  const BidderPositions = Me.__get__('BidderPositions');
-  const BidderPosition = BidderPositions.__get__('BidderPosition');
+import schema from "../../../schema"
+import { runAuthenticatedQuery } from "../../utils"
 
-  let gravity;
-  let gravity2;
+describe("Me type", () => {
+  const Me = schema.__get__("Me")
+  const BidderPositions = Me.__get__("BidderPositions")
+  const BidderPosition = BidderPositions.__get__("BidderPosition")
+
+  let gravity
+  let gravity2
 
   beforeEach(() => {
-    gravity = sinon.stub();
-    gravity2 = sinon.stub();
-    gravity.with = sinon.stub().returns(gravity);
+    gravity = sinon.stub()
+    gravity2 = sinon.stub()
+    gravity.with = sinon.stub().returns(gravity)
 
     gravity
       // Bidder positions fetch
       .onCall(0)
-      .returns(Promise.resolve([
-        {
-          id: 0,
-          max_bid_amount_cents: 1000000,
-          sale_artwork_id: 'foo',
-          highest_bid: null,
-        },
-        {
-          id: 1,
-          max_bid_amount_cents: 1000000,
-          sale_artwork_id: 'foo',
-          highest_bid: { id: 'hb1' },
-        },
-        {
-          id: 2,
-          max_bid_amount_cents: 1000000,
-          sale_artwork_id: 'bar',
-          highest_bid: { id: 'hb2' },
-        },
-        {
-          id: 3,
-          max_bid_amount_cents: 1000000,
-          sale_artwork_id: 'foo',
-          highest_bid: { id: 'hb13' },
-        },
-        {
-          id: 4,
-          max_bid_amount_cents: 1000000,
-          sale_artwork_id: 'baz',
-          highest_bid: { id: 'hb4' },
-        },
-      ]));
+      .returns(
+        Promise.resolve([
+          {
+            id: 0,
+            max_bid_amount_cents: 1000000,
+            sale_artwork_id: "foo",
+            highest_bid: null,
+          },
+          {
+            id: 1,
+            max_bid_amount_cents: 1000000,
+            sale_artwork_id: "foo",
+            highest_bid: { id: "hb1" },
+          },
+          {
+            id: 2,
+            max_bid_amount_cents: 1000000,
+            sale_artwork_id: "bar",
+            highest_bid: { id: "hb2" },
+          },
+          {
+            id: 3,
+            max_bid_amount_cents: 1000000,
+            sale_artwork_id: "foo",
+            highest_bid: { id: "hb13" },
+          },
+          {
+            id: 4,
+            max_bid_amount_cents: 1000000,
+            sale_artwork_id: "baz",
+            highest_bid: { id: "hb4" },
+          },
+        ])
+      )
     // Sale artworks fetches
-    times(3, (i) => {
-      let id;
-      if (i === 0) id = 'foo';
-      if (i === 1) id = 'bar';
-      if (i === 2) id = 'baz';
-      gravity.onCall(i + 1)
-      .returns(Promise.resolve({
-        id,
-        _id: id,
-        artwork: { title: 'Andy Warhol Skull' },
-        sale_id: i === 1 ? 'bar-auction' : 'else-auction',
-      }));
-    });
+    times(3, i => {
+      let id
+      if (i === 0) id = "foo"
+      if (i === 1) id = "bar"
+      if (i === 2) id = "baz"
+      gravity.onCall(i + 1).returns(
+        Promise.resolve({
+          id,
+          _id: id,
+          artwork: { title: "Andy Warhol Skull" },
+          sale_id: i === 1 ? "bar-auction" : "else-auction",
+        })
+      )
+    })
     // Sale fetches
-    times(3, (i) => {
-      gravity.onCall(i + 4)
-      .returns(Promise.resolve({
-        id: i === 1 ? 'bar-auction' : 'else-auction',
-        auction_state: i === 1 ? 'closed' : 'open',
-      }));
-    });
+    times(3, i => {
+      gravity.onCall(i + 4).returns(
+        Promise.resolve({
+          id: i === 1 ? "bar-auction" : "else-auction",
+          auction_state: i === 1 ? "closed" : "open",
+        })
+      )
+    })
     // Sale artwork fetch used in `is_winning` property
-    gravity2.returns(Promise.resolve({
-      id: '456',
-      highest_bid: { id: 'hb2' },
-      artwork: { title: 'Andy Warhol Skull' },
-    }));
+    gravity2.returns(
+      Promise.resolve({
+        id: "456",
+        highest_bid: { id: "hb2" },
+        artwork: { title: "Andy Warhol Skull" },
+      })
+    )
 
-    BidderPositions.__Rewire__('gravity', gravity);
-    BidderPosition.__Rewire__('gravity', gravity2);
-  });
+    BidderPositions.__Rewire__("gravity", gravity)
+    BidderPosition.__Rewire__("gravity", gravity2)
+  })
 
   afterEach(() => {
-    BidderPositions.__ResetDependency__('gravity');
-    BidderPosition.__ResetDependency__('gravity');
-  });
+    BidderPositions.__ResetDependency__("gravity")
+    BidderPosition.__ResetDependency__("gravity")
+  })
 
-  it('returns all bidder positions', () => {
+  it("returns all bidder positions", () => {
     const query = `
       {
         me {
@@ -98,14 +104,13 @@ describe('Me type', () => {
           }
         }
       }
-    `;
-    return runAuthenticatedQuery(query)
-      .then(data => {
-        expect(map(data.me.bidder_positions, 'id').join('')).toEqual('01234');
-      });
-  });
+    `
+    return runAuthenticatedQuery(query).then(data => {
+      expect(map(data.me.bidder_positions, "id").join("")).toEqual("01234")
+    })
+  })
 
-  it('can return only current bidder positions', () => {
+  it("can return only current bidder positions", () => {
     const query = `
       {
         me {
@@ -114,14 +119,13 @@ describe('Me type', () => {
           }
         }
       }
-    `;
-    return runAuthenticatedQuery(query)
-      .then(data => {
-        expect(map(data.me.bidder_positions, 'id').join('')).toEqual('14');
-      });
-  });
+    `
+    return runAuthenticatedQuery(query).then(data => {
+      expect(map(data.me.bidder_positions, "id").join("")).toEqual("14")
+    })
+  })
 
-  it('does not fail for bidder positions with unpublished artworks', () => {
+  it("does not fail for bidder positions with unpublished artworks", () => {
     const query = `
       {
         me {
@@ -130,15 +134,14 @@ describe('Me type', () => {
           }
         }
       }
-    `;
-    gravity.onCall(3).returns(Promise.reject(new Error('Forbidden')));
-    return runAuthenticatedQuery(query)
-      .then(data => {
-        expect(map(data.me.bidder_positions, 'id').join('')).toEqual('1');
-      });
-  });
+    `
+    gravity.onCall(3).returns(Promise.reject(new Error("Forbidden")))
+    return runAuthenticatedQuery(query).then(data => {
+      expect(map(data.me.bidder_positions, "id").join("")).toEqual("1")
+    })
+  })
 
-  it('bidder positions can return is_winning based on sale artwork', () => {
+  it("bidder positions can return is_winning based on sale artwork", () => {
     const query = `
       {
         me {
@@ -148,10 +151,9 @@ describe('Me type', () => {
           }
         }
       }
-    `;
-    return runAuthenticatedQuery(query)
-      .then(data => {
-        expect(data.me.bidder_positions[2].is_winning).toEqual(true);
-      });
-  });
-});
+    `
+    return runAuthenticatedQuery(query).then(data => {
+      expect(data.me.bidder_positions[2].is_winning).toEqual(true)
+    })
+  })
+})

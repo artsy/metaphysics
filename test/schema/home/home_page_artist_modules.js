@@ -1,7 +1,10 @@
-import { map } from 'lodash';
+import { map } from "lodash"
 
-describe('HomePageArtistModules', () => {
-  describe('concerning display', () => {
+import schema from "../../../schema"
+import { runQuery, runAuthenticatedQuery } from "../../utils"
+
+describe("HomePageArtistModules", () => {
+  describe("concerning display", () => {
     const query = `
       {
         home_page {
@@ -10,62 +13,62 @@ describe('HomePageArtistModules', () => {
           }
         }
       }
-    `;
+    `
 
-    describe('when signed-in', () => {
-      const HomePage = schema.__get__('HomePage');
-      const HomePageArtistModule = HomePage.__get__('HomePageArtistModule');
+    describe("when signed-in", () => {
+      const HomePage = schema.__get__("HomePage")
+      const HomePageArtistModule = HomePage.__get__("HomePageArtistModule")
 
-      let suggestions = null;
+      let suggestions = null
 
       beforeEach(() => {
-        suggestions = [];
+        suggestions = []
 
-        HomePageArtistModule.__Rewire__('gravity', () => {
-          return { with: () => Promise.resolve(suggestions) };
-        });
+        HomePageArtistModule.__Rewire__("gravity", () => {
+          return { with: () => Promise.resolve(suggestions) }
+        })
 
-        HomePageArtistModule.__Rewire__('total', () => {
-          return Promise.resolve({ body: { total: suggestions.length } });
-        });
-      });
+        HomePageArtistModule.__Rewire__("total", () => {
+          return Promise.resolve({ body: { total: suggestions.length } })
+        })
+      })
 
       afterEach(() => {
-        HomePageArtistModule.__ResetDependency__('gravity');
-        HomePageArtistModule.__ResetDependency__('total');
-      });
+        HomePageArtistModule.__ResetDependency__("gravity")
+        HomePageArtistModule.__ResetDependency__("total")
+      })
 
-      it('shows all modules if there are any suggestions', () => {
+      it("shows all modules if there are any suggestions", () => {
         suggestions.push({
-          id: 'foo-bar',
-          name: 'Foo Bar',
+          id: "foo-bar",
+          name: "Foo Bar",
           bio: null,
           blurb: null,
           birthday: null,
           artworks_count: 42,
-        });
+        })
 
         return runAuthenticatedQuery(query).then(({ home_page }) => {
-          const keys = map(home_page.artist_modules, 'key');
-          expect(keys).toEqual(['POPULAR', 'SUGGESTED', 'TRENDING']);
-        });
-      });
+          const keys = map(home_page.artist_modules, "key")
+          expect(keys).toEqual(["POPULAR", "SUGGESTED", "TRENDING"])
+        })
+      })
 
-      it('only shows the trending and popular artists modules if there are no suggestions', () => {
+      it("only shows the trending and popular artists modules if there are no suggestions", () => {
         return runAuthenticatedQuery(query).then(({ home_page }) => {
-          const keys = map(home_page.artist_modules, 'key');
-          expect(keys).toEqual(['POPULAR', 'TRENDING']);
-        });
-      });
-    });
+          const keys = map(home_page.artist_modules, "key")
+          expect(keys).toEqual(["POPULAR", "TRENDING"])
+        })
+      })
+    })
 
-    describe('when signed-out', () => {
-      it('only shows the trending and popular artists modules', () => {
+    describe("when signed-out", () => {
+      it("only shows the trending and popular artists modules", () => {
         return runQuery(query).then(({ home_page }) => {
-          const keys = map(home_page.artist_modules, 'key');
-          expect(keys).toEqual(['POPULAR', 'TRENDING']);
-        });
-      });
-    });
-  });
-});
+          const keys = map(home_page.artist_modules, "key")
+          expect(keys).toEqual(["POPULAR", "TRENDING"])
+        })
+      })
+    })
+  })
+})

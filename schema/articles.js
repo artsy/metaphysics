@@ -1,15 +1,11 @@
-import positron from '../lib/loaders/positron';
-import Article from './article';
-import ArticleSorts from './sorts/article_sorts';
-import {
-  GraphQLString,
-  GraphQLBoolean,
-  GraphQLList,
-} from 'graphql';
+import positron from "../lib/loaders/positron"
+import Article from "./article"
+import ArticleSorts from "./sorts/article_sorts"
+import { GraphQLString, GraphQLBoolean, GraphQLList } from "graphql"
 
 const Articles = {
   type: new GraphQLList(Article.type),
-  description: 'A list of Articles',
+  description: "A list of Articles",
   args: {
     auction_id: {
       type: GraphQLString,
@@ -24,8 +20,8 @@ const Articles = {
     sort: ArticleSorts,
   },
   resolve: (root, options) => {
-    return positron('articles', options).then(articles => articles.results);
+    return positron("articles", options).then(articles => articles.results)
   },
-};
+}
 
-export default Articles;
+export default Articles
