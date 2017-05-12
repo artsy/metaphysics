@@ -1,4 +1,4 @@
-import { assign, compact, find, times, last } from "lodash"
+import { assign, compact } from "lodash"
 import cached from "./fields/cached"
 import date from "./fields/date"
 import money, { amount } from "./fields/money"
@@ -44,19 +44,18 @@ const SaleArtworkType = new GraphQLObjectType({
             return gravity("increments", {
               key: sale.increment_strategy,
             }).then(incrs => {
-              const incr = incrs[0].increments
+              // We already have the asking price for the lot. Produce a list
+              // of increments beyond that amount.
+              const tiers = incrs[0].increments
               const increments = [minimum_next_bid_cents]
-              times(100, () => {
-                const bid = last(increments)
-                const bucket = find(incr, inc => bid >= inc.from && bid <= inc.to) || last(incr)
-                const nextBid = bid + bucket.amount
-                if (nextBid > BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT) return increments
-                if (!bucket.to) return increments.push(nextBid)
-                const nextBidBucket = find(incr, inc => nextBid >= inc.from && nextBid <= inc.to)
-                if (!nextBidBucket) return increments.push(nextBid)
-                if (nextBid === nextBidBucket.from) increments.push(nextBid)
-                else increments.push(bid + nextBidBucket.amount)
-              })
+              const limit = BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT || Number.MAX_SAFE_INTEGER
+              let current = 0 // Always start from zero, so that all prices are on-increment
+              while (increments.length < 100 && current <= limit) {
+                if (current > minimum_next_bid_cents) increments.push(current)
+                const { to, amount: increase } = tiers[0]
+                current += increase
+                if (current > to && tiers.length > 1) tiers.shift()
+              }
               return increments
             })
           })
