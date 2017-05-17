@@ -13,6 +13,13 @@ import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "../lib/
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
 
+const SUBJECT_MATTER_MATCHES = [
+  "content", "medium", "concrete contemporary",
+  "abstract contemporary", "concept", "technique", "appearance genes",
+]
+
+const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
+
 const GeneType = new GraphQLObjectType({
   name: "Gene",
   interfaces: [NodeInterface],
@@ -61,6 +68,13 @@ const GeneType = new GraphQLObjectType({
     image: Image,
     name: {
       type: GraphQLString,
+    },
+    mode: {
+      type: GraphQLString,
+      resolve: ({ type }) => {
+        const isSubjectMatter = type && type.name && type.name.match(SUBJECT_MATTER_REGEX)
+        return isSubjectMatter ? "artworks" : "artist"
+      },
     },
     trending_artists: {
       type: new GraphQLList(Artist.type),
