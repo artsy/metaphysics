@@ -66,15 +66,15 @@ const GeneType = new GraphQLObjectType({
       resolve: ({ id }) => `gene/${id}`,
     },
     image: Image,
-    name: {
-      type: GraphQLString,
-    },
     mode: {
       type: GraphQLString,
       resolve: ({ type }) => {
         const isSubjectMatter = type && type.name && type.name.match(SUBJECT_MATTER_REGEX)
         return isSubjectMatter ? "artworks" : "artist"
       },
+    },
+    name: {
+      type: GraphQLString,
     },
     trending_artists: {
       type: new GraphQLList(Artist.type),
