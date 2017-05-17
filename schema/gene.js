@@ -6,12 +6,19 @@ import _ from "lodash"
 import gravity from "../lib/loaders/gravity"
 import cached from "./fields/cached"
 import { artworkConnection } from "./artwork"
-import Artist from "./artist"
+import Artist, { artistConnection } from "./artist"
 import Image from "./image"
 import filterArtworks, { filterArtworksArgs } from "./filter_artworks"
 import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "../lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
+
+const SUBJECT_MATTER_MATCHES = [
+  "content", "medium", "concrete contemporary",
+  "abstract contemporary", "concept", "technique", "appearance genes",
+]
+
+const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 
 const GeneType = new GraphQLObjectType({
   name: "Gene",
@@ -25,6 +32,23 @@ const GeneType = new GraphQLObjectType({
       resolve: ({ id }) => {
         return gravity(`gene/${id}/artists`, {
           exclude_artists_without_artworks: true,
+        })
+      },
+    },
+    artists_connection: {
+      type: artistConnection,
+      args: pageable(),
+      resolve: ({ id, counts }, options) => {
+        const parsedOptions = _.omit(parseRelayOptions(options), "page")
+        const gravityOptions = _.extend(parsedOptions, {
+          exclude_artists_without_artworks: true,
+        })
+        return gravity(`gene/${id}/artists`, gravityOptions)
+        .then(response => {
+          return connectionFromArraySlice(response, options, {
+            arrayLength: counts.artists,
+            sliceStart: gravityOptions.offset,
+          })
         })
       },
     },
@@ -59,6 +83,13 @@ const GeneType = new GraphQLObjectType({
       resolve: ({ id }) => `gene/${id}`,
     },
     image: Image,
+    mode: {
+      type: GraphQLString,
+      resolve: ({ type }) => {
+        const isSubjectMatter = type && type.name && type.name.match(SUBJECT_MATTER_REGEX)
+        return isSubjectMatter ? "artworks" : "artist"
+      },
+    },
     name: {
       type: GraphQLString,
     },

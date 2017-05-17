@@ -1,7 +1,7 @@
 // @flow
 import type { GraphQLFieldConfig } from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
-import { connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { assign, compact, defaults, first, has } from "lodash"
 import { exclude } from "../../lib/helpers"
 import cached from "../fields/cached"
@@ -479,3 +479,7 @@ const Artist: GraphQLFieldConfig<ArtistType, *> = {
   },
 }
 export default Artist
+
+export const artistConnection = connectionDefinitions({
+  nodeType: Artist.type,
+}).connectionType
