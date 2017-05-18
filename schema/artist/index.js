@@ -4,6 +4,7 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { assign, compact, defaults, first, has } from "lodash"
 import { exclude } from "../../lib/helpers"
+import followedArtistLoader from "../../lib/loaders/followed_artist"
 import cached from "../fields/cached"
 import initials from "../fields/initials"
 import { markdown, formatMarkdownValue } from "../fields/markdown"
@@ -386,6 +387,13 @@ const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         description: "Only specific Artists should show a link to auction results.",
         resolve: ({ display_auction_link }) => display_auction_link,
+      },
+      is_followed: {
+        type: GraphQLBoolean,
+        resolve: ({ id }, {}, request, { rootValue: { accessToken } }) => {
+          if (!accessToken) return false
+          return followedArtistLoader.load(JSON.stringify({ id, accessToken })).then(({ is_followed }) => is_followed)
+        },
       },
       is_public: {
         type: GraphQLBoolean,
