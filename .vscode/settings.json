@@ -9,6 +9,10 @@
     "search.exclude": {
         "flow-typed": true
     },
+    "files.exclude": {
+        "**/.git": true,
+        "**/build": true
+    },
     "editor.formatOnSave": true,
     "prettier.singleQuote": false,
     "prettier.trailingComma": "es5",
