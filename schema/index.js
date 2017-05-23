@@ -18,6 +18,7 @@ import Partners from "./partners"
 import FilterPartners from "./filter_partners"
 import filterArtworks from "./filter_artworks"
 import FilterSaleArtworks from "./filter_sale_artworks"
+import FollowArtist from "./me/follow_artist"
 import PartnerCategory from "./partner_category"
 import PartnerCategories from "./partner_categories"
 import PartnerShow from "./partner_show"
@@ -90,6 +91,7 @@ const schema = new GraphQLSchema({
   mutation: new GraphQLObjectType({
     name: "RootMutationType",
     fields: {
+      followArtist: FollowArtist,
       updateCollectorProfile: UpdateCollectorProfile,
       updateConversation: UpdateConversation,
       saveArtwork: SaveArtwork,
