@@ -168,6 +168,10 @@ const SaleType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ auction_state }) => auction_state === "preview",
       },
+      is_registration_closed: {
+        type: GraphQLBoolean,
+        resolve: ({ registration_ends_at }) => moment().isAfter(registration_ends_at),
+      },
       is_with_buyers_premium: {
         type: GraphQLBoolean,
         resolve: ({ buyers_premium }) => buyers_premium,
