@@ -82,7 +82,7 @@ const ShowField = {
   },
 }
 
-const ArtistType = new GraphQLObjectType({
+export const ArtistType = new GraphQLObjectType({
   name: "Artist",
   interfaces: [NodeInterface],
   isTypeOf: obj => has(obj, "birthday") && has(obj, "artworks_count"),
