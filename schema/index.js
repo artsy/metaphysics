@@ -30,6 +30,7 @@ import Search from "./search"
 import Show from "./show"
 import Tag from "./tag"
 import TrendingArtists from "./trending"
+import MatchArtist from "./match/artist"
 import Me from "./me"
 import UpdateConversation from "./me/update_conversation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
@@ -55,6 +56,7 @@ const rootFields = {
   filter_sale_artworks: FilterSaleArtworks,
   gene: Gene,
   home_page: HomePage,
+  match_artist: MatchArtist,
   me: Me,
   node: ObjectIdentification.NodeField,
   ordered_sets: OrderedSets,
