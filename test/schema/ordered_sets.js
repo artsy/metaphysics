@@ -3,6 +3,7 @@ import { runQuery } from "../utils"
 
 describe("OrderedSets type", () => {
   const OrderedSets = schema.__get__("OrderedSets")
+  const OrderedSet = OrderedSets.__get__("OrderedSet")
 
   beforeEach(() => {
     const gravity = sinon.stub()
@@ -32,10 +33,12 @@ describe("OrderedSets type", () => {
       )
 
     OrderedSets.__Rewire__("gravity", gravity)
+    OrderedSet.__Rewire__("gravity", gravity)
   })
 
   afterEach(() => {
     OrderedSets.__ResetDependency__("gravity")
+    OrderedSet.__ResetDependency__("gravity")
   })
 
   it("fetches sets by key", () => {
@@ -56,7 +59,6 @@ describe("OrderedSets type", () => {
 
     return runQuery(query).then(data => {
       expect(OrderedSets.__get__("gravity").args[0]).toEqual(["sets", { key: "artists:featured-genes", public: true }])
-
       expect(OrderedSets.__get__("gravity").args[1]).toEqual(["set/52dd3c2e4b8480091700027f/items"])
 
       expect(data).toEqual({

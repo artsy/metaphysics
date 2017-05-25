@@ -1,5 +1,6 @@
 import _ from "lodash"
 import Artist from "./artist"
+import Artwork from "./artwork/index"
 import FeaturedLink from "./featured_link"
 import Gene from "./gene"
 import { GraphQLUnionType } from "graphql"
@@ -14,6 +15,11 @@ export const ArtistItemType = _.create(Artist.type, {
   isTypeOf: ({ item_type }) => item_type === "Artist",
 })
 
+export const ArtworkItemType = _.create(Artwork.type, {
+  name: "ArtworkItem",
+  isTypeOf: ({ item_type }) => item_type === "Artwork",
+})
+
 export const GeneItemType = _.create(Gene.type, {
   name: "GeneItem",
   isTypeOf: ({ item_type }) => item_type === "Gene",
@@ -21,7 +27,7 @@ export const GeneItemType = _.create(Gene.type, {
 
 export const ItemType = new GraphQLUnionType({
   name: "Item",
-  types: [ArtistItemType, FeaturedLinkItemType, GeneItemType],
+  types: [ArtistItemType, ArtworkItemType, FeaturedLinkItemType, GeneItemType],
 })
 
 export default ItemType
