@@ -11,6 +11,7 @@ import Fair from "./fair"
 import Fairs from "./fairs"
 import Gene from "./gene"
 import HomePage from "./home"
+import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
 import Profile from "./profile"
 import Partner from "./partner"
@@ -59,6 +60,7 @@ const rootFields = {
   match_artist: MatchArtist,
   me: Me,
   node: ObjectIdentification.NodeField,
+  ordered_set: OrderedSet,
   ordered_sets: OrderedSets,
   partner: Partner,
   partner_categories: PartnerCategories,
