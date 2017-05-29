@@ -10,6 +10,7 @@ import {
   GraphQLNonNull,
   GraphQLEnumType,
 } from "graphql"
+import { ArtworkType } from "../artwork"
 const { IMPULSE_APPLICATION_ID } = process.env
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
@@ -74,12 +75,36 @@ export const ConversationFields = {
   },
   buyer_outcome_at: date,
   created_at: date,
+  purchase_request: {
+    type: GraphQLBoolean,
+  },
 
   initial_message: {
     type: GraphQLString,
   },
-  purchase_request: {
-    type: GraphQLBoolean,
+
+  last_message: {
+    type: GraphQLString,
+    resolve: conversation => {
+      if (conversation._embedded.last_message) {
+        return conversation._embedded.last_message.snipped
+      }
+      return null
+    },
+  },
+  artworks: {
+    type: new GraphQLList(ArtworkType),
+    resolve: conversation => {
+      const ids = []
+
+      for (const item of conversation.items) {
+        if (item.item_type === "Artwork") {
+          ids.push(item.item_id)
+        }
+      }
+
+      return gravity("artworks", { ids })
+    },
   },
 }
 
@@ -102,6 +127,7 @@ export default {
   },
   resolve: (root, option, request, { rootValue: { accessToken, userID } }) => {
     if (!accessToken) return null
+
     return gravity
       .with(accessToken, { method: "POST" })("me/token", {
         client_application_id: IMPULSE_APPLICATION_ID,
@@ -112,9 +138,7 @@ export default {
             from_id: userID,
             from_type: "User",
           })
-          .then(impulseData => {
-            return impulseData.conversations
-          })
+          .then(a => a.conversations)
       })
   },
 }
