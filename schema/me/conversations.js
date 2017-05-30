@@ -1,6 +1,7 @@
 import date from "../fields/date"
 import impulse from "../../lib/loaders/impulse"
 import gravity from "../../lib/loaders/gravity"
+import { get } from "lodash"
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -86,12 +87,10 @@ export const ConversationFields = {
   last_message: {
     type: GraphQLString,
     resolve: conversation => {
-      if (conversation._embedded.last_message) {
-        return conversation._embedded.last_message.snipped
-      }
-      return null
+      return get(conversation, "_embedded.last_message.snippet")
     },
   },
+
   artworks: {
     type: new GraphQLList(ArtworkType),
     resolve: conversation => {
@@ -138,7 +137,9 @@ export default {
             from_id: userID,
             from_type: "User",
           })
-          .then(a => a.conversations)
+          .then(impulseData => {
+            return impulseData.conversations
+          })
       })
   },
 }
