@@ -25,10 +25,14 @@ describe("Me", () => {
       const query = `
         {
           me {
-            conversations {
-              id
-              initial_message
-              from_email
+            conversations(first: 10) {
+              edges {
+                node {
+                  id
+                  initial_message
+                  from_email
+                }
+              }
             }
           }
         }
@@ -45,18 +49,24 @@ describe("Me", () => {
         from_email: "percy@cat.com",
       }
 
-      const expectedConversationData = [
-        {
-          id: "2",
-          initial_message: "omg im sooo interested",
-          from_email: "percy@cat.com",
-        },
-        {
-          id: "3",
-          initial_message: "im only a little interested",
-          from_email: "percy@cat.com",
-        },
-      ]
+      const expectedConversationData = {
+        edges: [
+          {
+            node: {
+              id: "2",
+              initial_message: "omg im sooo interested",
+              from_email: "percy@cat.com",
+            },
+          },
+          {
+            node: {
+              id: "3",
+              initial_message: "im only a little interested",
+              from_email: "percy@cat.com",
+            },
+          },
+        ],
+      }
 
       gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
 
