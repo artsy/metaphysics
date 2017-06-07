@@ -74,17 +74,16 @@ export const ConversationFields = {
   purchase_request: {
     type: GraphQLBoolean,
   },
-
   initial_message: {
     type: GraphQLString,
   },
-
   last_message: {
     type: GraphQLString,
     resolve: conversation => {
       return get(conversation, "_embedded.last_message.snippet")
     },
   },
+  last_message_at: date,
 
   artworks: {
     type: new GraphQLList(ArtworkType),
