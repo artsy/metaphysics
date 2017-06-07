@@ -36,18 +36,7 @@ describe("GeneFamilies", () => {
     `
 
     return runQuery(query).then(data => {
-      expect(data).toEqual({
-        gene_families: [
-          {
-            id: "design-concepts-and-techniques",
-            name: "Design Concepts and Techniques",
-          },
-          {
-            id: "furniture-and-lighting",
-            name: "Furniture & Lighting",
-          },
-        ],
-      })
+      expect(data).toEqual({ gene_families: api_data })
     })
   })
 })
