@@ -1,9 +1,9 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import { pageable } from "relay-cursor-paging"
+import { ConversationType } from "./conversation"
 import { parseRelayOptions } from "lib/helpers"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
-import { ConversationType } from "./conversation"
 const { IMPULSE_APPLICATION_ID } = process.env
 
 export default {
