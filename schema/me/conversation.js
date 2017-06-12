@@ -9,30 +9,23 @@ const { IMPULSE_APPLICATION_ID } = process.env
 
 export default {
   type: ConversationType,
-  description: "A conversation",
+  description: "A conversation, usually between a user and a partner",
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The ID of the Conversation",
     },
   },
-  resolve: (root, options, request, { rootValue: { accessToken, userID } }) => {
+  resolve: (root, { id }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
-
-    const id = options.id
     return gravity
       .with(accessToken, { method: "POST" })("me/token", {
         client_application_id: IMPULSE_APPLICATION_ID,
       })
       .then(data => {
-        return impulse
-          .with(data.token, { method: "GET" })(`conversations/${id}`, {
-            from_id: userID,
-            from_type: "User",
-          })
-          .then(impulseData => {
-            return impulseData
-          })
+        return impulse.with(data.token, { method: "GET" })(`conversations/${id}`).then(impulseData => {
+          return impulseData
+        })
       })
   },
 }
