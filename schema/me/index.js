@@ -10,6 +10,7 @@ import SuggestedArtists from "./suggested_artists"
 import FollowArtists from "./follow_artists"
 import FollowedArtists from "./followed_artists"
 import Notifications from "./notifications"
+import Conversation from "./conversation"
 import Conversations from "./conversations"
 import CollectorProfile from "./collector_profile"
 import ArtworkInquiries from "./artwork_inquiries"
@@ -30,6 +31,7 @@ const Me = new GraphQLObjectType({
     bidder_status: BidderStatus,
     bidder_positions: BidderPositions,
     collector_profile: CollectorProfile,
+    conversation: Conversation,
     conversations: Conversations,
     created_at: date,
     email: {
@@ -72,6 +74,7 @@ export default {
       "lot_standing",
       "lot_standings",
       "sale_registrations",
+      "conversation",
       "conversations",
       "collector_profile",
       "artwork_inquiries_connection",
