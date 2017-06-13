@@ -1,12 +1,25 @@
+import { omit } from "lodash"
 import gravity from "../lib/loaders/gravity"
+import total from "../lib/loaders/total"
+import { pageable } from "relay-cursor-paging"
+import { connectionFromArraySlice } from "graphql-relay"
+import { parseRelayOptions } from "../lib/helpers"
 import moment from "moment"
 import cached from "./fields/cached"
 import date from "./fields/date"
 import Profile from "./profile"
 import Image from "./image"
+import { showConnection } from "./show"
 import Location from "./location"
 import { GravityIDFields } from "./object_identification"
-import { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLBoolean, GraphQLNonNull } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLID,
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLEnumType,
+} from "graphql"
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",
@@ -19,6 +32,48 @@ const FairOrganizerType = new GraphQLObjectType({
       resolve: ({ profile_id }) => {
         return gravity(`profile/${profile_id}`).catch(() => null)
       },
+    },
+  },
+})
+
+export const ShowsSort = new GraphQLEnumType({
+  name: "ShowSort",
+  values: {
+    START_AT_ASC: {
+      value: "start_at",
+    },
+    START_AT_DESC: {
+      value: "-start_at",
+    },
+    END_AT_ASC: {
+      value: "end_at",
+    },
+    END_AT_DESC: {
+      value: "-end_at",
+    },
+    UPDATED_AT_ASC: {
+      value: "updated_at",
+    },
+    UPDATED_AT_DESC: {
+      value: "-updated_at",
+    },
+    NAME_ASC: {
+      value: "name",
+    },
+    NAME_DESC: {
+      value: "-name",
+    },
+    FEATURED_ASC: {
+      value: "featured",
+    },
+    FEATURED_DESC: {
+      value: "-featured",
+    },
+    SORTABLE_NAME_ASC: {
+      value: "sortable_name",
+    },
+    SORTABLE_NAME_DESC: {
+      value: "-sortable_name",
     },
   },
 })
@@ -89,6 +144,29 @@ const FairType = new GraphQLObjectType({
             // Some profiles are private and return 403
             .catch(() => null)
         )
+      },
+    },
+    shows_connection: {
+      type: showConnection,
+      args: pageable({
+        section: {
+          type: GraphQLString,
+          description: "Number of artworks to return",
+        },
+      }),
+      resolve: ({ id }, options) => {
+        const path = `fair/${id}/shows`
+        const gravityOptions = omit(parseRelayOptions(options), ["page"])
+
+        return Promise.all([
+          total(path, Object.assign({}, gravityOptions, { size: 0 })),
+          gravity(path, gravityOptions),
+        ]).then(([count, { results }]) => {
+          return connectionFromArraySlice(results, options, {
+            arrayLength: count,
+            sliceStart: gravityOptions.offset,
+          })
+        })
       },
     },
     start_at: date,
