@@ -1,5 +1,7 @@
 import moment from "moment"
-import { isExisty, exclude, existyValue } from "../lib/helpers"
+import { pageable } from "relay-cursor-paging"
+import { connectionFromArraySlice } from "graphql-relay"
+import { isExisty, exclude, existyValue, parseRelayOptions } from "../lib/helpers"
 import { find, has } from "lodash"
 import gravity from "../lib/loaders/gravity"
 import total from "../lib/loaders/total"
@@ -12,7 +14,7 @@ import Artist from "./artist"
 import Partner from "./partner"
 import ExternalPartner from "./external_partner"
 import Fair from "./fair"
-import Artwork from "./artwork"
+import Artwork, { artworkConnection } from "./artwork"
 import Location from "./location"
 import Image, { getDefault } from "./image"
 import PartnerShowEventType from "./partner_show_event"
@@ -37,6 +39,34 @@ const kind = ({ artists, fair, artists_without_artworks, group }) => {
   }
 }
 
+const artworksArgs = {
+  size: {
+    type: GraphQLInt,
+    description: "Number of artworks to return",
+    defaultValue: 25,
+  },
+  published: {
+    type: GraphQLBoolean,
+    defaultValue: true,
+  },
+  page: {
+    type: GraphQLInt,
+    defaultValue: 1,
+  },
+  all: {
+    type: GraphQLBoolean,
+    default: false,
+  },
+  for_sale: {
+    type: GraphQLBoolean,
+    default: false,
+  },
+  exclude: {
+    type: new GraphQLList(GraphQLString),
+    description: "List of artwork IDs to exclude from the response (irrespective of size)",
+  },
+}
+
 const ShowType = new GraphQLObjectType({
   name: "Show",
   interfaces: [NodeInterface],
@@ -50,33 +80,7 @@ const ShowType = new GraphQLObjectType({
     },
     artworks: {
       type: new GraphQLList(Artwork.type),
-      args: {
-        size: {
-          type: GraphQLInt,
-          description: "Number of artworks to return",
-          defaultValue: 25,
-        },
-        published: {
-          type: GraphQLBoolean,
-          defaultValue: true,
-        },
-        page: {
-          type: GraphQLInt,
-          defaultValue: 1,
-        },
-        all: {
-          type: GraphQLBoolean,
-          default: false,
-        },
-        for_sale: {
-          type: GraphQLBoolean,
-          default: false,
-        },
-        exclude: {
-          type: new GraphQLList(GraphQLString),
-          description: "List of artwork IDs to exclude from the response (irrespective of size)",
-        },
-      },
+      args: artworksArgs,
       resolve: (show, options) => {
         const path = `partner/${show.partner.id}/show/${show.id}/artworks`
 
@@ -89,6 +93,25 @@ const ShowType = new GraphQLObjectType({
         }
 
         return fetch.then(exclude(options.exclude, "id"))
+      },
+    },
+    artworks_connection: {
+      type: artworkConnection,
+      args: pageable(artworksArgs),
+      resolve: (show, options) => {
+        const path = `partner/${show.partner.id}/show/${show.id}/artworks`
+        const gravityOptions = parseRelayOptions(options)
+        delete gravityOptions.page
+
+        return total(path, Object.assign({}, gravityOptions, { size: 0 })).then(count => {
+          return gravity(path, gravityOptions)
+          .then((body) => {
+            return connectionFromArraySlice(body, options, {
+              arrayLength: count,
+              sliceStart: gravityOptions.offset,
+            })
+          })
+        })
       },
     },
     artists_without_artworks: {
