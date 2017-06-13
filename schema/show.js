@@ -103,13 +103,13 @@ const ShowType = new GraphQLObjectType({
         const gravityOptions = parseRelayOptions(options)
         delete gravityOptions.page
 
-        return total(path, Object.assign({}, gravityOptions, { size: 0 })).then(count => {
-          return gravity(path, gravityOptions)
-          .then((body) => {
-            return connectionFromArraySlice(body, options, {
-              arrayLength: count,
-              sliceStart: gravityOptions.offset,
-            })
+        return Promise.all([
+          total(path, Object.assign({}, gravityOptions, { size: 0 })),
+          gravity(path, gravityOptions),
+        ]).then(([count, body]) => {
+          return connectionFromArraySlice(body, options, {
+            arrayLength: count,
+            sliceStart: gravityOptions.offset,
           })
         })
       },
