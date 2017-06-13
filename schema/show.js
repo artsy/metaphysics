@@ -1,6 +1,6 @@
 import moment from "moment"
 import { pageable } from "relay-cursor-paging"
-import { connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { isExisty, exclude, existyValue, parseRelayOptions } from "../lib/helpers"
 import { find, has } from "lodash"
 import gravity from "../lib/loaders/gravity"
@@ -331,3 +331,7 @@ const Show = {
 }
 
 export default Show
+
+export const showConnection = connectionDefinitions({
+  nodeType: Show.type,
+}).connectionType
