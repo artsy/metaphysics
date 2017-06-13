@@ -1,5 +1,5 @@
 import qs from "qs"
-import { isExisty } from "../../../lib/helpers"
+import { isExisty } from "lib/helpers"
 
 const { GEMINI_ENDPOINT } = process.env
 

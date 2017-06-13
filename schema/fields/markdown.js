@@ -1,6 +1,6 @@
-import Format from "../input_fields/format"
+import Format from "schema/input_fields/format"
 import { GraphQLString } from "graphql"
-import { isExisty } from "../../lib/helpers"
+import { isExisty } from "lib/helpers"
 import marked from "marked"
 
 export function formatMarkdownValue(value, format) {

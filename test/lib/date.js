@@ -1,6 +1,6 @@
 import { isNull } from "lodash"
 import moment from "moment"
-import { exhibitionPeriod, exhibitionStatus } from "../../lib/date"
+import { exhibitionPeriod, exhibitionStatus } from "lib/date"
 
 describe("date", () => {
   describe("exhibitionPeriod", () => {

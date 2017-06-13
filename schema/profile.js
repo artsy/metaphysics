@@ -1,4 +1,4 @@
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import numeral from "./fields/numeral"

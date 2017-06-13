@@ -1,4 +1,4 @@
-import { runQuery } from "../../utils"
+import { runQuery } from "test/utils"
 
 describe("GeneFamilies", () => {
   const api_data = [

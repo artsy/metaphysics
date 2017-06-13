@@ -1,4 +1,4 @@
-import gravity from "../../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import { CollectorProfileFields } from "./collector_profile"
 import { GraphQLBoolean, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"

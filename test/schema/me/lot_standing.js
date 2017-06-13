@@ -1,5 +1,5 @@
-import schema from "../../../schema"
-import { runAuthenticatedQuery } from "../../utils"
+import schema from "schema"
+import { runAuthenticatedQuery } from "test/utils"
 
 describe("LotStanding type", () => {
   const Me = schema.__get__("Me")

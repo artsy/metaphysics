@@ -1,4 +1,4 @@
-import savedArtwork from "../../../lib/loaders/saved_artwork"
+import savedArtwork from "lib/loaders/saved_artwork"
 
 describe("savedArtwork", () => {
   afterEach(() => savedArtwork.__ResetDependency__("gravity"))

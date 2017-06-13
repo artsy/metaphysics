@@ -3,19 +3,24 @@ import type { GraphQLFieldConfig } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import cached from "./fields/cached"
 import { artworkConnection } from "./artwork"
 import Artist, { artistConnection } from "./artist"
 import Image from "./image"
 import filterArtworks, { filterArtworksArgs } from "./filter_artworks"
-import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "../lib/helpers"
+import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
 
 const SUBJECT_MATTER_MATCHES = [
-  "content", "medium", "concrete contemporary",
-  "abstract contemporary", "concept", "technique", "appearance genes",
+  "content",
+  "medium",
+  "concrete contemporary",
+  "abstract contemporary",
+  "concept",
+  "technique",
+  "appearance genes",
 ]
 
 const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
@@ -43,8 +48,7 @@ const GeneType = new GraphQLObjectType({
         const gravityOptions = _.extend(parsedOptions, {
           exclude_artists_without_artworks: true,
         })
-        return gravity(`gene/${id}/artists`, gravityOptions)
-        .then(response => {
+        return gravity(`gene/${id}/artists`, gravityOptions).then(response => {
           return connectionFromArraySlice(response, options, {
             arrayLength: counts.artists,
             sliceStart: gravityOptions.offset,

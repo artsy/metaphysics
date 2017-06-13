@@ -1,9 +1,9 @@
 import { omit } from "lodash"
-import gravity from "../lib/loaders/gravity"
-import total from "../lib/loaders/total"
+import gravity from "lib/loaders/gravity"
+import total from "lib/loaders/total"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
-import { parseRelayOptions } from "../lib/helpers"
+import { parseRelayOptions } from "lib/helpers"
 import moment from "moment"
 import cached from "./fields/cached"
 import date from "./fields/date"
@@ -12,14 +12,7 @@ import Image from "./image"
 import { showConnection } from "./show"
 import Location from "./location"
 import { GravityIDFields } from "./object_identification"
-import {
-  GraphQLObjectType,
-  GraphQLID,
-  GraphQLString,
-  GraphQLBoolean,
-  GraphQLNonNull,
-  GraphQLEnumType,
-} from "graphql"
+import { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLBoolean, GraphQLNonNull, GraphQLEnumType } from "graphql"
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",

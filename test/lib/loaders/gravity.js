@@ -1,4 +1,4 @@
-import gravity from "../../../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 
 describe("gravity", () => {
   afterEach(() => gravity.__ResetDependency__("gravity"))

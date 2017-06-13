@@ -1,5 +1,5 @@
-import schema from "../../../schema"
-import { runQuery } from "../../utils"
+import schema from "schema"
+import { runQuery } from "test/utils"
 
 describe("Gene", () => {
   describe("For just querying the gene artworks", () => {
@@ -154,9 +154,7 @@ describe("Gene", () => {
         .returns(Promise.resolve(Object.assign({}, gene)))
         // 20 artworks
         .onCall(1)
-        .returns(
-          Promise.resolve(Array(20))
-        )
+        .returns(Promise.resolve(Array(20)))
 
       Gene.__Rewire__("gravity", gravity)
     })

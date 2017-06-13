@@ -1,8 +1,8 @@
 import _ from "lodash"
-import Artist from "../artist"
-import Artwork from "../artwork"
-import Profile from "../profile"
-import PartnerShow from "../partner_show"
+import Artist from "schema/artist"
+import Artwork from "schema/artwork"
+import Profile from "schema/profile"
+import PartnerShow from "schema/partner_show"
 import { GraphQLUnionType } from "graphql"
 
 export const ArtistSearchEntityType = _.create(Artist.type, {

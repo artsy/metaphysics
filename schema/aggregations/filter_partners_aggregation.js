@@ -1,7 +1,7 @@
 // @flow
 
 import { map, omit } from "lodash"
-import Partner from "../partner"
+import Partner from "schema/partner"
 import AggregationCount from "./aggregation_count"
 import { GraphQLObjectType, GraphQLEnumType, GraphQLList, GraphQLInt } from "graphql"
 

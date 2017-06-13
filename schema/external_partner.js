@@ -1,4 +1,4 @@
-import galaxy from "../lib/loaders/galaxy"
+import galaxy from "lib/loaders/galaxy"
 import { IDFields } from "./object_identification"
 
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"

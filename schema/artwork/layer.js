@@ -1,6 +1,6 @@
 import Artwork from "./index"
-import gravity from "../../lib/loaders/gravity"
-import { IDFields } from "../object_identification"
+import gravity from "lib/loaders/gravity"
+import { IDFields } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLList } from "graphql"
 
 const ArtworkLayerType = new GraphQLObjectType({

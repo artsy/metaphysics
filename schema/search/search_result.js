@@ -1,9 +1,9 @@
 import _ from "lodash"
 import url from "url"
-import { classify } from "../../lib/helpers"
-import routing from "../../lib/routing"
-import gravity from "../../lib/loaders/gravity"
-import Image from "../image"
+import { classify } from "lib/helpers"
+import routing from "lib/routing"
+import gravity from "lib/loaders/gravity"
+import Image from "schema/image"
 import SearchEntityType from "./search_entity"
 import { GraphQLID, GraphQLString, GraphQLObjectType } from "graphql"
 

@@ -1,12 +1,12 @@
-import date from "../fields/date"
-import impulse from "../../lib/loaders/impulse"
-import gravity from "../../lib/loaders/gravity"
+import date from "schema/fields/date"
+import impulse from "lib/loaders/impulse"
+import gravity from "lib/loaders/gravity"
 import { get } from "lodash"
 import { pageable } from "relay-cursor-paging"
-import { parseRelayOptions } from "../../lib/helpers"
+import { parseRelayOptions } from "lib/helpers"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLBoolean, GraphQLNonNull, GraphQLEnumType } from "graphql"
-import { ArtworkType } from "../artwork"
+import { ArtworkType } from "schema/artwork"
 const { IMPULSE_APPLICATION_ID } = process.env
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({

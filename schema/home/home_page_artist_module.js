@@ -1,8 +1,8 @@
 import { has, map } from "lodash"
-import Artist from "../artist"
-import gravity from "../../lib/loaders/gravity"
-import { total } from "../../lib/loaders/total"
-import { NodeInterface } from "../object_identification"
+import Artist from "schema/artist"
+import gravity from "lib/loaders/gravity"
+import { total } from "lib/loaders/total"
+import { NodeInterface } from "schema/object_identification"
 import { toGlobalId } from "graphql-relay"
 import { GraphQLEnumType, GraphQLID, GraphQLNonNull, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
 

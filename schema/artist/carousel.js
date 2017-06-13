@@ -2,8 +2,8 @@
 import type { GraphQLFieldConfig } from "graphql"
 
 import _ from "lodash"
-import Image from "../image"
-import { error } from "../../lib/loggers"
+import Image from "schema/image"
+import { error } from "lib/loggers"
 import { GraphQLObjectType, GraphQLList } from "graphql"
 
 const ArtistCarouselType = new GraphQLObjectType({

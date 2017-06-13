@@ -1,5 +1,5 @@
 import { get } from "lodash"
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import date from "./fields/date"
 import money, { amount } from "./fields/money"
 import SaleArtwork from "./sale_artwork"

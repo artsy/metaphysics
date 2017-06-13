@@ -1,4 +1,4 @@
-import galaxy from "../../../lib/apis/galaxy"
+import galaxy from "lib/apis/galaxy"
 
 describe("APIs", () => {
   describe("galaxy", () => {

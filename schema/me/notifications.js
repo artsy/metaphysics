@@ -1,13 +1,13 @@
-import gravity from "../../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import date from "../fields/date"
-import Artwork from "../artwork"
-import Image from "../image"
+import date from "schema/fields/date"
+import Artwork from "schema/artwork"
+import Image from "schema/image"
 import { GraphQLEnumType, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
 import { omit, has } from "lodash"
-import { parseRelayOptions } from "../../lib/helpers"
-import { GlobalIDField, NodeInterface } from "../object_identification"
+import { parseRelayOptions } from "lib/helpers"
+import { GlobalIDField, NodeInterface } from "schema/object_identification"
 
 const NotificationsFeedItemType = new GraphQLObjectType({
   name: "NotificationsFeedItem",

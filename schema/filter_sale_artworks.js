@@ -1,4 +1,4 @@
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import { map, omit } from "lodash"
 import SaleArtwork from "./sale_artwork"
 import numeral from "./fields/numeral"

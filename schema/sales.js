@@ -1,4 +1,4 @@
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import Sale from "./sale/index"
 import SaleSorts from "./sale/sorts"
 import { GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"

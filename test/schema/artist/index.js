@@ -1,5 +1,5 @@
-import schema from "../../../schema"
-import { runQuery } from "../../utils"
+import schema from "schema"
+import { runQuery } from "test/utils"
 
 describe("Artist type", () => {
   const Artist = schema.__get__("Artist")

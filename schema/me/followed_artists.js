@@ -1,8 +1,8 @@
 import _ from "lodash"
 
-import gravity from "../../lib/loaders/gravity"
-import Artist from "../artist"
-import { IDFields } from "../object_identification"
+import gravity from "lib/loaders/gravity"
+import Artist from "schema/artist"
+import { IDFields } from "schema/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"

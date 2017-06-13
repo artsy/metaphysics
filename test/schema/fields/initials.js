@@ -1,5 +1,5 @@
 import { isNull } from "lodash"
-import { initials } from "../../../schema/fields/initials"
+import { initials } from "schema/fields/initials"
 
 describe("initials", () => {
   it("returns the initials for a string with normal orthography", () => {

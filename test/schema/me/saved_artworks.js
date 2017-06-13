@@ -1,8 +1,7 @@
 import { resolve } from "path"
 import { readFileSync } from "fs"
-
-import schema from "../../../schema"
-import { runAuthenticatedQuery } from "../../utils"
+import schema from "schema"
+import { runAuthenticatedQuery } from "test/utils"
 
 describe("me { saved_artwork", () => {
   describe("Handles getting collection metadata", () => {

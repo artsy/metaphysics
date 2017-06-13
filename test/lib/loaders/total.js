@@ -1,4 +1,4 @@
-import total from "../../../lib/loaders/total"
+import total from "lib/loaders/total"
 
 describe("total", () => {
   afterEach(() => total.__ResetDependency__("gravity"))

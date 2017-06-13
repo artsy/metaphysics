@@ -1,7 +1,6 @@
 import { assign } from "lodash"
-
-import schema from "../../../schema"
-import { runAuthenticatedQuery } from "../../utils"
+import schema from "schema"
+import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("Notifications", () => {

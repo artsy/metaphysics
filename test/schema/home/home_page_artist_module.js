@@ -1,7 +1,7 @@
 import { graphql } from "graphql"
 
-import schema from "../../../schema"
-import { runQuery, runAuthenticatedQuery } from "../../utils"
+import schema from "schema"
+import { runQuery, runAuthenticatedQuery } from "test/utils"
 
 describe("HomePageArtistModule", () => {
   const HomePage = schema.__get__("HomePage")

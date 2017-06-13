@@ -1,4 +1,4 @@
-import { date } from "../../../schema/fields/date"
+import { date } from "schema/fields/date"
 
 describe("date", () => {
   const rawDate = "2020-12-31T12:00:00+00:00"

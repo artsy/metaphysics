@@ -1,4 +1,4 @@
-import { versionedImageUrl } from "../../../schema/image/versioned"
+import { versionedImageUrl } from "schema/image/versioned"
 
 describe("Image", () => {
   describe("versionedImageUrl", () => {

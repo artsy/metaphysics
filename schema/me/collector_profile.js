@@ -1,6 +1,6 @@
-import date from "../fields/date"
-import gravity from "../../lib/loaders/gravity"
-import { IDFields } from "../object_identification"
+import date from "schema/fields/date"
+import gravity from "lib/loaders/gravity"
+import { IDFields } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
 
 export const CollectorProfileFields = {

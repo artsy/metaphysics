@@ -1,7 +1,7 @@
 import { map, find } from "lodash"
 
-import schema from "../../../schema"
-import { runAuthenticatedQuery } from "../../utils"
+import schema from "schema"
+import { runAuthenticatedQuery } from "test/utils"
 
 describe("HomePageArtworkModules", () => {
   describe("when signed in", () => {

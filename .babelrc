@@ -1,6 +1,12 @@
 {
   "presets": ["es2015"],
-  "plugins": ["transform-object-rest-spread", "transform-flow-strip-types"],
+  "plugins": [
+    ["module-resolver", {
+      "root": ["./"]
+    }],
+    "transform-object-rest-spread",
+    "transform-flow-strip-types"
+  ],
   "env": {
     "test": {
       "plugins": ["rewire"]

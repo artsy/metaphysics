@@ -1,5 +1,5 @@
-import schema from "../../../schema"
-import { runAuthenticatedQuery } from "../../utils"
+import schema from "schema"
+import { runAuthenticatedQuery } from "test/utils"
 
 describe("FollowArtist", () => {
   const gravity = sinon.stub()

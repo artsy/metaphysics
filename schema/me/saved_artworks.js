@@ -1,4 +1,4 @@
-import { CollectionType, collectionResolver } from "../collection"
+import { CollectionType, collectionResolver } from "schema/collection"
 
 // Forward this directly to the collection resolver with known defaults.
 

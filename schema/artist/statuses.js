@@ -1,4 +1,4 @@
-import total from "../../lib/loaders/total"
+import total from "lib/loaders/total"
 import { GraphQLObjectType, GraphQLBoolean } from "graphql"
 
 const ArtistStatusesType = new GraphQLObjectType({

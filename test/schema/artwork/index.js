@@ -1,8 +1,8 @@
 import { assign } from "lodash"
 import moment from "moment"
 
-import schema from "../../../schema"
-import { runQuery } from "../../utils"
+import schema from "schema"
+import { runQuery } from "test/utils"
 
 describe("Artwork type", () => {
   let gravity

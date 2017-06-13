@@ -1,5 +1,5 @@
 import _ from "lodash"
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import Partners from "./partners"
 import { FilterPartnersType, PartnersAggregation } from "./aggregations/filter_partners_aggregation"
 import { GraphQLList, GraphQLNonNull } from "graphql"

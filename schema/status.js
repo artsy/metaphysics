@@ -1,4 +1,4 @@
-import gravity from "../lib/apis/gravity" // Uncached
+import gravity from "lib/apis/gravity" // Uncached
 import { GraphQLObjectType, GraphQLBoolean } from "graphql"
 
 const StatusType = new GraphQLObjectType({

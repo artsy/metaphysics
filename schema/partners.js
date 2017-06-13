@@ -1,4 +1,4 @@
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import Partner from "./partner"
 import PartnerTypeType from "./input_fields/partner_type_type"
 import { GraphQLString, GraphQLList, GraphQLBoolean, GraphQLInt, GraphQLEnumType } from "graphql"

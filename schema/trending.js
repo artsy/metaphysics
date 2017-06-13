@@ -1,5 +1,5 @@
-import delta from "../lib/loaders/delta"
-import gravity from "../lib/loaders/gravity"
+import delta from "lib/loaders/delta"
+import gravity from "lib/loaders/gravity"
 import { keys, without } from "lodash"
 import Artist from "./artist"
 import {

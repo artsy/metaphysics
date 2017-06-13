@@ -1,6 +1,6 @@
-import cached from "../fields/cached"
-import gravity from "../../lib/loaders/gravity"
-import { GravityIDFields } from "../object_identification"
+import cached from "schema/fields/cached"
+import gravity from "lib/loaders/gravity"
+import { GravityIDFields } from "schema/object_identification"
 import { GraphQLEnumType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLBoolean } from "graphql"
 import { shuffle } from "lodash"
 

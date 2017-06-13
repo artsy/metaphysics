@@ -1,5 +1,5 @@
 import descriptions from "./maps/artist_meta_descriptions"
-import { stripTags, truncate, markdownToText } from "../../lib/helpers"
+import { stripTags, truncate, markdownToText } from "lib/helpers"
 import { compact } from "lodash"
 import { GraphQLString, GraphQLObjectType } from "graphql"
 
