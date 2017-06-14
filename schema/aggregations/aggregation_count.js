@@ -1,7 +1,7 @@
 // @flow
 import type { GraphQLFieldConfig } from "graphql"
 
-import { IDFields } from "../object_identification"
+import { IDFields } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
 
 export const AggregationCountType = new GraphQLObjectType({

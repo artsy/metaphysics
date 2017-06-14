@@ -1,8 +1,8 @@
 import { first } from "lodash"
-import gravity from "../../lib/loaders/gravity"
-import Sale from "../sale/index"
-import Sales from "../sales"
-import Bidder from "../bidder"
+import gravity from "lib/loaders/gravity"
+import Sale from "schema/sale/index"
+import Sales from "schema/sales"
+import Bidder from "schema/bidder"
 import { GraphQLList, GraphQLBoolean, GraphQLObjectType } from "graphql"
 
 export const SaleRegistrationType = new GraphQLObjectType({

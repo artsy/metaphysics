@@ -1,4 +1,4 @@
-import { isExisty } from "../../lib/helpers"
+import { isExisty } from "lib/helpers"
 
 export function isZoomable(image) {
   return (

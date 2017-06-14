@@ -1,5 +1,5 @@
 import _ from "lodash"
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import cached from "./fields/cached"
 import Partners from "./partners"
 import CategoryType from "./input_fields/category_type"

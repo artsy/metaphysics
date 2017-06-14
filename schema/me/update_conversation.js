@@ -1,5 +1,5 @@
-import impulse from "../../lib/loaders/impulse"
-import gravity from "../../lib/loaders/gravity"
+import impulse from "lib/loaders/impulse"
+import gravity from "lib/loaders/gravity"
 import { ConversationType, BuyerOutcomeTypes } from "./conversations"
 import { GraphQLList, GraphQLString, GraphQLNonNull } from "graphql"
 const { IMPULSE_APPLICATION_ID } = process.env

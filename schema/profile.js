@@ -1,5 +1,5 @@
-import gravity from "../lib/loaders/gravity"
-import followedProfileLoader from "../lib/loaders/followed_profile"
+import gravity from "lib/loaders/gravity"
+import followedProfileLoader from "lib/loaders/followed_profile"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import numeral from "./fields/numeral"

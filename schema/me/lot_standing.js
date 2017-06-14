@@ -1,8 +1,8 @@
-import { isExisty } from "../../lib/helpers"
-import gravity from "../../lib/loaders/gravity"
-import BidderPosition from "../bidder_position"
-import Bidder from "../bidder"
-import SaleArtwork from "../sale_artwork"
+import { isExisty } from "lib/helpers"
+import gravity from "lib/loaders/gravity"
+import BidderPosition from "schema/bidder_position"
+import Bidder from "schema/bidder"
+import SaleArtwork from "schema/sale_artwork"
 import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLBoolean } from "graphql"
 
 // is leading human bidder

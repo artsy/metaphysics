@@ -1,7 +1,7 @@
-import gravity from "../../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ArtworkType } from "../artwork/index"
+import { ArtworkType } from "schema/artwork/index"
 
 export default mutationWithClientMutationId({
   name: "SaveArtwork",

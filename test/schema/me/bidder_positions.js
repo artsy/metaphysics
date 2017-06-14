@@ -1,7 +1,7 @@
 import { map, times } from "lodash"
 
-import schema from "../../../schema"
-import { runAuthenticatedQuery } from "../../utils"
+import schema from "schema"
+import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me type", () => {
   const Me = schema.__get__("Me")

@@ -1,4 +1,4 @@
-import all from "../../lib/all"
+import all from "lib/all"
 
 describe("all", () => {
   afterEach(() => {

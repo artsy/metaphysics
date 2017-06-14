@@ -1,8 +1,7 @@
 import jwt from "jwt-simple"
 import { omit } from "lodash"
-
-import schema from "../../schema"
-import { runQuery, runAuthenticatedQuery } from "../utils"
+import schema from "schema"
+import { runQuery, runAuthenticatedQuery } from "test/utils"
 
 const { HMAC_SECRET } = process.env
 

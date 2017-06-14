@@ -1,5 +1,5 @@
-import googleCSE from "../../lib/loaders/google_cse"
-import cached from "../fields/cached"
+import googleCSE from "lib/loaders/google_cse"
+import cached from "schema/fields/cached"
 import SearchResult from "./search_result"
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
 

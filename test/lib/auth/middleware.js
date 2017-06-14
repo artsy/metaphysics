@@ -1,4 +1,4 @@
-import * as middleware from "../../../lib/auth/middleware"
+import * as middleware from "lib/auth/middleware"
 
 describe("auth middleware", () => {
   describe("#validArtsyEmail", () => {

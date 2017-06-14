@@ -1,5 +1,5 @@
 import { featuredAuction, featuredFair, featuredGene } from "./fetch"
-import gravity from "../../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import { GraphQLString } from "graphql"
 
 const moduleTitle = {

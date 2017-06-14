@@ -1,4 +1,4 @@
-import gravity from "../../../lib/apis/gravity"
+import gravity from "lib/apis/gravity"
 
 describe("APIs", () => {
   describe("gravity", () => {

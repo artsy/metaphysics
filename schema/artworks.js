@@ -1,4 +1,4 @@
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import Artwork from "./artwork"
 import { GraphQLList, GraphQLString } from "graphql"
 

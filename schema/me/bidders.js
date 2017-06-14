@@ -1,5 +1,5 @@
-import gravity from "../../lib/loaders/gravity"
-import Bidder from "../bidder"
+import gravity from "lib/loaders/gravity"
+import Bidder from "schema/bidder"
 import { GraphQLList, GraphQLString } from "graphql"
 
 export default {

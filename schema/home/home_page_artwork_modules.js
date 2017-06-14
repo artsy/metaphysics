@@ -1,4 +1,4 @@
-import gravity from "../../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import { filter, find, findIndex, keys, map, remove, slice, set, without } from "lodash"
 import { GraphQLEnumType, GraphQLInt, GraphQLList } from "graphql"
 import { HomePageArtworkModuleType } from "./home_page_artwork_module"

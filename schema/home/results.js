@@ -1,9 +1,9 @@
-import gravity from "../../lib/loaders/gravity"
-import uncachedGravity from "../../lib/apis/gravity"
+import gravity from "lib/loaders/gravity"
+import uncachedGravity from "lib/apis/gravity"
 import { activeSaleArtworks, featuredAuction, featuredFair, featuredGene, geneArtworks, popularArtists } from "./fetch"
 import { map, assign, keys, without, shuffle, slice } from "lodash"
-import { toQueryString } from "../../lib/helpers"
-import Artwork from "../artwork/index"
+import { toQueryString } from "lib/helpers"
+import Artwork from "schema/artwork/index"
 import { GraphQLList } from "graphql"
 
 const RESULTS_SIZE = 20

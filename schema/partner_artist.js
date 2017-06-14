@@ -1,4 +1,4 @@
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import Partner from "./partner"
 import Artist from "./artist/index"
 import numeral from "./fields/numeral"

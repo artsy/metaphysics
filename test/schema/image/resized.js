@@ -1,4 +1,4 @@
-import { resizedImageUrl } from "../../../schema/image/resized"
+import { resizedImageUrl } from "schema/image/resized"
 
 describe("Image", () => {
   describe("resizedImageUrl", () => {

@@ -1,7 +1,7 @@
 import { assign, create, first, flow, compact } from "lodash"
-import Fair from "../fair"
-import Sale from "../sale/index"
-import PartnerShow from "../partner_show"
+import Fair from "schema/fair"
+import Sale from "schema/sale/index"
+import PartnerShow from "schema/partner_show"
 import { GraphQLUnionType } from "graphql"
 
 export const ArtworkContextFairType = create(Fair.type, {

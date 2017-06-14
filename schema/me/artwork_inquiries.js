@@ -1,5 +1,5 @@
-import gravity from "../../lib/loaders/gravity"
-import Artwork from "../artwork/index"
+import gravity from "lib/loaders/gravity"
+import Artwork from "schema/artwork/index"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLObjectType, GraphQLID, GraphQLNonNull, GraphQLString } from "graphql"

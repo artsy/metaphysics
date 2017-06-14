@@ -1,8 +1,7 @@
 import _ from "lodash"
 import { toGlobalId } from "graphql-relay"
-
-import schema from "../../schema"
-import { runQuery, runAuthenticatedQuery } from "../utils"
+import schema from "schema"
+import { runQuery, runAuthenticatedQuery } from "test/utils"
 
 describe("Object Identification", () => {
   // TODO As we add more loaders, remove the old tests at the bottom of this file and add them here.

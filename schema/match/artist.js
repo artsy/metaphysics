@@ -2,9 +2,9 @@
 import type { GraphQLFieldConfig } from "graphql"
 
 import { GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"
-import Artist from "../artist"
+import Artist from "schema/artist"
 
-import gravity from "../../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 
 const ArtistMatch: GraphQLFieldConfig<typeof Artist, *> = {
   type: new GraphQLList(Artist.type),

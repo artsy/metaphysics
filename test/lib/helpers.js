@@ -1,4 +1,4 @@
-import { exclude, toKey, isExisty, stripTags } from "../../lib/helpers"
+import { exclude, toKey, isExisty, stripTags } from "lib/helpers"
 
 describe("exclude", () => {
   const xs = [{ id: "foo", name: "Foo" }, { id: "bar", name: "Bar" }, { id: "baz", name: "Baz" }]

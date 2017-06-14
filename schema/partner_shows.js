@@ -1,5 +1,5 @@
 import _ from "lodash"
-import gravity from "../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import PartnerShowSorts from "./sorts/partner_show_sorts"
 import EventStatus from "./input_fields/event_status"
 import Near from "./input_fields/near"

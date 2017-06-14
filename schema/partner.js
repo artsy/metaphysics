@@ -1,6 +1,6 @@
 import { assign, has, omit } from "lodash"
-import { exclude } from "../lib/helpers"
-import gravity from "../lib/loaders/gravity"
+import { exclude } from "lib/helpers"
+import gravity from "lib/loaders/gravity"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import Profile from "./profile"

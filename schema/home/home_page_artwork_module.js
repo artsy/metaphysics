@@ -1,11 +1,11 @@
 import { chain, find, has } from "lodash"
-import gravity from "../../lib/loaders/gravity"
+import gravity from "lib/loaders/gravity"
 import { params as genericGenes } from "./add_generic_genes"
 import Results from "./results"
 import Title from "./title"
 import Context from "./context"
 import Params from "./params"
-import { NodeInterface } from "../object_identification"
+import { NodeInterface } from "schema/object_identification"
 import { toGlobalId } from "graphql-relay"
 import { GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLID, GraphQLNonNull } from "graphql"
 

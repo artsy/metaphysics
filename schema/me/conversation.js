@@ -1,5 +1,5 @@
-import impulse from "../../lib/loaders/impulse"
-import gravity from "../../lib/loaders/gravity"
+import impulse from "lib/loaders/impulse"
+import gravity from "lib/loaders/gravity"
 
 import { GraphQLString, GraphQLNonNull } from "graphql"
 

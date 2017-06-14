@@ -1,5 +1,5 @@
 import { has } from "lodash"
-import positron from "../lib/loaders/positron"
+import positron from "lib/loaders/positron"
 import cached from "./fields/cached"
 import AuthorType from "./author"
 import Image from "./image"

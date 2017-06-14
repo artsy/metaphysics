@@ -1,4 +1,4 @@
-import cache from "../../lib/cache"
+import cache from "lib/cache"
 
 describe("Cache", () => {
   describe("when connection to Redis fails", () => {
