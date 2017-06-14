@@ -1,28 +1,28 @@
 import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
-describe("UpdateConversation", () => {
+describe("UpdateBuyerOutcome", () => {
   const gravity = sinon.stub()
   const impulse = sinon.stub()
-  const UpdateConversation = schema.__get__("UpdateConversation")
+  const UpdateBuyerOutcome = schema.__get__("UpdateBuyerOutcome")
 
   beforeEach(() => {
     gravity.with = sinon.stub().returns(gravity)
     impulse.with = sinon.stub().returns(impulse)
 
-    UpdateConversation.__Rewire__("gravity", gravity)
-    UpdateConversation.__Rewire__("impulse", impulse)
+    UpdateBuyerOutcome.__Rewire__("gravity", gravity)
+    UpdateBuyerOutcome.__Rewire__("impulse", impulse)
   })
 
   afterEach(() => {
-    UpdateConversation.__ResetDependency__("gravity")
-    UpdateConversation.__ResetDependency__("impulse")
+    UpdateBuyerOutcome.__ResetDependency__("gravity")
+    UpdateBuyerOutcome.__ResetDependency__("impulse")
   })
 
   it("updates and returns a conversation", () => {
     const mutation = `
       mutation {
-        updateConversation(input: { ids: ["3"], buyer_outcome: HIGH_PRICE }) {
+        updateBuyerOutcome(input: { ids: ["3"], buyer_outcome: HIGH_PRICE }) {
           conversations {
             id
             initial_message
@@ -56,8 +56,8 @@ describe("UpdateConversation", () => {
 
     impulse.onCall(0).returns(Promise.resolve(conversation))
 
-    return runAuthenticatedQuery(mutation).then(({ updateConversation }) => {
-      expect(updateConversation).toEqual(expectedConversationData)
+    return runAuthenticatedQuery(mutation).then(({ updateBuyerOutcome }) => {
+      expect(updateBuyerOutcome).toEqual(expectedConversationData)
     })
   })
 })

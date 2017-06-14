@@ -6,7 +6,7 @@ const { IMPULSE_APPLICATION_ID } = process.env
 import { mutationWithClientMutationId } from "graphql-relay"
 
 export default mutationWithClientMutationId({
-  name: "UpdateConversation",
+  name: "UpdateBuyerOutcome",
   decription: "Updating buyer outcome of a conversation.",
   inputFields: {
     buyer_outcome: {

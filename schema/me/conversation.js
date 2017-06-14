@@ -1,6 +1,6 @@
-import date from "schema/fields/date"
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
+import date from "schema/fields/date"
 import { get } from "lodash"
 import { queryContainsField } from "lib/helpers"
 import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
