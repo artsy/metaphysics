@@ -1,7 +1,8 @@
-import date from "fields/date"
+import date from "schema/fields/date"
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import { get } from "lodash"
+import { queryContainsField } from "lib/helpers"
 import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
 import { ArtworkType } from "schema/artwork"
 const { IMPULSE_APPLICATION_ID } = process.env
@@ -167,8 +168,7 @@ export default {
         client_application_id: IMPULSE_APPLICATION_ID,
       })
       .then(data => {
-        const queriedFields = map(flatMap(fieldNodes, "selectionSet.selections"), "name.value")
-        const params = queriedFields.includes("messages") ? { expand: ["messages"] } : {}
+        const params = queryContainsField(fieldNodes, "messages") ? { expand: ["messages"] } : {}
         return impulse.with(data.token, { method: "GET" })(`conversations/${id}`, params).then(impulseData => {
           return impulseData
         })
