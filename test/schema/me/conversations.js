@@ -30,7 +30,7 @@ describe("Me", () => {
                 node {
                   id
                   initial_message
-                  from{
+                  from {
                     email
                   }
                 }

@@ -26,7 +26,7 @@ describe("UpdateConversation", () => {
           conversations {
             id
             initial_message
-            from{
+            from {
               email
             }
           }

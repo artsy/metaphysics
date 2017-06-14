@@ -160,15 +160,15 @@ export default {
       description: "The ID of the Conversation",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { accessToken } }) => {
+  resolve: (root, { id }, request, { rootValue: { accessToken }, fieldNodes }) => {
     if (!accessToken) return null
     return gravity
       .with(accessToken, { method: "POST" })("me/token", {
         client_application_id: IMPULSE_APPLICATION_ID,
       })
       .then(data => {
-        const params = {}
-        params.expand = ["messages"]
+        const queriedFields = map(flatMap(fieldNodes, "selectionSet.selections"), "name.value")
+        const params = queriedFields.includes("messages") ? { expand: ["messages"] } : {}
         return impulse.with(data.token, { method: "GET" })(`conversations/${id}`, params).then(impulseData => {
           return impulseData
         })
