@@ -52,6 +52,27 @@ export const MessageType = new GraphQLObjectType({
   },
 })
 
+export const ConversationParticipantType = new GraphQLObjectType({
+  name: "ConversationParticipantType",
+  description: "A participant in a conversation.",
+  fields: {
+    id: {
+      description: "Impulse id.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    type: {
+      description: "The type of participant, e.g. Partner or User",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    email: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+})
+
 export const ConversationFields = {
   id: {
     description: "Impulse id.",
@@ -61,26 +82,29 @@ export const ConversationFields = {
     description: "Gravity inquiry id.",
     type: GraphQLString,
   },
-  from_id: {
-    type: new GraphQLNonNull(GraphQLString),
+  from: {
+    description: "The participant who initiated the conversation",
+    type: new GraphQLNonNull(ConversationParticipantType),
+    resolve: conversation => {
+      return {
+        id: conversation.from_id,
+        type: conversation.from_type,
+        name: conversation.from_name,
+        email: conversation.from_email,
+      }
+    },
   },
-  from_type: {
-    type: new GraphQLNonNull(GraphQLString),
-  },
-  from_name: {
-    type: new GraphQLNonNull(GraphQLString),
-  },
-  from_email: {
-    type: new GraphQLNonNull(GraphQLString),
-  },
-  to_id: {
-    type: new GraphQLNonNull(GraphQLString),
-  },
-  to_type: {
-    type: new GraphQLNonNull(GraphQLString),
-  },
-  to_name: {
-    type: new GraphQLNonNull(GraphQLString),
+  to: {
+    description: "The participant responding to the conversation",
+    type: new GraphQLNonNull(ConversationParticipantType),
+    resolve: conversation => {
+      return {
+        id: conversation.to_id,
+        type: conversation.to_type,
+        name: conversation.to_name,
+        email: conversation.to_email,
+      }
+    },
   },
   buyer_outcome: {
     type: GraphQLString,
@@ -136,15 +160,16 @@ export default {
       description: "The ID of the Conversation",
     },
   },
-  resolve: (root, params, request, { rootValue: { accessToken } }) => {
+  resolve: (root, { id }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
     return gravity
       .with(accessToken, { method: "POST" })("me/token", {
         client_application_id: IMPULSE_APPLICATION_ID,
       })
       .then(data => {
+        const params = {}
         params.expand = ["messages"]
-        return impulse.with(data.token, { method: "GET" })(`conversations/${params.id}`, params).then(impulseData => {
+        return impulse.with(data.token, { method: "GET" })(`conversations/${id}`, params).then(impulseData => {
           return impulseData
         })
       })

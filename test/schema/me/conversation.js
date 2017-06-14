@@ -28,7 +28,9 @@ describe("Me", () => {
             conversation(id: "420") {
               id
               initial_message
-              from_email
+              from {
+                email
+              }
             }
           }
         }
@@ -44,7 +46,9 @@ describe("Me", () => {
         conversation: {
           id: "420",
           initial_message: "10/10 would buy",
-          from_email: "fancy_german_person@posteo.de",
+          from: {
+            email: "fancy_german_person@posteo.de",
+          },
         },
       }
 
