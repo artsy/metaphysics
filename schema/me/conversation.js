@@ -39,15 +39,15 @@ export const MessageType = new GraphQLObjectType({
   fields: {
     id: {
       description: "Impulse id.",
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     from_email_address: {
       description: "Email address of sender.",
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     snippet: {
       description: "A snippet of the full message",
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
 })
@@ -91,10 +91,10 @@ export const ConversationFields = {
     type: GraphQLBoolean,
   },
   initial_message: {
-    type: GraphQLString,
+    type: new GraphQLNonNull(GraphQLString),
   },
   last_message: {
-    type: GraphQLString,
+    type: new GraphQLNonNull(GraphQLString),
     resolve: conversation => {
       return get(conversation, "_embedded.last_message.snippet")
     },
@@ -136,20 +136,17 @@ export default {
       description: "The ID of the Conversation",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { accessToken } }) => {
+  resolve: (root, params, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
     return gravity
       .with(accessToken, { method: "POST" })("me/token", {
         client_application_id: IMPULSE_APPLICATION_ID,
       })
       .then(data => {
-        return impulse
-          .with(data.token, { method: "GET" })(`conversations/${id}`, {
-            expand: ["messages"],
-          })
-          .then(impulseData => {
-            return impulseData
-          })
+        params.expand = ["messages"]
+        return impulse.with(data.token, { method: "GET" })(`conversations/${params.id}`, params).then(impulseData => {
+          return impulseData
+        })
       })
   },
 }
