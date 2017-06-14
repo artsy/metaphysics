@@ -1,36 +1,23 @@
+let gravityData = null
+jest.mock("../../lib/loaders/gravity.js", () => ({ with: () => () => Promise.resolve(gravityData) }))
+
 import { resolve } from "path"
 import { readFileSync } from "fs"
 
-import schema from "../../schema"
 import { runAuthenticatedQuery } from "../utils"
-
-const gravityData = {
-  id: "saved-artwork",
-  name: "Saved Artwork",
-  default: true,
-  description: "",
-  image_url: null,
-  image_versions: null,
-  private: false,
-}
 
 describe("Collections", () => {
   describe("Handles getting collection metadata", () => {
-    const Collection = schema.__get__("Collection")
-    let gravity = null
-    beforeEach(() => {
-      gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
-
-      Collection.__Rewire__("gravity", gravity)
-    })
-
-    afterEach(() => {
-      Collection.__ResetDependency__("gravity")
-    })
-
     it("returns collection metadata", () => {
-      gravity.withArgs("collection/saved-artwork", { user_id: "user-42" }).returns(Promise.resolve(gravityData))
+      gravityData = {
+        id: "saved-artwork",
+        name: "Saved Artwork",
+        default: true,
+        description: "",
+        image_url: null,
+        image_versions: null,
+        private: false,
+      }
 
       const query = `
         {
@@ -49,9 +36,7 @@ describe("Collections", () => {
     it("returns artworks for a collection", () => {
       const artworksPath = resolve("test", "fixtures", "gravity", "artworks_array.json")
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
-      gravity
-        .withArgs("collection/saved-artwork/artworks", { size: 10, offset: 0, total_count: true, user_id: "user-42" })
-        .returns(Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } }))
+      gravityData = { body: artworks, headers: { "x-total-count": 10 } }
 
       const query = `
         {
