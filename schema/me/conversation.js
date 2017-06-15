@@ -4,6 +4,9 @@ import date from "schema/fields/date"
 import { get } from "lodash"
 import { queryContainsField } from "lib/helpers"
 import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
+import { pageable } from "relay-cursor-paging"
+import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
+import { parseRelayOptions } from "lib/helpers"
 import { ArtworkType } from "schema/artwork"
 const { IMPULSE_APPLICATION_ID } = process.env
 
@@ -167,7 +170,16 @@ export const ConversationFields = {
   },
 
   messages: {
-    type: new GraphQLList(MessageType),
+    type: connectionDefinitions({ nodeType: MessageType }).connectionType,
+    description: "A connection for all messages in a single conversation",
+    args: pageable(),
+    resolve: ({ messages }, options) => {
+      const impulseOptions = parseRelayOptions(options)
+      return connectionFromArraySlice(messages, options, {
+        arrayLength: messages.length,
+        sliceStart: impulseOptions.offset,
+      })
+    },
   },
 }
 
