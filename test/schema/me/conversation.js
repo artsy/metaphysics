@@ -74,8 +74,12 @@ describe("Me", () => {
                 reply_to_impulse_ids
                 name
               }
-              messages {
-                snippet
+              messages(first: 10) {
+                edges {
+                  node {
+                    snippet
+                  }
+                }
               }
             }
           }
@@ -87,11 +91,7 @@ describe("Me", () => {
         initial_message: "10/10 would buy",
         to: ["1234567"],
         to_name: "Some Gallery",
-        messages: [
-          {
-            snippet: "Take my money!",
-          },
-        ],
+        messages: [{ snippet: "Take my money!" }],
       }
 
       const expectedConversationData = {
@@ -102,11 +102,15 @@ describe("Me", () => {
             name: "Some Gallery",
             reply_to_impulse_ids: ["1234567"],
           },
-          messages: [
-            {
-              snippet: "Take my money!",
-            },
-          ],
+          messages: {
+            edges: [
+              {
+                node: {
+                  snippet: "Take my money!",
+                },
+              },
+            ],
+          },
         },
       }
 

@@ -1,10 +1,11 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import { pageable } from "relay-cursor-paging"
-import { ConversationType } from "./conversation"
 import { parseRelayOptions } from "lib/helpers"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 const { IMPULSE_APPLICATION_ID } = process.env
+
+import { ConversationType } from "./conversation"
 
 export default {
   type: connectionDefinitions({ nodeType: ConversationType }).connectionType,
@@ -26,9 +27,9 @@ export default {
             from_id: userID,
             from_type: "User",
           })
-          .then(impulseData => {
-            return connectionFromArraySlice(impulseData.conversations, options, {
-              arrayLength: impulseData.conversations.length,
+          .then(({ conversations }) => {
+            return connectionFromArraySlice(conversations, options, {
+              arrayLength: conversations.length,
               sliceStart: impulseOptions.offset,
             })
           })
