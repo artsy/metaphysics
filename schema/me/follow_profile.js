@@ -16,12 +16,14 @@ export default mutationWithClientMutationId({
     },
   },
   outputFields: {
-    artist: {
+    profile: {
       type: ProfileType,
-      resolve: ({ profile_id }) => {
-        return gravity(`profile/${profile_id}`).then(profile => {
-          return profile
-        })
+      resolve: ({ profile_id }, options, request, { rootValue: { profileLoader } }) => {
+        return profileLoader(profile_id)
+          .then(profile => {
+            return profile
+          })
+          .catch(() => null)
       },
     },
   },
