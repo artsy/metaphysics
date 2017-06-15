@@ -7,7 +7,7 @@ import Image from "./image"
 import { GravityIDFields } from "./object_identification"
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
 
-const ProfileType = new GraphQLObjectType({
+export const ProfileType = new GraphQLObjectType({
   name: "Profile",
   fields: () => ({
     ...GravityIDFields,
