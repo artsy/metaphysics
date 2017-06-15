@@ -22,6 +22,7 @@ import FilterPartners from "./filter_partners"
 import filterArtworks from "./filter_artworks"
 import FilterSaleArtworks from "./filter_sale_artworks"
 import FollowArtist from "./me/follow_artist"
+import FollowProfile from "./me/follow_profile"
 import PartnerCategory from "./partner_category"
 import PartnerCategories from "./partner_categories"
 import PartnerShow from "./partner_show"
@@ -100,6 +101,7 @@ const schema = new GraphQLSchema({
     name: "RootMutationType",
     fields: {
       followArtist: FollowArtist,
+      followProfile: FollowProfile,
       updateCollectorProfile: UpdateCollectorProfile,
       updateConversation: UpdateConversation,
       saveArtwork: SaveArtwork,
