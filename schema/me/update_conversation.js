@@ -1,6 +1,6 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
-import { ConversationType, BuyerOutcomeTypes } from "./conversations"
+import { ConversationType, BuyerOutcomeTypes } from "./conversation"
 import { GraphQLList, GraphQLString, GraphQLNonNull } from "graphql"
 const { IMPULSE_APPLICATION_ID } = process.env
 import { mutationWithClientMutationId } from "graphql-relay"

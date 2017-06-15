@@ -30,7 +30,9 @@ describe("Me", () => {
                 node {
                   id
                   initial_message
-                  from_email
+                  from {
+                    email
+                  }
                 }
               }
             }
@@ -55,14 +57,18 @@ describe("Me", () => {
             node: {
               id: "2",
               initial_message: "omg im sooo interested",
-              from_email: "percy@cat.com",
+              from: {
+                email: "percy@cat.com",
+              },
             },
           },
           {
             node: {
               id: "3",
               initial_message: "im only a little interested",
-              from_email: "percy@cat.com",
+              from: {
+                email: "percy@cat.com",
+              },
             },
           },
         ],
