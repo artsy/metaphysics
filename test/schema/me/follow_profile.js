@@ -27,6 +27,7 @@ describe("FollowProfile", () => {
     `
 
     const profile = {
+      id: "gagosian",
       name: "Gagosian Gallery",
     }
 
@@ -36,9 +37,13 @@ describe("FollowProfile", () => {
       },
     }
 
+    const rootValue = {
+      profileLoader: sinon.stub().withArgs(profile.id).returns(Promise.resolve(profile)),
+    }
+
     gravity.returns(Promise.resolve(profile))
 
-    return runAuthenticatedQuery(mutation).then(({ followProfile }) => {
+    return runAuthenticatedQuery(mutation, rootValue).then(({ followProfile }) => {
       expect(followProfile).toEqual(expectedProfileData)
     })
   })

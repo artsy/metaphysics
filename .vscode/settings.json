@@ -13,7 +13,7 @@
         "**/.git": true,
         "**/build": true
     },
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "prettier.singleQuote": false,
     "prettier.trailingComma": "es5",
     "prettier.parser": "flow",
