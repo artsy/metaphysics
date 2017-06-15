@@ -1,9 +1,22 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
-import { ConversationType } from "./conversation"
-import { GraphQLString, GraphQLNonNull, GraphQLList } from "graphql"
+import { GraphQLString, GraphQLNonNull, GraphQLList, GraphQLObjectType } from "graphql"
 const { IMPULSE_APPLICATION_ID } = process.env
 import { mutationWithClientMutationId } from "graphql-relay"
+
+const MessagePayloadType = new GraphQLObjectType({
+  name: "MessagePayloadType",
+  description: "Expected payload from a successful message post",
+  fields: {
+    id: {
+      description: "Impulse id.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    radiation_message_id: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+})
 
 export default mutationWithClientMutationId({
   name: "AppendConversationThread",
@@ -26,8 +39,9 @@ export default mutationWithClientMutationId({
     },
   },
   outputFields: {
-    conversation: {
-      type: ConversationType,
+    message: {
+      type: MessagePayloadType,
+      resolve: message => message,
     },
   },
   mutateAndGetPayload: ({ id, from, to, message_body }, request, { rootValue: { accessToken } }) => {
@@ -43,7 +57,7 @@ export default mutationWithClientMutationId({
             from,
             body_text: message_body,
           })
-        ).then(conversation => conversation)
+        ).then(message => message)
       })
   },
 })

@@ -50,6 +50,9 @@ export const MessageType = new GraphQLObjectType({
       description: "A snippet of the full message",
       type: new GraphQLNonNull(GraphQLString),
     },
+    radiation_message_id: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
   },
 })
 
