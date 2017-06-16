@@ -1,6 +1,6 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
-import { GraphQLString, GraphQLNonNull, GraphQLList, GraphQLObjectType } from "graphql"
+import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
 const { IMPULSE_APPLICATION_ID } = process.env
 import { mutationWithClientMutationId } from "graphql-relay"
 
@@ -30,11 +30,7 @@ export default mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       description: "The email address of the message sender",
     },
-    to: {
-      type: new GraphQLList(GraphQLString),
-      description: "An array of email addresses that the message should be sent to",
-    },
-    message_body: {
+    body_text: {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
@@ -44,7 +40,7 @@ export default mutationWithClientMutationId({
       resolve: message => message,
     },
   },
-  mutateAndGetPayload: ({ id, from, to, message_body }, request, { rootValue: { accessToken } }) => {
+  mutateAndGetPayload: ({ id, from, to, body_text }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
     return gravity
       .with(accessToken, { method: "POST" })("me/token", {
@@ -53,9 +49,9 @@ export default mutationWithClientMutationId({
       .then(data => {
         return Promise.resolve(
           impulse.with(data.token, { method: "POST" })(`conversations/${id}/messages`, {
-            to,
+            to: ["partner@example.com"],
             from,
-            body_text: message_body,
+            body_text,
           })
         ).then(message => message)
       })

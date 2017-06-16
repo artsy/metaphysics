@@ -26,8 +26,7 @@ describe("AppendConversationThread", () => {
           input: {
             id: "623",
             from:"pio@dog.com",
-            to: ["galleryPerson@gallery.de"],
-            message_body: "Sehr schön!"
+            body_text: "Sehr schön!"
           }
         ) {
             message {
