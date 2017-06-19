@@ -70,8 +70,9 @@ describe("Me", () => {
             conversation(id: "420") {
               id
               initial_message
-              from {
-                email
+              to {
+                reply_to_impulse_ids
+                name
               }
               messages {
                 snippet
@@ -84,7 +85,8 @@ describe("Me", () => {
       const conversation1 = {
         id: "420",
         initial_message: "10/10 would buy",
-        from_email: "fancy_german_person@posteo.de",
+        to: ["1234567"],
+        to_name: "Some Gallery",
         messages: [
           {
             snippet: "Take my money!",
@@ -96,8 +98,9 @@ describe("Me", () => {
         conversation: {
           id: "420",
           initial_message: "10/10 would buy",
-          from: {
-            email: "fancy_german_person@posteo.de",
+          to: {
+            name: "Some Gallery",
+            reply_to_impulse_ids: ["1234567"],
           },
           messages: [
             {
