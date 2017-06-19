@@ -35,7 +35,7 @@ import Tag from "./tag"
 import TrendingArtists from "./trending"
 import MatchArtist from "./match/artist"
 import Me from "./me"
-import UpdateBuyerOutcome from "./me/update_buyer_outcome"
+import UpdateConversation from "./me/update_conversation"
 import AppendConversationThread from "./me/append_conversation_thread"
 import UpdateCollectorProfile from "./me/update_collector_profile"
 import SaveArtwork from "./me/save_artwork"
@@ -102,7 +102,7 @@ const schema = new GraphQLSchema({
     fields: {
       followArtist: FollowArtist,
       updateCollectorProfile: UpdateCollectorProfile,
-      updateBuyerOutcome: UpdateBuyerOutcome,
+      updateConversation: UpdateConversation,
       appendConversationThread: AppendConversationThread,
       saveArtwork: SaveArtwork,
     },
