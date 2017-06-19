@@ -98,7 +98,7 @@ const Viewer = {
 
 const schema = new GraphQLSchema({
   mutation: new GraphQLObjectType({
-    name: "RootMutationType",
+    name: "Mutation",
     fields: {
       followArtist: FollowArtist,
       updateCollectorProfile: UpdateCollectorProfile,
@@ -108,7 +108,7 @@ const schema = new GraphQLSchema({
     },
   }),
   query: new GraphQLObjectType({
-    name: "RootQueryType",
+    name: "Query",
     fields: {
       ...rootFields,
       viewer: Viewer,
