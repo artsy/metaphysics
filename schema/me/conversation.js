@@ -102,6 +102,10 @@ export const ConversationResponderType = new GraphQLObjectType({
   },
 })
 
+export const { connectionType: MessageConnection, edgeType: MessageEdge } = connectionDefinitions({
+  nodeType: MessageType,
+})
+
 export const ConversationFields = {
   id: {
     description: "Impulse id.",
@@ -170,7 +174,7 @@ export const ConversationFields = {
   },
 
   messages: {
-    type: connectionDefinitions({ nodeType: MessageType }).connectionType,
+    type: MessageConnection,
     description: "A connection for all messages in a single conversation",
     args: pageable(),
     resolve: ({ messages }, options) => {

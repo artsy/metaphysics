@@ -29,25 +29,48 @@ describe("AppendConversationThread", () => {
             body_text: "Sehr schön!"
           }
         ) {
-            message {
-              id
-              radiation_message_id
+            payload {
+              conversation {
+                id
+              }
+              messageEdge {
+                cursor
+                node {
+                  id
+                }
+              }
             }
           }
       }
     `
-    const payload = {
+    const messagePayload = {
       id: "222",
       radiation_message_id: "333",
     }
+    const conversation = {
+      id: "420",
+      initial_message: "10/10 would buy",
+      to: ["1234567"],
+      to_name: "Some Gallery",
+      messages: [{ snippet: "Take my money!" }],
+    }
     const expectedResponseData = {
-      message: {
-        id: "222",
-        radiation_message_id: "333",
+      payload: {
+        conversation: {
+          id: "420",
+        },
+        messageEdge: {
+          cursor: "YXJyYXljb25uZWN0aW9uOjE=",
+          node: {
+            id: "222",
+          },
+        },
       },
     }
-    gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
-    impulse.onCall(0).returns(Promise.resolve(payload))
+    gravity.onCall(0).returns(Promise.resolve({ token: "token" })) // First call just adds the message
+    impulse.onCall(0).returns(Promise.resolve(messagePayload))
+    gravity.onCall(1).returns(Promise.resolve({ token: "token" })) // Second call is for the conversation data
+    impulse.onCall(1).returns(Promise.resolve(conversation))
     return runAuthenticatedQuery(mutation).then(({ appendConversationThread }) => {
       expect(appendConversationThread).toEqual(expectedResponseData)
     })

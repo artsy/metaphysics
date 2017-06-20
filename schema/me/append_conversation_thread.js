@@ -2,18 +2,31 @@ import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
 const { IMPULSE_APPLICATION_ID } = process.env
-import { mutationWithClientMutationId } from "graphql-relay"
+import { mutationWithClientMutationId, cursorForObjectInConnection } from "graphql-relay"
+import { ConversationType, MessageEdge } from "./conversation"
 
-const MessagePayloadType = new GraphQLObjectType({
-  name: "MessagePayloadType",
-  description: "Expected payload from a successful message post",
+const getImpulseToken = gravityToken => {
+  return gravity.with(gravityToken, { method: "POST" })("me/token", {
+    client_application_id: IMPULSE_APPLICATION_ID,
+  })
+}
+
+const AppendConversationThreadMutationPayload = new GraphQLObjectType({
+  name: "AppendConversationThreadMutationPayload",
   fields: {
-    id: {
-      description: "Impulse id.",
-      type: new GraphQLNonNull(GraphQLString),
+    conversation: {
+      type: ConversationType,
+      resolve: ({ conversation }) => conversation,
     },
-    radiation_message_id: {
-      type: new GraphQLNonNull(GraphQLString),
+    messageEdge: {
+      type: MessageEdge,
+      resolve: ({ conversation, newMessagePayload }) => {
+        conversation.messages.push(newMessagePayload)
+        return {
+          cursor: cursorForObjectInConnection(conversation.messages, newMessagePayload),
+          node: newMessagePayload,
+        }
+      },
     },
   },
 })
@@ -35,17 +48,15 @@ export default mutationWithClientMutationId({
     },
   },
   outputFields: {
-    message: {
-      type: MessagePayloadType,
-      resolve: message => message,
+    payload: {
+      type: AppendConversationThreadMutationPayload,
+      resolve: data => data,
     },
   },
   mutateAndGetPayload: ({ id, from, to, body_text }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
-    return gravity
-      .with(accessToken, { method: "POST" })("me/token", {
-        client_application_id: IMPULSE_APPLICATION_ID,
-      })
+    let newMessagePayload
+    return getImpulseToken(accessToken)
       .then(data => {
         return Promise.resolve(
           impulse.with(data.token, { method: "POST" })(`conversations/${id}/messages`, {
@@ -53,7 +64,20 @@ export default mutationWithClientMutationId({
             from,
             body_text,
           })
-        ).then(message => message)
+        )
+      })
+      .then(payload => {
+        newMessagePayload = payload
+        return getImpulseToken(accessToken)
+      })
+      .then(data => {
+        return Promise.resolve(
+          impulse
+            .with(data.token, { method: "GET" })(`conversations/${id}`, { expand: ["messages"] })
+            .then(impulseData => {
+              return { conversation: impulseData, newMessagePayload }
+            })
+        )
       })
   },
 })
