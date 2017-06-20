@@ -146,6 +146,11 @@ const FairType = new GraphQLObjectType({
           type: GraphQLString,
           description: "Number of artworks to return",
         },
+        sort: {
+          type: ShowsSort,
+          description: "Sorts for shows in a fair",
+          defaultValue: "-featured",
+        },
       }),
       resolve: ({ id }, options) => {
         const path = `fair/${id}/shows`
