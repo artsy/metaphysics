@@ -10,7 +10,7 @@ deployment:
       - heroku restart --app artsy-metaphysics-staging
 dependencies:
   override:
-    - yarn install
+    - yarn install --verbose
 test:
   override:
     - "npm run danger"
