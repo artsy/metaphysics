@@ -40,7 +40,7 @@ describe("Cache", () => {
 
     describe("#set", () => {
       describe("with a plain Object", () => {
-        xit("sets the cache and includes a timestamp", done => {
+        it("sets the cache and includes a timestamp", done => {
           cache.set("set_foo", { bar: "baz" })
 
           client.get("set_foo", (err, data) => {
@@ -55,7 +55,7 @@ describe("Cache", () => {
       })
 
       describe("with an Array", () => {
-        xit("sets the cache and includes a timestamp", done => {
+        it("sets the cache and includes a timestamp", done => {
           cache.set("set_bar", [{ baz: "qux" }])
 
           client.get("set_bar", (err, data) => {
