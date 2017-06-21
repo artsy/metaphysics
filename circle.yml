@@ -3,6 +3,8 @@ machine:
     version: 6
   pre:
     - mkdir ~/.yarn-cache
+  services:
+    - memcached
 deployment:
   staging:
     branch: master
