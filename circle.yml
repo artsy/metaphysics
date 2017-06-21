@@ -1,6 +1,8 @@
 machine:
   node:
     version: 5
+  pre:
+    - mkdir ~/.yarn-cache
 deployment:
   staging:
     branch: master
@@ -11,6 +13,8 @@ deployment:
 dependencies:
   override:
     - yarn install < /dev/null
+  cache_directories:
+    - ~/.yarn-cache
 test:
   override:
     - "npm run danger"
