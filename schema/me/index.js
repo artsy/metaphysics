@@ -5,6 +5,7 @@ import BidderStatus from "./bidder_status"
 import BidderPositions from "./bidder_positions"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
+import initials from "./fields/initials"
 import SaleRegistrations from "./sale_registrations"
 import SuggestedArtists from "./suggested_artists"
 import FollowArtists from "./follow_artists"
@@ -39,6 +40,7 @@ const Me = new GraphQLObjectType({
     },
     follow_artists: FollowArtists,
     followed_artists_connection: FollowedArtists,
+    initials: initials("name"),
     lot_standing: LotStanding,
     lot_standings: LotStandings,
     name: {
