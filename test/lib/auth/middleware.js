@@ -47,7 +47,7 @@ describe("auth middleware", () => {
 
       expect(middleware.authenticateWithUser({ user: {} })).toBeFalsy()
 
-      process.env.NODE_NEV = "test"
+      process.env.NODE_ENV = "test"
     })
   })
 

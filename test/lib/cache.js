@@ -21,7 +21,7 @@ describe("Cache", () => {
     })
   })
 
-  xdescribe("when successfully connected to the cache", () => {
+  describe("when successfully connected to the cache", () => {
     const client = cache.__get__("client")
 
     afterEach(() => {
