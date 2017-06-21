@@ -59,6 +59,48 @@ export const MessageType = new GraphQLObjectType({
   },
 })
 
+export const AttachmentType = new GraphQLObjectType({
+  name: "AttachmentType",
+  desciption: "Fields of an attachment (currently from Radiation)",
+  fields: {
+    id: {
+      description: "Attachment id.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    content_type: {
+      description: "Content type of file.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    file_name: {
+      description: "File name.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    download_url: {
+      descrpition: "URL of attachment.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+})
+
+export const MessageDetailType = new GraphQLObjectType({
+  name: "MessageDetailType",
+  description: "Complete details of a message (currently from Radiation)",
+  fields: {
+    id: {
+      description: "Radiation id.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    attachments: {
+      description: "Attachments.",
+      type: new GraphQLList(AttachmentType),
+    },
+    raw_text: {
+      description: "Raw text.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+})
+
 export const ConversationInitiatorType = new GraphQLObjectType({
   name: "ConversationInitiatorType",
   description: "The participant who started the conversation, currently always a User",
@@ -181,6 +223,19 @@ export const ConversationFields = {
       })
     },
   },
+
+  message_details: {
+    type: connectionDefinitions({ nodeType: MessageDetailType }).connectionType,
+    description: "A connection for all message details in a single conversation",
+    args: pageable(),
+    resolve: ({ message_details }, options) => {
+      const impulseOptions = parseRelayOptions(options)
+      return connectionFromArraySlice(message_details, options, {
+        arrayLength: message_details.length,
+        sliceStart: impulseOptions.offset,
+      })
+    },
+  },
 }
 
 export const ConversationType = new GraphQLObjectType({
@@ -205,7 +260,14 @@ export default {
         client_application_id: IMPULSE_APPLICATION_ID,
       })
       .then(data => {
-        const params = queryContainsField(fieldNodes, "messages") ? { expand: ["messages"] } : {}
+        let expand = []
+        if (queryContainsField(fieldNodes, "messages")) {
+          expand = expand.concat("messages")
+        }
+        if (queryContainsField(fieldNodes, "message_details")) {
+          expand = expand.concat("message_details")
+        }
+        const params = expand.length > 0 ? { expand } : {}
         return impulse.with(data.token, { method: "GET" })(`conversations/${id}`, params).then(impulseData => {
           return impulseData
         })
