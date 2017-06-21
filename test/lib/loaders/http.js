@@ -17,7 +17,7 @@ describe("Loaders", () => {
     })
 
     describe("success", () => {
-      xit("accepts an API function and returns a generic data loader for making cached HTTP requests", () => {
+      it("accepts an API function and returns a generic data loader for making cached HTTP requests", () => {
         const api = sinon.stub().returns(
           Promise.resolve({
             body: {
