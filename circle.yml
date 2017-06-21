@@ -1,0 +1,18 @@
+machine:
+  node:
+    version: 5
+deployment:
+  staging:
+    branch: master
+    owner: artsy
+    commands:
+      - git push git@heroku.com:artsy-metaphysics-staging.git $CIRCLE_SHA1:refs/heads/master
+      - heroku restart --app artsy-metaphysics-staging
+dependencies:
+  override:
+    - yarn install
+test:
+  override:
+    - "npm run danger"
+    - yarn test:
+        parallel: true
