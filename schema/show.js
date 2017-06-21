@@ -253,9 +253,11 @@ const ShowType = new GraphQLObjectType({
       type: Image.type,
       resolve: ({ id, partner, image_versions, image_url }) => {
         if (image_versions && image_versions.length && image_url) {
-          return Image.resolve({ image_versions, image_url })
+          return Image.resolve({
+            image_versions,
+            image_url,
+          })
         }
-
         return gravity(`partner/${partner.id}/show/${id}/artworks`, {
           published: true,
         }).then(artworks => {
@@ -310,7 +312,6 @@ const ShowType = new GraphQLObjectType({
     },
   }),
 })
-
 const Show = {
   type: ShowType,
   description: "A Show",
@@ -329,9 +330,7 @@ const Show = {
       .catch(() => null)
   },
 }
-
 export default Show
-
 export const showConnection = connectionDefinitions({
   nodeType: Show.type,
 }).connectionType
