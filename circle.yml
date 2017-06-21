@@ -18,4 +18,4 @@ dependencies:
 test:
   override:
     - "DANG=811cbbb6dff14fe34cc7f ER_TOKEN=7e0778afdd8b1508764 DANGER_GITHUB_API_TOKEN=${DANG}${ER_TOKEN} npm run danger"
-    - NODE_ENV=test npm run test -- --runInBand
+    - npm run test -- --runInBand
