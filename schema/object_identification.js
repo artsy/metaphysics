@@ -44,6 +44,7 @@ const SupportedTypes = {
     "./me",
     "./partner",
     "./partner_show",
+    "./show",
   ],
 }
 
