@@ -1,6 +1,7 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import date from "schema/fields/date"
+import initials from "./fields/initials"
 import { get } from "lodash"
 import { queryContainsField } from "lib/helpers"
 import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
@@ -71,6 +72,7 @@ export const ConversationInitiatorType = new GraphQLObjectType({
       description: "The type of participant, e.g. Partner or User",
       type: new GraphQLNonNull(GraphQLString),
     },
+    initials: initials("name"),
     name: {
       type: new GraphQLNonNull(GraphQLString),
     },
