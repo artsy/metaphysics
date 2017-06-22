@@ -52,7 +52,6 @@ describe("AppendConversationThread", () => {
       initial_message: "10/10 would buy",
       to: ["1234567"],
       to_name: "Some Gallery",
-      messages: [{ snippet: "Take my money!" }],
     }
     const expectedResponseData = {
       payload: {
@@ -60,7 +59,7 @@ describe("AppendConversationThread", () => {
           id: "420",
         },
         messageEdge: {
-          cursor: "YXJyYXljb25uZWN0aW9uOjE=",
+          cursor: "YXJyYXljb25uZWN0aW9uOjA=",
           node: {
             id: "222",
           },

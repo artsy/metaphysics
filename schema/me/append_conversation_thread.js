@@ -20,10 +20,9 @@ const AppendConversationThreadMutationPayload = new GraphQLObjectType({
     },
     messageEdge: {
       type: MessageEdge,
-      resolve: ({ conversation, newMessagePayload }) => {
-        conversation.messages.push(newMessagePayload)
+      resolve: ({ newMessagePayload }) => {
         return {
-          cursor: cursorForObjectInConnection(conversation.messages, newMessagePayload),
+          cursor: cursorForObjectInConnection([newMessagePayload], newMessagePayload),
           node: newMessagePayload,
         }
       },
@@ -69,11 +68,9 @@ export default mutationWithClientMutationId({
       })
       .then(newMessagePayload => {
         return Promise.resolve(
-          impulse
-            .with(impulseToken, { method: "GET" })(`conversations/${id}`, { expand: ["messages"] })
-            .then(impulseData => {
-              return { conversation: impulseData, newMessagePayload }
-            })
+          impulse.with(impulseToken, { method: "GET" })(`conversations/${id}`).then(impulseData => {
+            return { conversation: impulseData, newMessagePayload }
+          })
         )
       })
   },
