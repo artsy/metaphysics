@@ -58,20 +58,16 @@ export default mutationWithClientMutationId({
     return getImpulseToken(accessToken)
       .then(data => {
         impulseToken = data.token
-        return Promise.resolve(
-          impulse.with(impulseToken, { method: "POST" })(`conversations/${id}/messages`, {
-            to: ["partner@example.com"],
-            from,
-            body_text,
-          })
-        )
+        return impulse.with(impulseToken, { method: "POST" })(`conversations/${id}/messages`, {
+          to: ["partner@example.com"],
+          from,
+          body_text,
+        })
       })
       .then(newMessagePayload => {
-        return Promise.resolve(
-          impulse.with(impulseToken, { method: "GET" })(`conversations/${id}`).then(impulseData => {
-            return { conversation: impulseData, newMessagePayload }
-          })
-        )
+        return impulse.with(impulseToken, { method: "GET" })(`conversations/${id}`).then(impulseData => {
+          return { conversation: impulseData, newMessagePayload }
+        })
       })
   },
 })
