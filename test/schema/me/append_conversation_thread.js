@@ -69,8 +69,7 @@ describe("AppendConversationThread", () => {
     }
     gravity.onCall(0).returns(Promise.resolve({ token: "token" })) // First call just adds the message
     impulse.onCall(0).returns(Promise.resolve(messagePayload))
-    gravity.onCall(1).returns(Promise.resolve({ token: "token" })) // Second call is for the conversation data
-    impulse.onCall(1).returns(Promise.resolve(conversation))
+    impulse.onCall(1).returns(Promise.resolve(conversation)) // Second call is for the conversation data
     return runAuthenticatedQuery(mutation).then(({ appendConversationThread }) => {
       expect(appendConversationThread).toEqual(expectedResponseData)
     })
