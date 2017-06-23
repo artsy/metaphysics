@@ -1,8 +1,7 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import date from "schema/fields/date"
-import { get } from "lodash"
-import { queryContainsField } from "lib/helpers"
+import { get, merge } from "lodash"
 import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
@@ -37,24 +36,53 @@ export const BuyerOutcomeTypes = new GraphQLEnumType({
   },
 })
 
+export const AttachmentType = new GraphQLObjectType({
+  name: "AttachmentType",
+  desciption: "Fields of an attachment (currently from Radiation)",
+  fields: {
+    id: {
+      description: "Attachment id.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    content_type: {
+      description: "Content type of file.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    file_name: {
+      description: "File name.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    download_url: {
+      descrpition: "URL of attachment.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+})
+
 export const MessageType = new GraphQLObjectType({
   name: "MessageType",
   description: "A message in a conversation.",
   fields: {
     id: {
-      description: "Impulse id.",
+      description: "Impulse message id.",
       type: new GraphQLNonNull(GraphQLString),
+    },
+    is_from_user: {
+      description: "True if message is from the user to the partner.",
+      type: GraphQLBoolean,
+      resolve: ({ from_email_address, conversation_from_address }) => {
+        return from_email_address === conversation_from_address
+      },
     },
     from_email_address: {
-      description: "Email address of sender.",
+      type: GraphQLString,
+    },
+    raw_text: {
+      description: "Full unsanitized text.",
       type: new GraphQLNonNull(GraphQLString),
     },
-    snippet: {
-      description: "A snippet of the full message",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    radiation_message_id: {
-      type: new GraphQLNonNull(GraphQLString),
+    attachments: {
+      type: new GraphQLList(AttachmentType),
     },
   },
 })
@@ -173,12 +201,30 @@ export const ConversationFields = {
     type: connectionDefinitions({ nodeType: MessageType }).connectionType,
     description: "A connection for all messages in a single conversation",
     args: pageable(),
-    resolve: ({ messages }, options) => {
-      const impulseOptions = parseRelayOptions(options)
-      return connectionFromArraySlice(messages, options, {
-        arrayLength: messages.length,
-        sliceStart: impulseOptions.offset,
-      })
+    resolve: ({ id, from_email }, options, req, { rootValue: { accessToken } }) => {
+      const { page, size, offset } = parseRelayOptions(options)
+      const impulseParams = { page, size, conversation_id: id }
+      return gravity
+        .with(accessToken, { method: "POST" })("me/token", {
+          client_application_id: IMPULSE_APPLICATION_ID,
+        })
+        .then(data => {
+          return impulse
+            .with(data.token, { method: "GET" })(`message_details`, impulseParams)
+            .then(({ total_count, message_details }) => {
+              // Inject the convesation initiator's email into each message payload
+              // so we can tell if the user sent a particular message.
+              /* eslint-disable no-param-reassign */
+              message_details = message_details.map(message => {
+                return merge(message, { conversation_from_address: from_email })
+              })
+              /* eslint-disable no-param-reassign */
+              return connectionFromArraySlice(message_details, options, {
+                arrayLength: total_count,
+                sliceStart: offset,
+              })
+            })
+        })
     },
   },
 }
@@ -198,15 +244,14 @@ export default {
       description: "The ID of the Conversation",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { accessToken }, fieldNodes }) => {
+  resolve: (root, { id }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
     return gravity
       .with(accessToken, { method: "POST" })("me/token", {
         client_application_id: IMPULSE_APPLICATION_ID,
       })
       .then(data => {
-        const params = queryContainsField(fieldNodes, "messages") ? { expand: ["messages"] } : {}
-        return impulse.with(data.token, { method: "GET" })(`conversations/${id}`, params).then(impulseData => {
+        return impulse.with(data.token, { method: "GET" })(`conversations/${id}`).then(impulseData => {
           return impulseData
         })
       })
