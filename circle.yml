@@ -10,6 +10,11 @@ deployment:
     commands:
       - git push git@heroku.com:artsy-metaphysics-staging.git $CIRCLE_SHA1:refs/heads/master
       - heroku restart --app artsy-metaphysics-staging
+  production:
+    branch: release
+    owner: artsy
+    commands:
+      - heroku pipelines:promote --app artsy-metaphysics-staging
 dependencies:
   override:
     - yarn install < /dev/null
