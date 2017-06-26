@@ -84,6 +84,7 @@ export const MessageType = new GraphQLObjectType({
     attachments: {
       type: new GraphQLList(AttachmentType),
     },
+    created_at: date,
   },
 })
 
