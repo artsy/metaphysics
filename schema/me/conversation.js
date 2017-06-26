@@ -64,7 +64,7 @@ export const MessageType = new GraphQLObjectType({
   name: "MessageType",
   description: "A message in a conversation.",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "raw_text") && has(obj, "attachments"),
+  isTypeOf: obj => has(obj, "raw_text") && has(obj, "from_email_address"),
   fields: {
     __id: GlobalIDField,
     id: {
