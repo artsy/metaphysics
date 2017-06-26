@@ -1,13 +1,14 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import date from "schema/fields/date"
-import { get, merge } from "lodash"
+import { get, merge, has } from "lodash"
 import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
 import { ArtworkType } from "schema/artwork"
 const { IMPULSE_APPLICATION_ID } = process.env
+import { GlobalIDField, NodeInterface } from "schema/object_identification"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -63,8 +64,9 @@ export const MessageType = new GraphQLObjectType({
   name: "MessageType",
   description: "A message in a conversation.",
   interfaces: [NodeInterface],
-  isTypeOf: obj => _.has(obj, "raw_text") && _.has(obj, "attachments"),
+  isTypeOf: obj => has(obj, "raw_text") && has(obj, "attachments"),
   fields: {
+    __id: GlobalIDField,
     id: {
       description: "Impulse message id.",
       type: new GraphQLNonNull(GraphQLString),
