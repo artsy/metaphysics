@@ -62,6 +62,8 @@ export const AttachmentType = new GraphQLObjectType({
 export const MessageType = new GraphQLObjectType({
   name: "MessageType",
   description: "A message in a conversation.",
+  interfaces: [NodeInterface],
+  isTypeOf: obj => _.has(obj, "raw_text") && _.has(obj, "attachments"),
   fields: {
     id: {
       description: "Impulse message id.",

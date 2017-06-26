@@ -18,7 +18,7 @@
     "lint": "eslint .",
     "flow": "flow check",
     "danger": "danger",
-    "fix": "eslint . --fix",
+    "fix": "yarn eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
     "heroku-postbuild": "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
