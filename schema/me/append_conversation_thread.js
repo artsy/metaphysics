@@ -45,6 +45,10 @@ export default mutationWithClientMutationId({
     body_text: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    reply_to_message_id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The message being replied to",
+    },
   },
   outputFields: {
     payload: {
@@ -52,14 +56,15 @@ export default mutationWithClientMutationId({
       resolve: data => data,
     },
   },
-  mutateAndGetPayload: ({ id, from, to, body_text }, request, { rootValue: { accessToken } }) => {
+  mutateAndGetPayload: ({ id, from, to, body_text, reply_to_message_id }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
     let impulseToken
     return getImpulseToken(accessToken)
       .then(data => {
         impulseToken = data.token
         return impulse.with(impulseToken, { method: "POST" })(`conversations/${id}/messages`, {
-          to: ["partner@example.com"],
+          reply_all: true,
+          reply_to_message_id,
           from,
           body_text,
         })
