@@ -4,6 +4,7 @@ import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
 const { IMPULSE_APPLICATION_ID } = process.env
 import { mutationWithClientMutationId, cursorForObjectInConnection } from "graphql-relay"
 import { ConversationType, MessageEdge } from "./conversation"
+import { GlobalIDField } from "schema/object_identification"
 
 const getImpulseToken = gravityToken => {
   return gravity.with(gravityToken, { method: "POST" })("me/token", {
@@ -18,6 +19,7 @@ const AppendConversationThreadMutationPayload = new GraphQLObjectType({
       type: ConversationType,
       resolve: ({ conversation }) => conversation,
     },
+    __id: GlobalIDField,
     messageEdge: {
       type: MessageEdge,
       resolve: ({ newMessagePayload }) => {
