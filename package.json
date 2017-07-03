@@ -27,7 +27,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@types/jest": "^19.2.2",
+    "@types/jest": "^20.0.2",
     "accounting": "^0.4.1",
     "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
     "artsy-newrelic": "^1.0.0",
@@ -72,7 +72,6 @@
   "devDependencies": {
     "babel-eslint": "^5.0.4",
     "babel-jest": "^16.0.0",
-    "babel-plugin-rewire": "1.0.0-beta-2",
     "babel-watch": "^2.0.5",
     "danger": "^0.17.0",
     "deep-equal": "^1.0.1",

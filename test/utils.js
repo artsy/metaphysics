@@ -1,3 +1,18 @@
+jest.mock("lib/apis/gravity", () => {
+  return jest.fn(() => {
+    throw new Error("THROWING")
+  })
+})
+
+jest.mock("lib/loaders/gravity", () => ({
+  default: jest.fn(() => {
+    throw new Error("THROWING")
+  }),
+  with: jest.fn(() => {
+    throw new Error("THROWING")
+  }),
+}))
+
 import schema from "schema"
 import { graphql } from "graphql"
 
@@ -29,8 +44,9 @@ export const runQuery = (query: string, rootValue: ?any = { accessToken: null, u
  * Same as `runQuery` except it provides a `rootValue` that’s required for authenticated queries.
  *
  * @see runQuery
- */
-export const runAuthenticatedQuery = (query: string) => {
+ */ export const runAuthenticatedQuery = (
+  query: string
+) => {
   return runQuery(query, {
     accessToken: "secret",
     userID: "user-42",
