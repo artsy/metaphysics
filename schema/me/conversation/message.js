@@ -3,6 +3,7 @@ import { has } from "lodash"
 import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 import { AttachmentType } from "./attachment"
+import { isExisty } from "lib/helpers"
 
 export const MessageType = new GraphQLObjectType({
   name: "Message",
@@ -43,11 +44,7 @@ export const MessageType = new GraphQLObjectType({
     is_invoice: {
       description: "True if message is an invoice message",
       type: GraphQLBoolean,
-      resolve: ({ metadata }) => {
-        if (!metadata) return false
-        console.log(metadata)
-        return !!metadata.lewitt_invoice_id
-      },
+      resolve: ({ metadata: { lewitt_invoice_id } }) => isExisty(lewitt_invoice_id),
     },
     created_at: date,
   },
