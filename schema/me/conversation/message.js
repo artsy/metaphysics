@@ -15,6 +15,14 @@ export const MessageType = new GraphQLObjectType({
       description: "Impulse message id.",
       type: new GraphQLNonNull(GraphQLString),
     },
+    // This alias exists specifically because our fork of Relay Classic did not yet properly support using `__id`
+    // instead of `id`, which lead to Relay overwriting `id` fields with the `__id` value. Thus using a completely
+    // different field name works around this. You should probably not use it.
+    impulse_id: {
+      description: "Impulse message id.",
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ id }) => id,
+    },
     is_from_user: {
       description: "True if message is from the user to the partner.",
       type: GraphQLBoolean,
