@@ -1,10 +1,10 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
-import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
-const { IMPULSE_APPLICATION_ID } = process.env
+import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId, cursorForObjectInConnection } from "graphql-relay"
-import { ConversationType, MessageEdge } from "./conversation"
-import { GlobalIDField } from "schema/object_identification"
+import { ConversationType, MessageEdge } from "./index"
+
+const { IMPULSE_APPLICATION_ID } = process.env
 
 const getImpulseToken = gravityToken => {
   return gravity.with(gravityToken, { method: "POST" })("me/token", {
@@ -12,28 +12,8 @@ const getImpulseToken = gravityToken => {
   })
 }
 
-const AppendConversationThreadMutationPayload = new GraphQLObjectType({
-  name: "AppendConversationThreadMutationPayload",
-  fields: {
-    conversation: {
-      type: ConversationType,
-      resolve: ({ conversation }) => conversation,
-    },
-    __id: GlobalIDField,
-    messageEdge: {
-      type: MessageEdge,
-      resolve: ({ newMessagePayload }) => {
-        return {
-          cursor: cursorForObjectInConnection([newMessagePayload], newMessagePayload),
-          node: newMessagePayload,
-        }
-      },
-    },
-  },
-})
-
 export default mutationWithClientMutationId({
-  name: "AppendConversationThread",
+  name: "SendConversationMessageMutation",
   description: "Appending a message to a conversation thread",
   inputFields: {
     id: {
@@ -53,9 +33,18 @@ export default mutationWithClientMutationId({
     },
   },
   outputFields: {
-    payload: {
-      type: AppendConversationThreadMutationPayload,
-      resolve: data => data,
+    conversation: {
+      type: ConversationType,
+      resolve: ({ conversation }) => conversation,
+    },
+    messageEdge: {
+      type: MessageEdge,
+      resolve: ({ newMessagePayload }) => {
+        return {
+          cursor: cursorForObjectInConnection([newMessagePayload], newMessagePayload),
+          node: newMessagePayload,
+        }
+      },
     },
   },
   mutateAndGetPayload: ({ id, from, to, body_text, reply_to_message_id }, request, { rootValue: { accessToken } }) => {
@@ -71,9 +60,22 @@ export default mutationWithClientMutationId({
           body_text,
         })
       })
-      .then(newMessagePayload => {
-        return impulse.with(impulseToken, { method: "GET" })(`conversations/${id}`).then(impulseData => {
-          return { conversation: impulseData, newMessagePayload }
+      .then(({ id: newMessageID }) => {
+        return impulse.with(impulseToken, { method: "GET" })(`conversations/${id}`).then(updatedConversation => {
+          return {
+            conversation: updatedConversation,
+            // Because Impulse does not have the full new message object available immediately, we return an optimistic
+            // response so the mutation can return it too.
+            newMessagePayload: {
+              id: newMessageID,
+              from_email_address: from,
+              raw_text: body_text,
+              created_at: new Date().toISOString(),
+              attachments: [],
+              // This addition is only for MP so it can determine if the message was from the current user.
+              conversation_from_address: updatedConversation.from_email,
+            },
+          }
         })
       })
   },

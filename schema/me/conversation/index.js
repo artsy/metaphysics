@@ -7,8 +7,10 @@ import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
 import { ArtworkType } from "schema/artwork"
-const { IMPULSE_APPLICATION_ID } = process.env
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
+import { MessageType } from "./message"
+
+const { IMPULSE_APPLICATION_ID } = process.env
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -37,63 +39,8 @@ export const BuyerOutcomeTypes = new GraphQLEnumType({
   },
 })
 
-export const AttachmentType = new GraphQLObjectType({
-  name: "AttachmentType",
-  desciption: "Fields of an attachment (currently from Radiation)",
-  fields: {
-    id: {
-      description: "Attachment id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    content_type: {
-      description: "Content type of file.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    file_name: {
-      description: "File name.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    download_url: {
-      descrpition: "URL of attachment.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-  },
-})
-
-export const MessageType = new GraphQLObjectType({
-  name: "MessageType",
-  description: "A message in a conversation.",
-  interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "raw_text") && has(obj, "from_email_address"),
-  fields: {
-    __id: GlobalIDField,
-    id: {
-      description: "Impulse message id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    is_from_user: {
-      description: "True if message is from the user to the partner.",
-      type: GraphQLBoolean,
-      resolve: ({ from_email_address, conversation_from_address }) => {
-        return from_email_address === conversation_from_address
-      },
-    },
-    from_email_address: {
-      type: GraphQLString,
-    },
-    raw_text: {
-      description: "Full unsanitized text.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    attachments: {
-      type: new GraphQLList(AttachmentType),
-    },
-    created_at: date,
-  },
-})
-
 export const ConversationInitiatorType = new GraphQLObjectType({
-  name: "ConversationInitiatorType",
+  name: "ConversationInitiator",
   description: "The participant who started the conversation, currently always a User",
   fields: {
     id: {
@@ -114,7 +61,7 @@ export const ConversationInitiatorType = new GraphQLObjectType({
 })
 
 export const ConversationResponderType = new GraphQLObjectType({
-  name: "ConversationResponderType",
+  name: "ConversationResponder",
   description: "The participant responding to the conversation, currently always a Partner",
   fields: {
     id: {
@@ -140,6 +87,7 @@ export const { connectionType: MessageConnection, edgeType: MessageEdge } = conn
 })
 
 export const ConversationFields = {
+  __id: GlobalIDField,
   id: {
     description: "Impulse id.",
     type: GraphQLString,
@@ -239,8 +187,10 @@ export const ConversationFields = {
 }
 
 export const ConversationType = new GraphQLObjectType({
-  name: "ConversationType",
+  name: "Conversation",
   description: "A conversation.",
+  interfaces: [NodeInterface],
+  isTypeOf: obj => has(obj, "initial_message") && has(obj, "from_email"),
   fields: ConversationFields,
 })
 

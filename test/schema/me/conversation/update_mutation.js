@@ -1,22 +1,22 @@
 import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
-describe("UpdateConversation", () => {
+describe("UpdateConversationMutation", () => {
   const gravity = sinon.stub()
   const impulse = sinon.stub()
-  const UpdateConversation = schema.__get__("UpdateConversation")
+  const UpdateConversationMutation = schema.__get__("UpdateConversationMutation")
 
   beforeEach(() => {
     gravity.with = sinon.stub().returns(gravity)
     impulse.with = sinon.stub().returns(impulse)
 
-    UpdateConversation.__Rewire__("gravity", gravity)
-    UpdateConversation.__Rewire__("impulse", impulse)
+    UpdateConversationMutation.__Rewire__("gravity", gravity)
+    UpdateConversationMutation.__Rewire__("impulse", impulse)
   })
 
   afterEach(() => {
-    UpdateConversation.__ResetDependency__("gravity")
-    UpdateConversation.__ResetDependency__("impulse")
+    UpdateConversationMutation.__ResetDependency__("gravity")
+    UpdateConversationMutation.__ResetDependency__("impulse")
   })
 
   it("updates and returns a conversation", () => {
