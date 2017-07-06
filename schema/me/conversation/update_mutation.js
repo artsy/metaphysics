@@ -1,12 +1,12 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
-import { ConversationType, BuyerOutcomeTypes } from "./conversation"
+import { ConversationType, BuyerOutcomeTypes } from "./index"
 import { GraphQLList, GraphQLString, GraphQLNonNull } from "graphql"
 const { IMPULSE_APPLICATION_ID } = process.env
 import { mutationWithClientMutationId } from "graphql-relay"
 
 export default mutationWithClientMutationId({
-  name: "UpdateConversation",
+  name: "UpdateConversationMutation",
   decription: "Updating buyer outcome of a conversation.",
   inputFields: {
     buyer_outcome: {
