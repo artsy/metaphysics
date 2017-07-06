@@ -1,4 +1,5 @@
 import date from "schema/fields/date"
+import initials from "schema/fields/initials"
 import gravity from "lib/loaders/gravity"
 import Bidders from "./bidders"
 import BidderStatus from "./bidder_status"
@@ -44,6 +45,7 @@ const Me = new GraphQLObjectType({
     name: {
       type: GraphQLString,
     },
+    initials: initials("name"),
     notifications_connection: Notifications,
     paddle_number: {
       type: GraphQLString,

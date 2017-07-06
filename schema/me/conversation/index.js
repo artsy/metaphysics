@@ -1,6 +1,7 @@
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import date from "schema/fields/date"
+import initials from "schema/fields/initials"
 import { get, merge, has } from "lodash"
 import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
 import { pageable } from "relay-cursor-paging"
@@ -57,6 +58,7 @@ export const ConversationInitiatorType = new GraphQLObjectType({
     email: {
       type: new GraphQLNonNull(GraphQLString),
     },
+    initials: initials("name"),
   },
 })
 
@@ -79,6 +81,7 @@ export const ConversationResponderType = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
       description: "An array of Impulse IDs that correspond to all email addresses that messages should be sent to",
     },
+    initials: initials("name"),
   },
 })
 
