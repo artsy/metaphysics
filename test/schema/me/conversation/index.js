@@ -34,6 +34,15 @@ describe("Me", () => {
               from {
                 email
               }
+              messages(first: 10) {
+                edges {
+                  node {
+                    id
+                    is_invoice
+                    is_from_user
+                  }
+                }
+              }
             }
           }
         }
@@ -45,6 +54,21 @@ describe("Me", () => {
         from_email: "fancy_german_person@posteo.de",
       }
 
+      const conversation1Messages = {
+        total_count: 1,
+        message_details: [
+          {
+            id: "240",
+            raw_text: "this is a good message",
+            from_email_address: "fancy_german_person@posteo.de",
+            attachments: [],
+            metadata: {
+              lewitt_invoice_id: "420i",
+            },
+          },
+        ],
+      }
+
       const expectedConversationData = {
         conversation: {
           id: "420",
@@ -52,11 +76,24 @@ describe("Me", () => {
           from: {
             email: "fancy_german_person@posteo.de",
           },
+          messages: {
+            edges: [
+              {
+                node: {
+                  id: "240",
+                  is_invoice: true,
+                  is_from_user: true,
+                },
+              },
+            ],
+          },
         },
       }
 
       gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
       impulse.onCall(0).returns(Promise.resolve(conversation1))
+      gravity.onCall(1).returns(Promise.resolve({ token: "token" }))
+      impulse.onCall(1).returns(Promise.resolve(conversation1Messages))
 
       return runAuthenticatedQuery(query).then(({ me: conversation }) => {
         expect(conversation).toEqual(expectedConversationData)

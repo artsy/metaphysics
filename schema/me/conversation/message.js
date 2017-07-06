@@ -40,6 +40,15 @@ export const MessageType = new GraphQLObjectType({
     attachments: {
       type: new GraphQLList(AttachmentType),
     },
+    is_invoice: {
+      description: "True if message is an invoice message",
+      type: GraphQLBoolean,
+      resolve: ({ metadata }) => {
+        if (!metadata) return false
+        console.log(metadata)
+        return !!metadata.lewitt_invoice_id
+      },
+    },
     created_at: date,
   },
 })
