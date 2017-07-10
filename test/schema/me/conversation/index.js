@@ -55,7 +55,7 @@ describe("Me", () => {
       }
 
       const conversation1Messages = {
-        total_count: 1,
+        total_count: 2,
         message_details: [
           {
             id: "240",
@@ -65,6 +65,13 @@ describe("Me", () => {
             metadata: {
               lewitt_invoice_id: "420i",
             },
+          },
+          {
+            id: "241",
+            raw_text: "this is a good message",
+            from_email_address: "postman@posteo.de",
+            attachments: [],
+            metadata: {},
           },
         ],
       }
@@ -83,6 +90,13 @@ describe("Me", () => {
                   id: "240",
                   is_invoice: true,
                   is_from_user: true,
+                },
+              },
+              {
+                node: {
+                  id: "241",
+                  is_invoice: false,
+                  is_from_user: false,
                 },
               },
             ],

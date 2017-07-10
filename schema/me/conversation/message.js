@@ -44,7 +44,9 @@ export const MessageType = new GraphQLObjectType({
     is_invoice: {
       description: "True if message is an invoice message",
       type: GraphQLBoolean,
-      resolve: ({ metadata: { lewitt_invoice_id } }) => isExisty(lewitt_invoice_id),
+      resolve: ({ metadata }) => {
+        return !!metadata && isExisty(metadata.lewitt_invoice_id)
+      },
     },
     created_at: date,
   },
