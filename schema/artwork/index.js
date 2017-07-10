@@ -183,14 +183,20 @@ export const artworkFields = () => {
       description: "Returns the highlighted shows and articles",
       resolve: ({ id, _id }, options, request, { rootValue: { relatedShowsLoader, articlesLoader } }) =>
         Promise.all([
-          relatedShowsLoader(id, { artwork: [id], size: 1, at_a_fair: false }),
+          relatedShowsLoader(id, {
+            artwork: [id],
+            size: 1,
+            at_a_fair: false,
+          }),
           articlesLoader(_id, {
             artwork_id: _id,
             published: true,
             limit: 1,
           }).then(({ results }) => results),
         ]).then(([shows, articles]) => {
-          const highlightedShows = enhance(shows, { highlight_type: "Show" })
+          const highlightedShows = enhance(shows, {
+            highlight_type: "Show",
+          })
           const highlightedArticles = enhance(articles, {
             highlight_type: "Article",
           })
@@ -334,7 +340,7 @@ export const artworkFields = () => {
             id: sale_ids,
             is_auction: true,
           }).then(sales => {
-            return sales.length > 0
+            return sales.filter(sale => sale.is_open).length > 0
           })
         }
         return false
@@ -440,14 +446,16 @@ export const artworkFields = () => {
         },
       },
       resolve: ({ _id }, { size }, request, { rootValue: { relatedArtworksLoader } }) =>
-        relatedArtworksLoader(null, { artwork_id: _id, size }),
+        relatedArtworksLoader(null, {
+          artwork_id: _id,
+          size,
+        }),
     },
     sale: {
       type: Sale.type,
       resolve: ({ sale_ids }, options, request, { rootValue: { saleLoader } }) => {
         if (sale_ids && sale_ids.length > 0) {
-          const sale_id = _.first(sale_ids)
-          // don't error if the sale is unpublished
+          const sale_id = _.first(sale_ids) // don't error if the sale is unpublished
           return saleLoader(sale_id).catch(() => null)
         }
         return null
@@ -457,8 +465,7 @@ export const artworkFields = () => {
       type: SaleArtwork.type,
       resolve: ({ id, sale_ids }) => {
         if (sale_ids && sale_ids.length > 0) {
-          const sale_id = _.first(sale_ids)
-          // don't error if the sale/artwork is unpublished
+          const sale_id = _.first(sale_ids) // don't error if the sale/artwork is unpublished
           return gravity(`sale/${sale_id}/sale_artwork/${id}`).catch(() => null)
         }
         return null
@@ -550,7 +557,6 @@ export const artworkFields = () => {
     },
   }
 }
-
 export const ArtworkType = new GraphQLObjectType({
   name: "Artwork",
   interfaces: [NodeInterface],
@@ -562,7 +568,6 @@ export const ArtworkType = new GraphQLObjectType({
     }
   },
 })
-
 Artwork = {
   type: ArtworkType,
   description: "An Artwork",
@@ -574,9 +579,7 @@ Artwork = {
   },
   resolve: (root, { id }, request, { rootValue: { artworkLoader } }) => artworkLoader(id),
 }
-
 export default Artwork
-
 export const artworkConnection = connectionDefinitions({
   nodeType: Artwork.type,
 }).connectionType
