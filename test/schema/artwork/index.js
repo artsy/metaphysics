@@ -236,7 +236,7 @@ describe("Artwork type", () => {
     `
 
     it("is true if the artwork has any sales that are auctions", () => {
-      const sales = [assign({}, sale, { is_auction: false }), assign({}, sale, { is_auction: true, is_open: true })]
+      const sales = [assign({}, sale, { is_auction: false }), assign({}, sale, { is_auction: true })]
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve(sales))
 
       return runQuery(query, rootValue).then(data => {
@@ -251,20 +251,6 @@ describe("Artwork type", () => {
 
     it("is false if the artwork is not in any sales that are auctions", () => {
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]))
-
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          artwork: {
-            id: "richard-prince-untitled-portrait",
-            is_in_auction: false,
-          },
-        })
-      })
-    })
-
-    it("is false if the only sales the artwork is in are all closed", () => {
-      const sales = [assign({}, sale, { is_auction: false }), assign({}, sale, { is_open: false })]
-      rootValue.salesLoader = sinon.stub().returns(Promise.resolve(sales))
 
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
