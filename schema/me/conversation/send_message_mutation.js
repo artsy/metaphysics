@@ -48,7 +48,7 @@ export default mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { id, from, to, body_text, reply_to_message_id },
+    { id, from, from_id, to, body_text, reply_to_message_id },
     request,
     { rootValue: { accessToken, userID } }
   ) => {
@@ -61,6 +61,7 @@ export default mutationWithClientMutationId({
           reply_all: true,
           reply_to_message_id,
           from,
+          from_id: userID,
           body_text,
         })
       })
