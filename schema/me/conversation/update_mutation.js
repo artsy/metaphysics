@@ -7,7 +7,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 
 export default mutationWithClientMutationId({
   name: "UpdateConversationMutation",
-  decription: "Updating buyer outcome of a conversation.",
+  description: "Updating buyer outcome of a conversation.",
   inputFields: {
     buyer_outcome: {
       type: new GraphQLNonNull(BuyerOutcomeTypes),

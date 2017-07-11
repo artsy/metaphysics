@@ -47,7 +47,11 @@ export default mutationWithClientMutationId({
       },
     },
   },
-  mutateAndGetPayload: ({ id, from, to, body_text, reply_to_message_id }, request, { rootValue: { accessToken } }) => {
+  mutateAndGetPayload: (
+    { id, from, to, body_text, reply_to_message_id },
+    request,
+    { rootValue: { accessToken, userID } }
+  ) => {
     if (!accessToken) return null
     let impulseToken
     return getImpulseToken(accessToken)
@@ -69,6 +73,7 @@ export default mutationWithClientMutationId({
             newMessagePayload: {
               id: newMessageID,
               from_email_address: from,
+              from_id: userID,
               raw_text: body_text,
               created_at: new Date().toISOString(),
               attachments: [],

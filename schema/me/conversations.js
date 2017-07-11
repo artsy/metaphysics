@@ -9,7 +9,7 @@ import { ConversationType } from "./conversation"
 
 export default {
   type: connectionDefinitions({ nodeType: ConversationType }).connectionType,
-  decription: "Conversations, usually between a user and partner.",
+  description: "Conversations, usually between a user and partner.",
   args: pageable(),
   resolve: (root, options, request, { rootValue: { accessToken, userID } }) => {
     if (!accessToken) return null
