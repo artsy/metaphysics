@@ -27,9 +27,8 @@ export const MessageType = new GraphQLObjectType({
     is_from_user: {
       description: "True if message is from the user to the partner.",
       type: GraphQLBoolean,
-      resolve: ({ from_email_address, conversation_from_address }) => {
-        return from_email_address === conversation_from_address
-      },
+      resolve: ({ from_id, from_email_address, conversation_from_address }, options, req, { rootValue: { userID } }) =>
+        (userID && from_id === userID) || from_email_address === conversation_from_address,
     },
     from_email_address: {
       type: GraphQLString,
