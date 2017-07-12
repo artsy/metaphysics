@@ -55,12 +55,13 @@ describe("Me", () => {
       }
 
       const conversation1Messages = {
-        total_count: 2,
+        total_count: 4,
         message_details: [
           {
             id: "240",
             raw_text: "this is a good message",
             from_email_address: "fancy_german_person@posteo.de",
+            from_id: null,
             attachments: [],
             metadata: {
               lewitt_invoice_id: "420i",
@@ -70,6 +71,23 @@ describe("Me", () => {
             id: "241",
             raw_text: "this is a good message",
             from_email_address: "postman@posteo.de",
+            from_id: null,
+            attachments: [],
+            metadata: {},
+          },
+          {
+            id: "242",
+            raw_text: "this is a good message",
+            from_email_address: "fancy_german_person+wunderbar@posteo.de",
+            from_id: "user-42",
+            attachments: [],
+            metadata: {},
+          },
+          {
+            id: "243",
+            raw_text: "this is a good message",
+            from_email_address: "postman+wunderlich@posteo.de",
+            from_id: "user-21",
             attachments: [],
             metadata: {},
           },
@@ -99,6 +117,20 @@ describe("Me", () => {
                   is_from_user: false,
                 },
               },
+              {
+                node: {
+                  id: "242",
+                  is_invoice: false,
+                  is_from_user: true,
+                },
+              },
+              {
+                node: {
+                  id: "243",
+                  is_invoice: false,
+                  is_from_user: false,
+                },
+              },
             ],
           },
         },
@@ -109,7 +141,7 @@ describe("Me", () => {
       gravity.onCall(1).returns(Promise.resolve({ token: "token" }))
       impulse.onCall(1).returns(Promise.resolve(conversation1Messages))
 
-      return runAuthenticatedQuery(query).then(({ me: conversation }) => {
+      return runAuthenticatedQuery(query, "user-42").then(({ me: conversation }) => {
         expect(conversation).toEqual(expectedConversationData)
       })
     })

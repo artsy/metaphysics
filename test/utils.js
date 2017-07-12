@@ -30,9 +30,9 @@ export const runQuery = (query: string, rootValue: ?any = { accessToken: null, u
  *
  * @see runQuery
  */
-export const runAuthenticatedQuery = (query: string) => {
+export const runAuthenticatedQuery = (query: string, userID: string = "user-42") => {
   return runQuery(query, {
     accessToken: "secret",
-    userID: "user-42",
+    userID,
   })
 }
