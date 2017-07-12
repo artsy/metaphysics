@@ -67,7 +67,7 @@ const artworksArgs = {
   },
 }
 
-const ShowType = new GraphQLObjectType({
+export const ShowType = new GraphQLObjectType({
   name: "Show",
   interfaces: [NodeInterface],
   isTypeOf: obj => has(obj, "is_reference") && has(obj, "display_on_partner_profile"),

@@ -2,12 +2,21 @@ import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import date from "schema/fields/date"
 import initials from "schema/fields/initials"
-import { get, merge, has } from "lodash"
-import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
+import { flatten, get, has, merge } from "lodash"
+import {
+  GraphQLBoolean,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLEnumType,
+  GraphQLUnionType,
+} from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
 import { ArtworkType } from "schema/artwork"
+import { ShowType } from "schema/show"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 import { MessageType } from "./message"
 
@@ -85,6 +94,21 @@ export const ConversationResponderType = new GraphQLObjectType({
   },
 })
 
+const ConversationItemType = new GraphQLUnionType({
+  name: "ConversationItem",
+  types: [ArtworkType, ShowType],
+})
+
+function itemIDsOfType(items: any[], type: "Artwork" | "PartnerShow") {
+  const ids = []
+  items.forEach(item => {
+    if (item.item_type === type) {
+      ids.push(item.item_id)
+    }
+  })
+  return ids
+}
+
 export const { connectionType: MessageConnection, edgeType: MessageEdge } = connectionDefinitions({
   nodeType: MessageType,
 })
@@ -144,16 +168,29 @@ export const ConversationFields = {
 
   artworks: {
     type: new GraphQLList(ArtworkType),
+    description: "Only the artworks discussed in the conversation.",
     resolve: conversation => {
-      const ids = []
+      const artwork_ids = itemIDsOfType(conversation.items, "Artwork")
+      return artwork_ids.length > 0 ? gravity("artworks", { ids: artwork_ids }) : []
+    },
+  },
 
-      for (const item of conversation.items) {
-        if (item.item_type === "Artwork") {
-          ids.push(item.item_id)
-        }
+  items: {
+    type: new GraphQLList(ConversationItemType),
+    description: "The artworks and/or partner shows discussed in the conversation.",
+    resolve: conversation => {
+      const promises = []
+      const artwork_ids = itemIDsOfType(conversation.items, "Artwork")
+      if (artwork_ids.length > 0) {
+        promises.push(gravity("artworks", { ids: artwork_ids }))
       }
-
-      return gravity("artworks", { ids })
+      const show_ids = itemIDsOfType(conversation.items, "PartnerShow")
+      if (show_ids.length > 0) {
+        show_ids.forEach(id => {
+          promises.push(gravity(`show/${id}`))
+        })
+      }
+      return Promise.all(promises).then(flatten)
     },
   },
 
@@ -164,27 +201,26 @@ export const ConversationFields = {
     resolve: ({ id, from_email }, options, req, { rootValue: { accessToken } }) => {
       const { page, size, offset } = parseRelayOptions(options)
       const impulseParams = { page, size, conversation_id: id }
-      return gravity
-        .with(accessToken, { method: "POST" })("me/token", {
-          client_application_id: IMPULSE_APPLICATION_ID,
+      return gravity.with(accessToken, { method: "POST" })("me/token", {
+        client_application_id: IMPULSE_APPLICATION_ID,
+      }).then(data => {
+        return impulse.with(data.token, { method: "GET" })(
+          `message_details`,
+          impulseParams
+        ).then(({ total_count, message_details }) => {
+          // Inject the convesation initiator's email into each message payload
+          // so we can tell if the user sent a particular message.
+          /* eslint-disable no-param-reassign */
+          message_details = message_details.map(message => {
+            return merge(message, { conversation_from_address: from_email })
+          })
+          /* eslint-disable no-param-reassign */
+          return connectionFromArraySlice(message_details, options, {
+            arrayLength: total_count,
+            sliceStart: offset,
+          })
         })
-        .then(data => {
-          return impulse
-            .with(data.token, { method: "GET" })(`message_details`, impulseParams)
-            .then(({ total_count, message_details }) => {
-              // Inject the convesation initiator's email into each message payload
-              // so we can tell if the user sent a particular message.
-              /* eslint-disable no-param-reassign */
-              message_details = message_details.map(message => {
-                return merge(message, { conversation_from_address: from_email })
-              })
-              /* eslint-disable no-param-reassign */
-              return connectionFromArraySlice(message_details, options, {
-                arrayLength: total_count,
-                sliceStart: offset,
-              })
-            })
-        })
+      })
     },
   },
 }
@@ -208,14 +244,12 @@ export default {
   },
   resolve: (root, { id }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
-    return gravity
-      .with(accessToken, { method: "POST" })("me/token", {
-        client_application_id: IMPULSE_APPLICATION_ID,
+    return gravity.with(accessToken, { method: "POST" })("me/token", {
+      client_application_id: IMPULSE_APPLICATION_ID,
+    }).then(data => {
+      return impulse.with(data.token, { method: "GET" })(`conversations/${id}`).then(impulseData => {
+        return impulseData
       })
-      .then(data => {
-        return impulse.with(data.token, { method: "GET" })(`conversations/${id}`).then(impulseData => {
-          return impulseData
-        })
-      })
+    })
   },
 }
