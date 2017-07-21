@@ -5,7 +5,7 @@ import { connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
 import gravity from "lib/loaders/gravity"
 import cached from "./fields/cached"
-import ArtworkSorts from "./sorts/artwork_sorts"
+import CollectionSorts from "./sorts/collection_sorts"
 import { artworkConnection } from "./artwork"
 import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
@@ -30,7 +30,7 @@ export const CollectionType = new GraphQLObjectType({
           type: GraphQLBoolean,
           defaultValue: false,
         },
-        sort: ArtworkSorts,
+        sort: CollectionSorts,
       },
       resolve: ({ id }, options, request, { rootValue: { accessToken, userID } }) => {
         const gravityOptions = parseRelayOptions(options)
