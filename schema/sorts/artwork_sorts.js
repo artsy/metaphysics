@@ -76,6 +76,12 @@ export default {
       PARTNER_UPDATED_AT_DESC: {
         value: "-partner_updated_at",
       },
+      POSITION_ASC: {
+        value: "position",
+      },
+      POSITION_DESC: {
+        value: "-position",
+      },
       PUBLISHED_AT_ASC: {
         value: "published_at",
       },
