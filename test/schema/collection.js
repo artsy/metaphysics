@@ -49,7 +49,13 @@ describe("Collections", () => {
       const artworksPath = resolve("test", "fixtures", "gravity", "artworks_array.json")
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
       gravity
-        .withArgs("collection/saved-artwork/artworks", { size: 10, offset: 0, total_count: true, user_id: "user-42" })
+        .withArgs("collection/saved-artwork/artworks", {
+          size: 10,
+          offset: 0,
+          private: false,
+          total_count: true,
+          user_id: "user-42",
+        })
         .returns(Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } }))
 
       const query = `
