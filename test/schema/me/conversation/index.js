@@ -156,47 +156,46 @@ describe("Me", () => {
           {
             item_type: "Artwork",
             item_id: "artwork-42",
+            title: "Pwetty Cats",
+            properties: {
+              title: "Pwetty Cats",
+              acquireable: true,
+              artists: [
+                {
+                  id: "artist-42",
+                },
+              ],
+            },
           },
           {
             item_type: "PartnerShow",
             item_id: "show-42",
+            title: "Catty Show",
+            properties: {
+              is_reference: true,
+              display_on_partner_profile: true,
+            },
           },
         ],
       }
 
-      const artworks = [
-        {
-          title: "Pwetty Cats",
-          acquireable: true,
-          artists: [
-            {
-              id: "artist-42",
-            },
-          ],
-        },
-      ]
-
-      const show = {
-        is_reference: true,
-        display_on_partner_profile: true,
-      }
-
       gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
       impulse.onCall(0).returns(Promise.resolve(conversation))
-      gravity.onCall(1).returns(Promise.resolve(artworks))
-      gravity.onCall(2).returns(Promise.resolve(show))
 
       const query = `
         {
           me {
             conversation(id: "420") {
               items {
-                __typename
-                ... on Artwork {
-                  is_acquireable
-                }
-                ... on Show {
-                  is_reference
+                title
+                item {
+                  __typename
+                  ... on Artwork {
+                    is_acquireable
+                  }
+                  ... on Show {
+                    is_reference
+                  }
                 }
               }
             }
@@ -206,12 +205,18 @@ describe("Me", () => {
 
       const expectedItems = [
         {
-          __typename: "Artwork",
-          is_acquireable: true,
+          title: "Pwetty Cats",
+          item: {
+            __typename: "Artwork",
+            is_acquireable: true,
+          },
         },
         {
-          __typename: "Show",
-          is_reference: true,
+          title: "Catty Show",
+          item: {
+            __typename: "Show",
+            is_reference: true,
+          },
         },
       ]
 
