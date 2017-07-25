@@ -1,3 +1,4 @@
+import { isExisty } from "lib/helpers"
 import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import date from "schema/fields/date"
@@ -192,7 +193,7 @@ export const ConversationFields = {
     resolve: conversation => {
       const results = []
       for (const item of conversation.items) {
-        if (item.item_type === "Artwork" || item.item_type === "PartnerShow") {
+        if (isExisty(item.properties) && (item.item_type === "Artwork" || item.item_type === "PartnerShow")) {
           results.push(item)
         }
       }
