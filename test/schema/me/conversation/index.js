@@ -3,13 +3,15 @@ import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("Conversation", () => {
-    const gravity = sinon.stub()
-    const impulse = sinon.stub()
+    let gravity
+    let impulse
     const Me = schema.__get__("Me")
     const Conversation = Me.__get__("Conversation")
 
     beforeEach(() => {
+      gravity = sinon.stub()
       gravity.with = sinon.stub().returns(gravity)
+      impulse = sinon.stub()
       impulse.with = sinon.stub().returns(impulse)
 
       Conversation.__Rewire__("gravity", gravity)
@@ -143,6 +145,83 @@ describe("Me", () => {
 
       return runAuthenticatedQuery(query, "user-42").then(({ me: conversation }) => {
         expect(conversation).toEqual(expectedConversationData)
+      })
+    })
+
+    it("returns the conversation items", () => {
+      const conversation = {
+        initial_message: "Loved some of the works at your fair booth!",
+        from_email: "collector@example.com",
+        items: [
+          {
+            item_type: "Artwork",
+            item_id: "artwork-42",
+            title: "Pwetty Cats",
+            properties: {
+              title: "Pwetty Cats",
+              acquireable: true,
+              artists: [
+                {
+                  id: "artist-42",
+                },
+              ],
+            },
+          },
+          {
+            item_type: "PartnerShow",
+            item_id: "show-42",
+            title: "Catty Show",
+            properties: {
+              is_reference: true,
+              display_on_partner_profile: true,
+            },
+          },
+        ],
+      }
+
+      gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
+      impulse.onCall(0).returns(Promise.resolve(conversation))
+
+      const query = `
+        {
+          me {
+            conversation(id: "420") {
+              items {
+                title
+                item {
+                  __typename
+                  ... on Artwork {
+                    is_acquireable
+                  }
+                  ... on Show {
+                    is_reference
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const expectedItems = [
+        {
+          title: "Pwetty Cats",
+          item: {
+            __typename: "Artwork",
+            is_acquireable: true,
+          },
+        },
+        {
+          title: "Catty Show",
+          item: {
+            __typename: "Show",
+            is_reference: true,
+          },
+        },
+      ]
+
+      return runAuthenticatedQuery(query).then(({ me: { conversation: { items } } }) => {
+        expect(items).toEqual(expectedItems)
       })
     })
   })

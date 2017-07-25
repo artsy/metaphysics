@@ -2,12 +2,21 @@ import impulse from "lib/loaders/impulse"
 import gravity from "lib/loaders/gravity"
 import date from "schema/fields/date"
 import initials from "schema/fields/initials"
-import { get, merge, has } from "lodash"
-import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
+import { get, has, merge } from "lodash"
+import {
+  GraphQLBoolean,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLEnumType,
+  GraphQLUnionType,
+} from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
 import { ArtworkType } from "schema/artwork"
+import { ShowType } from "schema/show"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 import { MessageType } from "./message"
 
@@ -85,6 +94,27 @@ export const ConversationResponderType = new GraphQLObjectType({
   },
 })
 
+const ConversationItemType = new GraphQLUnionType({
+  name: "ConversationItemType",
+  types: [ArtworkType, ShowType],
+})
+
+const ConversationItem = new GraphQLObjectType({
+  name: "ConversationItem",
+  fields: {
+    item: {
+      type: ConversationItemType,
+      resolve: ({ properties }) => properties,
+    },
+    title: {
+      type: GraphQLString,
+    },
+    permalink: {
+      type: GraphQLString,
+    },
+  },
+})
+
 export const { connectionType: MessageConnection, edgeType: MessageEdge } = connectionDefinitions({
   nodeType: MessageType,
 })
@@ -144,16 +174,29 @@ export const ConversationFields = {
 
   artworks: {
     type: new GraphQLList(ArtworkType),
+    description: "Only the artworks discussed in the conversation.",
     resolve: conversation => {
-      const ids = []
-
+      const results = []
       for (const item of conversation.items) {
         if (item.item_type === "Artwork") {
-          ids.push(item.item_id)
+          results.push(item.properties)
         }
       }
+      return results
+    },
+  },
 
-      return gravity("artworks", { ids })
+  items: {
+    type: new GraphQLList(ConversationItem),
+    description: "The artworks and/or partner shows discussed in the conversation.",
+    resolve: conversation => {
+      const results = []
+      for (const item of conversation.items) {
+        if (item.item_type === "Artwork" || item.item_type === "PartnerShow") {
+          results.push(item)
+        }
+      }
+      return results
     },
   },
 
