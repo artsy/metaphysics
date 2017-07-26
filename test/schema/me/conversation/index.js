@@ -42,6 +42,10 @@ describe("Me", () => {
                     id
                     is_invoice
                     is_from_user
+                    from {
+                      name
+                      email
+                    }
                   }
                 }
               }
@@ -68,6 +72,7 @@ describe("Me", () => {
             metadata: {
               lewitt_invoice_id: "420i",
             },
+            from: "\"Percy Z\" <percy@cat.com>",
           },
           {
             id: "241",
@@ -76,6 +81,7 @@ describe("Me", () => {
             from_id: null,
             attachments: [],
             metadata: {},
+            from: "\"Bitty Z\" <Bitty@cat.com>",
           },
           {
             id: "242",
@@ -84,6 +90,7 @@ describe("Me", () => {
             from_id: "user-42",
             attachments: [],
             metadata: {},
+            from: "\"Matt Z\" <matt@cat.com>",
           },
           {
             id: "243",
@@ -92,6 +99,7 @@ describe("Me", () => {
             from_id: "user-21",
             attachments: [],
             metadata: {},
+            from: "<email@email.com>",
           },
         ],
       }
@@ -110,6 +118,10 @@ describe("Me", () => {
                   id: "240",
                   is_invoice: true,
                   is_from_user: true,
+                  from: {
+                    name: "Percy Z",
+                    email: "fancy_german_person@posteo.de",
+                  },
                 },
               },
               {
@@ -117,6 +129,10 @@ describe("Me", () => {
                   id: "241",
                   is_invoice: false,
                   is_from_user: false,
+                  from: {
+                    name: "Bitty Z",
+                    email: "postman@posteo.de",
+                  },
                 },
               },
               {
@@ -124,6 +140,10 @@ describe("Me", () => {
                   id: "242",
                   is_invoice: false,
                   is_from_user: true,
+                  from: {
+                    name: "Matt Z",
+                    email: "fancy_german_person+wunderbar@posteo.de",
+                  },
                 },
               },
               {
@@ -131,6 +151,10 @@ describe("Me", () => {
                   id: "243",
                   is_invoice: false,
                   is_from_user: false,
+                  from: {
+                    name: null,
+                    email: "postman+wunderlich@posteo.de",
+                  },
                 },
               },
             ],

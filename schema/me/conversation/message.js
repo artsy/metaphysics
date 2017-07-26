@@ -5,6 +5,19 @@ import { GlobalIDField, NodeInterface } from "schema/object_identification"
 import { AttachmentType } from "./attachment"
 import { isExisty } from "lib/helpers"
 
+const MessageInitiatorType = new GraphQLObjectType({
+  name: "MessageInitiator",
+  description: "The participant who sent the message.",
+  fields: {
+    name: {
+      type: GraphQLString,
+    },
+    email: {
+      type: GraphQLString,
+    },
+  },
+})
+
 export const MessageType = new GraphQLObjectType({
   name: "Message",
   description: "A message in a conversation.",
@@ -32,7 +45,25 @@ export const MessageType = new GraphQLObjectType({
     },
     from_email_address: {
       type: GraphQLString,
+      deprecationReason: "Prefer to use the structured `from` field.",
     },
+
+    from: {
+      type: MessageInitiatorType,
+      resolve: ({ from, from_email_address }) => {
+        const namePartRegex = /"([^"]*)"/
+        const namePart = namePartRegex.exec(from)
+        let name
+        if (isExisty(namePart) && namePart.length > 0) {
+          name = namePart[0].replace(/^\"|\"$/g, "")
+        }
+        return {
+          email: from_email_address,
+          name,
+        }
+      },
+    },
+
     raw_text: {
       description: "Full unsanitized text.",
       type: new GraphQLNonNull(GraphQLString),
