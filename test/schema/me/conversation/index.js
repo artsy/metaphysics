@@ -147,8 +147,7 @@ describe("Me", () => {
         expect(conversation).toEqual(expectedConversationData)
       })
     })
-
-    it("returns the conversation items", () => {
+    describe("concerning items", () => {
       const conversation = {
         initial_message: "Loved some of the works at your fair booth!",
         from_email: "collector@example.com",
@@ -178,10 +177,6 @@ describe("Me", () => {
           },
         ],
       }
-
-      gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
-      impulse.onCall(0).returns(Promise.resolve(conversation))
-
       const query = `
         {
           me {
@@ -202,26 +197,49 @@ describe("Me", () => {
           }
         }
       `
-
-      const expectedItems = [
-        {
-          title: "Pwetty Cats",
-          item: {
-            __typename: "Artwork",
-            is_acquireable: true,
+      beforeEach(() => {
+        gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
+      })
+      it("returns the conversation items", () => {
+        impulse.onCall(0).returns(Promise.resolve(conversation))
+        const expectedItems = [
+          {
+            title: "Pwetty Cats",
+            item: {
+              __typename: "Artwork",
+              is_acquireable: true,
+            },
           },
-        },
-        {
-          title: "Catty Show",
-          item: {
-            __typename: "Show",
-            is_reference: true,
+          {
+            title: "Catty Show",
+            item: {
+              __typename: "Show",
+              is_reference: true,
+            },
           },
-        },
-      ]
+        ]
 
-      return runAuthenticatedQuery(query).then(({ me: { conversation: { items } } }) => {
-        expect(items).toEqual(expectedItems)
+        return runAuthenticatedQuery(query).then(({ me: { conversation: { items } } }) => {
+          expect(items).toEqual(expectedItems)
+        })
+      })
+
+      it("doesnt return invalid items", () => {
+        conversation.items[0].properties = {}
+        impulse.onCall(0).returns(Promise.resolve(conversation))
+        const expectedItems = [
+          {
+            title: "Catty Show",
+            item: {
+              __typename: "Show",
+              is_reference: true,
+            },
+          },
+        ]
+
+        return runAuthenticatedQuery(query).then(({ me: { conversation: { items } } }) => {
+          expect(items).toEqual(expectedItems)
+        })
       })
     })
   })
