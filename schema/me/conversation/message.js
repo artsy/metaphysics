@@ -67,7 +67,14 @@ export const MessageType = new GraphQLObjectType({
     raw_text: {
       description: "Full unsanitized text.",
       type: new GraphQLNonNull(GraphQLString),
+      deprecationReason: "Prefer to use the parsed/cleaned-up `body`.",
     },
+
+    body: {
+      description: "Text which has been parsed/sanitized of quoted replies (among other things).",
+      type: GraphQLString,
+    },
+
     attachments: {
       type: new GraphQLList(AttachmentType),
     },
