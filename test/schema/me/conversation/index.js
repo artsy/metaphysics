@@ -47,6 +47,9 @@ describe("Me", () => {
                       email
                     }
                     body
+                    deliveries {
+                      opened_at
+                    }
                   }
                 }
               }
@@ -104,6 +107,9 @@ describe("Me", () => {
             attachments: [],
             metadata: {},
             from: "<email@email.com>",
+            deliveries: [{
+              opened_at: "2020-12-31T12:00:00+00:00",
+            }],
           },
         ],
       }
@@ -127,6 +133,7 @@ describe("Me", () => {
                     email: "fancy_german_person@posteo.de",
                   },
                   body: "I'm a cat",
+                  deliveries: null,
                 },
               },
               {
@@ -139,6 +146,7 @@ describe("Me", () => {
                     email: "postman@posteo.de",
                   },
                   body: "",
+                  deliveries: null,
                 },
               },
               {
@@ -151,6 +159,7 @@ describe("Me", () => {
                     email: "fancy_german_person+wunderbar@posteo.de",
                   },
                   body: null,
+                  deliveries: null,
                 },
               },
               {
@@ -163,6 +172,9 @@ describe("Me", () => {
                     email: "postman+wunderlich@posteo.de",
                   },
                   body: null,
+                  deliveries: [{
+                    opened_at: "2020-12-31T12:00:00+00:00",
+                  }],
                 },
               },
             ],
