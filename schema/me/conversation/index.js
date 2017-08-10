@@ -207,7 +207,7 @@ export const ConversationFields = {
     args: pageable(),
     resolve: ({ id, from_email }, options, req, { rootValue: { accessToken } }) => {
       const { page, size, offset } = parseRelayOptions(options)
-      const impulseParams = { page, size, conversation_id: id }
+      const impulseParams = { page, size, conversation_id: id, "expand[]": "deliveries" }
       return gravity
         .with(accessToken, { method: "POST" })("me/token", {
           client_application_id: IMPULSE_APPLICATION_ID,

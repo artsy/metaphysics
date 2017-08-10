@@ -3,6 +3,7 @@ import { has } from "lodash"
 import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 import { AttachmentType } from "./attachment"
+import { DeliveryType } from "./delivery"
 import { isExisty } from "lib/helpers"
 
 const MessageInitiatorType = new GraphQLObjectType({
@@ -75,9 +76,14 @@ export const MessageType = new GraphQLObjectType({
       type: GraphQLString,
     },
 
+    deliveries: {
+      type: new GraphQLList(DeliveryType),
+    },
+
     attachments: {
       type: new GraphQLList(AttachmentType),
     },
+
     is_invoice: {
       description: "True if message is an invoice message",
       type: GraphQLBoolean,
