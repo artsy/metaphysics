@@ -1,4 +1,4 @@
-# Metaphysics [![CircleCI][badge]][circleci]
+# Metaphysics [![CircleCI](https://circleci.com/gh/artsy/metaphysics.svg?style=svg)](https://circleci.com/gh/artsy/metaphysics)
 
 Metaphysics is a [GraphQL](http://graphql.org)-compliant API that wraps various Artsy APIs. You can [try it here](https://metaphysics-staging.artsy.net/) against our staging API.
 
@@ -66,6 +66,3 @@ Then promote using the command:
 ```sh
 $ heroku pipelines:promote -r staging
 ```
-
-[badge]: https://circleci.com/gh/artsy/metaphysics.svg?style=svg
-[circleci]: https://circleci.com/gh/artsy/metaphysics)
