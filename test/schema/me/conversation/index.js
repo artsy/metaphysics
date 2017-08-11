@@ -36,6 +36,8 @@ describe("Me", () => {
               from {
                 email
               }
+              is_last_message_to_user
+              last_message_open
               messages(first: 10) {
                 edges {
                   node {
@@ -62,6 +64,12 @@ describe("Me", () => {
         id: "420",
         initial_message: "10/10 would buy",
         from_email: "fancy_german_person@posteo.de",
+        _embedded: {
+          last_message: {
+            snippet: "Cool snippet",
+            from_email_address: "some_other_fancy_german_person@posteo.de",
+          },
+        },
       }
 
       const conversation1Messages = {
@@ -121,6 +129,8 @@ describe("Me", () => {
           from: {
             email: "fancy_german_person@posteo.de",
           },
+          is_last_message_to_user: true,
+          last_message_open: null,
           messages: {
             edges: [
               {

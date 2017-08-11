@@ -167,11 +167,31 @@ export const ConversationFields = {
   },
   last_message: {
     type: new GraphQLNonNull(GraphQLString),
+    description: "This is a snippet of text from the last message.",
     resolve: conversation => {
       return get(conversation, "_embedded.last_message.snippet")
     },
   },
   last_message_at: date,
+
+  // TODO: Currently if the user is not the sender of a message, we assume they are a recipient.
+  // That may not be the case, so we should evolve this check to be more accurate.
+  is_last_message_to_user: {
+    type: GraphQLBoolean,
+    description: "True if user/conversation initiator is a recipient.",
+    resolve: ({ _embedded, from_email }) => {
+      const lastMessageFromEmail = get(_embedded, "last_message.from_email_address")
+      return from_email !== lastMessageFromEmail
+    },
+  },
+
+  // If the user is a recipient of the last message, return their timestamped
+  // 'read' event, otherwise null.
+  last_message_open: {
+    type: GraphQLString,
+    description: "Timestamp if the user opened the last message, null in all other cases",
+    resolve: (conversation) => null, // eslint-disable-line no-unused-vars
+  },
 
   artworks: {
     type: new GraphQLList(ArtworkType),
@@ -208,27 +228,26 @@ export const ConversationFields = {
     resolve: ({ id, from_email }, options, req, { rootValue: { accessToken } }) => {
       const { page, size, offset } = parseRelayOptions(options)
       const impulseParams = { page, size, conversation_id: id, "expand[]": "deliveries" }
-      return gravity
-        .with(accessToken, { method: "POST" })("me/token", {
-          client_application_id: IMPULSE_APPLICATION_ID,
+      return gravity.with(accessToken, { method: "POST" })("me/token", {
+        client_application_id: IMPULSE_APPLICATION_ID,
+      }).then(data => {
+        return impulse.with(data.token, { method: "GET" })(
+          `message_details`,
+          impulseParams
+        ).then(({ total_count, message_details }) => {
+          // Inject the convesation initiator's email into each message payload
+          // so we can tell if the user sent a particular message.
+          /* eslint-disable no-param-reassign */
+          message_details = message_details.map(message => {
+            return merge(message, { conversation_from_address: from_email })
+          })
+          /* eslint-disable no-param-reassign */
+          return connectionFromArraySlice(message_details, options, {
+            arrayLength: total_count,
+            sliceStart: offset,
+          })
         })
-        .then(data => {
-          return impulse
-            .with(data.token, { method: "GET" })(`message_details`, impulseParams)
-            .then(({ total_count, message_details }) => {
-              // Inject the convesation initiator's email into each message payload
-              // so we can tell if the user sent a particular message.
-              /* eslint-disable no-param-reassign */
-              message_details = message_details.map(message => {
-                return merge(message, { conversation_from_address: from_email })
-              })
-              /* eslint-disable no-param-reassign */
-              return connectionFromArraySlice(message_details, options, {
-                arrayLength: total_count,
-                sliceStart: offset,
-              })
-            })
-        })
+      })
     },
   },
 }
@@ -252,14 +271,12 @@ export default {
   },
   resolve: (root, { id }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
-    return gravity
-      .with(accessToken, { method: "POST" })("me/token", {
-        client_application_id: IMPULSE_APPLICATION_ID,
+    return gravity.with(accessToken, { method: "POST" })("me/token", {
+      client_application_id: IMPULSE_APPLICATION_ID,
+    }).then(data => {
+      return impulse.with(data.token, { method: "GET" })(`conversations/${id}`).then(impulseData => {
+        return impulseData
       })
-      .then(data => {
-        return impulse.with(data.token, { method: "GET" })(`conversations/${id}`).then(impulseData => {
-          return impulseData
-        })
-      })
+    })
   },
 }
