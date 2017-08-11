@@ -1,4 +1,4 @@
-[![Build Status](https://semaphoreci.com/api/v1/projects/accc4cab-8844-44d3-ba87-e2e73335592a/587408/badge.svg)](https://semaphoreci.com/artsy-it/metaphysics)
+# Metaphysics [![CircleCI][badge]][circleci]
 
 Metaphysics is a [GraphQL](http://graphql.org)-compliant API that wraps various Artsy APIs. You can [try it here](https://metaphysics-staging.artsy.net/) against our staging API.
 
@@ -11,7 +11,6 @@ It is currently used in production all over the place in [Artsy.net](http://gith
 -   **State:** production
 -   **Production:** [metaphysics-production.artsy.net](https://metaphysics-production.artsy.net/)
 -   **Staging:** [metaphysics-staging.artsy.net](https://metaphysics-staging.artsy.net/)
--   **CI:** [Semaphore](https://semaphoreapp.com/artsy-it/metaphysics/)
 -   **Point People:** [@alloy](https://github.com/alloy) & [@mzikherman](https://github.com/mzikherman)
 
 ### Getting Setup
@@ -52,7 +51,7 @@ If you need to generate a token, [this command](https://artsy.slack.com/archives
 
 ### Deployment
 
-PRs merged to master are deployed to staging via Semaphore.
+PRs merged to master are deployed to staging via Circle.
 
 We then use the heroku [pipelines](https://blog.heroku.com/archives/2013/7/10/heroku-pipelines-beta) to deploy to production when happy with staging.
 
@@ -67,3 +66,6 @@ Then promote using the command:
 ```sh
 $ heroku pipelines:promote -r staging
 ```
+
+[badge]: https://circleci.com/gh/artsy/metaphysics.svg?style=svg
+[circleci]: https://circleci.com/gh/artsy/metaphysics)
