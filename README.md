@@ -15,7 +15,7 @@ It is currently used in production all over the place in [Artsy.net](http://gith
 
 ### Getting Setup
 
-Set up your `.env` file based on our example `.env.test` (the variables you must change for development are separated at the bottom).
+Set up your `.env` file based on our example `.env.test` (the variables you must change for development are separated at the bottom). For Artsy staff, grab the config from 1Password.
 
 Install memcached and Yarn if you don't already have them:
 
