@@ -3,7 +3,7 @@
 # Exit if any subcommand fails
 set -e
 
-STEPS=7
+STEPS=5
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
