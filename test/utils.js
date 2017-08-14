@@ -4,7 +4,7 @@ import { graphql } from "graphql"
 /**
  * Performs a GraphQL query against our schema.
  *
- * On success, the promise resolves with the `data` part of the resonse.
+ * On success, the promise resolves with the `data` part of the response.
  *
  * On error, the promise will reject with the original error that was thrown.
  *
@@ -30,9 +30,10 @@ export const runQuery = (query: string, rootValue: ?any = { accessToken: null, u
  *
  * @see runQuery
  */
-export const runAuthenticatedQuery = (query: string, userID: string = "user-42") => {
-  return runQuery(query, {
-    accessToken: "secret",
-    userID,
-  })
+export const runAuthenticatedQuery = (query: string, rootValue: ?any = {}) => {
+  const authenticatedRootValue = rootValue
+  authenticatedRootValue.accessToken = "secret"
+  authenticatedRootValue.userID = "user-42"
+
+  return runQuery(query, authenticatedRootValue)
 }
