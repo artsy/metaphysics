@@ -15,14 +15,14 @@ It is currently used in production all over the place in [Artsy.net](http://gith
 
 ### Getting Setup
 
-Set up your `.env` file based on our example `.env.test` (the variables you must change for development are separated at the bottom). For Artsy staff, grab the config from 1Password.
+Read and run setup script:
 
-Install memcached and Yarn if you don't already have them:
-
-```sh
-brew install memcached
-npm install -g yarn
 ```
+$ cat bin/setup
+$ bin/setup
+```
+
+Set up your `.env` file based on our example `.env.test` (the variables you must change for development are separated at the bottom). For Artsy staff, grab the config from 1Password.
 
 To start up a development server, clone this repo and run:
 
