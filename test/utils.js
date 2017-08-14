@@ -31,9 +31,5 @@ export const runQuery = (query: string, rootValue: ?any = { accessToken: null, u
  * @see runQuery
  */
 export const runAuthenticatedQuery = (query: string, rootValue: ?any = {}) => {
-  const authenticatedRootValue = rootValue
-  authenticatedRootValue.accessToken = "secret"
-  authenticatedRootValue.userID = "user-42"
-
-  return runQuery(query, authenticatedRootValue)
+  return runQuery(query, Object.assign({ accessToken: "secret", userID: "user-42" }, rootValue))
 }
