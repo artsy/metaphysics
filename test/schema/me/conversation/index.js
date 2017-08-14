@@ -84,7 +84,7 @@ describe("Me", () => {
             metadata: {
               lewitt_invoice_id: "420i",
             },
-            from: "\"Percy Z\" <percy@cat.com>",
+            from: '"Percy Z" <percy@cat.com>',
             body: "I'm a cat",
           },
           {
@@ -94,7 +94,7 @@ describe("Me", () => {
             from_id: null,
             attachments: [],
             metadata: {},
-            from: "\"Bitty Z\" <Bitty@cat.com>",
+            from: '"Bitty Z" <Bitty@cat.com>',
             body: "",
           },
           {
@@ -104,7 +104,7 @@ describe("Me", () => {
             from_id: "user-42",
             attachments: [],
             metadata: {},
-            from: "\"Matt Z\" <matt@cat.com>",
+            from: '"Matt Z" <matt@cat.com>',
             body: null,
           },
           {
@@ -115,9 +115,11 @@ describe("Me", () => {
             attachments: [],
             metadata: {},
             from: "<email@email.com>",
-            deliveries: [{
-              opened_at: "2020-12-31T12:00:00+00:00",
-            }],
+            deliveries: [
+              {
+                opened_at: "2020-12-31T12:00:00+00:00",
+              },
+            ],
           },
         ],
       }
@@ -182,9 +184,11 @@ describe("Me", () => {
                     email: "postman+wunderlich@posteo.de",
                   },
                   body: null,
-                  deliveries: [{
-                    opened_at: "2020-12-31T12:00:00+00:00",
-                  }],
+                  deliveries: [
+                    {
+                      opened_at: "2020-12-31T12:00:00+00:00",
+                    },
+                  ],
                 },
               },
             ],
@@ -197,7 +201,7 @@ describe("Me", () => {
       gravity.onCall(1).returns(Promise.resolve({ token: "token" }))
       impulse.onCall(1).returns(Promise.resolve(conversation1Messages))
 
-      return runAuthenticatedQuery(query, "user-42").then(({ me: conversation }) => {
+      return runAuthenticatedQuery(query).then(({ me: conversation }) => {
         expect(conversation).toEqual(expectedConversationData)
       })
     })
