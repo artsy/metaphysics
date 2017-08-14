@@ -17,6 +17,13 @@ printf "[1/${STEPS}]  checking dependencies"
 actual_node_version=$(node --version)
 expected_node_version=$(cat .nvmrc)
 
+if ! command -v nvm > /dev/null; then
+  printf "${CLEAR_LINE}${RED}  You must install nvm before setup can continue${NO_COLOR}\n"
+  printf "    You should read this:\n"
+  printf "      https://github.com/creationix/nvm#installation\n"
+  exit -1
+fi
+
 if [ "$actual_node_version" != "$expected_node_version" ]; then
   printf "${CLEAR_LINE}${RED}  Your node version must match before setup can continue${NO_COLOR}\n"
   printf "    You should:\n"
