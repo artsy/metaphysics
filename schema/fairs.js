@@ -1,5 +1,4 @@
 import _ from "lodash"
-import gravity from "lib/loaders/gravity"
 import FairSorts from "./sorts/fair_sorts"
 import EventStatus from "./input_fields/event_status"
 import Near from "./input_fields/near"
@@ -34,7 +33,7 @@ const Fairs = {
     sort: FairSorts,
     status: EventStatus,
   },
-  resolve: (root, options) => {
+  resolve: (root, options, request, { rootValue: { fairsLoader } }) => {
     let gravityOptions = options
     if (options.near) {
       gravityOptions = _.assign(options, {
@@ -43,7 +42,7 @@ const Fairs = {
         max_distance: options.near.max_distance,
       })
     }
-    return gravity("fairs", gravityOptions)
+    return fairsLoader(gravityOptions)
   },
 }
 
