@@ -1,10 +1,11 @@
 import gravity from "lib/loaders/gravity"
+import fairsLoader from "lib/loaders/per_type"
 import delta from "lib/loaders/delta"
 import { clone, first, forEach, map, sampleSize, shuffle, slice, filter, sortBy } from "lodash"
 import blacklist from "lib/artist_blacklist"
 
 export const featuredFair = () => {
-  return gravity("fairs", {
+  return fairsLoader({
     size: 5,
     active: true,
     has_homepage_section: true,
