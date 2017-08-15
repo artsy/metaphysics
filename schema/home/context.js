@@ -1,6 +1,5 @@
 import { create, assign } from "lodash"
 import gravity from "lib/loaders/gravity"
-import artistLoader from "lib/loaders/per_type"
 import { featuredAuction, featuredFair, featuredGene, popularArtists } from "./fetch"
 import Fair from "schema/fair"
 import Sale from "schema/sale/index"
@@ -83,7 +82,7 @@ export const moduleContext = {
       return assign({}, fair, { context_type: "Fair" })
     })
   },
-  followed_artist: ({ params }) => {
+  followed_artist: ({ params }, options, request, { rootValue: { artistLoader } }) => {
     return artistLoader(params.followed_artist_id).then(artist => {
       return assign(
         {},
@@ -94,7 +93,7 @@ export const moduleContext = {
       )
     })
   },
-  related_artists: ({ params }) => {
+  related_artists: ({ params }, options, request, { rootValue: { artistLoader } }) => {
     return Promise.all([
       artistLoader(params.related_artist_id),
       artistLoader(params.followed_artist_id),

@@ -1,5 +1,4 @@
 import { featuredAuction, featuredFair, featuredGene } from "./fetch"
-import artistLoader from "lib/loaders/per_type"
 import { GraphQLString } from "graphql"
 
 const moduleTitle = {
@@ -11,7 +10,7 @@ const moduleTitle = {
       }
     })
   },
-  followed_artist: ({ params }) => {
+  followed_artist: ({ params }, options, request, { rootValue: { artistLoader } }) => {
     return artistLoader(params.followed_artist_id).then(artist => {
       return `Works by ${artist.name}`
     })
@@ -41,7 +40,7 @@ const moduleTitle = {
   },
   popular_artists: () => "Works by Popular Artists",
   recommended_works: () => "Recommended Works for You",
-  related_artists: ({ params }) => {
+  related_artists: ({ params }, options, request, { rootValue: { artistLoader } }) => {
     return artistLoader(params.related_artist_id).then(artist => {
       return `Works by ${artist.name}`
     })
