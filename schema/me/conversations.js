@@ -16,23 +16,19 @@ export default {
 
     const impulseOptions = parseRelayOptions(options)
 
-    return gravity
-      .with(accessToken, { method: "POST" })("me/token", {
-        client_application_id: IMPULSE_APPLICATION_ID,
+    return gravity.with(accessToken, { method: "POST" })("me/token", {
+      client_application_id: IMPULSE_APPLICATION_ID,
+    }).then(data => {
+      return impulse.with(data.token)("conversations", {
+        ...impulseOptions,
+        from_id: userID,
+        from_type: "User",
+      }).then(({ conversations }) => {
+        return connectionFromArraySlice(conversations, options, {
+          arrayLength: conversations.length,
+          sliceStart: impulseOptions.offset,
+        })
       })
-      .then(data => {
-        return impulse
-          .with(data.token)("conversations", {
-            ...impulseOptions,
-            from_id: userID,
-            from_type: "User",
-          })
-          .then(({ conversations }) => {
-            return connectionFromArraySlice(conversations, options, {
-              arrayLength: conversations.length,
-              sliceStart: impulseOptions.offset,
-            })
-          })
-      })
+    })
   },
 }

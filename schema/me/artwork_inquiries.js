@@ -33,13 +33,14 @@ export default {
       inquireable_type: "artwork",
       total_count: true,
     }
-    return gravity
-      .with(accessToken, { headers: true })("me/inquiry_requests", gravityArgs)
-      .then(({ body, headers }) => {
-        return connectionFromArraySlice(body, options, {
-          arrayLength: headers["x-total-count"],
-          sliceStart: offset,
-        })
+    return gravity.with(accessToken, { headers: true })(
+      "me/inquiry_requests",
+      gravityArgs
+    ).then(({ body, headers }) => {
+      return connectionFromArraySlice(body, options, {
+        arrayLength: headers["x-total-count"],
+        sliceStart: offset,
       })
+    })
   },
 }
