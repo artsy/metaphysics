@@ -1,7 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
 # Exit if any subcommand fails
 set -e
+
+# make sure we can find nvm function
+[ -r ~/.bash_profile ] && . ~/.bash_profile
 
 STEPS=5
 
