@@ -3,7 +3,7 @@ import delta from "lib/loaders/delta"
 import { clone, first, forEach, map, sampleSize, shuffle, slice, filter, sortBy } from "lodash"
 import blacklist from "lib/artist_blacklist"
 
-export const featuredFair = (root, options, request, { rootValue: { fairsLoader } }) => {
+export const featuredFair = fairsLoader => {
   return fairsLoader({
     size: 5,
     active: true,
