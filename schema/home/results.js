@@ -37,14 +37,12 @@ const moduleResults = {
     })
   },
   followed_galleries: ({ accessToken }) => {
-    return gravity
-      .with(accessToken)("me/follow/profiles/artworks", {
-        for_sale: true,
-        size: 60,
-      })
-      .then(artworks => {
-        return slice(shuffle(artworks), 0, RESULTS_SIZE)
-      })
+    return gravity.with(accessToken)("me/follow/profiles/artworks", {
+      for_sale: true,
+      size: 60,
+    }).then(artworks => {
+      return slice(shuffle(artworks), 0, RESULTS_SIZE)
+    })
   },
   genes: ({ accessToken, params: { id } }) => {
     if (id) {

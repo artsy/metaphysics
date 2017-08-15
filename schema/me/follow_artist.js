@@ -30,10 +30,8 @@ export default mutationWithClientMutationId({
     const saveMethod = unfollow ? "DELETE" : "POST"
     const options = unfollow ? {} : { artist_id }
     const followPath = unfollow ? `/${artist_id}` : ""
-    return gravity
-      .with(accessToken, {
-        method: saveMethod,
-      })(`/me/follow/artist${followPath}`, options)
-      .then(() => ({ artist_id }))
+    return gravity.with(accessToken, {
+      method: saveMethod,
+    })(`/me/follow/artist${followPath}`, options).then(() => ({ artist_id }))
   },
 })

@@ -12,7 +12,8 @@ describe("Image", () => {
       expect(croppedImageUrl(image, { width: 500, height: 500 })).toEqual({
         width: 500,
         height: 500,
-        url: "https://gemini.cloudfront.test/?resize_to=fill&width=500&height=500&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg", // eslint-disable-line
+        url:
+          "https://gemini.cloudfront.test/?resize_to=fill&width=500&height=500&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg", // eslint-disable-line
       })
     })
 
@@ -21,7 +22,8 @@ describe("Image", () => {
       expect(croppedImageUrl(bareImageUrl, { width: 500, height: 500 })).toEqual({
         width: 500,
         height: 500,
-        url: "https://gemini.cloudfront.test/?resize_to=fill&width=500&height=500&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg", // eslint-disable-line
+        url:
+          "https://gemini.cloudfront.test/?resize_to=fill&width=500&height=500&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg", // eslint-disable-line
       })
     })
   })
