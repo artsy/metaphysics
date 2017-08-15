@@ -21,7 +21,6 @@ import EditionSet from "schema/edition_set"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import gravity from "lib/loaders/gravity"
-import positron from "lib/loaders/positron"
 import savedArtworkLoader from "lib/loaders/saved_artwork"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
@@ -82,8 +81,8 @@ export const artworkFields = () => {
           type: GraphQLInt,
         },
       },
-      resolve: ({ _id }, { size }) =>
-        positron("articles", {
+      resolve: ({ _id }, { size }, request, { rootValue: { articlesLoader } }) =>
+        articlesLoader({
           artwork_id: _id,
           published: true,
           limit: size,
