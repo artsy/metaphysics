@@ -24,15 +24,13 @@ export default {
     },
   },
   resolve: (root, { active_positions, artwork_id, live, sale_id }, request, { rootValue: { accessToken } }) => {
-    return gravity
-      .with(accessToken)("me/lot_standings", {
-        active_positions,
-        artwork_id,
-        live,
-        sale_id,
-      })
-      .then(lotStandings => {
-        return lotStandings
-      })
+    return gravity.with(accessToken)("me/lot_standings", {
+      active_positions,
+      artwork_id,
+      live,
+      sale_id,
+    }).then(lotStandings => {
+      return lotStandings
+    })
   },
 }

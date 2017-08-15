@@ -99,7 +99,7 @@ const PartnerType = new GraphQLObjectType({
       href: {
         type: GraphQLString,
         resolve: ({ type, default_profile_id }) =>
-          (type === "Auction" ? `/auction/${default_profile_id}` : `/${default_profile_id}`),
+          type === "Auction" ? `/auction/${default_profile_id}` : `/${default_profile_id}`,
       },
       initials: initials("name"),
       is_default_profile_public: {

@@ -214,9 +214,9 @@ function filterArtworks(primaryKey) {
         delete gravityOptions.medium
       }
 
-      return gravity
-        .with(accessToken)("filter/artworks", gravityOptions)
-        .then(response => assign({}, response, { options: gravityOptions }))
+      return gravity.with(accessToken)("filter/artworks", gravityOptions).then(response =>
+        assign({}, response, { options: gravityOptions })
+      )
     },
   }
 }

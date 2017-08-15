@@ -190,7 +190,7 @@ export const ConversationFields = {
   last_message_open: {
     type: GraphQLString,
     description: "Timestamp if the user opened the last message, null in all other cases",
-    resolve: (conversation) => null, // eslint-disable-line no-unused-vars
+    resolve: conversation => null, // eslint-disable-line no-unused-vars
   },
 
   artworks: {

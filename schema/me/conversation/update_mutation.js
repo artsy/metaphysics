@@ -24,20 +24,18 @@ export default mutationWithClientMutationId({
   },
   mutateAndGetPayload: ({ buyer_outcome, ids }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
-    return gravity
-      .with(accessToken, { method: "POST" })("me/token", {
-        client_application_id: IMPULSE_APPLICATION_ID,
+    return gravity.with(accessToken, { method: "POST" })("me/token", {
+      client_application_id: IMPULSE_APPLICATION_ID,
+    }).then(data => {
+      return Promise.all(
+        ids.map(id =>
+          impulse.with(data.token, { method: "PUT" })(`conversations/${id}`, {
+            buyer_outcome,
+          })
+        )
+      ).then(conversations => {
+        return conversations
       })
-      .then(data => {
-        return Promise.all(
-          ids.map(id =>
-            impulse.with(data.token, { method: "PUT" })(`conversations/${id}`, {
-              buyer_outcome,
-            })
-          )
-        ).then(conversations => {
-          return conversations
-        })
-      })
+    })
   },
 })
