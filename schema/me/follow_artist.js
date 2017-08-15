@@ -18,8 +18,8 @@ export default mutationWithClientMutationId({
   outputFields: {
     artist: {
       type: ArtistType,
-      resolve: ({ artist_id }) => {
-        return gravity(`artist/${artist_id}`).then(artist => {
+      resolve: ({ artist_id }, options, request, { rootValue: { artistLoader } }) => {
+        return artistLoader(artist_id).then(artist => {
           return artist
         })
       },

@@ -6,6 +6,13 @@ import { runQuery, runAuthenticatedQuery } from "test/utils"
 describe("Object Identification", () => {
   // TODO As we add more loaders, remove the old tests at the bottom of this file and add them here.
   const loaderTests = {
+    Article: {
+      articleLoader: {
+        id: "foo-bar",
+        title: "Nightlife at the Foo Bar",
+        author: "Artsy Editorial",
+      },
+    },
     Artist: {
       artistLoader: {
         id: "foo-bar",
@@ -72,12 +79,6 @@ describe("Object Identification", () => {
   })
 
   const tests = {
-    Article: {
-      positron: {
-        title: "Nightlife at the Foo Bar",
-        author: "Artsy Editorial",
-      },
-    },
     Partner: {
       gravity: {
         has_full_profile: true,
