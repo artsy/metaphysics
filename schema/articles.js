@@ -18,7 +18,7 @@ const Articles = {
     },
     sort: ArticleSorts,
   },
-  resolve: (root, options, response, request, { rootValue: { articlesLoader } }) => {
+  resolve: (root, options, request, { rootValue: { articlesLoader } }) => {
     return articlesLoader(options).then(articles => articles.results)
   },
 }
