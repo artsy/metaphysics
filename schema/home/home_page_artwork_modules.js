@@ -105,12 +105,7 @@ const HomePageArtworkModules = {
       description: "The preferred order of modules, defaults to order returned by Gravity",
     },
   },
-  resolve: (
-    root,
-    { max_rails, max_followed_gene_rails, order },
-    request,
-    { rootValue: { accessToken, userID, fairsLoader } }
-  ) => {
+  resolve: (root, { max_rails, max_followed_gene_rails, order }, request, { rootValue: { accessToken, userID } }) => {
     // If user is logged in, get their specific modules
     if (accessToken) {
       return gravity.with(accessToken)("me/modules").then(response => {
@@ -168,7 +163,7 @@ const HomePageArtworkModules = {
     }
 
     // Otherwise, get the generic set of modules
-    return Promise.all([featuredAuction(), featuredFair(fairsLoader)]).then(([auction, fair]) => {
+    return Promise.all([featuredAuction(), featuredFair()]).then(([auction, fair]) => {
       const modules = loggedOutModules(auction, fair)
       return filterModules(modules, max_rails)
     })
