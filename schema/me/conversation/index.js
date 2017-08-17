@@ -120,6 +120,11 @@ export const { connectionType: MessageConnection, edgeType: MessageEdge } = conn
   nodeType: MessageType,
 })
 
+const isLastMessageToUser = ({ _embedded, from_email }) => {
+  const lastMessageFromEmail = get(_embedded, "last_message.from_email_address")
+  return from_email !== lastMessageFromEmail
+}
+
 export const ConversationFields = {
   __id: GlobalIDField,
   id: {
@@ -179,10 +184,7 @@ export const ConversationFields = {
   is_last_message_to_user: {
     type: GraphQLBoolean,
     description: "True if user/conversation initiator is a recipient.",
-    resolve: ({ _embedded, from_email }) => {
-      const lastMessageFromEmail = get(_embedded, "last_message.from_email_address")
-      return from_email !== lastMessageFromEmail
-    },
+    resolve: conversation => isLastMessageToUser(conversation),
   },
 
   // If the user is a recipient of the last message, return their timestamped
@@ -190,7 +192,34 @@ export const ConversationFields = {
   last_message_open: {
     type: GraphQLString,
     description: "Timestamp if the user opened the last message, null in all other cases",
-    resolve: conversation => null, // eslint-disable-line no-unused-vars
+    resolve: (conversation, options, request, { rootValue: { accessToken } }) => {
+      if (!isLastMessageToUser(conversation)) {
+        return null
+      }
+      const radiationMessageId = get(conversation, "_embedded.last_message.radiation_message_id")
+      const impulseParams = {
+        conversation_id: conversation.id,
+        radiation_message_id: radiationMessageId,
+        "expand[]": "deliveries",
+      }
+      return gravity.with(accessToken, { method: "POST" })("me/token", {
+        client_application_id: IMPULSE_APPLICATION_ID,
+      }).then(data => {
+        return impulse.with(data.token, { method: "GET" })(
+          `message_details`,
+          impulseParams
+        ).then(({ message_details }) => {
+          if (message_details.length === 0) {
+            return null
+          }
+          const relevantDelivery = message_details[0].deliveries.find(d => d.email === conversation.from_email)
+          if (!relevantDelivery) {
+            return null
+          }
+          return relevantDelivery.opened_at
+        })
+      })
+    },
   },
 
   artworks: {

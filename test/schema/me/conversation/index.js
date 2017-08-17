@@ -24,9 +24,6 @@ describe("Me", () => {
     })
 
     it("returns a conversation", () => {
-      impulse.with = sinon.stub().returns(impulse)
-      Conversation.__Rewire__("impulse", impulse)
-
       const query = `
         {
           me {
@@ -36,8 +33,6 @@ describe("Me", () => {
               from {
                 email
               }
-              is_last_message_to_user
-              last_message_open
               messages(first: 10) {
                 edges {
                   node {
@@ -131,8 +126,6 @@ describe("Me", () => {
           from: {
             email: "fancy_german_person@posteo.de",
           },
-          is_last_message_to_user: true,
-          last_message_open: null,
           messages: {
             edges: [
               {
@@ -205,6 +198,50 @@ describe("Me", () => {
         expect(conversation).toEqual(expectedConversationData)
       })
     })
+
+    describe("concerning unread indicator", () => {
+      it("returns the right unread status", () => {
+        const query = `
+          {
+            me {
+              conversation(id: "420") {
+                is_last_message_to_user
+                last_message_open
+              }
+            }
+          }
+        `
+        const conversation1 = {
+          from_email: "collector@example.com",
+          initial_message: "Hi",
+          _embedded: {
+            last_message: {
+              radiation_message_id: "240",
+              from_email_address: "percy@cat.com",
+            },
+          },
+        }
+        const message = {
+          message_details: [
+            {
+              deliveries: [{ email: "collector@example.com", opened_at: "2020-12-31T12:00:00+00:00" }],
+            },
+          ],
+        }
+        gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
+        impulse.onCall(0).returns(Promise.resolve(conversation1))
+        gravity.onCall(1).returns(Promise.resolve({ token: "token" }))
+        impulse.onCall(1).returns(Promise.resolve(message))
+        const expectedResponse = {
+          is_last_message_to_user: true,
+          last_message_open: "2020-12-31T12:00:00+00:00",
+        }
+        return runAuthenticatedQuery(query).then(({ me: { conversation } }) => {
+          expect(conversation).toEqual(expectedResponse)
+        })
+      })
+    })
+
     describe("concerning items", () => {
       const conversation = {
         initial_message: "Loved some of the works at your fair booth!",
