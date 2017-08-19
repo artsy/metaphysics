@@ -3,21 +3,16 @@ import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("Conversations", () => {
-    const gravity = sinon.stub()
     const impulse = sinon.stub()
     const Me = schema.__get__("Me")
     const Conversations = Me.__get__("Conversations")
 
     beforeEach(() => {
-      gravity.with = sinon.stub().returns(gravity)
       impulse.with = sinon.stub().returns(impulse)
-
-      Conversations.__Rewire__("gravity", gravity)
       Conversations.__Rewire__("impulse", impulse)
     })
 
     afterEach(() => {
-      Conversations.__ResetDependency__("gravity")
       Conversations.__ResetDependency__("impulse")
     })
 
@@ -74,11 +69,13 @@ describe("Me", () => {
         ],
       }
 
-      gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
+      const rootValue = {
+        impulseTokenLoader: () => Promise.resolve({ token: "token" }),
+      }
 
       impulse.onCall(0).returns(Promise.resolve({ conversations: [conversation1, conversation2] }))
 
-      return runAuthenticatedQuery(query).then(({ me: { conversations } }) => {
+      return runAuthenticatedQuery(query, rootValue).then(({ me: { conversations } }) => {
         expect(conversations).toEqual(expectedConversationData)
       })
     })

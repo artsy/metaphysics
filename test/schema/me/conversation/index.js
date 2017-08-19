@@ -3,23 +3,21 @@ import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("Conversation", () => {
-    let gravity
     let impulse
     const Me = schema.__get__("Me")
     const Conversation = Me.__get__("Conversation")
 
+    const rootValue = {
+      impulseTokenLoader: () => Promise.resolve({ token: "token" }),
+    }
+
     beforeEach(() => {
-      gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
       impulse = sinon.stub()
       impulse.with = sinon.stub().returns(impulse)
-
-      Conversation.__Rewire__("gravity", gravity)
       Conversation.__Rewire__("impulse", impulse)
     })
 
     afterEach(() => {
-      Conversation.__ResetDependency__("gravity")
       Conversation.__ResetDependency__("impulse")
     })
 
@@ -189,12 +187,10 @@ describe("Me", () => {
         },
       }
 
-      gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
       impulse.onCall(0).returns(Promise.resolve(conversation1))
-      gravity.onCall(1).returns(Promise.resolve({ token: "token" }))
       impulse.onCall(1).returns(Promise.resolve(conversation1Messages))
 
-      return runAuthenticatedQuery(query).then(({ me: conversation }) => {
+      return runAuthenticatedQuery(query, rootValue).then(({ me: conversation }) => {
         expect(conversation).toEqual(expectedConversationData)
       })
     })
@@ -228,15 +224,13 @@ describe("Me", () => {
             },
           ],
         }
-        gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
         impulse.onCall(0).returns(Promise.resolve(conversation1))
-        gravity.onCall(1).returns(Promise.resolve({ token: "token" }))
         impulse.onCall(1).returns(Promise.resolve(message))
         const expectedResponse = {
           is_last_message_to_user: true,
           last_message_open: "2020-12-31T12:00:00+00:00",
         }
-        return runAuthenticatedQuery(query).then(({ me: { conversation } }) => {
+        return runAuthenticatedQuery(query, rootValue).then(({ me: { conversation } }) => {
           expect(conversation).toEqual(expectedResponse)
         })
       })
@@ -292,9 +286,7 @@ describe("Me", () => {
           }
         }
       `
-      beforeEach(() => {
-        gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
-      })
+
       it("returns the conversation items", () => {
         impulse.onCall(0).returns(Promise.resolve(conversation))
         const expectedItems = [
@@ -314,7 +306,7 @@ describe("Me", () => {
           },
         ]
 
-        return runAuthenticatedQuery(query).then(({ me: { conversation: { items } } }) => {
+        return runAuthenticatedQuery(query, rootValue).then(({ me: { conversation: { items } } }) => {
           expect(items).toEqual(expectedItems)
         })
       })
@@ -332,7 +324,7 @@ describe("Me", () => {
           },
         ]
 
-        return runAuthenticatedQuery(query).then(({ me: { conversation: { items } } }) => {
+        return runAuthenticatedQuery(query, rootValue).then(({ me: { conversation: { items } } }) => {
           expect(items).toEqual(expectedItems)
         })
       })

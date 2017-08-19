@@ -2,20 +2,19 @@ import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("UpdateConversationMutation", () => {
-  const gravity = sinon.stub()
   const impulse = sinon.stub()
   const UpdateConversationMutation = schema.__get__("UpdateConversationMutation")
 
-  beforeEach(() => {
-    gravity.with = sinon.stub().returns(gravity)
-    impulse.with = sinon.stub().returns(impulse)
+  const rootValue = {
+    impulseTokenLoader: () => Promise.resolve({ token: "token" }),
+  }
 
-    UpdateConversationMutation.__Rewire__("gravity", gravity)
+  beforeEach(() => {
+    impulse.with = sinon.stub().returns(impulse)
     UpdateConversationMutation.__Rewire__("impulse", impulse)
   })
 
   afterEach(() => {
-    UpdateConversationMutation.__ResetDependency__("gravity")
     UpdateConversationMutation.__ResetDependency__("impulse")
   })
 
@@ -52,11 +51,9 @@ describe("UpdateConversationMutation", () => {
       ],
     }
 
-    gravity.onCall(0).returns(Promise.resolve({ token: "token" }))
-
     impulse.onCall(0).returns(Promise.resolve(conversation))
 
-    return runAuthenticatedQuery(mutation).then(({ updateConversation }) => {
+    return runAuthenticatedQuery(mutation, rootValue).then(({ updateConversation }) => {
       expect(updateConversation).toEqual(expectedConversationData)
     })
   })

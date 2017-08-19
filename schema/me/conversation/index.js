@@ -21,8 +21,6 @@ import { ShowType } from "schema/show"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 import { MessageType } from "./message"
 
-const { IMPULSE_APPLICATION_ID } = process.env
-
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
   values: {
@@ -192,7 +190,7 @@ export const ConversationFields = {
   last_message_open: {
     type: GraphQLString,
     description: "Timestamp if the user opened the last message, null in all other cases",
-    resolve: (conversation, options, request, { rootValue: { accessToken } }) => {
+    resolve: (conversation, options, request, { rootValue: { impulseTokenLoader } }) => {
       if (!isLastMessageToUser(conversation)) {
         return null
       }
@@ -202,9 +200,7 @@ export const ConversationFields = {
         radiation_message_id: radiationMessageId,
         "expand[]": "deliveries",
       }
-      return gravity.with(accessToken, { method: "POST" })("me/token", {
-        client_application_id: IMPULSE_APPLICATION_ID,
-      }).then(data => {
+      return impulseTokenLoader().then(data => {
         return impulse.with(data.token, { method: "GET" })(
           `message_details`,
           impulseParams
@@ -254,12 +250,10 @@ export const ConversationFields = {
     type: MessageConnection,
     description: "A connection for all messages in a single conversation",
     args: pageable(),
-    resolve: ({ id, from_email }, options, req, { rootValue: { accessToken } }) => {
+    resolve: ({ id, from_email }, options, req, { rootValue: { impulseTokenLoader } }) => {
       const { page, size, offset } = parseRelayOptions(options)
       const impulseParams = { page, size, conversation_id: id, "expand[]": "deliveries" }
-      return gravity.with(accessToken, { method: "POST" })("me/token", {
-        client_application_id: IMPULSE_APPLICATION_ID,
-      }).then(data => {
+      return impulseTokenLoader().then(data => {
         return impulse.with(data.token, { method: "GET" })(
           `message_details`,
           impulseParams
@@ -298,11 +292,9 @@ export default {
       description: "The ID of the Conversation",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { accessToken } }) => {
-    if (!accessToken) return null
-    return gravity.with(accessToken, { method: "POST" })("me/token", {
-      client_application_id: IMPULSE_APPLICATION_ID,
-    }).then(data => {
+  resolve: (root, { id }, request, { rootValue: { impulseTokenLoader } }) => {
+    if (!impulseTokenLoader) return null
+    return impulseTokenLoader().then(data => {
       return impulse.with(data.token, { method: "GET" })(`conversations/${id}`).then(impulseData => {
         return impulseData
       })

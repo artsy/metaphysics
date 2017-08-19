@@ -2,20 +2,19 @@ import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("SendConversationMessageMutation", () => {
-  const gravity = sinon.stub()
   const impulse = sinon.stub()
   const SendConversationMessageMutation = schema.__get__("SendConversationMessageMutation")
 
-  beforeEach(() => {
-    gravity.with = sinon.stub().returns(gravity)
-    impulse.with = sinon.stub().returns(impulse)
+  const rootValue = {
+    impulseTokenLoader: () => Promise.resolve({ token: "token" }),
+  }
 
-    SendConversationMessageMutation.__Rewire__("gravity", gravity)
+  beforeEach(() => {
+    impulse.with = sinon.stub().returns(impulse)
     SendConversationMessageMutation.__Rewire__("impulse", impulse)
   })
 
   afterEach(() => {
-    SendConversationMessageMutation.__ResetDependency__("gravity")
     SendConversationMessageMutation.__ResetDependency__("impulse")
   })
 
@@ -64,10 +63,9 @@ describe("SendConversationMessageMutation", () => {
         },
       },
     }
-    gravity.onCall(0).returns(Promise.resolve({ token: "token" })) // First call just adds the message
-    impulse.onCall(0).returns(Promise.resolve(messagePayload))
+    impulse.onCall(0).returns(Promise.resolve(messagePayload)) // First call just adds the message
     impulse.onCall(1).returns(Promise.resolve(conversation)) // Second call is for the conversation data
-    return runAuthenticatedQuery(mutation).then(({ sendConversationMessage }) => {
+    return runAuthenticatedQuery(mutation, rootValue).then(({ sendConversationMessage }) => {
       expect(sendConversationMessage).toEqual(expectedResponseData)
     })
   })
