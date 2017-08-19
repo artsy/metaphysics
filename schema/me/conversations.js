@@ -1,4 +1,3 @@
-import impulse from "lib/loaders/legacy/impulse"
 import { pageable } from "relay-cursor-paging"
 import { parseRelayOptions } from "lib/helpers"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
