@@ -1,4 +1,4 @@
-import followedProfile from "../../../lib/loaders/followed_profile"
+import followedProfile from "../../../lib/loaders/per_type/followed_profile"
 
 describe("followedProfile", () => {
   afterEach(() => followedProfile.__ResetDependency__("gravity"))

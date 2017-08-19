@@ -21,7 +21,7 @@ import EditionSet from "schema/edition_set"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import gravity from "lib/loaders/legacy/gravity"
-import savedArtworkLoader from "lib/loaders/saved_artwork"
+import savedArtworkLoader from "lib/loaders/per_type/saved_artwork"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
 

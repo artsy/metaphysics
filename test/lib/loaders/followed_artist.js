@@ -1,4 +1,4 @@
-import followedArtist from "lib/loaders/followed_artist"
+import followedArtist from "lib/loaders/per_type/followed_artist"
 
 describe("followedArtist", () => {
   afterEach(() => followedArtist.__ResetDependency__("gravity"))
