@@ -86,7 +86,7 @@ app.use(
         accessToken,
         userID,
         defaultTimezone,
-        ...createLoaders(accessToken),
+        ...createLoaders(accessToken, userID),
       },
       formatError: graphqlErrorHandler(request.body),
     }
