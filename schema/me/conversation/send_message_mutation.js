@@ -1,4 +1,3 @@
-import impulse from "lib/loaders/legacy/impulse"
 import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId, cursorForObjectInConnection } from "graphql-relay"
 import { ConversationType, MessageEdge } from "./index"
@@ -41,39 +40,31 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: (
     { id, from, from_id, to, body_text, reply_to_message_id },
     request,
-    { rootValue: { impulseTokenLoader, userID } }
+    { rootValue: { conversationLoader, conversationCreateMessageLoader, userID } }
   ) => {
-    if (!impulseTokenLoader) return null
-    return impulseTokenLoader()
-      .then(data => {
-        return impulse.with(data.token, { method: "POST" })(`conversations/${id}/messages`, {
-          reply_all: true,
-          reply_to_message_id,
-          from,
-          from_id: userID,
-          body_text,
-        })
+    if (!conversationCreateMessageLoader) return null
+    return conversationCreateMessageLoader(id, {
+      from,
+      reply_to_message_id,
+      body_text,
+    }).then(({ id: newMessageID }) => {
+      return conversationLoader(id).then(updatedConversation => {
+        return {
+          conversation: updatedConversation,
+          // Because Impulse does not have the full new message object available immediately, we return an optimistic
+          // response so the mutation can return it too.
+          newMessagePayload: {
+            id: newMessageID,
+            from_email_address: from,
+            from_id: userID,
+            raw_text: body_text,
+            created_at: new Date().toISOString(),
+            attachments: [],
+            // This addition is only for MP so it can determine if the message was from the current user.
+            conversation_from_address: updatedConversation.from_email,
+          },
+        }
       })
-      .then(({ id: newMessageID }) => {
-        return impulseTokenLoader().then(data => {
-          return impulse.with(data.token, { method: "GET" })(`conversations/${id}`).then(updatedConversation => {
-            return {
-              conversation: updatedConversation,
-              // Because Impulse does not have the full new message object available immediately, we return an optimistic
-              // response so the mutation can return it too.
-              newMessagePayload: {
-                id: newMessageID,
-                from_email_address: from,
-                from_id: userID,
-                raw_text: body_text,
-                created_at: new Date().toISOString(),
-                attachments: [],
-                // This addition is only for MP so it can determine if the message was from the current user.
-                conversation_from_address: updatedConversation.from_email,
-              },
-            }
-          })
-        })
-      })
+    })
   },
 })

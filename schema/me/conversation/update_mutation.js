@@ -1,4 +1,3 @@
-import impulse from "lib/loaders/legacy/impulse"
 import { ConversationType, BuyerOutcomeTypes } from "./index"
 import { GraphQLList, GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
@@ -20,18 +19,8 @@ export default mutationWithClientMutationId({
       resolve: conversations => conversations,
     },
   },
-  mutateAndGetPayload: ({ buyer_outcome, ids }, request, { rootValue: { impulseTokenLoader } }) => {
-    if (!impulseTokenLoader) return null
-    return impulseTokenLoader().then(data => {
-      return Promise.all(
-        ids.map(id =>
-          impulse.with(data.token, { method: "PUT" })(`conversations/${id}`, {
-            buyer_outcome,
-          })
-        )
-      ).then(conversations => {
-        return conversations
-      })
-    })
+  mutateAndGetPayload: ({ buyer_outcome, ids }, request, { rootValue: { conversationUpdateLoader } }) => {
+    if (!conversationUpdateLoader) return null
+    return Promise.all(ids.map(id => conversationUpdateLoader(id, { buyer_outcome })))
   },
 })

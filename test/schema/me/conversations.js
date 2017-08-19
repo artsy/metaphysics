@@ -1,21 +1,7 @@
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("Conversations", () => {
-    const impulse = sinon.stub()
-    const Me = schema.__get__("Me")
-    const Conversations = Me.__get__("Conversations")
-
-    beforeEach(() => {
-      impulse.with = sinon.stub().returns(impulse)
-      Conversations.__Rewire__("impulse", impulse)
-    })
-
-    afterEach(() => {
-      Conversations.__ResetDependency__("impulse")
-    })
-
     it("returns conversations", () => {
       const query = `
         {
@@ -69,13 +55,9 @@ describe("Me", () => {
         ],
       }
 
-      const rootValue = {
-        impulseTokenLoader: () => Promise.resolve({ token: "token" }),
-      }
-
-      impulse.onCall(0).returns(Promise.resolve({ conversations: [conversation1, conversation2] }))
-
-      return runAuthenticatedQuery(query, rootValue).then(({ me: { conversations } }) => {
+      return runAuthenticatedQuery(query, {
+        conversationsLoader: () => Promise.resolve({ conversations: [conversation1, conversation2] }),
+      }).then(({ me: { conversations } }) => {
         expect(conversations).toEqual(expectedConversationData)
       })
     })

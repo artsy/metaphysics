@@ -1,6 +1,4 @@
 import { isExisty } from "lib/helpers"
-import impulse from "lib/loaders/legacy/impulse"
-import gravity from "lib/loaders/legacy/gravity"
 import date from "schema/fields/date"
 import initials from "schema/fields/initials"
 import { get, has, merge } from "lodash"
@@ -190,30 +188,24 @@ export const ConversationFields = {
   last_message_open: {
     type: GraphQLString,
     description: "Timestamp if the user opened the last message, null in all other cases",
-    resolve: (conversation, options, request, { rootValue: { impulseTokenLoader } }) => {
+    resolve: (conversation, options, request, { rootValue: { conversationMessagesLoader } }) => {
       if (!isLastMessageToUser(conversation)) {
         return null
       }
       const radiationMessageId = get(conversation, "_embedded.last_message.radiation_message_id")
-      const impulseParams = {
+      return conversationMessagesLoader(null, {
         conversation_id: conversation.id,
         radiation_message_id: radiationMessageId,
         "expand[]": "deliveries",
-      }
-      return impulseTokenLoader().then(data => {
-        return impulse.with(data.token, { method: "GET" })(
-          `message_details`,
-          impulseParams
-        ).then(({ message_details }) => {
-          if (message_details.length === 0) {
-            return null
-          }
-          const relevantDelivery = message_details[0].deliveries.find(d => d.email === conversation.from_email)
-          if (!relevantDelivery) {
-            return null
-          }
-          return relevantDelivery.opened_at
-        })
+      }).then(({ message_details }) => {
+        if (message_details.length === 0) {
+          return null
+        }
+        const relevantDelivery = message_details[0].deliveries.find(d => d.email === conversation.from_email)
+        if (!relevantDelivery) {
+          return null
+        }
+        return relevantDelivery.opened_at
       })
     },
   },
@@ -250,25 +242,24 @@ export const ConversationFields = {
     type: MessageConnection,
     description: "A connection for all messages in a single conversation",
     args: pageable(),
-    resolve: ({ id, from_email }, options, req, { rootValue: { impulseTokenLoader } }) => {
+    resolve: ({ id, from_email }, options, req, { rootValue: { conversationMessagesLoader } }) => {
       const { page, size, offset } = parseRelayOptions(options)
-      const impulseParams = { page, size, conversation_id: id, "expand[]": "deliveries" }
-      return impulseTokenLoader().then(data => {
-        return impulse.with(data.token, { method: "GET" })(
-          `message_details`,
-          impulseParams
-        ).then(({ total_count, message_details }) => {
-          // Inject the convesation initiator's email into each message payload
-          // so we can tell if the user sent a particular message.
-          /* eslint-disable no-param-reassign */
-          message_details = message_details.map(message => {
-            return merge(message, { conversation_from_address: from_email })
-          })
-          /* eslint-disable no-param-reassign */
-          return connectionFromArraySlice(message_details, options, {
-            arrayLength: total_count,
-            sliceStart: offset,
-          })
+      return conversationMessagesLoader(null, {
+        page,
+        size,
+        conversation_id: id,
+        "expand[]": "deliveries",
+      }).then(({ total_count, message_details }) => {
+        // Inject the convesation initiator's email into each message payload
+        // so we can tell if the user sent a particular message.
+        /* eslint-disable no-param-reassign */
+        message_details = message_details.map(message => {
+          return merge(message, { conversation_from_address: from_email })
+        })
+        /* eslint-disable no-param-reassign */
+        return connectionFromArraySlice(message_details, options, {
+          arrayLength: total_count,
+          sliceStart: offset,
         })
       })
     },
@@ -292,12 +283,8 @@ export default {
       description: "The ID of the Conversation",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { impulseTokenLoader } }) => {
-    if (!impulseTokenLoader) return null
-    return impulseTokenLoader().then(data => {
-      return impulse.with(data.token, { method: "GET" })(`conversations/${id}`).then(impulseData => {
-        return impulseData
-      })
-    })
+  resolve: (root, { id }, request, { rootValue: { conversationLoader } }) => {
+    if (!conversationLoader) return null
+    return conversationLoader(id)
   },
 }
