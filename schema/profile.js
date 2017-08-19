@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import followedProfileLoader from "lib/loaders/followed_profile"
 import cached from "./fields/cached"
 import initials from "./fields/initials"

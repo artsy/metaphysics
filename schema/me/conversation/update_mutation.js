@@ -1,4 +1,4 @@
-import impulse from "lib/loaders/impulse"
+import impulse from "lib/loaders/legacy/impulse"
 import { ConversationType, BuyerOutcomeTypes } from "./index"
 import { GraphQLList, GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"

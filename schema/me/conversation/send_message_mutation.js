@@ -1,4 +1,4 @@
-import impulse from "lib/loaders/impulse"
+import impulse from "lib/loaders/legacy/impulse"
 import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId, cursorForObjectInConnection } from "graphql-relay"
 import { ConversationType, MessageEdge } from "./index"

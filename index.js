@@ -9,8 +9,8 @@ import session from "express-session"
 import graphqlHTTP from "express-graphql"
 import bodyParser from "body-parser"
 import schema from "./schema"
-import loaders from "./lib/loaders"
-import perTypeLoaders from "./lib/loaders/per_type"
+import legacyLoaders from "./lib/loaders/legacy"
+import createLoaders from "./lib/loaders/per_type"
 import config from "./config"
 import { info, error } from "./lib/loggers"
 import auth from "./lib/auth"
@@ -67,7 +67,7 @@ app.use(
   graphqlHTTP(request => {
     info("----------")
 
-    loaders.clearAll()
+    legacyLoaders.clearAll()
 
     const accessToken = request.headers["x-access-token"]
     const userID = request.headers["x-user-id"]
@@ -86,7 +86,7 @@ app.use(
         accessToken,
         userID,
         defaultTimezone,
-        ...perTypeLoaders(accessToken),
+        ...createLoaders(accessToken),
       },
       formatError: graphqlErrorHandler(request.body),
     }

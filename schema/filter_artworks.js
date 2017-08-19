@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import { map, omit, keys, create, assign } from "lodash"
 import { isExisty } from "lib/helpers"
 import Artwork from "./artwork"

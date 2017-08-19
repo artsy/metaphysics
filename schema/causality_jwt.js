@@ -1,6 +1,6 @@
 import jwt from "jwt-simple"
 import { GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 
 const { HMAC_SECRET } = process.env
 

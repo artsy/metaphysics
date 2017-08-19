@@ -1,5 +1,5 @@
 import { chain, find, has } from "lodash"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import { params as genericGenes } from "./add_generic_genes"
 import Results from "./results"
 import Title from "./title"

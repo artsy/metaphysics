@@ -1,6 +1,6 @@
 import { omit } from "lodash"
-import gravity from "lib/loaders/gravity"
-import total from "lib/loaders/total"
+import gravity from "lib/loaders/legacy/gravity"
+import total from "lib/loaders/legacy/total"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"

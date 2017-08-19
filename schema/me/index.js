@@ -1,6 +1,6 @@
 import date from "schema/fields/date"
 import initials from "schema/fields/initials"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import Bidders from "./bidders"
 import BidderStatus from "./bidder_status"
 import BidderPositions from "./bidder_positions"

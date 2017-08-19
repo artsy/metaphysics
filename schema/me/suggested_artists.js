@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import Artist from "schema/artist"
 import { GraphQLBoolean, GraphQLList, GraphQLString, GraphQLInt } from "graphql"
 

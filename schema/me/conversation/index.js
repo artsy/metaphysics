@@ -1,6 +1,6 @@
 import { isExisty } from "lib/helpers"
-import impulse from "lib/loaders/impulse"
-import gravity from "lib/loaders/gravity"
+import impulse from "lib/loaders/legacy/impulse"
+import gravity from "lib/loaders/legacy/gravity"
 import date from "schema/fields/date"
 import initials from "schema/fields/initials"
 import { get, has, merge } from "lodash"

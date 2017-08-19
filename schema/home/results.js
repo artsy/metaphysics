@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import uncachedGravity from "lib/apis/gravity"
 import { activeSaleArtworks, featuredAuction, featuredFair, featuredGene, geneArtworks, popularArtists } from "./fetch"
 import { map, assign, keys, without, shuffle, slice } from "lodash"

@@ -1,5 +1,5 @@
-import gravity from "lib/loaders/gravity"
-import delta from "lib/loaders/delta"
+import gravity from "lib/loaders/legacy/gravity"
+import delta from "lib/loaders/legacy/delta"
 import { clone, first, forEach, map, sampleSize, shuffle, slice, filter, sortBy } from "lodash"
 import blacklist from "lib/artist_blacklist"
 

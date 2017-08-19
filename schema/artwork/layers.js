@@ -1,5 +1,5 @@
 import { remove } from "lodash"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import { enhance } from "lib/helpers"
 import ArtworkLayer from "./layer"
 import { GraphQLList } from "graphql"

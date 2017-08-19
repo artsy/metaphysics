@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import LotStanding from "./lot_standing"
 import { GraphQLList, GraphQLBoolean, GraphQLString } from "graphql"
 

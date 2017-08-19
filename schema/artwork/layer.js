@@ -1,5 +1,5 @@
 import Artwork from "./index"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import { IDFields } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLList } from "graphql"
 
