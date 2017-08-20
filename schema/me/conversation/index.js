@@ -193,7 +193,7 @@ export const ConversationFields = {
         return null
       }
       const radiationMessageId = get(conversation, "_embedded.last_message.radiation_message_id")
-      return conversationMessagesLoader(null, {
+      return conversationMessagesLoader({
         conversation_id: conversation.id,
         radiation_message_id: radiationMessageId,
         "expand[]": "deliveries",
@@ -244,7 +244,7 @@ export const ConversationFields = {
     args: pageable(),
     resolve: ({ id, from_email }, options, req, { rootValue: { conversationMessagesLoader } }) => {
       const { page, size, offset } = parseRelayOptions(options)
-      return conversationMessagesLoader(null, {
+      return conversationMessagesLoader({
         page,
         size,
         conversation_id: id,

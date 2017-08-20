@@ -26,14 +26,14 @@ describe("API loaders", () => {
       })
 
       it("appends params to the path", () => {
-        return loader(null, { some: "param" }).then(({ path }) => {
+        return loader({ some: "param" }).then(({ path }) => {
           expect(path).toEqual("some/path?some=param")
         })
       })
 
       it("sets default params and merges with specific params", () => {
         loader = apiLoader("some/path", {}, { defaultParam: "value" })
-        return loader(null, { some: "param" }).then(({ path }) => {
+        return loader({ some: "param" }).then(({ path }) => {
           expect(path).toEqual("some/path?defaultParam=value&some=param")
         })
       })

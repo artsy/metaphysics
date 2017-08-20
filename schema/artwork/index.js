@@ -237,7 +237,7 @@ export const artworkFields = () => {
       description: "Is this artwork part of an auction that is currently running?",
       resolve: ({ sale_ids }, options, request, { rootValue: { salesLoader } }) => {
         if (sale_ids && sale_ids.length > 0) {
-          return salesLoader(null, {
+          return salesLoader({
             id: sale_ids,
             is_auction: true,
             live: true,
@@ -275,7 +275,7 @@ export const artworkFields = () => {
       description: "Are we able to display a contact form on artwork pages?",
       deprecationReason: "Prefer to use is_inquireable",
       resolve: (artwork, options, request, { rootValue: { relatedSalesLoader } }) => {
-        return relatedSalesLoader(null, {
+        return relatedSalesLoader({
           size: 1,
           active: true,
           artwork: [artwork.id],
@@ -329,7 +329,7 @@ export const artworkFields = () => {
       description: "Is this artwork part of an auction?",
       resolve: ({ sale_ids }, options, request, { rootValue: { salesLoader } }) => {
         if (sale_ids && sale_ids.length > 0) {
-          return salesLoader(null, {
+          return salesLoader({
             id: sale_ids,
             is_auction: true,
           }).then(sales => {
@@ -343,7 +343,7 @@ export const artworkFields = () => {
       type: GraphQLBoolean,
       description: "Is this artwork part of a current show",
       resolve: ({ id }, options, request, { rootValue: { relatedShowsLoader } }) =>
-        relatedShowsLoader(null, { active: true, size: 1, artwork: [id] }).then(shows => shows.length > 0),
+        relatedShowsLoader({ active: true, size: 1, artwork: [id] }).then(shows => shows.length > 0),
     },
     is_not_for_sale: {
       type: GraphQLString,
@@ -439,7 +439,7 @@ export const artworkFields = () => {
         },
       },
       resolve: ({ _id }, { size }, request, { rootValue: { relatedArtworksLoader } }) =>
-        relatedArtworksLoader(null, { artwork_id: _id, size }),
+        relatedArtworksLoader({ artwork_id: _id, size }),
     },
     sale: {
       type: Sale.type,
@@ -499,7 +499,7 @@ export const artworkFields = () => {
         },
       },
       resolve: ({ id }, { active, sort, at_a_fair }, request, { rootValue: { relatedShowsLoader } }) =>
-        relatedShowsLoader(null, {
+        relatedShowsLoader({
           artwork: [id],
           size: 1,
           active,
@@ -524,7 +524,7 @@ export const artworkFields = () => {
         },
       },
       resolve: ({ id }, { size, active, sort, at_a_fair }, request, { rootValue: { relatedShowsLoader } }) =>
-        relatedShowsLoader(null, {
+        relatedShowsLoader({
           artwork: [id],
           active,
           size,

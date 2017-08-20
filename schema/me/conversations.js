@@ -11,7 +11,7 @@ export default {
   resolve: (root, options, request, { rootValue: { conversationsLoader } }) => {
     if (!conversationsLoader) return null
     const relayOptions = parseRelayOptions(options)
-    return conversationsLoader(null, relayOptions).then(({ conversations }) => {
+    return conversationsLoader(relayOptions).then(({ conversations }) => {
       return connectionFromArraySlice(conversations, options, {
         arrayLength: conversations.length,
         sliceStart: relayOptions.offset,
