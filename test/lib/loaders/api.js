@@ -34,7 +34,7 @@ describe("API loaders", () => {
       })
 
       it("sets default params and merges with specific params", () => {
-        loader = apiLoader("some/path", {}, { defaultParam: "value" })
+        loader = apiLoader("some/path", { defaultParam: "value" })
         return loader({ some: "param" }).then(({ path }) => {
           expect(path).toEqual("some/path?defaultParam=value&some=param")
         })
@@ -46,6 +46,12 @@ describe("API loaders", () => {
         expect(responses.map(({ path }) => path)).toEqual(["some/path?", "some/path?"])
         expect(api.mock.calls.length).toEqual(1)
       })
+    })
+
+    it("passes options for the api function on", () => {
+      // Needs to be a new path so that it hasn’t been cached in memcache yet
+      loader = apiLoader("some/post/path", {}, { method: "POST" })
+      return loader().then(({ options }) => expect(options.method).toEqual("POST"))
     })
   }
 
@@ -59,7 +65,7 @@ describe("API loaders", () => {
 
     it("does not try to pass an access token", () => {
       return loader().then(({ accessToken }) => {
-        expect(accessToken).toEqual(undefined)
+        expect(accessToken).toEqual(null)
       })
     })
 
