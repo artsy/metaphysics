@@ -22,7 +22,7 @@ const ArtistCarousel: GraphQLFieldConfig<ArtistCarouselType, *> = {
     const { artistArtworksLoader, partnerShowImagesLoader, relatedShowsLoader } = (resolver.rootValue: any)
 
     return Promise.all([
-      relatedShowsLoader(id, {
+      relatedShowsLoader({
         artist_id: id,
         sort: "-end_at",
         displayable: true,

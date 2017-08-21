@@ -173,7 +173,7 @@ export const artworkFields = () => {
     fair: {
       type: Fair.type,
       resolve: ({ id }, options, request, { rootValue: { relatedFairsLoader } }) => {
-        return relatedFairsLoader(id, { artwork: [id], size: 1 }).then(_.first)
+        return relatedFairsLoader({ artwork: [id], size: 1 }).then(_.first)
       },
     },
     highlights: {
@@ -181,8 +181,8 @@ export const artworkFields = () => {
       description: "Returns the highlighted shows and articles",
       resolve: ({ id, _id }, options, request, { rootValue: { relatedShowsLoader, articlesLoader } }) =>
         Promise.all([
-          relatedShowsLoader(id, { artwork: [id], size: 1, at_a_fair: false }),
-          articlesLoader(_id, {
+          relatedShowsLoader({ artwork: [id], size: 1, at_a_fair: false }),
+          articlesLoader({
             artwork_id: _id,
             published: true,
             limit: 1,
@@ -252,7 +252,7 @@ export const artworkFields = () => {
       description: "When in an auction, can the work be bought immediately",
       resolve: ({ id, acquireable, sale_ids }, options, request, { rootValue: { salesLoader } }) => {
         if (sale_ids && sale_ids.length > 0 && acquireable) {
-          return salesLoader(id, {
+          return salesLoader({
             id: sale_ids,
             is_auction: true,
             live: true,
