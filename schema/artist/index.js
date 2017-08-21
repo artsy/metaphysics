@@ -4,7 +4,6 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { assign, compact, defaults, first, has } from "lodash"
 import { exclude } from "lib/helpers"
-import followedArtistLoader from "lib/loaders/per_type/followed_artist"
 import cached from "schema/fields/cached"
 import initials from "schema/fields/initials"
 import { markdown, formatMarkdownValue } from "schema/fields/markdown"
@@ -390,9 +389,9 @@ export const ArtistType = new GraphQLObjectType({
       },
       is_followed: {
         type: GraphQLBoolean,
-        resolve: ({ id }, {}, request, { rootValue: { accessToken } }) => {
-          if (!accessToken) return false
-          return followedArtistLoader.load(JSON.stringify({ id, accessToken })).then(({ is_followed }) => is_followed)
+        resolve: ({ id }, {}, request, { rootValue: { followedArtistLoader } }) => {
+          if (!followedArtistLoader) return false
+          return followedArtistLoader(id).then(({ is_followed }) => is_followed)
         },
       },
       is_public: {

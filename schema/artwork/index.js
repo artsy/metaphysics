@@ -21,7 +21,6 @@ import EditionSet from "schema/edition_set"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import gravity from "lib/loaders/legacy/gravity"
-import savedArtworkLoader from "lib/loaders/per_type/saved_artwork"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
 
@@ -376,9 +375,9 @@ export const artworkFields = () => {
     },
     is_saved: {
       type: GraphQLBoolean,
-      resolve: ({ id }, {}, request, { rootValue: { accessToken, userID } }) => {
-        if (!accessToken) return false
-        return savedArtworkLoader.load(JSON.stringify({ id, userID, accessToken })).then(({ is_saved }) => is_saved)
+      resolve: ({ id }, {}, request, { rootValue: { savedArtworkLoader } }) => {
+        if (!savedArtworkLoader) return false
+        return savedArtworkLoader(id).then(({ is_saved }) => is_saved)
       },
     },
     is_shareable: {
