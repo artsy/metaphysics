@@ -72,7 +72,6 @@ const ShowField = {
   },
   resolve: ({ id }, options, request, { rootValue: { relatedShowsLoader } }) => {
     return relatedShowsLoader(
-      id,
       defaults(options, {
         artist_id: id,
         sort: "-end_at",
@@ -102,7 +101,6 @@ export const ArtistType = new GraphQLObjectType({
         type: new GraphQLList(Article.type),
         resolve: ({ _id }, options, request, { rootValue: { articlesLoader } }) =>
           articlesLoader(
-            _id,
             defaults(options, {
               artist_id: _id,
               published: true,
@@ -123,7 +121,6 @@ export const ArtistType = new GraphQLObjectType({
         },
         resolve: ({ id }, options, request, { rootValue: { relatedMainArtistsLoader } }) =>
           relatedMainArtistsLoader(
-            id,
             defaults(options, {
               artist: [id],
             })
@@ -190,7 +187,7 @@ export const ArtistType = new GraphQLObjectType({
         type: Article.type,
         description: "The Artist biography article written by Artsy",
         resolve: ({ _id }, options, request, { rootValue: { articlesLoader } }) =>
-          articlesLoader(_id, {
+          articlesLoader({
             published: true,
             biography_for_artist_id: _id,
             limit: 1,
@@ -272,7 +269,6 @@ export const ArtistType = new GraphQLObjectType({
         },
         resolve: ({ id }, options, request, { rootValue: { relatedContemporaryArtistsLoader } }) =>
           relatedContemporaryArtistsLoader(
-            id,
             defaults(options, {
               artist: [id],
             })
@@ -321,7 +317,7 @@ export const ArtistType = new GraphQLObjectType({
         type: new GraphQLList(Show.type),
         description: "Custom-sorted list of shows for an artist, in order of significance.",
         resolve: ({ id }, options, request, { rootValue: { relatedShowsLoader } }) => {
-          return relatedShowsLoader(id, {
+          return relatedShowsLoader({
             artist_id: id,
             sort: "-relevance,-start_at",
             is_reference: true,
@@ -449,7 +445,6 @@ export const ArtistType = new GraphQLObjectType({
         },
         resolve: ({ id }, options, request, { rootValue: { relatedSalesLoader } }) =>
           relatedSalesLoader(
-            id,
             defaults(options, {
               artist_id: id,
               sort: "timely_at,name",
