@@ -1,5 +1,4 @@
-import gravity from "lib/loaders/gravity"
-import followedProfileLoader from "lib/loaders/followed_profile"
+import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import numeral from "./fields/numeral"
@@ -39,9 +38,9 @@ const ProfileType = new GraphQLObjectType({
     initials: initials("owner.name"),
     is_followed: {
       type: GraphQLBoolean,
-      resolve: ({ id }, {}, request, { rootValue: { accessToken } }) => {
-        if (!accessToken) return false
-        return followedProfileLoader.load(JSON.stringify({ id, accessToken })).then(({ is_followed }) => is_followed)
+      resolve: ({ id }, {}, request, { rootValue: { followedProfileLoader } }) => {
+        if (!followedProfileLoader) return false
+        return followedProfileLoader(id).then(({ is_followed }) => is_followed)
       },
     },
     is_published: {

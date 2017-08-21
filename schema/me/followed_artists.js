@@ -1,6 +1,6 @@
 import _ from "lodash"
 
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import Artist from "schema/artist"
 import { IDFields } from "schema/object_identification"
 

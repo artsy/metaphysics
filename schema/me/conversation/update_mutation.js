@@ -1,8 +1,5 @@
-import impulse from "lib/loaders/impulse"
-import gravity from "lib/loaders/gravity"
 import { ConversationType, BuyerOutcomeTypes } from "./index"
 import { GraphQLList, GraphQLString, GraphQLNonNull } from "graphql"
-const { IMPULSE_APPLICATION_ID } = process.env
 import { mutationWithClientMutationId } from "graphql-relay"
 
 export default mutationWithClientMutationId({
@@ -22,20 +19,8 @@ export default mutationWithClientMutationId({
       resolve: conversations => conversations,
     },
   },
-  mutateAndGetPayload: ({ buyer_outcome, ids }, request, { rootValue: { accessToken } }) => {
-    if (!accessToken) return null
-    return gravity.with(accessToken, { method: "POST" })("me/token", {
-      client_application_id: IMPULSE_APPLICATION_ID,
-    }).then(data => {
-      return Promise.all(
-        ids.map(id =>
-          impulse.with(data.token, { method: "PUT" })(`conversations/${id}`, {
-            buyer_outcome,
-          })
-        )
-      ).then(conversations => {
-        return conversations
-      })
-    })
+  mutateAndGetPayload: ({ buyer_outcome, ids }, request, { rootValue: { conversationUpdateLoader } }) => {
+    if (!conversationUpdateLoader) return null
+    return Promise.all(ids.map(id => conversationUpdateLoader(id, { buyer_outcome })))
   },
 })

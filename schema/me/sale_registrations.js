@@ -1,5 +1,5 @@
 import { first } from "lodash"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import Sale from "schema/sale/index"
 import Sales from "schema/sales"
 import Bidder from "schema/bidder"

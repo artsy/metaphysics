@@ -1,5 +1,5 @@
 import date from "schema/fields/date"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import { IDFields } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
 

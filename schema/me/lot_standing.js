@@ -1,5 +1,5 @@
 import { isExisty } from "lib/helpers"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import BidderPosition from "schema/bidder_position"
 import Bidder from "schema/bidder"
 import SaleArtwork from "schema/sale_artwork"

@@ -1,5 +1,5 @@
 import { create, assign } from "lodash"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import { featuredAuction, featuredFair, featuredGene, popularArtists } from "./fetch"
 import Fair from "schema/fair"
 import Sale from "schema/sale/index"

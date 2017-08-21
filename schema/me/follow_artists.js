@@ -1,6 +1,6 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import { map } from "lodash"
-import { total as getTotal } from "lib/loaders/total"
+import { total as getTotal } from "lib/loaders/legacy/total"
 import Artist from "schema/artist"
 import { GraphQLInt, GraphQLList, GraphQLObjectType } from "graphql"
 

@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import OrderedSet from "./ordered_set"
 import { GraphQLString, GraphQLNonNull, GraphQLList, GraphQLBoolean } from "graphql"
 

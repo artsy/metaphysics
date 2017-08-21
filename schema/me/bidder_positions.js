@@ -1,5 +1,5 @@
 import _ from "lodash"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import BidderPosition from "schema/bidder_position"
 import { GraphQLList, GraphQLBoolean, GraphQLString } from "graphql"
 

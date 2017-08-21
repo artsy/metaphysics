@@ -4,7 +4,6 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { assign, compact, defaults, first, has } from "lodash"
 import { exclude } from "lib/helpers"
-import followedArtistLoader from "lib/loaders/followed_artist"
 import cached from "schema/fields/cached"
 import initials from "schema/fields/initials"
 import { markdown, formatMarkdownValue } from "schema/fields/markdown"
@@ -24,8 +23,8 @@ import SaleSorts from "schema/sale/sorts"
 import ArtistCarousel from "./carousel"
 import ArtistStatuses from "./statuses"
 import ArtistArtworksFilters from "./artwork_filters"
-import positron from "lib/loaders/positron"
-import total from "lib/loaders/total"
+import positron from "lib/loaders/legacy/positron"
+import total from "lib/loaders/legacy/total"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
 
@@ -390,9 +389,9 @@ export const ArtistType = new GraphQLObjectType({
       },
       is_followed: {
         type: GraphQLBoolean,
-        resolve: ({ id }, {}, request, { rootValue: { accessToken } }) => {
-          if (!accessToken) return false
-          return followedArtistLoader.load(JSON.stringify({ id, accessToken })).then(({ is_followed }) => is_followed)
+        resolve: ({ id }, {}, request, { rootValue: { followedArtistLoader } }) => {
+          if (!followedArtistLoader) return false
+          return followedArtistLoader(id).then(({ is_followed }) => is_followed)
         },
       },
       is_public: {
