@@ -93,6 +93,11 @@ describe("Me", () => {
             },
           ],
         }),
+      conversationInvoiceLoader: () =>
+        Promise.resolve({
+          payment_url: "https://www.adopt-cats.org/adopt-all-the-cats",
+          state: "unpaid",
+        }),
     }
 
     it("returns a conversation", () => {
@@ -110,6 +115,10 @@ describe("Me", () => {
                   node {
                     id
                     is_invoice
+                    invoice {
+                      payment_url
+                      state
+                    }
                     is_from_user
                     from {
                       name
