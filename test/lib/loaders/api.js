@@ -53,6 +53,14 @@ describe("API loaders", () => {
       loader = apiLoader("some/post/path", {}, { method: "POST" })
       return loader().then(({ options }) => expect(options.method).toEqual("POST"))
     })
+
+    it("passes a requestID", () => {
+      // Needs a new path so we don't just refer to the cached version
+      loader = apiLoader("some/path/new", {}, { requestID: "request-foo" })
+      return loader().then(({ options }) => {
+        expect(options.requestID).toEqual("request-foo")
+      })
+    })
   }
 
   describe("without authentication", () => {
