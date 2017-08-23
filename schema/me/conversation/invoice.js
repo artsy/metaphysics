@@ -39,6 +39,6 @@ export const InvoiceType = new GraphQLObjectType({
       description: "Current state of invoice.",
       type: InvoiceState,
     },
-    total: amount(({ total_cents, symbol }) => total_cents), // eslint-disable-line no-unused-vars
+    total: amount(({ total_cents }) => total_cents),
   },
 })
