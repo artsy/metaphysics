@@ -164,8 +164,9 @@ const HomePageArtworkModules = {
 
     // Otherwise, get the generic set of modules
     return Promise.all([featuredAuction(), featuredFair()]).then(([auction, fair]) => {
-      const modules = loggedOutModules(auction, fair)
-      return filterModules(modules, max_rails)
+      let modules = loggedOutModules(auction, fair)
+      modules = filterModules(modules, max_rails)
+      return reorderModules(modules, order)
     })
   },
 }
