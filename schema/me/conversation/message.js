@@ -75,7 +75,7 @@ export const MessageType = new GraphQLObjectType({
       description: "Text which has been parsed/sanitized of quoted replies (among other things).",
       type: GraphQLString,
       resolve: ({ body }) => {
-        return body.split("\n\nAbout this collector:")[0]
+        return body && body.split("\n\nAbout this collector")[0]
       },
     },
 
