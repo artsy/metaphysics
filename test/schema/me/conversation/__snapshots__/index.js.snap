@@ -60,6 +60,7 @@ Object {
             "invoice": Object {
               "payment_url": "https://www.adopt-cats.org/adopt-all-the-cats",
               "state": "UNPAID",
+              "total": "$4,200",
             },
             "is_from_user": false,
             "is_invoice": true,

@@ -97,6 +97,8 @@ describe("Me", () => {
         Promise.resolve({
           payment_url: "https://www.adopt-cats.org/adopt-all-the-cats",
           state: "unpaid",
+          symbol: "$",
+          total_cents: 420000,
         }),
     }
 
@@ -118,6 +120,7 @@ describe("Me", () => {
                     invoice {
                       payment_url
                       state
+                      total
                     }
                     is_from_user
                     from {

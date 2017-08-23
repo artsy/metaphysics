@@ -1,4 +1,5 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
+import { amount } from "../../fields/money"
 
 const InvoiceState = new GraphQLEnumType({
   name: "InvoiceState",
@@ -38,5 +39,6 @@ export const InvoiceType = new GraphQLObjectType({
       description: "Current state of invoice.",
       type: InvoiceState,
     },
+    total: amount(({ total_cents, symbol }) => total_cents), // eslint-disable-line no-unused-vars
   },
 })
