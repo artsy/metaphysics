@@ -252,9 +252,11 @@ export const ConversationFields = {
       }).then(({ total_count, message_details }) => {
         // Inject the convesation initiator's email into each message payload
         // so we can tell if the user sent a particular message.
+        // Also inject the conversation id, since we need it in some message
+        // resolvers (invoices).
         /* eslint-disable no-param-reassign */
         message_details = message_details.map(message => {
-          return merge(message, { conversation_from_address: from_email })
+          return merge(message, { conversation_from_address: from_email, conversation_id: id })
         })
         /* eslint-disable no-param-reassign */
         return connectionFromArraySlice(message_details, options, {

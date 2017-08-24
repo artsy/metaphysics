@@ -4,6 +4,7 @@ import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLN
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 import { AttachmentType } from "./attachment"
 import { DeliveryType } from "./delivery"
+import { InvoiceType } from "./invoice"
 import { isExisty } from "lib/helpers"
 
 const MessageInitiatorType = new GraphQLObjectType({
@@ -18,6 +19,10 @@ const MessageInitiatorType = new GraphQLObjectType({
     },
   },
 })
+
+const isInvoiceMessage = metadata => {
+  return !!metadata && isExisty(metadata.lewitt_invoice_id)
+}
 
 export const MessageType = new GraphQLObjectType({
   name: "Message",
@@ -87,12 +92,23 @@ export const MessageType = new GraphQLObjectType({
       type: new GraphQLList(AttachmentType),
     },
 
+    invoice: {
+      type: InvoiceType,
+      resolve: ({ metadata, conversation_id }, options, request, { rootValue: { conversationInvoiceLoader } }) => {
+        if (!isInvoiceMessage(metadata)) {
+          return null
+        }
+        return conversationInvoiceLoader({
+          conversation_id,
+          lewitt_invoice_id: metadata.lewitt_invoice_id,
+        })
+      },
+    },
+
     is_invoice: {
       description: "True if message is an invoice message",
       type: GraphQLBoolean,
-      resolve: ({ metadata }) => {
-        return !!metadata && isExisty(metadata.lewitt_invoice_id)
-      },
+      resolve: ({ metadata }) => isInvoiceMessage(metadata),
     },
     created_at: date,
   },
