@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import Artwork from "schema/artwork/index"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
@@ -33,13 +33,14 @@ export default {
       inquireable_type: "artwork",
       total_count: true,
     }
-    return gravity
-      .with(accessToken, { headers: true })("me/inquiry_requests", gravityArgs)
-      .then(({ body, headers }) => {
-        return connectionFromArraySlice(body, options, {
-          arrayLength: headers["x-total-count"],
-          sliceStart: offset,
-        })
+    return gravity.with(accessToken, { headers: true })(
+      "me/inquiry_requests",
+      gravityArgs
+    ).then(({ body, headers }) => {
+      return connectionFromArraySlice(body, options, {
+        arrayLength: headers["x-total-count"],
+        sliceStart: offset,
       })
+    })
   },
 }

@@ -1,6 +1,6 @@
 import { assign, has, omit } from "lodash"
 import { exclude } from "lib/helpers"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import Profile from "./profile"
@@ -99,7 +99,7 @@ const PartnerType = new GraphQLObjectType({
       href: {
         type: GraphQLString,
         resolve: ({ type, default_profile_id }) =>
-          (type === "Auction" ? `/auction/${default_profile_id}` : `/${default_profile_id}`),
+          type === "Auction" ? `/auction/${default_profile_id}` : `/${default_profile_id}`,
       },
       initials: initials("name"),
       is_default_profile_public: {

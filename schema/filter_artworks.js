@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import { map, omit, keys, create, assign } from "lodash"
 import { isExisty } from "lib/helpers"
 import Artwork from "./artwork"
@@ -214,9 +214,9 @@ function filterArtworks(primaryKey) {
         delete gravityOptions.medium
       }
 
-      return gravity
-        .with(accessToken)("filter/artworks", gravityOptions)
-        .then(response => assign({}, response, { options: gravityOptions }))
+      return gravity.with(accessToken)("filter/artworks", gravityOptions).then(response =>
+        assign({}, response, { options: gravityOptions })
+      )
     },
   }
 }

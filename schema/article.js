@@ -1,5 +1,4 @@
 import { has } from "lodash"
-import positron from "lib/loaders/positron"
 import cached from "./fields/cached"
 import AuthorType from "./author"
 import Image from "./image"
@@ -62,7 +61,7 @@ const Article = {
       description: "The ID of the Article",
     },
   },
-  resolve: (root, { id }) => positron(`articles/${id}`),
+  resolve: (root, { id }, request, { rootValue: { articleLoader } }) => articleLoader(id),
 }
 
 export default Article

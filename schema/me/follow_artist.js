@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ArtistType } from "schema/artist/index"
@@ -18,8 +18,8 @@ export default mutationWithClientMutationId({
   outputFields: {
     artist: {
       type: ArtistType,
-      resolve: ({ artist_id }) => {
-        return gravity(`artist/${artist_id}`).then(artist => {
+      resolve: ({ artist_id }, options, request, { rootValue: { artistLoader } }) => {
+        return artistLoader(artist_id).then(artist => {
           return artist
         })
       },
@@ -30,10 +30,8 @@ export default mutationWithClientMutationId({
     const saveMethod = unfollow ? "DELETE" : "POST"
     const options = unfollow ? {} : { artist_id }
     const followPath = unfollow ? `/${artist_id}` : ""
-    return gravity
-      .with(accessToken, {
-        method: saveMethod,
-      })(`/me/follow/artist${followPath}`, options)
-      .then(() => ({ artist_id }))
+    return gravity.with(accessToken, {
+      method: saveMethod,
+    })(`/me/follow/artist${followPath}`, options).then(() => ({ artist_id }))
   },
 })

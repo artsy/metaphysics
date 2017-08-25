@@ -1,5 +1,5 @@
-import gravity from "lib/loaders/gravity"
-import delta from "lib/loaders/delta"
+import gravity from "lib/loaders/legacy/gravity"
+import delta from "lib/loaders/legacy/delta"
 import { clone, first, forEach, map, sampleSize, shuffle, slice, filter, sortBy } from "lodash"
 import blacklist from "lib/artist_blacklist"
 
@@ -18,10 +18,9 @@ export const featuredFair = () => {
 }
 
 export const activeSaleArtworks = accessToken => {
-  return gravity
-    .with(accessToken)("me/lot_standings", {
-      live: true,
-    })
+  return gravity.with(accessToken)("me/lot_standings", {
+    live: true,
+  })
     .then(results => {
       return results.map(result => result.sale_artwork)
     })
@@ -63,18 +62,16 @@ export const geneArtworks = (id, size) => {
 }
 
 export const relatedArtists = (accessToken, userID) => {
-  return gravity
-    .with(accessToken)(`user/${userID}/suggested/similar/artists`, {
-      exclude_artists_without_forsale_artworks: true,
-      exclude_followed_artists: true,
-      size: 20,
+  return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`, {
+    exclude_artists_without_forsale_artworks: true,
+    exclude_followed_artists: true,
+    size: 20,
+  }).then(results => {
+    const filteredResults = filter(results, result => {
+      return result.sim_artist.forsale_artworks_count > 0
     })
-    .then(results => {
-      const filteredResults = filter(results, result => {
-        return result.sim_artist.forsale_artworks_count > 0
-      })
-      return sampleSize(filteredResults, 2)
-    })
+    return sampleSize(filteredResults, 2)
+  })
 }
 
 export const popularArtists = () => {

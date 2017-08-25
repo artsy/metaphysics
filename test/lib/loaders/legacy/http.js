@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 
 import cache from "lib/cache"
-import httpLoader from "lib/loaders/http"
+import httpLoader from "lib/loaders/legacy/http"
 
 describe("Loaders", () => {
   describe("http", () => {

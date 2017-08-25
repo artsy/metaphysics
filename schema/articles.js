@@ -1,4 +1,3 @@
-import positron from "lib/loaders/positron"
 import Article from "./article"
 import ArticleSorts from "./sorts/article_sorts"
 import { GraphQLString, GraphQLBoolean, GraphQLList } from "graphql"
@@ -19,8 +18,8 @@ const Articles = {
     },
     sort: ArticleSorts,
   },
-  resolve: (root, options) => {
-    return positron("articles", options).then(articles => articles.results)
+  resolve: (root, options, request, { rootValue: { articlesLoader } }) => {
+    return articlesLoader(options).then(articles => articles.results)
   },
 }
 

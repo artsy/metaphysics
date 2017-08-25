@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import Bidder from "schema/bidder"
 import { GraphQLList, GraphQLString } from "graphql"
 

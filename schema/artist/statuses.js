@@ -1,4 +1,4 @@
-import total from "lib/loaders/total"
+import total from "lib/loaders/legacy/total"
 import { GraphQLObjectType, GraphQLBoolean } from "graphql"
 
 const ArtistStatusesType = new GraphQLObjectType({
@@ -17,7 +17,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     articles: {
       type: GraphQLBoolean,
       resolve: ({ _id }, options, request, { rootValue: { articlesLoader } }) =>
-        articlesLoader(_id, {
+        articlesLoader({
           artist_id: _id,
           published: true,
           limit: 0,
@@ -37,7 +37,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     biography: {
       type: GraphQLBoolean,
       resolve: ({ _id }, options, request, { rootValue: { articlesLoader } }) =>
-        articlesLoader(_id, {
+        articlesLoader({
           published: true,
           biography_for_artist_id: _id,
           limit: 0,

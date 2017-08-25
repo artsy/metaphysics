@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import ItemType from "./item"
 import { IDFields } from "./object_identification"

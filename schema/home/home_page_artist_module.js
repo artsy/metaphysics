@@ -1,7 +1,7 @@
 import { has, map } from "lodash"
 import Artist from "schema/artist"
-import gravity from "lib/loaders/gravity"
-import { total } from "lib/loaders/total"
+import gravity from "lib/loaders/legacy/gravity"
+import { total } from "lib/loaders/legacy/total"
 import { NodeInterface } from "schema/object_identification"
 import { toGlobalId } from "graphql-relay"
 import { GraphQLEnumType, GraphQLID, GraphQLNonNull, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
@@ -31,12 +31,10 @@ export const HomePageArtistModuleTypes = {
       if (!accessToken || !userID) {
         throw new Error("Both the X-USER-ID and X-ACCESS-TOKEN headers are required.")
       }
-      return gravity
-        .with(accessToken)(`user/${userID}/suggested/similar/artists`, {
-          exclude_followed_artists: true,
-          exclude_artists_without_forsale_artworks: true,
-        })
-        .then(results => map(results, "artist"))
+      return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`, {
+        exclude_followed_artists: true,
+        exclude_artists_without_forsale_artworks: true,
+      }).then(results => map(results, "artist"))
     },
   },
   TRENDING: {

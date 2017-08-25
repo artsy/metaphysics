@@ -1,4 +1,4 @@
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import uncachedGravity from "lib/apis/gravity"
 import { activeSaleArtworks, featuredAuction, featuredFair, featuredGene, geneArtworks, popularArtists } from "./fetch"
 import { map, assign, keys, without, shuffle, slice } from "lodash"
@@ -37,14 +37,12 @@ const moduleResults = {
     })
   },
   followed_galleries: ({ accessToken }) => {
-    return gravity
-      .with(accessToken)("me/follow/profiles/artworks", {
-        for_sale: true,
-        size: 60,
-      })
-      .then(artworks => {
-        return slice(shuffle(artworks), 0, RESULTS_SIZE)
-      })
+    return gravity.with(accessToken)("me/follow/profiles/artworks", {
+      for_sale: true,
+      size: 60,
+    }).then(artworks => {
+      return slice(shuffle(artworks), 0, RESULTS_SIZE)
+    })
   },
   genes: ({ accessToken, params: { id } }) => {
     if (id) {

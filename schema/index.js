@@ -35,8 +35,8 @@ import Tag from "./tag"
 import TrendingArtists from "./trending"
 import MatchArtist from "./match/artist"
 import Me from "./me"
-import UpdateConversation from "./me/update_conversation"
-import AppendConversationThread from "./me/append_conversation_thread"
+import UpdateConversationMutation from "./me/conversation/update_mutation"
+import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
 import SaveArtwork from "./me/save_artwork"
 import CausalityJWT from "./causality_jwt"
@@ -102,8 +102,8 @@ const schema = new GraphQLSchema({
     fields: {
       followArtist: FollowArtist,
       updateCollectorProfile: UpdateCollectorProfile,
-      updateConversation: UpdateConversation,
-      appendConversationThread: AppendConversationThread,
+      updateConversation: UpdateConversationMutation,
+      sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtwork,
     },
   }),

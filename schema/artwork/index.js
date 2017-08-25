@@ -20,9 +20,7 @@ import Dimensions from "schema/dimensions"
 import EditionSet from "schema/edition_set"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
-import gravity from "lib/loaders/gravity"
-import positron from "lib/loaders/positron"
-import savedArtworkLoader from "lib/loaders/saved_artwork"
+import gravity from "lib/loaders/legacy/gravity"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
 
@@ -82,8 +80,8 @@ export const artworkFields = () => {
           type: GraphQLInt,
         },
       },
-      resolve: ({ _id }, { size }) =>
-        positron("articles", {
+      resolve: ({ _id }, { size }, request, { rootValue: { articlesLoader } }) =>
+        articlesLoader({
           artwork_id: _id,
           published: true,
           limit: size,
@@ -175,7 +173,7 @@ export const artworkFields = () => {
     fair: {
       type: Fair.type,
       resolve: ({ id }, options, request, { rootValue: { relatedFairsLoader } }) => {
-        return relatedFairsLoader(id, { artwork: [id], size: 1 }).then(_.first)
+        return relatedFairsLoader({ artwork: [id], size: 1 }).then(_.first)
       },
     },
     highlights: {
@@ -183,8 +181,8 @@ export const artworkFields = () => {
       description: "Returns the highlighted shows and articles",
       resolve: ({ id, _id }, options, request, { rootValue: { relatedShowsLoader, articlesLoader } }) =>
         Promise.all([
-          relatedShowsLoader(id, { artwork: [id], size: 1, at_a_fair: false }),
-          articlesLoader(_id, {
+          relatedShowsLoader({ artwork: [id], size: 1, at_a_fair: false }),
+          articlesLoader({
             artwork_id: _id,
             published: true,
             limit: 1,
@@ -238,7 +236,7 @@ export const artworkFields = () => {
       description: "Is this artwork part of an auction that is currently running?",
       resolve: ({ sale_ids }, options, request, { rootValue: { salesLoader } }) => {
         if (sale_ids && sale_ids.length > 0) {
-          return salesLoader(null, {
+          return salesLoader({
             id: sale_ids,
             is_auction: true,
             live: true,
@@ -254,7 +252,7 @@ export const artworkFields = () => {
       description: "When in an auction, can the work be bought immediately",
       resolve: ({ id, acquireable, sale_ids }, options, request, { rootValue: { salesLoader } }) => {
         if (sale_ids && sale_ids.length > 0 && acquireable) {
-          return salesLoader(id, {
+          return salesLoader({
             id: sale_ids,
             is_auction: true,
             live: true,
@@ -276,7 +274,7 @@ export const artworkFields = () => {
       description: "Are we able to display a contact form on artwork pages?",
       deprecationReason: "Prefer to use is_inquireable",
       resolve: (artwork, options, request, { rootValue: { relatedSalesLoader } }) => {
-        return relatedSalesLoader(null, {
+        return relatedSalesLoader({
           size: 1,
           active: true,
           artwork: [artwork.id],
@@ -330,7 +328,7 @@ export const artworkFields = () => {
       description: "Is this artwork part of an auction?",
       resolve: ({ sale_ids }, options, request, { rootValue: { salesLoader } }) => {
         if (sale_ids && sale_ids.length > 0) {
-          return salesLoader(null, {
+          return salesLoader({
             id: sale_ids,
             is_auction: true,
           }).then(sales => {
@@ -344,7 +342,7 @@ export const artworkFields = () => {
       type: GraphQLBoolean,
       description: "Is this artwork part of a current show",
       resolve: ({ id }, options, request, { rootValue: { relatedShowsLoader } }) =>
-        relatedShowsLoader(null, { active: true, size: 1, artwork: [id] }).then(shows => shows.length > 0),
+        relatedShowsLoader({ active: true, size: 1, artwork: [id] }).then(shows => shows.length > 0),
     },
     is_not_for_sale: {
       type: GraphQLString,
@@ -377,9 +375,9 @@ export const artworkFields = () => {
     },
     is_saved: {
       type: GraphQLBoolean,
-      resolve: ({ id }, {}, request, { rootValue: { accessToken, userID } }) => {
-        if (!accessToken) return false
-        return savedArtworkLoader.load(JSON.stringify({ id, userID, accessToken })).then(({ is_saved }) => is_saved)
+      resolve: ({ id }, {}, request, { rootValue: { savedArtworkLoader } }) => {
+        if (!savedArtworkLoader) return false
+        return savedArtworkLoader(id).then(({ is_saved }) => is_saved)
       },
     },
     is_shareable: {
@@ -440,7 +438,7 @@ export const artworkFields = () => {
         },
       },
       resolve: ({ _id }, { size }, request, { rootValue: { relatedArtworksLoader } }) =>
-        relatedArtworksLoader(null, { artwork_id: _id, size }),
+        relatedArtworksLoader({ artwork_id: _id, size }),
     },
     sale: {
       type: Sale.type,
@@ -500,7 +498,7 @@ export const artworkFields = () => {
         },
       },
       resolve: ({ id }, { active, sort, at_a_fair }, request, { rootValue: { relatedShowsLoader } }) =>
-        relatedShowsLoader(null, {
+        relatedShowsLoader({
           artwork: [id],
           size: 1,
           active,
@@ -525,7 +523,7 @@ export const artworkFields = () => {
         },
       },
       resolve: ({ id }, { size, active, sort, at_a_fair }, request, { rootValue: { relatedShowsLoader } }) =>
-        relatedShowsLoader(null, {
+        relatedShowsLoader({
           artwork: [id],
           active,
           size,

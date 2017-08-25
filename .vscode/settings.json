@@ -7,7 +7,8 @@
     "javascript.validate.enable": false,
     "flow.useNPMPackagedFlow": true,
     "search.exclude": {
-        "flow-typed": true
+        "flow-typed": true,
+        "**/node_modules": true
     },
     "files.exclude": {
         "**/.git": true,

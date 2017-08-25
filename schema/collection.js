@@ -3,8 +3,9 @@ import type { GraphQLFieldConfig } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
-import gravity from "lib/loaders/gravity"
+import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
+import CollectionSorts from "./sorts/collection_sorts"
 import { artworkConnection } from "./artwork"
 import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
@@ -23,7 +24,14 @@ export const CollectionType = new GraphQLObjectType({
     cached,
     artworks_connection: {
       type: artworkConnection,
-      args: pageable({}),
+      args: {
+        ...pageable({}),
+        private: {
+          type: GraphQLBoolean,
+          defaultValue: false,
+        },
+        sort: CollectionSorts,
+      },
       resolve: ({ id }, options, request, { rootValue: { accessToken, userID } }) => {
         const gravityOptions = parseRelayOptions(options)
 
@@ -31,14 +39,15 @@ export const CollectionType = new GraphQLObjectType({
         gravityOptions.user_id = userID
 
         delete gravityOptions.page // this can't also be used with the offset in gravity
-        return gravity
-          .with(accessToken, { headers: true })(`collection/${id}/artworks`, gravityOptions)
-          .then(({ body, headers }) => {
-            return connectionFromArraySlice(body, options, {
-              arrayLength: headers["x-total-count"],
-              sliceStart: gravityOptions.offset,
-            })
+        return gravity.with(accessToken, { headers: true })(
+          `collection/${id}/artworks`,
+          gravityOptions
+        ).then(({ body, headers }) => {
+          return connectionFromArraySlice(body, options, {
+            arrayLength: headers["x-total-count"],
+            sliceStart: gravityOptions.offset,
           })
+        })
       },
     },
     description: {

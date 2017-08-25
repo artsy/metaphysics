@@ -1,0 +1,66 @@
+#!/bin/sh
+
+# Exit if any subcommand fails
+set -e
+
+STEPS=5
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NO_COLOR='\033[0m'
+CLEAR_LINE='\r\033[K'
+
+# STEP 1
+printf "[1/${STEPS}]  checking dependencies"
+
+actual_node_version=$(node --version)
+expected_node_version=$(cat .nvmrc)
+
+if [ -d "~/.nvm" ]; then
+  printf "${CLEAR_LINE}${RED}  You must install nvm before setup can continue${NO_COLOR}\n"
+  printf "    You should read this:\n"
+  printf "      https://github.com/creationix/nvm#installation\n"
+  exit -1
+fi
+
+if [ "$actual_node_version" != "$expected_node_version" ]; then
+  printf "${CLEAR_LINE}${RED}  Your node version must match before setup can continue${NO_COLOR}\n"
+  printf "    You should:\n"
+  printf "      $ nvm install $expected_node_version\n"
+  exit -1
+fi
+
+if ! command -v yarn > /dev/null; then
+  printf "${CLEAR_LINE}${RED}  You must install yarn before setup can continue${NO_COLOR}\n"
+  printf "    You should:\n"
+  printf "      $ npm install -g yarn\n"
+  exit -1
+fi
+
+if ! command -v memcached > /dev/null; then
+  printf "${CLEAR_LINE}${RED}  You must install memcached before setup can continue${NO_COLOR}\n"
+  printf "    You should:\n"
+  printf "      $ brew install memcached\n"
+  exit -1
+fi
+
+# STEP 2
+printf "${CLEAR_LINE}[2/${STEPS}]  installing packages"
+yarn install > /dev/null
+
+# STEP 3
+printf "${CLEAR_LINE}[3/${STEPS}]  adding remotes"
+git remote add staging git@heroku.com:artsy-metaphysics-staging.git
+git remote add production git@heroku.com:artsy-metaphysics-production.git
+
+# STEP 4
+printf "${CLEAR_LINE}[4/${STEPS}]  fetching remotes"
+git fetch --all --quiet > /dev/null
+
+# STEP 5
+printf "${CLEAR_LINE}[5/${STEPS}]  setting up dotenv"
+cp .env{.test,}
+
+# FINISH
+printf "${CLEAR_LINE}[${STEPS}/${STEPS}]${GREEN}  finished!${NO_COLOR}\n"

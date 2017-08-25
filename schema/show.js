@@ -3,8 +3,8 @@ import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { isExisty, exclude, existyValue, parseRelayOptions } from "lib/helpers"
 import { find, has } from "lodash"
-import gravity from "lib/loaders/gravity"
-import total from "lib/loaders/total"
+import gravity from "lib/loaders/legacy/gravity"
+import total from "lib/loaders/legacy/total"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
 import cached from "./fields/cached"
@@ -67,7 +67,7 @@ const artworksArgs = {
   },
 }
 
-const ShowType = new GraphQLObjectType({
+export const ShowType = new GraphQLObjectType({
   name: "Show",
   interfaces: [NodeInterface],
   isTypeOf: obj => has(obj, "is_reference") && has(obj, "display_on_partner_profile"),
