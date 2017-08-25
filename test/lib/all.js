@@ -1,19 +1,18 @@
 import all from "lib/all"
 
+jest.mock("lib/loaders/legacy/gravity", () => jest.fn())
+jest.mock("lib/loaders/legacy/total", () => jest.fn())
+
+import gravity from "lib/loaders/legacy/gravity"
+import total from "lib/loaders/legacy/total"
+
 describe("all", () => {
-  afterEach(() => {
-    all.__ResetDependency__("total")
-    all.__ResetDependency__("gravity")
-  })
-
   it("fans out all the request", () => {
-    const gravity = sinon.stub()
-
-    all.__Rewire__("total", sinon.stub().returns(Promise.resolve(120)))
-    all.__Rewire__("gravity", gravity.returns(Promise.resolve([{}])))
+    gravity.mockImplementation(() => Promise.resolve([{}]))
+    total.mockImplementationOnce(() => Promise.resolve(120))
 
     return all(`artist/foo-bar/artworks`, { size: 10 }).then(artworks => {
-      expect(gravity.args).toEqual([
+      expect(gravity.mock.calls).toEqual([
         ["artist/foo-bar/artworks", { size: 10, page: 1 }],
         ["artist/foo-bar/artworks", { size: 10, page: 2 }],
         ["artist/foo-bar/artworks", { size: 10, page: 3 }],

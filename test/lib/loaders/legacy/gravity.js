@@ -1,19 +1,18 @@
-import gravity from "lib/loaders/legacy/gravity"
+import gravityLoader from "lib/loaders/legacy/gravity"
+import gravity from "lib/apis/gravity"
+jest.mock("lib/apis/gravity")
 
 describe("gravity", () => {
-  afterEach(() => gravity.__ResetDependency__("gravity"))
-
   describe("with authentication", () => {
     it("loads the path and passes in the token and options", () => {
-      const api = sinon.stub().returns(Promise.resolve({ body: { ok: true } }))
-      gravity.__Rewire__("gravity", api)
+      gravity.mockImplementation(() => Promise.resolve({ body: { ok: true } }))
 
       return Promise.all([
-        gravity.with("xxx")("foo/bar", { ids: ["baz"] }),
-        gravity.with("yyy")("foo/bar", { ids: ["baz"] }),
-        gravity.with("zzz")("foo/bar", { ids: ["baz"] }),
+        gravityLoader.with("xxx")("foo/bar", { ids: ["baz"] }),
+        gravityLoader.with("yyy")("foo/bar", { ids: ["baz"] }),
+        gravityLoader.with("zzz")("foo/bar", { ids: ["baz"] }),
       ]).then(responses => {
-        expect(api.args).toEqual([
+        expect(gravity.mock.calls).toEqual([
           ["foo/bar?ids%5B%5D=baz", "xxx", {}],
           ["foo/bar?ids%5B%5D=baz", "yyy", {}],
           ["foo/bar?ids%5B%5D=baz", "zzz", {}],
