@@ -1,18 +1,3 @@
-jest.mock("lib/apis/gravity", () => {
-  return jest.fn(() => {
-    throw new Error("THROWING")
-  })
-})
-
-jest.mock("lib/loaders/legacy/gravity", () => ({
-  default: jest.fn(() => {
-    throw new Error("THROWING")
-  }),
-  with: jest.fn(() => {
-    throw new Error("THROWING")
-  }),
-}))
-
 import schema from "schema"
 import { graphql } from "graphql"
 

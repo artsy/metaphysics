@@ -1,5 +1,6 @@
 import { runAuthenticatedQuery } from "test/utils"
 import gravity from "lib/loaders/legacy/gravity"
+jest.mock("lib/loaders/legacy/gravity")
 
 describe("Me", () => {
   describe("Bidders", () => {
