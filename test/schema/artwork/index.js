@@ -1,13 +1,9 @@
 import { assign } from "lodash"
 import moment from "moment"
 
-import schema from "schema"
 import { runQuery } from "test/utils"
 
 describe("Artwork type", () => {
-  let gravity
-  const Artwork = schema.__get__("Artwork")
-
   const partner = { id: "existy" }
   const sale = { id: "existy" }
 
@@ -47,16 +43,9 @@ describe("Artwork type", () => {
       sale_ids: ["sale-id-not-auction", "sale-id-auction"],
     }
 
-    gravity = sinon.stub()
-    Artwork.__Rewire__("gravity", gravity)
-
     rootValue = {
       artworkLoader: sinon.stub().withArgs(artwork.id).returns(Promise.resolve(artwork)),
     }
-  })
-
-  afterEach(() => {
-    Artwork.__ResetDependency__("gravity")
   })
 
   describe("#is_contactable", () => {
