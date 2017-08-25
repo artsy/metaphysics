@@ -82,8 +82,8 @@ export const moduleContext = {
       return assign({}, fair, { context_type: "Fair" })
     })
   },
-  followed_artist: ({ params }, options, request, { rootValue: { artistLoader } }) => {
-    return artistLoader(params.followed_artist_id).then(artist => {
+  followed_artist: ({ params }) => {
+    return gravity(`artist/${params.followed_artist_id}`).then(artist => {
       return assign(
         {},
         {
@@ -93,10 +93,10 @@ export const moduleContext = {
       )
     })
   },
-  related_artists: ({ params }, options, request, { rootValue: { artistLoader } }) => {
+  related_artists: ({ params }) => {
     return Promise.all([
-      artistLoader(params.related_artist_id),
-      artistLoader(params.followed_artist_id),
+      gravity(`artist/${params.related_artist_id}`),
+      gravity(`artist/${params.followed_artist_id}`),
     ]).then(([related_artist, follow_artist]) => {
       return assign(
         {},
