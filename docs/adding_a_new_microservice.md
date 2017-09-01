@@ -2,10 +2,32 @@
 
 Let's pretend we're mapping an API called `Decoherence` which uses Gravity to generate a short-term JWT for your application.
 
+1. Add your ENV Vars:
+
+  ```SH
+  DECOHERENCE_APP_ID="xxx_id_xxx"
+  DECOHERENCE_API_BASE="https://decoherence-staging.artsy.net/api"
+  ```
+
+  These will need to be added to : Your `.env`, the `.env.test` and the metaphysics Heroku instances,.
+
 1. Create an API: `lib/apis/decoherence.js`
   
   This is function which is used for any API call to your app, so you'll need to make an ENV var for it. Convention
-  is that you'd add: `DECOHERENCE_API_BASE`.
+  is that you'd add: `DECOHERENCE_API_BASE`. It should probably look like:
+
+  ```
+  import { assign } from "lodash"
+  import fetch from "./fetch"
+
+  const { DECOHERENCE_API_BASE } = process.env
+
+  export default (path, accessToken, fetchOptions = {}) => {
+    const headers = {}
+    if (accessToken) assign(headers, { Authorization: `Bearer ${accessToken}` })
+    return fetch(`${DECOHERENCE_API_BASE}/${path}`, assign({}, fetchOptions, { headers }))
+  }
+  ```
 
 1. Create an API loader factory: `lib/loaders/index.js`
 

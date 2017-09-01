@@ -38,6 +38,7 @@ import Me from "./me"
 import UpdateConversationMutation from "./me/conversation/update_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
+import CreateConsignmentMutation from "./me/consignments/create_consignment_mutation"
 import SaveArtwork from "./me/save_artwork"
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
@@ -105,6 +106,7 @@ const schema = new GraphQLSchema({
       updateConversation: UpdateConversationMutation,
       sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtwork,
+      createConsignment: CreateConsignmentMutation,
     },
   }),
   query: new GraphQLObjectType({
