@@ -4,7 +4,7 @@ Let's pretend we're mapping an API called `Decoherence` which uses Gravity to ge
 
 1. Add your ENV Vars:
 
-  ```SH
+  ```sh
   DECOHERENCE_APP_ID="xxx_id_xxx"
   DECOHERENCE_API_BASE="https://decoherence-staging.artsy.net/api"
   ```
@@ -14,9 +14,9 @@ Let's pretend we're mapping an API called `Decoherence` which uses Gravity to ge
 1. Create an API: `lib/apis/decoherence.js`
   
   This is function which is used for any API call to your app, so you'll need to make an ENV var for it. Convention
-  is that you'd add: `DECOHERENCE_API_BASE`. It should probably look like:
+  is that you'd add: `DECOHERENCE_API_BASE`. It should probably look like this if you have mutations:
 
-  ```
+  ```js
   import { assign } from "lodash"
   import fetch from "./fetch"
 
@@ -27,6 +27,15 @@ Let's pretend we're mapping an API called `Decoherence` which uses Gravity to ge
     if (accessToken) assign(headers, { Authorization: `Bearer ${accessToken}` })
     return fetch(`${DECOHERENCE_API_BASE}/${path}`, assign({}, fetchOptions, { headers }))
   }
+  ```
+
+  Or this if you're only reading:
+  
+  ```js
+  import fetch from "./fetch"
+  const { DECOHERENCE_API_BASE } = process.env
+
+  export default path => fetch(`${DECOHERENCE_API_BASE}/${path}`)
   ```
 
 1. Create an API loader factory: `lib/loaders/index.js`
