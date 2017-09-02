@@ -476,6 +476,9 @@ const Artist: GraphQLFieldConfig<ArtistType, *> = {
     },
   },
   resolve: (root, { id }, request, resolver) => {
+    if (id.length === 0) {
+      return null
+    }
     const { artistLoader } = (resolver.rootValue: any)
     return artistLoader(id)
   },
