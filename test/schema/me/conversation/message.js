@@ -65,6 +65,10 @@ describe("Me", () => {
                     node {
                       body
                       id
+                      from {
+                        email
+                        name
+                      }
                     }
                   }
                 }

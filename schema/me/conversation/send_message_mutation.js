@@ -58,6 +58,7 @@ export default mutationWithClientMutationId({
             from_email_address: from,
             from_id: userID,
             raw_text: body_text,
+            body: body_text,
             created_at: new Date().toISOString(),
             attachments: [],
             // This addition is only for MP so it can determine if the message was from the current user.
