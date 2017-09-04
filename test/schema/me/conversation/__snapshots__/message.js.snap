@@ -26,6 +26,10 @@ Object {
         Object {
           "node": Object {
             "body": "I'm a cat",
+            "from": Object {
+              "email": "fancy_german_person@posteo.de",
+              "name": "Percy Z",
+            },
             "id": "222",
           },
         },

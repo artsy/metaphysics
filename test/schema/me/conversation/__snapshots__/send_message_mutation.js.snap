@@ -8,6 +8,11 @@ Object {
   "messageEdge": Object {
     "cursor": "YXJyYXljb25uZWN0aW9uOjA=",
     "node": Object {
+      "body": "Sehr schön!",
+      "from": Object {
+        "email": "pio-dog@example.com",
+        "name": null,
+      },
       "id": "222",
     },
   },
