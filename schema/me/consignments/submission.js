@@ -1,14 +1,6 @@
-import {
-  GraphQLBoolean,
-  GraphQLList,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLEnumType,
-  GraphQLUnionType,
-} from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 
-export const ConsignmentType = new GraphQLObjectType({
+export const SubmissionType = new GraphQLObjectType({
   name: "Consignment",
   description: "A work to be consigned to the user",
   fields: {
@@ -103,17 +95,6 @@ export const ConsignmentType = new GraphQLObjectType({
   },
 })
 
-export default {
-  type: ConsignmentType,
-  description: "A consignment, usually between a user and a partner",
-  args: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The ID of the Conversation",
-    },
-  },
-  resolve: (root, { id }, request, { rootValue: { conversationLoader } }) => {
-    if (!conversationLoader) return null
-    return conversationLoader(id)
-  },
-}
+// There is no need to support reading yet,
+// and so this file has no default export
+// to handle resolving.
