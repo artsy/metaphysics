@@ -79,4 +79,6 @@ Let's pretend we're mapping an API called `Decoherence` which uses Gravity to ge
 
   Which corresponds to one API call: `[DECOHERENCE_API_BASE]/star/[id]`. You would add more at the bottom.
 
-1. You need to add objects to the schema. ...
+From here you need to handle the usual work of adding mutations for writing data, and updating the schema for reading data. Good luck!
+
+If you want to see a PR where this comes together, check out [#726](https://github.com/artsy/metaphysics/pull/726).
