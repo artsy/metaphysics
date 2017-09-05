@@ -31,13 +31,11 @@ yarn install
 npm run dev
 ```
 
-If you are using VS Code, you can read [debugging with VS Code](docs/debugging_with_vscode.md) to get inline debugging.
-
 ### Setting up your local GraphiQL
 
 You will need to set up headers with both:
 
--   `x-access-token` - Get your clientID and secret, use this command to generate a token.
+-   `x-access-token` - Get your client ID and secret, use this command to generate a token.
 -   `x-user-id` - Go to the [users admin](https://admin-staging.artsy.net/users) and find your user account ID.
 
 If you need to generate a token, [this command](https://artsy.slack.com/archives/C02BC3HEJ/p1492126234025615) will create one for you. Add it to your `.bash_rc.private` and update the values between `<` and `>`.
@@ -48,6 +46,12 @@ If you need to generate a token, [this command](https://artsy.slack.com/archives
 
 `npm test` to run the entire suite
 `npm run watch` to spin up the test watcher
+
+### Docs
+
+- [Debugging with VS Code](docs/debugging_with_vscode.md)
+- [Adding a microservice to Metaphysics](docs/adding_a_new_microservice.md)
+
 
 ### Deployment
 

@@ -1,15 +1,12 @@
-import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { SubmissionType } from "./submission"
+import { omit } from "lodash"
 
 export default mutationWithClientMutationId({
   name: "CreateSubmissionMutation",
-  description: "Create a new consigment using Convection",
+  description: "Create a new consignment submission using Convection",
   inputFields: {
-    artist_id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The id of the artist",
-    },
+    ...omit(SubmissionType.getFields(), ["id"]),
   },
   outputFields: {
     submission: {
@@ -17,8 +14,8 @@ export default mutationWithClientMutationId({
       resolve: response => response,
     },
   },
-  mutateAndGetPayload: ({ id, artist_id }, request, { rootValue: { submissionCreateLoader } }) => {
+  mutateAndGetPayload: (request, response, { rootValue: { submissionCreateLoader } }) => {
     if (!submissionCreateLoader) return null
-    return submissionCreateLoader(id, { artist_id })
+    return submissionCreateLoader(request)
   },
 })

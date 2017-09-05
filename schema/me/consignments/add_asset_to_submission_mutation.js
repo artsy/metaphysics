@@ -4,11 +4,11 @@ import { AssetType } from "./asset"
 
 export default mutationWithClientMutationId({
   name: "AddAssetToConsignmentSubmission",
-  description: "Attach an impulse asset to a consignment submission",
+  description: "Attach an gemini asset to a consignment submission",
   inputFields: {
     asset_type: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The type of the asset, currently only 'image' is supported",
+      description: "The type of the asset",
     },
     gemini_token: {
       type: new GraphQLNonNull(GraphQLString),

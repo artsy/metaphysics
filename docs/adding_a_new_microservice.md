@@ -1,11 +1,11 @@
 ## Adding a new Microservice to Metaphysics
 
-Let's pretend we're mapping an API called `Three Body` which uses Gravity to generate a short-term JWT for your application.
+Let's pretend we're mapping an API called `Three Body` which uses Gravity to generate a short-term JWT for your app.
 
 1. Add your ENV Vars:
 
     ```sh
-    THREE_BODY_APP_ID="xxx_id_xxx"
+    THREE_BODY_APP_ID="xxx_gravity_app_id_xxx"
     THREE_BODY_API_BASE="https://threebody-staging.artsy.net/api"
     ```
 
@@ -71,7 +71,7 @@ Let's pretend we're mapping an API called `Three Body` which uses Gravity to gen
       threeBodyTokenLoader = gravityLoader("me/token", { client_application_id: THREE_BODY_APP_ID }, { method: "POST" })
 
       return {
-        artistAuctionsResultsLoader: threeBodyLoader(id => `/group/${id}`),
+        groupResultsLoader: threeBodyLoader(id => `/group/${id}`),
       }
     }
     ```
