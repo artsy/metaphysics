@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UpdateSubmissionMutation updates a submission and returns its new data payload 1`] = `undefined`;

@@ -12,8 +12,8 @@ export const AssetType = new GraphQLObjectType({
       description: "The convection submission ID",
       type: GraphQLString,
     },
-    impulse_token: {
-      description: "The impulse token for the asset",
+    gemini_token: {
+      description: "The gemini token for the asset",
       type: GraphQLString,
     },
   },

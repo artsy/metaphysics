@@ -1,7 +1,7 @@
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean } from "graphql"
 
 export const SubmissionType = new GraphQLObjectType({
-  name: "Consignment",
+  name: "Submission",
   description: "A work to be consigned to the user",
   fields: {
     id: {
@@ -17,11 +17,11 @@ export const SubmissionType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
     },
     authenticity_certificate: {
-      description: "",
-      type: GraphQLString,
+      description: "Does the artwork come with an certificate of authenticty?",
+      type: GraphQLBoolean,
     },
     category: {
-      description: "",
+      description: "The set in which to put the work",
       type: GraphQLString,
     },
     deadline_to_sell: {
@@ -29,67 +29,67 @@ export const SubmissionType = new GraphQLObjectType({
       type: GraphQLString,
     },
     depth: {
-      description: "",
+      description: "The depth of the work",
       type: GraphQLString,
     },
     dimensions_metric: {
-      description: "",
+      description: "A string, either CM or IN",
       type: GraphQLString,
     },
     edition: {
-      description: "",
+      description: "The version of artwork if from a set",
       type: GraphQLString,
     },
     edition_number: {
-      description: "",
+      description: "The number of the artwork if in a set",
       type: GraphQLString,
     },
     edition_size: {
-      description: "",
+      description: "The whole size of the set of artworks",
       type: GraphQLString,
     },
     height: {
-      description: "",
+      description: "The height of the artwork",
       type: GraphQLString,
     },
     location_city: {
-      description: "",
+      description: "The city where the Artwork currently resides",
       type: GraphQLString,
     },
     location_country: {
-      description: "",
+      description: "The country where the Artwork currently resides",
       type: GraphQLString,
     },
     location_state: {
-      description: "",
+      description: "The state where the Artwork currently resides",
       type: GraphQLString,
     },
     medium: {
-      description: "",
+      description: "The materials in which the artwork is created",
       type: GraphQLString,
     },
     provenance: {
-      description: "",
+      description: "The history of an artwork",
       type: GraphQLString,
     },
     signature: {
-      description: "",
-      type: GraphQLString,
+      description: "Is this work signed?",
+      type: GraphQLBoolean,
     },
     state: {
-      description: "",
+      description: "A description of the Artwork's state",
       type: GraphQLString,
     },
     title: {
-      description: "",
+      description: "The name of the artwork",
       type: GraphQLString,
     },
     width: {
-      description: "",
+      description: "The width of the artwork",
       type: GraphQLString,
     },
-    yea: {
-      description: "",
+    year: {
+      description: "The year the artwork was created",
       type: GraphQLString,
     },
   },

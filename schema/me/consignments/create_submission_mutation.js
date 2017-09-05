@@ -1,6 +1,6 @@
 import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { SubmissionType } from "./index"
+import { SubmissionType } from "./submission"
 
 export default mutationWithClientMutationId({
   name: "CreateSubmissionMutation",
