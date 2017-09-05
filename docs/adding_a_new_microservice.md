@@ -1,17 +1,17 @@
 ## Adding a new Microservice to Metaphysics
 
-Let's pretend we're mapping an API called `Decoherence` which uses Gravity to generate a short-term JWT for your application. It's a micro-service for getting auctions data for an artist.
+Let's pretend we're mapping an API called `Three Body` which uses Gravity to generate a short-term JWT for your application.
 
 1. Add your ENV Vars:
 
     ```sh
-    DECOHERENCE_APP_ID="xxx_id_xxx"
-    DECOHERENCE_API_BASE="https://decoherence-staging.artsy.net/api"
+    THREE_BODY_APP_ID="xxx_id_xxx"
+    THREE_BODY_API_BASE="https://threebody-staging.artsy.net/api"
     ```
 
     These will need to be added to : Your `.env`, the `.env.test` and the metaphysics Heroku instances,.
 
-1. Create an API: `lib/apis/decoherence.js`
+1. Create an API: `lib/apis/threeBody.js`
     
     This is function which is used for any API call to your service. Depending on what you want to map, it should probably look like this if you have mutations:
 
@@ -19,12 +19,12 @@ Let's pretend we're mapping an API called `Decoherence` which uses Gravity to ge
     import { assign } from "lodash"
     import fetch from "./fetch"
 
-    const { DECOHERENCE_API_BASE } = process.env
+    const { THREE_BODY_API_BASE } = process.env
 
     export default (path, accessToken, fetchOptions = {}) => {
       const headers = {}
       if (accessToken) assign(headers, { Authorization: `Bearer ${accessToken}` })
-      return fetch(`${DECOHERENCE_API_BASE}/${path}`, assign({}, fetchOptions, { headers }))
+      return fetch(`${THREE_BODY_API_BASE}/${path}`, assign({}, fetchOptions, { headers }))
     }
     ```
 
@@ -32,9 +32,9 @@ Let's pretend we're mapping an API called `Decoherence` which uses Gravity to ge
     
     ```js
     import fetch from "./fetch"
-    const { DECOHERENCE_API_BASE } = process.env
+    const { THREE_BODY_API_BASE } = process.env
 
-    export default path => fetch(`${DECOHERENCE_API_BASE}/${path}`)
+    export default path => fetch(`${THREE_BODY_API_BASE}/${path}`)
     ```
 
 1. Create an API loader factory: `lib/loaders/index.js`
@@ -43,50 +43,50 @@ Let's pretend we're mapping an API called `Decoherence` which uses Gravity to ge
 
     ```diff
     import positron from "lib/apis/positron"
-    + import decoherence from "lib/apis/decoherence"
+    + import threeBody from "lib/apis/threeBody"
 
     ...
 
-    + export const decoherenceLoaderWithAuthenticationFactory = apiLoaderWithAuthenticationFactory(decoherence)
+    + export const threeBodyLoaderWithAuthenticationFactory = apiLoaderWithAuthenticationFactory(threeBody)
     ```
 
-1. Create a loader for your service: `lib/loaders/loaders_with_authentication/decoherence.js`
+1. Create a loader for your service: `lib/loaders/loaders_with_authentication/threeBody.js`
 
     Roughly, this looks something like:
 
     ```js
-    import { gravityLoaderWithAuthenticationFactory, decoherenceLoaderWithAuthenticationFactory } from "../api"
+    import { gravityLoaderWithAuthenticationFactory, threeBodyLoaderWithAuthenticationFactory } from "../api"
 
-    const { DECOHERENCE_APP_ID } = process.env
+    const { THREE_BODY_APP_ID } = process.env
 
     export default accessToken => {
-      let decoherenceTokenLoader
+      let threeBodyTokenLoader
       const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
-      const decoherenceAccessTokenLoader = () => decoherenceTokenLoader().then(data => data.token)
+      const threeBodyAccessTokenLoader = () => threeBodyTokenLoader().then(data => data.token)
 
       const gravityLoader = gravityLoaderWithAuthenticationFactory(gravityAccessTokenLoader)
-      const decoherenceLoader = decoherenceLoaderWithAuthenticationFactory(decoherenceAccessTokenLoader)
+      const threeBodyLoader = threeBodyLoaderWithAuthenticationFactory(threeBodyAccessTokenLoader)
 
       // This generates a token with a lifetime of 1 minute, which should be plenty of time to fulfill a full query.
-      decoherenceTokenLoader = gravityLoader("me/token", { client_application_id: DECOHERENCE_APP_ID }, { method: "POST" })
+      threeBodyTokenLoader = gravityLoader("me/token", { client_application_id: THREE_BODY_APP_ID }, { method: "POST" })
 
       return {
-        artistAuctionsResultsLoader: decoherenceLoader(id => `artist/${id}`),
+        artistAuctionsResultsLoader: threeBodyLoader(id => `/group/${id}`),
       }
     }
     ```
 
-    Each of which corresponds to one API call: `[DECOHERENCE_API_BASE]/artist/[id]`. You would add more API loaders at the to the `return`ed object as you add more routes to metaphysics.
+    Each of which corresponds to one API call: `[THREE_BODY_API_BASE]/group/[id]`. You would add more API loaders at the to the `return`ed object as you add more routes to metaphysics.
 
 1. Next you need to expose those loaders to the `rootValue` so you can access them in the resolvers, you can do that by editing `/lib/loaders/loaders_with_authentication/index.js` to add the following:
 
     ```diff
     import convectionLoaders from "./convection"
-    + import decoherenceLoaders from "./decoherence"
+    + import threeBodyLoaders from "./threeBody"
     import impulseLoaders from "./impulse"
 
     ...convectionLoaders(accessToken),
-    + ...decoherenceLoaders(accessToken),
+    + ...threeBodyLoaders(accessToken),
     ...impulseLoaders(accessToken, userID),
     ```
 
