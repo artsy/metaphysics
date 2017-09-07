@@ -54,18 +54,19 @@ describe("API loaders", () => {
       return loader().then(({ options }) => expect(options.method).toEqual("POST"))
     })
 
-    it("passes a requestID", () => {
+    it("passes merged global and path specific API options", () => {
       // Needs a new path so we don't just refer to the cached version
-      loader = apiLoader("some/path/new", {}, { requestID: "request-foo" })
+      loader = apiLoader("some/path/new", {}, { pathAPIOption: "path-option" })
       return loader().then(({ options }) => {
-        expect(options.requestID).toEqual("request-foo")
+        expect(options.pathAPIOption).toEqual("path-option")
+        expect(options.globalAPIOption).toEqual("global-option")
       })
     })
   }
 
   describe("without authentication", () => {
     beforeEach(() => {
-      apiLoader = apiLoaderWithoutAuthenticationFactory(api)
+      apiLoader = apiLoaderWithoutAuthenticationFactory(api, { globalAPIOption: "global-option" })
       loader = apiLoader("some/path")
     })
 
@@ -96,7 +97,9 @@ describe("API loaders", () => {
 
   describe("with authentication", () => {
     beforeEach(() => {
-      apiLoader = apiLoaderWithAuthenticationFactory(api)(() => Promise.resolve("secret-token"))
+      apiLoader = apiLoaderWithAuthenticationFactory(api, { globalAPIOption: "global-option" })(() =>
+        Promise.resolve("secret-token")
+      )
       loader = apiLoader("some/path")
     })
 
