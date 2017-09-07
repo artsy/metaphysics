@@ -7,7 +7,7 @@ describe("SendConversationMessageMutation", () => {
         sendConversationMessage(
           input: {
             id: "623",
-            from:"pio@dog.com",
+            from: "pio-dog@example.com",
             body_text: "Sehr schön!"
             reply_to_message_id: "221"
           }
@@ -19,6 +19,11 @@ describe("SendConversationMessageMutation", () => {
               cursor
               node {
                 id
+                body
+                from {
+                  email
+                  name
+                }
               }
             }
           }

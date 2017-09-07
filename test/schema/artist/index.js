@@ -40,6 +40,12 @@ describe("Artist type", () => {
     Artist.__ResetDependency__("positron")
   })
 
+  it("returns null for an empty ID string", () => {
+    return runQuery(`{ artist(id: "") { id } }`, rootValue).then(data => {
+      expect(data.artist).toBe(null)
+    })
+  })
+
   it("fetches an artist by ID", () => {
     return runQuery(`{ artist(id: "foo-bar") { id, name } }`, rootValue).then(data => {
       expect(data.artist.id).toBe("foo-bar")
