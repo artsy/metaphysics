@@ -6,7 +6,8 @@
   "repository": "https://github.com/artsy/metaphysics",
   "engines": {
     "node": ">=5.1.1",
-    "npm": "3.8.x"
+    "npm": "3.8.x",
+    "yarn": "0.27.x"
   },
   "scripts": {
     "start": "yarn run dev",
