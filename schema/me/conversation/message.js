@@ -77,10 +77,13 @@ export const MessageType = new GraphQLObjectType({
     },
 
     body: {
-      description: "Text which has been parsed/sanitized of quoted replies (among other things).",
+      description: "Unaltered text if possible, otherwise `body`: a parsed/sanitized version from Sendgrid.",
       type: GraphQLString,
-      resolve: ({ body }) => {
-        return body && body.split("\n\nAbout this collector")[0]
+      resolve: ({ body, original_text }) => {
+        if (original_text) {
+          return original_text
+        }
+        return body
       },
     },
 
