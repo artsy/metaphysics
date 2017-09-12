@@ -6,8 +6,9 @@ describe("Me", () => {
       conversationLoader: () => {
         return Promise.resolve({
           id: "420",
-          initial_message: "Loved some of the works at your fair booth!",
+          initial_message: "Buncha secret stuff Message from Percy:\n\nLoved some of the works at your fair booth!",
           from_email: "collector@example.com",
+          from_name: "Percy",
           _embedded: {
             last_message: {
               snippet: "Cool snippet",
