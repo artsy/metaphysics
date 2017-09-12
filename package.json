@@ -5,9 +5,9 @@
   "main": "index.js",
   "repository": "https://github.com/artsy/metaphysics",
   "engines": {
-    "node": ">=5.1.1",
-    "npm": "3.8.x",
-    "yarn": "0.27.x"
+    "node": ">=8.4.0",
+    "npm": "5.3.x",
+    "yarn": "1.0.x"
   },
   "scripts": {
     "start": "yarn run dev",
