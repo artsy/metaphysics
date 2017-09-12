@@ -165,6 +165,10 @@ export const ConversationFields = {
   },
   initial_message: {
     type: new GraphQLNonNull(GraphQLString),
+    resolve: ({ initial_message, from_name }) => {
+      const parts = initial_message.split("Message from " + from_name + ":\n\n")
+      return parts[parts.length - 1]
+    },
   },
   last_message: {
     type: new GraphQLNonNull(GraphQLString),
@@ -256,7 +260,10 @@ export const ConversationFields = {
         // resolvers (invoices).
         /* eslint-disable no-param-reassign */
         message_details = message_details.map(message => {
-          return merge(message, { conversation_from_address: from_email, conversation_id: id })
+          return merge(message, {
+            conversation_from_address: from_email,
+            conversation_id: id,
+          })
         })
         /* eslint-disable no-param-reassign */
         return connectionFromArraySlice(message_details, options, {
