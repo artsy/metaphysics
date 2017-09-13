@@ -50,6 +50,7 @@ export const CollectionType = new GraphQLObjectType({
             // returned in the X-Total-Count header includes unpublished artworks, even though only
             // published artworks are returned. This can lead to a situation where hasNextPage is true
             // but endCursor is null, violating Relay norms and causing serious problems for Eigen.
+            // FIXME: Remove the following line once Gravity PR 11240 has been deployed to production.
             connection.pageInfo.hasNextPage =
               connection.pageInfo.endCursor === null ? false : connection.pageInfo.hasNextPage
             return connection
