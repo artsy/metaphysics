@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Collections Handles getting collection metadata ignores errors from gravity. 1`] = `
+Object {
+  "collection": Object {
+    "artworks_connection": Object {
+      "edges": Array [],
+    },
+  },
+}
+`;
+
 exports[`Collections Handles getting collection metadata returns artworks for a collection 1`] = `
 Object {
   "collection": Object {
