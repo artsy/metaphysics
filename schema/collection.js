@@ -3,6 +3,7 @@ import type { GraphQLFieldConfig } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
+import { error } from "lib/loggers"
 import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import CollectionSorts from "./sorts/collection_sorts"
@@ -41,13 +42,20 @@ export const CollectionType = new GraphQLObjectType({
         delete gravityOptions.page // this can't also be used with the offset in gravity
         return gravity.with(accessToken, { headers: true })(`collection/${id}/artworks`, gravityOptions)
           .then(({ body, headers }) => {
-            return connectionFromArraySlice(body, options, {
+            const connection = connectionFromArraySlice(body, options, {
               arrayLength: headers["x-total-count"],
               sliceStart: gravityOptions.offset,
             })
+            // Gravity has a bug (see PR https://github.com/artsy/gravity/pull/11240) where the counts
+            // returned in the X-Total-Count header includes unpublished artworks, even though only
+            // published artworks are returned. This can lead to a situation where hasNextPage is true
+            // but endCursor is null, violating Relay norms and causing serious problems for Eigen.
+            connection.pageInfo.hasNextPage =
+              connection.pageInfo.endCursor === null ? false : connection.pageInfo.hasNextPage
+            return connection
           })
           .catch(e => {
-            console.log("Bypassing Gravity error: ", e)
+            error("Bypassing Gravity error: ", e)
             // For some users with no favourites, Gravity produces an error of "Collection Not Found".
             // This can cause a crash on Eigen 3.2.4, so we will intercept the error and return an empty list.
             // FIXME: This can be removed once use of 3.2.4 drops to zero.
