@@ -46,9 +46,11 @@ export const CollectionType = new GraphQLObjectType({
               sliceStart: gravityOptions.offset,
             })
           })
-          .catch(() => {
+          .catch(e => {
+            console.log("Bypassing Gravity error: ", e)
             // For some users with no favourites, Gravity produces an error of "Collection Not Found".
             // This can cause a crash on Eigen 3.2.4, so we will intercept the error and return an empty list.
+            // FIXME: This can be removed once use of 3.2.4 drops to zero.
             return connectionFromArray([], options, {
               arrayLength: 0,
               sliceStart: 0,
