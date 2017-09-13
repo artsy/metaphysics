@@ -76,5 +76,35 @@ describe("Collections", () => {
         expect(data).toMatchSnapshot()
       })
     })
+
+    it("ignores errors from gravity.", () => {
+      gravity
+        .withArgs("collection/saved-artwork/artworks", {
+          size: 10,
+          offset: 0,
+          private: false,
+          total_count: true,
+          user_id: "user-42",
+        })
+        .returns(Promise.reject(new Error("Collection Not Found")))
+
+      const query = `
+                {
+                  collection(id: "saved-artwork") {
+                    artworks_connection(first:10) {
+                      edges {
+                        node {
+                          id
+                          title
+                        }
+                      }
+                    }
+                  }
+                }
+              `
+      return runAuthenticatedQuery(query).then(data => {
+        expect(data).toMatchSnapshot()
+      })
+    })
   })
 })
