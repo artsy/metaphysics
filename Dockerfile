@@ -24,4 +24,4 @@ RUN node_modules/.bin/babel schema -s inline -d build/schema
 USER deploy
 
 # Start node-forman
-CMD node build/index.js
+CMD node_modules/.bin/nf start
