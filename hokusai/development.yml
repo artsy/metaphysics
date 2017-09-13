@@ -6,7 +6,7 @@ services:
     - metaphysics-memcached
     environment:
     - NODE_ENV=development
-    - MEMCACHED_SERVERS=metaphysics-memcached:11211
+    - MEMCACHE_SERVERS=metaphysics-memcached:11211
     extends:
       file: common.yml
       service: metaphysics
