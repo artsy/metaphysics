@@ -34,6 +34,7 @@ Array [
 exports[`Me Conversation concerning unread indicator returns the right unread status 1`] = `
 Object {
   "is_last_message_to_user": true,
+  "last_message_delivery_id": "2",
   "last_message_open": "2020-12-31T12:00:00+00:00",
 }
 `;

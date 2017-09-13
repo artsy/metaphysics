@@ -153,6 +153,7 @@ describe("Me", () => {
               conversation(id: "420") {
                 is_last_message_to_user
                 last_message_open
+                last_message_delivery_id
               }
             }
           }
@@ -161,7 +162,7 @@ describe("Me", () => {
         const message = {
           message_details: [
             {
-              deliveries: [{ email: "collector@example.com", opened_at: "2020-12-31T12:00:00+00:00" }],
+              deliveries: [{ id: "2", email: "collector@example.com", opened_at: "2020-12-31T12:00:00+00:00" }],
             },
           ],
         }

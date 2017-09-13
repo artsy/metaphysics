@@ -37,6 +37,7 @@ import MatchArtist from "./match/artist"
 import Me from "./me"
 import UpdateConversationMutation from "./me/conversation/update_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
+import MarkReadMessageMutation from "./me/conversation/mark_read_message_mutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
 import CreateSubmissionMutation from "./me/consignments/create_submission_mutation"
 import UpdateSubmissionMutation from "./me/consignments/update_submission_mutation"
@@ -107,6 +108,7 @@ const schema = new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateConversation: UpdateConversationMutation,
       sendConversationMessage: SendConversationMessageMutation,
+      markReadMessage: MarkReadMessageMutation,
       saveArtwork: SaveArtwork,
       createConsignmentSubmission: CreateSubmissionMutation,
       updateConsignmentSubmission: UpdateSubmissionMutation,
