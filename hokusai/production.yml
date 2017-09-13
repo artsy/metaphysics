@@ -27,7 +27,7 @@ spec:
           image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:production
           imagePullPolicy: Always
           ports:
-          - containerPort: 5000
+          - containerPort: 3000
 ---
 apiVersion: v1
 kind: Service
@@ -41,7 +41,7 @@ metadata:
 spec:
   ports:
   - port: 80
-    targetPort: 5000
+    targetPort: 3000
     protocol: TCP
   selector:
     app: metaphysics
