@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "https://github.com/artsy/metaphysics",
   "engines": {
-    "node": ">=8.4.0",
+    "node": "8.4.0",
     "npm": "5.3.x",
     "yarn": "1.0.x"
   },
