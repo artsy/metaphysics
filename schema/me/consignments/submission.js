@@ -72,12 +72,6 @@ export const SubmissionStateAggregation = new GraphQLEnumType({
     SUBMITTED: {
       value: "submitted",
     },
-    APPROVED: {
-      value: "approved",
-    },
-    REJECTED: {
-      value: "rejected",
-    },
   },
 })
 

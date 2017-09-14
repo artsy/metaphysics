@@ -1,6 +1,6 @@
 import { runAuthenticatedQuery } from "test/utils"
 
-describe("CreateSubmissionMutation", () => {
+describe("addAssetToConsignmentSubmission", () => {
   it("creates a submission and returns its new data payload", () => {
     const mutation = `
       mutation {
