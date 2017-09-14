@@ -272,7 +272,17 @@ export const ConversationFields = {
   messages: {
     type: MessageConnection,
     description: "A connection for all messages in a single conversation",
-    args: pageable(),
+    args: pageable({
+      sort: {
+        type: new GraphQLEnumType({
+          name: "sort",
+          values: {
+            DESC: { value: "desc" },
+            ASC: { value: "asc" },
+          },
+        }),
+      },
+    }),
     resolve: ({ id, from_email }, options, req, { rootValue: { conversationMessagesLoader } }) => {
       const { page, size, offset } = parseRelayOptions(options)
       return conversationMessagesLoader({
@@ -280,6 +290,7 @@ export const ConversationFields = {
         size,
         conversation_id: id,
         "expand[]": "deliveries",
+        sort: options.sort || "asc",
       }).then(({ total_count, message_details }) => {
         // Inject the convesation initiator's email into each message payload
         // so we can tell if the user sent a particular message.
