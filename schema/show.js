@@ -324,7 +324,11 @@ const Show = {
   resolve: (root, { id }) => {
     return gravity(`show/${id}`)
       .then(show => {
-        if (!show.displayable && !show.is_reference) return new Error("Show Not Found")
+        if (!show.displayable && !show.is_reference) {
+          const error = new Error("Show Not Found")
+          error.statusCode = 404
+          return error
+        }
         return show
       })
       .catch(() => null)

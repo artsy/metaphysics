@@ -252,7 +252,11 @@ const PartnerShow = {
   },
   resolve: (root, { id }) => {
     return gravity(`show/${id}`).then(show => {
-      if (!show.displayable) return new Error("Show Not Found")
+      if (!show.displayable) {
+        const error = new Error("Show Not Found")
+        error.statusCode = 404
+        return error
+      }
       return show
     })
   },

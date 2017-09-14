@@ -35,6 +35,24 @@ describe("PartnerShow type", () => {
     PartnerShow.__ResetDependency__("total")
   })
 
+  it("doesn't return a show that’s not displayable", () => {
+    showData.displayable = false
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          name
+        }
+      }
+    `
+    return runQuery(query)
+      .then(() => {
+        throw new Error("Did not expect query to not throw an error")
+      })
+      .catch(error => {
+        expect(error.statusCode).toEqual(404)
+      })
+  })
+
   it("includes a formattable start and end date", () => {
     const query = `
       {
