@@ -50,6 +50,25 @@ describe("Show type", () => {
     Show.__ResetDependency__("total")
   })
 
+  it("doesn't return a show that’s neither displayable nor a reference", () => {
+    showData.displayable = false
+    showData.is_reference = false
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          name
+        }
+      }
+    `
+    return runQuery(query)
+      .then(() => {
+        throw new Error("Did not expect query to not throw an error")
+      })
+      .catch(error => {
+        expect(error.statusCode).toEqual(404)
+      })
+  })
+
   describe("name", () => {
     it("strips whitespace from the name", () => {
       const query = `
