@@ -1,24 +1,30 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "editor.rulers": [
-        120
-    ],
-    "editor.tabSize": 2,
-    "javascript.validate.enable": false,
-    "flow.useNPMPackagedFlow": true,
-    "search.exclude": {
-        "flow-typed": true,
-        "**/node_modules": true
-    },
-    "files.exclude": {
-        "**/.git": true,
-        "**/build": true
-    },
-    "editor.formatOnSave": true,
-    "prettier.singleQuote": false,
-    "prettier.trailingComma": "es5",
-    "prettier.parser": "flow",
-    "prettier.semi": false,
-    "prettier.printWidth": 120,
-    "eslint.autoFixOnSave": false
+  "editor.rulers": [
+      120
+  ],
+  "editor.tabSize": 2,
+  "javascript.validate.enable": false,
+  "flow.useNPMPackagedFlow": true,
+  "search.exclude": {
+    "flow-typed": true,
+    "**/node_modules": true
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/build": true
+  },
+  "editor.formatOnSave": true,
+  "prettier.singleQuote": false,
+  "prettier.trailingComma": "es5",
+  "prettier.parser": "flow",
+  "prettier.semi": false,
+  "prettier.printWidth": 120,
+  "eslint.autoFixOnSave": false,
+  "path-intellisense.mappings": {
+    "/": "${workspaceRoot}",
+    "lib": "${workspaceRoot}/lib",
+    "schema": "${workspaceRoot}/schema",
+    "test": "${workspaceRoot}/tst"
+  }
 }

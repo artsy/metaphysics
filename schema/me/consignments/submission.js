@@ -63,6 +63,18 @@ export const SubmissionCategoryAggregation = new GraphQLEnumType({
   },
 })
 
+export const SubmissionStateAggregation = new GraphQLEnumType({
+  name: "SubmissionStateAggregation",
+  values: {
+    DRAFT: {
+      value: "draft",
+    },
+    SUBMITTED: {
+      value: "submitted",
+    },
+  },
+})
+
 export const SubmissionType = new GraphQLObjectType({
   name: "Submission",
   description: "A work to be consigned to the user",
@@ -134,6 +146,10 @@ export const SubmissionType = new GraphQLObjectType({
     title: {
       description: "The name of the work",
       type: GraphQLString,
+    },
+    state: {
+      description: "The internal state of the work, e.g. draft/submitted",
+      type: SubmissionStateAggregation,
     },
     width: {
       description: "The width of the work",

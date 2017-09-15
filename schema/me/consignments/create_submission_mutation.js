@@ -2,7 +2,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { SubmissionType } from "./submission"
 import { omit } from "lodash"
 
-export default mutationWithClientMutationId({
+export const config = {
   name: "CreateSubmissionMutation",
   description: "Create a new consignment submission using Convection",
   inputFields: {
@@ -18,4 +18,5 @@ export default mutationWithClientMutationId({
     if (!submissionCreateLoader) return null
     return submissionCreateLoader(request)
   },
-})
+}
+export default mutationWithClientMutationId(config)
