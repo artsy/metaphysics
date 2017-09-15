@@ -5,6 +5,7 @@ import { isExisty, exclude, existyValue, parseRelayOptions } from "lib/helpers"
 import { find, has } from "lodash"
 import gravity from "lib/loaders/legacy/gravity"
 import total from "lib/loaders/legacy/total"
+import HTTPError from "lib/http_error"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
 import cached from "./fields/cached"
@@ -325,9 +326,7 @@ const Show = {
     return gravity(`show/${id}`)
       .then(show => {
         if (!show.displayable && !show.is_reference) {
-          const error = new Error("Show Not Found")
-          error.statusCode = 404
-          return error
+          return new HTTPError("Show Not Found", 404)
         }
         return show
       })
