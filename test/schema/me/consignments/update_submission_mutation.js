@@ -1,6 +1,17 @@
 import { runAuthenticatedQuery } from "test/utils"
+import { config as updateSubmissionMutation } from "schema/me/consignments/update_submission_mutation.js"
 
 describe("UpdateSubmissionMutation", () => {
+  it("includes the id param", () => {
+    const mutation = updateSubmissionMutation
+    expect(Object.keys(mutation.inputFields)).toContain("id")
+  })
+
+  it("includes the state param", () => {
+    const mutation = updateSubmissionMutation
+    expect(Object.keys(mutation.inputFields)).toContain("state")
+  })
+
   it("updates a submission and returns its new data payload", () => {
     const mutation = `
       mutation {
