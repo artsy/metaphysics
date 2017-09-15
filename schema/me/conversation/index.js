@@ -179,6 +179,14 @@ export const ConversationFields = {
   },
   last_message_at: date,
 
+  last_message_id: {
+    type: GraphQLString,
+    description: "Impulse id of the last message.",
+    resolve: conversation => {
+      return get(conversation, "_embedded.last_message.id")
+    },
+  },
+
   // TODO: Currently if the user is not the sender of a message, we assume they are a recipient.
   // That may not be the case, so we should evolve this check to be more accurate.
   is_last_message_to_user: {
