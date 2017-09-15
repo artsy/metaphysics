@@ -47,6 +47,7 @@ Object {
     },
     "id": "420",
     "initial_message": "Loved some of the works at your fair booth!",
+    "last_message_id": "25",
     "messages": Object {
       "edges": Array [
         Object {

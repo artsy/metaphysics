@@ -13,6 +13,7 @@ describe("Me", () => {
             last_message: {
               snippet: "Cool snippet",
               from_email_address: "other-collector@example.com",
+              id: "25",
             },
           },
           items: [
@@ -120,6 +121,7 @@ describe("Me", () => {
               from {
                 email
               }
+              last_message_id
               messages(first: 10) {
                 edges {
                   node {
