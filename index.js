@@ -1,5 +1,5 @@
-import Bluebird from "bluebird"
 import newrelic from "artsy-newrelic"
+import Bluebird from "bluebird"
 import xapp from "artsy-xapp"
 import cors from "cors"
 import morgan from "artsy-morgan"
@@ -28,7 +28,9 @@ const sess = {
   cookie: {},
 }
 
-app.use(newrelic)
+if (process.env.NEW_RELIC_LICENSE_KEY) {
+  app.use(newrelic)
+}
 
 if (NODE_ENV === "production") {
   app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
