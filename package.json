@@ -18,7 +18,6 @@
     "watch": "jest --watch",
     "lint": "eslint .",
     "flow": "flow check",
-    "danger": "danger",
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
@@ -75,7 +74,6 @@
     "babel-jest": "^16.0.0",
     "babel-plugin-rewire": "1.0.0-beta-2",
     "babel-watch": "^2.0.5",
-    "danger": "^0.17.0",
     "deep-equal": "^1.0.1",
     "dotenv": "^2.0.0",
     "eslint": "^1.10.3",
@@ -93,17 +91,9 @@
   "jest": {
     "testRegex": "/test/.*.js$",
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/test/helper.js",
-      "/test/utils.js",
-      "/test/__mocks__"
-    ]
+    "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/utils.js", "/test/__mocks__"]
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --write --trailing-comma es5 --print-width 120 --no-semi",
-      "git add"
-    ]
+    "*.js": ["prettier --write --trailing-comma es5 --print-width 120 --no-semi", "git add"]
   }
 }
