@@ -35,13 +35,16 @@ import Tag from "./tag"
 import TrendingArtists from "./trending"
 import MatchArtist from "./match/artist"
 import Me from "./me"
+
 import UpdateConversationMutation from "./me/conversation/update_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
 import MarkReadMessageMutation from "./me/conversation/mark_read_message_mutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
 import CreateSubmissionMutation from "./me/consignments/create_submission_mutation"
 import UpdateSubmissionMutation from "./me/consignments/update_submission_mutation"
-import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_submission_mutation"
+import AddAssetToConsignmentSubmissionMutation from "./me/consignments/add_asset_to_submission_mutation"
+import UploadFileMutation from "./gemini/image_upload_mutation"
+
 import SaveArtwork from "./me/save_artwork"
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
@@ -112,7 +115,8 @@ const schema = new GraphQLSchema({
       saveArtwork: SaveArtwork,
       createConsignmentSubmission: CreateSubmissionMutation,
       updateConsignmentSubmission: UpdateSubmissionMutation,
-      addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
+      addAssetToConsignmentSubmission: AddAssetToConsignmentSubmissionMutation,
+      uploadFile: UploadFileMutation,
     },
   }),
   query: new GraphQLObjectType({

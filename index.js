@@ -17,6 +17,8 @@ import auth from "./lib/auth"
 import graphqlErrorHandler from "./lib/graphql-error-handler"
 import moment from "moment"
 import * as tz from "moment-timezone" // eslint-disable-line no-unused-vars
+import multer from "multer"
+
 global.Promise = Bluebird
 
 const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET } = process.env
@@ -56,16 +58,20 @@ app.get("/favicon.ico", (req, res) => {
   res.status(200).set({ "Content-Type": "image/x-icon" }).end()
 })
 
+const storage = multer.memoryStorage()
+app.use(multer({ storage }).single("file"))
+
 app.all("/graphql", (req, res) => res.redirect("/"))
 auth(app)
 
 app.use(bodyParser.json())
+
 app.use(
   "/",
   cors(),
   morgan,
   graphqlHTTP(request => {
-    info("----------")
+    info("---------sadadas-")
 
     legacyLoaders.clearAll()
 
@@ -78,6 +84,7 @@ app.use(
     if (moment.tz.zone(timezone)) {
       defaultTimezone = timezone
     }
+    console.log(request.body)
 
     return {
       schema,
@@ -86,6 +93,7 @@ app.use(
         accessToken,
         userID,
         defaultTimezone,
+        file: request.file,
         ...createLoaders(accessToken, userID),
       },
       formatError: graphqlErrorHandler(request.body),
