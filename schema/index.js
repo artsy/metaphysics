@@ -30,6 +30,7 @@ import Sale from "./sale/index"
 import Sales from "./sales"
 import SaleArtwork from "./sale_artwork"
 import Search from "./search"
+import Services from "./services"
 import Show from "./show"
 import Tag from "./tag"
 import TrendingArtists from "./trending"
@@ -82,6 +83,7 @@ const rootFields = {
   sale_artwork: SaleArtwork,
   sales: Sales,
   search: Search,
+  services: Services,
   show: Show,
   status: Status,
   tag: Tag,
