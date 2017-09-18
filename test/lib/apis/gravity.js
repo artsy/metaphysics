@@ -67,5 +67,14 @@ describe("APIs", () => {
 
       return expectPromiseRejectionToMatch(gravity("foo/bar"), /Unexpected token/)
     })
+
+    it("sets a request ID header", () => {
+      const request = sinon.stub().yields(null, { statusCode: 200, body: {} })
+      fetch.__Rewire__("request", request)
+
+      return gravity("foo/bar", {}, { requestID: "request-foo" }).then(() => {
+        expect(request.args[0][1].headers["X-Request-Id"]).toEqual("request-foo")
+      })
+    })
   })
 })

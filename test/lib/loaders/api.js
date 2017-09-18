@@ -53,11 +53,20 @@ describe("API loaders", () => {
       loader = apiLoader("some/post/path", {}, { method: "POST" })
       return loader().then(({ options }) => expect(options.method).toEqual("POST"))
     })
+
+    it("passes merged global and path specific API options", () => {
+      // Needs a new path so we don't just refer to the cached version
+      loader = apiLoader("some/path/new", {}, { pathAPIOption: "path-option" })
+      return loader().then(({ options }) => {
+        expect(options.pathAPIOption).toEqual("path-option")
+        expect(options.globalAPIOption).toEqual("global-option")
+      })
+    })
   }
 
   describe("without authentication", () => {
     beforeEach(() => {
-      apiLoader = apiLoaderWithoutAuthenticationFactory(api)
+      apiLoader = apiLoaderWithoutAuthenticationFactory(api, { globalAPIOption: "global-option" })
       loader = apiLoader("some/path")
     })
 
@@ -88,7 +97,9 @@ describe("API loaders", () => {
 
   describe("with authentication", () => {
     beforeEach(() => {
-      apiLoader = apiLoaderWithAuthenticationFactory(api)(() => Promise.resolve("secret-token"))
+      apiLoader = apiLoaderWithAuthenticationFactory(api, { globalAPIOption: "global-option" })(() =>
+        Promise.resolve("secret-token")
+      )
       loader = apiLoader("some/path")
     })
 

@@ -72,6 +72,8 @@ app.use(
     const accessToken = request.headers["x-access-token"]
     const userID = request.headers["x-user-id"]
     const timezone = request.headers["x-timezone"]
+    const requestID = request.headers["x-request-id"] || "implement-me"
+
     // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
     // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     let defaultTimezone
@@ -86,7 +88,7 @@ app.use(
         accessToken,
         userID,
         defaultTimezone,
-        ...createLoaders(accessToken, userID),
+        ...createLoaders(accessToken, userID, requestID),
       },
       formatError: graphqlErrorHandler(request.body),
     }
