@@ -60,6 +60,7 @@
     "memjs": "^0.10.0",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
+    "multer": "^1.3.0",
     "numeral": "^1.5.3",
     "passport": "^0.3.2",
     "passport-oauth2": "git://github.com/craigspaeth/passport-oauth2.git",
@@ -67,8 +68,8 @@
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "relay-cursor-paging": "^0.2.0",
-    "request": "^2.67.0",
-    "source-map-support": "^0.4.3"
+    "source-map-support": "^0.4.3",
+    "superagent": "^3.6.0"
   },
   "devDependencies": {
     "babel-eslint": "^5.0.4",
