@@ -18,7 +18,10 @@ describe("Artist type", () => {
     }
 
     rootValue = {
-      artistLoader: sinon.stub().withArgs(artist.id).returns(Promise.resolve(artist)),
+      artistLoader: sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(Promise.resolve(artist)),
     }
 
     Artist.__Rewire__(
@@ -300,7 +303,10 @@ describe("Artist type", () => {
       artist.published_artworks_count = count
       artist.forsale_artworks_count = count
       const artworks = Promise.resolve(Array(count))
-      rootValue.artistArtworksLoader = sinon.stub().withArgs(artist.id).returns(artworks)
+      rootValue.artistArtworksLoader = sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(artworks)
     })
     it("does not have a next page when the requested amount exceeds the count", () => {
       const query = `
@@ -407,7 +413,10 @@ describe("Artist type", () => {
               },
             },
           ])
-          rootValue.partnerArtistsLoader = sinon.stub().withArgs(artist.id).returns(partnerArtists)
+          rootValue.partnerArtistsLoader = sinon
+            .stub()
+            .withArgs(artist.id)
+            .returns(partnerArtists)
         })
         afterEach(() => {
           const query = `
@@ -502,7 +511,10 @@ describe("Artist type", () => {
           },
         },
       ])
-      rootValue.partnerArtistsLoader = sinon.stub().withArgs(artist.id).returns(partnerArtists)
+      rootValue.partnerArtistsLoader = sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(partnerArtists)
       const query = `
         {
           artist(id: "foo-bar") {

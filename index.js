@@ -1,3 +1,5 @@
+// @ts-check
+
 import Bluebird from "bluebird"
 import newrelic from "artsy-newrelic"
 import xapp from "artsy-xapp"
@@ -53,7 +55,10 @@ xapp.init(
 )
 
 app.get("/favicon.ico", (req, res) => {
-  res.status(200).set({ "Content-Type": "image/x-icon" }).end()
+  res
+    .status(200)
+    .set({ "Content-Type": "image/x-icon" })
+    .end()
 })
 
 app.all("/graphql", (req, res) => res.redirect("/"))

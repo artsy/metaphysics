@@ -42,16 +42,20 @@ export default {
   ) => {
     let sale_promise = Promise.resolve(null)
     if (sale_ids && sale_ids.length > 0) {
-      sale_promise = salesLoader({ id: sale_ids }).then(first).then(sale => {
-        if (!sale) return null
-        return assign({ context_type: sale.is_auction ? "Auction" : "Sale" }, sale)
-      })
+      sale_promise = salesLoader({ id: sale_ids })
+        .then(first)
+        .then(sale => {
+          if (!sale) return null
+          return assign({ context_type: sale.is_auction ? "Auction" : "Sale" }, sale)
+        })
     }
 
-    const fair_promise = relatedFairsLoader({ artwork: [id], size: 1 }).then(first).then(fair => {
-      if (!fair || (fair && !fair.has_full_feature)) return null
-      return assign({ context_type: "Fair" }, fair)
-    })
+    const fair_promise = relatedFairsLoader({ artwork: [id], size: 1 })
+      .then(first)
+      .then(fair => {
+        if (!fair || (fair && !fair.has_full_feature)) return null
+        return assign({ context_type: "Fair" }, fair)
+      })
 
     const show_promise = relatedShowsLoader({
       artwork: [id],

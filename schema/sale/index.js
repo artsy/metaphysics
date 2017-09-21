@@ -81,10 +81,15 @@ const SaleType = new GraphQLObjectType({
           const invert = saleArtworks => map(saleArtworks, "artwork")
 
           if (options.all) {
-            return gravity.all(`sale/${id}/sale_artworks`, options).then(invert).then(exclude(options.exclude, "id"))
+            return gravity
+              .all(`sale/${id}/sale_artworks`, options)
+              .then(invert)
+              .then(exclude(options.exclude, "id"))
           }
 
-          return gravity(`sale/${id}/sale_artworks`, options).then(invert).then(exclude(options.exclude, "id"))
+          return gravity(`sale/${id}/sale_artworks`, options)
+            .then(invert)
+            .then(exclude(options.exclude, "id"))
         },
       },
       associated_sale: {
