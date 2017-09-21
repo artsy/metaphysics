@@ -179,4 +179,112 @@ describe("LotStanding type", () => {
       })
     })
   })
+
+  it("correctly determines if a lot is part of a live auction", () => {
+    gravity
+      .onCall(0)
+      .returns(
+        Promise.resolve([
+          {
+            bidder: {
+              sale: {
+                id: "a-live-auction",
+              },
+            },
+            sale_artwork: {
+              id: "untitled",
+              reserve_status: "reserve_not_met",
+            },
+            max_position: {
+              id: 0,
+              max_bid_amount_cents: 90000,
+              sale_artwork_id: "untitled",
+            },
+            leading_position: {
+              id: 0,
+              max_bid_amount_cents: 90000,
+              sale_artwork_id: "untitled",
+            },
+          },
+        ])
+      )
+      .onCall(1)
+      .returns(
+        Promise.resolve({
+          live_start_at: "2017-09-23T14:00:00+00:00",
+        })
+      )
+
+    const query = `
+      {
+        me {
+          lot_standing(artwork_id: "untitled", sale_id: "active-auction") {
+            is_in_live_auction
+          }
+        }
+      }
+    `
+
+    return runAuthenticatedQuery(query).then(({ me }) => {
+      expect(me).toEqual({
+        lot_standing: {
+          is_in_live_auction: true,
+        },
+      })
+    })
+  })
+
+  it("correctly determines if a lot is not part of a live auction", () => {
+    gravity
+      .onCall(0)
+      .returns(
+        Promise.resolve([
+          {
+            bidder: {
+              sale: {
+                id: "a-timed-auction",
+              },
+            },
+            sale_artwork: {
+              id: "untitled",
+              reserve_status: "reserve_not_met",
+            },
+            max_position: {
+              id: 0,
+              max_bid_amount_cents: 90000,
+              sale_artwork_id: "untitled",
+            },
+            leading_position: {
+              id: 0,
+              max_bid_amount_cents: 90000,
+              sale_artwork_id: "untitled",
+            },
+          },
+        ])
+      )
+      .onCall(1)
+      .returns(
+        Promise.resolve({
+          live_start_at: null,
+        })
+      )
+
+    const query = `
+      {
+        me {
+          lot_standing(artwork_id: "untitled", sale_id: "active-auction") {
+            is_in_live_auction
+          }
+        }
+      }
+    `
+
+    return runAuthenticatedQuery(query).then(({ me }) => {
+      expect(me).toEqual({
+        lot_standing: {
+          is_in_live_auction: false,
+        },
+      })
+    })
+  })
 })

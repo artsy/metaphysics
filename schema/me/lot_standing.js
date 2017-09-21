@@ -2,6 +2,7 @@ import { isExisty } from "lib/helpers"
 import gravity from "lib/loaders/legacy/gravity"
 import BidderPosition from "schema/bidder_position"
 import Bidder from "schema/bidder"
+import Sale from "schema/sale"
 import SaleArtwork from "schema/sale_artwork"
 import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLBoolean } from "graphql"
 
@@ -10,6 +11,8 @@ export const isLeadingBidder = lotStanding => isExisty(lotStanding.leading_posit
 
 export const isHighestBidder = lotStanding =>
   isLeadingBidder(lotStanding) && lotStanding.sale_artwork.reserve_status !== "reserve_not_met"
+
+export const isLiveAuction = sale => isExisty(sale.live_start_at)
 
 export const LotStandingType = new GraphQLObjectType({
   name: "LotStanding",
@@ -21,6 +24,13 @@ export const LotStandingType = new GraphQLObjectType({
     },
     bidder: {
       type: Bidder.type,
+    },
+    is_in_live_auction: {
+      type: GraphQLBoolean,
+      description: "This lot is associated with a live auction",
+      resolve: ({ bidder }) => {
+        return gravity(`sale/${bidder.sale.id}`).then(sale => isLiveAuction(sale))
+      },
     },
     is_highest_bidder: {
       type: GraphQLBoolean,
@@ -36,6 +46,12 @@ export const LotStandingType = new GraphQLObjectType({
       type: BidderPosition.type,
       description: "Your most recent bid—which is not necessarily winning (may be higher or lower)",
       resolve: ({ max_position }) => max_position,
+    },
+    sale: {
+      type: Sale.type,
+      resolve: ({ bidder }) => {
+        return gravity(`sale/${bidder.sale.id}`)
+      },
     },
     sale_artwork: {
       type: SaleArtwork.type,
