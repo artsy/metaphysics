@@ -1,14 +1,17 @@
+jest.mock("lib/loaders/legacy/gravity")
+import gravity from "lib/loaders/legacy/gravity"
+
 import { map, find } from "lodash"
 
-import schema from "schema"
+// import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("HomePageArtworkModules", () => {
   describe("when signed in", () => {
-    const HomePage = schema.__get__("HomePage")
-    const HomePageArtworkModules = HomePage.__get__("HomePageArtworkModules")
+    // const HomePage = schema.__get__("HomePage")
+    // const HomePageArtworkModules = HomePage.__get__("HomePageArtworkModules")
 
-    let gravity
+    // let gravity
     let modules
     let relatedArtistsResponse
     let relatedArtists
@@ -37,23 +40,30 @@ describe("HomePageArtworkModules", () => {
         },
       ]
 
-      gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
-      relatedArtists = sinon.stub()
+      // gravity = sinon.stub()
+      // gravity.with = sinon.stub().returns(gravity)
+      // relatedArtists = sinon.stub()
 
-      HomePageArtworkModules.__Rewire__("gravity", gravity)
-      HomePageArtworkModules.__Rewire__("relatedArtists", relatedArtists)
+      // HomePageArtworkModules.__Rewire__("gravity", gravity)
+      // HomePageArtworkModules.__Rewire__("relatedArtists", relatedArtists)
 
-      gravity
-        // Modules fetch
-        .onCall(0)
-        .returns(Promise.resolve(modules))
-      relatedArtists.onCall(0).returns(Promise.resolve(relatedArtistsResponse))
+      // gravity
+      //   // Modules fetch
+      //   .onCall(0)
+      //   .returns(Promise.resolve(modules))
+      // relatedArtists.onCall(0).returns(Promise.resolve(relatedArtistsResponse))
+
+      gravity.mockReset()
+      const gravBiddersAPICall = jest.fn(() => Promise.resolve(modules))
+      gravity.with.mockImplementationOnce(() => gravBiddersAPICall)
+
+      gravity.with.mockImplementationOnce(() => () => Promise.resolve(relatedArtistsResponse))
+      // const relatedArtistsAPICall = jest.fn()
     })
 
-    afterEach(() => {
-      HomePageArtworkModules.__ResetDependency__("gravity")
-    })
+    // afterEach(() => {
+    //   HomePageArtworkModules.__ResetDependency__("gravity")
+    // })
 
     it("shows all modules that should be returned", () => {
       const query = `
@@ -146,7 +156,10 @@ describe("HomePageArtworkModules", () => {
     })
 
     it("skips the followed_artist module if the pairs are empty", () => {
-      relatedArtists.onCall(0).returns(Promise.resolve([]))
+      gravity.mockReset()
+      const gravBiddersAPICall = jest.fn(() => Promise.resolve(modules))
+      gravity.with.mockImplementationOnce(() => gravBiddersAPICall)
+      gravity.with.mockImplementationOnce(() => () => Promise.resolve([]))
 
       const query = `
         {
