@@ -51,7 +51,10 @@ describe("Artwork type", () => {
     Artwork.__Rewire__("gravity", gravity)
 
     rootValue = {
-      artworkLoader: sinon.stub().withArgs(artwork.id).returns(Promise.resolve(artwork)),
+      artworkLoader: sinon
+        .stub()
+        .withArgs(artwork.id)
+        .returns(Promise.resolve(artwork)),
     }
   })
 

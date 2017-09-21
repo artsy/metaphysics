@@ -1,4 +1,4 @@
-// @flow
+// @ts-check
 import type { GraphQLFieldConfig } from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"

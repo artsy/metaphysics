@@ -1,4 +1,4 @@
-// @flow
+// @ts-check
 
 import { map, omit } from "lodash"
 import Partner from "schema/partner"
