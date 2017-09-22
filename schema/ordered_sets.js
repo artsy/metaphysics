@@ -16,9 +16,11 @@ const OrderedSets = {
     },
     page: {
       type: GraphQLInt,
+      defaultValue: 1,
     },
     size: {
       type: GraphQLInt,
+      defaultValue: 10,
     },
   },
   resolve: (root, options) => gravity("sets", options),
