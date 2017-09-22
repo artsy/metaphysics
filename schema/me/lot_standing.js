@@ -1,5 +1,4 @@
 import { isExisty } from "lib/helpers"
-import gravity from "lib/loaders/legacy/gravity"
 import BidderPosition from "schema/bidder_position"
 import Bidder from "schema/bidder"
 import Sale from "schema/sale"
@@ -12,8 +11,6 @@ export const isLeadingBidder = lotStanding => isExisty(lotStanding.leading_posit
 export const isHighestBidder = lotStanding =>
   isLeadingBidder(lotStanding) && lotStanding.sale_artwork.reserve_status !== "reserve_not_met"
 
-export const isLiveAuction = sale => isExisty(sale.live_start_at)
-
 export const LotStandingType = new GraphQLObjectType({
   name: "LotStanding",
   fields: () => ({
@@ -24,13 +21,6 @@ export const LotStandingType = new GraphQLObjectType({
     },
     bidder: {
       type: Bidder.type,
-    },
-    is_in_live_auction: {
-      type: GraphQLBoolean,
-      description: "This lot is associated with a live auction",
-      resolve: ({ bidder }) => {
-        return gravity(`sale/${bidder.sale.id}`).then(sale => isLiveAuction(sale))
-      },
     },
     is_highest_bidder: {
       type: GraphQLBoolean,
@@ -49,8 +39,12 @@ export const LotStandingType = new GraphQLObjectType({
     },
     sale: {
       type: Sale.type,
-      resolve: ({ bidder }) => {
-        return gravity(`sale/${bidder.sale.id}`)
+      resolve: ({ bidder }, options, request, { rootValue: { saleLoader } }) => {
+        if (bidder.sale && bidder.sale.id) {
+          // don't error if the sale is unpublished
+          return saleLoader(bidder.sale.id).catch(() => null)
+        }
+        return null
       },
     },
     sale_artwork: {
@@ -70,14 +64,10 @@ export default {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { sale_id, artwork_id }, request, { rootValue: { accessToken } }) =>
-    Promise.all([
-      gravity.with(accessToken)("me/lot_standings", {
-        sale_id,
-        artwork_id,
-      }),
-    ]).then(([lotStanding]) => {
-      if (lotStanding.length === 0) return null
-      return lotStanding[0]
-    }),
+  resolve: (root, { sale_id, artwork_id }, request, { rootValue: { lotStandingLoader } }) => {
+    if (!lotStandingLoader) return null
+    return lotStandingLoader({ sale_id, artwork_id }).then(([lotStanding]) => {
+      return lotStanding
+    })
+  },
 }
