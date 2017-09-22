@@ -105,6 +105,6 @@
   },
   "lint-staged": {
     "*.json": ["yarn prettier --write", "git add"],
-    "*.js": ["eslint --fix", "prettier --write", "git add"]
+    "*.js": ["eslint --fix", "yarn prettier --write", "git add"]
   }
 }
