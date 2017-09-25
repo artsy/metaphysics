@@ -18,8 +18,8 @@ import ArtworkInquiries from "./artwork_inquiries"
 import SavedArtworks from "./saved_artworks"
 import UserStatuses from "./statuses"
 import { IDFields, NodeInterface } from "schema/object_identification"
-import { queriedForFieldsOtherThanBlacklisted, queryContainsField } from "lib/helpers"
-import { GraphQLString, GraphQLObjectType, GraphQLBoolean } from "graphql"
+import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+import { GraphQLString, GraphQLObjectType } from "graphql"
 import { has } from "lodash"
 
 const Me = new GraphQLObjectType({
@@ -80,18 +80,16 @@ export default {
       "sale_registrations",
       "conversation",
       "conversations",
-      "statuses",
       "collector_profile",
       "artwork_inquiries_connection",
       "notifications_connection",
     ]
-    // TODO: Inject fieldNodes as rootFieldNodes
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return gravity.with(accessToken)("me").catch(() => null)
     }
 
     // The email and is_collector are here so that the type system's `isTypeOf`
     // resolves correctly when we're skipping gravity data
-    return { rootFieldNodes: fieldNodes, id: userID, email: null, is_collector: null }
+    return { id: userID, email: null, is_collector: null }
   },
 }
