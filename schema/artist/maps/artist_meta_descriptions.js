@@ -1,4 +1,4 @@
-// @flow
+// @ts-check
 /* eslint-disable */
 export default {
   "ai-weiwei":

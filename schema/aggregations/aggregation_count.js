@@ -1,4 +1,4 @@
-// @flow
+// @ts-check
 import type { GraphQLFieldConfig } from "graphql"
 
 import { IDFields } from "schema/object_identification"

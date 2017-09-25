@@ -15,11 +15,6 @@
     "**/build": true
   },
   "editor.formatOnSave": true,
-  "prettier.singleQuote": false,
-  "prettier.trailingComma": "es5",
-  "prettier.parser": "flow",
-  "prettier.semi": false,
-  "prettier.printWidth": 120,
   "eslint.autoFixOnSave": false,
   "path-intellisense.mappings": {
     "/": "${workspaceRoot}",

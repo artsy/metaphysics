@@ -34,7 +34,10 @@ describe("Object Identification", () => {
     const loaderName = _.keys(loaderTests[typeName])[0]
     const payload = loaderTests[typeName][loaderName]
     const rootValue = {
-      [loaderName]: sinon.stub().withArgs(payload.id).returns(Promise.resolve(payload)),
+      [loaderName]: sinon
+        .stub()
+        .withArgs(payload.id)
+        .returns(Promise.resolve(payload)),
     }
 
     describe(`for a ${typeName}`, () => {

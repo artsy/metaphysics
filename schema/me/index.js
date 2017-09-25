@@ -16,7 +16,6 @@ import Conversations from "./conversations"
 import CollectorProfile from "./collector_profile"
 import ArtworkInquiries from "./artwork_inquiries"
 import SavedArtworks from "./saved_artworks"
-import UserStatuses from "./statuses"
 import { IDFields, NodeInterface } from "schema/object_identification"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 import { GraphQLString, GraphQLObjectType } from "graphql"
@@ -57,7 +56,6 @@ const Me = new GraphQLObjectType({
     type: {
       type: GraphQLString,
     },
-    statuses: UserStatuses,
   },
 })
 

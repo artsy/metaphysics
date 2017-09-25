@@ -21,7 +21,10 @@ export const HomePageArtworkModuleType = new GraphQLObjectType({
       description: "A globally unique ID.",
       resolve: ({ key, params }) => {
         // Compose this ID from params that `resolve` uses to identify a rail later on.
-        const payload = chain(params).pick(possibleArgs).set("key", key).value()
+        const payload = chain(params)
+          .pick(possibleArgs)
+          .set("key", key)
+          .value()
         return toGlobalId("HomePageArtworkModule", JSON.stringify(payload))
       },
     },

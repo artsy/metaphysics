@@ -1,7 +1,7 @@
 import { isExisty } from "lib/helpers"
-import gravity from "lib/loaders/legacy/gravity"
 import BidderPosition from "schema/bidder_position"
 import Bidder from "schema/bidder"
+import Sale from "schema/sale"
 import SaleArtwork from "schema/sale_artwork"
 import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLBoolean } from "graphql"
 
@@ -37,6 +37,16 @@ export const LotStandingType = new GraphQLObjectType({
       description: "Your most recent bid—which is not necessarily winning (may be higher or lower)",
       resolve: ({ max_position }) => max_position,
     },
+    sale: {
+      type: Sale.type,
+      resolve: ({ bidder }, options, request, { rootValue: { saleLoader } }) => {
+        if (bidder.sale && bidder.sale.id) {
+          // don't error if the sale is unpublished
+          return saleLoader(bidder.sale.id).catch(() => null)
+        }
+        return null
+      },
+    },
     sale_artwork: {
       type: SaleArtwork.type,
     },
@@ -54,14 +64,10 @@ export default {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { sale_id, artwork_id }, request, { rootValue: { accessToken } }) =>
-    Promise.all([
-      gravity.with(accessToken)("me/lot_standings", {
-        sale_id,
-        artwork_id,
-      }),
-    ]).then(([lotStanding]) => {
-      if (lotStanding.length === 0) return null
-      return lotStanding[0]
-    }),
+  resolve: (root, { sale_id, artwork_id }, request, { rootValue: { lotStandingLoader } }) => {
+    if (!lotStandingLoader) return null
+    return lotStandingLoader({ sale_id, artwork_id }).then(([lotStanding]) => {
+      return lotStanding
+    })
+  },
 }

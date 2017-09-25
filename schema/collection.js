@@ -1,4 +1,4 @@
-// @flow
+// @ts-check
 import type { GraphQLFieldConfig } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
@@ -42,24 +42,16 @@ export const CollectionType = new GraphQLObjectType({
         delete gravityOptions.page // this can't also be used with the offset in gravity
         return gravity.with(accessToken, { headers: true })(`collection/${id}/artworks`, gravityOptions)
           .then(({ body, headers }) => {
-            const connection = connectionFromArraySlice(body, options, {
+            return connectionFromArraySlice(body, options, {
               arrayLength: headers["x-total-count"],
               sliceStart: gravityOptions.offset,
             })
-            // Gravity has a bug (see PR https://github.com/artsy/gravity/pull/11240) where the counts
-            // returned in the X-Total-Count header includes unpublished artworks, even though only
-            // published artworks are returned. This can lead to a situation where hasNextPage is true
-            // but endCursor is null, violating Relay norms and causing serious problems for Eigen.
-            // FIXME: Remove the following line once Gravity PR 11240 has been deployed to production.
-            connection.pageInfo.hasNextPage =
-              connection.pageInfo.endCursor === null ? false : connection.pageInfo.hasNextPage
-            return connection
           })
           .catch(e => {
             error("Bypassing Gravity error: ", e)
             // For some users with no favourites, Gravity produces an error of "Collection Not Found".
-            // This can cause a crash on Eigen 3.2.4, so we will intercept the error and return an empty list.
-            // FIXME: This can be removed once use of 3.2.4 drops to zero.
+            // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
+            // and return an empty list instead.
             return connectionFromArray([], options, {
               arrayLength: 0,
               sliceStart: 0,

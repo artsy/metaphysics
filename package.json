@@ -17,14 +17,16 @@
     "test": "yarn run lint && jest",
     "watch": "jest --watch",
     "lint": "eslint .",
-    "flow": "flow check",
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild": "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
-    "precommit": "lint-staged"
+    "heroku-postbuild":
+      "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
+    "precommit": "lint-staged",
+    "prettier-project": "prettier --write '**/*.js'",
+    "type-check": "tsc --noEmit --pretty"
   },
-  "author": "",
+  "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
     "@types/jest": "^19.2.2",
@@ -70,6 +72,7 @@
     "source-map-support": "^0.4.3"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.74",
     "babel-eslint": "^5.0.4",
     "babel-jest": "^16.0.0",
     "babel-plugin-rewire": "1.0.0-beta-2",
@@ -80,20 +83,28 @@
     "eslint-config-airbnb": "^3.1.0",
     "eslint-plugin-react": "^3.14.0",
     "expect.js": "^0.3.1",
-    "flow-bin": "^0.37.0",
     "foreman": "^1.4.1",
     "husky": "^0.13.3",
     "jest": "^20.0.4",
     "lint-staged": "^3.4.0",
-    "prettier": "^1.5.2",
-    "sinon": "^1.17.2"
+    "prettier": "^1.7",
+    "sinon": "^1.17.2",
+    "typescript": "^2.5.2"
   },
   "jest": {
     "testRegex": "/test/.*.js$",
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
     "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/utils.js", "/test/__mocks__"]
   },
+  "prettier": {
+    "printWidth": 120,
+    "semi": false,
+    "singleQuote": false,
+    "trailingComma": "es5",
+    "bracketSpacing": true
+  },
   "lint-staged": {
-    "*.js": ["prettier --write --trailing-comma es5 --print-width 120 --no-semi", "git add"]
+    "*.json": ["yarn prettier --write", "git add"],
+    "*.js": ["eslint --fix", "yarn prettier --write", "git add"]
   }
 }

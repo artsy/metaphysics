@@ -55,6 +55,7 @@ describe("Collections", () => {
           private: false,
           total_count: true,
           user_id: "user-42",
+          sort: "-position",
         })
         .returns(Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } }))
 
@@ -85,6 +86,7 @@ describe("Collections", () => {
           private: false,
           total_count: true,
           user_id: "user-42",
+          sort: "-position",
         })
         .returns(Promise.reject(new Error("Collection Not Found")))
 
@@ -97,33 +99,6 @@ describe("Collections", () => {
                           id
                           title
                         }
-                      }
-                    }
-                  }
-                }
-              `
-      return runAuthenticatedQuery(query).then(data => {
-        expect(data).toMatchSnapshot()
-      })
-    })
-
-    it("ignores incorrect counts from gravity", () => {
-      gravity
-        .withArgs("collection/saved-artwork/artworks", {
-          size: 10,
-          offset: 0,
-          private: false,
-          total_count: true,
-          user_id: "user-42",
-        })
-        .returns(Promise.resolve({ body: [], headers: { "x-total-count": 10 } }))
-      const query = `
-                {
-                  collection(id: "saved-artwork") {
-                    artworks_connection(first:10) {
-                      pageInfo {
-                        hasNextPage
-                        endCursor
                       }
                     }
                   }
