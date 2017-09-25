@@ -2,7 +2,7 @@
 import type { GraphQLFieldConfig } from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
-import { assign, compact, defaults, first, has } from "lodash"
+import { assign, compact, defaults, first, has, reject, includes } from "lodash"
 import { exclude } from "lib/helpers"
 import cached from "schema/fields/cached"
 import initials from "schema/fields/initials"
@@ -40,6 +40,8 @@ const artistArtworkArrayLength = (artist, filter) => {
   return length
 }
 
+const blacklistedPartnerTypes = ["Private Dealer", "Demo", "Private Collector", "Auction"]
+
 // TODO Get rid of this when we remove the deprecated PartnerShow in favour of Show.
 const ShowField = {
   args: {
@@ -71,12 +73,14 @@ const ShowField = {
     sort: PartnerShowSorts,
   },
   resolve: ({ id }, options, request, { rootValue: { relatedShowsLoader } }) => {
+    // TODO: Fix upstream, for now we remove shows from certain Partner types
     return relatedShowsLoader(
       defaults(options, {
         artist_id: id,
         sort: "-end_at",
+      })).then(shows => {
+        return reject(shows, show => includes(blacklistedPartnerTypes, show.partner.type))
       })
-    )
   },
 }
 
