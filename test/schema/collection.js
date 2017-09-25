@@ -55,6 +55,7 @@ describe("Collections", () => {
           private: false,
           total_count: true,
           user_id: "user-42",
+          sort: "-position",
         })
         .returns(Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } }))
 
@@ -85,6 +86,7 @@ describe("Collections", () => {
           private: false,
           total_count: true,
           user_id: "user-42",
+          sort: "-position",
         })
         .returns(Promise.reject(new Error("Collection Not Found")))
 
@@ -115,6 +117,7 @@ describe("Collections", () => {
           private: false,
           total_count: true,
           user_id: "user-42",
+          sort: "-position",
         })
         .returns(Promise.resolve({ body: [], headers: { "x-total-count": 10 } }))
       const query = `
