@@ -542,6 +542,11 @@ describe("Artist type", () => {
   })
   describe("concerning related shows", () => {
     beforeEach(() => {
+      const partnerlessShow = {
+        id: "no-partner",
+        is_reference: true,
+        display_on_partner_profile: false,
+      }
       const privateShow = {
         id: "oops",
         partner: {
@@ -565,7 +570,7 @@ describe("Artist type", () => {
       rootValue.relatedShowsLoader = sinon
         .stub()
         .withArgs(artist.id)
-        .returns(Promise.resolve([privateShow, publicShow]))
+        .returns(Promise.resolve([privateShow, publicShow, partnerlessShow]))
     })
     it("excludes shows from private partners for related shows", () => {
       const query = `

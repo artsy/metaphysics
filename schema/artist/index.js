@@ -40,7 +40,16 @@ const artistArtworkArrayLength = (artist, filter) => {
   return length
 }
 
+// TODO: Fix upstream, for now we remove shows from certain Partner types
 const blacklistedPartnerTypes = ["Private Dealer", "Demo", "Private Collector", "Auction"]
+const showsWithBLacklistedPartnersRemoved = shows => {
+  return reject(shows, show => {
+    if (show.partner) {
+      return includes(blacklistedPartnerTypes, show.partner.type)
+    }
+    return true
+  })
+}
 
 // TODO Get rid of this when we remove the deprecated PartnerShow in favour of Show.
 const ShowField = {
@@ -73,14 +82,11 @@ const ShowField = {
     sort: PartnerShowSorts,
   },
   resolve: ({ id }, options, request, { rootValue: { relatedShowsLoader } }) => {
-    // TODO: Fix upstream, for now we remove shows from certain Partner types
     return relatedShowsLoader(
       defaults(options, {
         artist_id: id,
         sort: "-end_at",
-      })).then(shows => {
-        return reject(shows, show => includes(blacklistedPartnerTypes, show.partner.type))
-      })
+      })).then(shows => showsWithBLacklistedPartnersRemoved(shows))
   },
 }
 
@@ -327,9 +333,7 @@ export const ArtistType = new GraphQLObjectType({
             is_reference: true,
             visible_to_public: false,
             size: options.size,
-          }).then(shows => {
-            return reject(shows, show => includes(blacklistedPartnerTypes, show.partner.type))
-          })
+          }).then(shows => showsWithBLacklistedPartnersRemoved(shows))
         },
       },
       formatted_artworks_count: {
