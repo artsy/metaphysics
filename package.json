@@ -20,7 +20,8 @@
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild": "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
+    "heroku-postbuild":
+      "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
     "precommit": "lint-staged",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"
@@ -28,7 +29,6 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
-    "@types/jest": "^19.2.2",
     "accounting": "^0.4.1",
     "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
     "artsy-newrelic": "^1.0.0",
@@ -42,7 +42,6 @@
     "basic-auth": "^1.0.3",
     "bluebird": "^3.3.4",
     "body-parser": "^1.15.2",
-    "btoa": "^1.1.2",
     "cors": "^2.7.1",
     "dataloader": "^1.0.0",
     "debug": "^2.2.0",
@@ -72,6 +71,7 @@
     "source-map-support": "^0.4.3"
   },
   "devDependencies": {
+    "@types/jest": "^19.2.2",
     "@types/lodash": "^4.14.74",
     "babel-eslint": "^5.0.4",
     "babel-jest": "^16.0.0",
@@ -94,12 +94,7 @@
   "jest": {
     "testRegex": "/test/.*.js$",
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/test/helper.js",
-      "/test/utils.js",
-      "/test/__mocks__"
-    ]
+    "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/utils.js", "/test/__mocks__"]
   },
   "prettier": {
     "printWidth": 120,
@@ -109,14 +104,7 @@
     "bracketSpacing": true
   },
   "lint-staged": {
-    "*.json": [
-      "yarn prettier --write",
-      "git add"
-    ],
-    "*.js": [
-      "eslint --fix",
-      "prettier --write",
-      "git add"
-    ]
+    "*.json": ["yarn prettier --write", "git add"],
+    "*.js": ["eslint --fix", "prettier --write", "git add"]
   }
 }

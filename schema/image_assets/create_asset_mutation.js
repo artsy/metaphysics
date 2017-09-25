@@ -11,10 +11,11 @@ export const CredentialsType = new GraphQLObjectType({
       description: "The key to use with S3.",
       type: new GraphQLNonNull(GraphQLString),
     },
-    // policy_document: {
-    //   description: "The convection submission ID",
-    //   type: GraphQLString,
-    // },
+    policy_encoded: {
+      description: "The convection submission ID",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    // Intentionally left out policy_document, as not needed for now
     expiration: {
       description: "The ISO8601 date when the token will expire.",
       type: new GraphQLNonNull(GraphQLString),
@@ -30,15 +31,22 @@ export default mutationWithClientMutationId({
       type: new GraphQLNonNull(GraphQLString),
       description: "The id of the bucket",
     },
+    acl: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The desired access control",
+    },
   },
   outputFields: {
     asset: {
       type: CredentialsType,
-      resolve: response => response,
+      resolve: credentials => {
+        debugger
+        return credentials
+      },
     },
   },
-  mutateAndGetPayload: ({ name }, request, { rootValue: { createImageUploadLoader } }) => {
-    if (!createImageUploadLoader) return null
-    return createImageUploadLoader(name, {})
+  mutateAndGetPayload: ({ name, acl }, request, { rootValue: { createNewUploadLoader } }) => {
+    if (!createNewUploadLoader) return null
+    return createNewUploadLoader({ name, acl })
   },
 })
