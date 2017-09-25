@@ -328,7 +328,7 @@ export const ArtistType = new GraphQLObjectType({
             visible_to_public: false,
             size: options.size,
           }).then(shows => {
-            return shows
+            return reject(shows, show => includes(blacklistedPartnerTypes, show.partner.type))
           })
         },
       },

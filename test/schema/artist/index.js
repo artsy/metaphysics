@@ -541,7 +541,7 @@ describe("Artist type", () => {
     })
   })
   describe("concerning related shows", () => {
-    it("excludes shows from private partners", () => {
+    beforeEach(() => {
       const privateShow = {
         id: "oops",
         partner: {
@@ -566,6 +566,8 @@ describe("Artist type", () => {
         .stub()
         .withArgs(artist.id)
         .returns(Promise.resolve([privateShow, publicShow]))
+    })
+    it("excludes shows from private partners for related shows", () => {
       const query = `
         {
           artist(id: "foo-bar") {
@@ -579,6 +581,28 @@ describe("Artist type", () => {
         expect(data).toEqual({
           artist: {
             shows: [
+              {
+                id: "ok",
+              },
+            ],
+          },
+        })
+      })
+    })
+    it("excludes shows from private partners for exhibition highlights", () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            exhibition_highlights {
+              id
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            exhibition_highlights: [
               {
                 id: "ok",
               },
