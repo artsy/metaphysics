@@ -47,6 +47,9 @@ const showsWithBLacklistedPartnersRemoved = shows => {
     if (show.partner) {
       return includes(blacklistedPartnerTypes, show.partner.type)
     }
+    if (show.galaxy_partner_id) {
+      return false
+    }
     return true
   })
 }
