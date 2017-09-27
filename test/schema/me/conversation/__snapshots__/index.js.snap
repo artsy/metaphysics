@@ -60,6 +60,8 @@ Object {
             },
             "id": "240",
             "invoice": Object {
+              "__id": "SW52b2ljZTox",
+              "id": "1",
               "payment_url": "https://www.adopt-cats.org/adopt-all-the-cats",
               "state": "UNPAID",
               "total": "$4,200",

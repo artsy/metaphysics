@@ -1,5 +1,7 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
 import { amount } from "../../fields/money"
+import { IDFields, NodeInterface } from "../../object_identification"
+import { has } from "lodash"
 
 const InvoiceState = new GraphQLEnumType({
   name: "InvoiceState",
@@ -22,11 +24,10 @@ const InvoiceState = new GraphQLEnumType({
 export const InvoiceType = new GraphQLObjectType({
   name: "Invoice",
   desciption: "Fields of an invoice (currently from Lewitt)",
+  interfaces: [NodeInterface],
+  isTypeOf: obj => has(obj, "payment_url") && has(obj, "lewitt_invoice_id"),
   fields: {
-    id: {
-      description: "Impulse's invoice id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    ...IDFields,
     lewitt_invoice_id: {
       description: "Lewitt's invoice id.",
       type: new GraphQLNonNull(GraphQLString),
@@ -42,3 +43,25 @@ export const InvoiceType = new GraphQLObjectType({
     total: amount(({ total_cents }) => total_cents),
   },
 })
+
+export default {
+  type: InvoiceType,
+  description: "An invoice",
+  args: {
+    conversationId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the Conversation",
+    },
+    invoiceId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the invoice",
+    },
+  },
+  resolve: (root, { conversationId, invoiceId }, request, { rootValue: { conversationInvoiceLoader } }) => {
+    if (!conversationInvoiceLoader) return null
+    return conversationInvoiceLoader({
+      conversation_id: conversationId,
+      lewitt_invoice_id: invoiceId,
+    })
+  },
+}
