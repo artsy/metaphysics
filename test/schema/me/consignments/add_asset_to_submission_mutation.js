@@ -1,12 +1,13 @@
 import { runAuthenticatedQuery } from "test/utils"
+import gql from "test/gql"
 
 describe("addAssetToConsignmentSubmission", () => {
   it("creates a submission and returns its new data payload", () => {
-    const mutation = `
+    const mutation = gql`
       mutation {
-        addAssetToConsignmentSubmission(input:
-          { asset_type: "image", gemini_token: "12345", submission_id: "123", clientMutationId: "123" }
-        ){
+        addAssetToConsignmentSubmission(
+          input: { asset_type: "image", gemini_token: "12345", submission_id: "123", clientMutationId: "123" }
+        ) {
           asset {
             submission_id
             gemini_token
@@ -24,8 +25,8 @@ describe("addAssetToConsignmentSubmission", () => {
         }),
     }
 
-    return runAuthenticatedQuery(mutation, rootValue).then(({ assetCreateLoader }) => {
-      expect(assetCreateLoader).toMatchSnapshot()
+    return runAuthenticatedQuery(mutation, rootValue).then(data => {
+      expect(data).toMatchSnapshot()
     })
   })
 })

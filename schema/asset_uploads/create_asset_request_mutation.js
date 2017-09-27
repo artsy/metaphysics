@@ -16,8 +16,8 @@ export const CredentialsType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
     },
     // Intentionally left out policy_document, as not needed for now
-    expiration: {
-      description: "The ISO8601 date when the token will expire.",
+    signature: {
+      description: "The signature for your asset.",
       type: new GraphQLNonNull(GraphQLString),
     },
   },
@@ -39,14 +39,11 @@ export default mutationWithClientMutationId({
   outputFields: {
     asset: {
       type: CredentialsType,
-      resolve: credentials => {
-        debugger
-        return credentials
-      },
+      resolve: credentials => credentials,
     },
   },
-  mutateAndGetPayload: ({ name, acl }, request, { rootValue: { createNewUploadLoader } }) => {
-    if (!createNewUploadLoader) return null
-    return createNewUploadLoader({ name, acl })
+  mutateAndGetPayload: ({ name, acl }, request, { rootValue: { createNewGeminiAssetLoader } }) => {
+    if (!createNewGeminiAssetLoader) return null
+    return createNewGeminiAssetLoader({ name, acl })
   },
 })

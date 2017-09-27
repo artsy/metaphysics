@@ -1,4 +1,5 @@
 import { map, times } from "lodash"
+import gql from "test/gql"
 
 import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
@@ -96,7 +97,7 @@ describe("Me type", () => {
   })
 
   it("returns all bidder positions", () => {
-    const query = `
+    const query = gql`
       {
         me {
           bidder_positions {
@@ -111,7 +112,7 @@ describe("Me type", () => {
   })
 
   it("can return only current bidder positions", () => {
-    const query = `
+    const query = gql`
       {
         me {
           bidder_positions(current: true) {
@@ -126,7 +127,7 @@ describe("Me type", () => {
   })
 
   it("does not fail for bidder positions with unpublished artworks", () => {
-    const query = `
+    const query = gql`
       {
         me {
           bidder_positions(current: true) {
@@ -142,7 +143,7 @@ describe("Me type", () => {
   })
 
   it("bidder positions can return is_winning based on sale artwork", () => {
-    const query = `
+    const query = gql`
       {
         me {
           bidder_positions {

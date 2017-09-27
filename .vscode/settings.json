@@ -1,13 +1,8 @@
-// Place your settings in this file to overwrite default and user settings.
 {
-  "editor.rulers": [
-      120
-  ],
+  "editor.rulers": [120],
   "editor.tabSize": 2,
-  "javascript.validate.enable": false,
-  "flow.useNPMPackagedFlow": true,
+  "javascript.validate.enable": true,
   "search.exclude": {
-    "flow-typed": true,
     "**/node_modules": true
   },
   "files.exclude": {
@@ -20,6 +15,6 @@
     "/": "${workspaceRoot}",
     "lib": "${workspaceRoot}/lib",
     "schema": "${workspaceRoot}/schema",
-    "test": "${workspaceRoot}/tst"
+    "test": "${workspaceRoot}/test"
   }
 }

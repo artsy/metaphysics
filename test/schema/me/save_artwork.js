@@ -1,22 +1,21 @@
 import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
-describe("SaveArtwork", () => {
+describe("SaveArtworkMutation", () => {
   const gravity = sinon.stub()
-  const SaveArtwork = schema.__get__("SaveArtwork")
+  const SaveArtworkMutation = schema.__get__("SaveArtworkMutation")
 
   beforeEach(() => {
     gravity.with = sinon.stub().returns(gravity)
 
-    SaveArtwork.__Rewire__("gravity", gravity)
+    SaveArtworkMutation.__Rewire__("gravity", gravity)
   })
 
   afterEach(() => {
-    SaveArtwork.__ResetDependency__("gravity")
+    SaveArtworkMutation.__ResetDependency__("gravity")
   })
 
   it("saves an artwork", () => {
-    /* eslint-disable max-len */
     const mutation = `
       mutation {
         saveArtwork(input: { artwork_id: "damon-zucconi-slow-verb" }) {
@@ -27,7 +26,6 @@ describe("SaveArtwork", () => {
         }
       }
     `
-    /* eslint-enable max-len */
 
     const artwork = {
       date: "2015",

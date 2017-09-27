@@ -1,5 +1,6 @@
 import { runAuthenticatedQuery } from "test/utils"
 import { config as updateSubmissionMutation } from "schema/me/consignments/update_submission_mutation.js"
+import gql from "test/gql"
 
 describe("UpdateSubmissionMutation", () => {
   it("includes the id param", () => {
@@ -13,7 +14,7 @@ describe("UpdateSubmissionMutation", () => {
   })
 
   it("updates a submission and returns its new data payload", () => {
-    const mutation = `
+    const mutation = gql`
       mutation {
         updateConsignmentSubmission(
           input: { id: "108", artist_id: "andy-warhol", depth: "123", clientMutationId: "123123" }
@@ -34,8 +35,8 @@ describe("UpdateSubmissionMutation", () => {
         }),
     }
 
-    return runAuthenticatedQuery(mutation, rootValue).then(({ submissionUpdateLoader }) => {
-      expect(submissionUpdateLoader).toMatchSnapshot()
+    return runAuthenticatedQuery(mutation, rootValue).then(data => {
+      expect(data).toMatchSnapshot()
     })
   })
 })

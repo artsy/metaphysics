@@ -49,8 +49,9 @@ If you need to generate a token, [this command](https://artsy.slack.com/archives
 
 ### Docs
 
-- [Debugging with VS Code](docs/debugging_with_vscode.md)
+- [How we use DataLoaders](docs/dataloaders.md)
 - [Adding a microservice to Metaphysics](docs/adding_a_new_microservice.md)
+- [Debugging with VS Code](docs/debugging_with_vscode.md)
 
 
 ### Deployment

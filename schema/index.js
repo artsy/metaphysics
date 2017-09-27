@@ -1,3 +1,5 @@
+// @ts-check
+
 import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
@@ -44,7 +46,7 @@ import CreateSubmissionMutation from "./me/consignments/create_submission_mutati
 import UpdateSubmissionMutation from "./me/consignments/update_submission_mutation"
 import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_submission_mutation"
 import SaveArtworkMutation from "./me/save_artwork_mutation"
-import CreateImageUploadLoader from "./image_assets/create_asset_mutation"
+import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
@@ -116,7 +118,7 @@ const schema = new GraphQLSchema({
       createConsignmentSubmission: CreateSubmissionMutation,
       updateConsignmentSubmission: UpdateSubmissionMutation,
       addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
-      createImageUploadLoader: CreateImageUploadLoader,
+      requestCredentialsForAssetUpload: CreateAssetRequestLoader,
     },
   }),
   query: new GraphQLObjectType({
