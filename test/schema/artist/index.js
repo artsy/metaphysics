@@ -547,6 +547,12 @@ describe("Artist type", () => {
         is_reference: true,
         display_on_partner_profile: false,
       }
+      const galaxyShow = {
+        id: "galaxy-partner",
+        is_reference: true,
+        display_on_partner_profile: false,
+        galaxy_partner_id: "420",
+      }
       const privateShow = {
         id: "oops",
         partner: {
@@ -570,7 +576,7 @@ describe("Artist type", () => {
       rootValue.relatedShowsLoader = sinon
         .stub()
         .withArgs(artist.id)
-        .returns(Promise.resolve([privateShow, publicShow, partnerlessShow]))
+        .returns(Promise.resolve([privateShow, publicShow, partnerlessShow, galaxyShow]))
     })
     it("excludes shows from private partners for related shows", () => {
       const query = `
@@ -588,6 +594,9 @@ describe("Artist type", () => {
             shows: [
               {
                 id: "ok",
+              },
+              {
+                id: "galaxy-partner",
               },
             ],
           },
@@ -610,6 +619,9 @@ describe("Artist type", () => {
             exhibition_highlights: [
               {
                 id: "ok",
+              },
+              {
+                id: "galaxy-partner",
               },
             ],
           },
