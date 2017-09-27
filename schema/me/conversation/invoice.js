@@ -43,3 +43,25 @@ export const InvoiceType = new GraphQLObjectType({
     total: amount(({ total_cents }) => total_cents),
   },
 })
+
+export default {
+  type: InvoiceType,
+  description: "An invoice",
+  args: {
+    conversationId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the Conversation",
+    },
+    invoiceId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the invoice",
+    },
+  },
+  resolve: (root, { conversationId, invoiceId }, request, { rootValue: { conversationInvoiceLoader } }) => {
+    if (!conversationInvoiceLoader) return null
+    return conversationInvoiceLoader({
+      conversation_id: conversationId,
+      lewitt_invoice_id: invoiceId,
+    })
+  },
+}
