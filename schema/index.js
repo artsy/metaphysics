@@ -47,6 +47,7 @@ import UpdateSubmissionMutation from "./me/consignments/update_submission_mutati
 import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_submission_mutation"
 import SaveArtworkMutation from "./me/save_artwork_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
+import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
 
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
@@ -119,6 +120,7 @@ const schema = new GraphQLSchema({
       updateConsignmentSubmission: UpdateSubmissionMutation,
       addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
+      createGeminiEntryForAsset: CreateGeminiEntryForAsset,
     },
   }),
   query: new GraphQLObjectType({
