@@ -30,7 +30,7 @@
   "dependencies": {
     "accounting": "^0.4.1",
     "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
-    "artsy-newrelic": "^1.0.0",
+    "artsy-newrelic": "^1.3.0",
     "artsy-xapp": "^1.0.4",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.2.4",
@@ -47,7 +47,6 @@
     "express": "^4.13.3",
     "express-force-ssl": "^0.3.0",
     "express-graphql": "^0.6.1",
-    "express-session": "^1.15.1",
     "forever": "^0.15.3",
     "graphiql": "^0.8.0",
     "graphql": "^0.8.2",
@@ -61,8 +60,6 @@
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
     "numeral": "^1.5.3",
-    "passport": "^0.3.2",
-    "passport-oauth2": "git://github.com/craigspaeth/passport-oauth2.git",
     "qs": "^5.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
@@ -118,7 +115,7 @@
     ],
     "*.js": [
       "eslint --fix",
-      "prettier --write",
+      "yarn prettier --write",
       "git add"
     ]
   }

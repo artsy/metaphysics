@@ -10,19 +10,6 @@ Object {
 }
 `;
 
-exports[`Collections Handles getting collection metadata ignores incorrect counts from gravity 1`] = `
-Object {
-  "collection": Object {
-    "artworks_connection": Object {
-      "pageInfo": Object {
-        "endCursor": null,
-        "hasNextPage": false,
-      },
-    },
-  },
-}
-`;
-
 exports[`Collections Handles getting collection metadata returns artworks for a collection 1`] = `
 Object {
   "collection": Object {

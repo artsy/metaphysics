@@ -22,6 +22,7 @@ describe("Artist type", () => {
         .stub()
         .withArgs(artist.id)
         .returns(Promise.resolve(artist)),
+
     }
 
     Artist.__Rewire__(
@@ -534,6 +535,95 @@ describe("Artist type", () => {
               credit: "Submitted by Catty Partner",
               partner_id: "catty-partner",
             },
+          },
+        })
+      })
+    })
+  })
+  describe("concerning related shows", () => {
+    beforeEach(() => {
+      const partnerlessShow = {
+        id: "no-partner",
+        is_reference: true,
+        display_on_partner_profile: false,
+      }
+      const galaxyShow = {
+        id: "galaxy-partner",
+        is_reference: true,
+        display_on_partner_profile: false,
+        galaxy_partner_id: "420",
+      }
+      const privateShow = {
+        id: "oops",
+        partner: {
+          type: "Private Dealer",
+          has_full_profile: true,
+          profile_banner_display: false,
+        },
+        is_reference: true,
+        display_on_partner_profile: false,
+      }
+      const publicShow = {
+        id: "ok",
+        partner: {
+          type: "Gallery",
+          has_full_profile: true,
+          profile_banner_display: false,
+        },
+        is_reference: true,
+        display_on_partner_profile: false,
+      }
+      rootValue.relatedShowsLoader = sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(Promise.resolve([privateShow, publicShow, partnerlessShow, galaxyShow]))
+    })
+    it("excludes shows from private partners for related shows", () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            shows {
+              id
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            shows: [
+              {
+                id: "ok",
+              },
+              {
+                id: "galaxy-partner",
+              },
+            ],
+          },
+        })
+      })
+    })
+    it("excludes shows from private partners for exhibition highlights", () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            exhibition_highlights {
+              id
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            exhibition_highlights: [
+              {
+                id: "ok",
+              },
+              {
+                id: "galaxy-partner",
+              },
+            ],
           },
         })
       })
