@@ -53,6 +53,19 @@ describe("API loaders", () => {
       loader = apiLoader("some/post/path", {}, { method: "POST" })
       return loader().then(({ options }) => expect(options.method).toEqual("POST"))
     })
+
+    it("takes a callback that can be used to optimize requests", () => {
+      loader = apiLoader("some/optimized/path", {}, {}, keys => {
+        const [foo, bar] = keys.map(key => key.match(/(foo|bar)=(\d+)/)[2]).map(digit => parseInt(digit, 10))
+        return {
+          keys: [`some/optimized/path?baz=${foo + bar}`],
+          postProcess: responses => [responses[0].path + "&id=foo", responses[0].path + "&id=bar"],
+        }
+      })
+      return Promise.all([loader({ foo: 21 }), loader({ bar: 21 })]).then(responses => {
+        expect(responses).toEqual(["some/optimized/path?baz=42&id=foo", "some/optimized/path?baz=42&id=bar"])
+      })
+    })
   }
 
   describe("without authentication", () => {

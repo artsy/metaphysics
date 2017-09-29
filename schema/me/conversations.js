@@ -7,7 +7,7 @@ import { ConversationType } from "./conversation"
 const connectionFields = {
   totalCount: {
     type: GraphQLInt,
-    resolve: ({ pageInfo }) => pageInfo.totalCount,
+    resolve: (root, options, request, { rootValue: { conversationsCountLoader } }) => conversationsCountLoader(),
   },
 }
 
@@ -19,12 +19,10 @@ export default {
     if (!conversationsLoader) return null
     const { page, size, offset } = parseRelayOptions(options)
     return conversationsLoader({ page, size }).then(({ total_count, conversations }) => {
-      const arrayConn = connectionFromArraySlice(conversations, options, {
+      return connectionFromArraySlice(conversations, options, {
         arrayLength: total_count,
         sliceStart: offset,
       })
-      arrayConn.pageInfo.totalCount = total_count
-      return arrayConn
     })
   },
 }

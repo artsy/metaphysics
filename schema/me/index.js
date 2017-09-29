@@ -18,7 +18,7 @@ import ArtworkInquiries from "./artwork_inquiries"
 import SavedArtworks from "./saved_artworks"
 import { IDFields, NodeInterface } from "schema/object_identification"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import { GraphQLString, GraphQLObjectType, GraphQLBoolean } from "graphql"
 import { has } from "lodash"
 
 const Me = new GraphQLObjectType({
@@ -56,6 +56,12 @@ const Me = new GraphQLObjectType({
     type: {
       type: GraphQLString,
     },
+    has_conversations: {
+      type: GraphQLBoolean,
+      resolve: (root, options, request, { rootValue: { conversationsCountLoader } }) => {
+        return conversationsCountLoader().then(count => count > 0)
+      },
+    },
   },
 })
 
@@ -78,6 +84,7 @@ export default {
       "sale_registrations",
       "conversation",
       "conversations",
+      "has_conversations",
       "collector_profile",
       "artwork_inquiries_connection",
       "notifications_connection",
