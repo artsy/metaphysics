@@ -47,7 +47,6 @@
     "express": "^4.13.3",
     "express-force-ssl": "^0.3.0",
     "express-graphql": "^0.6.1",
-    "express-session": "^1.15.1",
     "forever": "^0.15.3",
     "graphiql": "^0.8.0",
     "graphql": "^0.8.2",
@@ -60,8 +59,6 @@
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
     "numeral": "^1.5.3",
-    "passport": "^0.3.2",
-    "passport-oauth2": "git://github.com/craigspaeth/passport-oauth2.git",
     "qs": "^5.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
@@ -94,7 +91,13 @@
   "jest": {
     "testRegex": "/test/.*.js$",
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
-    "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/utils.js", "/test/gql.js", "/test/__mocks__"]
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/test/helper.js",
+      "/test/utils.js",
+      "/test/gql.js",
+      "/test/__mocks__"
+    ]
   },
   "prettier": {
     "printWidth": 120,

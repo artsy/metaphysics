@@ -7,7 +7,6 @@ import cors from "cors"
 import morgan from "artsy-morgan"
 import express from "express"
 import forceSSL from "express-force-ssl"
-import session from "express-session"
 import graphqlHTTP from "express-graphql"
 import bodyParser from "body-parser"
 import schema from "./schema"
@@ -15,7 +14,6 @@ import legacyLoaders from "./lib/loaders/legacy"
 import createLoaders from "./lib/loaders"
 import config from "./config"
 import { info, error } from "./lib/loggers"
-import auth from "./lib/auth"
 import graphqlErrorHandler from "./lib/graphql-error-handler"
 import moment from "moment"
 import * as tz from "moment-timezone" // eslint-disable-line no-unused-vars
@@ -25,20 +23,13 @@ const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET } = process.
 
 const app = express()
 const port = PORT || 3000
-const sess = {
-  secret: GRAVITY_SECRET,
-  cookie: {},
-}
 
 app.use(newrelic)
 
 if (NODE_ENV === "production") {
   app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
   app.set("trust proxy", 1)
-  sess.cookie.secure = true
 }
-
-app.use(session(sess))
 
 xapp.on("error", err => {
   error(err)
@@ -62,7 +53,6 @@ app.get("/favicon.ico", (req, res) => {
 })
 
 app.all("/graphql", (req, res) => res.redirect("/"))
-auth(app)
 
 app.use(bodyParser.json())
 app.use(
