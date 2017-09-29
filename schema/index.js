@@ -1,3 +1,5 @@
+// @ts-check
+
 import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
@@ -35,6 +37,7 @@ import Tag from "./tag"
 import TrendingArtists from "./trending"
 import MatchArtist from "./match/artist"
 import Me from "./me"
+
 import UpdateConversationMutation from "./me/conversation/update_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
 import MarkReadMessageMutation from "./me/conversation/mark_read_message_mutation"
@@ -42,7 +45,9 @@ import UpdateCollectorProfile from "./me/update_collector_profile"
 import CreateSubmissionMutation from "./me/consignments/create_submission_mutation"
 import UpdateSubmissionMutation from "./me/consignments/update_submission_mutation"
 import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_submission_mutation"
-import SaveArtwork from "./me/save_artwork"
+import SaveArtworkMutation from "./me/save_artwork_mutation"
+import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
+
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
 import { GraphQLSchema, GraphQLObjectType } from "graphql"
@@ -109,10 +114,11 @@ const schema = new GraphQLSchema({
       updateConversation: UpdateConversationMutation,
       sendConversationMessage: SendConversationMessageMutation,
       markReadMessage: MarkReadMessageMutation,
-      saveArtwork: SaveArtwork,
+      saveArtwork: SaveArtworkMutation,
       createConsignmentSubmission: CreateSubmissionMutation,
       updateConsignmentSubmission: UpdateSubmissionMutation,
       addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
+      requestCredentialsForAssetUpload: CreateAssetRequestLoader,
     },
   }),
   query: new GraphQLObjectType({

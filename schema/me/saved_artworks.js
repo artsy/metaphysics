@@ -5,7 +5,7 @@ import { CollectionType, collectionResolver } from "schema/collection"
 export default {
   type: CollectionType,
   resolve: (root, options, request, { fieldNodes, rootValue }) => {
-    const { accessToken, userID } = (rootValue: any)
+    const { accessToken, userID } = rootValue
     return collectionResolver(fieldNodes, accessToken, userID, "saved-artwork")
   },
 }

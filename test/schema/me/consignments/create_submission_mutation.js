@@ -1,7 +1,7 @@
 import { runAuthenticatedQuery } from "test/utils"
 import { config as createSubmissionMutation } from "schema/me/consignments/create_submission_mutation.js"
 
-const gql = args => args[0]
+import gql from "test/gql"
 
 describe("UpdateSubmissionMutation", () => {
   it("does not include the id param", () => {
@@ -43,8 +43,8 @@ describe("UpdateSubmissionMutation", () => {
         }),
     }
 
-    return runAuthenticatedQuery(mutation, rootValue).then(({ submissionCreateLoader }) => {
-      expect(submissionCreateLoader).toMatchSnapshot()
+    return runAuthenticatedQuery(mutation, rootValue).then(data => {
+      expect(data).toMatchSnapshot()
     })
   })
 })

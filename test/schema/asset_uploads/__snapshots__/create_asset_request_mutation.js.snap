@@ -2,10 +2,11 @@
 
 exports[`addAssetToConsignmentSubmission creates a submission and returns its new data payload 1`] = `
 Object {
-  "addAssetToConsignmentSubmission": Object {
+  "requestCredentialsForAssetUpload": Object {
     "asset": Object {
-      "gemini_token": "12345",
-      "submission_id": "123",
+      "credentials": "AKIA123456789",
+      "policy_encoded": "12345==",
+      "signature": "12345=",
     },
   },
 }
