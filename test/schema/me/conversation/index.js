@@ -108,6 +108,8 @@ describe("Me", () => {
           state: "unpaid",
           symbol: "$",
           total_cents: 420000,
+          lewitt_invoice_id: "420",
+          id: "1",
         }),
     }
 
@@ -128,6 +130,8 @@ describe("Me", () => {
                     id
                     is_invoice
                     invoice {
+                      __id
+                      id
                       payment_url
                       state
                       total
