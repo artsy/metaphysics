@@ -12,6 +12,8 @@ export const GeminiEntryType = new GraphQLObjectType({
       description: "The token that represents the gemini entry.",
       type: new GraphQLNonNull(GraphQLString),
     },
+    // TODO: skipping image_urls due to not needing them right now
+    // https://github.com/artsy/gemini/blob/master/app/models/entry_version.rb
   },
 })
 
@@ -25,7 +27,7 @@ export default mutationWithClientMutationId({
     },
     template_key: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The template key, this is `name` in the asset request.",
+      description: "The template key, this is `name` in the asset request",
     },
     source_bucket: {
       type: new GraphQLNonNull(GraphQLString),

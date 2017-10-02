@@ -45,6 +45,7 @@ describe("UpdateCollectorProfile", () => {
 
     gravity.onCall(0).returns(Promise.resolve(collectorProfile))
 
+    expect.assertions(1)
     return runAuthenticatedQuery(mutation).then(({ updateCollectorProfile }) => {
       expect(updateCollectorProfile).toEqual(expectedProfileData)
     })

@@ -21,6 +21,7 @@ describe("MarkReadMessageMutation", () => {
         }),
     }
 
+    expect.assertions(1)
     return runAuthenticatedQuery(mutation, rootValue).then(updatedDelivery => {
       expect(updatedDelivery).toMatchSnapshot()
     })
