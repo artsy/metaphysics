@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean, GraphQLEnumType } from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean, GraphQLEnumType, GraphQLInt } from "graphql"
 
 export const SubmissionDimensionAggregation = new GraphQLEnumType({
   name: "SubmissionDimensionAggregation",
@@ -104,8 +104,8 @@ export const SubmissionType = new GraphQLObjectType({
       type: SubmissionDimensionAggregation,
     },
     edition: {
-      description: "The version of individual work if from a set",
-      type: GraphQLString,
+      description: "Is the work a part of an edition",
+      type: GraphQLBoolean,
     },
     edition_number: {
       description: "The number of the individual work if in a set",
@@ -113,7 +113,7 @@ export const SubmissionType = new GraphQLObjectType({
     },
     edition_size: {
       description: "The whole size of the set of works",
-      type: GraphQLString,
+      type: GraphQLInt,
     },
     height: {
       description: "The height of the work",
