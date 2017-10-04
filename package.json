@@ -7,7 +7,7 @@
   "engines": {
     "node": "8.4.x",
     "npm": "5.4.x",
-    "yarn": "1.0.x"
+    "yarn": "1.x"
   },
   "scripts": {
     "start": "yarn run dev",
@@ -20,7 +20,8 @@
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild": "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
+    "heroku-postbuild":
+      "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
     "precommit": "lint-staged",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"
@@ -51,6 +52,7 @@
     "graphiql": "^0.8.0",
     "graphql": "^0.8.2",
     "graphql-relay": "^0.4.3",
+    "graphql-type-json": "^0.1.4",
     "i": "^0.3.5",
     "jwt-simple": "^0.5.0",
     "lodash": "^4.3.0",
@@ -67,9 +69,10 @@
     "source-map-support": "^0.4.3"
   },
   "devDependencies": {
-    "@types/jest": "^19.2.2",
+    "@types/jest": "^21",
     "@types/lodash": "^4.14.74",
     "@types/node": "^8.0.31",
+    "@types/request": "^2.0.3",
     "babel-eslint": "^5.0.4",
     "babel-jest": "^16.0.0",
     "babel-plugin-rewire": "1.0.0-beta-2",
@@ -82,7 +85,7 @@
     "expect.js": "^0.3.1",
     "foreman": "^1.4.1",
     "husky": "^0.13.3",
-    "jest": "^20.0.4",
+    "jest": "^21",
     "lint-staged": "^3.4.0",
     "prettier": "^1.7",
     "sinon": "^1.17.2",
@@ -91,13 +94,7 @@
   "jest": {
     "testRegex": "/test/.*.js$",
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/test/helper.js",
-      "/test/utils.js",
-      "/test/gql.js",
-      "/test/__mocks__"
-    ]
+    "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/utils.js", "/test/gql.js", "/test/__mocks__"]
   },
   "prettier": {
     "printWidth": 120,
@@ -107,14 +104,7 @@
     "bracketSpacing": true
   },
   "lint-staged": {
-    "*.json": [
-      "yarn prettier --write",
-      "git add"
-    ],
-    "*.js": [
-      "eslint --fix",
-      "yarn prettier --write",
-      "git add"
-    ]
+    "*.json": ["yarn prettier --write", "git add"],
+    "*.js": ["eslint --fix", "yarn prettier --write", "git add"]
   }
 }

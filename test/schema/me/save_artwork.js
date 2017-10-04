@@ -42,6 +42,7 @@ describe("SaveArtworkMutation", () => {
 
     gravity.returns(Promise.resolve(artwork))
 
+    expect.assertions(1)
     return runAuthenticatedQuery(mutation).then(({ saveArtwork }) => {
       expect(saveArtwork).toEqual(expectedArtworkData)
     })

@@ -19,7 +19,7 @@ Our usage has a few moving parts:
   - [`loader_with_authentication_factory`][auth_loader] for API requests that _could_ require a call for an authentication token (like the examples in [Adding a New Microservice][new_micro].)
   - [`loader_one_off_factory`][one_off_loader] for API requests which have custom auth schemes, or need to ignore cache completely.
 
-* The `loader` themselves. These are a set of functions which [are exposed][loaders] as properties on the root object exposed during the the resolving stages of our graphQL implementation.
+* The `loader` themselves. These are a set of functions which [are exposed][loaders] as properties on the root object during the resolving stages of our graphQL implementation.
 
   ```js
   import { gravityLoaderWithoutAuthenticationFactory as gravityLoader } from "../api"

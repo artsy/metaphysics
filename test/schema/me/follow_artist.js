@@ -41,6 +41,7 @@ describe("FollowArtist", () => {
 
     gravity.returns(Promise.resolve(artist))
 
+    expect.assertions(1)
     return runAuthenticatedQuery(mutation, rootValue).then(({ followArtist }) => {
       expect(followArtist).toEqual({
         artist: {

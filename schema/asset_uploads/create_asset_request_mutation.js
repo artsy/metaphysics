@@ -12,7 +12,7 @@ export const CredentialsType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLString),
     },
     policy_encoded: {
-      description: "The convection submission ID",
+      description: "A base64 encoded version of the S3 policy",
       type: new GraphQLNonNull(GraphQLString),
     },
     // Intentionally left out policy_document, as not needed for now
@@ -29,7 +29,7 @@ export default mutationWithClientMutationId({
   inputFields: {
     name: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The id of the bucket",
+      description: "The gemini template you want to request",
     },
     acl: {
       type: new GraphQLNonNull(GraphQLString),
