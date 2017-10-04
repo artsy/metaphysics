@@ -6,7 +6,7 @@ import Sale from "schema/sale/index"
 import Gene from "schema/gene"
 import Artist from "schema/artist/index"
 import FollowArtists from "schema/me/follow_artists"
-import Trending from "schema/trending"
+import Trending from "schema/artists/trending"
 import { GraphQLUnionType, GraphQLObjectType } from "graphql"
 
 export const HomePageModuleContextFairType = create(Fair.type, {

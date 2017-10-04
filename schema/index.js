@@ -28,13 +28,14 @@ import PartnerCategory from "./partner_category"
 import PartnerCategories from "./partner_categories"
 import PartnerShow from "./partner_show"
 import PartnerShows from "./partner_shows"
+import PopularArtists from "./artists/popular"
 import Sale from "./sale/index"
 import Sales from "./sales"
 import SaleArtwork from "./sale_artwork"
 import Search from "./search"
 import Show from "./show"
 import Tag from "./tag"
-import TrendingArtists from "./trending"
+import TrendingArtists from "./artists/trending"
 import MatchArtist from "./match/artist"
 import Me from "./me"
 
@@ -92,6 +93,7 @@ const rootFields = {
   status: Status,
   tag: Tag,
   trending_artists: TrendingArtists,
+  popular_artists: PopularArtists,
 }
 
 const ViewerType = new GraphQLObjectType({
