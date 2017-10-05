@@ -1,11 +1,20 @@
 import GeneFamily from "./gene_family"
-import { GraphQLList } from "graphql"
+import { GraphQLList, GraphQLInt } from "graphql"
 
 const GeneFamilies = {
   type: new GraphQLList(GeneFamily.type),
   description: "A list of Gene Families",
-  resolve: (_source, _args, _request, { rootValue }) => {
-    return rootValue.geneFamiliesLoader()
+  args: {
+    page: {
+      type: GraphQLInt,
+    },
+    size: {
+      type: GraphQLInt,
+    },
+  },
+  resolve: (_source, options, _request, { rootValue }) => {
+    const gravityOptions = Object.assign({}, options, { sort: "position" })
+    return rootValue.geneFamiliesLoader(gravityOptions)
   },
 }
 
