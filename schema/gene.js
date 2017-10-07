@@ -11,7 +11,7 @@ import Image from "./image"
 import filterArtworks, { filterArtworksArgs } from "./filter_artworks"
 import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -81,12 +81,19 @@ const GeneType = new GraphQLObjectType({
     description: {
       type: GraphQLString,
     },
+    display_name: {
+      type: GraphQLString,
+    },
     filtered_artworks: filterArtworks("gene_id"),
     href: {
       type: GraphQLString,
       resolve: ({ id }) => `gene/${id}`,
     },
     image: Image,
+    is_published: {
+      type: GraphQLBoolean,
+      resolve: ({ published }) => published,
+    },
     mode: {
       type: GraphQLString,
       resolve: ({ type }) => {
