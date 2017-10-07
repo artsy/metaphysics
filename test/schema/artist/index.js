@@ -22,11 +22,21 @@ describe("Artist type", () => {
     }
 
     rootValue = {
-      artistLoader: sinon.stub().withArgs(artist.id).returns(Promise.resolve(artist)),
+      artistLoader: sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(Promise.resolve(artist)),
+
     }
 
     positron.mockImplementation(() => Promise.resolve({ count: 22 }))
     total.mockImplementation(() => Promise.resolve(42))
+  })
+
+  it("returns null for an empty ID string", () => {
+    return runQuery(`{ artist(id: "") { id } }`, rootValue).then(data => {
+      expect(data.artist).toBe(null)
+    })
   })
 
   it("fetches an artist by ID", () => {
@@ -283,7 +293,10 @@ describe("Artist type", () => {
       artist.published_artworks_count = count
       artist.forsale_artworks_count = count
       const artworks = Promise.resolve(Array(count))
-      rootValue.artistArtworksLoader = sinon.stub().withArgs(artist.id).returns(artworks)
+      rootValue.artistArtworksLoader = sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(artworks)
     })
     it("does not have a next page when the requested amount exceeds the count", () => {
       const query = `
@@ -390,7 +403,10 @@ describe("Artist type", () => {
               },
             },
           ])
-          rootValue.partnerArtistsLoader = sinon.stub().withArgs(artist.id).returns(partnerArtists)
+          rootValue.partnerArtistsLoader = sinon
+            .stub()
+            .withArgs(artist.id)
+            .returns(partnerArtists)
         })
         afterEach(() => {
           const query = `
@@ -485,7 +501,10 @@ describe("Artist type", () => {
           },
         },
       ])
-      rootValue.partnerArtistsLoader = sinon.stub().withArgs(artist.id).returns(partnerArtists)
+      rootValue.partnerArtistsLoader = sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(partnerArtists)
       const query = `
         {
           artist(id: "foo-bar") {
@@ -505,6 +524,95 @@ describe("Artist type", () => {
               credit: "Submitted by Catty Partner",
               partner_id: "catty-partner",
             },
+          },
+        })
+      })
+    })
+  })
+  describe("concerning related shows", () => {
+    beforeEach(() => {
+      const partnerlessShow = {
+        id: "no-partner",
+        is_reference: true,
+        display_on_partner_profile: false,
+      }
+      const galaxyShow = {
+        id: "galaxy-partner",
+        is_reference: true,
+        display_on_partner_profile: false,
+        galaxy_partner_id: "420",
+      }
+      const privateShow = {
+        id: "oops",
+        partner: {
+          type: "Private Dealer",
+          has_full_profile: true,
+          profile_banner_display: false,
+        },
+        is_reference: true,
+        display_on_partner_profile: false,
+      }
+      const publicShow = {
+        id: "ok",
+        partner: {
+          type: "Gallery",
+          has_full_profile: true,
+          profile_banner_display: false,
+        },
+        is_reference: true,
+        display_on_partner_profile: false,
+      }
+      rootValue.relatedShowsLoader = sinon
+        .stub()
+        .withArgs(artist.id)
+        .returns(Promise.resolve([privateShow, publicShow, partnerlessShow, galaxyShow]))
+    })
+    it("excludes shows from private partners for related shows", () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            shows {
+              id
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            shows: [
+              {
+                id: "ok",
+              },
+              {
+                id: "galaxy-partner",
+              },
+            ],
+          },
+        })
+      })
+    })
+    it("excludes shows from private partners for exhibition highlights", () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            exhibition_highlights {
+              id
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            exhibition_highlights: [
+              {
+                id: "ok",
+              },
+              {
+                id: "galaxy-partner",
+              },
+            ],
           },
         })
       })

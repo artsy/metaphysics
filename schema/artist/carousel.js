@@ -1,4 +1,4 @@
-// @flow
+// @ts-check
 import type { GraphQLFieldConfig } from "graphql"
 
 import _ from "lodash"

@@ -25,7 +25,11 @@ Object {
       "edges": Array [
         Object {
           "node": Object {
-            "body": "I'm a cat",
+            "body": "I'm a cat oh yea!",
+            "from": Object {
+              "email": "fancy_german_person@posteo.de",
+              "name": "Percy Z",
+            },
             "id": "222",
           },
         },

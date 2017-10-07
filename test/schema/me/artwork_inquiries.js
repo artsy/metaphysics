@@ -1,5 +1,6 @@
 import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
+import gql from "test/gql"
 
 describe("Me", () => {
   describe("ArtworkInquiries", () => {
@@ -17,7 +18,7 @@ describe("Me", () => {
     })
 
     it("returns notification feed items w/ Relay pagination", () => {
-      const query = `
+      const query = gql`
         {
           me {
             artwork_inquiries_connection(first: 2) {

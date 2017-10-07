@@ -14,7 +14,7 @@ import { graphql } from "graphql"
  *
  * @todo This assumes there will always be just 1 error, not sure how to handle this differently.
  */
-export const runQuery = (query: string, rootValue: ?any = { accessToken: null, userID: null }) => {
+export const runQuery = (query, rootValue = { accessToken: null, userID: null }) => {
   return graphql(schema, query, rootValue, {}).then(result => {
     if (result.errors) {
       const error = result.errors[0]
@@ -28,8 +28,10 @@ export const runQuery = (query: string, rootValue: ?any = { accessToken: null, u
 /**
  * Same as `runQuery` except it provides a `rootValue` that’s required for authenticated queries.
  *
+ * @param {String} query      The GraphQL query to run.
+ * @param {Object} rootValue  The request params, which currently are `accessToken` and `userID`.
  * @see runQuery
-*/
-export const runAuthenticatedQuery = (query: string, rootValue: ?any = {}) => {
+ */
+export const runAuthenticatedQuery = (query, rootValue = {}) => {
   return runQuery(query, Object.assign({ accessToken: "secret", userID: "user-42" }, rootValue))
 }

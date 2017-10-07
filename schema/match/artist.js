@@ -1,4 +1,4 @@
-// @flow
+// @ts-check
 import type { GraphQLFieldConfig } from "graphql"
 
 import { GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"

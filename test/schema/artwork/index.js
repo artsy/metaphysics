@@ -44,7 +44,10 @@ describe("Artwork type", () => {
     }
 
     rootValue = {
-      artworkLoader: sinon.stub().withArgs(artwork.id).returns(Promise.resolve(artwork)),
+      artworkLoader: sinon
+        .stub()
+        .withArgs(artwork.id)
+        .returns(Promise.resolve(artwork)),
     }
   })
 

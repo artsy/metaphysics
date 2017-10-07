@@ -34,7 +34,11 @@ export default {
       // recently created bidder positions per sale artwork where
       // `position.highest_bid != null`.
       //
-      const latestPositions = _(positions).chain().reject({ highest_bid: null }).uniqBy("sale_artwork_id").value()
+      const latestPositions = _(positions)
+        .chain()
+        .reject({ highest_bid: null })
+        .uniqBy("sale_artwork_id")
+        .value()
       //
       // 2. Find only bidder positions in "open" auctions. This requires
       // fetching all of that related data to be able to do:

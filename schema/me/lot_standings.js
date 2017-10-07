@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import LotStanding from "./lot_standing"
 import { GraphQLList, GraphQLBoolean, GraphQLString } from "graphql"
 
@@ -23,13 +22,9 @@ export default {
       description: "Only the lot standings for a specific auction",
     },
   },
-  resolve: (root, { active_positions, artwork_id, live, sale_id }, request, { rootValue: { accessToken } }) => {
-    return gravity.with(accessToken)("me/lot_standings", {
-      active_positions,
-      artwork_id,
-      live,
-      sale_id,
-    }).then(lotStandings => {
+  resolve: (root, { active_positions, artwork_id, live, sale_id }, request, { rootValue: { lotStandingLoader } }) => {
+    if (!lotStandingLoader) return null
+    return lotStandingLoader({ active_positions, artwork_id, live, sale_id }).then(lotStandings => {
       return lotStandings
     })
   },

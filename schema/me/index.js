@@ -12,6 +12,7 @@ import FollowArtists from "./follow_artists"
 import FollowedArtists from "./followed_artists"
 import Notifications from "./notifications"
 import Conversation from "./conversation"
+import Invoice from "./conversation/invoice"
 import Conversations from "./conversations"
 import CollectorProfile from "./collector_profile"
 import ArtworkInquiries from "./artwork_inquiries"
@@ -40,6 +41,7 @@ const Me = new GraphQLObjectType({
     },
     follow_artists: FollowArtists,
     followed_artists_connection: FollowedArtists,
+    invoice: Invoice,
     lot_standing: LotStanding,
     lot_standings: LotStandings,
     name: {

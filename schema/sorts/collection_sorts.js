@@ -12,4 +12,5 @@ export default {
       },
     },
   }),
+  defaultValue: "-position",
 }

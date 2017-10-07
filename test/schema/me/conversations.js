@@ -56,7 +56,7 @@ describe("Me", () => {
       }
 
       return runAuthenticatedQuery(query, {
-        conversationsLoader: () => Promise.resolve({ conversations: [conversation1, conversation2] }),
+        conversationsLoader: () => Promise.resolve({ total_count: 2, conversations: [conversation1, conversation2] }),
       }).then(({ me: { conversations } }) => {
         expect(conversations).toEqual(expectedConversationData)
       })

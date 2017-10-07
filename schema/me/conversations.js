@@ -10,11 +10,11 @@ export default {
   args: pageable(),
   resolve: (root, options, request, { rootValue: { conversationsLoader } }) => {
     if (!conversationsLoader) return null
-    const relayOptions = parseRelayOptions(options)
-    return conversationsLoader(relayOptions).then(({ conversations }) => {
+    const { page, size, offset } = parseRelayOptions(options)
+    return conversationsLoader({ page, size }).then(({ total_count, conversations }) => {
       return connectionFromArraySlice(conversations, options, {
-        arrayLength: conversations.length,
-        sliceStart: relayOptions.offset,
+        arrayLength: total_count,
+        sliceStart: offset,
       })
     })
   },

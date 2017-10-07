@@ -1,4 +1,4 @@
-// @flow
+// @ts-check
 
 import { map, orderBy } from "lodash"
 import AggregationCount from "./aggregation_count"

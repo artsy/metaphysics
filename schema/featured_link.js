@@ -8,7 +8,11 @@ const FeaturedLinkType = new GraphQLObjectType({
     id: {
       type: GraphQLString,
       description: "Attempt to get the ID of the entity of the FeaturedLink",
-      resolve: ({ href }) => href.split("/").pop().split("?")[0],
+      resolve: ({ href }) =>
+        href
+          .split("/")
+          .pop()
+          .split("?")[0],
     },
     href: {
       type: GraphQLString,

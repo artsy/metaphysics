@@ -165,6 +165,10 @@ export const ConversationFields = {
   },
   initial_message: {
     type: new GraphQLNonNull(GraphQLString),
+    resolve: ({ initial_message, from_name }) => {
+      const parts = initial_message.split("Message from " + from_name + ":\n\n")
+      return parts[parts.length - 1]
+    },
   },
   last_message: {
     type: new GraphQLNonNull(GraphQLString),
@@ -174,6 +178,14 @@ export const ConversationFields = {
     },
   },
   last_message_at: date,
+
+  last_message_id: {
+    type: GraphQLString,
+    description: "Impulse id of the last message.",
+    resolve: conversation => {
+      return get(conversation, "_embedded.last_message.id")
+    },
+  },
 
   // TODO: Currently if the user is not the sender of a message, we assume they are a recipient.
   // That may not be the case, so we should evolve this check to be more accurate.
@@ -210,6 +222,33 @@ export const ConversationFields = {
     },
   },
 
+  // If the user is a recipient of the last message, return the relevant delivery id.
+  // This can be used to mark the message as read, or log other events.
+  last_message_delivery_id: {
+    type: GraphQLString,
+    description: "Delivery id if the user is a recipient of the last message, null otherwise.",
+    resolve: (conversation, options, request, { rootValue: { conversationMessagesLoader } }) => {
+      if (!isLastMessageToUser(conversation)) {
+        return null
+      }
+      const radiationMessageId = get(conversation, "_embedded.last_message.radiation_message_id")
+      return conversationMessagesLoader({
+        conversation_id: conversation.id,
+        radiation_message_id: radiationMessageId,
+        "expand[]": "deliveries",
+      }).then(({ message_details }) => {
+        if (message_details.length === 0) {
+          return null
+        }
+        const relevantDelivery = message_details[0].deliveries.find(d => d.email === conversation.from_email)
+        if (!relevantDelivery) {
+          return null
+        }
+        return relevantDelivery.id
+      })
+    },
+  },
+
   artworks: {
     type: new GraphQLList(ArtworkType),
     description: "Only the artworks discussed in the conversation.",
@@ -241,7 +280,17 @@ export const ConversationFields = {
   messages: {
     type: MessageConnection,
     description: "A connection for all messages in a single conversation",
-    args: pageable(),
+    args: pageable({
+      sort: {
+        type: new GraphQLEnumType({
+          name: "sort",
+          values: {
+            DESC: { value: "desc" },
+            ASC: { value: "asc" },
+          },
+        }),
+      },
+    }),
     resolve: ({ id, from_email }, options, req, { rootValue: { conversationMessagesLoader } }) => {
       const { page, size, offset } = parseRelayOptions(options)
       return conversationMessagesLoader({
@@ -249,6 +298,7 @@ export const ConversationFields = {
         size,
         conversation_id: id,
         "expand[]": "deliveries",
+        sort: options.sort || "asc",
       }).then(({ total_count, message_details }) => {
         // Inject the convesation initiator's email into each message payload
         // so we can tell if the user sent a particular message.
@@ -256,7 +306,10 @@ export const ConversationFields = {
         // resolvers (invoices).
         /* eslint-disable no-param-reassign */
         message_details = message_details.map(message => {
-          return merge(message, { conversation_from_address: from_email, conversation_id: id })
+          return merge(message, {
+            conversation_from_address: from_email,
+            conversation_id: id,
+          })
         })
         /* eslint-disable no-param-reassign */
         return connectionFromArraySlice(message_details, options, {
