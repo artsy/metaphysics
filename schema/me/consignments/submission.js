@@ -1,3 +1,5 @@
+// @ts-check
+
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean, GraphQLEnumType, GraphQLInt } from "graphql"
 
 export const SubmissionDimensionAggregation = new GraphQLEnumType({

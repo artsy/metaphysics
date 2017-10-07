@@ -16,7 +16,7 @@ import config from "./config"
 import { info, error } from "./lib/loggers"
 import graphqlErrorHandler from "./lib/graphql-error-handler"
 import moment from "moment"
-import * as tz from "moment-timezone" // eslint-disable-line no-unused-vars
+import "moment-timezone"
 global.Promise = Bluebird
 
 const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET } = process.env
