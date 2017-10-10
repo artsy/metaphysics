@@ -4,6 +4,7 @@ import Bluebird from "bluebird"
 import newrelic from "artsy-newrelic"
 import xapp from "artsy-xapp"
 import cors from "cors"
+import depthLimit from "graphql-depth-limit"
 import morgan from "artsy-morgan"
 import express from "express"
 import forceSSL from "express-force-ssl"
@@ -86,6 +87,7 @@ app.use(
         ...createLoaders(accessToken, userID, requestID),
       },
       formatError: graphqlErrorHandler(request.body),
+      validationRules: [depthLimit(10, { ignore: [] }, depths => console.log("Depths: ", depths))],
     }
   })
 )

@@ -50,6 +50,7 @@
     "forever": "^0.15.3",
     "graphiql": "^0.11.5",
     "graphql": "^0.11.7",
+    "graphql-depth-limit": "^1.1.0",
     "graphql-relay": "0.5.3",
     "graphql-type-json": "^0.1.4",
     "i": "^0.3.5",
