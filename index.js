@@ -20,10 +20,11 @@ import moment from "moment"
 import * as tz from "moment-timezone" // eslint-disable-line no-unused-vars
 global.Promise = Bluebird
 
-const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET } = process.env
+const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, QUERY_DEPTH_LIMIT } = process.env
 
 const app = express()
 const port = PORT || 3000
+const queryLimit = parseInt(QUERY_DEPTH_LIMIT, 10) || 10 // Default to ten.
 
 app.use(newrelic)
 
@@ -87,7 +88,9 @@ app.use(
         ...createLoaders(accessToken, userID, requestID),
       },
       formatError: graphqlErrorHandler(request.body),
-      validationRules: [depthLimit(10, { ignore: [] }, depths => console.log("Depths: ", depths))],
+      validationRules: [
+        depthLimit(queryLimit, { ignore: [] }, depths => console.log("Depths: ", depths)), // eslint-disable-line
+      ],
     }
   })
 )
