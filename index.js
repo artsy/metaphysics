@@ -1,7 +1,7 @@
 // @ts-check
 
 import Bluebird from "bluebird"
-import newrelic from "artsy-newrelic"
+import "artsy-newrelic"
 import xapp from "artsy-xapp"
 import cors from "cors"
 import depthLimit from "graphql-depth-limit"
@@ -24,8 +24,6 @@ const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET } = process.
 
 const app = express()
 const port = PORT || 3000
-
-app.use(newrelic)
 
 if (NODE_ENV === "production") {
   app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
