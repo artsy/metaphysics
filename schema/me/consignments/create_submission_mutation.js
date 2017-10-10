@@ -1,3 +1,5 @@
+// @ts-check
+
 import { mutationWithClientMutationId } from "graphql-relay"
 import { SubmissionType } from "./submission"
 import { omit } from "lodash"
