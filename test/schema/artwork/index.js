@@ -332,6 +332,49 @@ describe("Artwork type", () => {
       })
     })
 
+    it("returns 'On loan' if work is on loan", () => {
+      artwork.sale_message = "Not for sale"
+      artwork.availability = "on loan"
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            sale_message: "On loan",
+          },
+        })
+      })
+    })
+
+    it("returns null if work is marked with availability_hidden", () => {
+      artwork.sale_message = "for sale"
+      artwork.availability = "on loan"
+      artwork.availability_hidden = true
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            sale_message: null,
+          },
+        })
+      })
+    })
+
+    it("returns null if work is part of permanent collection", () => {
+      artwork.sale_message = "for sale"
+      artwork.availability = "permanent collection"
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            sale_message: null,
+          },
+        })
+      })
+    })
+
     it("returns the gravity sale_message if for sale", () => {
       artwork.availability = "for sale"
       artwork.sale_message = "something from gravity"
