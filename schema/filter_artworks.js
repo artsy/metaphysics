@@ -30,22 +30,36 @@ export const ArtworkFilterFacetType = new GraphQLUnionType({
   types: [ArtworkFilterTagType],
 })
 
+export const ArtworkFilterAggregations = {
+  description: "Returns aggregation counts for the given filter query.",
+  type: new GraphQLList(ArtworksAggregationResultsType),
+  resolve: ({ aggregations }) => {
+    const whitelistedAggregations = omit(aggregations, ["total", "followed_artists"])
+    return map(whitelistedAggregations, (counts, slice) => ({
+      slice,
+      counts,
+    }))
+  },
+}
+
+export const FilterArtworksCounts = {
+  type: new GraphQLObjectType({
+    name: "FilterArtworksCounts",
+    fields: {
+      total: numeral(({ aggregations }) => aggregations.total.value),
+      followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
+    },
+  }),
+  resolve: data => data,
+}
+
 export const FilterArtworksType = new GraphQLObjectType({
   name: "FilterArtworks",
   fields: () => ({
-    aggregations: {
-      description: "Returns aggregation counts for the given filter query.",
-      type: new GraphQLList(ArtworksAggregationResultsType),
-      resolve: ({ aggregations }) => {
-        const whitelistedAggregations = omit(aggregations, ["total", "followed_artists"])
-        return map(whitelistedAggregations, (counts, slice) => ({
-          slice,
-          counts,
-        }))
-      },
-    },
+    aggregations: ArtworkFilterAggregations,
     artworks_connection: {
       type: artworkConnection,
+      deprecationReason: "Favour artwork connections that take filter arguments.",
       args: pageable(),
       resolve: ({ hits, aggregations }, options) => {
         if (!aggregations || !aggregations.total) {
@@ -58,16 +72,7 @@ export const FilterArtworksType = new GraphQLObjectType({
         })
       },
     },
-    counts: {
-      type: new GraphQLObjectType({
-        name: "FilterArtworksCounts",
-        fields: {
-          total: numeral(({ aggregations }) => aggregations.total.value),
-          followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
-        },
-      }),
-      resolve: artist => artist,
-    },
+    counts: FilterArtworksCounts,
     followed_artists_total: {
       type: GraphQLInt,
       resolve: ({ aggregations }) => aggregations.followed_artists.value,

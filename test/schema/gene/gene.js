@@ -141,11 +141,14 @@ describe("Gene", () => {
       })
     })
 
-    it("exposes aggregation information", () => {
+    it("exposes aggregation metadata", () => {
       const query = `
         {
           gene(id: "500-1000-ce") {
             artworks_connection(aggregations: [MEDIUM], first: 10) {
+              counts {
+                total
+              }
               aggregations {
                 slice
                 counts {
@@ -163,6 +166,9 @@ describe("Gene", () => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
+              counts: {
+                total: 20,
+              },
               aggregations: [
                 {
                   slice: "MEDIUM",
