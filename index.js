@@ -86,9 +86,7 @@ app.use(
         ...createLoaders(accessToken, userID, requestID),
       },
       formatError: graphqlErrorHandler(request.body),
-      validationRules: [
-        depthLimit(queryLimit, { ignore: [] }, depths => console.log("Depths: ", depths)), // eslint-disable-line
-      ],
+      validationRules: [depthLimit(queryLimit)],
     }
   })
 )
