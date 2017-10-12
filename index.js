@@ -1,7 +1,7 @@
 // @ts-check
 
 import Bluebird from "bluebird"
-import newrelic from "artsy-newrelic"
+import "artsy-newrelic"
 import xapp from "artsy-xapp"
 import cors from "cors"
 import depthLimit from "graphql-depth-limit"
@@ -17,7 +17,7 @@ import config from "./config"
 import { info, error } from "./lib/loggers"
 import graphqlErrorHandler from "./lib/graphql-error-handler"
 import moment from "moment"
-import * as tz from "moment-timezone" // eslint-disable-line no-unused-vars
+import "moment-timezone"
 global.Promise = Bluebird
 
 const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, QUERY_DEPTH_LIMIT } = process.env
@@ -25,8 +25,6 @@ const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, QUERY_DEPTH
 const app = express()
 const port = PORT || 3000
 const queryLimit = parseInt(QUERY_DEPTH_LIMIT, 10) || 10 // Default to ten.
-
-app.use(newrelic)
 
 if (NODE_ENV === "production") {
   app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)

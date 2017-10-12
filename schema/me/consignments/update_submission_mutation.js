@@ -10,7 +10,7 @@ export const config = {
   outputFields: {
     submission: {
       type: SubmissionType,
-      resolve: response => response,
+      resolve: submission => submission,
     },
   },
   mutateAndGetPayload: (submission, request, { rootValue: { submissionUpdateLoader } }) => {
