@@ -171,6 +171,7 @@ export const filterArtworksArgs = {
   },
   page: {
     type: GraphQLInt,
+    defaultValue: 1,
   },
   sale_id: {
     type: GraphQLID,

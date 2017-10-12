@@ -18,6 +18,7 @@ describe("Gene", () => {
         .withArgs("filter/artworks", {
           gene_id: "500-1000-ce",
           aggregations: ["total"],
+          page: 1,
         })
         .returns(
           Promise.resolve({
@@ -41,7 +42,7 @@ describe("Gene", () => {
       const query = `
         {
           gene(id: "500-1000-ce") {
-            filtered_artworks(aggregations:[TOTAL]){
+            filtered_artworks(aggregations: [TOTAL]) {
               hits {
                 id
               }
@@ -77,12 +78,17 @@ describe("Gene", () => {
               total: {
                 value: 20,
               },
+              medium: {
+                painting: { name: "Painting", count: 16 },
+                photography: { name: "Photography", count: 4 },
+              },
             },
           })
         )
 
       Gene.__Rewire__("gravity", gravity)
     })
+
     it("does not have a next page when the requested amount exceeds the count", () => {
       const query = `
         {
@@ -108,6 +114,7 @@ describe("Gene", () => {
         })
       })
     })
+
     it("has a next page when the amount requested is less than the count", () => {
       const query = `
         {
@@ -128,6 +135,51 @@ describe("Gene", () => {
               pageInfo: {
                 hasNextPage: true,
               },
+            },
+          },
+        })
+      })
+    })
+
+    it("exposes aggregation information", () => {
+      const query = `
+        {
+          gene(id: "500-1000-ce") {
+            artworks_connection(aggregations: [MEDIUM], first: 10) {
+              aggregations {
+                slice
+                counts {
+                  id
+                  count
+                  name
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          gene: {
+            artworks_connection: {
+              aggregations: [
+                {
+                  slice: "MEDIUM",
+                  counts: [
+                    {
+                      id: "painting",
+                      count: 16,
+                      name: "Painting",
+                    },
+                    {
+                      id: "photography",
+                      count: 4,
+                      name: "Photography",
+                    },
+                  ],
+                },
+              ],
             },
           },
         })
@@ -226,6 +278,7 @@ describe("Gene", () => {
         .withArgs("filter/artworks", {
           gene_id: "500-1000-ce",
           aggregations: ["total"],
+          page: 1,
         })
         .returns(
           Promise.resolve({
