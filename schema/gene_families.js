@@ -1,20 +1,17 @@
 import GeneFamily from "./gene_family"
-import { GraphQLList, GraphQLInt } from "graphql"
+import { pageable } from "relay-cursor-paging"
+import { connectionDefinitions, connectionFromPromisedArray } from "graphql-relay"
+import { parseRelayOptions } from "lib/helpers"
+
+const { connectionType: GeneFamilyConnection } = connectionDefinitions({ nodeType: GeneFamily.type })
 
 const GeneFamilies = {
-  type: new GraphQLList(GeneFamily.type),
+  type: GeneFamilyConnection,
   description: "A list of Gene Families",
-  args: {
-    page: {
-      type: GraphQLInt,
-    },
-    size: {
-      type: GraphQLInt,
-    },
-  },
-  resolve: (_source, options, _request, { rootValue }) => {
-    const gravityOptions = Object.assign({}, options, { sort: "position" })
-    return rootValue.geneFamiliesLoader(gravityOptions)
+  args: pageable(),
+  resolve: (_root, options, _request, { rootValue }) => {
+    const gravityOptions = Object.assign({}, parseRelayOptions(options), { sort: "position" })
+    return connectionFromPromisedArray(rootValue.geneFamiliesLoader(gravityOptions), gravityOptions)
   },
 }
 

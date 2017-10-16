@@ -17,14 +17,18 @@ describe("GeneFamilies", () => {
     const query = `
       {
         gene_families {
-          id
-          name
+          edges {
+            node {
+              id
+              name
+            }
+          }
         }
       }
     `
 
-    return runQuery(query, { geneFamiliesLoader }).then(data => {
-      expect(data).toEqual({ gene_families: api_data })
+    return runQuery(query, { geneFamiliesLoader }).then(geneFamilies => {
+      expect(geneFamilies).toMatchSnapshot()
     })
   })
 })
