@@ -3,6 +3,52 @@
 import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
+export const S3PolicyConditionsType = new GraphQLObjectType({
+  name: "S3PolicyConditionsType",
+  description: "The conditions for uploading assets to media.artsy.net",
+  fields: {
+    bucket: {
+      description: "The bucket to upload to.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    acl: {
+      description: "The assigned access control",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    gemini_key: {
+      description: "A key which is prefixed on your file",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    success_action_status: {
+      description: "The returned status code, currently always 201",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+})
+
+export const S3PolicyDocumentType = new GraphQLObjectType({
+  name: "S3PolicyDocumentType",
+  description: "An policy for uploading assets to media.artsy.net",
+  fields: {
+    expiration: {
+      description: "An expiration date string.",
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    conditions: {
+      description: "The details for the upload",
+      type: new GraphQLNonNull(S3PolicyConditionsType),
+      resolve: ({ conditions }) => {
+        return {
+          bucket: conditions[0].bucket,
+          acl: conditions[2].acl,
+          success_action_status: conditions[3].success_action_status,
+          gemini_key: conditions[1][2],
+        }
+      },
+    },
+  },
+})
+
 export const CredentialsType = new GraphQLObjectType({
   name: "Credentials",
   description: "An asset which is assigned to a consignment submission",
@@ -15,7 +61,10 @@ export const CredentialsType = new GraphQLObjectType({
       description: "A base64 encoded version of the S3 policy",
       type: new GraphQLNonNull(GraphQLString),
     },
-    // Intentionally left out policy_document, as not needed for now
+    policy_document: {
+      description: "The s3 policy document for your request",
+      type: new GraphQLNonNull(S3PolicyDocumentType),
+    },
     signature: {
       description: "The signature for your asset.",
       type: new GraphQLNonNull(GraphQLString),
@@ -39,7 +88,7 @@ export default mutationWithClientMutationId({
   outputFields: {
     asset: {
       type: CredentialsType,
-      resolve: credentials => credentials,
+      resolve: asset => asset,
     },
   },
   mutateAndGetPayload: ({ name, acl }, request, { rootValue: { createNewGeminiAssetLoader } }) => {
