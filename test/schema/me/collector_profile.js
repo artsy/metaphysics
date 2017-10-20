@@ -25,6 +25,7 @@ describe("Me", () => {
               name
               email
               self_reported_purchases
+              intents
             }
           }
         }
@@ -35,6 +36,7 @@ describe("Me", () => {
         name: "Percy",
         email: "percy@cat.com",
         self_reported_purchases: "treats",
+        intents: ["buy art & design"],
       }
 
       const expectedProfileData = {
@@ -42,6 +44,7 @@ describe("Me", () => {
         name: "Percy",
         email: "percy@cat.com",
         self_reported_purchases: "treats",
+        intents: ["buy art & design"],
       }
 
       gravity.returns(Promise.resolve(collectorProfile))
