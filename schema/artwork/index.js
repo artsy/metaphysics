@@ -293,7 +293,7 @@ export const artworkFields = () => {
     },
     is_downloadable: {
       type: GraphQLBoolean,
-      resolve: ({ images }) => _.first(images).downloadable,
+      resolve: ({ images }) => !!(_.first(images) && _.first(images).downloadable),
     },
     is_embeddable_video: {
       type: GraphQLBoolean,
