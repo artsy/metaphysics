@@ -105,6 +105,76 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#is_downloadable", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_downloadable
+        }
+      }
+    `
+
+    it("is downloadable if the first image is downloadable", () => {
+      artwork.images = [
+        {
+          id: "image1",
+          downloadable: true,
+        },
+        {
+          id: "image2",
+          downloadable: false,
+        },
+      ]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_downloadable: true,
+          },
+        })
+      })
+    })
+
+    it("is not downloadable if it does not have a downloadable image", () => {
+      artwork.images = [
+        {
+          id: "image1",
+          downloadable: false,
+        },
+        {
+          id: "image2",
+          downloadable: false,
+        },
+      ]
+      const sales = Promise.resolve([sale])
+      rootValue.relatedSalesLoader = sinon.stub().returns(sales)
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_downloadable: false,
+          },
+        })
+      })
+    })
+
+    it("is not downloadable if it does not have any images", () => {
+      const sales = Promise.resolve([sale])
+      rootValue.relatedSalesLoader = sinon.stub().returns(sales)
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_downloadable: false,
+          },
+        })
+      })
+    })
+  })
+
   describe("#is_purchasable", () => {
     const query = `
       {
