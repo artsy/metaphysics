@@ -15,7 +15,6 @@ describe("Filter Artworks", () => {
         .withArgs("filter/artworks", {
           gene_id: "500-1000-ce",
           aggregations: ["total"],
-          page: 1,
         })
         .returns(
           Promise.resolve({
