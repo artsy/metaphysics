@@ -18,7 +18,6 @@ describe("Gene", () => {
         .withArgs("filter/artworks", {
           gene_id: "500-1000-ce",
           aggregations: ["total"],
-          page: 1,
         })
         .returns(
           Promise.resolve({
@@ -42,7 +41,7 @@ describe("Gene", () => {
       const query = `
         {
           gene(id: "500-1000-ce") {
-            filtered_artworks(aggregations: [TOTAL]) {
+            filtered_artworks(aggregations:[TOTAL]){
               hits {
                 id
               }
@@ -216,6 +215,7 @@ describe("Gene", () => {
 
       Gene.__Rewire__("gravity", gravity)
     })
+
     it("does not have a next page when the requested amount exceeds the count", () => {
       const query = `
         {
@@ -241,6 +241,7 @@ describe("Gene", () => {
         })
       })
     })
+
     it("has a next page when the amount requested is less than the count", () => {
       const query = `
         {
@@ -284,7 +285,6 @@ describe("Gene", () => {
         .withArgs("filter/artworks", {
           gene_id: "500-1000-ce",
           aggregations: ["total"],
-          page: 1,
         })
         .returns(
           Promise.resolve({
