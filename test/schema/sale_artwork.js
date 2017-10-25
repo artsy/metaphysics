@@ -20,8 +20,8 @@ describe("SaleArtwork type", () => {
         bidder_positions_count: 7,
         highest_bid_amount_cents: 325000,
         display_highest_bid_amount_dollars: "€3,250",
-        minimum_next_bid_cents: 350000,
-        display_minimum_next_bid_dollars: "€3,500",
+        minimum_next_bid_cents: 351000,
+        display_minimum_next_bid_dollars: "€3,510",
         opening_bid_cents: 180000,
         display_opening_bid_dollars: "€1,800",
         low_estimate_cents: 200000,
@@ -93,7 +93,11 @@ describe("SaleArtwork type", () => {
       })
     })
   })
+<<<<<<< HEAD
   it("can return the bid increment", () => {
+=======
+  it("can return the bid increments, including Gravity's asking price, but then snapped to preset increments", () => {
+>>>>>>> make test a little more nuanced
     gravity
       .onCall(1)
       .returns(
@@ -130,7 +134,7 @@ describe("SaleArtwork type", () => {
     `
     return runQuery(query).then(data => {
       expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
-        350000,
+        351000,
         355000,
         360000,
         365000,
@@ -197,7 +201,7 @@ describe("SaleArtwork type", () => {
       `
       return runQuery(query).then(data => {
         expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
-          350000,
+          351000,
           355000,
           360000,
           365000,
