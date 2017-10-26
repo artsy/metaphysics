@@ -93,11 +93,7 @@ describe("SaleArtwork type", () => {
       })
     })
   })
-<<<<<<< HEAD
-  it("can return the bid increment", () => {
-=======
   it("can return the bid increments, including Gravity's asking price, but then snapped to preset increments", () => {
->>>>>>> make test a little more nuanced
     gravity
       .onCall(1)
       .returns(
