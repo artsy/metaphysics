@@ -1,18 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "lib": ["es2017"],
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
     "checkJs": false,
-    "outDir": "./build",
+    "lib": ["es2017"],
+    "module": "commonjs",
     "noEmit": true,
-    "strict": true,
     "noImplicitAny": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "baseUrl": "./",
-    "allowSyntheticDefaultImports": true
-  },
-  "include": ["lib/**/*.js"]
+    "outDir": "./build",
+    "rootDir": "./",
+    "strict": true,
+    "target": "es5"
+  }
 }
