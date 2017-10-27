@@ -225,14 +225,12 @@ const SaleType = new GraphQLObjectType({
         args: pageable(),
         resolve: (sale, options, request, { rootValue: { saleArtworksLoader } }) => {
           const { limit: size, offset } = getPagingParameters(options)
-          const gravityArgs = { size, offset }
-          return saleArtworksLoader(sale.id, gravityArgs).then(saleArtworks => {
-            console.log(offset)
-            return connectionFromArraySlice(saleArtworks, options, {
+          return saleArtworksLoader(sale.id, { size, offset }).then(saleArtworks =>
+            connectionFromArraySlice(saleArtworks, options, {
               arrayLength: sale.eligible_sale_artworks_count,
               sliceStart: offset,
             })
-          })
+          )
         },
       },
       sale_type: {
