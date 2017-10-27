@@ -1,6 +1,7 @@
 import moment from "moment"
 import schema from "schema"
-import { runQuery } from "test/utils"
+import { fill } from "lodash"
+import { runQuery, runAuthenticatedQuery } from "test/utils"
 
 describe("Sale type", () => {
   const Sale = schema.__get__("Sale")
@@ -124,6 +125,35 @@ describe("Sale type", () => {
             status: "open",
           },
         })
+      })
+    })
+  })
+
+  describe("sale_artworks_connection", () => {
+    it("returns data from gravity", () => {
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            sale_artworks_connection(first: 10) {
+              pageInfo {
+                hasNextPage
+              }
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      sale.eligible_sale_artworks_count = 20
+      const rootValue = {
+        saleArtworksLoader: () => Promise.resolve(fill(Array(sale.eligible_sale_artworks_count), { id: "some-id" })),
+      }
+
+      return runAuthenticatedQuery(query, rootValue).then(data => {
+        expect(data).toMatchSnapshot()
       })
     })
   })

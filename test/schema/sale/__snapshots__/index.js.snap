@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Sale type sale_artworks_connection returns data from gravity 1`] = `
+Object {
+  "sale": Object {
+    "sale_artworks_connection": Object {
+      "edges": Array [
+        Object {
+          "node": Object {
+            "id": "some-id",
+          },
+        },
+        Object {
+          "node": Object {
+            "id": "some-id",
+          },
+        },
+        Object {
+          "node": Object {
+            "id": "some-id",
+          },
+        },
+        Object {
+          "node": Object {
+            "id": "some-id",
+          },
+        },
+        Object {
+          "node": Object {
+            "id": "some-id",
+          },
+        },
+        Object {
+          "node": Object {
+            "id": "some-id",
+          },
+        },
+        Object {
+          "node": Object {
+            "id": "some-id",
+          },
+        },
+        Object {
+          "node": Object {
+            "id": "some-id",
+          },
+        },
+        Object {
+          "node": Object {
+            "id": "some-id",
+          },
+        },
+        Object {
+          "node": Object {
+            "id": "some-id",
+          },
+        },
+      ],
+      "pageInfo": Object {
+        "hasNextPage": true,
+      },
+    },
+  },
+}
+`;
