@@ -7,6 +7,8 @@ import date from "schema/fields/date"
 import gravity from "lib/loaders/legacy/gravity"
 import moment from "moment"
 import { GravityIDFields } from "schema/object_identification"
+import { pageable, getPagingParameters } from "relay-cursor-paging"
+import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { amount } from "schema/fields/money"
 import { exclude } from "lib/helpers"
 import { map } from "lodash"
@@ -50,6 +52,10 @@ const BuyersPremium = new GraphQLObjectType({
     },
   },
 })
+
+const saleArtworkConnection = connectionDefinitions({
+  nodeType: SaleArtwork.type,
+}).connectionType
 
 const SaleType = new GraphQLObjectType({
   name: "Sale",
@@ -212,6 +218,21 @@ const SaleType = new GraphQLObjectType({
           }
 
           return gravity(`sale/${id}/sale_artworks`, options)
+        },
+      },
+      sale_artworks_connection: {
+        type: saleArtworkConnection,
+        args: pageable(),
+        resolve: (sale, options, request, { rootValue: { saleArtworksLoader } }) => {
+          const { limit: size, offset } = getPagingParameters(options)
+          const gravityArgs = { size, offset }
+          return saleArtworksLoader(sale.id, gravityArgs).then(saleArtworks => {
+            console.log(offset)
+            return connectionFromArraySlice(saleArtworks, options, {
+              arrayLength: sale.eligible_sale_artworks_count,
+              sliceStart: offset,
+            })
+          })
         },
       },
       sale_type: {
