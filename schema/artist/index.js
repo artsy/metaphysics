@@ -89,7 +89,8 @@ const ShowField = {
       defaults(options, {
         artist_id: id,
         sort: "-end_at",
-      })).then(shows => showsWithBLacklistedPartnersRemoved(shows))
+      })
+    ).then(shows => showsWithBLacklistedPartnersRemoved(shows))
   },
 }
 
@@ -136,6 +137,37 @@ export const ArtistType = new GraphQLObjectType({
           relatedMainArtistsLoader(
             defaults(options, {
               artist: [id],
+            })
+          ),
+      },
+      suggested_artists: {
+        // '/me/suggested/artists'
+        type: new GraphQLList(Artist.type), // eslint-disable-line no-use-before-define
+        args: {
+          size: {
+            type: GraphQLInt,
+            description: "The number of Artists to return",
+          },
+          exclude_artists_without_artworks: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+          },
+          exclude_artists_without_forsale_artworks: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+          },
+          exclude_followed_artists: {
+            type: GraphQLBoolean,
+            defaultValue: true,
+          },
+          exclude_artist_ids: {
+            type: new GraphQLList(GraphQLString),
+          },
+        },
+        resolve: ({ id }, options, request, { rootValue: { suggestedArtistsLoader } }) =>
+          suggestedArtistsLoader(
+            defaults(options, {
+              artist_id: id,
             })
           ),
       },
