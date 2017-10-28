@@ -195,6 +195,8 @@ describe("LotStanding type", () => {
     const liveOpenSale = {
       auction_state: "open",
       live_start_at: moment().subtract(2, "days"),
+      currency: "$",
+      is_auction: true,
     }
 
     return runAuthenticatedQuery(query, {
@@ -239,6 +241,8 @@ describe("LotStanding type", () => {
     const notALiveOpenSale = {
       auction_state: "open",
       live_start_at: moment().add(2, "days"),
+      currency: "$",
+      is_auction: true,
     }
 
     return runAuthenticatedQuery(query, {

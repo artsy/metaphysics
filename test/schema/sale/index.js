@@ -9,6 +9,8 @@ describe("Sale type", () => {
   const sale = {
     id: "foo-foo",
     _id: "123",
+    currency: "$",
+    is_auction: true,
   }
 
   beforeEach(() => {
