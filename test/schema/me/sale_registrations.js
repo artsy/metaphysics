@@ -33,7 +33,20 @@ describe("Me", () => {
       gravity
         // Sale fetch
         .onCall(0)
-        .returns(Promise.resolve([{ name: "Foo Sale" }, { name: "Bar Sale" }]))
+        .returns(
+          Promise.resolve([
+            {
+              name: "Foo Sale",
+              currency: "$",
+              is_auction: true,
+            },
+            {
+              name: "Bar Sale",
+              currency: "$",
+              is_auction: true,
+            },
+          ])
+        )
         // Registration fetches
         .onCall(1)
         .returns(Promise.resolve([]))

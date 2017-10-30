@@ -1,3 +1,4 @@
+// @ts-check
 import gravity from "lib/loaders/legacy/gravity"
 import Sale from "./sale/index"
 import SaleSorts from "./sale/sorts"

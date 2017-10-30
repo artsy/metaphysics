@@ -1,3 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CreateSubmissionMutation creates a submission and returns its new data payload 1`] = `undefined`;
+exports[`addAssetToConsignmentSubmission creates a submission and returns its new data payload 1`] = `
+Object {
+  "addAssetToConsignmentSubmission": Object {
+    "asset": Object {
+      "gemini_token": "12345",
+      "submission_id": "123",
+    },
+  },
+}
+`;

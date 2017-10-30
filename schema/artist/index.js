@@ -1,8 +1,8 @@
-// @flow
+// @ts-check
 import type { GraphQLFieldConfig } from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
-import { assign, compact, defaults, first, has } from "lodash"
+import { assign, compact, defaults, first, has, reject, includes } from "lodash"
 import { exclude } from "lib/helpers"
 import cached from "schema/fields/cached"
 import initials from "schema/fields/initials"
@@ -40,6 +40,20 @@ const artistArtworkArrayLength = (artist, filter) => {
   return length
 }
 
+// TODO: Fix upstream, for now we remove shows from certain Partner types
+const blacklistedPartnerTypes = ["Private Dealer", "Demo", "Private Collector", "Auction"]
+const showsWithBLacklistedPartnersRemoved = shows => {
+  return reject(shows, show => {
+    if (show.partner) {
+      return includes(blacklistedPartnerTypes, show.partner.type)
+    }
+    if (show.galaxy_partner_id) {
+      return false
+    }
+    return true
+  })
+}
+
 // TODO Get rid of this when we remove the deprecated PartnerShow in favour of Show.
 const ShowField = {
   args: {
@@ -75,8 +89,7 @@ const ShowField = {
       defaults(options, {
         artist_id: id,
         sort: "-end_at",
-      })
-    )
+      })).then(shows => showsWithBLacklistedPartnersRemoved(shows))
   },
 }
 
@@ -323,9 +336,7 @@ export const ArtistType = new GraphQLObjectType({
             is_reference: true,
             visible_to_public: false,
             size: options.size,
-          }).then(shows => {
-            return shows
-          })
+          }).then(shows => showsWithBLacklistedPartnersRemoved(shows))
         },
       },
       formatted_artworks_count: {

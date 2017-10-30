@@ -1,7 +1,7 @@
 import date from "schema/fields/date"
 import gravity from "lib/loaders/legacy/gravity"
 import { IDFields } from "schema/object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList } from "graphql"
 
 export const CollectorProfileFields = {
   ...IDFields,
@@ -21,6 +21,9 @@ export const CollectorProfileFields = {
   loyalty_applicant_at: date,
   professional_buyer_at: date,
   professional_buyer_applied_at: date,
+  intents: {
+    type: new GraphQLList(GraphQLString),
+  },
 }
 
 export const CollectorProfileType = new GraphQLObjectType({

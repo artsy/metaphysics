@@ -34,6 +34,7 @@ Array [
 exports[`Me Conversation concerning unread indicator returns the right unread status 1`] = `
 Object {
   "is_last_message_to_user": true,
+  "last_message_delivery_id": "2",
   "last_message_open": "2020-12-31T12:00:00+00:00",
 }
 `;
@@ -46,6 +47,7 @@ Object {
     },
     "id": "420",
     "initial_message": "Loved some of the works at your fair booth!",
+    "last_message_id": "25",
     "messages": Object {
       "edges": Array [
         Object {
@@ -58,6 +60,8 @@ Object {
             },
             "id": "240",
             "invoice": Object {
+              "__id": "SW52b2ljZTox",
+              "id": "1",
               "payment_url": "https://www.adopt-cats.org/adopt-all-the-cats",
               "state": "UNPAID",
               "total": "$4,200",

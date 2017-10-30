@@ -13,6 +13,7 @@ describe("Me", () => {
             last_message: {
               snippet: "Cool snippet",
               from_email_address: "other-collector@example.com",
+              id: "25",
             },
           },
           items: [
@@ -42,64 +43,73 @@ describe("Me", () => {
           ],
         })
       },
-      conversationMessagesLoader: () =>
-        Promise.resolve({
-          total_count: 4,
-          message_details: [
-            {
-              id: "240",
-              raw_text: "this is a good message",
-              from_email_address: "fancy_german_person@posteo.de",
-              from_id: null,
-              attachments: [],
-              metadata: {
-                lewitt_invoice_id: "420i",
+      conversationMessagesLoader: ({ sort } = { sort: "asc" }) => {
+        let messages = [
+          {
+            id: "240",
+            raw_text: "this is a good message",
+            from_email_address: "fancy_german_person@posteo.de",
+            from_id: null,
+            attachments: [],
+            metadata: {
+              lewitt_invoice_id: "420i",
+            },
+            from: `"Percy Z" <percy@cat.com>`,
+            body: "I'm a cat",
+          },
+          {
+            id: "241",
+            raw_text: "this is a good message",
+            from_email_address: "postman@posteo.de",
+            from_id: null,
+            attachments: [],
+            metadata: {},
+            from: `"Bitty Z" <Bitty@cat.com>`,
+            body: "",
+          },
+          {
+            id: "242",
+            raw_text: "this is a good message",
+            from_email_address: "fancy_german_person+wunderbar@posteo.de",
+            from_id: "user-42",
+            attachments: [],
+            metadata: {},
+            from: `"Matt Z" <matt@cat.com>`,
+            body: null,
+          },
+          {
+            id: "243",
+            raw_text: "this is a good message",
+            from_email_address: "postman+wunderlich@posteo.de",
+            from_id: "user-21",
+            attachments: [],
+            metadata: {},
+            from: "<email@email.com>",
+            deliveries: [
+              {
+                opened_at: "2020-12-31T12:00:00+00:00",
               },
-              from: `"Percy Z" <percy@cat.com>`,
-              body: "I'm a cat",
-            },
-            {
-              id: "241",
-              raw_text: "this is a good message",
-              from_email_address: "postman@posteo.de",
-              from_id: null,
-              attachments: [],
-              metadata: {},
-              from: `"Bitty Z" <Bitty@cat.com>`,
-              body: "",
-            },
-            {
-              id: "242",
-              raw_text: "this is a good message",
-              from_email_address: "fancy_german_person+wunderbar@posteo.de",
-              from_id: "user-42",
-              attachments: [],
-              metadata: {},
-              from: `"Matt Z" <matt@cat.com>`,
-              body: null,
-            },
-            {
-              id: "243",
-              raw_text: "this is a good message",
-              from_email_address: "postman+wunderlich@posteo.de",
-              from_id: "user-21",
-              attachments: [],
-              metadata: {},
-              from: "<email@email.com>",
-              deliveries: [
-                {
-                  opened_at: "2020-12-31T12:00:00+00:00",
-                },
-              ],
-            },
-          ],
-        }),
+            ],
+          },
+        ]
+
+        if (sort === "desc") {
+          messages = messages.reverse()
+        }
+
+        return Promise.resolve({
+          total_count: 4,
+          message_details: messages,
+        })
+      },
       conversationInvoiceLoader: () =>
         Promise.resolve({
           payment_url: "https://www.adopt-cats.org/adopt-all-the-cats",
           state: "unpaid",
           symbol: "$",
           total_cents: 420000,
+          lewitt_invoice_id: "420",
+          id: "1",
         }),
     }
 
@@ -113,12 +123,15 @@ describe("Me", () => {
               from {
                 email
               }
+              last_message_id
               messages(first: 10) {
                 edges {
                   node {
                     id
                     is_invoice
                     invoice {
+                      __id
+                      id
                       payment_url
                       state
                       total
@@ -153,6 +166,7 @@ describe("Me", () => {
               conversation(id: "420") {
                 is_last_message_to_user
                 last_message_open
+                last_message_delivery_id
               }
             }
           }
@@ -161,7 +175,7 @@ describe("Me", () => {
         const message = {
           message_details: [
             {
-              deliveries: [{ email: "collector@example.com", opened_at: "2020-12-31T12:00:00+00:00" }],
+              deliveries: [{ id: "2", email: "collector@example.com", opened_at: "2020-12-31T12:00:00+00:00" }],
             },
           ],
         }
@@ -219,6 +233,44 @@ describe("Me", () => {
         return runAuthenticatedQuery(query, customRootValue).then(({ me: { conversation: { items } } }) => {
           expect(items.length).toEqual(1)
           expect(items).toMatchSnapshot()
+        })
+      })
+    })
+
+    describe("messages", () => {
+      const getQuery = (sort = "ASC") => {
+        return `
+          {
+            me {
+              conversation(id: "420") {
+                messages(first: 10, sort: ${sort}) {
+                  edges {
+                    node {
+                      id
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
+      }
+
+      it("returns messages in ascending order", () => {
+        const query = getQuery()
+
+        return runAuthenticatedQuery(query, rootValue).then(({ me: { conversation: { messages } } }) => {
+          expect(messages.edges.length).toEqual(4)
+          expect(messages.edges[0].node.id).toEqual("240")
+        })
+      })
+
+      it("returns messages in descending order", () => {
+        const query = getQuery("DESC")
+
+        return runAuthenticatedQuery(query, rootValue).then(({ me: { conversation: { messages } } }) => {
+          expect(messages.edges.length).toEqual(4)
+          expect(messages.edges[0].node.id).toEqual("243")
         })
       })
     })

@@ -1,17 +1,17 @@
-// @flow
+// @ts-check
 import type { GraphQLFieldConfig } from "graphql"
 import { pageable } from "relay-cursor-paging"
-import { connectionFromArraySlice } from "graphql-relay"
+import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
 import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
-import { artworkConnection } from "./artwork"
+import Artwork from "./artwork"
 import Artist, { artistConnection } from "./artist"
 import Image from "./image"
-import filterArtworks, { filterArtworksArgs } from "./filter_artworks"
+import filterArtworks, { ArtworkFilterAggregations, filterArtworksArgs, FilterArtworksCounts } from "./filter_artworks"
 import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -57,7 +57,14 @@ const GeneType = new GraphQLObjectType({
       },
     },
     artworks_connection: {
-      type: artworkConnection,
+      type: connectionDefinitions({
+        name: "GeneArtworks",
+        nodeType: Artwork.type,
+        connectionFields: {
+          aggregations: ArtworkFilterAggregations,
+          counts: FilterArtworksCounts,
+        },
+      }).connectionType,
       args: pageable(filterArtworksArgs),
       resolve: ({ id }, options, request, { rootValue: { accessToken } }) => {
         const gravityOptions = parseRelayOptions(options)
@@ -70,15 +77,27 @@ const GeneType = new GraphQLObjectType({
         }
         // Manually set the gene_id to the current id
         gravityOptions.gene_id = id
-        return gravity.with(accessToken)("filter/artworks", gravityOptions).then(response => {
-          return connectionFromArraySlice(response.hits, options, {
-            arrayLength: response.aggregations.total.value,
-            sliceStart: gravityOptions.offset,
-          })
+        /**
+         * FIXME: There’s no need for this loader to be authenticated (and not cache data), unless the
+         *        `include_artworks_by_followed_artists` argument is given. Perhaps we can have specialized loaders that
+         *        compose authenticated and unauthenticated loaders based on the request?
+         *        Here’s an example of such a setup https://gist.github.com/alloy/69bb274039ecd552de76c3f1739c519e
+         */
+        return gravity.with(accessToken)("filter/artworks", gravityOptions).then(({ aggregations, hits }) => {
+          return Object.assign(
+            { aggregations }, // Add data to connection so the `aggregations` connection field can resolve it
+            connectionFromArraySlice(hits, options, {
+              arrayLength: aggregations.total.value,
+              sliceStart: gravityOptions.offset,
+            })
+          )
         })
       },
     },
     description: {
+      type: GraphQLString,
+    },
+    display_name: {
       type: GraphQLString,
     },
     filtered_artworks: filterArtworks("gene_id"),
@@ -87,6 +106,10 @@ const GeneType = new GraphQLObjectType({
       resolve: ({ id }) => `gene/${id}`,
     },
     image: Image,
+    is_published: {
+      type: GraphQLBoolean,
+      resolve: ({ published }) => published,
+    },
     mode: {
       type: GraphQLString,
       resolve: ({ type }) => {

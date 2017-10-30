@@ -1,3 +1,4 @@
+// @ts-check
 import Artwork from "schema/artwork"
 import Image from "schema/image/index"
 import Profile from "schema/profile"
@@ -7,9 +8,12 @@ import date from "schema/fields/date"
 import gravity from "lib/loaders/legacy/gravity"
 import moment from "moment"
 import { GravityIDFields } from "schema/object_identification"
+import { pageable, getPagingParameters } from "relay-cursor-paging"
+import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { amount } from "schema/fields/money"
 import { exclude } from "lib/helpers"
-import { map } from "lodash"
+import { map, has } from "lodash"
+import { NodeInterface } from "schema/object_identification"
 
 import {
   GraphQLString,
@@ -51,8 +55,14 @@ const BuyersPremium = new GraphQLObjectType({
   },
 })
 
+const saleArtworkConnection = connectionDefinitions({
+  nodeType: SaleArtwork.type,
+}).connectionType
+
 const SaleType = new GraphQLObjectType({
   name: "Sale",
+  interfaces: [NodeInterface],
+  isTypeOf: obj => has(obj, "is_auction") && has(obj, "currency"),
   fields: () => {
     return {
       ...GravityIDFields,
@@ -81,10 +91,15 @@ const SaleType = new GraphQLObjectType({
           const invert = saleArtworks => map(saleArtworks, "artwork")
 
           if (options.all) {
-            return gravity.all(`sale/${id}/sale_artworks`, options).then(invert).then(exclude(options.exclude, "id"))
+            return gravity
+              .all(`sale/${id}/sale_artworks`, options)
+              .then(invert)
+              .then(exclude(options.exclude, "id"))
           }
 
-          return gravity(`sale/${id}/sale_artworks`, options).then(invert).then(exclude(options.exclude, "id"))
+          return gravity(`sale/${id}/sale_artworks`, options)
+            .then(invert)
+            .then(exclude(options.exclude, "id"))
         },
       },
       associated_sale: {
@@ -207,6 +222,19 @@ const SaleType = new GraphQLObjectType({
           }
 
           return gravity(`sale/${id}/sale_artworks`, options)
+        },
+      },
+      sale_artworks_connection: {
+        type: saleArtworkConnection,
+        args: pageable(),
+        resolve: (sale, options, request, { rootValue: { saleArtworksLoader } }) => {
+          const { limit: size, offset } = getPagingParameters(options)
+          return saleArtworksLoader(sale.id, { size, offset }).then(saleArtworks =>
+            connectionFromArraySlice(saleArtworks, options, {
+              arrayLength: sale.eligible_sale_artworks_count,
+              sliceStart: offset,
+            })
+          )
         },
       },
       sale_type: {

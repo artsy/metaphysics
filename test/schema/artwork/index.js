@@ -51,7 +51,10 @@ describe("Artwork type", () => {
     Artwork.__Rewire__("gravity", gravity)
 
     rootValue = {
-      artworkLoader: sinon.stub().withArgs(artwork.id).returns(Promise.resolve(artwork)),
+      artworkLoader: sinon
+        .stub()
+        .withArgs(artwork.id)
+        .returns(Promise.resolve(artwork)),
     }
   })
 
@@ -96,6 +99,76 @@ describe("Artwork type", () => {
           artwork: {
             id: "richard-prince-untitled-portrait",
             is_contactable: false,
+          },
+        })
+      })
+    })
+  })
+
+  describe("#is_downloadable", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_downloadable
+        }
+      }
+    `
+
+    it("is downloadable if the first image is downloadable", () => {
+      artwork.images = [
+        {
+          id: "image1",
+          downloadable: true,
+        },
+        {
+          id: "image2",
+          downloadable: false,
+        },
+      ]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_downloadable: true,
+          },
+        })
+      })
+    })
+
+    it("is not downloadable if it does not have a downloadable image", () => {
+      artwork.images = [
+        {
+          id: "image1",
+          downloadable: false,
+        },
+        {
+          id: "image2",
+          downloadable: false,
+        },
+      ]
+      const sales = Promise.resolve([sale])
+      rootValue.relatedSalesLoader = sinon.stub().returns(sales)
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_downloadable: false,
+          },
+        })
+      })
+    })
+
+    it("is not downloadable if it does not have any images", () => {
+      const sales = Promise.resolve([sale])
+      rootValue.relatedSalesLoader = sinon.stub().returns(sales)
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_downloadable: false,
           },
         })
       })
@@ -318,6 +391,49 @@ describe("Artwork type", () => {
 
     it("returns null if work is not for sale", () => {
       artwork.availability = "not for sale"
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            sale_message: null,
+          },
+        })
+      })
+    })
+
+    it("returns 'On loan' if work is on loan", () => {
+      artwork.sale_message = "Not for sale"
+      artwork.availability = "on loan"
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            sale_message: "On loan",
+          },
+        })
+      })
+    })
+
+    it("returns null if work is marked with availability_hidden", () => {
+      artwork.sale_message = "for sale"
+      artwork.availability = "on loan"
+      artwork.availability_hidden = true
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            sale_message: null,
+          },
+        })
+      })
+    })
+
+    it("returns null if work is part of permanent collection", () => {
+      artwork.sale_message = "for sale"
+      artwork.availability = "permanent collection"
 
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({

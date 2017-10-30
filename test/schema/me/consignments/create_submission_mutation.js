@@ -1,7 +1,19 @@
 import { runAuthenticatedQuery } from "test/utils"
-const gql = args => args[0]
+import { config as createSubmissionMutation } from "schema/me/consignments/create_submission_mutation.js"
+
+import gql from "test/gql"
 
 describe("UpdateSubmissionMutation", () => {
+  it("does not include the id param", () => {
+    const mutation = createSubmissionMutation
+    expect(Object.keys(mutation.inputFields)).not.toContain("id")
+  })
+
+  it("includes the state param", () => {
+    const mutation = createSubmissionMutation
+    expect(Object.keys(mutation.inputFields)).toContain("state")
+  })
+
   it("updates a submission and returns its new data payload", () => {
     const mutation = gql`
       mutation {
@@ -31,8 +43,9 @@ describe("UpdateSubmissionMutation", () => {
         }),
     }
 
-    return runAuthenticatedQuery(mutation, rootValue).then(({ submissionCreateLoader }) => {
-      expect(submissionCreateLoader).toMatchSnapshot()
+    expect.assertions(1)
+    return runAuthenticatedQuery(mutation, rootValue).then(data => {
+      expect(data).toMatchSnapshot()
     })
   })
 })

@@ -1,4 +1,6 @@
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean, GraphQLEnumType } from "graphql"
+// @ts-check
+
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean, GraphQLEnumType, GraphQLInt } from "graphql"
 
 export const SubmissionDimensionAggregation = new GraphQLEnumType({
   name: "SubmissionDimensionAggregation",
@@ -63,6 +65,18 @@ export const SubmissionCategoryAggregation = new GraphQLEnumType({
   },
 })
 
+export const SubmissionStateAggregation = new GraphQLEnumType({
+  name: "SubmissionStateAggregation",
+  values: {
+    DRAFT: {
+      value: "draft",
+    },
+    SUBMITTED: {
+      value: "submitted",
+    },
+  },
+})
+
 export const SubmissionType = new GraphQLObjectType({
   name: "Submission",
   description: "A work to be consigned to the user",
@@ -92,8 +106,8 @@ export const SubmissionType = new GraphQLObjectType({
       type: SubmissionDimensionAggregation,
     },
     edition: {
-      description: "The version of individual work if from a set",
-      type: GraphQLString,
+      description: "Is the work a part of an edition",
+      type: GraphQLBoolean,
     },
     edition_number: {
       description: "The number of the individual work if in a set",
@@ -101,7 +115,7 @@ export const SubmissionType = new GraphQLObjectType({
     },
     edition_size: {
       description: "The whole size of the set of works",
-      type: GraphQLString,
+      type: GraphQLInt,
     },
     height: {
       description: "The height of the work",
@@ -134,6 +148,10 @@ export const SubmissionType = new GraphQLObjectType({
     title: {
       description: "The name of the work",
       type: GraphQLString,
+    },
+    state: {
+      description: "The internal state of the work, e.g. draft/submitted",
+      type: SubmissionStateAggregation,
     },
     width: {
       description: "The width of the work",

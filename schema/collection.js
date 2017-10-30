@@ -1,8 +1,9 @@
-// @flow
+// @ts-check
 import type { GraphQLFieldConfig } from "graphql"
 import { pageable } from "relay-cursor-paging"
-import { connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
+import { error } from "lib/loggers"
 import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import CollectionSorts from "./sorts/collection_sorts"
@@ -39,15 +40,23 @@ export const CollectionType = new GraphQLObjectType({
         gravityOptions.user_id = userID
 
         delete gravityOptions.page // this can't also be used with the offset in gravity
-        return gravity.with(accessToken, { headers: true })(
-          `collection/${id}/artworks`,
-          gravityOptions
-        ).then(({ body, headers }) => {
-          return connectionFromArraySlice(body, options, {
-            arrayLength: headers["x-total-count"],
-            sliceStart: gravityOptions.offset,
+        return gravity.with(accessToken, { headers: true })(`collection/${id}/artworks`, gravityOptions)
+          .then(({ body, headers }) => {
+            return connectionFromArraySlice(body, options, {
+              arrayLength: headers["x-total-count"],
+              sliceStart: gravityOptions.offset,
+            })
           })
-        })
+          .catch(e => {
+            error("Bypassing Gravity error: ", e)
+            // For some users with no favourites, Gravity produces an error of "Collection Not Found".
+            // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
+            // and return an empty list instead.
+            return connectionFromArray([], options, {
+              arrayLength: 0,
+              sliceStart: 0,
+            })
+          })
       },
     },
     description: {

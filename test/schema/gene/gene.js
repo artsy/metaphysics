@@ -77,12 +77,17 @@ describe("Gene", () => {
               total: {
                 value: 20,
               },
+              medium: {
+                painting: { name: "Painting", count: 16 },
+                photography: { name: "Photography", count: 4 },
+              },
             },
           })
         )
 
       Gene.__Rewire__("gravity", gravity)
     })
+
     it("does not have a next page when the requested amount exceeds the count", () => {
       const query = `
         {
@@ -108,6 +113,7 @@ describe("Gene", () => {
         })
       })
     })
+
     it("has a next page when the amount requested is less than the count", () => {
       const query = `
         {
@@ -128,6 +134,57 @@ describe("Gene", () => {
               pageInfo: {
                 hasNextPage: true,
               },
+            },
+          },
+        })
+      })
+    })
+
+    it("exposes aggregation metadata", () => {
+      const query = `
+        {
+          gene(id: "500-1000-ce") {
+            artworks_connection(aggregations: [MEDIUM], first: 10) {
+              counts {
+                total
+              }
+              aggregations {
+                slice
+                counts {
+                  id
+                  count
+                  name
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          gene: {
+            artworks_connection: {
+              counts: {
+                total: 20,
+              },
+              aggregations: [
+                {
+                  slice: "MEDIUM",
+                  counts: [
+                    {
+                      id: "painting",
+                      count: 16,
+                      name: "Painting",
+                    },
+                    {
+                      id: "photography",
+                      count: 4,
+                      name: "Photography",
+                    },
+                  ],
+                },
+              ],
             },
           },
         })
@@ -158,6 +215,7 @@ describe("Gene", () => {
 
       Gene.__Rewire__("gravity", gravity)
     })
+
     it("does not have a next page when the requested amount exceeds the count", () => {
       const query = `
         {
@@ -183,6 +241,7 @@ describe("Gene", () => {
         })
       })
     })
+
     it("has a next page when the amount requested is less than the count", () => {
       const query = `
         {

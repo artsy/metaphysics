@@ -1,7 +1,7 @@
 import delta from "lib/loaders/legacy/delta"
 import gravity from "lib/loaders/legacy/gravity"
 import { keys, without } from "lodash"
-import Artist from "./artist"
+import Artist from "../artist"
 import {
   GraphQLString,
   GraphQLObjectType,

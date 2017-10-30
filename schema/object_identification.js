@@ -43,9 +43,11 @@ const SupportedTypes = {
     "./home/home_page_artist_module",
     "./me",
     "./me/conversation",
+    "./me/conversation/invoice",
     "./partner",
     "./partner_show",
     "./show",
+    "./sale",
   ],
 }
 

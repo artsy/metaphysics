@@ -4,8 +4,14 @@ import { GraphQLString, GraphQLBoolean } from "graphql"
 
 export function date(rawDate, format, timezone) {
   if (timezone) {
-    if (format) return moment(rawDate).tz(timezone).format(format)
-    return moment(rawDate).tz(timezone).format()
+    if (format) {
+      return moment(rawDate)
+        .tz(timezone)
+        .format(format)
+    }
+    return moment(rawDate)
+      .tz(timezone)
+      .format()
   }
   if (format) return moment.utc(rawDate).format(format)
   return rawDate
