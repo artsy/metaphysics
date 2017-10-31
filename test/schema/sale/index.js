@@ -4,6 +4,7 @@ import { fill } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "test/utils"
 
 describe("Sale type", () => {
+  let gravity
   const Sale = schema.__get__("Sale")
 
   const sale = {
@@ -11,10 +12,12 @@ describe("Sale type", () => {
     _id: "123",
     currency: "$",
     is_auction: true,
+    increment_strategy: "default",
   }
 
   beforeEach(() => {
-    Sale.__Rewire__("gravity", sinon.stub().returns(Promise.resolve(sale)))
+    gravity = sinon.stub().withArgs("sale/foo-foo").returns(Promise.resolve(sale))
+    Sale.__Rewire__("gravity", gravity)
   })
 
   afterEach(() => {
@@ -156,6 +159,84 @@ describe("Sale type", () => {
 
       return runAuthenticatedQuery(query, rootValue).then(data => {
         expect(data).toMatchSnapshot()
+      })
+    })
+  })
+
+  describe("sale_artworks", () => {
+    const SaleArtwork = schema.__get__("SaleArtwork")
+    const saleArtworks = [
+      {
+        minimum_next_bid_cents: 400000,
+        sale_id: "foo-foo",
+      },
+      {
+        minimum_next_bid_cents: 20000,
+        sale_id: "foo-foo",
+      },
+    ]
+
+    beforeEach(() => {
+      gravity = sinon.stub()
+      gravity.withArgs("sale/foo-foo").returns(Promise.resolve(sale))
+      gravity.withArgs("sale/foo-foo/sale_artworks", { page: 1, size: 25, all: false }).returns(
+        Promise.resolve(saleArtworks)
+      )
+      gravity.withArgs("increments", { key: "default" }).returns(
+        Promise.resolve([
+          {
+            key: "default",
+            increments: [
+              {
+                from: 0,
+                to: 399999,
+                amount: 5000,
+              },
+              {
+                from: 400000,
+                to: 1000000,
+                amount: 10000,
+              },
+            ],
+          },
+        ])
+      )
+      Sale.__Rewire__("gravity", gravity)
+      SaleArtwork.__Rewire__("gravity", gravity)
+    })
+
+    afterEach(() => {
+      Sale.__ResetDependency__("gravity")
+      SaleArtwork.__ResetDependency__("gravity")
+    })
+
+    it("returns data from gravity", () => {
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            sale_artworks {
+              bid_increments
+            }
+          }
+        }
+      `
+
+      return runAuthenticatedQuery(query).then(data => {
+        expect(data.sale.sale_artworks[0].bid_increments.slice(0, 5)).toEqual([
+          400000,
+          410000,
+          420000,
+          430000,
+          440000,
+        ])
+
+        expect(data.sale.sale_artworks[1].bid_increments.slice(0, 5)).toEqual([
+          20000,
+          25000,
+          30000,
+          35000,
+          40000,
+        ])
       })
     })
   })

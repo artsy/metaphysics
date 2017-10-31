@@ -45,8 +45,9 @@ const SaleArtworkType = new GraphQLObjectType({
               key: sale.increment_strategy,
             }).then(incrs => {
               // We already have the asking price for the lot. Produce a list
-              // of increments beyond that amount.
-              const tiers = incrs[0].increments
+              // of increments beyond that amount. Make a local copy of the
+              // tiers to avoid mutating the cached value.
+              const tiers = incrs[0].increments.slice()
               const increments = [minimum_next_bid_cents]
               const limit = BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT || Number.MAX_SAFE_INTEGER
               let current = 0 // Always start from zero, so that all prices are on-increment
