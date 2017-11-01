@@ -1,6 +1,6 @@
 machine:
   node:
-    version: 8
+    version: 8.4.0
   pre:
     - mkdir ~/.yarn-cache
 deployment:
