@@ -15,10 +15,10 @@ export const HomePageFairsModuleType = new GraphQLObjectType({
             const newOptions = { ...gravityOptions, status: "closed", active: false, size: 8 - runningFairs.length }
             return fairsLoader(newOptions).then(closedFairs => {
               const allFairs = runningFairs.concat(closedFairs)
-              return allFairs
+              return allFairs.filter(fair => fair.mobile_image)
             })
           }
-          return runningFairs
+          return runningFairs.filter(fair => fair.mobile_image)
         })
       },
     },
