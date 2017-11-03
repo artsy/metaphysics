@@ -25,6 +25,7 @@ import ArtistStatuses from "./statuses"
 import ArtistArtworksFilters from "./artwork_filters"
 import positron from "lib/loaders/legacy/positron"
 import total from "lib/loaders/legacy/total"
+import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
 
@@ -89,7 +90,8 @@ const ShowField = {
       defaults(options, {
         artist_id: id,
         sort: "-end_at",
-      })).then(shows => showsWithBLacklistedPartnersRemoved(shows))
+      })
+    ).then(shows => showsWithBLacklistedPartnersRemoved(shows))
   },
 }
 
@@ -439,6 +441,32 @@ export const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         deprecationReason: "Favor `is_`-prefixed boolean attributes",
       },
+      related: {
+        type: new GraphQLObjectType({
+          name: "RelatedArtists",
+          fields: {
+            suggested: {
+              type: artistConnection, // eslint-disable-line no-use-before-define
+              args: pageable(SuggestedArtistsArgs),
+              description: "A list of the current user’s suggested artists, based on a single artist",
+              resolve: ({ id }, options, request, { rootValue: { suggestedArtistsLoader } }) => {
+                if (!suggestedArtistsLoader) return null
+                const { offset } = getPagingParameters(options)
+                const gravityOptions = assign({ artist_id: id, total_count: true }, options, {})
+                return suggestedArtistsLoader(gravityOptions).then(({ body, headers }) => {
+                  const suggestedArtists = body
+                  const totalCount = headers["x-total-count"]
+                  return connectionFromArraySlice(suggestedArtists, options, {
+                    arrayLength: totalCount,
+                    sliceStart: offset,
+                  })
+                })
+              },
+            },
+          },
+        }),
+        resolve: artist => artist,
+      },
       sales: {
         type: new GraphQLList(Sale.type),
         args: {
@@ -454,7 +482,7 @@ export const ArtistType = new GraphQLObjectType({
           },
           sort: SaleSorts,
         },
-        resolve: ({ id }, options, request, { rootValue: { relatedSalesLoader } }) =>
+        resolve: ({ id }, options, _request, { rootValue: { relatedSalesLoader } }) =>
           relatedSalesLoader(
             defaults(options, {
               artist_id: id,
@@ -486,7 +514,7 @@ const Artist: GraphQLFieldConfig<ArtistType, *> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { id }, request, resolver) => {
+  resolve: (_root, { id }, _request, resolver) => {
     if (id.length === 0) {
       return null
     }
