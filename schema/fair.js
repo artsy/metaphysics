@@ -108,6 +108,13 @@ const FairType = new GraphQLObjectType({
         return moment.utc().isBetween(start, end)
       },
     },
+    mobile_image: {
+      /**
+       * cannot use Image normalizer because it will grab other image versions; mobile icon is expected to be correctly
+       * sized
+       */
+      type: Image.type,
+    },
     is_published: {
       type: GraphQLBoolean,
       resolve: ({ published }) => published,

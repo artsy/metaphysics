@@ -3,6 +3,7 @@ import HomePageArtworkModules from "./home_page_artwork_modules"
 import HomePageArtistModule from "./home_page_artist_module"
 import HomePageArtistModules from "./home_page_artist_modules"
 import HomePageHeroUnits from "./home_page_hero_units"
+import HomePageFairsModule from "./home_page_fairs_module"
 
 import { GraphQLObjectType } from "graphql"
 
@@ -14,6 +15,7 @@ const HomePageType = new GraphQLObjectType({
     artwork_module: HomePageArtworkModule,
     artwork_modules: HomePageArtworkModules,
     hero_units: HomePageHeroUnits,
+    fairs_module: HomePageFairsModule,
   },
 })
 
