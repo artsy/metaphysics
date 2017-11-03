@@ -1,13 +1,12 @@
-import gravity from "lib/loaders/legacy/gravity"
 import Artist from "schema/artist"
-import { GraphQLBoolean, GraphQLList, GraphQLString, GraphQLInt } from "graphql"
+import { GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLString, GraphQLInt } from "graphql"
 
 export default {
   type: new GraphQLList(Artist.type),
   description: "A list of the current user’s suggested artists, based on a single artist",
   args: {
     artist_id: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "The slug or ID of an artist",
     },
     exclude_artists_without_forsale_artworks: {
@@ -31,9 +30,8 @@ export default {
       description: "Amount of artists to return",
     },
   },
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
-    if (!accessToken) return null
-    if (!options.artist_id) return null
-    return gravity.with(accessToken)("me/suggested/artists", options)
+  resolve: (root, options, request, { rootValue: { suggestedArtistsLoader } }) => {
+    if (!suggestedArtistsLoader) return null
+    return suggestedArtistsLoader(options)
   },
 }
