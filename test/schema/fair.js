@@ -15,6 +15,9 @@ describe("Fair type", () => {
       organizer: {
         profile_id: "the-armory-show",
       },
+      mobile_image: {
+        image_url: "circle-image.jpg",
+      },
     }
 
     gravity.returns(Promise.resolve(fairData))
@@ -36,6 +39,9 @@ describe("Fair type", () => {
           profile {
             is_publically_visible
           }
+        }
+        mobile_image {
+          image_url
         }
       }
     }
@@ -60,6 +66,9 @@ describe("Fair type", () => {
             profile: {
               is_publically_visible: true,
             },
+          },
+          mobile_image: {
+            image_url: "circle-image.jpg",
           },
         },
       })
@@ -86,6 +95,9 @@ describe("Fair type", () => {
               is_publically_visible: false,
             },
           },
+          mobile_image: {
+            image_url: "circle-image.jpg",
+          },
         },
       })
     })
@@ -110,6 +122,9 @@ describe("Fair type", () => {
             profile: {
               is_publically_visible: false,
             },
+          },
+          mobile_image: {
+            image_url: "circle-image.jpg",
           },
         },
       })

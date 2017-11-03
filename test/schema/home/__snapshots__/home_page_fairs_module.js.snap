@@ -4,54 +4,13 @@ exports[`HomePageFairsModule does not request past fairs if it has 8 running one
 Object {
   "home_page": Object {
     "fairs_module": Object {
-      "results": Array [
-        Object {
-          "id": "artissima-2017",
-          "is_active": true,
-          "name": "Artissima 2017",
-        },
-        Object {
-          "id": "artissima-2017",
-          "is_active": true,
-          "name": "Artissima 2017",
-        },
-        Object {
-          "id": "artissima-2017",
-          "is_active": true,
-          "name": "Artissima 2017",
-        },
-        Object {
-          "id": "artissima-2017",
-          "is_active": true,
-          "name": "Artissima 2017",
-        },
-        Object {
-          "id": "artissima-2017",
-          "is_active": true,
-          "name": "Artissima 2017",
-        },
-        Object {
-          "id": "artissima-2017",
-          "is_active": true,
-          "name": "Artissima 2017",
-        },
-        Object {
-          "id": "artissima-2017",
-          "is_active": true,
-          "name": "Artissima 2017",
-        },
-        Object {
-          "id": "artissima-2017",
-          "is_active": true,
-          "name": "Artissima 2017",
-        },
-      ],
+      "results": Array [],
     },
   },
 }
 `;
 
-exports[`HomePageFairsModule works 1`] = `
+exports[`HomePageFairsModule does not return fairs that do not have mobile images 1`] = `
 Object {
   "home_page": Object {
     "fairs_module": Object {
@@ -63,10 +22,20 @@ Object {
         },
         Object {
           "id": "zonamaco-foto-and-sal-n-del-anticuario-2017",
-          "is_active": false,
+          "is_active": true,
           "name": "Zâ“ˆONAMACO FOTO & SALÃ“N DEL ANTICUARIO 2017",
         },
       ],
+    },
+  },
+}
+`;
+
+exports[`HomePageFairsModule works 1`] = `
+Object {
+  "home_page": Object {
+    "fairs_module": Object {
+      "results": Array [],
     },
   },
 }

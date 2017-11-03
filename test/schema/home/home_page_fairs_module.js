@@ -99,4 +99,49 @@ describe("HomePageFairsModule", () => {
       expect(fairsModule).toMatchSnapshot()
     })
   })
+
+  it("does not return fairs that do not have mobile images", () => {
+    const aFair = [
+      {
+        id: "artissima-2017",
+        name: "Artissima 2017",
+        mobile_image: "circle-image.jpg",
+      },
+    ]
+
+    const pastFairs = [
+      {
+        id: "zonamaco-foto-and-sal-n-del-anticuario-2017",
+        name: "Zâ“ˆONAMACO FOTO & SALÃ“N DEL ANTICUARIO 2017",
+        mobile_image: {
+          image_url: "circle-image.jpg",
+        },
+      },
+      {
+        id: "past-fair-2017",
+        name: "I Should Not Show Up in the Snapshot",
+        mobile_image: null,
+      },
+    ]
+
+    const query = `
+      {
+        home_page {
+          fairs_module {
+            results {
+              id
+              name
+              is_active
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, {
+      fairsLoader: options => Promise.resolve(options.active ? aFair : pastFairs),
+    }).then(fairsModule => {
+      expect(fairsModule).toMatchSnapshot()
+    })
+  })
 })
