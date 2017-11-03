@@ -12,6 +12,7 @@ import ExternalPartner from "./external_partner"
 import Fair from "./fair"
 import Fairs from "./fairs"
 import Gene from "./gene"
+import SuggestedGenes from "./suggested_genes"
 import GeneFamilies from "./gene_families"
 import GeneFamily from "./gene_family"
 import HomePage from "./home"
@@ -70,6 +71,7 @@ const rootFields = {
   filter_artworks: filterArtworks(),
   filter_sale_artworks: FilterSaleArtworks,
   gene: Gene,
+  suggested_genes: SuggestedGenes,
   gene_families: GeneFamilies,
   gene_family: GeneFamily,
   home_page: HomePage,
