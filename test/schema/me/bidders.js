@@ -1,23 +1,9 @@
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
+import gravity from "lib/loaders/legacy/gravity"
+jest.mock("lib/loaders/legacy/gravity")
 
 describe("Me", () => {
   describe("Bidders", () => {
-    let gravity
-
-    const Me = schema.__get__("Me")
-    const Bidders = Me.__get__("Bidders")
-
-    beforeEach(() => {
-      gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
-      Bidders.__Rewire__("gravity", gravity)
-    })
-
-    afterEach(() => {
-      Bidders.__ResetDependency__("gravity")
-    })
-
     it("returns bidder ids that the user is registered in sales for", () => {
       const query = `
         {
@@ -29,9 +15,11 @@ describe("Me", () => {
         }
       `
 
-      gravity.withArgs("me/bidders", {}).returns(Promise.resolve([{ id: "Foo ID" }, { id: "Bar ID" }]))
+      const gravBiddersAPICall = jest.fn(() => Promise.resolve([{ id: "Foo ID" }, { id: "Bar ID" }]))
+      gravity.with.mockImplementationOnce(() => gravBiddersAPICall)
 
       return runAuthenticatedQuery(query).then(({ me: { bidders } }) => {
+        expect(gravBiddersAPICall).toBeCalledWith("me/bidders", {})
         expect(bidders).toEqual([{ id: "Foo ID" }, { id: "Bar ID" }])
       })
     })
@@ -47,11 +35,11 @@ describe("Me", () => {
         }
       `
 
-      gravity
-        .withArgs("me/bidders", { sale_id: "the-fun-sale" })
-        .returns(Promise.resolve([{ id: "Foo ID" }, { id: "Bar ID" }]))
+      const gravBiddersAPICall = jest.fn(() => Promise.resolve([{ id: "Foo ID" }, { id: "Bar ID" }]))
+      gravity.with.mockImplementationOnce(() => gravBiddersAPICall)
 
       return runAuthenticatedQuery(query).then(({ me: { bidders } }) => {
+        expect(gravBiddersAPICall).toBeCalledWith("me/bidders", { sale_id: "the-fun-sale" })
         expect(bidders).toEqual([{ id: "Foo ID" }, { id: "Bar ID" }])
       })
     })

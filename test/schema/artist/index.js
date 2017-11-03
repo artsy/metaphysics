@@ -1,8 +1,12 @@
-import schema from "schema"
+jest.mock("lib/loaders/legacy/positron", () => jest.fn())
+import positron from "lib/loaders/legacy/positron"
+
+jest.mock("lib/loaders/legacy/total", () => jest.fn())
+import total from "lib/loaders/legacy/total"
+
 import { runQuery } from "test/utils"
 
 describe("Artist type", () => {
-  const Artist = schema.__get__("Artist")
   let artist = null
   let rootValue = null
 
@@ -25,23 +29,8 @@ describe("Artist type", () => {
 
     }
 
-    Artist.__Rewire__(
-      "positron",
-      sinon.stub().returns(
-        Promise.resolve({
-          count: 22,
-        })
-      )
-    )
-
-    const total = sinon.stub()
-    total.onCall(0).returns(Promise.resolve(42))
-    Artist.__Rewire__("total", total)
-  })
-
-  afterEach(() => {
-    Artist.__ResetDependency__("total")
-    Artist.__ResetDependency__("positron")
+    positron.mockImplementation(() => Promise.resolve({ count: 22 }))
+    total.mockImplementation(() => Promise.resolve(42))
   })
 
   it("returns null for an empty ID string", () => {

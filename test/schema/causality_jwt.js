@@ -1,44 +1,33 @@
+import gravity from "lib/loaders/legacy/gravity"
+jest.mock("lib/loaders/legacy/gravity")
+
 import jwt from "jwt-simple"
 import { omit } from "lodash"
-import schema from "schema"
+
 import { runQuery, runAuthenticatedQuery } from "test/utils"
 
 const { HMAC_SECRET } = process.env
 
 describe("CausalityJWT", () => {
-  const CausalityJWT = schema.__get__("CausalityJWT")
-
-  let gravity
-
   beforeEach(() => {
-    gravity = sinon.stub()
-    gravity.with = sinon.stub().returns(gravity)
-    gravity
-      .onCall(0)
-      .returns(Promise.resolve({ _id: "foo", name: "Foo sale", id: "slug" }))
-      .onCall(1)
-      .returns(
-        Promise.resolve({
-          _id: "craig",
-          paddle_number: "123",
-          type: "User",
-        })
-      )
-      .onCall(2)
-      .returns(
-        Promise.resolve([
-          {
-            id: "bidder1",
-            sale: { _id: "foo", id: "slug" },
-            qualified_for_bidding: true,
-          },
-        ])
-      )
-    CausalityJWT.__Rewire__("gravity", gravity)
-  })
+    gravity.mockImplementationOnce(() => Promise.resolve({ _id: "foo", name: "Foo sale", id: "slug" }))
+    gravity.with.mockImplementationOnce(() => () =>
+      Promise.resolve({
+        _id: "craig",
+        paddle_number: "123",
+        type: "User",
+      })
+    )
 
-  afterEach(() => {
-    CausalityJWT.__ResetDependency__("gravity")
+    gravity.with.mockImplementationOnce(() => () =>
+      Promise.resolve([
+        {
+          id: "bidder1",
+          sale: { _id: "foo", id: "slug" },
+          qualified_for_bidding: true,
+        },
+      ])
+    )
   })
 
   it("encodes a bidder JWT for logged in registered users", () => {

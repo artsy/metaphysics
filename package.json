@@ -78,7 +78,6 @@
     "@types/request": "^2.0.3",
     "babel-eslint": "^5.0.4",
     "babel-jest": "^16.0.0",
-    "babel-plugin-rewire": "1.0.0-beta-2",
     "babel-watch": "^2.0.5",
     "deep-equal": "^1.0.1",
     "dotenv": "^2.0.0",
