@@ -524,6 +524,6 @@ const Artist: GraphQLFieldConfig<ArtistType, *> = {
 }
 export default Artist
 
-export const artistConnection = connectionDefinitions({
+export const { connectionType: artistConnection, edgeType: ArtistEdge } = connectionDefinitions({
   nodeType: Artist.type,
-}).connectionType
+})

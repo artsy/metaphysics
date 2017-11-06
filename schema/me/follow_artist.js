@@ -1,7 +1,7 @@
 import gravity from "lib/loaders/legacy/gravity"
 import { GraphQLString, GraphQLBoolean } from "graphql"
-import { mutationWithClientMutationId } from "graphql-relay"
-import { ArtistType } from "schema/artist/index"
+import { mutationWithClientMutationId, cursorForObjectInConnection } from "graphql-relay"
+import { ArtistEdge, ArtistType } from "schema/artist/index"
 
 export default mutationWithClientMutationId({
   name: "FollowArtist",
@@ -16,6 +16,18 @@ export default mutationWithClientMutationId({
     },
   },
   outputFields: {
+    artistEdge: {
+      type: ArtistEdge,
+      resolve: ({ artist_id }, options, request, { rootValue: { artistLoader } }) => {
+        return artistLoader(artist_id).then(artist => {
+          return {
+            node: artist,
+            cursor: cursorForObjectInConnection([artist], artist),
+          }
+        })
+      },
+    },
+
     artist: {
       type: ArtistType,
       resolve: ({ artist_id }, options, request, { rootValue: { artistLoader } }) => {
