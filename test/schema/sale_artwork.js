@@ -93,6 +93,66 @@ describe("SaleArtwork type", () => {
       })
     })
   })
+
+  it("can return bid increments that are above the size of a GraphQLInt", () => {
+    gravity.returns(
+      Promise.resolve({
+        minimum_next_bid_cents: 2400000000,
+      })
+    )
+    SaleArtwork.__Rewire__("gravity", gravity)
+
+    gravity
+      .onCall(1)
+      .returns(Promise.resolve({ increment_strategy: "default" }))
+      .onCall(2)
+      .returns(
+        Promise.resolve([
+          {
+            key: "default",
+            increments: [
+              {
+                from: 0,
+                to: 3000000000,
+                amount: 1000,
+              },
+            ],
+          },
+        ])
+      )
+    const query = `
+      {
+        sale_artwork(id: "54c7ed2a7261692bfa910200") {
+          bid_increments
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
+        2400000000,
+        2400001000,
+        2400002000,
+        2400003000,
+        2400004000,
+        2400005000,
+        2400006000,
+        2400007000,
+        2400008000,
+        2400009000,
+        2400010000,
+        2400011000,
+        2400012000,
+        2400013000,
+        2400014000,
+        2400015000,
+        2400016000,
+        2400017000,
+        2400018000,
+        2400019000,
+      ])
+    })
+  })
+
   it("can return the bid increments, including Gravity's asking price, but then snapped to preset increments", () => {
     gravity
       .onCall(1)
