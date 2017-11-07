@@ -1,20 +1,6 @@
-import schema from "schema"
 import { runQuery } from "test/utils"
 
 describe("MatchGene", () => {
-  let gravity
-
-  const MatchGene = schema.__get__("MatchGene")
-
-  beforeEach(() => {
-    gravity = sinon.stub()
-    MatchGene.__Rewire__("gravity", gravity)
-  })
-
-  afterEach(() => {
-    MatchGene.__ResetDependency__("gravity")
-  })
-
   it("queries match/genes for the term 'pop'", () => {
     const query = `
       {
@@ -25,7 +11,6 @@ describe("MatchGene", () => {
         }
       }
     `
-
     const response = [
       {
         family: {
@@ -46,9 +31,9 @@ describe("MatchGene", () => {
       },
     ]
 
-    gravity.withArgs("match/genes", { term: "pop" }).returns(Promise.resolve(response))
+    const matchGeneLoader = () => Promise.resolve(response)
 
-    return runQuery(query).then(data => {
+    return runQuery(query, { matchGeneLoader }).then(data => {
       expect(data).toEqual({
         match_gene: [{ id: "pop-art", name: "Pop Art", _id: "123456" }],
       })

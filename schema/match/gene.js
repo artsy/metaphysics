@@ -1,12 +1,9 @@
 // @ts-check
-import type { GraphQLFieldConfig } from "graphql"
 
 import { GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"
 import Gene from "schema/gene"
 
-import gravity from "lib/loaders/legacy/gravity"
-
-const GeneMatch: GraphQLFieldConfig<typeof Gene, *> = {
+const GeneMatch = {
   type: new GraphQLList(Gene.type),
   description: "A Search for Genes",
   args: {
@@ -27,7 +24,7 @@ const GeneMatch: GraphQLFieldConfig<typeof Gene, *> = {
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (root: any, options: any) => gravity("match/genes", options),
+  resolve: (_root, options, _request, { rootValue: { matchGeneLoader } }) => matchGeneLoader(options),
 }
 
 export default GeneMatch
