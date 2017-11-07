@@ -38,6 +38,7 @@ import Show from "./show"
 import Tag from "./tag"
 import TrendingArtists from "./artists/trending"
 import MatchArtist from "./match/artist"
+import MatchGene from "./match/gene"
 import Me from "./me"
 
 import UpdateConversationMutation from "./me/conversation/update_mutation"
@@ -76,6 +77,7 @@ const rootFields = {
   gene_family: GeneFamily,
   home_page: HomePage,
   match_artist: MatchArtist,
+  match_gene: MatchGene,
   me: Me,
   node: ObjectIdentification.NodeField,
   ordered_set: OrderedSet,
