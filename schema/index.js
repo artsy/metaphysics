@@ -51,6 +51,7 @@ import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_subm
 import SaveArtworkMutation from "./me/save_artwork_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
+import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
@@ -118,6 +119,7 @@ const schema = new GraphQLSchema({
     fields: {
       followArtist: FollowArtist,
       updateCollectorProfile: UpdateCollectorProfile,
+      updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
       sendConversationMessage: SendConversationMessageMutation,
       markReadMessage: MarkReadMessageMutation,
