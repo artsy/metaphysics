@@ -45,7 +45,7 @@ xapp.init(
   () => (config.GRAVITY_XAPP_TOKEN = xapp.token)
 )
 
-app.get("/favicon.ico", (req, res) => {
+app.get("/favicon.ico", (_req, res) => {
   res
     .status(200)
     .set({ "Content-Type": "image/x-icon" })
