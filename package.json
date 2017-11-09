@@ -20,8 +20,7 @@
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild":
-      "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
+    "heroku-postbuild": "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
     "precommit": "lint-staged",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"
@@ -67,13 +66,16 @@
     "react-dom": "^15.3.2",
     "relay-cursor-paging": "^0.2.0",
     "request": "^2.67.0",
-    "source-map-support": "^0.4.3"
+    "source-map-support": "^0.4.3",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "@types/express-graphql": "^0.0.35",
     "@types/graphql": "^0.8.2",
     "@types/jest": "^21",
     "@types/lodash": "^4.14.74",
     "@types/moment": "^2.13.0",
+    "@types/moment-timezone": "^0.5.1",
     "@types/node": "^8.0.31",
     "@types/qs": "^6.5.0",
     "@types/request": "^2.0.3",
@@ -98,7 +100,13 @@
   "jest": {
     "testRegex": "/test/.*.js$",
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
-    "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/utils.js", "/test/gql.js", "/test/__mocks__"]
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/test/helper.js",
+      "/test/utils.js",
+      "/test/gql.js",
+      "/test/__mocks__"
+    ]
   },
   "prettier": {
     "printWidth": 120,
@@ -108,7 +116,14 @@
     "bracketSpacing": true
   },
   "lint-staged": {
-    "*.json": ["yarn prettier --write", "git add"],
-    "*.js": ["eslint --fix", "yarn prettier --write", "git add"]
+    "*.json": [
+      "yarn prettier --write",
+      "git add"
+    ],
+    "*.js": [
+      "eslint --fix",
+      "yarn prettier --write",
+      "git add"
+    ]
   }
 }

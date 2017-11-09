@@ -18,6 +18,8 @@ import { info, error } from "./lib/loggers"
 import graphqlErrorHandler from "./lib/graphql-error-handler"
 import moment from "moment"
 import "moment-timezone"
+import uuid from "uuid/v1"
+
 global.Promise = Bluebird
 
 const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, QUERY_DEPTH_LIMIT } = process.env
@@ -25,11 +27,16 @@ const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, QUERY_DEPTH
 const app = express()
 const port = PORT || 3000
 const queryLimit = parseInt(QUERY_DEPTH_LIMIT, 10) || 10 // Default to ten.
+const isProduction = NODE_ENV === "production"
 
-if (NODE_ENV === "production") {
+if (isProduction) {
   app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
   app.set("trust proxy", 1)
+} else {
+  global.requestInfoCache = {}
 }
+
+const extensions = isProduction ? undefined : () => global.requestInfoCache
 
 xapp.on("error", err => {
   error(err)
@@ -52,7 +59,7 @@ app.get("/favicon.ico", (_req, res) => {
     .end()
 })
 
-app.all("/graphql", (req, res) => res.redirect("/"))
+app.all("/graphql", (_req, res) => res.redirect("/"))
 
 app.use(bodyParser.json())
 app.use(
@@ -67,7 +74,7 @@ app.use(
     const accessToken = request.headers["x-access-token"]
     const userID = request.headers["x-user-id"]
     const timezone = request.headers["x-timezone"]
-    const requestID = request.headers["x-request-id"] || "implement-me"
+    const requestID = request.headers["x-request-id"] || uuid()
 
     // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
     // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -87,6 +94,7 @@ app.use(
       },
       formatError: graphqlErrorHandler(request.body),
       validationRules: [depthLimit(queryLimit)],
+      extensions,
     }
   })
 )

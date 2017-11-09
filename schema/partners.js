@@ -84,7 +84,7 @@ const Partners = {
       type: new GraphQLList(PartnerTypeType),
     },
   },
-  resolve: (root, options) => gravity("partners", options),
+  resolve: (root, options, request, { rootValue: { partnersLoader } }) => partnersLoader("partners", options),
 }
 
 export default Partners
