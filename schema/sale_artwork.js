@@ -8,6 +8,7 @@ import Artwork from "./artwork"
 import Sale from "./sale"
 import { GravityIDFields } from "./object_identification"
 import {
+  GraphQLFloat,
   GraphQLObjectType,
   GraphQLID,
   GraphQLString,
@@ -38,7 +39,7 @@ const SaleArtworkType = new GraphQLObjectType({
         deprecationReason: "Favor `counts.bidder_positions`",
       },
       bid_increments: {
-        type: new GraphQLList(GraphQLInt),
+        type: new GraphQLList(GraphQLFloat),
         resolve: ({ minimum_next_bid_cents, sale_id }) => {
           return gravity(`sale/${sale_id}`).then(sale => {
             return gravity("increments", {

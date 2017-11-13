@@ -38,6 +38,7 @@ import Show from "./show"
 import Tag from "./tag"
 import TrendingArtists from "./artists/trending"
 import MatchArtist from "./match/artist"
+import MatchGene from "./match/gene"
 import Me from "./me"
 
 import UpdateConversationMutation from "./me/conversation/update_mutation"
@@ -50,6 +51,7 @@ import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_subm
 import SaveArtworkMutation from "./me/save_artwork_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
+import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
@@ -76,6 +78,7 @@ const rootFields = {
   gene_family: GeneFamily,
   home_page: HomePage,
   match_artist: MatchArtist,
+  match_gene: MatchGene,
   me: Me,
   node: ObjectIdentification.NodeField,
   ordered_set: OrderedSet,
@@ -116,6 +119,7 @@ const schema = new GraphQLSchema({
     fields: {
       followArtist: FollowArtist,
       updateCollectorProfile: UpdateCollectorProfile,
+      updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
       sendConversationMessage: SendConversationMessageMutation,
       markReadMessage: MarkReadMessageMutation,

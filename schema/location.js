@@ -4,7 +4,7 @@ import DayScheduleType from "./day_schedule"
 import { IDFields } from "./object_identification"
 import { GraphQLString, GraphQLObjectType, GraphQLFloat, GraphQLList } from "graphql"
 
-const LocationType = new GraphQLObjectType({
+export const LocationType = new GraphQLObjectType({
   name: "Location",
   fields: () => ({
     ...IDFields,
