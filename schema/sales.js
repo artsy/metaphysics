@@ -28,7 +28,7 @@ const Sales = {
     },
     sort: SaleSorts,
   },
-  resolve: (root, options) => gravity("sales", options),
+  resolve: (_root, options) => gravity("sales", options),
 }
 
 export default Sales
