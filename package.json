@@ -99,7 +99,6 @@
     "foreman": "^1.4.1",
     "husky": "^0.13.3",
     "jest": "^21",
-    "json-stringify-safe": "^5.0.1",
     "lint-staged": "^3.4.0",
     "prettier": "^1.7",
     "sinon": "^1.17.2",
