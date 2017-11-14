@@ -18,12 +18,29 @@ export default async function mergedSchema() {
     link: convectionLink,
   })
 
+  const linkTypeDefs = `
+    extend type Submission {
+      artist: Artist
+    }
+  `
+
   return mergeSchemas({
-    schemas: [localSchema, convectionSchema],
+    schemas: [localSchema, convectionSchema, linkTypeDefs],
     // Prefer others over the local MP schema.
     onTypeConflict: (_leftType, rightType) => {
-      console.warn(`[!] Type collision ${rightType}`)
+      // console.warn(`[!] Type collision ${rightType}`)
       return rightType
     },
+    resolvers: mergeInfo => ({
+      Submission: {
+        artist: {
+          fragment: `fragment SubmissionArtist on Submission { artist_id }`,
+          resolve: (parent, args, context, info) => {
+            const id = parent.artist_id
+            return mergeInfo.delegate("query", "artist", { id }, context, info)
+          },
+        },
+      },
+    }),
   })
 }
