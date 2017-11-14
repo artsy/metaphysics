@@ -10,7 +10,7 @@ import localSchema from "./schema"
 function createConvectionLink() {
   const httpLink = createHttpLink({
     fetch,
-    uri: process.env.CONVECTION_GRAPH_URL,
+    uri: `${process.env.CONVECTION_API_BASE}/graphql`,
   })
 
   const middlewareLink = new ApolloLink((operation, forward) => forward(operation))
