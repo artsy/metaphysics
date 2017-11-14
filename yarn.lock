@@ -250,6 +250,25 @@ anymatch@^1.3.0:
     micromatch "^2.1.5"
     normalize-path "^2.0.0"
 
+apollo-link-http@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/apollo-link-http/-/apollo-link-http-1.1.0.tgz#a85cc43d9a5286bb54ac32213f7a16bef3554ae4"
+
+apollo-link@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/apollo-link/-/apollo-link-1.0.0.tgz#3d334285789c217f95712ebce434d56ce7f3e991"
+  dependencies:
+    apollo-utilities "^0.2.0-beta.0"
+    zen-observable "^0.6.0"
+
+apollo-utilities@^0.2.0-beta.0:
+  version "0.2.0-rc.3"
+  resolved "https://registry.yarnpkg.com/apollo-utilities/-/apollo-utilities-0.2.0-rc.3.tgz#7bd93be0f587f20c5b46e21880272e305759fdc2"
+
+apollo-utilities@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/apollo-utilities/-/apollo-utilities-1.0.1.tgz#34b4df0bd6ed71d0afaa7c62489173dca5d07e92"
+
 app-root-path@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/app-root-path/-/app-root-path-2.0.1.tgz#cd62dcf8e4fd5a417efc664d2e5b10653c651b46"
@@ -1459,6 +1478,10 @@ depd@1.1.1, depd@~1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/depd/-/depd-1.1.1.tgz#5783b4e1c459f06fa5ca27f991f3d06e7a310359"
 
+deprecated-decorator@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/deprecated-decorator/-/deprecated-decorator-0.1.6.tgz#00966317b7a12fe92f3cc831f7583af329b86c37"
+
 destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
@@ -2236,6 +2259,14 @@ graphql-relay@0.5.3:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/graphql-relay/-/graphql-relay-0.5.3.tgz#56a78ac07c87d89795a34db6b8e9681b827be5b5"
 
+"graphql-tools@https://github.com/alloy/graphql-tools/releases/download/v2.7.3-alpha.1/graphql-tools-2.7.3-alpha.1.tgz":
+  version "2.7.3-alpha.1"
+  resolved "https://github.com/alloy/graphql-tools/releases/download/v2.7.3-alpha.1/graphql-tools-2.7.3-alpha.1.tgz#b28f6d0fb4a31793cca6bc574cf8bb1c00f41abf"
+  dependencies:
+    apollo-utilities "^1.0.1"
+    deprecated-decorator "^0.1.6"
+    uuid "^3.1.0"
+
 graphql-type-json@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/graphql-type-json/-/graphql-type-json-0.1.4.tgz#89f13f5d32ce08c9a76c79fdf9c1968384d81a4e"
@@ -3001,7 +3032,7 @@ json-stable-stringify@^1.0.0, json-stable-stringify@^1.0.1:
   dependencies:
     jsonify "~0.0.0"
 
-json-stringify-safe@^5.0.0, json-stringify-safe@~5.0.1:
+json-stringify-safe@^5.0.0, json-stringify-safe@^5.0.1, json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
 
@@ -3586,7 +3617,7 @@ newrelic@^2.2.1:
   optionalDependencies:
     "@newrelic/native-metrics" "^2.1.0"
 
-node-fetch@^1.0.1:
+node-fetch@^1.0.1, node-fetch@^1.7.3:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.7.3.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
   dependencies:
@@ -5107,3 +5138,7 @@ yargs@~3.10.0:
     cliui "^2.1.0"
     decamelize "^1.0.0"
     window-size "0.1.0"
+
+zen-observable@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.6.0.tgz#8a6157ed15348d185d948cfc4a59d90a2c0f70ee"
