@@ -28,7 +28,7 @@ export default async function mergedSchema() {
     schemas: [localSchema, convectionSchema, linkTypeDefs],
     // Prefer others over the local MP schema.
     onTypeConflict: (_leftType, rightType) => {
-      // console.warn(`[!] Type collision ${rightType}`)
+      console.warn(`[!] Type collision ${rightType}`) // eslint-disable-line no-console
       return rightType
     },
     resolvers: mergeInfo => ({
