@@ -10,7 +10,7 @@ import express from "express"
 import forceSSL from "express-force-ssl"
 import graphqlHTTP from "express-graphql"
 import bodyParser from "body-parser"
-import schema from "./schema"
+import mergedSchema from "./mergedSchema"
 import legacyLoaders from "./lib/loaders/legacy"
 import createLoaders from "./lib/loaders"
 import config from "./config"
@@ -53,6 +53,12 @@ xapp.init(
   },
   () => (config.GRAVITY_XAPP_TOKEN = xapp.token)
 )
+
+let schema = null
+mergedSchema().then(merged => {
+  schema = merged
+  app.listen(port, () => info(`Listening on ${port}`))
+})
 
 app.get("/favicon.ico", (_req, res) => {
   res
@@ -229,5 +235,3 @@ app.use(
     }
   })
 )
-
-app.listen(port, () => info(`Listening on ${port}`))
