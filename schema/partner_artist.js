@@ -5,7 +5,7 @@ import numeral from "./fields/numeral"
 import { IDFields } from "./object_identification"
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
 
-const PartnerArtistType = new GraphQLObjectType({
+export const PartnerArtistType = new GraphQLObjectType({
   name: "PartnerArtist",
   fields: () => ({
     ...IDFields,

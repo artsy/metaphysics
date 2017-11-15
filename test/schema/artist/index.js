@@ -22,7 +22,6 @@ describe("Artist type", () => {
         .stub()
         .withArgs(artist.id)
         .returns(Promise.resolve(artist)),
-
     }
 
     Artist.__Rewire__(
@@ -414,7 +413,7 @@ describe("Artist type", () => {
               },
             },
           ])
-          rootValue.partnerArtistsLoader = sinon
+          rootValue.partnerArtistsForArtistLoader = sinon
             .stub()
             .withArgs(artist.id)
             .returns(partnerArtists)
@@ -450,7 +449,7 @@ describe("Artist type", () => {
       })
       describe("without a featured partner bio", () => {
         it("returns the artsy blurb if there is no featured partner bio", () => {
-          rootValue.partnerArtistsLoader = sinon.stub().returns(Promise.resolve([]))
+          rootValue.partnerArtistsForArtistLoader = sinon.stub().returns(Promise.resolve([]))
           artist.blurb = "artsy blurb"
           const query = `
             {
@@ -512,7 +511,7 @@ describe("Artist type", () => {
           },
         },
       ])
-      rootValue.partnerArtistsLoader = sinon
+      rootValue.partnerArtistsForArtistLoader = sinon
         .stub()
         .withArgs(artist.id)
         .returns(partnerArtists)
