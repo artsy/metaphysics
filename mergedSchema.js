@@ -24,8 +24,8 @@ function createConvectionLink() {
     if (tokenLoader) {
       return tokenLoader().then(({ token }) => {
         return {
-          ...context.headers,
           headers: {
+            ...context.headers,
             authorization: `Bearer ${token}`,
           },
         }
@@ -35,8 +35,8 @@ function createConvectionLink() {
     // Otherwise use MP’s XApp token so that on startup MP can fetch Convection’s schema.
     // TODO: Actually enable once Convection supports this.
     return {
-      ...context.headers,
       headers: {
+        ...context.headers,
         // authorization: `XApp ${config.GRAVITY_XAPP_TOKEN}`,
         authorization: `Bearer ${process.env.CONVECTION_TOKEN}`,
       },
