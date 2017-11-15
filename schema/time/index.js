@@ -26,7 +26,7 @@ export const TimeType = new GraphQLObjectType({
 
 const Time = {
   type: TimeType,
-  description: "Artsy system time",
+  description: "Artsy system time, never cached",
   resolve: (root, params, request, { rootValue: { timeLoader } }) => timeLoader(),
 }
 
