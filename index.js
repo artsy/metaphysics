@@ -19,7 +19,9 @@ import graphqlErrorHandler from "./lib/graphql-error-handler"
 import moment from "moment"
 import "moment-timezone"
 import Tracer from "datadog-tracer"
-import { PartnersAggregation } from "schema/aggregations/filter_partners_aggregation";
+import { PartnersAggregation } from "schema/aggregations/filter_partners_aggregation"
+
+import { forIn, has } from "lodash"
 //import { initGlobalTracer } from "opentracing"
 
 global.Promise = Bluebird
@@ -30,7 +32,7 @@ const app = express()
 const port = PORT || 3000
 const queryLimit = parseInt(QUERY_DEPTH_LIMIT, 10) || 10 // Default to ten.
 
-const tracer = new Tracer({ service: 'metaphysics' })
+const tracer = new Tracer({ service: "metaphysics" })
 
 if (NODE_ENV === "production") {
   app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
@@ -58,39 +60,96 @@ app.get("/favicon.ico", (_req, res) => {
     .end()
 })
 
+app.all("/graphql", (req, res) => res.redirect("/"))
+
+app.use(bodyParser.json())
+
 function parse_args(match, lp, args, rp) {
-  console.log(args)
+  // @TODO: Parse args like `(foo: wow, cool: man)` to (foo:, cool:) because that's
+  // useful info for the key, we just can't use actual query values.`
+  //console.log(args)
   return "( ... )"
 }
 
 function trace(req, res, span) {
-  var query = req.body.query.replace(/(\()([^\)]*)(\))/g, parse_args)
-
-  span.addTags({
-    'resource': query,
-    'type': 'web',
-    'span.kind': 'server',
-    'http.method': req.method,
-    'http.url': req.url,
-    'http.status_code': res.statusCode
-  })
-
+  console.log("SPAN END")
+  //console.log(span)
   span.finish()
 }
 
 app.use((req, res, next) => {
-  if (req.method == 'POST') {
-    const span = tracer.startSpan('metaphysics.query')
+  if (req.method === "POST") {
+    console.log("SPAN BEGIN")
+    var span = tracer.startSpan("metaphysics.query")
+    var query = req.body.query.replace(/(\()([^\)]*)(\))/g, parse_args)
+    span.addTags({
+      "resource": "[TEST11]" + query,
+      "type": "web",
+      "span.kind": "server",
+      "http.method": req.method,
+      "http.url": req.url,
+      "http.status_code": res.statusCode
+    })
+    req.span = span
 
-    res.on('finish', () => trace(req, res, span))
-    res.on('close', () => trace(req, res, span))
+    res.on("finish", () => trace(req, res, span))
+    res.on("close", () => trace(req, res, span))
   }
   next()
 })
 
-app.all("/graphql", (req, res) => res.redirect("/"))
+function wrapResolve(typeName, fieldName, resolver) {
+  return function (root, options, request) {
+    //console.log('me: ' + typeName + " resolver for " + fieldName)
+    if (has(request, 'thereWasAParent')) {
+      //console.log('parent: ' + request.thereWasAParent)
+    }
 
-app.use(bodyParser.json())
+    var parentSpan = request.span
+    var span = parentSpan.tracer().startSpan('metaphysics.resolver.' + typeName + '.' + fieldName, { childOf: parentSpan.context() })
+    span.addTags({
+      'resource': typeName + ": " + fieldName,
+      'type': 'web',
+      'span.kind': 'server'
+    })
+
+    request.span = span
+    request.thereWasAParent = typeName + " resolver for " + fieldName
+    var result = resolver.apply(this, arguments);
+    request.span = parentSpan
+
+    //console.log(result)
+    if (result instanceof Promise) {
+      //console.log("THIS IS A PROMISE I THINK")
+      //console.log(result)
+      return result.finally(function () {
+        span.finish()
+      })
+    }
+
+    span.finish()
+    return result;
+  };
+}
+
+// @TODO(steve): Don't do this here and figure out the best way to actually do it.
+// @TODO(steve): how 2 node cuz I dunno
+// I guess there is lodash or something in here I could use.
+forIn(schema._typeMap, function (value, key) {
+  const typeName = key
+  if (has(value, '_fields')) {
+    forIn(value._fields, function (value, key) {
+      const fieldName = key
+      if (has(value, 'resolve') && value.resolve instanceof Function) {
+        //console.log(value.resolve)
+        value.resolve = wrapResolve(typeName, fieldName, value.resolve)
+      }
+    });
+  }
+  // if it has _fields instrument all those field resolvers
+
+});
+
 app.use(
   "/",
   cors(),
@@ -111,9 +170,6 @@ app.use(
     if (moment.tz.zone(timezone)) {
       defaultTimezone = timezone
     }
-
-    console.log("[STEVE] hello this is steve");
-    console.log("[STEVE] requestId: " + requestID);
 
     return {
       schema,
