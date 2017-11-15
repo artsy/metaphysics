@@ -21,7 +21,7 @@ describe("Time type", () => {
     }
     `
     const rootValue = {
-      timeLoader: () =>
+      systemLoader: () =>
         Promise.resolve({
           day: 15,
           wday: 3,
