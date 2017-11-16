@@ -1,26 +1,31 @@
-import date from "schema/fields/date"
-import initials from "schema/fields/initials"
-import gravity from "lib/loaders/legacy/gravity"
-import Bidders from "./bidders"
-import BidderStatus from "./bidder_status"
-import BidderPositions from "./bidder_positions"
-import LotStanding from "./lot_standing"
-import LotStandings from "./lot_standings"
-import SaleRegistrations from "./sale_registrations"
-import SuggestedArtists from "./suggested_artists"
-import FollowArtists from "./follow_artists"
-import FollowedArtists from "./followed_artists"
-import Notifications from "./notifications"
-import Conversation from "./conversation"
-import Invoice from "./conversation/invoice"
-import Conversations from "./conversations"
-import CollectorProfile from "./collector_profile"
-import ArtworkInquiries from "./artwork_inquiries"
-import SavedArtworks from "./saved_artworks"
-import { IDFields, NodeInterface } from "schema/object_identification"
-import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 import { GraphQLString, GraphQLObjectType } from "graphql"
 import { has } from "lodash"
+
+import { IDFields, NodeInterface } from "schema/object_identification"
+import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+
+import date from "schema/fields/date"
+import initials from "schema/fields/initials"
+
+import gravity from "lib/loaders/legacy/gravity"
+
+import ArtworkInquiries from "./artwork_inquiries"
+import BidderPositions from "./bidder_positions"
+import Bidders from "./bidders"
+import BidderStatus from "./bidder_status"
+import CollectorProfile from "./collector_profile"
+import Conversation from "./conversation"
+import Conversations from "./conversations"
+import FollowArtists from "./follow_artists"
+import FollowedArtists from "./followed_artists"
+import FollowedGenes from "./followed_genes"
+import Invoice from "./conversation/invoice"
+import LotStanding from "./lot_standing"
+import LotStandings from "./lot_standings"
+import Notifications from "./notifications"
+import SaleRegistrations from "./sale_registrations"
+import SavedArtworks from "./saved_artworks"
+import SuggestedArtists from "./suggested_artists"
 
 const Me = new GraphQLObjectType({
   name: "Me",
@@ -41,6 +46,7 @@ const Me = new GraphQLObjectType({
     },
     follow_artists: FollowArtists,
     followed_artists_connection: FollowedArtists,
+    followed_genes: FollowedGenes,
     invoice: Invoice,
     lot_standing: LotStanding,
     lot_standings: LotStandings,
@@ -71,6 +77,7 @@ export default {
       "__id",
       "follow_artists",
       "followed_artists_connection",
+      "followed_genes",
       "suggested_artists",
       "bidders",
       "bidder_positions",
