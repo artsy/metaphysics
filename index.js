@@ -19,10 +19,7 @@ import graphqlErrorHandler from "./lib/graphql-error-handler"
 import moment from "moment"
 import "moment-timezone"
 import Tracer from "datadog-tracer"
-import { PartnersAggregation } from "schema/aggregations/filter_partners_aggregation"
-
-import { forIn, has } from "lodash"
-//import { initGlobalTracer } from "opentracing"
+import { forIn, has, assign } from "lodash"
 
 global.Promise = Bluebird
 
@@ -31,8 +28,6 @@ const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, QUERY_DEPTH
 const app = express()
 const port = PORT || 3000
 const queryLimit = parseInt(QUERY_DEPTH_LIMIT, 10) || 10 // Default to ten.
-
-const tracer = new Tracer({ service: "metaphysics" })
 
 if (NODE_ENV === "production") {
   app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
@@ -64,64 +59,54 @@ app.all("/graphql", (req, res) => res.redirect("/"))
 
 app.use(bodyParser.json())
 
-function parse_args(match, lp, args, rp) {
-  // @TODO: Parse args like `(foo: wow, cool: man)` to (foo:, cool:) because that's
-  // useful info for the key, we just can't use actual query values.`
-  //console.log(args)
+function parse_args() {
   return "( ... )"
 }
 
-function trace(req, res, span) {
-  console.log("SPAN END")
-  //console.log(span)
+function trace(res, span) {
+  span.addTags({
+    "http.status_code": res.statusCode,
+  })
   span.finish()
 }
 
 app.use((req, res, next) => {
   if (req.method === "POST") {
-    console.log("SPAN BEGIN")
-    var span = tracer.startSpan("metaphysics.query")
-    var query = req.body.query.replace(/(\()([^\)]*)(\))/g, parse_args)
+    const tracer = new Tracer({ service: "metaphysics" })
+    const span = tracer.startSpan("metaphysics.query")
+    const query = req.body.query.replace(/(\()([^\)]*)(\))/g, parse_args)
     span.addTags({
-      "resource": "[TEST11]" + query,
-      "type": "web",
+      resource: query,
+      type: "web",
       "span.kind": "server",
       "http.method": req.method,
       "http.url": req.url,
-      "http.status_code": res.statusCode
     })
-    req.span = span
 
-    res.on("finish", () => trace(req, res, span))
-    res.on("close", () => trace(req, res, span))
+    assign(req, { span })
+
+    res.on("finish", () => trace(res, span))
+    res.on("close", () => trace(res, span))
   }
   next()
 })
 
 function wrapResolve(typeName, fieldName, resolver) {
   return function (root, options, request) {
-    //console.log('me: ' + typeName + " resolver for " + fieldName)
-    if (has(request, 'thereWasAParent')) {
-      //console.log('parent: ' + request.thereWasAParent)
-    }
-
-    var parentSpan = request.span
-    var span = parentSpan.tracer().startSpan('metaphysics.resolver.' + typeName + '.' + fieldName, { childOf: parentSpan.context() })
+    const parentSpan = request.span
+    const span = parentSpan.tracer().startSpan("metaphysics.resolver." + typeName + "." + fieldName,
+      { childOf: parentSpan.context() })
     span.addTags({
-      'resource': typeName + ": " + fieldName,
-      'type': 'web',
-      'span.kind': 'server'
+      resource: typeName + ": " + fieldName,
+      type: "web",
+      "span.kind": "server",
     })
 
-    request.span = span
-    request.thereWasAParent = typeName + " resolver for " + fieldName
-    var result = resolver.apply(this, arguments);
-    request.span = parentSpan
+    assign(request, { span })
+    const result = resolver.apply(this, arguments);
+    assign(request, { span: parentSpan })
 
-    //console.log(result)
     if (result instanceof Promise) {
-      //console.log("THIS IS A PROMISE I THINK")
-      //console.log(result)
       return result.finally(function () {
         span.finish()
       })
@@ -132,22 +117,16 @@ function wrapResolve(typeName, fieldName, resolver) {
   };
 }
 
-// @TODO(steve): Don't do this here and figure out the best way to actually do it.
-// @TODO(steve): how 2 node cuz I dunno
-// I guess there is lodash or something in here I could use.
+// Walk the schema and for all object type fields with resolvers wrap them in our tracing resolver.
 forIn(schema._typeMap, function (value, key) {
   const typeName = key
-  if (has(value, '_fields')) {
-    forIn(value._fields, function (value, key) {
-      const fieldName = key
-      if (has(value, 'resolve') && value.resolve instanceof Function) {
-        //console.log(value.resolve)
-        value.resolve = wrapResolve(typeName, fieldName, value.resolve)
+  if (has(value, "_fields")) {
+    forIn(value._fields, function (field, fieldName) {
+      if (has(field, "resolve") && field.resolve instanceof Function) {
+        assign(field, { resolve: wrapResolve(typeName, fieldName, field.resolve) })
       }
     });
   }
-  // if it has _fields instrument all those field resolvers
-
 });
 
 app.use(
@@ -163,6 +142,15 @@ app.use(
     const userID = request.headers["x-user-id"]
     const timezone = request.headers["x-timezone"]
     const requestID = request.headers["x-request-id"] || "implement-me"
+    const requestIDs = { requestID }
+
+    if (request.span) {
+      const context = request.span.context()
+      const traceId = context.traceId
+      const parentSpanId = context.spanId
+
+      assign(requestIDs, { traceId, parentSpanId })
+    }
 
     // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
     // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -178,7 +166,7 @@ app.use(
         accessToken,
         userID,
         defaultTimezone,
-        ...createLoaders(accessToken, userID, requestID),
+        ...createLoaders(accessToken, userID, requestIDs),
       },
       formatError: graphqlErrorHandler(request.body),
       validationRules: [depthLimit(queryLimit)],
