@@ -1,4 +1,4 @@
-import _ from "lodash"
+import { has } from "lodash"
 
 import Gene from "schema/gene"
 import { IDFields } from "schema/object_identification"
@@ -15,15 +15,15 @@ export const FollowGeneType = new GraphQLObjectType({
     },
     ...IDFields,
   },
-  isTypeOf: obj => _.has(obj, "gene"),
+  isTypeOf: obj => has(obj, "gene"),
 })
 
 export default {
   type: connectionDefinitions({ nodeType: FollowGeneType }).connectionType,
   args: pageable({}),
   description: "A list of the current user’s inquiry requests",
-  resolve: (root, options, request, { rootValue: { myFollowedGenesLoader } }) => {
-    if (!myFollowedGenesLoader) return null
+  resolve: (root, options, request, { rootValue: { followedGenesLoader } }) => {
+    if (!followedGenesLoader) return null
 
     const { limit: size, offset } = getPagingParameters(options)
     const gravityArgs = {
@@ -32,7 +32,7 @@ export default {
       total_count: true,
     }
 
-    return myFollowedGenesLoader(gravityArgs).then(({ body, headers }) => {
+    return followedGenesLoader(gravityArgs).then(({ body, headers }) => {
       return connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,

@@ -1,4 +1,4 @@
-import _ from "lodash"
+import { has } from "lodash"
 
 import Artist from "schema/artist"
 import { IDFields } from "schema/object_identification"
@@ -18,22 +18,22 @@ export const FollowArtistType = new GraphQLObjectType({
     },
     ...IDFields,
   },
-  isTypeOf: obj => _.has(obj, "artist") && _.has(obj, "auto"),
+  isTypeOf: obj => has(obj, "artist") && has(obj, "auto"),
 })
 
 export default {
   type: connectionDefinitions({ nodeType: FollowArtistType }).connectionType,
   args: pageable({}),
   description: "A list of the current user’s inquiry requests",
-  resolve: (root, options, request, { rootValue: { myFollowedGenesLoader } }) => {
-    if (!myFollowedGenesLoader) return null
+  resolve: (root, options, request, { rootValue: { followedArtistsLoader } }) => {
+    if (!followedArtistsLoader) return null
     const { limit: size, offset } = getPagingParameters(options)
     const gravityArgs = {
       size,
       offset,
       total_count: true,
     }
-    return myFollowedGenesLoader(gravityArgs).then(({ body, headers }) => {
+    return followedArtistsLoader(gravityArgs).then(({ body, headers }) => {
       return connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
