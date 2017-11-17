@@ -1,20 +1,6 @@
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("UpdateCollectorProfile", () => {
-  const gravity = sinon.stub()
-  const UpdateCollectorProfile = schema.__get__("UpdateCollectorProfile")
-
-  beforeEach(() => {
-    gravity.with = sinon.stub().returns(gravity)
-
-    UpdateCollectorProfile.__Rewire__("gravity", gravity)
-  })
-
-  afterEach(() => {
-    UpdateCollectorProfile.__ResetDependency__("gravity")
-  })
-
   it("updates and returns a collector profile", () => {
     /* eslint-disable max-len */
     const mutation = `
@@ -24,16 +10,21 @@ describe("UpdateCollectorProfile", () => {
           name
           email
           self_reported_purchases
+          intents
         }
       }
     `
     /* eslint-enable max-len */
 
-    const collectorProfile = {
-      id: "3",
-      name: "Percy",
-      email: "percy@cat.com",
-      self_reported_purchases: "treats",
+    const rootValue = {
+      updateCollectorProfileLoader: () =>
+        Promise.resolve({
+          id: "3",
+          name: "Percy",
+          email: "percy@cat.com",
+          self_reported_purchases: "treats",
+          intents: ["buy art & design"],
+        }),
     }
 
     const expectedProfileData = {
@@ -41,13 +32,41 @@ describe("UpdateCollectorProfile", () => {
       name: "Percy",
       email: "percy@cat.com",
       self_reported_purchases: "treats",
+      intents: ["buy art & design"],
     }
 
-    gravity.onCall(0).returns(Promise.resolve(collectorProfile))
-
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation).then(({ updateCollectorProfile }) => {
+    return runAuthenticatedQuery(mutation, rootValue).then(({ updateCollectorProfile }) => {
       expect(updateCollectorProfile).toEqual(expectedProfileData)
     })
+  })
+
+  it("throws error when data loader is missing", () => {
+    /* eslint-disable max-len */
+    const mutation = `
+      mutation {
+        updateCollectorProfile(input: { professional_buyer: true, loyalty_applicant: true, self_reported_purchases: "trust me i buy art" }) {
+          id
+          name
+          email
+          self_reported_purchases
+          intents
+        }
+      }
+    `
+    /* eslint-enable max-len */
+
+    const rootValue = {}
+
+    const errorResponse = "Missing Update Collector Profile Loader. Check your access token."
+
+    expect.assertions(1)
+    return runAuthenticatedQuery(mutation, rootValue)
+      .then(() => {
+        throw new Error("An error was not thrown but was expected.")
+      })
+      .catch(error => {
+        expect(error.message).toEqual(errorResponse)
+      })
   })
 })
