@@ -1,6 +1,6 @@
 import gravity from "lib/loaders/legacy/gravity"
 import { CollectorProfileFields } from "./collector_profile"
-import { GraphQLBoolean, GraphQLString } from "graphql"
+import { GraphQLBoolean, GraphQLString, GraphQLList } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 export default mutationWithClientMutationId({
@@ -9,17 +9,23 @@ export default mutationWithClientMutationId({
   inputFields: {
     loyalty_applicant: {
       type: GraphQLBoolean,
+      defaultValue: false,
     },
     professional_buyer: {
       type: GraphQLBoolean,
+      defaultValue: false,
     },
     self_reported_purchases: {
       type: GraphQLString,
+      defaultValue: null,
+    },
+    intents: {
+      type: new GraphQLList(GraphQLString),
     },
   },
   outputFields: CollectorProfileFields,
   mutateAndGetPayload: (
-    { loyalty_applicant, professional_buyer, self_reported_purchases },
+    { loyalty_applicant, professional_buyer, self_reported_purchases, intents },
     request,
     { rootValue: { accessToken } }
   ) => {
@@ -30,6 +36,7 @@ export default mutationWithClientMutationId({
       loyalty_applicant,
       professional_buyer,
       self_reported_purchases,
+      intents,
     })
   },
 })
