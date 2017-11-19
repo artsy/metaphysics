@@ -50,6 +50,6 @@ export default mutationWithClientMutationId({
     { rootValue: { createNewGeminiEntryAssetLoader } }
   ) => {
     if (!createNewGeminiEntryAssetLoader) return null
-    return createNewGeminiEntryAssetLoader({ name, template_key, source_key, source_bucket, metadata })
+    return createNewGeminiEntryAssetLoader(template_key, source_key, source_bucket, metadata)
   },
 })

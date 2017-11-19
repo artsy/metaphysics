@@ -36,6 +36,7 @@ import SaleArtwork from "./sale_artwork"
 import Search from "./search"
 import Show from "./show"
 import Tag from "./tag"
+import Time from "./time"
 import TrendingArtists from "./artists/trending"
 import MatchArtist from "./match/artist"
 import MatchGene from "./match/gene"
@@ -97,6 +98,7 @@ const rootFields = {
   show: Show,
   status: Status,
   tag: Tag,
+  time: Time,
   trending_artists: TrendingArtists,
   popular_artists: PopularArtists,
 }

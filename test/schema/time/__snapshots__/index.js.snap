@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Time type returns the system time 1`] = `
+Object {
+  "time": Object {
+    "day": 15,
+    "dst": false,
+    "hour": 19,
+    "iso8601": "2017-11-15T19:45:03Z",
+    "min": 45,
+    "month": 11,
+    "sec": 3,
+    "unix": 1510775103,
+    "utc_offset": 0,
+    "wday": 3,
+    "year": 2017,
+    "zone": "UTC",
+  },
+}
+`;
