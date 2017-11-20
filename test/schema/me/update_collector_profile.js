@@ -5,7 +5,7 @@ describe("UpdateCollectorProfile", () => {
     /* eslint-disable max-len */
     const mutation = `
       mutation {
-        updateCollectorProfile(input: { professional_buyer: true, loyalty_applicant: true, self_reported_purchases: "trust me i buy art" }) {
+        updateCollectorProfile(input: { professional_buyer: true, loyalty_applicant: true, self_reported_purchases: "trust me i buy art", intents: [BUY_ART_AND_DESIGN] }) {
           id
           name
           email
