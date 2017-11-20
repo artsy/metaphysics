@@ -63,6 +63,10 @@ function parse_args() {
   return "( ... )"
 }
 
+function drop_params(query) {
+  return query.replace(/(\()([^\)]*)(\))/g, parse_args)
+}
+
 function trace(res, span) {
   span.addTags({
     "http.status_code": res.statusCode,
@@ -71,30 +75,34 @@ function trace(res, span) {
 }
 
 app.use((req, res, next) => {
-  if (req.method === "POST") {
-    const tracer = new Tracer({ service: "metaphysics" })
-    const span = tracer.startSpan("metaphysics.query")
-    const query = req.body.query.replace(/(\()([^\)]*)(\))/g, parse_args)
-    span.addTags({
-      resource: query,
-      type: "web",
-      "span.kind": "server",
-      "http.method": req.method,
-      "http.url": req.url,
-    })
+  const tracer = new Tracer({ service: "metaphysics_testing" })
+  const span = tracer.startSpan("metaphysics_testing.query")
+  span.addTags({
+    type: "web",
+    "span.kind": "server",
+    "http.method": req.method,
+    "http.url": req.url,
+  })
 
-    assign(req, { span })
-
-    res.on("finish", () => trace(res, span))
-    res.on("close", () => trace(res, span))
+  if (req.body && req.body.query) {
+    const query = drop_params(req.body.query)
+    span.addTags({ resource: query })
+  } else {
+    span.addTags({ resource: req.path })
   }
+
+  assign(req, { span })
+
+  res.on("finish", () => trace(res, span))
+  res.on("close", () => trace(res, span))
+
   next()
 })
 
 function wrapResolve(typeName, fieldName, resolver) {
-  return function (root, options, request) {
-    const parentSpan = request.span
-    const span = parentSpan.tracer().startSpan("metaphysics.resolver." + typeName + "." + fieldName,
+  return function (root, opts, req, { rootValue }) {
+    const parentSpan = rootValue.span
+    const span = parentSpan.tracer().startSpan("metaphysics_testing.resolver." + typeName + "." + fieldName,
       { childOf: parentSpan.context() })
     span.addTags({
       resource: typeName + ": " + fieldName,
@@ -102,9 +110,9 @@ function wrapResolve(typeName, fieldName, resolver) {
       "span.kind": "server",
     })
 
-    assign(request, { span })
+    rootValue.span = span // eslint-disable-line no-param-reassign
     const result = resolver.apply(this, arguments);
-    assign(request, { span: parentSpan })
+    rootValue.span = parentSpan // eslint-disable-line no-param-reassign
 
     if (result instanceof Promise) {
       return result.finally(function () {
@@ -122,8 +130,8 @@ forIn(schema._typeMap, function (value, key) {
   const typeName = key
   if (has(value, "_fields")) {
     forIn(value._fields, function (field, fieldName) {
-      if (has(field, "resolve") && field.resolve instanceof Function) {
-        assign(field, { resolve: wrapResolve(typeName, fieldName, field.resolve) })
+      if (field.resolve instanceof Function) {
+        field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
       }
     });
   }
@@ -142,15 +150,12 @@ app.use(
     const userID = request.headers["x-user-id"]
     const timezone = request.headers["x-timezone"]
     const requestID = request.headers["x-request-id"] || "implement-me"
-    const requestIDs = { requestID }
 
-    if (request.span) {
-      const context = request.span.context()
-      const traceId = context.traceId
-      const parentSpanId = context.spanId
-
-      assign(requestIDs, { traceId, parentSpanId })
-    }
+    const span = request.span
+    const traceContext = span.context()
+    const traceId = traceContext.traceId
+    const parentSpanId = traceContext.spanId
+    const requestIDs = { requestID, traceId, parentSpanId }
 
     // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
     // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -166,6 +171,7 @@ app.use(
         accessToken,
         userID,
         defaultTimezone,
+        span,
         ...createLoaders(accessToken, userID, requestIDs),
       },
       formatError: graphqlErrorHandler(request.body),
