@@ -19,6 +19,7 @@ import graphqlErrorHandler from "./lib/graphql-error-handler"
 import moment from "moment"
 import "moment-timezone"
 import uuid from "uuid/v1"
+import { fetchLoggerSetup, fetchLoggerRequestDone } from "lib/loaders/api/logger"
 
 global.Promise = Bluebird
 
@@ -33,10 +34,10 @@ if (isProduction) {
   app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
   app.set("trust proxy", 1)
 } else {
-  global.requestInfoCache = {}
+  fetchLoggerSetup()
 }
 
-const extensions = isProduction ? undefined : () => global.requestInfoCache
+const extensions = isProduction ? undefined : fetchLoggerRequestDone
 
 xapp.on("error", err => {
   error(err)

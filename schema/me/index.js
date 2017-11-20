@@ -1,26 +1,27 @@
-import date from "schema/fields/date"
-import initials from "schema/fields/initials"
-import gravity from "lib/loaders/legacy/gravity"
-import Bidders from "./bidders"
-import BidderStatus from "./bidder_status"
-import BidderPositions from "./bidder_positions"
-import LotStanding from "./lot_standing"
-import LotStandings from "./lot_standings"
-import SaleRegistrations from "./sale_registrations"
-import SuggestedArtists from "./suggested_artists"
-import FollowArtists from "./follow_artists"
-import FollowedArtists from "./followed_artists"
-import Notifications from "./notifications"
-import Conversation from "./conversation"
-import Invoice from "./conversation/invoice"
-import Conversations from "./conversations"
-import CollectorProfile from "./collector_profile"
-import ArtworkInquiries from "./artwork_inquiries"
-import SavedArtworks from "./saved_artworks"
-import { IDFields, NodeInterface } from "schema/object_identification"
-import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 import { GraphQLString, GraphQLObjectType } from "graphql"
 import { has } from "lodash"
+
+import { IDFields, NodeInterface } from "schema/object_identification"
+import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+
+import ArtworkInquiries from "./artwork_inquiries"
+import BidderPositions from "./bidder_positions"
+import Bidders from "./bidders"
+import BidderStatus from "./bidder_status"
+import CollectorProfile from "./collector_profile"
+import Conversation from "./conversation"
+import Conversations from "./conversations"
+import date from "schema/fields/date"
+import FollowArtists from "./follow_artists"
+import FollowedArtists from "./followed_artists"
+import initials from "schema/fields/initials"
+import Invoice from "./conversation/invoice"
+import LotStanding from "./lot_standing"
+import LotStandings from "./lot_standings"
+import Notifications from "./notifications"
+import SaleRegistrations from "./sale_registrations"
+import SavedArtworks from "./saved_artworks"
+import SuggestedArtists from "./suggested_artists"
 
 const Me = new GraphQLObjectType({
   name: "Me",
@@ -63,7 +64,7 @@ const Me = new GraphQLObjectType({
 
 export default {
   type: Me,
-  resolve: (root, options, request, { rootValue: { accessToken, userID }, fieldNodes }) => {
+  resolve: (root, options, request, { rootValue: { accessToken, userID, meLoader }, fieldNodes }) => {
     if (!accessToken) return null
 
     const blacklistedFields = [
@@ -85,7 +86,7 @@ export default {
       "notifications_connection",
     ]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return gravity.with(accessToken)("me").catch(() => null)
+      return meLoader()
     }
 
     // The email and is_collector are here so that the type system's `isTypeOf`
