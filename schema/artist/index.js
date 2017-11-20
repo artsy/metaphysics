@@ -22,6 +22,7 @@ import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import SaleSorts from "schema/sale/sorts"
 import ArtistCarousel from "./carousel"
 import ArtistStatuses from "./statuses"
+import ArtistHighlights from "./highlights"
 import ArtistArtworksFilters from "./artwork_filters"
 import positron from "lib/loaders/legacy/positron"
 import total from "lib/loaders/legacy/total"
@@ -237,11 +238,16 @@ export const ArtistType = new GraphQLObjectType({
             },
           },
         }),
-        resolve: ({ blurb, id }, { format, partner_bio }, request, { rootValue: { partnerArtistsLoader } }) => {
+        resolve: (
+          { blurb, id },
+          { format, partner_bio },
+          request,
+          { rootValue: { partnerArtistsForArtistLoader } }
+        ) => {
           if (!partner_bio && blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) }
           }
-          return partnerArtistsLoader(id, {
+          return partnerArtistsForArtistLoader(id, {
             size: 1,
             featured: true,
           }).then(partner_artists => {
@@ -429,8 +435,8 @@ export const ArtistType = new GraphQLObjectType({
             description: "The number of PartnerArtists to return",
           },
         },
-        resolve: ({ id }, options, request, { rootValue: { partnerArtistsLoader } }) =>
-          partnerArtistsLoader(id, options),
+        resolve: ({ id }, options, request, { rootValue: { partnerArtistsForArtistLoader } }) =>
+          partnerArtistsForArtistLoader(id, options),
       },
       partner_shows: {
         type: new GraphQLList(PartnerShow.type),
@@ -499,6 +505,7 @@ export const ArtistType = new GraphQLObjectType({
         description: "Use this attribute to sort by when sorting a collection of Artists",
       },
       statuses: ArtistStatuses,
+      highlights: ArtistHighlights,
       years: {
         type: GraphQLString,
       },
