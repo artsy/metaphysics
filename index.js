@@ -33,11 +33,7 @@ const isProduction = NODE_ENV === "production"
 if (isProduction) {
   app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
   app.set("trust proxy", 1)
-} else {
-  fetchLoggerSetup()
 }
-
-const extensions = isProduction ? undefined : fetchLoggerRequestDone
 
 xapp.on("error", err => {
   error(err)
@@ -76,7 +72,9 @@ app.use(
     const userID = request.headers["x-user-id"]
     const timezone = request.headers["x-timezone"]
     const requestID = request.headers["x-request-id"] || uuid()
-
+    if (!isProduction) {
+      fetchLoggerSetup(requestID)
+    }
     // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
     // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     let defaultTimezone
@@ -95,7 +93,7 @@ app.use(
       },
       formatError: graphqlErrorHandler(request.body),
       validationRules: [depthLimit(queryLimit)],
-      extensions,
+      extensions: isProduction ? undefined : fetchLoggerRequestDone(requestID),
     }
   })
 )
