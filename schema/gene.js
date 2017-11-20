@@ -1,5 +1,5 @@
 // @ts-check
-import type { GraphQLFieldConfig } from "graphql"
+
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
@@ -28,7 +28,7 @@ const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 const GeneType = new GraphQLObjectType({
   name: "Gene",
   interfaces: [NodeInterface],
-  isTypeOf: obj => _.has(obj, "family") && _.has(obj, "browseable"),
+  isTypeOf: obj => _.has(obj, "browseable") && (_.has(obj, "published") || _.has(obj, "family")),
   fields: {
     ...GravityIDFields,
     cached,
@@ -139,7 +139,7 @@ const GeneType = new GraphQLObjectType({
   },
 })
 
-const Gene: GraphQLFieldConfig<GeneType, *> = {
+const Gene = {
   type: GeneType,
   args: {
     id: {
@@ -147,7 +147,7 @@ const Gene: GraphQLFieldConfig<GeneType, *> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { id }, request, { fieldNodes }) => {
+  resolve: (_root, { id }, _request, { fieldNodes }) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ["filtered_artworks", "id", "__id"]
@@ -157,7 +157,7 @@ const Gene: GraphQLFieldConfig<GeneType, *> = {
 
     // The family and browsable are here so that the type system's `isTypeOf`
     // resolves correctly when we're skipping gravity data
-    return { id, family: null, browseable: null }
+    return { id, published: null, browseable: null }
   },
 }
 

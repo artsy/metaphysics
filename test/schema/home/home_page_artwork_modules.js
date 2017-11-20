@@ -204,7 +204,25 @@ describe("HomePageArtworkModules", () => {
         ])
       })
     })
+
+    it("excludes modules upon request", () => {
+      const query = `
+        {
+          home_page {
+            artwork_modules(exclude: [RECOMMENDED_WORKS]) {
+              key
+            }
+          }
+        }
+      `
+
+      return runAuthenticatedQuery(query).then(({ home_page }) => {
+        const keys = map(home_page.artwork_modules, "key")
+        expect(keys).not.toContain("recommended_works")
+      })
+    })
   })
+
   describe("when signed-out", () => {
     // nothing for now
   })
