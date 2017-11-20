@@ -104,12 +104,23 @@ const HomePageArtworkModules = {
       type: new GraphQLList(HomePageArtworkModuleTypes),
       description: "The preferred order of modules, defaults to order returned by Gravity",
     },
+    exclude: {
+      type: new GraphQLList(HomePageArtworkModuleTypes),
+      defaultValue: [],
+      description: "Exclude certain modules",
+    },
   },
-  resolve: (root, { max_rails, max_followed_gene_rails, order }, request, { rootValue: { accessToken, userID } }) => {
+  resolve: (
+    root,
+    { max_rails, max_followed_gene_rails, order, exclude },
+    request,
+    { rootValue: { accessToken, userID } }
+  ) => {
     // If user is logged in, get their specific modules
     if (accessToken) {
       return gravity.with(accessToken)("me/modules").then(response => {
-        const modulesToDisplay = map(keys(response), key => ({
+        const keysToDisplay = without(keys(response), ...exclude)
+        const modulesToDisplay = map(keysToDisplay, key => ({
           key,
           display: response[key],
         }))
