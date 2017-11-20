@@ -1,5 +1,4 @@
 // @ts-check
-import type { GraphQLFieldConfig } from "graphql"
 
 import { IDFields } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
@@ -21,7 +20,7 @@ export const AggregationCountType = new GraphQLObjectType({
   },
 })
 
-export default ({
+export default {
   type: AggregationCountType,
   resolve: ({ name, count, sortable_id }, id) => ({
     id,
@@ -29,4 +28,4 @@ export default ({
     name,
     count,
   }),
-}: GraphQLFieldConfig<AggregationCountType, any>)
+}
