@@ -110,8 +110,12 @@ function wrapResolve(typeName, fieldName, resolver) {
       "span.kind": "server",
     })
 
+    // Set the parent context to this span for any sub resolvers.
     rootValue.span = span // eslint-disable-line no-param-reassign
+
     const result = resolver.apply(this, arguments);
+
+    // Return parent context to our parent for any resolvers called after this one.
     rootValue.span = parentSpan // eslint-disable-line no-param-reassign
 
     if (result instanceof Promise) {
