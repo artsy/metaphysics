@@ -80,8 +80,8 @@ function trace(res, span) {
 }
 
 app.use((req, res, next) => {
-  const tracer = new Tracer({ service: "metaphysics_testing" })
-  const span = tracer.startSpan("metaphysics_testing.query")
+  const tracer = new Tracer({ service: "metaphysics" })
+  const span = tracer.startSpan("metaphysics.query")
   span.addTags({
     type: "web",
     "span.kind": "server",
@@ -107,7 +107,7 @@ app.use((req, res, next) => {
 function wrapResolve(typeName, fieldName, resolver) {
   return function (root, opts, req, { rootValue }) {
     const parentSpan = rootValue.span
-    const span = parentSpan.tracer().startSpan("metaphysics_testing.resolver." + typeName + "." + fieldName,
+    const span = parentSpan.tracer().startSpan("metaphysics.resolver." + typeName + "." + fieldName,
       { childOf: parentSpan.context() })
     span.addTags({
       resource: typeName + ": " + fieldName,
