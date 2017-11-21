@@ -11,6 +11,8 @@ describe("UpdateMeMutation", () => {
             clientMutationId: "1232"
             phone: "1234890"
             location: { address: "123 my street" }
+            price_range_min: -1
+            price_range_max: 50000
           }
         ) {
           user {
@@ -20,6 +22,7 @@ describe("UpdateMeMutation", () => {
               city
               address
             }
+            price_range
           }
         }
       }
@@ -34,6 +37,7 @@ describe("UpdateMeMutation", () => {
           location: {
             address: "123 my street",
           },
+          price_range: "-1:50000",
         }),
     }
 
