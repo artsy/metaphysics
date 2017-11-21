@@ -298,6 +298,62 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#edition_sets", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          edition_sets {
+            sale_message
+          }
+        }
+      }
+    `
+
+    it("returns the proper sale_message for edition sets", () => {
+      artwork.edition_sets = [
+        {
+          availability: "on hold",
+        },
+        {
+          availability: "on loan",
+        },
+        {
+          availability: "permanent collection",
+        },
+        {
+          price: "$1,000",
+        },
+        {
+          availabilitiy: "not for sale",
+        },
+      ]
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            edition_sets: [
+              {
+                sale_message: "On hold",
+              },
+              {
+                sale_message: "On loan",
+              },
+              {
+                sale_message: "Permanent collection",
+              },
+              {
+                sale_message: "$1,000",
+              },
+              {
+                sale_message: "No longer available",
+              },
+            ],
+          },
+        })
+      })
+    })
+  })
+
   describe("#is_in_auction", () => {
     const query = `
       {
