@@ -71,7 +71,9 @@ function trace(res, span) {
   span.addTags({
     "http.status_code": res.statusCode,
   })
-  span.finish()
+  setImmediate(function () {
+    span.finish()
+  });
 }
 
 app.use((req, res, next) => {
