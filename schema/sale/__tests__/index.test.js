@@ -16,7 +16,10 @@ describe("Sale type", () => {
   }
 
   beforeEach(() => {
-    gravity = sinon.stub().withArgs("sale/foo-foo").returns(Promise.resolve(sale))
+    gravity = sinon
+      .stub()
+      .withArgs("sale/foo-foo")
+      .returns(Promise.resolve(sale))
     Sale.__Rewire__("gravity", gravity)
   })
 
@@ -179,9 +182,9 @@ describe("Sale type", () => {
     beforeEach(() => {
       gravity = sinon.stub()
       gravity.withArgs("sale/foo-foo").returns(Promise.resolve(sale))
-      gravity.withArgs("sale/foo-foo/sale_artworks", { page: 1, size: 25, all: false }).returns(
-        Promise.resolve(saleArtworks)
-      )
+      gravity
+        .withArgs("sale/foo-foo/sale_artworks", { page: 1, size: 25, all: false })
+        .returns(Promise.resolve(saleArtworks))
       gravity.withArgs("increments", { key: "default" }).returns(
         Promise.resolve([
           {
@@ -222,21 +225,9 @@ describe("Sale type", () => {
       `
 
       return runAuthenticatedQuery(query).then(data => {
-        expect(data.sale.sale_artworks[0].bid_increments.slice(0, 5)).toEqual([
-          400000,
-          410000,
-          420000,
-          430000,
-          440000,
-        ])
+        expect(data.sale.sale_artworks[0].bid_increments.slice(0, 5)).toEqual([400000, 410000, 420000, 430000, 440000])
 
-        expect(data.sale.sale_artworks[1].bid_increments.slice(0, 5)).toEqual([
-          20000,
-          25000,
-          30000,
-          35000,
-          40000,
-        ])
+        expect(data.sale.sale_artworks[1].bid_increments.slice(0, 5)).toEqual([20000, 25000, 30000, 35000, 40000])
       })
     })
   })

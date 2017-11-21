@@ -1,5 +1,5 @@
 import { runAuthenticatedQuery } from "test/utils"
-import gql from "../../gql"
+import gql from "test/gql"
 
 describe("CreateGeminiEntryForAsset", () => {
   it("creates a submission and returns its new data payload", () => {
