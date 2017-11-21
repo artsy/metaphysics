@@ -7,37 +7,9 @@ import {
   SaleArtworksAggregation,
 } from "./aggregations/filter_sale_artworks_aggregation"
 import { GraphQLList, GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLID } from "graphql"
-
-export const FilterSaleArtworksType = new GraphQLObjectType({
-  name: "FilterSaleArtworks",
-  fields: () => ({
-    aggregations: {
-      description: "Returns aggregation counts for the given filter query.",
-      type: new GraphQLList(SaleArtworksAggregationResultsType),
-      resolve: ({ aggregations }) => {
-        const whitelistedAggregations = omit(aggregations, ["total", "followed_artists"])
-        return map(whitelistedAggregations, (counts, slice) => ({
-          slice,
-          counts,
-        }))
-      },
-    },
-    counts: {
-      type: new GraphQLObjectType({
-        name: "FilterSaleArtworksCounts",
-        fields: {
-          total: numeral(({ aggregations }) => aggregations.total.value),
-          followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
-        },
-      }),
-      resolve: artist => artist,
-    },
-    hits: {
-      description: "Sale Artwork results.",
-      type: new GraphQLList(SaleArtwork.type),
-    },
-  }),
-})
+import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
+import { parseRelayOptions } from "lib/helpers"
+import { pageable } from "relay-cursor-paging"
 
 export const filterSaleArtworksArgs = {
   aggregations: {
@@ -68,6 +40,54 @@ export const filterSaleArtworksArgs = {
     type: GraphQLString,
   },
 }
+
+export const FilterSaleArtworksType = new GraphQLObjectType({
+  name: "FilterSaleArtworks",
+  fields: () => ({
+    aggregations: {
+      description: "Returns aggregation counts for the given filter query.",
+      type: new GraphQLList(SaleArtworksAggregationResultsType),
+      resolve: ({ aggregations }) => {
+        const whitelistedAggregations = omit(aggregations, ["total", "followed_artists"])
+        return map(whitelistedAggregations, (counts, slice) => ({
+          slice,
+          counts,
+        }))
+      },
+    },
+    counts: {
+      type: new GraphQLObjectType({
+        name: "FilterSaleArtworksCounts",
+        fields: {
+          total: numeral(({ aggregations }) => aggregations.total.value),
+          followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
+        },
+      }),
+      resolve: artist => artist,
+    },
+    hits: {
+      description: "Sale Artwork results.",
+      type: new GraphQLList(SaleArtwork.type),
+    },
+    sale_artworks_connection: {
+      type: connectionDefinitions({
+        name: "FilterSaleArtworksConnection",
+        nodeType: SaleArtwork.type,
+      }).connectionType,
+      args: pageable(filterSaleArtworksArgs),
+      resolve: ({ hits, aggregations }, options) => {
+        if (!aggregations || !aggregations.total) {
+          throw new Error("This query must contain the total aggregation")
+        }
+        const relayOptions = parseRelayOptions(options)
+        return connectionFromArraySlice(hits, options, {
+          arrayLength: aggregations.total.value,
+          sliceStart: relayOptions.offset,
+        })
+      },
+    },
+  }),
+})
 
 const FilterSaleArtworks = {
   type: FilterSaleArtworksType,

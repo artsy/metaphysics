@@ -13,6 +13,11 @@ describe("Filter Sale Artworks", () => {
       })
       .returns(
         Promise.resolve({
+          hits: [
+            {
+              id: "foo",
+            },
+          ],
           aggregations: {
             followed_artists: {
               value: 2,

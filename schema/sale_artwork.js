@@ -134,7 +134,13 @@ const SaleArtworkType = new GraphQLObjectType({
             },
           },
         }),
-        resolve: ({ symbol, highest_bid }) => assign({ symbol }, highest_bid),
+        resolve: ({ symbol, highest_bid }) =>
+          assign(
+            {
+              symbol,
+            },
+            highest_bid
+          ),
       },
       is_bid_on: {
         type: GraphQLBoolean,
@@ -237,6 +243,7 @@ const SaleArtworkType = new GraphQLObjectType({
     }
   },
 })
+
 const SaleArtwork = {
   type: SaleArtworkType,
   description: "A Sale Artwork",
@@ -250,4 +257,5 @@ const SaleArtwork = {
     return gravity(`sale_artwork/${id}`)
   },
 }
+
 export default SaleArtwork
