@@ -71,15 +71,17 @@ export const FilterSaleArtworksType = new GraphQLObjectType({
     },
     sale_artworks_connection: {
       type: connectionDefinitions({
-        name: "FilterSaleArtworksConnection",
+        name: "FilterSaleArtworks",
         nodeType: SaleArtwork.type,
       }).connectionType,
       args: pageable(filterSaleArtworksArgs),
-      resolve: ({ hits, aggregations }, options) => {
+      resolve: async ({ aggregations }, options, _request, { rootValue: { accessToken } }) => {
         if (!aggregations || !aggregations.total) {
           throw new Error("This query must contain the total aggregation")
         }
+
         const relayOptions = parseRelayOptions(options)
+        const { hits } = await gravity.with(accessToken)("filter/sale_artworks", relayOptions)
         return connectionFromArraySlice(hits, options, {
           arrayLength: aggregations.total.value,
           sliceStart: relayOptions.offset,

@@ -1,23 +1,27 @@
 import schema from "schema"
-import { runQuery } from "test/utils"
+import { runAuthenticatedQuery, runQuery } from "test/utils"
 
 describe("Filter Sale Artworks", () => {
   const FilterSaleArtworks = schema.__get__("FilterSaleArtworks")
+  let gravity
 
   beforeEach(() => {
-    const gravity = sinon.stub()
+    gravity = sinon.stub()
     gravity.with = sinon.stub().returns(gravity)
+    FilterSaleArtworks.__Rewire__("gravity", gravity)
+  })
+
+  afterEach(() => {
+    FilterSaleArtworks.__ResetDependency__("gravity")
+  })
+
+  it("formats the counts and aggregations, and sorts the artists correctly", () => {
     gravity
       .withArgs("filter/sale_artworks", {
         aggregations: ["total", "medium", "followed_artists", "artist"],
       })
       .returns(
         Promise.resolve({
-          hits: [
-            {
-              id: "foo",
-            },
-          ],
           aggregations: {
             followed_artists: {
               value: 2,
@@ -53,14 +57,6 @@ describe("Filter Sale Artworks", () => {
         })
       )
 
-    FilterSaleArtworks.__Rewire__("gravity", gravity)
-  })
-
-  afterEach(() => {
-    FilterSaleArtworks.__ResetDependency__("gravity")
-  })
-
-  it("formats the counts and aggregations, and sorts the artists correctly", () => {
     const query = `
       {
         filter_sale_artworks(
@@ -113,6 +109,85 @@ describe("Filter Sale Artworks", () => {
           slice: "ARTIST",
         },
       ])
+    })
+  })
+
+  describe("sale_artworks_connection", () => {
+    it("filters artworks based on aggregations and returns pageable collection", () => {
+      gravity
+        .withArgs("filter/sale_artworks", {
+          aggregations: ["total", "followed_artists"],
+          include_artworks_by_followed_artists: true,
+          size: 20,
+        })
+        .returns(
+          Promise.resolve({
+            aggregations: {
+              followed_artists: {
+                value: 3,
+              },
+              total: {
+                value: 3,
+              },
+            },
+          })
+        )
+
+      // Paginate
+      gravity
+        .withArgs("filter/sale_artworks", {
+          page: 1,
+          size: 3,
+          offset: 0,
+        })
+        .returns(
+          Promise.resolve({
+            hits: [
+              {
+                id: "christopher-anderson-reflection-in-window-in-altamira-caracas-venezuela",
+              },
+              {
+                id: "eduardo-abaroa-insercion-arqueologica-285-1",
+              },
+              {
+                id: "francis-alys-the-modern-procession",
+              },
+            ],
+          })
+        )
+
+      const query = `
+        {
+          filter_sale_artworks(
+            aggregations:[TOTAL, FOLLOWED_ARTISTS],
+            include_artworks_by_followed_artists: true,
+            size: 20
+          ) {
+            counts {
+              total
+              followed_artists
+            }
+            sale_artworks_connection(first: 3) {
+              pageInfo {
+                hasNextPage
+              }
+              edges {
+                cursor
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runAuthenticatedQuery(query).then(data => {
+        const { filter_sale_artworks: { sale_artworks_connection: { pageInfo, edges } } } = data
+        expect(data).toMatchSnapshot()
+        expect(pageInfo.hasNextPage).toEqual(false)
+        expect(edges.length).toEqual(3)
+      })
     })
   })
 })

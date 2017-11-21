@@ -10,7 +10,7 @@
     "**/build": true
   },
   "editor.formatOnSave": true,
-  "eslint.autoFixOnSave": true,
+  "eslint.autoFixOnSave": false,
   "path-intellisense.mappings": {
     "/": "${workspaceRoot}",
     "lib": "${workspaceRoot}/lib",
