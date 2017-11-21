@@ -24,6 +24,10 @@ const UserType = new GraphQLObjectType({
       description: "The given location of the user as structured data",
       type: LocationType,
     },
+    price_range: {
+      description: "The price range the collector has selected",
+      type: GraphQLString,
+    },
   },
 })
 
