@@ -68,13 +68,16 @@
     "react-dom": "^15.3.2",
     "relay-cursor-paging": "^0.2.0",
     "request": "^2.67.0",
-    "source-map-support": "^0.4.3"
+    "source-map-support": "^0.4.3",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "@types/express-graphql": "^0.0.35",
     "@types/graphql": "^0.8.2",
     "@types/jest": "^21",
     "@types/lodash": "^4.14.74",
     "@types/moment": "^2.13.0",
+    "@types/moment-timezone": "^0.5.1",
     "@types/node": "^8.0.31",
     "@types/qs": "^6.5.0",
     "@types/request": "^2.0.3",

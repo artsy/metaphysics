@@ -20,6 +20,8 @@ import moment from "moment"
 import "moment-timezone"
 import Tracer from "datadog-tracer"
 import { forIn, has, assign } from "lodash"
+import uuid from "uuid/v1"
+import { fetchLoggerSetup, fetchLoggerRequestDone } from "lib/loaders/api/logger"
 
 global.Promise = Bluebird
 
@@ -28,8 +30,9 @@ const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, QUERY_DEPTH
 const app = express()
 const port = PORT || 3000
 const queryLimit = parseInt(QUERY_DEPTH_LIMIT, 10) || 10 // Default to ten.
+const isProduction = NODE_ENV === "production"
 
-if (NODE_ENV === "production") {
+if (isProduction) {
   app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
   app.set("trust proxy", 1)
 }
@@ -55,7 +58,7 @@ app.get("/favicon.ico", (_req, res) => {
     .end()
 })
 
-app.all("/graphql", (req, res) => res.redirect("/"))
+app.all("/graphql", (_req, res) => res.redirect("/"))
 
 app.use(bodyParser.json())
 
@@ -155,13 +158,17 @@ app.use(
     const accessToken = request.headers["x-access-token"]
     const userID = request.headers["x-user-id"]
     const timezone = request.headers["x-timezone"]
-    const requestID = request.headers["x-request-id"] || "implement-me"
+    const requestID = request.headers["x-request-id"] || uuid()
 
     const span = request.span
     const traceContext = span.context()
     const traceId = traceContext.traceId
     const parentSpanId = traceContext.spanId
     const requestIDs = { requestID, traceId, parentSpanId }
+
+    if (!isProduction) {
+      fetchLoggerSetup(requestID)
+    }
 
     // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
     // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -182,6 +189,7 @@ app.use(
       },
       formatError: graphqlErrorHandler(request.body),
       validationRules: [depthLimit(queryLimit)],
+      extensions: isProduction ? undefined : fetchLoggerRequestDone(requestID),
     }
   })
 )

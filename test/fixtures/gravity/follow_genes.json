@@ -1,0 +1,33 @@
+[
+  {
+    "gene": {
+      "family": {
+        "_id": "575ac46debad644c13000006",
+        "id": "subject-matter",
+        "name": "Subject Matter"
+      },
+      "_id": "556600677261695a6b7b0000",
+      "id": "engaged-with-traditional-african-art",
+      "name": "Engaged with Traditional African Art",
+      "display_name": null,
+      "image_url": "https://d32dm0rphc51dk.cloudfront.net/jVcFGfSt0SArZjj7f9Uv0Q/:version.jpg",
+      "image_versions": ["big_and_tall", "square500", "tall", "thumb"],
+      "image_urls": {
+        "big_and_tall": "https://d32dm0rphc51dk.cloudfront.net/jVcFGfSt0SArZjj7f9Uv0Q/big_and_tall.jpg",
+        "square500": "https://d32dm0rphc51dk.cloudfront.net/jVcFGfSt0SArZjj7f9Uv0Q/square500.jpg",
+        "tall": "https://d32dm0rphc51dk.cloudfront.net/jVcFGfSt0SArZjj7f9Uv0Q/tall.jpg",
+        "thumb": "https://d32dm0rphc51dk.cloudfront.net/jVcFGfSt0SArZjj7f9Uv0Q/thumb.jpg"
+      },
+      "original_width": null,
+      "original_height": null,
+      "counts": {
+        "artworks": 308,
+        "artists": 48
+      },
+      "published": true,
+      "browseable": false,
+      "created_at": "2015-05-27T17:35:35+00:00"
+    },
+    "id": "5a0df980275b245c42586afe"
+  }
+]
