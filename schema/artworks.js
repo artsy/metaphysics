@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import Artwork from "./artwork"
 import { GraphQLList, GraphQLString } from "graphql"
 
@@ -10,7 +9,7 @@ const Artworks = {
       type: new GraphQLList(GraphQLString),
     },
   },
-  resolve: (root, options) => gravity("artworks", options),
+  resolve: (root, options, request, { rootValue: { artworksLoader } }) => artworksLoader(options),
 }
 
 export default Artworks

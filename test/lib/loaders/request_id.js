@@ -15,12 +15,11 @@ describe("requestID (with the real data loaders)", () => {
     `
     const gravity = jest.fn(() => Promise.resolve({}))
     factories.__Rewire__("gravity", gravity)
-    const rootValue = createLoaders("access-token", "user-id", "request-id")
+    const requestIDs = { requestId: "request-id" }
+    const rootValue = createLoaders("access-token", "user-id", requestIDs)
     expect.assertions(1)
     return runQuery(query, rootValue).then(() => {
-      expect(gravity).toBeCalledWith("artist/andy-warhol?", null, {
-        requestID: "request-id",
-      })
+      expect(gravity).toBeCalledWith("artist/andy-warhol?", null, { requestIDs })
     })
   })
 
@@ -36,12 +35,11 @@ describe("requestID (with the real data loaders)", () => {
     `
     const gravity = jest.fn(() => Promise.resolve({}))
     factories.__Rewire__("gravity", gravity)
-    const rootValue = createLoaders("secret", "user-42", "request-id")
+    const requestIDs = { requestId: "request-id" }
+    const rootValue = createLoaders("secret", "user-42", requestIDs)
     expect.assertions(1)
     return runAuthenticatedQuery(query, rootValue).then(() => {
-      expect(gravity).toBeCalledWith("me/lot_standings?", "secret", {
-        requestID: "request-id",
-      })
+      expect(gravity).toBeCalledWith("me/lot_standings?", "secret", { requestIDs })
     })
   })
 })
