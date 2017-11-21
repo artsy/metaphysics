@@ -18,6 +18,8 @@ import { info, error } from "./lib/loggers"
 import graphqlErrorHandler from "./lib/graphql-error-handler"
 import moment from "moment"
 import "moment-timezone"
+import Tracer from "datadog-tracer"
+import { forIn, has, assign } from "lodash"
 import uuid from "uuid/v1"
 import { fetchLoggerSetup, fetchLoggerRequestDone } from "lib/loaders/api/logger"
 
@@ -59,6 +61,91 @@ app.get("/favicon.ico", (_req, res) => {
 app.all("/graphql", (_req, res) => res.redirect("/"))
 
 app.use(bodyParser.json())
+
+function parse_args() {
+  return "( ... )"
+}
+
+function drop_params(query) {
+  return query.replace(/(\()([^\)]*)(\))/g, parse_args)
+}
+
+function trace(res, span) {
+  span.addTags({
+    "http.status_code": res.statusCode,
+  })
+  setImmediate(function () {
+    span.finish()
+  });
+}
+
+app.use((req, res, next) => {
+  const tracer = new Tracer({ service: "metaphysics" })
+  const span = tracer.startSpan("metaphysics.query")
+  span.addTags({
+    type: "web",
+    "span.kind": "server",
+    "http.method": req.method,
+    "http.url": req.url,
+  })
+
+  if (req.body && req.body.query) {
+    const query = drop_params(req.body.query)
+    span.addTags({ resource: query })
+  } else {
+    span.addTags({ resource: req.path })
+  }
+
+  assign(req, { span })
+
+  res.on("finish", () => trace(res, span))
+  res.on("close", () => trace(res, span))
+
+  next()
+})
+
+function wrapResolve(typeName, fieldName, resolver) {
+  return function (root, opts, req, { rootValue }) {
+    const parentSpan = rootValue.span
+    const span = parentSpan.tracer().startSpan("metaphysics.resolver." + typeName + "." + fieldName,
+      { childOf: parentSpan.context() })
+    span.addTags({
+      resource: typeName + ": " + fieldName,
+      type: "web",
+      "span.kind": "server",
+    })
+
+    // Set the parent context to this span for any sub resolvers.
+    rootValue.span = span // eslint-disable-line no-param-reassign
+
+    const result = resolver.apply(this, arguments);
+
+    // Return parent context to our parent for any resolvers called after this one.
+    rootValue.span = parentSpan // eslint-disable-line no-param-reassign
+
+    if (result instanceof Promise) {
+      return result.finally(function () {
+        span.finish()
+      })
+    }
+
+    span.finish()
+    return result;
+  };
+}
+
+// Walk the schema and for all object type fields with resolvers wrap them in our tracing resolver.
+forIn(schema._typeMap, function (value, key) {
+  const typeName = key
+  if (has(value, "_fields")) {
+    forIn(value._fields, function (field, fieldName) {
+      if (field.resolve instanceof Function) {
+        field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
+      }
+    });
+  }
+});
+
 app.use(
   "/",
   cors(),
@@ -72,9 +159,17 @@ app.use(
     const userID = request.headers["x-user-id"]
     const timezone = request.headers["x-timezone"]
     const requestID = request.headers["x-request-id"] || uuid()
+
+    const span = request.span
+    const traceContext = span.context()
+    const traceId = traceContext.traceId
+    const parentSpanId = traceContext.spanId
+    const requestIDs = { requestID, traceId, parentSpanId }
+
     if (!isProduction) {
       fetchLoggerSetup(requestID)
     }
+
     // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
     // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     let defaultTimezone
@@ -89,7 +184,8 @@ app.use(
         accessToken,
         userID,
         defaultTimezone,
-        ...createLoaders(accessToken, userID, requestID),
+        span,
+        ...createLoaders(accessToken, userID, requestIDs),
       },
       formatError: graphqlErrorHandler(request.body),
       validationRules: [depthLimit(queryLimit)],
