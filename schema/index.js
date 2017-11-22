@@ -33,6 +33,7 @@ import PopularArtists from "./artists/popular"
 import Sale from "./sale/index"
 import Sales from "./sales"
 import SaleArtwork from "./sale_artwork"
+import SaleArtworks from "./sale_artworks"
 import Search from "./search"
 import Show from "./show"
 import Tag from "./tag"
@@ -92,6 +93,7 @@ const rootFields = {
   profile: Profile,
   sale: Sale,
   sale_artwork: SaleArtwork,
+  sale_artworks: SaleArtworks,
   sales: Sales,
   search: Search,
   show: Show,
