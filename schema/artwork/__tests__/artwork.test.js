@@ -313,6 +313,7 @@ describe("Artwork type", () => {
       artwork.edition_sets = [
         {
           availability: "on hold",
+          price: "$1,000",
         },
         {
           availability: "on loan",
@@ -321,6 +322,7 @@ describe("Artwork type", () => {
           availability: "permanent collection",
         },
         {
+          availabilitiy: "for sale",
           price: "$1,000",
         },
         {
