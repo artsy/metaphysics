@@ -19,7 +19,7 @@ global.sinon = sinon
  * see https://github.com/facebook/jest/issues/2129
  *
  * So until this is built into Jest, then this will do for now
-*/
+ */
 
 const expectPromiseRejectionToMatch = (promise, failureMessage) => {
   return new Promise((resolve, reject) => {
