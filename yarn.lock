@@ -2263,9 +2263,9 @@ graphql-relay@0.5.3:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/graphql-relay/-/graphql-relay-0.5.3.tgz#56a78ac07c87d89795a34db6b8e9681b827be5b5"
 
-"graphql-tools@https://github.com/alloy/graphql-tools/releases/download/v2.7.3-alpha.1/graphql-tools-2.7.3-alpha.1.tgz":
-  version "2.7.3-alpha.1"
-  resolved "https://github.com/alloy/graphql-tools/releases/download/v2.7.3-alpha.1/graphql-tools-2.7.3-alpha.1.tgz#b28f6d0fb4a31793cca6bc574cf8bb1c00f41abf"
+graphql-tools@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/graphql-tools/-/graphql-tools-2.8.0.tgz#1a248ec6be62b0b77607bba6f7470e7a651425fa"
   dependencies:
     apollo-utilities "^1.0.1"
     deprecated-decorator "^0.1.6"

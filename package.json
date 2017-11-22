@@ -20,7 +20,8 @@
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild": "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
+    "heroku-postbuild":
+      "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
     "precommit": "lint-staged",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"
@@ -56,7 +57,7 @@
     "graphql": "^0.11.7",
     "graphql-depth-limit": "^1.1.0",
     "graphql-relay": "0.5.3",
-    "graphql-tools": "https://github.com/alloy/graphql-tools/releases/download/v2.7.3-alpha.1/graphql-tools-2.7.3-alpha.1.tgz",
+    "graphql-tools": "^2.8.0",
     "graphql-type-json": "^0.1.4",
     "i": "^0.3.5",
     "jwt-simple": "^0.5.0",
@@ -107,13 +108,7 @@
   },
   "jest": {
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/test/helper.js",
-      "/test/utils.js",
-      "/test/gql.js",
-      "/test/__mocks__"
-    ]
+    "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/utils.js", "/test/gql.js", "/test/__mocks__"]
   },
   "prettier": {
     "printWidth": 120,
@@ -123,14 +118,7 @@
     "bracketSpacing": true
   },
   "lint-staged": {
-    "*.json": [
-      "yarn prettier --write",
-      "git add"
-    ],
-    "*.js": [
-      "eslint --fix",
-      "yarn prettier --write",
-      "git add"
-    ]
+    "*.json": ["yarn prettier --write", "git add"],
+    "*.js": ["eslint --fix", "yarn prettier --write", "git add"]
   }
 }
