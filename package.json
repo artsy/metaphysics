@@ -63,6 +63,7 @@
     "moment-timezone": "^0.5.5",
     "numeral": "^1.5.3",
     "opentracing": "^0.14.1",
+    "performance-now": "^2.1.0",
     "qs": "^5.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
