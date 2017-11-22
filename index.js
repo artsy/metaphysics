@@ -24,6 +24,7 @@ import uuid from "uuid/v1"
 import { fetchLoggerSetup, fetchLoggerRequestDone } from "lib/loaders/api/logger"
 import { timestamp } from "./lib/helpers"
 import { getNamedType, GraphQLObjectType } from "graphql"
+import * as introspectionQuery from "graphql/type/introspection"
 
 global.Promise = Bluebird
 
@@ -78,7 +79,6 @@ function pushFinishedSpan(finishedSpans, span) {
 }
 
 function processFinishedSpans(finishedSpans) {
-  console.log(finishedSpans.length)
   let i = 0
   const iter = () => {
     const entry = finishedSpans[i]
@@ -161,10 +161,9 @@ function wrapResolve(typeName, fieldName, resolver) {
 }
 
 // Walk the schema and for all object type fields with resolvers wrap them in our tracing resolver.
-forIn(schema._typeMap, function (value, key) {
-  const typeName = key
-  if (has(value, "_fields")) {
-    forIn(value._fields, function (field, fieldName) {
+forIn(schema._typeMap, function (type, typeName) {
+  if (!introspectionQuery[type] && has(type, "_fields")) {
+    forIn(type._fields, function (field, fieldName) {
       if (field.resolve instanceof Function && getNamedType(field.type) instanceof GraphQLObjectType) {
         field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
       }
