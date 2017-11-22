@@ -25,15 +25,9 @@ export default {
   args: pageable(filterSaleArtworksArgs),
   description: "Sale Artworks Elastic Search results",
   type: SaleArtworksType,
-  resolve: async (
-    _root,
-    options,
-    _request,
-    { rootValue: { accessToken, authenticatedSaleArtworksFilterLoader, saleArtworksFilterLoader } }
-  ) => {
-    const loader = accessToken ? authenticatedSaleArtworksFilterLoader : saleArtworksFilterLoader
+  resolve: async (_root, options, _request, { rootValue: { saleArtworksFilterLoader } }) => {
     const params = parseRelayOptions({ ...DEFAULTS, ...options })
-    const response = await loader(params)
+    const response = await saleArtworksFilterLoader(params)
     const data = {
       ...response,
       ...connectionFromArraySlice(response.hits, options, {
