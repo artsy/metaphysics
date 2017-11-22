@@ -22,6 +22,7 @@ import Tracer from "datadog-tracer"
 import { forIn, has, assign } from "lodash"
 import uuid from "uuid/v1"
 import { fetchLoggerSetup, fetchLoggerRequestDone } from "lib/loaders/api/logger"
+import { timestamp } from "./lib/helpers"
 
 global.Promise = Bluebird
 
@@ -125,11 +126,13 @@ function wrapResolve(typeName, fieldName, resolver) {
 
     if (result instanceof Promise) {
       return result.finally(function () {
-        span.finish()
+        const endTime = timestamp()
+        setImmediate(() => span.finish(endTime))
       })
     }
 
-    span.finish()
+    const endTime = timestamp()
+    setImmediate(() => span.finish(endTime))
     return result;
   };
 }
