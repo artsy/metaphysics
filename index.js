@@ -23,6 +23,7 @@ import { forIn, has, assign } from "lodash"
 import uuid from "uuid/v1"
 import { fetchLoggerSetup, fetchLoggerRequestDone } from "lib/loaders/api/logger"
 import { timestamp } from "./lib/helpers"
+import { getNamedType, GraphQLObjectType } from "graphql"
 
 global.Promise = Bluebird
 
@@ -77,6 +78,7 @@ function pushFinishedSpan(finishedSpans, span) {
 }
 
 function processFinishedSpans(finishedSpans) {
+  console.log(finishedSpans.length)
   let i = 0
   const iter = () => {
     const entry = finishedSpans[i]
@@ -163,7 +165,7 @@ forIn(schema._typeMap, function (value, key) {
   const typeName = key
   if (has(value, "_fields")) {
     forIn(value._fields, function (field, fieldName) {
-      if (field.resolve instanceof Function) {
+      if (field.resolve instanceof Function && getNamedType(field.type) instanceof GraphQLObjectType) {
         field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
       }
     })
