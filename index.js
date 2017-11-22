@@ -32,7 +32,7 @@ const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, QUERY_DEPTH
 
 const app = express()
 const port = PORT || 3000
-const queryLimit = parseInt(QUERY_DEPTH_LIMIT, 10) || 10 // Default to ten.
+const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
 const isProduction = NODE_ENV === "production"
 
 function startApp(schema) {
@@ -119,7 +119,7 @@ function startApp(schema) {
   }
 
   function wrapResolve(typeName, fieldName, resolver) {
-    return function(root, opts, req, { rootValue }) {
+    return function wrappedResolver(_root, _opts, _req, { rootValue }) {
       const parentSpan = rootValue.span
       const span = parentSpan
         .tracer()
@@ -139,9 +139,7 @@ function startApp(schema) {
       rootValue.span = parentSpan // eslint-disable-line no-param-reassign
 
       if (result instanceof Promise) {
-        return result.finally(function() {
-          pushFinishedSpan(rootValue.finishedSpans, span)
-        })
+        return result.finally(() => pushFinishedSpan(rootValue.finishedSpans, span))
       }
 
       pushFinishedSpan(rootValue.finishedSpans, span)
@@ -151,9 +149,9 @@ function startApp(schema) {
 
   if (!isProduction) {
     // Walk the schema and for all object type fields with resolvers wrap them in our tracing resolver.
-    forIn(schema._typeMap, function(type, typeName) {
+    forIn(schema._typeMap, (type, typeName) => {
       if (!introspectionQuery[type] && has(type, "_fields")) {
-        forIn(type._fields, function(field, fieldName) {
+        forIn(type._fields, (field, fieldName) => {
           if (field.resolve instanceof Function && getNamedType(field.type) instanceof GraphQLObjectType) {
             field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
           }
