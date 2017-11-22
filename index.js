@@ -10,7 +10,7 @@ import express from "express"
 import forceSSL from "express-force-ssl"
 import graphqlHTTP from "express-graphql"
 import bodyParser from "body-parser"
-import mergeSchemas from "./lib/mergeSchemas"
+import { mergeSchemas } from "./lib/mergeSchemas"
 import legacyLoaders from "./lib/loaders/legacy"
 import createLoaders from "./lib/loaders"
 import config from "./config"
@@ -18,13 +18,9 @@ import { info, error } from "./lib/loggers"
 import graphqlErrorHandler from "./lib/graphql-error-handler"
 import moment from "moment"
 import "moment-timezone"
-import Tracer from "datadog-tracer"
-import { forIn, has, assign } from "lodash"
-import uuid from "uuid/v1"
 import { fetchLoggerSetup, fetchLoggerRequestDone } from "lib/loaders/api/logger"
-import { timestamp } from "./lib/helpers"
-import { getNamedType, GraphQLObjectType } from "graphql"
-import * as introspectionQuery from "graphql/type/introspection"
+import { middleware as requestTracer, makeSchemaTraceable } from "./lib/tracer"
+import { middleware as requestIDsAdder } from "./lib/requestIDs"
 
 global.Promise = Bluebird
 
@@ -52,113 +48,12 @@ function startApp(schema) {
 
   app.use(bodyParser.json())
 
-  function parse_args() {
-    return "( ... )"
-  }
-
-  function drop_params(query) {
-    return query.replace(/(\()([^\)]*)(\))/g, parse_args)
-  }
-
-  function pushFinishedSpan(finishedSpans, span) {
-    const endTime = timestamp()
-    finishedSpans.push({ span, endTime })
-  }
-
-  function processFinishedSpans(finishedSpans) {
-    let i = 0
-    const iter = () => {
-      const entry = finishedSpans[i]
-      if (entry) {
-        const { span, endTime } = entry
-        span.finish(endTime)
-        i++
-        setImmediate(iter)
-      }
-    }
-    setImmediate(iter)
-  }
-
-  function trace(res, span, finishedSpans) {
-    span.addTags({
-      "http.status_code": res.statusCode,
-    })
-    pushFinishedSpan(finishedSpans, span)
-    processFinishedSpans(finishedSpans)
-  }
-
   if (!isProduction) {
-    app.use((req, res, next) => {
-      const tracer = new Tracer({ service: "metaphysics" })
-      const span = tracer.startSpan("metaphysics.query")
-      span.addTags({
-        type: "web",
-        "span.kind": "server",
-        "http.method": req.method,
-        "http.url": req.url,
-      })
-
-      if (req.body && req.body.query) {
-        const query = drop_params(req.body.query)
-        span.addTags({ resource: query })
-      } else {
-        span.addTags({ resource: req.path })
-      }
-
-      assign(req, { span })
-
-      const finishedSpans = []
-      assign(req, { finishedSpans })
-
-      const finish = trace.bind(null, res, span, finishedSpans)
-      res.on("finish", finish)
-      res.on("close", finish)
-
-      next()
-    })
+    makeSchemaTraceable(schema)
+    app.use(requestTracer)
   }
 
-  function wrapResolve(typeName, fieldName, resolver) {
-    return function wrappedResolver(_root, _opts, _req, { rootValue }) {
-      const parentSpan = rootValue.span
-      const span = parentSpan
-        .tracer()
-        .startSpan("metaphysics.resolver." + typeName + "." + fieldName, { childOf: parentSpan.context() })
-      span.addTags({
-        resource: typeName + ": " + fieldName,
-        type: "web",
-        "span.kind": "server",
-      })
-
-      // Set the parent context to this span for any sub resolvers.
-      rootValue.span = span // eslint-disable-line no-param-reassign
-
-      const result = resolver.apply(this, arguments)
-
-      // Return parent context to our parent for any resolvers called after this one.
-      rootValue.span = parentSpan // eslint-disable-line no-param-reassign
-
-      if (result instanceof Promise) {
-        return result.finally(() => pushFinishedSpan(rootValue.finishedSpans, span))
-      }
-
-      pushFinishedSpan(rootValue.finishedSpans, span)
-      return result
-    }
-  }
-
-  if (!isProduction) {
-    // Walk the schema and for all object type fields with resolvers wrap them in our tracing resolver.
-    forIn(schema._typeMap, (type, typeName) => {
-      if (!introspectionQuery[type] && has(type, "_fields")) {
-        forIn(type._fields, (field, fieldName) => {
-          if (field.resolve instanceof Function && getNamedType(field.type) instanceof GraphQLObjectType) {
-            field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
-          }
-        })
-      }
-    })
-  }
+  app.use(requestIDsAdder)
 
   app.use(
     "/",
@@ -172,19 +67,9 @@ function startApp(schema) {
       const accessToken = req.headers["x-access-token"]
       const userID = req.headers["x-user-id"]
       const timezone = req.headers["x-timezone"]
-      const requestID = req.headers["x-request-id"] || uuid()
 
-      const requestIDs = { requestID, parentSpanId: "", traceId: "" }
-      let span = null
-
-      if (!isProduction) {
-        span = req.span
-        const traceContext = span.context()
-        const traceId = traceContext.traceId
-        const parentSpanId = traceContext.spanId
-
-        assign(requestIDs, { traceId, parentSpanId })
-      }
+      const { requestIDs, span, finishedSpans } = res.locals
+      const requestID = requestIDs.requestID
 
       if (!isProduction) {
         fetchLoggerSetup(requestID)
@@ -209,7 +94,7 @@ function startApp(schema) {
           userID,
           defaultTimezone,
           span,
-          finishedSpans: req.finishedSpans,
+          finishedSpans,
           ...createLoaders(accessToken, userID, requestIDs),
         },
         formatError: graphqlErrorHandler(req.body),
