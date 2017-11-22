@@ -10,7 +10,7 @@ import express from "express"
 import forceSSL from "express-force-ssl"
 import graphqlHTTP from "express-graphql"
 import bodyParser from "body-parser"
-import mergedSchema from "./mergedSchema"
+import mergeSchemas from "./lib/mergeSchemas"
 import legacyLoaders from "./lib/loaders/legacy"
 import createLoaders from "./lib/loaders"
 import config from "./config"
@@ -164,21 +164,21 @@ function startApp(schema) {
     "/",
     cors(),
     morgan,
-    graphqlHTTP(request => {
+    graphqlHTTP((req, res) => {
       info("----------")
 
       legacyLoaders.clearAll()
 
-      const accessToken = request.headers["x-access-token"]
-      const userID = request.headers["x-user-id"]
-      const timezone = request.headers["x-timezone"]
-      const requestID = request.headers["x-request-id"] || uuid()
+      const accessToken = req.headers["x-access-token"]
+      const userID = req.headers["x-user-id"]
+      const timezone = req.headers["x-timezone"]
+      const requestID = req.headers["x-request-id"] || uuid()
 
       const requestIDs = { requestID, parentSpanId: "", traceId: "" }
       let span = null
 
       if (!isProduction) {
-        span = request.span
+        span = req.span
         const traceContext = span.context()
         const traceId = traceContext.traceId
         const parentSpanId = traceContext.spanId
@@ -197,6 +197,10 @@ function startApp(schema) {
         defaultTimezone = timezone
       }
 
+      const loaders = createLoaders(accessToken, userID, requestID)
+      // Share with e.g. the Convection ApolloLink in mergedSchema.
+      res.locals.dataLoaders = loaders // eslint-disable-line no-param-reassign
+
       return {
         schema,
         graphiql: true,
@@ -205,10 +209,10 @@ function startApp(schema) {
           userID,
           defaultTimezone,
           span,
-          finishedSpans: request.finishedSpans,
+          finishedSpans: req.finishedSpans,
           ...createLoaders(accessToken, userID, requestIDs),
         },
-        formatError: graphqlErrorHandler(request.body),
+        formatError: graphqlErrorHandler(req.body),
         validationRules: [depthLimit(queryLimit)],
         extensions: isProduction ? undefined : fetchLoggerRequestDone(requestID),
       }
@@ -231,6 +235,6 @@ xapp.init(
   },
   () => {
     config.GRAVITY_XAPP_TOKEN = xapp.token
-    mergedSchema().then(startApp)
+    mergeSchemas().then(startApp)
   }
 )
