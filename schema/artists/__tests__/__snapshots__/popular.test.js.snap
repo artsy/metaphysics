@@ -1,21 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`when an anonymous user makes a call for popular artists to the popularArtistsLoader 1`] = `
-Object {
-  "popular_artists": Object {
-    "artists": Array [
-      Object {
-        "id": "ortina",
-      },
-      Object {
-        "id": "xtina",
-      },
-    ],
-  },
-}
-`;
-
-exports[`when logged in makes a call for popular artists to the auth'd popularArtistsLoader 1`] = `
+exports[`Popular Artists makes a call for popular artists 1`] = `
 Object {
   "popular_artists": Object {
     "artists": Array [
