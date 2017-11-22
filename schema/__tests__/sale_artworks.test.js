@@ -1,27 +1,12 @@
 import _ from "lodash"
-import schema from "schema"
-import { runQuery } from "test/utils"
+import gql from "test/gql"
+import { runAuthenticatedQuery } from "test/utils"
 
 describe("Sale Artworks", () => {
-  const FilterSaleArtworks = schema.__get__("SaleArtworks")
-  let gravity
-
-  beforeEach(() => {
-    gravity = sinon.stub()
-    gravity.with = sinon.stub().returns(gravity)
-    FilterSaleArtworks.__Rewire__("gravity", gravity)
-  })
-
-  afterEach(() => {
-    FilterSaleArtworks.__ResetDependency__("gravity")
-  })
-
-  // Test helper
-  const execute = async (gravityResponse, query, args = {}) => {
-    const DEFAULTS = { aggregations: ["total"], page: 1, size: 10, offset: 0 }
-    gravity.withArgs("filter/sale_artworks", { ...DEFAULTS, ...args }).returns(Promise.resolve(gravityResponse))
-    const data = await runQuery(query)
-    return data
+  const execute = async (gravityResponse, query) => {
+    return await runAuthenticatedQuery(query, {
+      saleArtworksFilterLoader: () => Promise.resolve(gravityResponse),
+    })
   }
 
   it("returns 10 items by default", async () => {
@@ -35,19 +20,20 @@ describe("Sale Artworks", () => {
         },
       },
     }
-    const query = `{
-      sale_artworks {
-        counts {
-          total
-        }
-        edges {
-          node {
-            id
+    const query = gql`
+      {
+        sale_artworks {
+          counts {
+            total
+          }
+          edges {
+            node {
+              id
+            }
           }
         }
       }
-    }`
-
+    `
     const { sale_artworks: { counts: { total }, edges } } = await execute(gravityResponse, query)
     expect(total).toEqual(totalCount)
     expect(edges.length).toEqual(hits.length)
@@ -64,19 +50,18 @@ describe("Sale Artworks", () => {
         },
       },
     }
-    const query = `{
-      sale_artworks(
-        size: 1
-      ) {
-        edges {
-          node {
-            id
+    const query = gql`
+      {
+        sale_artworks(size: 1) {
+          edges {
+            node {
+              id
+            }
           }
         }
       }
-    }`
-
-    const { sale_artworks: { edges } } = await execute(gravityResponse, query, { size })
+    `
+    const { sale_artworks: { edges } } = await execute(gravityResponse, query)
     expect(edges.length).toEqual(size)
   })
 
@@ -90,22 +75,23 @@ describe("Sale Artworks", () => {
         },
       },
     }
-    const query = `{
-      sale_artworks(first: 5) {
-        pageInfo {
-          startCursor
-          endCursor
-          hasNextPage
-        }
-        edges {
-          cursor
-          node {
-            id
+    const query = gql`
+      {
+        sale_artworks(first: 5) {
+          pageInfo {
+            startCursor
+            endCursor
+            hasNextPage
+          }
+          edges {
+            cursor
+            node {
+              id
+            }
           }
         }
       }
-    }`
-
+    `
     const { sale_artworks: { edges, pageInfo: { startCursor, endCursor, hasNextPage } } } = await execute(
       gravityResponse,
       query
@@ -115,13 +101,15 @@ describe("Sale Artworks", () => {
     expect(last.cursor).toEqual(endCursor)
     expect(hasNextPage).toEqual(true)
 
-    const query2 = `{
-      sale_artworks(after: "${last.cursor}") {
-        pageInfo {
-          hasNextPage
+    const query2 = gql`
+      {
+        sale_artworks(after: "${last.cursor}") {
+          pageInfo {
+            hasNextPage
+          }
         }
       }
-    }`
+    `
     const { sale_artworks: { pageInfo } } = await execute(gravityResponse, query2)
     expect(pageInfo.hasNextPage).toEqual(false)
   })
@@ -136,14 +124,15 @@ describe("Sale Artworks", () => {
         },
       },
     }
-    const query = `{
-      sale_artworks {
-        counts {
-          total
+    const query = gql`
+      {
+        sale_artworks {
+          counts {
+            total
+          }
         }
       }
-    }`
-
+    `
     const { sale_artworks: { counts: { total } } } = await execute(gravityResponse, query)
     expect(total).toEqual(hits.length)
   })
@@ -186,16 +175,17 @@ describe("Sale Artworks", () => {
       },
     }
 
-    const query = `{
-      sale_artworks(aggregations:[TOTAL, MEDIUM, FOLLOWED_ARTISTS]) {
-        aggregations {
-          counts {
-            id
+    const query = gql`
+      {
+        sale_artworks(aggregations: [TOTAL, MEDIUM, FOLLOWED_ARTISTS]) {
+          aggregations {
+            counts {
+              id
+            }
           }
         }
       }
-    }`
-
+    `
     const { sale_artworks: { aggregations } } = await execute(gravityResponse, query, {
       aggregations: ["total", "medium", "followed_artists"],
     })
