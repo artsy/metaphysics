@@ -1,11 +1,12 @@
 import _ from "lodash"
 import gql from "test/gql"
-import { runAuthenticatedQuery } from "test/utils"
+import { runQuery } from "test/utils"
 
 describe("Sale Artworks", () => {
-  const execute = async (gravityResponse, query) => {
-    return await runAuthenticatedQuery(query, {
+  const execute = async (gravityResponse, query, rootValue = {}) => {
+    return await runQuery(query, {
       saleArtworksFilterLoader: () => Promise.resolve(gravityResponse),
+      ...rootValue,
     })
   }
 
@@ -186,14 +187,64 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { aggregations } } = await execute(gravityResponse, query, {
-      aggregations: ["total", "medium", "followed_artists"],
-    })
+    const { sale_artworks: { aggregations } } = await execute(gravityResponse, query)
 
     expect(aggregations.length).toBeGreaterThan(0)
-
     aggregations.forEach(aggregation => {
       expect(aggregation.counts.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe("authentication", () => {
+    const hits = Array(10)
+    const gravityResponse = {
+      hits,
+      aggregations: {
+        total: {
+          value: hits.length,
+        },
+      },
+    }
+    const query = gql`
+      {
+        sale_artworks {
+          counts {
+            total
+          }
+        }
+      }
+    `
+    it("uses unauthenticated loaders by default", async () => {
+      const loaderSpy = jest.fn()
+      loaderSpy.mockReturnValue(Promise.resolve(gravityResponse))
+      const authLoaderSpy = jest.fn()
+      authLoaderSpy.mockReturnValue(Promise.resolve(gravityResponse))
+
+      const { sale_artworks: { counts: { total } } } = await execute(gravityResponse, query, {
+        saleArtworksFilterLoader: loaderSpy,
+        authenticatedSaleArtworksFilterLoader: authLoaderSpy,
+      })
+
+      expect(total).toEqual(hits.length)
+      expect(loaderSpy).toHaveBeenCalled()
+      expect(authLoaderSpy).not.toHaveBeenCalled()
+    })
+
+    it("uses authenticated loader if an accessToken is present", async () => {
+      const loaderSpy = jest.fn()
+      loaderSpy.mockReturnValue(Promise.resolve(gravityResponse))
+      const authLoaderSpy = jest.fn()
+      authLoaderSpy.mockReturnValue(Promise.resolve(gravityResponse))
+
+      const { sale_artworks: { counts: { total } } } = await execute(gravityResponse, query, {
+        accessToken: "foo",
+        saleArtworksFilterLoader: loaderSpy,
+        authenticatedSaleArtworksFilterLoader: authLoaderSpy,
+      })
+
+      expect(total).toEqual(hits.length)
+      expect(loaderSpy).not.toHaveBeenCalled()
+      expect(authLoaderSpy).toHaveBeenCalled()
     })
   })
 })
