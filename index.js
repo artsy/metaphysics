@@ -100,34 +100,36 @@ function trace(res, span, finishedSpans) {
   processFinishedSpans(finishedSpans)
 }
 
-app.use((req, res, next) => {
-  const tracer = new Tracer({ service: "metaphysics" })
-  const span = tracer.startSpan("metaphysics.query")
-  span.addTags({
-    type: "web",
-    "span.kind": "server",
-    "http.method": req.method,
-    "http.url": req.url,
+if (!isProduction) {
+  app.use((req, res, next) => {
+    const tracer = new Tracer({ service: "metaphysics" })
+    const span = tracer.startSpan("metaphysics.query")
+    span.addTags({
+      type: "web",
+      "span.kind": "server",
+      "http.method": req.method,
+      "http.url": req.url,
+    })
+
+    if (req.body && req.body.query) {
+      const query = drop_params(req.body.query)
+      span.addTags({ resource: query })
+    } else {
+      span.addTags({ resource: req.path })
+    }
+
+    assign(req, { span })
+
+    const finishedSpans = []
+    assign(req, { finishedSpans })
+
+    const finish = trace.bind(null, res, span, finishedSpans)
+    res.on("finish", finish)
+    res.on("close", finish)
+
+    next()
   })
-
-  if (req.body && req.body.query) {
-    const query = drop_params(req.body.query)
-    span.addTags({ resource: query })
-  } else {
-    span.addTags({ resource: req.path })
-  }
-
-  assign(req, { span })
-
-  const finishedSpans = []
-  assign(req, { finishedSpans })
-
-  const finish = trace.bind(null, res, span, finishedSpans)
-  res.on("finish", finish)
-  res.on("close", finish)
-
-  next()
-})
+}
 
 function wrapResolve(typeName, fieldName, resolver) {
   return function (root, opts, req, { rootValue }) {
@@ -160,16 +162,18 @@ function wrapResolve(typeName, fieldName, resolver) {
   }
 }
 
-// Walk the schema and for all object type fields with resolvers wrap them in our tracing resolver.
-forIn(schema._typeMap, function (type, typeName) {
-  if (!introspectionQuery[type] && has(type, "_fields")) {
-    forIn(type._fields, function (field, fieldName) {
-      if (field.resolve instanceof Function && getNamedType(field.type) instanceof GraphQLObjectType) {
-        field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
-      }
-    })
-  }
-})
+if (!isProduction) {
+  // Walk the schema and for all object type fields with resolvers wrap them in our tracing resolver.
+  forIn(schema._typeMap, function (type, typeName) {
+    if (!introspectionQuery[type] && has(type, "_fields")) {
+      forIn(type._fields, function (field, fieldName) {
+        if (field.resolve instanceof Function && getNamedType(field.type) instanceof GraphQLObjectType) {
+          field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
+        }
+      })
+    }
+  })
+}
 
 app.use(
   "/",
@@ -185,11 +189,17 @@ app.use(
     const timezone = request.headers["x-timezone"]
     const requestID = request.headers["x-request-id"] || uuid()
 
-    const span = request.span
-    const traceContext = span.context()
-    const traceId = traceContext.traceId
-    const parentSpanId = traceContext.spanId
-    const requestIDs = { requestID, traceId, parentSpanId }
+    const requestIDs = { requestID, parentSpanId: "", traceId: "" }
+    let span = null
+
+    if (!isProduction) {
+      span = request.span
+      const traceContext = span.context()
+      const traceId = traceContext.traceId
+      const parentSpanId = traceContext.spanId
+
+      assign(requestIDs, { traceId, parentSpanId })
+    }
 
     if (!isProduction) {
       fetchLoggerSetup(requestID)
