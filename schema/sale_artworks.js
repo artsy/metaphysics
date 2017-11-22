@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import SaleArtwork from "./sale_artwork"
 import { parseRelayOptions } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
@@ -26,9 +25,9 @@ export default {
   args: pageable(filterSaleArtworksArgs),
   description: "Sale Artworks Elastic Search results",
   type: SaleArtworksType,
-  resolve: async (_root, options, _request, { rootValue: { accessToken } }) => {
+  resolve: async (_root, options, _request, { rootValue: { saleArtworksFilterLoader } }) => {
     const params = parseRelayOptions({ ...DEFAULTS, ...options })
-    const response = await gravity.with(accessToken)("filter/sale_artworks", params)
+    const response = await saleArtworksFilterLoader(params)
     const data = {
       ...response,
       ...connectionFromArraySlice(response.hits, options, {
