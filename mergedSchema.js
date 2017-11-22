@@ -4,7 +4,6 @@ import { createHttpLink } from "apollo-link-http"
 import { setContext } from "apollo-link-context"
 import fetch from "node-fetch"
 
-import config from "./config"
 import localSchema from "./schema"
 
 function createConvectionLink() {
@@ -32,13 +31,10 @@ function createConvectionLink() {
       })
     }
 
-    // Otherwise use MP’s XApp token so that on startup MP can fetch Convection’s schema.
-    // TODO: Actually enable once Convection supports this.
+    // Otherwise use no authentication, which will likely only succceed for fetching the service’s (public) schema.
     return {
       headers: {
         ...context.headers,
-        // authorization: `XApp ${config.GRAVITY_XAPP_TOKEN}`,
-        authorization: `Bearer ${process.env.CONVECTION_TOKEN}`,
       },
     }
   })
