@@ -71,13 +71,31 @@ function drop_params(query) {
   return query.replace(/(\()([^\)]*)(\))/g, parse_args)
 }
 
-function trace(res, span) {
+function pushFinishedSpan(finishedSpans, span) {
+  const endTime = timestamp()
+  finishedSpans.push({ span, endTime })
+}
+
+function processFinishedSpans(finishedSpans) {
+  let i = 0
+  const iter = () => {
+    const entry = finishedSpans[i]
+    if (entry) {
+      const { span, endTime } = entry
+      span.finish(endTime)
+      i++
+      setImmediate(iter)
+    }
+  }
+  setImmediate(iter)
+}
+
+function trace(res, span, finishedSpans) {
   span.addTags({
     "http.status_code": res.statusCode,
   })
-  setImmediate(function () {
-    span.finish()
-  });
+  pushFinishedSpan(finishedSpans, span)
+  processFinishedSpans(finishedSpans)
 }
 
 app.use((req, res, next) => {
@@ -99,8 +117,12 @@ app.use((req, res, next) => {
 
   assign(req, { span })
 
-  res.on("finish", () => trace(res, span))
-  res.on("close", () => trace(res, span))
+  const finishedSpans = []
+  assign(req, { finishedSpans })
+
+  const finish = trace.bind(null, res, span, finishedSpans)
+  res.on("finish", finish)
+  res.on("close", finish)
 
   next()
 })
@@ -108,8 +130,9 @@ app.use((req, res, next) => {
 function wrapResolve(typeName, fieldName, resolver) {
   return function (root, opts, req, { rootValue }) {
     const parentSpan = rootValue.span
-    const span = parentSpan.tracer().startSpan("metaphysics.resolver." + typeName + "." + fieldName,
-      { childOf: parentSpan.context() })
+    const span = parentSpan
+      .tracer()
+      .startSpan("metaphysics.resolver." + typeName + "." + fieldName, { childOf: parentSpan.context() })
     span.addTags({
       resource: typeName + ": " + fieldName,
       type: "web",
@@ -119,22 +142,20 @@ function wrapResolve(typeName, fieldName, resolver) {
     // Set the parent context to this span for any sub resolvers.
     rootValue.span = span // eslint-disable-line no-param-reassign
 
-    const result = resolver.apply(this, arguments);
+    const result = resolver.apply(this, arguments)
 
     // Return parent context to our parent for any resolvers called after this one.
     rootValue.span = parentSpan // eslint-disable-line no-param-reassign
 
     if (result instanceof Promise) {
       return result.finally(function () {
-        const endTime = timestamp()
-        setImmediate(() => span.finish(endTime))
+        pushFinishedSpan(rootValue.finishedSpans, span)
       })
     }
 
-    const endTime = timestamp()
-    setImmediate(() => span.finish(endTime))
-    return result;
-  };
+    pushFinishedSpan(rootValue.finishedSpans, span)
+    return result
+  }
 }
 
 // Walk the schema and for all object type fields with resolvers wrap them in our tracing resolver.
@@ -145,9 +166,9 @@ forIn(schema._typeMap, function (value, key) {
       if (field.resolve instanceof Function) {
         field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
       }
-    });
+    })
   }
-});
+})
 
 app.use(
   "/",
@@ -188,6 +209,7 @@ app.use(
         userID,
         defaultTimezone,
         span,
+        finishedSpans: request.finishedSpans,
         ...createLoaders(accessToken, userID, requestIDs),
       },
       formatError: graphqlErrorHandler(request.body),
