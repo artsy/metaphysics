@@ -46,9 +46,6 @@ import UpdateConversationMutation from "./me/conversation/update_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
 import MarkReadMessageMutation from "./me/conversation/mark_read_message_mutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
-import CreateSubmissionMutation from "./me/consignments/create_submission_mutation"
-import UpdateSubmissionMutation from "./me/consignments/update_submission_mutation"
-import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_submission_mutation"
 import SaveArtworkMutation from "./me/save_artwork_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
@@ -126,9 +123,6 @@ const schema = new GraphQLSchema({
       sendConversationMessage: SendConversationMessageMutation,
       markReadMessage: MarkReadMessageMutation,
       saveArtwork: SaveArtworkMutation,
-      createConsignmentSubmission: CreateSubmissionMutation,
-      updateConsignmentSubmission: UpdateSubmissionMutation,
-      addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
     },

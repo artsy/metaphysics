@@ -1,3 +1,5 @@
+// TODO: @ts-check
+
 import { GraphQLString, GraphQLObjectType } from "graphql"
 import { has } from "lodash"
 
@@ -69,7 +71,7 @@ const Me = new GraphQLObjectType({
 
 export default {
   type: Me,
-  resolve: (root, options, request, { rootValue: { accessToken, userID }, fieldNodes }) => {
+  resolve: (_root, _options, _request, { rootValue: { accessToken, userID }, fieldNodes }) => {
     if (!accessToken) return null
 
     const blacklistedFields = [
