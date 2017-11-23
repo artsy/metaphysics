@@ -11,6 +11,7 @@ import forceSSL from "express-force-ssl"
 import graphqlHTTP from "express-graphql"
 import bodyParser from "body-parser"
 import { mergeSchemas } from "./lib/mergeSchemas"
+import localSchema from "./schema"
 import legacyLoaders from "./lib/loaders/legacy"
 import createLoaders from "./lib/loaders"
 import config from "./config"
@@ -24,12 +25,24 @@ import { middleware as requestIDsAdder } from "./lib/requestIDs"
 
 global.Promise = Bluebird
 
-const { PORT, NODE_ENV, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, QUERY_DEPTH_LIMIT } = process.env
+const {
+  PORT,
+  NODE_ENV,
+  GRAVITY_API_URL,
+  GRAVITY_ID,
+  GRAVITY_SECRET,
+  QUERY_DEPTH_LIMIT,
+  ENABLE_QUERY_TRACING,
+  ENABLE_SCHEMA_STITCHING,
+} = process.env
 
 const app = express()
 const port = PORT || 3000
 const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
+
 const isProduction = NODE_ENV === "production"
+const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
+const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 
 function startApp(schema) {
   if (isProduction) {
@@ -48,7 +61,8 @@ function startApp(schema) {
 
   app.use(bodyParser.json())
 
-  if (!isProduction) {
+  if (enableQueryTracing) {
+    console.warn("[FEATURE] Enabling query tracing")
     makeSchemaTraceable(schema)
     app.use(requestTracer)
   }
@@ -120,6 +134,11 @@ xapp.init(
   },
   () => {
     config.GRAVITY_XAPP_TOKEN = xapp.token
-    mergeSchemas().then(startApp)
+    if (enableSchemaStitching) {
+      console.warn("[FEATURE] Enabling schema stitching")
+      mergeSchemas().then(startApp)
+    } else {
+      startApp(localSchema)
+    }
   }
 )
