@@ -65,6 +65,14 @@ export default mutationWithClientMutationId({
       description: "The collector level for the user",
       type: GraphQLInt,
     },
+    price_range_min: {
+      description: "The minimum price collector has selected",
+      type: GraphQLInt,
+    },
+    price_range_max: {
+      description: "The maximum price collector has selected",
+      type: GraphQLInt,
+    },
   },
   outputFields: {
     user: {

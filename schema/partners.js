@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import Partner from "./partner"
 import PartnerTypeType from "./input_fields/partner_type_type"
 import { GraphQLString, GraphQLList, GraphQLBoolean, GraphQLInt, GraphQLEnumType } from "graphql"
@@ -84,7 +83,7 @@ const Partners = {
       type: new GraphQLList(PartnerTypeType),
     },
   },
-  resolve: (root, options) => gravity("partners", options),
+  resolve: (root, options, request, { rootValue: { partnersLoader } }) => partnersLoader("partners", options),
 }
 
 export default Partners
