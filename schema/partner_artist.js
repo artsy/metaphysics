@@ -4,6 +4,7 @@ import Artist from "./artist/index"
 import numeral from "./fields/numeral"
 import { IDFields } from "./object_identification"
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
+import { connectionDefinitions } from "graphql-relay"
 
 export const PartnerArtistType = new GraphQLObjectType({
   name: "PartnerArtist",
@@ -61,3 +62,7 @@ const PartnerArtist = {
 }
 
 export default PartnerArtist
+
+export const partnerArtistConnection = connectionDefinitions({
+  nodeType: PartnerArtistType,
+}).connectionType
