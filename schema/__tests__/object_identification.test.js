@@ -27,6 +27,13 @@ describe("Object Identification", () => {
         artists: null,
       },
     },
+    Partner: {
+      partnerLoader: {
+        id: "foo-bar",
+        has_full_profile: true,
+        profile_banner_display: false,
+      },
+    },
   }
 
   _.keys(loaderTests).forEach(typeName => {
@@ -82,12 +89,6 @@ describe("Object Identification", () => {
   })
 
   const tests = {
-    Partner: {
-      gravity: {
-        has_full_profile: true,
-        profile_banner_display: false,
-      },
-    },
     PartnerShow: {
       gravity: {
         displayable: true, // this is only so that the show doesn’t get rejected
