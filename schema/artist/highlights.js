@@ -24,8 +24,6 @@ const ArtistHighlightsType = new GraphQLObjectType({
         const gravityArgs = { total_count: true, size, offset, artist_id, represented_by, partner_category }
 
         return partnerArtistsLoader(gravityArgs).then(({ body, headers }) => {
-          console.log(body)
-          console.log(headers)
           return connectionFromArraySlice(body, options, {
             arrayLength: headers["x-total-count"],
             sliceStart: offset,

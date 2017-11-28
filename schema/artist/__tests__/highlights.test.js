@@ -10,7 +10,9 @@ describe("Artist Statuses", () => {
 
   beforeEach(() => {
     rootValue = {
-      partnerArtistsLoader: sinon.stub().returns(Promise.resolve([{ artist }])),
+      partnerArtistsLoader: sinon
+        .stub()
+        .returns(Promise.resolve({ headers: { "x-total-count": 1 }, body: [{ artist }] })),
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
     }
   })
@@ -20,9 +22,13 @@ describe("Artist Statuses", () => {
       {
         artist(id: "foo-bar") {
           highlights {
-            partner_artists {
-              artist {
-                id
+            partner_artists(first: 1) {
+              edges {
+                node {
+                  artist {
+                    id
+                  }
+                }
               }
             }
           }
@@ -33,13 +39,17 @@ describe("Artist Statuses", () => {
     const expectedHighlightData = {
       artist: {
         highlights: {
-          partner_artists: [
-            {
-              artist: {
-                id: "percy-z",
+          partner_artists: {
+            edges: [
+              {
+                node: {
+                  artist: {
+                    id: "percy-z",
+                  },
+                },
               },
-            },
-          ],
+            ],
+          },
         },
       },
     }
