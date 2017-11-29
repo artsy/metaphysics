@@ -24,9 +24,8 @@ const PopularArtists = {
       description: "Number of results to return",
     },
   },
-  resolve: ({ userID, popularArtistsLoader, authenticatedPopularArtistsLoader }, options) => {
-    const loader = userID ? authenticatedPopularArtistsLoader : popularArtistsLoader
-    return loader(options)
+  resolve: (_root, options, _request, { rootValue: { popularArtistsLoader } }) => {
+    return popularArtistsLoader(options)
   },
 }
 

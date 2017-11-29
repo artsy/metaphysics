@@ -20,7 +20,8 @@
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild": "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
+    "heroku-postbuild":
+      "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
     "precommit": "lint-staged",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"
@@ -29,6 +30,9 @@
   "license": "MIT",
   "dependencies": {
     "accounting": "^0.4.1",
+    "apollo-link": "^1.0.0",
+    "apollo-link-context": "^1.0.0",
+    "apollo-link-http": "^1.1.0",
     "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
     "artsy-newrelic": "^1.3.0",
     "artsy-xapp": "^1.0.4",
@@ -53,6 +57,7 @@
     "graphql": "^0.11.7",
     "graphql-depth-limit": "^1.1.0",
     "graphql-relay": "0.5.3",
+    "graphql-tools": "^2.8.0",
     "graphql-type-json": "^0.1.4",
     "i": "^0.3.5",
     "jwt-simple": "^0.5.0",
@@ -61,8 +66,10 @@
     "memjs": "^0.10.0",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
+    "node-fetch": "^1.7.3",
     "numeral": "^1.5.3",
     "opentracing": "^0.14.1",
+    "performance-now": "^2.1.0",
     "qs": "^5.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
@@ -100,15 +107,8 @@
     "typescript": "^2.5.2"
   },
   "jest": {
-    "testRegex": "/test/.*.js$",
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/test/helper.js",
-      "/test/utils.js",
-      "/test/gql.js",
-      "/test/__mocks__"
-    ]
+    "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/utils.js", "/test/gql.js", "/test/__mocks__"]
   },
   "prettier": {
     "printWidth": 120,
@@ -118,14 +118,7 @@
     "bracketSpacing": true
   },
   "lint-staged": {
-    "*.json": [
-      "yarn prettier --write",
-      "git add"
-    ],
-    "*.js": [
-      "eslint --fix",
-      "yarn prettier --write",
-      "git add"
-    ]
+    "*.json": ["yarn prettier --write", "git add"],
+    "*.js": ["eslint --fix", "yarn prettier --write", "git add"]
   }
 }

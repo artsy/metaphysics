@@ -2,42 +2,15 @@ import gravity from "lib/loaders/legacy/gravity"
 import { map, omit } from "lodash"
 import SaleArtwork from "./sale_artwork"
 import numeral from "./fields/numeral"
+import { GraphQLList, GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLID } from "graphql"
 import {
   SaleArtworksAggregationResultsType,
   SaleArtworksAggregation,
 } from "./aggregations/filter_sale_artworks_aggregation"
-import { GraphQLList, GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLID } from "graphql"
 
-export const FilterSaleArtworksType = new GraphQLObjectType({
-  name: "FilterSaleArtworks",
-  fields: () => ({
-    aggregations: {
-      description: "Returns aggregation counts for the given filter query.",
-      type: new GraphQLList(SaleArtworksAggregationResultsType),
-      resolve: ({ aggregations }) => {
-        const whitelistedAggregations = omit(aggregations, ["total", "followed_artists"])
-        return map(whitelistedAggregations, (counts, slice) => ({
-          slice,
-          counts,
-        }))
-      },
-    },
-    counts: {
-      type: new GraphQLObjectType({
-        name: "FilterSaleArtworksCounts",
-        fields: {
-          total: numeral(({ aggregations }) => aggregations.total.value),
-          followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
-        },
-      }),
-      resolve: artist => artist,
-    },
-    hits: {
-      description: "Sale Artwork results.",
-      type: new GraphQLList(SaleArtwork.type),
-    },
-  }),
-})
+/**
+ * NOTE: This type has been deprecated in favor of `SaleArtworks`.
+ */
 
 export const filterSaleArtworksArgs = {
   aggregations: {
@@ -69,9 +42,45 @@ export const filterSaleArtworksArgs = {
   },
 }
 
+export const SaleArtworkAggregations = {
+  description: "Returns aggregation counts for the given filter query.",
+  type: new GraphQLList(SaleArtworksAggregationResultsType),
+  resolve: ({ aggregations }) => {
+    const whitelistedAggregations = omit(aggregations, ["total", "followed_artists"])
+    return map(whitelistedAggregations, (counts, slice) => ({
+      slice,
+      counts,
+    }))
+  },
+}
+
+export const SaleArtworkCounts = {
+  type: new GraphQLObjectType({
+    name: "FilterSaleArtworksCounts",
+    fields: {
+      total: numeral(({ aggregations }) => aggregations.total.value),
+      followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
+    },
+  }),
+  resolve: artist => artist,
+}
+
+export const FilterSaleArtworksType = new GraphQLObjectType({
+  name: "FilterSaleArtworks",
+  fields: () => ({
+    aggregations: SaleArtworkAggregations,
+    counts: SaleArtworkCounts,
+    hits: {
+      description: "Sale Artwork results.",
+      type: new GraphQLList(SaleArtwork.type),
+    },
+  }),
+})
+
 const FilterSaleArtworks = {
   type: FilterSaleArtworksType,
   description: "Sale Artworks Elastic Search results",
+  deprecationReason: "This type has been superceded by `sale_artworks`",
   args: filterSaleArtworksArgs,
   resolve: (root, options, request, { rootValue: { accessToken } }) => {
     return gravity.with(accessToken)("filter/sale_artworks", options)

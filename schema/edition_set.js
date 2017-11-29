@@ -1,7 +1,10 @@
-import { isEmpty } from "lodash"
+import { isEmpty, includes } from "lodash"
 import { IDFields } from "./object_identification"
 import Dimensions from "./dimensions"
 import { GraphQLString, GraphQLBoolean, GraphQLObjectType } from "graphql"
+import { capitalizeFirstCharacter } from "lib/helpers"
+
+const EditionSetAvailabilities = ["sold", "on hold", "on loan", "permanent collection"]
 
 const EditionSetType = new GraphQLObjectType({
   name: "EditionSet",
@@ -29,6 +32,33 @@ const EditionSetType = new GraphQLObjectType({
       resolve: ({ price, forsale }) => {
         const fallback = forsale ? "Available" : "Not for Sale"
         return !isEmpty(price) ? price : fallback
+      },
+      deprecationReason: "Prefer to use `sale_message`.",
+    },
+    sale_message: {
+      type: GraphQLString,
+      resolve: ({ availability, availability_hidden, price, forsale }) => {
+        // Don't display anything if availability is hidden.
+        if (availability_hidden) {
+          return null
+        }
+
+        // If it's a supported availability, just return it (capitalized).
+        if (includes(EditionSetAvailabilities, availability)) {
+          return capitalizeFirstCharacter(availability)
+        }
+
+        // If there's a price string, just return it.
+        if (!isEmpty(price)) {
+          return price
+        }
+
+        // If its for sale (and no price), return 'Available'.
+        if (forsale) {
+          return "Available"
+        }
+
+        return "No longer available"
       },
     },
   },

@@ -12,6 +12,25 @@ import ArtworkSorts from "./sorts/artwork_sorts"
 
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLInt, GraphQLList, GraphQLBoolean } from "graphql"
 
+const PartnerCategoryType = new GraphQLObjectType({
+  name: "Category",
+  desciption: "Fields of partner category (currently from Gravity).",
+  fields: {
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    category_type: {
+      type: GraphQLString,
+    },
+    internal: {
+      type: GraphQLBoolean,
+    },
+    name: {
+      type: GraphQLString,
+    },
+  },
+})
+
 const PartnerType = new GraphQLObjectType({
   name: "Partner",
   interfaces: [NodeInterface],
@@ -45,6 +64,10 @@ const PartnerType = new GraphQLObjectType({
             })
           ).then(exclude(options.exclude, "id"))
         },
+      },
+      categories: {
+        type: new GraphQLList(PartnerCategoryType),
+        resolve: ({ partner_categories }) => partner_categories,
       },
       collecting_institution: {
         type: GraphQLString,
@@ -170,7 +193,7 @@ const Partner = {
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (root, { id }) => gravity(`partner/${id}`),
+  resolve: (root, { id }, _request, { rootValue: { partnerLoader } }) => partnerLoader(id),
 }
 
 export default Partner

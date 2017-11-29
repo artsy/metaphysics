@@ -83,7 +83,7 @@ const Partners = {
       type: new GraphQLList(PartnerTypeType),
     },
   },
-  resolve: (root, options, request, { rootValue: { partnersLoader } }) => partnersLoader("partners", options),
+  resolve: (root, options, request, { rootValue: { partnersLoader } }) => partnersLoader(options),
 }
 
 export default Partners
