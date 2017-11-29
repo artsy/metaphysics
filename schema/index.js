@@ -12,7 +12,6 @@ import ExternalPartner from "./external_partner"
 import Fair from "./fair"
 import Fairs from "./fairs"
 import Gene from "./gene"
-import SuggestedGenes from "./suggested_genes"
 import GeneFamilies from "./gene_families"
 import GeneFamily from "./gene_family"
 import HomePage from "./home"
@@ -25,6 +24,7 @@ import FilterPartners from "./filter_partners"
 import filterArtworks from "./filter_artworks"
 import FilterSaleArtworks from "./filter_sale_artworks"
 import FollowArtist from "./me/follow_artist"
+import FollowGene from "./me/follow_gene"
 import PartnerCategory from "./partner_category"
 import PartnerCategories from "./partner_categories"
 import PartnerShow from "./partner_show"
@@ -36,6 +36,7 @@ import SaleArtwork from "./sale_artwork"
 import SaleArtworks from "./sale_artworks"
 import Search from "./search"
 import Show from "./show"
+import SuggestedGenes from "./suggested_genes"
 import Tag from "./tag"
 import TrendingArtists from "./artists/trending"
 import MatchArtist from "./match/artist"
@@ -131,6 +132,7 @@ const schema = new GraphQLSchema({
     name: "Mutation",
     fields: {
       followArtist: FollowArtist,
+      followGene: FollowGene,
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
