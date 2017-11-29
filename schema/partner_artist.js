@@ -6,9 +6,19 @@ import { IDFields } from "./object_identification"
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 
-export const PartnerArtistType = new GraphQLObjectType({
-  name: "PartnerArtist",
-  fields: () => ({
+const counts = {
+  type: new GraphQLObjectType({
+    name: "PartnerArtistCounts",
+    fields: {
+      artworks: numeral(({ published_artworks_count }) => published_artworks_count),
+      for_sale_artworks: numeral(({ published_for_sale_artworks_count }) => published_for_sale_artworks_count),
+    },
+  }),
+  resolve: partner_artist => partner_artist,
+}
+
+const fields = () => {
+  return {
     ...IDFields,
     artist: {
       type: Artist.type,
@@ -16,16 +26,7 @@ export const PartnerArtistType = new GraphQLObjectType({
     biography: {
       type: GraphQLString,
     },
-    counts: {
-      type: new GraphQLObjectType({
-        name: "PartnerArtistCounts",
-        fields: {
-          artworks: numeral(({ published_artworks_count }) => published_artworks_count),
-          for_sale_artworks: numeral(({ published_for_sale_artworks_count }) => published_for_sale_artworks_count),
-        },
-      }),
-      resolve: partner_artist => partner_artist,
-    },
+    counts,
     is_display_on_partner_profile: {
       type: GraphQLBoolean,
       resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
@@ -42,7 +43,12 @@ export const PartnerArtistType = new GraphQLObjectType({
     sortable_id: {
       type: GraphQLString,
     },
-  }),
+  }
+}
+
+export const PartnerArtistType = new GraphQLObjectType({
+  name: "PartnerArtist",
+  fields,
 })
 
 const PartnerArtist = {
@@ -63,6 +69,16 @@ const PartnerArtist = {
 
 export default PartnerArtist
 
-export const partnerArtistConnection = connectionDefinitions({
+// export const partnerArtistConnection = connectionDefinitions({
+//   nodeType: PartnerArtistType,
+// }).connectionType
+
+// export const { edgeType: PartnerArtistEdge } = connectionDefinitions({
+//   nodeType: PartnerArtistType,
+// }).connectionType
+
+export const PartnerArtistConnection = connectionDefinitions({
+  name: "PartnerArtistConnection",
   nodeType: PartnerArtistType,
+  edgeFields: fields,
 }).connectionType

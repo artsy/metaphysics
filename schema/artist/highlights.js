@@ -1,5 +1,5 @@
 import { GraphQLBoolean, GraphQLObjectType, GraphQLList, GraphQLString } from "graphql"
-import { partnerArtistConnection } from "../partner_artist"
+import { PartnerArtistConnection } from "../partner_artist"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 
@@ -7,7 +7,7 @@ const ArtistHighlightsType = new GraphQLObjectType({
   name: "ArtistHighlights",
   fields: {
     partner_artists: {
-      type: partnerArtistConnection,
+      type: PartnerArtistConnection,
       args: pageable({
         represented_by: {
           type: GraphQLBoolean,
@@ -24,10 +24,12 @@ const ArtistHighlightsType = new GraphQLObjectType({
         const gravityArgs = { total_count: true, size, offset, artist_id, represented_by, partner_category }
 
         return partnerArtistsLoader(gravityArgs).then(({ body, headers }) => {
-          return connectionFromArraySlice(body, options, {
+          const connection = connectionFromArraySlice(body, options, {
             arrayLength: headers["x-total-count"],
             sliceStart: offset,
           })
+          debugger
+          return connection
         })
       },
     },

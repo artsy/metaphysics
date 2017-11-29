@@ -1,7 +1,6 @@
 // @ts-check
 import type { GraphQLFieldConfig } from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
-import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { assign, compact, defaults, first, has, reject, includes } from "lodash"
 import { exclude } from "lib/helpers"
 import cached from "schema/fields/cached"
@@ -14,6 +13,7 @@ import Artwork, { artworkConnection } from "schema/artwork"
 import PartnerArtist from "schema/partner_artist"
 import Meta from "./meta"
 import PartnerShow from "schema/partner_show"
+import { PartnerArtistConnection } from "schema/partner_artist"
 import Show from "schema/show"
 import Sale from "schema/sale/index"
 import ArtworkSorts from "schema/sorts/artwork_sorts"
@@ -29,6 +29,7 @@ import total from "lib/loaders/legacy/total"
 import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
+import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 
 const artistArtworkArrayLength = (artist, filter) => {
   let length
@@ -426,6 +427,49 @@ export const ArtistType = new GraphQLObjectType({
       },
       name: {
         type: GraphQLString,
+      },
+      partners: {
+        type: PartnerArtistConnection,
+        args: pageable({
+          represented_by: {
+            type: GraphQLBoolean,
+          },
+          partner_category: {
+            type: new GraphQLList(GraphQLString),
+          },
+        }),
+        resolve: ({ id: artist_id }, options, _request, { rootValue: { partnerArtistsLoader } }) => {
+          // Convert `after` cursors to page params
+          const { limit: size, offset } = getPagingParameters(options)
+          // Construct an object of all the params gravity will listen to
+          const { represented_by, partner_category } = options
+          const gravityArgs = { total_count: true, size, offset, artist_id, represented_by, partner_category }
+
+          return partnerArtistsLoader(gravityArgs).then(({ body, headers }) => {
+            const connection = connectionFromArraySlice(body, options, {
+              arrayLength: headers["x-total-count"],
+              sliceStart: offset,
+            })
+
+            // Inject the partner artist data into edges
+            let newEdges = []
+            connection.edges.forEach(edge => {
+              edge = assign(
+                {
+                  ...edge.node,
+                },
+                {},
+                edge
+              )
+              edge.node = edge.partner
+              newEdges = newEdges.concat(edge)
+            })
+            debugger
+            connection.edges = newEdges
+
+            return connection
+          })
+        },
       },
       partner_artists: {
         type: new GraphQLList(PartnerArtist.type),
