@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UpdateSubmissionMutation updates a submission and returns its new data payload 1`] = `
+Object {
+  "updateConsignmentSubmission": Object {
+    "clientMutationId": "123123",
+    "consignment_submission": Object {
+      "depth": "1000",
+    },
+  },
+}
+`;
