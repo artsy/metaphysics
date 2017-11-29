@@ -1396,9 +1396,9 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-"datadog-tracer@github:saolsen/datadog-tracer-js#2a566437913cda63359e5098595c5fc85fe004aa":
+"datadog-tracer@github:saolsen/datadog-tracer-js#200d0af065b93e6af7160ab1c7499b394da5506f":
   version "0.4.1"
-  resolved "https://codeload.github.com/saolsen/datadog-tracer-js/tar.gz/2a566437913cda63359e5098595c5fc85fe004aa"
+  resolved "https://codeload.github.com/saolsen/datadog-tracer-js/tar.gz/200d0af065b93e6af7160ab1c7499b394da5506f"
   dependencies:
     "@protobufjs/eventemitter" "^1.1.0"
     es6-promise "^4.1.1"
