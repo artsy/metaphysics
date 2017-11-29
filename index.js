@@ -82,7 +82,7 @@ function startApp(schema) {
       const userID = req.headers["x-user-id"]
       const timezone = req.headers["x-timezone"]
 
-      const { requestIDs, span, finishedSpans } = res.locals
+      const { requestIDs, span } = res.locals
       const requestID = requestIDs.requestID
 
       if (!isProduction) {
@@ -108,7 +108,6 @@ function startApp(schema) {
           userID,
           defaultTimezone,
           span,
-          finishedSpans,
           ...createLoaders(accessToken, userID, requestIDs),
         },
         formatError: graphqlErrorHandler(req.body),
