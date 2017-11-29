@@ -1,5 +1,3 @@
-// @ts-check
-
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
@@ -83,15 +81,17 @@ const GeneType = new GraphQLObjectType({
          *        compose authenticated and unauthenticated loaders based on the request?
          *        Here’s an example of such a setup https://gist.github.com/alloy/69bb274039ecd552de76c3f1739c519e
          */
-        return gravity.with(accessToken)("filter/artworks", gravityOptions).then(({ aggregations, hits }) => {
-          return Object.assign(
-            { aggregations }, // Add data to connection so the `aggregations` connection field can resolve it
-            connectionFromArraySlice(hits, options, {
-              arrayLength: aggregations.total.value,
-              sliceStart: gravityOptions.offset,
-            })
-          )
-        })
+        return gravity
+          .with(accessToken)("filter/artworks", gravityOptions)
+          .then(({ aggregations, hits }) => {
+            return Object.assign(
+              { aggregations }, // Add data to connection so the `aggregations` connection field can resolve it
+              connectionFromArraySlice(hits, options, {
+                arrayLength: aggregations.total.value,
+                sliceStart: gravityOptions.offset,
+              })
+            )
+          })
       },
     },
     description: {

@@ -26,7 +26,7 @@ describe("UpdateSubmissionMutation", () => {
           }
         ) {
           clientMutationId
-          submission {
+          consignment_submission {
             artist_id
             authenticity_certificate
             id
@@ -40,6 +40,8 @@ describe("UpdateSubmissionMutation", () => {
         Promise.resolve({
           id: "106",
           artist_id: "andy-warhol",
+          authenticity_certificate: true,
+          dimensions_metric: "cm",
         }),
     }
 

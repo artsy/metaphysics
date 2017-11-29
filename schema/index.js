@@ -58,6 +58,9 @@ import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
 import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
+const { ENABLE_SCHEMA_STITCHING } = process.env
+const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
+
 const rootFields = {
   article: Article,
   articles: Articles,
@@ -115,6 +118,14 @@ const Viewer = {
   resolve: x => x,
 }
 
+const convectionMutations = enableSchemaStitching
+  ? {}
+  : {
+    createConsignmentSubmission: CreateSubmissionMutation,
+    updateConsignmentSubmission: UpdateSubmissionMutation,
+    addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
+  }
+
 const schema = new GraphQLSchema({
   mutation: new GraphQLObjectType({
     name: "Mutation",
@@ -126,11 +137,9 @@ const schema = new GraphQLSchema({
       sendConversationMessage: SendConversationMessageMutation,
       markReadMessage: MarkReadMessageMutation,
       saveArtwork: SaveArtworkMutation,
-      createConsignmentSubmission: CreateSubmissionMutation,
-      updateConsignmentSubmission: UpdateSubmissionMutation,
-      addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
+      ...convectionMutations,
     },
   }),
   query: new GraphQLObjectType({

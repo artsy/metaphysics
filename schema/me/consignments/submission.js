@@ -1,6 +1,17 @@
 // @ts-check
 
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean, GraphQLEnumType, GraphQLInt } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLBoolean,
+  GraphQLEnumType,
+  GraphQLInt,
+  GraphQLID,
+} from "graphql"
+import * as _ from "lodash"
+import { GravityIDFields, NodeInterface } from "schema/object_identification"
+import Artist from "schema/artist"
 
 export const SubmissionDimensionAggregation = new GraphQLEnumType({
   name: "SubmissionDimensionAggregation",
@@ -74,17 +85,22 @@ export const SubmissionStateAggregation = new GraphQLEnumType({
     SUBMITTED: {
       value: "submitted",
     },
+    APPROVED: {
+      value: "approved",
+    },
+    REJECTED: {
+      value: "rejected",
+    },
   },
 })
 
 export const SubmissionType = new GraphQLObjectType({
-  name: "Submission",
+  name: "ConsignmentSubmission",
   description: "A work to be consigned to the user",
+  interfaces: [NodeInterface],
+  isTypeOf: obj => _.has(obj, "authenticity_certificate") && _.has(obj, "artist_id"),
   fields: {
-    id: {
-      description: "Convection id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    ...GravityIDFields,
     artist_id: {
       decription: "The gravity ID for an Artist",
       type: new GraphQLNonNull(GraphQLString),
@@ -160,6 +176,17 @@ export const SubmissionType = new GraphQLObjectType({
     year: {
       description: "The year the work was created",
       type: GraphQLString,
+    },
+    user_id: {
+      description: "The user who submitted the work",
+      type: GraphQLID,
+    },
+    artist: {
+      type: Artist.type,
+      resolve: ({ artist_id }, _args, _request, { rootValue: { artistLoader } }) => {
+        if (!artist_id) return null
+        return artistLoader(artist_id).catch(() => null)
+      },
     },
   },
 })

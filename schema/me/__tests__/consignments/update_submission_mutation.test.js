@@ -20,7 +20,7 @@ describe("UpdateSubmissionMutation", () => {
           input: { id: "108", artist_id: "andy-warhol", depth: "123", clientMutationId: "123123" }
         ) {
           clientMutationId
-          submission {
+          consignment_submission {
             depth
           }
         }
@@ -32,6 +32,8 @@ describe("UpdateSubmissionMutation", () => {
         Promise.resolve({
           id: "106",
           artist_id: "andy-warhol",
+          authenticity_certificate: true,
+          depth: "1000",
         }),
     }
 

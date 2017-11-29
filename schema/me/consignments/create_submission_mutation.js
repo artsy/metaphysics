@@ -8,10 +8,10 @@ export const config = {
   name: "CreateSubmissionMutation",
   description: "Create a new consignment submission using Convection",
   inputFields: {
-    ...omit(SubmissionType.getFields(), ["id"]),
+    ...omit(SubmissionType.getFields(), ["id", "_id", "__id", "artist"]),
   },
   outputFields: {
-    submission: {
+    consignment_submission: {
       type: SubmissionType,
       resolve: response => response,
     },
