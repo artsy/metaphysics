@@ -1,9 +1,10 @@
 import SaleArtwork from "./sale_artwork"
-import { parseRelayOptions } from "lib/helpers"
-import { pageable } from "relay-cursor-paging"
+import { GraphQLObjectType } from "graphql"
+import { SaleArtworkAggregations, SaleArtworkCounts } from "schema/filter_sale_artworks"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { filterSaleArtworksArgs } from "schema/filter_sale_artworks"
-import { SaleArtworkAggregations, SaleArtworkCounts } from "schema/filter_sale_artworks"
+import { pageable } from "relay-cursor-paging"
+import { parseRelayOptions } from "lib/helpers"
 
 const DEFAULTS = {
   aggregations: ["total"],
@@ -22,20 +23,29 @@ const SaleArtworksType = connectionDefinitions({
 }).connectionType
 
 export default {
-  args: pageable(filterSaleArtworksArgs),
   description: "Sale Artworks Elastic Search results",
-  type: SaleArtworksType,
-  resolve: async (_root, options, _request, { rootValue: { saleArtworksFilterLoader } }) => {
-    const params = parseRelayOptions({ ...DEFAULTS, ...options })
-    const response = await saleArtworksFilterLoader(params)
-    const data = {
-      ...response,
-      ...connectionFromArraySlice(response.hits, options, {
-        arrayLength: response.aggregations.total.value,
-        sliceStart: params.offset,
-      }),
-    }
+  args: pageable(filterSaleArtworksArgs),
+  type: new GraphQLObjectType({
+    name: "SaleArtworks",
+    fields: {
+      connection: {
+        args: pageable(filterSaleArtworksArgs),
+        type: SaleArtworksType,
+        resolve: async (_root, options, _request, { rootValue: { saleArtworksFilterLoader } }) => {
+          const params = parseRelayOptions({ ...DEFAULTS, ...options })
+          const response = await saleArtworksFilterLoader(params)
+          const data = {
+            ...response,
+            ...connectionFromArraySlice(response.hits, options, {
+              arrayLength: response.aggregations.total.value,
+              sliceStart: params.offset,
+            }),
+          }
 
-    return data
-  },
+          return data
+        },
+      },
+    },
+  }),
+  resolve: x => x,
 }
