@@ -1,5 +1,3 @@
-// TODO: @ts-check
-
 import { GraphQLString, GraphQLObjectType } from "graphql"
 import { has } from "lodash"
 
@@ -28,6 +26,16 @@ import Notifications from "./notifications"
 import SaleRegistrations from "./sale_registrations"
 import SavedArtworks from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
+import Submissions from "./consignments/submissions"
+
+const { ENABLE_SCHEMA_STITCHING } = process.env
+const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
+
+const mySubmissions = enableSchemaStitching
+  ? {}
+  : {
+    consignment_submissions: Submissions,
+  }
 
 const Me = new GraphQLObjectType({
   name: "Me",
@@ -35,6 +43,7 @@ const Me = new GraphQLObjectType({
   isTypeOf: obj => has(obj, "email") && has(obj, "is_collector"),
   fields: {
     ...IDFields,
+    ...mySubmissions,
     artwork_inquiries_connection: ArtworkInquiries,
     bidders: Bidders,
     bidder_status: BidderStatus,
@@ -71,7 +80,7 @@ const Me = new GraphQLObjectType({
 
 export default {
   type: Me,
-  resolve: (_root, _options, _request, { rootValue: { accessToken, userID }, fieldNodes }) => {
+  resolve: (root, options, request, { rootValue: { accessToken, userID }, fieldNodes }) => {
     if (!accessToken) return null
 
     const blacklistedFields = [
@@ -92,9 +101,12 @@ export default {
       "collector_profile",
       "artwork_inquiries_connection",
       "notifications_connection",
+      "consignment_submissions",
     ]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return gravity.with(accessToken)("me").catch(() => null)
+      return gravity
+        .with(accessToken)("me")
+        .catch(() => null)
     }
 
     // The email and is_collector are here so that the type system's `isTypeOf`
