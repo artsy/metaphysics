@@ -21,6 +21,12 @@ describe("Artist type", () => {
             organization: "Christie's",
             category_text: "an old guitar",
             id: "1",
+            images: [
+              {
+                thumbnail: "https://path.to.thumbnail.jpg",
+                larger: "https://path.to.larger.jpg",
+              },
+            ],
           },
         ],
       },
@@ -43,6 +49,14 @@ describe("Artist type", () => {
             edges {
               node {
                 category_text
+                images {
+                  thumbnail {
+                    image_url
+                  }
+                  larger {
+                    image_url
+                  }
+                }
               }
             }
           }
@@ -58,6 +72,14 @@ describe("Artist type", () => {
               {
                 node: {
                   category_text: "an old guitar",
+                  images: {
+                    thumbnail: {
+                      image_url: "https://path.to.thumbnail.jpg",
+                    },
+                    larger: {
+                      image_url: "https://path.to.larger.jpg",
+                    },
+                  },
                 },
               },
             ],

@@ -4,6 +4,7 @@ import { IDFields, NodeInterface } from "./object_identification"
 import { GraphQLFloat, GraphQLNonNull, GraphQLString, GraphQLObjectType } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 import { has } from "lodash"
+import Image from "schema/image"
 
 const AuctionResultType = new GraphQLObjectType({
   name: "AuctionResult",
@@ -68,6 +69,28 @@ const AuctionResultType = new GraphQLObjectType({
     },
     external_url: {
       type: GraphQLString,
+    },
+    images: {
+      type: new GraphQLObjectType({
+        name: "AuctionLotImages",
+        fields: {
+          larger: {
+            type: Image.type,
+          },
+          thumbnail: {
+            type: Image.type,
+          },
+        },
+      }),
+      resolve: ({ images }) => {
+        if (images.length < 1) {
+          return null
+        }
+        return {
+          larger: Image.resolve(images[0].larger),
+          thumbnail: Image.resolve(images[0].thumbnail),
+        }
+      },
     },
     low_estimate: amount(({ low_estimate_cents_usd }) => low_estimate_cents_usd),
     high_estimate: amount(({ high_estimate_cents_usd }) => high_estimate_cents_usd),
