@@ -1,15 +1,26 @@
 import date from "./fields/date"
 import { amount } from "./fields/money"
 import { IDFields, NodeInterface } from "./object_identification"
-import { GraphQLFloat, GraphQLNonNull, GraphQLString, GraphQLObjectType } from "graphql"
+import { GraphQLFloat, GraphQLNonNull, GraphQLString, GraphQLObjectType, GraphQLEnumType } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 import { has } from "lodash"
 import Image from "schema/image"
 
+export const AuctionResultSorts = {
+  type: new GraphQLEnumType({
+    name: "AuctionResultSorts",
+    values: {
+      PRICE_AND_DATE_DESC: {
+        value: "-price_realized_cents_usd,-sale_date",
+      },
+    },
+  }),
+}
+
 const AuctionResultType = new GraphQLObjectType({
   name: "AuctionResult",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "dimension_text") && has(obj, "organization"),
+  isTypeOf: obj => has(obj, "sale_date") && has(obj, "organization"),
   fields: () => ({
     ...IDFields,
     title: {
