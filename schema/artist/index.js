@@ -23,7 +23,7 @@ import SaleSorts from "schema/sale/sorts"
 import ArtistCarousel from "./carousel"
 import ArtistStatuses from "./statuses"
 import ArtistHighlights from "./highlights"
-import { auctionResultConnection } from "schema/auction_result"
+import { auctionResultConnection, AuctionResultSorts } from "schema/auction_result"
 import ArtistArtworksFilters from "./artwork_filters"
 import positron from "lib/loaders/legacy/positron"
 import total from "lib/loaders/legacy/total"
@@ -197,11 +197,13 @@ export const ArtistType = new GraphQLObjectType({
       },
       auctionResults: {
         type: auctionResultConnection,
-        args: pageable({}),
+        args: pageable({
+          sort: AuctionResultSorts,
+        }),
         resolve: ({ _id }, options, _request, { rootValue: { auctionLotLoader } }) => {
           // Convert `after` cursors to page params
           const { page, size, offset } = parseRelayOptions(options)
-          const diffusionArgs = { page, size, artist_id: _id }
+          const diffusionArgs = { page, size, artist_id: _id, sort: options.sort }
           return auctionLotLoader(diffusionArgs).then(({ total_count, _embedded }) => {
             return connectionFromArraySlice(_embedded.items, options, {
               arrayLength: total_count,

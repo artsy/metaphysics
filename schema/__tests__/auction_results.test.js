@@ -20,6 +20,7 @@ describe("Artist type", () => {
             dimension_text: "20 x 20",
             organization: "Christie's",
             category_text: "an old guitar",
+            sale_date: "yesterday",
             id: "1",
             images: [
               {
