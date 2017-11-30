@@ -76,7 +76,7 @@ describe("Sale Artworks", () => {
         },
       },
     }
-    const query = gql`
+    let query = gql`
       {
         sale_artworks(first: 5) {
           pageInfo {
@@ -102,16 +102,16 @@ describe("Sale Artworks", () => {
     expect(last.cursor).toEqual(endCursor)
     expect(hasNextPage).toEqual(true)
 
-    const query2 = gql`
+    query = gql`
       {
-        sale_artworks(after: "${last.cursor}") {
+        sale_artworks(first: 15, after: "${last.cursor}") {
           pageInfo {
             hasNextPage
           }
         }
       }
     `
-    const { sale_artworks: { pageInfo } } = await execute(gravityResponse, query2)
+    const { sale_artworks: { pageInfo } } = await execute(gravityResponse, query)
     expect(pageInfo.hasNextPage).toEqual(false)
   })
 
