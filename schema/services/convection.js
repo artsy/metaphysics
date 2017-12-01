@@ -1,29 +1,21 @@
 // @ts-check
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
 
 const ConvectionSchema = new GraphQLObjectType({
   name: "Convection",
   fields: () => ({
-    api_base: {
-      type: GraphQLString,
-    },
-    app_id: {
-      type: GraphQLString,
-    },
-    gemini_app_id: {
-      type: GraphQLString,
+    geminiTemplateKey: {
+      type: new GraphQLNonNull(GraphQLString),
     },
   }),
 })
 
 const Convection = {
   type: ConvectionSchema,
-  description: "The schema for microservice settings",
+  description: "The schema for convection's ENV settings",
   args: {},
   resolve: () => ({
-    api_base: process.env.CONVECTION_API_BASE,
-    app_id: process.env.CONVECTION_APP_ID,
-    gemini_app_id: process.env.CONVECTION_GEMINI_APP,
+    geminiTemplateKey: process.env.CONVECTION_GEMINI_TEMPLATE,
   }),
 }
 

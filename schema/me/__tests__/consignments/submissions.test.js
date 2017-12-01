@@ -17,7 +17,7 @@ describe("submissions", () => {
                   name
                 }
               }
-            }
+             }
           }
         }
       }
