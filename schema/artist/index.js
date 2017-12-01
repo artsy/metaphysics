@@ -451,20 +451,19 @@ export const ArtistType = new GraphQLObjectType({
               sliceStart: offset,
             })
 
-            // Inject the partner artist data into edges
+            // Inject the partner artist data into edges, and set the partner as the node.
             let newEdges = []
             connection.edges.forEach(edge => {
-              edge = assign(
+              const newEdge = assign(
                 {
                   ...edge.node,
                 },
                 {},
                 edge
               )
-              edge.node = edge.partner
-              newEdges = newEdges.concat(edge)
+              newEdge.node = edge.node.partner
+              newEdges = newEdges.concat(newEdge)
             })
-            debugger
             connection.edges = newEdges
 
             return connection

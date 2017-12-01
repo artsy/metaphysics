@@ -33,6 +33,7 @@ const fields = () => {
     },
     is_represented_by: {
       type: GraphQLBoolean,
+      resolve: ({ represented_by }) => represented_by,
     },
     is_use_default_biography: {
       type: GraphQLBoolean,
@@ -69,16 +70,11 @@ const PartnerArtist = {
 
 export default PartnerArtist
 
-// export const partnerArtistConnection = connectionDefinitions({
-//   nodeType: PartnerArtistType,
-// }).connectionType
-
-// export const { edgeType: PartnerArtistEdge } = connectionDefinitions({
-//   nodeType: PartnerArtistType,
-// }).connectionType
-
+// The below can be used as the connection from an artist to its partners.
+// The edge is the PartnerArtist relationship, with the node being the partner.
 export const PartnerArtistConnection = connectionDefinitions({
   name: "PartnerArtistConnection",
-  nodeType: PartnerArtistType,
+  edgeType: PartnerArtistType,
+  nodeType: Partner.type,
   edgeFields: fields,
 }).connectionType

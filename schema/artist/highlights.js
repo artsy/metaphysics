@@ -2,11 +2,12 @@ import { GraphQLBoolean, GraphQLObjectType, GraphQLList, GraphQLString } from "g
 import { PartnerArtistConnection } from "../partner_artist"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
+import { assign } from "lodash"
 
 const ArtistHighlightsType = new GraphQLObjectType({
   name: "ArtistHighlights",
   fields: {
-    partner_artists: {
+    partners: {
       type: PartnerArtistConnection,
       args: pageable({
         represented_by: {
@@ -28,7 +29,21 @@ const ArtistHighlightsType = new GraphQLObjectType({
             arrayLength: headers["x-total-count"],
             sliceStart: offset,
           })
-          debugger
+          // Inject the partner artist data into edges, and set the partner as the node.
+          let newEdges = []
+          connection.edges.forEach(edge => {
+            const newEdge = assign(
+              {
+                ...edge.node,
+              },
+              {},
+              edge
+            )
+            newEdge.node = edge.node.partner
+            newEdges = newEdges.concat(newEdge)
+          })
+          connection.edges = newEdges
+
           return connection
         })
       },
