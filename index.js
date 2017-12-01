@@ -62,7 +62,7 @@ function startApp(schema) {
   app.use(bodyParser.json())
 
   if (enableQueryTracing) {
-    console.warn("[FEATURE] Enabling query tracing")
+    console.warn("[FEATURE] Enabling query tracing") // eslint-disable-line
     makeSchemaTraceable(schema)
     app.use(requestTracer)
   }
@@ -134,7 +134,7 @@ xapp.init(
   () => {
     config.GRAVITY_XAPP_TOKEN = xapp.token
     if (enableSchemaStitching) {
-      console.warn("[FEATURE] Enabling schema stitching")
+      console.warn("[FEATURE] Enabling schema stitching") // eslint-disable-line
       mergeSchemas().then(startApp)
     } else {
       startApp(localSchema)
