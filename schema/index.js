@@ -35,6 +35,7 @@ import Sales from "./sales"
 import SaleArtwork from "./sale_artwork"
 import SaleArtworks from "./sale_artworks"
 import Search from "./search"
+import Services from "./services"
 import Show from "./show"
 import SuggestedGenes from "./suggested_genes"
 import Tag from "./tag"
@@ -100,6 +101,7 @@ const rootFields = {
   sale_artworks: SaleArtworks,
   sales: Sales,
   search: Search,
+  services: Services,
   show: Show,
   status: Status,
   tag: Tag,
