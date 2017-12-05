@@ -1,4 +1,3 @@
-// @ts-check
 import Artwork from "schema/artwork"
 import Image from "schema/image/index"
 import Profile from "schema/profile"
@@ -24,6 +23,13 @@ import {
   GraphQLInt,
   GraphQLFloat,
 } from "graphql"
+
+const { PREDICTION_ENDPOINT } = process.env
+
+const isLiveOpen = (sale) => {
+  const liveStart = moment(sale.live_start_at)
+  return sale.auction_state === "open" && (moment().isAfter(liveStart) || moment().isSame(liveStart))
+}
 
 const BidIncrement = new GraphQLObjectType({
   name: "BidIncrement",
@@ -174,10 +180,7 @@ const SaleType = new GraphQLObjectType({
       },
       is_live_open: {
         type: GraphQLBoolean,
-        resolve: ({ auction_state, live_start_at }) => {
-          const liveStart = moment(live_start_at)
-          return auction_state === "open" && (moment().isAfter(liveStart) || moment().isSame(liveStart))
-        },
+        resolve: isLiveOpen,
       },
       is_preview: {
         type: GraphQLBoolean,
@@ -192,6 +195,15 @@ const SaleType = new GraphQLObjectType({
         resolve: ({ buyers_premium }) => buyers_premium,
       },
       live_start_at: date,
+      live_url_if_open: {
+        type: GraphQLString,
+        description: "Returns a live auctions url if the sale is open and start time is after now",
+        resolve: (sale) => {
+          if (isLiveOpen(sale)) {
+            return PREDICTION_ENDPOINT + "/" + sale.id
+          }
+        },
+      },
       profile: {
         type: Profile.type,
         resolve: ({ profile }) => profile,
