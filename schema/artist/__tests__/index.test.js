@@ -15,6 +15,7 @@ describe("Artist type", () => {
       birthday: null,
       artworks_count: 42,
       partner_shows_count: 42,
+      collections: "Catty Art Collections\nMatt's Personal Art Collection",
     }
 
     rootValue = {
@@ -135,6 +136,24 @@ describe("Artist type", () => {
       expect(data).toEqual({
         artist: {
           has_metadata: false,
+        },
+      })
+    })
+  })
+
+  it("rincludes collections data", () => {
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          collections
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(data => {
+      expect(data).toEqual({
+        artist: {
+          collections: ["Catty Art Collections", "Matt's Personal Art Collection"],
         },
       })
     })
