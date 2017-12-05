@@ -8,9 +8,24 @@ describe("Artist Statuses", () => {
     artworks_count: 420,
   }
 
+  const partnerArtistResp = [
+    {
+      artist,
+      partner: {
+        id: "catty-gallery",
+        name: "Catty Gallery",
+        has_full_profile: true,
+        profile_banner_display: true,
+      },
+      represented_by: true,
+    },
+  ]
+
   beforeEach(() => {
     rootValue = {
-      partnerArtistsLoader: sinon.stub().returns(Promise.resolve([{ artist }])),
+      partnerArtistsLoader: sinon
+        .stub()
+        .returns(Promise.resolve({ headers: { "x-total-count": 1 }, body: partnerArtistResp })),
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
     }
   })
@@ -20,9 +35,13 @@ describe("Artist Statuses", () => {
       {
         artist(id: "foo-bar") {
           highlights {
-            partner_artists {
-              artist {
-                id
+            partners(first: 1) {
+              edges {
+                is_represented_by
+                node {
+                  id
+                  name
+                }
               }
             }
           }
@@ -33,13 +52,17 @@ describe("Artist Statuses", () => {
     const expectedHighlightData = {
       artist: {
         highlights: {
-          partner_artists: [
-            {
-              artist: {
-                id: "percy-z",
+          partners: {
+            edges: [
+              {
+                is_represented_by: true,
+                node: {
+                  id: "catty-gallery",
+                  name: "Catty Gallery",
+                },
               },
-            },
-          ],
+            ],
+          },
         },
       },
     }

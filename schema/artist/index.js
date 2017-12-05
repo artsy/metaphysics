@@ -1,7 +1,6 @@
 // @ts-check
 import type { GraphQLFieldConfig } from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
-import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { assign, compact, defaults, first, has, reject, includes } from "lodash"
 import { exclude } from "lib/helpers"
 import cached from "schema/fields/cached"
@@ -14,6 +13,7 @@ import Artwork, { artworkConnection } from "schema/artwork"
 import PartnerArtist from "schema/partner_artist"
 import Meta from "./meta"
 import PartnerShow from "schema/partner_show"
+import { PartnerArtistConnection, partnersForArtist } from "schema/partner_artist"
 import Show from "schema/show"
 import Sale from "schema/sale/index"
 import ArtworkSorts from "schema/sorts/artwork_sorts"
@@ -30,6 +30,7 @@ import total from "lib/loaders/legacy/total"
 import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
+import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
 
 const artistArtworkArrayLength = (artist, filter) => {
@@ -445,6 +446,20 @@ export const ArtistType = new GraphQLObjectType({
       },
       name: {
         type: GraphQLString,
+      },
+      partners: {
+        type: PartnerArtistConnection,
+        args: pageable({
+          represented_by: {
+            type: GraphQLBoolean,
+          },
+          partner_category: {
+            type: new GraphQLList(GraphQLString),
+          },
+        }),
+        resolve: ({ id: artist_id }, options, _request, { rootValue: { partnerArtistsLoader } }) => {
+          return partnersForArtist(artist_id, options, partnerArtistsLoader)
+        },
       },
       partner_artists: {
         type: new GraphQLList(PartnerArtist.type),
