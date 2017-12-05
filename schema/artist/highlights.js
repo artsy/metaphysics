@@ -1,8 +1,6 @@
 import { GraphQLBoolean, GraphQLObjectType, GraphQLList, GraphQLString } from "graphql"
-import { PartnerArtistConnection } from "../partner_artist"
-import { pageable, getPagingParameters } from "relay-cursor-paging"
-import { connectionFromArraySlice } from "graphql-relay"
-import { assign } from "lodash"
+import { PartnerArtistConnection, partnersForArtist } from "../partner_artist"
+import { pageable } from "relay-cursor-paging"
 
 const ArtistHighlightsType = new GraphQLObjectType({
   name: "ArtistHighlights",
@@ -18,34 +16,7 @@ const ArtistHighlightsType = new GraphQLObjectType({
         },
       }),
       resolve: ({ id: artist_id }, options, _request, { rootValue: { partnerArtistsLoader } }) => {
-        // Convert `after` cursors to page params
-        const { limit: size, offset } = getPagingParameters(options)
-        // Construct an object of all the params gravity will listen to
-        const { represented_by, partner_category } = options
-        const gravityArgs = { total_count: true, size, offset, artist_id, represented_by, partner_category }
-
-        return partnerArtistsLoader(gravityArgs).then(({ body, headers }) => {
-          const connection = connectionFromArraySlice(body, options, {
-            arrayLength: headers["x-total-count"],
-            sliceStart: offset,
-          })
-          // Inject the partner artist data into edges, and set the partner as the node.
-          let newEdges = []
-          connection.edges.forEach(edge => {
-            const newEdge = assign(
-              {
-                ...edge.node,
-              },
-              {},
-              edge
-            )
-            newEdge.node = edge.node.partner
-            newEdges = newEdges.concat(newEdge)
-          })
-          connection.edges = newEdges
-
-          return connection
-        })
+        return partnersForArtist(artist_id, options, partnerArtistsLoader)
       },
     },
   },

@@ -7,9 +7,7 @@ import { SaleArtworkAggregations, SaleArtworkCounts } from "schema/filter_sale_a
 
 const DEFAULTS = {
   aggregations: ["total"],
-  page: 1,
-  size: 10,
-  offset: 0,
+  first: 10,
 }
 
 const SaleArtworksType = connectionDefinitions({
@@ -26,11 +24,12 @@ export default {
   description: "Sale Artworks Elastic Search results",
   type: SaleArtworksType,
   resolve: async (_root, options, _request, { rootValue: { saleArtworksFilterLoader } }) => {
-    const params = parseRelayOptions({ ...DEFAULTS, ...options })
+    const relayOptions = { ...DEFAULTS, ...options }
+    const params = parseRelayOptions(relayOptions)
     const response = await saleArtworksFilterLoader(params)
     const data = {
       ...response,
-      ...connectionFromArraySlice(response.hits, options, {
+      ...connectionFromArraySlice(response.hits, relayOptions, {
         arrayLength: response.aggregations.total.value,
         sliceStart: params.offset,
       }),

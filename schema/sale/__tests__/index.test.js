@@ -137,6 +137,62 @@ describe("Sale type", () => {
     })
   })
 
+  describe("live_url", () => {
+    it("returns live_url if is_live_open", () => {
+      sale.is_live_open = true
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            live_url_if_open
+          }
+        }
+      `
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            live_url_if_open: "https://live.artsy.net/foo-foo",
+          },
+        })
+      })
+    })
+
+    it("returns live_url if live_start_at < now", () => {
+      sale.live_start_at = moment().subtract(2, "days")
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            live_url_if_open
+          }
+        }
+      `
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            live_url_if_open: "https://live.artsy.net/foo-foo",
+          },
+        })
+      })
+    })
+
+    it("returns null if not is_live_open", () => {
+      sale.live_start_at = moment().add(2, "days")
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            live_url_if_open
+          }
+        }
+      `
+      return runQuery(query).then(data => {
+        expect(data).toEqual({
+          sale: {
+            live_url_if_open: null,
+          },
+        })
+      })
+    })
+  })
+
   describe("sale_artworks_connection", () => {
     it("returns data from gravity", () => {
       const query = `
@@ -157,7 +213,12 @@ describe("Sale type", () => {
       `
       sale.eligible_sale_artworks_count = 20
       const rootValue = {
-        saleArtworksLoader: () => Promise.resolve(fill(Array(sale.eligible_sale_artworks_count), { id: "some-id" })),
+        saleArtworksLoader: () =>
+          Promise.resolve(
+            fill(Array(sale.eligible_sale_artworks_count), {
+              id: "some-id",
+            })
+          ),
       }
 
       return runAuthenticatedQuery(query, rootValue).then(data => {
@@ -183,27 +244,35 @@ describe("Sale type", () => {
       gravity = sinon.stub()
       gravity.withArgs("sale/foo-foo").returns(Promise.resolve(sale))
       gravity
-        .withArgs("sale/foo-foo/sale_artworks", { page: 1, size: 25, all: false })
+        .withArgs("sale/foo-foo/sale_artworks", {
+          page: 1,
+          size: 25,
+          all: false,
+        })
         .returns(Promise.resolve(saleArtworks))
-      gravity.withArgs("increments", { key: "default" }).returns(
-        Promise.resolve([
-          {
-            key: "default",
-            increments: [
-              {
-                from: 0,
-                to: 399999,
-                amount: 5000,
-              },
-              {
-                from: 400000,
-                to: 1000000,
-                amount: 10000,
-              },
-            ],
-          },
-        ])
-      )
+      gravity
+        .withArgs("increments", {
+          key: "default",
+        })
+        .returns(
+          Promise.resolve([
+            {
+              key: "default",
+              increments: [
+                {
+                  from: 0,
+                  to: 399999,
+                  amount: 5000,
+                },
+                {
+                  from: 400000,
+                  to: 1000000,
+                  amount: 10000,
+                },
+              ],
+            },
+          ])
+        )
       Sale.__Rewire__("gravity", gravity)
       SaleArtwork.__Rewire__("gravity", gravity)
     })

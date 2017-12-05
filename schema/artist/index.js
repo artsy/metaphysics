@@ -13,7 +13,7 @@ import Artwork, { artworkConnection } from "schema/artwork"
 import PartnerArtist from "schema/partner_artist"
 import Meta from "./meta"
 import PartnerShow from "schema/partner_show"
-import { PartnerArtistConnection } from "schema/partner_artist"
+import { PartnerArtistConnection, partnersForArtist } from "schema/partner_artist"
 import Show from "schema/show"
 import Sale from "schema/sale/index"
 import ArtworkSorts from "schema/sorts/artwork_sorts"
@@ -23,6 +23,7 @@ import SaleSorts from "schema/sale/sorts"
 import ArtistCarousel from "./carousel"
 import ArtistStatuses from "./statuses"
 import ArtistHighlights from "./highlights"
+import { auctionResultConnection, AuctionResultSorts } from "schema/auction_result"
 import ArtistArtworksFilters from "./artwork_filters"
 import positron from "lib/loaders/legacy/positron"
 import total from "lib/loaders/legacy/total"
@@ -30,6 +31,7 @@ import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt } from "graphql"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
+import { parseRelayOptions } from "lib/helpers"
 
 const artistArtworkArrayLength = (artist, filter) => {
   let length
@@ -192,6 +194,23 @@ export const ArtistType = new GraphQLObjectType({
               sliceStart: offset,
             })
           )
+        },
+      },
+      auctionResults: {
+        type: auctionResultConnection,
+        args: pageable({
+          sort: AuctionResultSorts,
+        }),
+        resolve: ({ _id }, options, _request, { rootValue: { auctionLotLoader } }) => {
+          // Convert `after` cursors to page params
+          const { page, size, offset } = parseRelayOptions(options)
+          const diffusionArgs = { page, size, artist_id: _id, sort: options.sort }
+          return auctionLotLoader(diffusionArgs).then(({ total_count, _embedded }) => {
+            return connectionFromArraySlice(_embedded.items, options, {
+              arrayLength: total_count,
+              sliceStart: offset,
+            })
+          })
         },
       },
       bio: {
@@ -439,35 +458,7 @@ export const ArtistType = new GraphQLObjectType({
           },
         }),
         resolve: ({ id: artist_id }, options, _request, { rootValue: { partnerArtistsLoader } }) => {
-          // Convert `after` cursors to page params
-          const { limit: size, offset } = getPagingParameters(options)
-          // Construct an object of all the params gravity will listen to
-          const { represented_by, partner_category } = options
-          const gravityArgs = { total_count: true, size, offset, artist_id, represented_by, partner_category }
-
-          return partnerArtistsLoader(gravityArgs).then(({ body, headers }) => {
-            const connection = connectionFromArraySlice(body, options, {
-              arrayLength: headers["x-total-count"],
-              sliceStart: offset,
-            })
-
-            // Inject the partner artist data into edges, and set the partner as the node.
-            let newEdges = []
-            connection.edges.forEach(edge => {
-              const newEdge = assign(
-                {
-                  ...edge.node,
-                },
-                {},
-                edge
-              )
-              newEdge.node = edge.node.partner
-              newEdges = newEdges.concat(newEdge)
-            })
-            connection.edges = newEdges
-
-            return connection
-          })
+          return partnersForArtist(artist_id, options, partnerArtistsLoader)
         },
       },
       partner_artists: {
