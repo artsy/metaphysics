@@ -296,6 +296,15 @@ export const ArtistType = new GraphQLObjectType({
         },
       },
       carousel: ArtistCarousel,
+      collections: {
+        type: new GraphQLList(GraphQLString),
+        resolve: ({ collections }) => {
+          if (!collections) {
+            return null
+          }
+          return collections.split("\n")
+        },
+      },
       contemporary: {
         type: new GraphQLList(Artist.type), // eslint-disable-line no-use-before-define
         args: {
