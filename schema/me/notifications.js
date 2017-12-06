@@ -7,6 +7,7 @@ import Image from "schema/image"
 import { GraphQLEnumType, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
 import { has } from "lodash"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
+import { concat } from "apollo-link"
 
 const NotificationsFeedItemType = new GraphQLObjectType({
   name: "NotificationsFeedItem",
@@ -53,7 +54,12 @@ const Notifications = {
   type: connectionDefinitions({ nodeType: NotificationsFeedItemType }).connectionType,
   description: "A list of feed items, indicating published artworks (grouped by date and artists).",
   args: pageable({}),
-  resolve: (root, options, request, { rootValue: { notificationsLoader } }) => {
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { notificationsLoader, followedArtistsLoader, artistArtworksLoader } }
+  ) => {
     if (!notificationsLoader) return null
     const { limit: size, offset } = getPagingParameters(options)
     const gravityArgs = {
@@ -61,12 +67,26 @@ const Notifications = {
       offset,
       total_count: true,
     }
-    return notificationsLoader(gravityArgs).then(({ feed, total }) =>
-      connectionFromArraySlice(feed, options, {
-        arrayLength: total,
-        sliceStart: offset,
-      })
-    )
+    return notificationsLoader(gravityArgs).then(({ feed, total }) => {
+      if (!total) {
+        return followedArtistsLoader(gravityArgs).then(({ body }) => {
+          if (!body) {
+            return null
+          }
+
+          body.forEach(item => {
+            return artistArtworksLoader(item.artist.id, { size: 6, published: true }).then(results =>
+              console.log(results)
+            )
+          })
+        })
+      } else {
+        return connectionFromArraySlice(feed, options, {
+          arrayLength: total,
+          sliceStart: offset,
+        })
+      }
+    })
   },
 }
 
