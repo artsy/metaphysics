@@ -54,15 +54,18 @@ const Notifications = {
   type: connectionDefinitions({ nodeType: NotificationsFeedItemType }).connectionType,
   description: "A list of feed items, indicating published artworks (grouped by date and artists).",
   args: pageable({}),
+  deprecationReason: "Prefer to use followed_artists_artwork_groups.",
   resolve: (root, options, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return null
     const gravityOptions = parseRelayOptions(options)
-    return gravity.with(accessToken)("me/notifications/feed", omit(gravityOptions, "offset")).then(({ feed, total }) =>
-      connectionFromArraySlice(feed, options, {
-        arrayLength: total,
-        sliceStart: gravityOptions.offset,
-      })
-    )
+    return gravity
+      .with(accessToken)("me/notifications/feed", omit(gravityOptions, "offset"))
+      .then(({ feed, total }) =>
+        connectionFromArraySlice(feed, options, {
+          arrayLength: total,
+          sliceStart: gravityOptions.offset,
+        })
+      )
   },
 }
 
