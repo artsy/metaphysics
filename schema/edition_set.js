@@ -55,7 +55,7 @@ const EditionSetType = new GraphQLObjectType({
 
         // If its for sale (and no price), return 'Available'.
         if (forsale) {
-          return "Available"
+          return "Contact for price"
         }
 
         return "No longer available"
