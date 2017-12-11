@@ -75,7 +75,7 @@ export default PartnerArtist
 // The below can be used as the connection from an artist to its partners.
 // The edge is the PartnerArtist relationship, with the node being the partner.
 export const PartnerArtistConnection = connectionDefinitions({
-  name: "PartnerArtistConnection",
+  name: "PartnerArtist",
   edgeType: PartnerArtistType,
   nodeType: Partner.type,
   edgeFields: fields,
