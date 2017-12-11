@@ -7,14 +7,16 @@ describe("Me", () => {
       const query = `
         {
           me {
-            followed_artists_artwork_groups(first: 10) {
-              pageInfo {
-                hasNextPage
-              }
-              edges {
-                node {
-                  summary
-                  artists
+            followsAndSaves {
+              bundledArtworksByArtist(first: 10) {
+                pageInfo {
+                  hasNextPage
+                }
+                edges {
+                  node {
+                    summary
+                    artists
+                  }
                 }
               }
             }
@@ -48,8 +50,8 @@ describe("Me", () => {
 
       return runAuthenticatedQuery(query, {
         followedArtistsArtworksLoader: () => Promise.resolve(artworkResponse),
-      }).then(({ me: { followed_artists_artwork_groups } }) => {
-        expect(followed_artists_artwork_groups).toEqual(expectedConnectionData)
+      }).then(({ me: { followsAndSaves: { bundledArtworksByArtist } } }) => {
+        expect(bundledArtworksByArtist).toEqual(expectedConnectionData)
       })
     })
   })

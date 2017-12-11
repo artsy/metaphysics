@@ -54,8 +54,16 @@ const Me = new GraphQLObjectType({
     },
     follow_artists: FollowArtists,
     followed_artists_connection: FollowedArtists,
-    followed_artists_artwork_groups: FollowedArtistsArtworkGroups,
     followed_genes: FollowedGenes,
+    followsAndSaves: {
+      type: new GraphQLObjectType({
+        name: "FollowsAndSaves",
+        fields: {
+          bundledArtworksByArtist: FollowedArtistsArtworkGroups,
+        },
+      }),
+      resolve: () => ({}),
+    },
     invoice: Invoice,
     lot_standing: LotStanding,
     lot_standings: LotStandings,
@@ -80,7 +88,6 @@ export default {
   type: Me,
   resolve: (root, options, request, { rootValue: { accessToken, userID }, fieldNodes }) => {
     if (!accessToken) return null
-
     const blacklistedFields = [
       "id",
       "__id",
@@ -100,7 +107,7 @@ export default {
       "artwork_inquiries_connection",
       "notifications_connection",
       "consignment_submissions",
-      "followed_artists_artwork_groups",
+      "followsAndSaves",
     ]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return gravity
