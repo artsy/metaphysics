@@ -308,7 +308,7 @@ describe("Gene", () => {
       `
 
       const rootValue = {
-        similarGeneLoader: () =>
+        similarGenesLoader: () =>
           Promise.resolve({
             body: [
               {

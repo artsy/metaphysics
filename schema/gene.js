@@ -138,11 +138,11 @@ export const GeneType = new GraphQLObjectType({
           },
         }),
         description: "A list of genes similar to the specified gene",
-        resolve: (gene, options, request, { rootValue: { similarGeneLoader } }) => {
+        resolve: (gene, options, request, { rootValue: { similarGenesLoader } }) => {
           const { limit: size, offset } = getPagingParameters(options)
           const gravityArgs = { size, offset, exclude_gene_ids: options.exclude_gene_ids, total_count: true }
 
-          return similarGeneLoader(gene.id, gravityArgs).then(({ body, headers }) => {
+          return similarGenesLoader(gene.id, gravityArgs).then(({ body, headers }) => {
             const genes = body
             const totalCount = headers["x-total-count"]
 
