@@ -17,6 +17,7 @@ import CollectorProfile from "./collector_profile"
 import Conversation from "./conversation"
 import Conversations from "./conversations"
 import FollowArtists from "./follow_artists"
+import FollowedArtistsArtworkGroups from "./followed_artists_artworks_group"
 import FollowedArtists from "./followed_artists"
 import FollowedGenes from "./followed_genes"
 import Invoice from "./conversation/invoice"
@@ -31,11 +32,7 @@ import Submissions from "./consignments/submissions"
 const { ENABLE_SCHEMA_STITCHING } = process.env
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 
-const mySubmissions = enableSchemaStitching
-  ? {}
-  : {
-    consignment_submissions: Submissions,
-  }
+const mySubmissions = enableSchemaStitching ? {} : { consignment_submissions: Submissions }
 
 const Me = new GraphQLObjectType({
   name: "Me",
@@ -58,6 +55,15 @@ const Me = new GraphQLObjectType({
     follow_artists: FollowArtists,
     followed_artists_connection: FollowedArtists,
     followed_genes: FollowedGenes,
+    followsAndSaves: {
+      type: new GraphQLObjectType({
+        name: "FollowsAndSaves",
+        fields: {
+          bundledArtworksByArtist: FollowedArtistsArtworkGroups,
+        },
+      }),
+      resolve: () => ({}),
+    },
     invoice: Invoice,
     lot_standing: LotStanding,
     lot_standings: LotStandings,
@@ -82,7 +88,6 @@ export default {
   type: Me,
   resolve: (root, options, request, { rootValue: { accessToken, userID }, fieldNodes }) => {
     if (!accessToken) return null
-
     const blacklistedFields = [
       "id",
       "__id",
@@ -102,6 +107,7 @@ export default {
       "artwork_inquiries_connection",
       "notifications_connection",
       "consignment_submissions",
+      "followsAndSaves",
     ]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return gravity
