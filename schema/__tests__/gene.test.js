@@ -269,6 +269,84 @@ describe("Gene", () => {
     })
   })
 
+  describe("similar", () => {
+    const Gene = schema.__get__("Gene")
+
+    beforeEach(() => {
+      Gene.__ResetDependency__("gravity")
+      const gravity = sinon.stub()
+      gravity.with = sinon.stub().returns(gravity)
+      const gene = {
+        id: "500-1000-ce",
+        browseable: true,
+        family: "",
+        counts: { artists: 20 },
+      }
+
+      gravity.onCall(0).returns(Promise.resolve(Object.assign({}, gene)))
+
+      Gene.__Rewire__("gravity", gravity)
+    })
+
+    it("returns similar genes", () => {
+      const query = `
+        {
+          gene(id: "500-1000-ce") {
+            similar(first: 1) {
+              edges {
+                node {
+                  id
+                  name
+                }
+              }
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const rootValue = {
+        similarGenesLoader: () =>
+          Promise.resolve({
+            body: [
+              {
+                id: "pop-art",
+                name: "Pop Art",
+                browseable: true,
+                family: "",
+                counts: { artists: 20 },
+              },
+            ],
+            headers: {
+              "x-total-count": 1,
+            },
+          }),
+      }
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          gene: {
+            similar: {
+              edges: [
+                {
+                  node: {
+                    id: "pop-art",
+                    name: "Pop Art",
+                  },
+                },
+              ],
+              pageInfo: {
+                hasNextPage: false,
+              },
+            },
+          },
+        })
+      })
+    })
+  })
+
   // The key distinction here is that because the query contains
   // metadata about the gene, then gravity will have to be called,
   // and in the test mocked out. Whereas above, it does not need
