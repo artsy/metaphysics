@@ -25,9 +25,14 @@ const ArtworkFilterTagType = create(Tag.type, {
   isTypeOf: ({ context_type }) => context_type === "Tag",
 })
 
+const ArtworkFilterGeneType = create(Tag.type, {
+  name: "ArtworkFilterGene",
+  isTypeOf: ({ context_type }) => context_type === "Gene",
+})
+
 export const ArtworkFilterFacetType = new GraphQLUnionType({
   name: "ArtworkFilterFacet",
-  types: [ArtworkFilterTagType],
+  types: [ArtworkFilterTagType, ArtworkFilterGeneType],
 })
 
 export const ArtworkFilterAggregations = {
@@ -101,10 +106,13 @@ export const FilterArtworksType = new GraphQLObjectType({
     },
     facet: {
       type: ArtworkFilterFacetType,
-      resolve: ({ options }) => {
-        const { tag_id } = options
+      resolve: ({ options }, _options, _request, { rootValue: { geneLoader } }) => {
+        const { tag_id, gene_id } = options
         if (tag_id) {
           return gravity(`tag/${tag_id}`).then(tag => assign({ context_type: "Tag" }, tag))
+        }
+        if (gene_id) {
+          return geneLoader(gene_id).then(gene => assign({ context_type: "Gene" }, gene))
         }
         return null
       },
@@ -219,9 +227,9 @@ function filterArtworks(primaryKey) {
         delete gravityOptions.medium
       }
 
-      return gravity.with(accessToken)("filter/artworks", gravityOptions).then(response =>
-        assign({}, response, { options: gravityOptions })
-      )
+      return gravity
+        .with(accessToken)("filter/artworks", gravityOptions)
+        .then(response => assign({}, response, { options: gravityOptions }))
     },
   }
 }
