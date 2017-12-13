@@ -34,16 +34,18 @@ describe("SuggestedGenes type", () => {
       {
         suggested_genes {
           id
-          name
-          image_url
           _id
+          name
+          image {
+            url
+          }
         }
       }
     `
 
     return runQuery(query, {}).then(data => {
       expect(data.suggested_genes[0]._id).toBe("123456")
-      expect(data.suggested_genes[0].image_url).toBe("photography.jpg")
+      expect(data.suggested_genes[0].image.url).toBe("photography.jpg")
     })
   })
 })
