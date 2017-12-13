@@ -21,7 +21,7 @@
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
     "heroku-postbuild":
-      "babel index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
+      "babel ./src/index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
     "precommit": "lint-staged",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"
@@ -29,6 +29,7 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
+    "@artsy/express-reloadable": "^1.1.1",
     "accounting": "^0.4.1",
     "apollo-link": "^1.0.0",
     "apollo-link-context": "^1.0.0",
@@ -107,8 +108,14 @@
     "typescript": "^2.5.2"
   },
   "jest": {
-    "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
-    "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/utils.js", "/test/gql.js", "/test/__mocks__"]
+    "setupTestFrameworkScriptFile": "<rootDir>/src/test/helper.js",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/test/helper.js",
+      "src/test/utils.js",
+      "src/test/gql.js",
+      "src/test/__mocks__"
+    ]
   },
   "prettier": {
     "printWidth": 120,

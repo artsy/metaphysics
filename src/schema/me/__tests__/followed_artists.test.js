@@ -4,7 +4,7 @@ import { runAuthenticatedQuery } from "test/utils"
 import gql from "test/gql"
 
 it("returns artists for a user", () => {
-  const artworksPath = resolve("test", "fixtures", "gravity", "follow_artists.json")
+  const artworksPath = resolve("src", "test", "fixtures", "gravity", "follow_artists.json")
   const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
 
   const followedArtistsLoader = sinon
