@@ -1,2 +1,2 @@
-web: node_modules/.bin/babel-watch --inspect src/index.js
+web: node_modules/.bin/babel-watch --inspect index.js
 memcached: memcached -p 11211
