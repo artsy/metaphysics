@@ -1,9 +1,12 @@
 {
   "presets": ["es2015"],
   "plugins": [
-    ["module-resolver", {
-      "root": ["./"]
-    }],
+    [
+      "module-resolver",
+      {
+        "root": ["./src"]
+      }
+    ],
     "transform-object-rest-spread",
     "transform-flow-strip-types"
   ],

@@ -46,7 +46,7 @@ describe("Collections", () => {
     })
 
     it("returns artworks for a collection", () => {
-      const artworksPath = resolve("test", "fixtures", "gravity", "artworks_array.json")
+      const artworksPath = resolve("src", "test", "fixtures", "gravity", "artworks_array.json")
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
       gravity
         .withArgs("collection/saved-artwork/artworks", {
