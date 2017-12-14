@@ -1,13 +1,9 @@
 import moment from "moment"
-import schema from "schema"
-import { clone, fill } from "lodash"
+import { fill } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "test/utils"
 
 describe("Sale type", () => {
-  let gravity
-  const Sale = schema.__get__("Sale")
-
-  let sale = {
+  const sale = {
     id: "foo-foo",
     _id: "123",
     currency: "$",
@@ -122,9 +118,11 @@ describe("Sale type", () => {
     })
   })
 
-  describe("live_url", () => {
-    it("returns live_url if is_live_open", async () => {
+  describe("live_url_if_open", () => {
+    it("returns live_url_if_open if is_live_open", async () => {
+      sale.auction_state = "open"
       sale.is_live_open = true
+      sale.live_start_at = moment().subtract(2, "days")
       const query = `
         {
           sale(id: "foo-foo") {
@@ -139,7 +137,8 @@ describe("Sale type", () => {
       })
     })
 
-    it("returns live_url if live_start_at < now", async () => {
+    it("returns live_url_if_open if live_start_at < now", async () => {
+      sale.auction_state = "open"
       sale.live_start_at = moment().subtract(2, "days")
       const query = `
         {
@@ -156,6 +155,7 @@ describe("Sale type", () => {
     })
 
     it("returns null if not is_live_open", async () => {
+      sale.auction_state = "open"
       sale.live_start_at = moment().add(2, "days")
       const query = `
         {
@@ -328,7 +328,7 @@ describe("Sale type", () => {
       {
         sale(id: "foo-foo") {
           _id
-          associated_sale{
+          associated_sale {
             id
           }
         }
@@ -359,12 +359,11 @@ describe("Sale type", () => {
     })
   })
 
-  // FIXME
-  xdescribe("display_start_time", () => {
+  describe("display_timely_at", () => {
     const testData = [
       [
         {
-          is_live_open: true,
+          auction_state: "open",
           live_start_at: moment().subtract(1, "days"),
           registration_ends_at: moment().subtract(2, "days"),
         },
@@ -372,7 +371,7 @@ describe("Sale type", () => {
       ],
       [
         {
-          is_live_open: true,
+          auction_state: "open",
           live_start_at: moment().subtract(2, "days"),
           registration_ends_at: moment().subtract(3, "days"),
         },
@@ -464,49 +463,29 @@ describe("Sale type", () => {
       ],
     ]
 
-    it("returns proper labels", async () => {
-      const prevSale = () => clone(sale)
-
-      testData.forEach(([saleTime, expectedLabelOutput]) => {
-        sale = {
-          id: "foo-foo",
-          _id: "123",
-          ...saleTime,
+    const query = `
+      {
+        sale(id: "foo-foo") {
+          display_timely_at
         }
+      }
+    `
 
-        // console.log(sale)
-
-        gravity = sinon
-          .stub()
-          .withArgs("sale/foo-foo")
-          .returns(Promise.resolve(sale))
-
-        Sale.__Rewire__("gravity", gravity)
-
-        const query = `
-          {
-            sale(id: "foo-foo") {
-              display_timely_at
-            }
-          }
-        `
-
-        runQuery(query)
-          .then(data => {
-            // console.log(data)
-            expect(true).toEqual(true)
-            // Sale.__ResetDependency__("gravity")
+    it("returns proper labels", async () => {
+      const results = await Promise.all(
+        testData.map(async ([input]) => {
+          return await execute(query, {
+            currency: "$",
+            is_auction: true,
+            ...input,
           })
-          .catch(error => console.log(error))
+        })
+      )
 
-        // runQuery(query).then(data => {
-        //   console.log(data)
-        //   expect(data).toEqual({
-        //     sale: {
-        //       display_start_time: expectedLabelOutput,
-        //     },
-        //   })
-        // })
+      const labels = testData.map(test => test[1])
+
+      results.forEach(({ sale: { display_timely_at } }, index) => {
+        expect(display_timely_at).toEqual(labels[index])
       })
     })
   })

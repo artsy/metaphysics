@@ -156,15 +156,31 @@ const SaleType = new GraphQLObjectType({
       },
       display_timely_at: {
         type: GraphQLString,
-        resolve: props => {
-          const { is_live_open, live_start_at, start_at, end_at } = props
+        resolve: sale => {
+          const { live_start_at, registration_ends_at, start_at, end_at } = sale
 
-          if (end_at < moment()) {
+          // Closed
+          if (end_at && end_at < moment()) {
             return "Ended"
-          } else if (is_live_open) {
-            return "In Progress"
+
+            // End Registration
+          } else if (registration_ends_at > moment()) {
+            const diff = moment().diff(moment(registration_ends_at), "hours")
+            const format = diff > -24 ? "ha" : "MMM D, ha"
+            const label = `Register by\n${moment(registration_ends_at).format(format)}`
+            return label
+
+            // Live Auction
           } else if (live_start_at) {
-            return `Live ${moment(live_start_at).fromNow()}`
+            if (isLiveOpen(sale)) {
+              return "In Progress"
+
+              // Live auction starting soon
+            } else if (live_start_at) {
+              return `Live ${moment(live_start_at).fromNow()}`
+            }
+
+            // Timed Auction
           } else if (start_at) {
             const range = moment().add(5, "days")
             const startAt = moment(start_at)
@@ -176,13 +192,20 @@ const SaleType = new GraphQLObjectType({
                 moment(saleDate)
                   .fromNow()
                   .replace("in", "")
+                  .replace("ago", "")
                   .trim() + " left" // e.g., X min left
               )
             }
+
+            // Timed auction in progress
             if (isInProgress) {
               return dateLabel(end_at)
+
+              // Coming soon
             } else if (isUpcoming) {
               return dateLabel(start_at)
+
+              // Coming in the future
             } else if (isNearFuture) {
               return `Ends on ${moment(end_at).format("MMM D, ha")}`
             }

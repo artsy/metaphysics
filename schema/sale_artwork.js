@@ -3,7 +3,6 @@ import cached from "./fields/cached"
 import date from "./fields/date"
 import money, { amount } from "./fields/money"
 import numeral from "./fields/numeral"
-import gravity from "lib/loaders/legacy/gravity"
 import Artwork from "./artwork"
 import Sale from "./sale"
 import { GravityIDFields } from "./object_identification"
@@ -47,8 +46,12 @@ const SaleArtworkType = new GraphQLObjectType({
           { rootValue: { incrementsLoader, saleLoader } }
         ) => {
           return saleLoader(sale_id).then(sale => {
+            if (!sale.increment_strategy) {
+              return Promise.reject("schema/sale_artwork - Missing increment strategy")
+            }
+
             return incrementsLoader({
-              key: sale.incremenet_strategy,
+              key: sale.increment_strategy,
             }).then(incrs => {
               // We already have the asking price for the lot. Produce a list
               // of increments beyond that amount. Make a local copy of the
@@ -258,8 +261,9 @@ const SaleArtwork = {
       description: "The slug or ID of the SaleArtwork",
     },
   },
-  resolve: (root, { id }) => {
-    return gravity(`sale_artwork/${id}`)
+  resolve: async (root, { id }, request, { rootValue: { saleArtworkRootLoader } }) => {
+    const data = await saleArtworkRootLoader(id)
+    return data
   },
 }
 
