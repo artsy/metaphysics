@@ -1,5 +1,5 @@
 import gravity from "lib/loaders/legacy/gravity"
-import { map, omit, keys, create, assign } from "lodash"
+import { map, omit, keys, create, assign, has } from "lodash"
 import { isExisty } from "lib/helpers"
 import Artwork from "./artwork"
 import Artist from "./artist"
@@ -7,8 +7,8 @@ import Tag from "./tag"
 import numeral from "./fields/numeral"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
-import { parseRelayOptions } from "lib/helpers"
-import { connectionFromArraySlice } from "graphql-relay"
+import { parseRelayOptions, queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+import { connectionFromArraySlice, toGlobalId } from "graphql-relay"
 import { ArtworksAggregationResultsType, ArtworksAggregation } from "./aggregations/filter_artworks_aggregation"
 import {
   GraphQLList,
@@ -18,7 +18,10 @@ import {
   GraphQLInt,
   GraphQLID,
   GraphQLUnionType,
+  GraphQLNonNull,
 } from "graphql"
+
+import { NodeInterface } from "schema/object_identification"
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",
@@ -60,21 +63,37 @@ export const FilterArtworksCounts = {
 
 export const FilterArtworksType = new GraphQLObjectType({
   name: "FilterArtworks",
+  interfaces: [NodeInterface],
+  isTypeOf: obj => has(obj, "hits") && has(obj, "aggregations"),
   fields: () => ({
+    __id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: "The ID of the object.",
+      resolve: ({ options }) => toGlobalId("FilterArtworks", JSON.stringify(options)),
+    },
     aggregations: ArtworkFilterAggregations,
     artworks_connection: {
       type: artworkConnection,
       deprecationReason: "Favour artwork connections that take filter arguments.",
-      args: pageable(),
-      resolve: ({ hits, aggregations }, options) => {
-        if (!aggregations || !aggregations.total) {
-          throw new Error("This query must contain the total aggregation")
-        }
-        const relayOptions = parseRelayOptions(options)
-        return connectionFromArraySlice(hits, options, {
-          arrayLength: aggregations.total.value,
-          sliceStart: relayOptions.offset,
-        })
+      args: pageable({
+        sort: {
+          type: GraphQLString,
+        },
+      }),
+      resolve: ({ options: gravityOptions }, args, request, { rootValue: { accessToken } }) => {
+        const relayOptions = parseRelayOptions(args)
+        return gravity
+          .with(accessToken)("filter/artworks", assign(gravityOptions, relayOptions, {}))
+          .then(({ aggregations, hits }) => {
+            if (!aggregations || !aggregations.total) {
+              throw new Error("This query must contain the total aggregation")
+            }
+
+            return connectionFromArraySlice(hits, args, {
+              arrayLength: aggregations.total.value,
+              sliceStart: relayOptions.offset,
+            })
+          })
       },
     },
     counts: FilterArtworksCounts,
@@ -214,7 +233,7 @@ function filterArtworks(primaryKey) {
     type: FilterArtworksType,
     description: "Artworks Elastic Search results",
     args: filterArtworksArgs,
-    resolve: (root, options, request, { rootValue: { accessToken } }) => {
+    resolve: (root, options, request, { fieldNodes, rootValue: { accessToken } }) => {
       const gravityOptions = Object.assign({}, options)
       if (primaryKey) {
         gravityOptions[primaryKey] = root.id
@@ -227,9 +246,13 @@ function filterArtworks(primaryKey) {
         delete gravityOptions.medium
       }
 
-      return gravity
-        .with(accessToken)("filter/artworks", gravityOptions)
-        .then(response => assign({}, response, { options: gravityOptions }))
+      const blacklistedFields = ["artworks_connection", "__id"]
+      if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+        return gravity
+          .with(accessToken)("filter/artworks", gravityOptions)
+          .then(response => assign({}, response, { options: gravityOptions }))
+      }
+      return { hits: null, aggregations: null, options: gravityOptions }
     },
   }
 }

@@ -1,5 +1,6 @@
 import schema from "schema"
 import { runQuery } from "test/utils"
+import { toGlobalId } from "graphql-relay"
 
 describe("Filter Artworks", () => {
   describe(`Does not pass along the medium param if it is "*"`, () => {
@@ -15,6 +16,7 @@ describe("Filter Artworks", () => {
         .withArgs("filter/artworks", {
           gene_id: "500-1000-ce",
           aggregations: ["total"],
+          for_sale: true,
         })
         .returns(
           Promise.resolve({
@@ -25,6 +27,7 @@ describe("Filter Artworks", () => {
                 artists: [],
               },
             ],
+            aggregations: [],
           })
         )
 
@@ -43,7 +46,7 @@ describe("Filter Artworks", () => {
         {
           gene(id: "500-1000-ce") {
             name
-            filtered_artworks(aggregations:[TOTAL], medium: "*"){
+            filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true){
               hits {
                 id
               }
@@ -54,6 +57,48 @@ describe("Filter Artworks", () => {
 
       return runQuery(query).then(({ gene: { filtered_artworks: { hits } } }) => {
         expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+      })
+    })
+
+    it("implements the NodeInterface", () => {
+      const query = `
+        {
+          gene(id: "500-1000-ce") {
+            name
+            filtered_artworks(for_sale: true, aggregations:[TOTAL], medium: "*"){
+              __id
+            }
+          }
+        }
+      `
+      const filterOptions = {
+        aggregations: ["total"],
+        for_sale: true,
+        gene_id: "500-1000-ce",
+      }
+      const expectedId = toGlobalId("FilterArtworks", JSON.stringify(filterOptions))
+      return runQuery(query).then(({ gene: { filtered_artworks: { __id } } }) => {
+        expect(__id).toEqual(expectedId)
+      })
+    })
+
+    it("fetches FilterArtworks using the node root field", () => {
+      const filterOptions = {
+        aggregations: ["total"],
+        for_sale: true,
+        gene_id: "500-1000-ce",
+      }
+      const generatedId = toGlobalId("FilterArtworks", JSON.stringify(filterOptions))
+
+      const query = `
+        {
+          node(__id: "${generatedId}") {
+            __id
+          }
+        }
+      `
+      return runQuery(query).then(({ node: { __id } }) => {
+        expect(__id).toEqual(generatedId)
       })
     })
   })

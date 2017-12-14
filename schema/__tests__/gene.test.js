@@ -28,6 +28,7 @@ describe("Gene", () => {
                 artists: [],
               },
             ],
+            aggregations: [],
           })
         )
       filterArtworks.__Rewire__("gravity", gravity)
@@ -373,6 +374,7 @@ describe("Gene", () => {
                 artists: [],
               },
             ],
+            aggregations: [],
           })
         )
 
