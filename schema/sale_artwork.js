@@ -40,10 +40,15 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       bid_increments: {
         type: new GraphQLList(GraphQLFloat),
-        resolve: ({ minimum_next_bid_cents, sale_id }) => {
-          return gravity(`sale/${sale_id}`).then(sale => {
-            return gravity("increments", {
-              key: sale.increment_strategy,
+        resolve: (
+          { minimum_next_bid_cents, sale_id },
+          options,
+          request,
+          { rootValue: { incrementsLoader, saleLoader } }
+        ) => {
+          return saleLoader(sale_id).then(sale => {
+            return incrementsLoader({
+              key: sale.incremenet_strategy,
             }).then(incrs => {
               // We already have the asking price for the lot. Produce a list
               // of increments beyond that amount. Make a local copy of the
@@ -149,11 +154,11 @@ const SaleArtworkType = new GraphQLObjectType({
       is_biddable: {
         type: GraphQLBoolean,
         description: "Can bids be placed on the artwork?",
-        resolve: saleArtwork => {
+        resolve: (saleArtwork, options, request, { rootValue: { saleLoader } }) => {
           if (!!saleArtwork.sale) {
             return isBiddable(saleArtwork.sale, saleArtwork)
           }
-          return gravity(`sale/${saleArtwork.sale_id}`).then(sale => isBiddable(sale, saleArtwork))
+          return saleLoader(saleArtwork.sale_id).then(sale => isBiddable(sale, saleArtwork))
         },
       },
       is_with_reserve: {
@@ -231,9 +236,9 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       sale: {
         type: Sale.type,
-        resolve: ({ sale, sale_id }) => {
+        resolve: ({ sale, sale_id }, options, request, { rootValue: { saleLoader } }) => {
           if (!!sale) return sale
-          return gravity(`sale/${sale_id}`)
+          return saleLoader(sale_id)
         },
       },
       symbol: {

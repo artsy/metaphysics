@@ -110,9 +110,9 @@ const SaleType = new GraphQLObjectType({
       },
       associated_sale: {
         type: SaleType,
-        resolve: ({ associated_sale }) => {
+        resolve: ({ associated_sale }, options, request, { rootValue: { saleLoader } }) => {
           if (associated_sale && associated_sale.id) {
-            return gravity(`sale/${associated_sale.id}`)
+            return saleLoader(associated_sale.id)
           }
           return null
         },
@@ -125,7 +125,11 @@ const SaleType = new GraphQLObjectType({
       bid_increments: {
         type: new GraphQLList(BidIncrement),
         description: "A bid increment policy that explains minimum bids in ranges.",
-        resolve: sale => gravity(`increments`, { key: sale.increment_strategy }).then(incs => incs[0].increments),
+        resolve: (sale, options, request, { rootValue: { incrementsLoader } }) => {
+          return incrementsLoader({ key: sale.increment_strategy }).then(increments => {
+            return increments[0].increments
+          })
+        },
       },
       buyers_premium: {
         type: new GraphQLList(BuyersPremium),
@@ -152,7 +156,9 @@ const SaleType = new GraphQLObjectType({
       },
       display_timely_at: {
         type: GraphQLString,
-        resolve: ({ is_live_open, live_start_at, start_at, end_at }) => {
+        resolve: props => {
+          const { is_live_open, live_start_at, start_at, end_at } = props
+
           if (end_at < moment()) {
             return "Ended"
           } else if (is_live_open) {
@@ -263,12 +269,14 @@ const SaleType = new GraphQLObjectType({
             defaultValue: false,
           },
         },
-        resolve: ({ id }, options) => {
+        resolve: ({ id }, options, request, { rootValue: { saleArtworksLoader } }) => {
+          // TODO: Implement additional `allSaleArtworksLoader` loader (or something) to
+          // tap into this legacy request.
           if (options.all) {
             return gravity.all(`sale/${id}/sale_artworks`, options)
           }
 
-          return gravity(`sale/${id}/sale_artworks`, options)
+          return saleArtworksLoader(id, options)
         },
       },
       sale_artworks_connection: {
@@ -299,7 +307,9 @@ const SaleType = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString),
           },
         },
-        resolve: (sale, { id }) => gravity(`sale/${sale.id}/sale_artwork/${id}`),
+        resolve: (sale, { id }, request, { rootValue: { saleArtworkLoader } }) => {
+          return saleArtworkLoader({ saleId: sale.id, saleArtworkId: id })
+        },
       },
       symbol: {
         type: GraphQLString,
@@ -317,7 +327,10 @@ const Sale = {
       description: "The slug or ID of the Sale",
     },
   },
-  resolve: (root, { id }) => gravity(`sale/${id}`),
+  resolve: async (_root, { id }, _request, { rootValue: { saleLoader } }) => {
+    const data = await saleLoader(id)
+    return data
+  },
 }
 
 export default Sale
