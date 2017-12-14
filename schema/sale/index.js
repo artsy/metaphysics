@@ -26,7 +26,7 @@ import {
 
 const { PREDICTION_ENDPOINT } = process.env
 
-const isLiveOpen = (sale) => {
+const isLiveOpen = sale => {
   const liveStart = moment(sale.live_start_at)
   return sale.auction_state === "open" && (moment().isAfter(liveStart) || moment().isSame(liveStart))
 }
@@ -150,6 +150,41 @@ const SaleType = new GraphQLObjectType({
       description: {
         type: GraphQLString,
       },
+      display_timely_at: {
+        type: GraphQLString,
+        resolve: ({ is_live_open, live_start_at, start_at, end_at }) => {
+          if (end_at < moment()) {
+            return "Ended"
+          } else if (is_live_open) {
+            return "In Progress"
+          } else if (live_start_at) {
+            return `Live ${moment(live_start_at).fromNow()}`
+          } else if (start_at) {
+            const range = moment().add(5, "days")
+            const startAt = moment(start_at)
+            const isInProgress = startAt < moment()
+            const isUpcoming = startAt > moment() && startAt < range
+            const isNearFuture = startAt > range
+            const dateLabel = saleDate => {
+              return (
+                moment(saleDate)
+                  .fromNow()
+                  .replace("in", "")
+                  .trim() + " left" // e.g., X min left
+              )
+            }
+            if (isInProgress) {
+              return dateLabel(end_at)
+            } else if (isUpcoming) {
+              return dateLabel(start_at)
+            } else if (isNearFuture) {
+              return `Ends on ${moment(end_at).format("MMM D, ha")}`
+            }
+          } else {
+            return null
+          }
+        },
+      },
       eligible_sale_artworks_count: {
         type: GraphQLInt,
       },
@@ -198,7 +233,7 @@ const SaleType = new GraphQLObjectType({
       live_url_if_open: {
         type: GraphQLString,
         description: "Returns a live auctions url if the sale is open and start time is after now",
-        resolve: (sale) => {
+        resolve: sale => {
           if (isLiveOpen(sale)) {
             return PREDICTION_ENDPOINT + "/" + sale.id
           }
