@@ -21,7 +21,7 @@
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
     "heroku-postbuild":
-      "babel ./src/index.js config.js -s inline -d build && babel lib -s inline -d build/lib && babel schema -s inline -d build/schema",
+      "babel ./src/index.js ./src/config.js -s inline -d build && babel ./src/lib -s inline -d build/lib && babel ./src/schema -s inline -d build/schema",
     "precommit": "lint-staged",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"
@@ -29,7 +29,7 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
-    "@artsy/express-reloadable": "^1.1.1",
+    "@artsy/express-reloadable": "^1.1.2",
     "accounting": "^0.4.1",
     "apollo-link": "^1.0.0",
     "apollo-link-context": "^1.0.0",
@@ -92,7 +92,6 @@
     "babel-eslint": "^5.0.4",
     "babel-jest": "^16.0.0",
     "babel-plugin-rewire": "1.0.0-beta-2",
-    "babel-watch": "^2.0.5",
     "deep-equal": "^1.0.1",
     "dotenv": "^2.0.0",
     "eslint": "^1.10.3",
