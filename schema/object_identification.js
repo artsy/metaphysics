@@ -39,6 +39,7 @@ const SupportedTypes = {
     "./artist",
     "./artwork",
     "./gene",
+    "./filter_artworks",
     "./home/home_page_artwork_module",
     "./home/home_page_artist_module",
     "./me",
@@ -75,7 +76,7 @@ Object.defineProperty(SupportedTypes, "typeModules", {
 const isSupportedType = _.includes.bind(null, SupportedTypes.types)
 
 function argumentsForChild(type, id) {
-  return type.includes("HomePage") ? JSON.parse(id) : { id }
+  return type === "FilterArtworks" || type.startsWith("HomePage") ? JSON.parse(id) : { id }
 }
 
 function rootValueForChild(rootValue) {
@@ -117,7 +118,11 @@ const NodeField = {
   resolve: (root, { __id }, request, rootValue) => {
     const { type, id } = fromGlobalId(__id)
     if (isSupportedType(type)) {
-      const { resolve } = SupportedTypes.typeModules[type]
+      let exported = SupportedTypes.typeModules[type]
+      if (typeof exported === "function") {
+        exported = exported()
+      }
+      const { resolve } = exported
       return resolve(null, argumentsForChild(type, id), request, rootValueForChild(rootValue))
     }
   },
