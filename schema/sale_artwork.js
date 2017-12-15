@@ -3,7 +3,6 @@ import cached from "./fields/cached"
 import date from "./fields/date"
 import money, { amount } from "./fields/money"
 import numeral from "./fields/numeral"
-import gravity from "lib/loaders/legacy/gravity"
 import Artwork from "./artwork"
 import Sale from "./sale"
 import { GravityIDFields } from "./object_identification"
@@ -40,9 +39,18 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       bid_increments: {
         type: new GraphQLList(GraphQLFloat),
-        resolve: ({ minimum_next_bid_cents, sale_id }) => {
-          return gravity(`sale/${sale_id}`).then(sale => {
-            return gravity("increments", {
+        resolve: (
+          { minimum_next_bid_cents, sale_id },
+          options,
+          request,
+          { rootValue: { incrementsLoader, saleLoader } }
+        ) => {
+          return saleLoader(sale_id).then(sale => {
+            if (!sale.increment_strategy) {
+              return Promise.reject("schema/sale_artwork - Missing increment strategy")
+            }
+
+            return incrementsLoader({
               key: sale.increment_strategy,
             }).then(incrs => {
               // We already have the asking price for the lot. Produce a list
@@ -149,11 +157,11 @@ const SaleArtworkType = new GraphQLObjectType({
       is_biddable: {
         type: GraphQLBoolean,
         description: "Can bids be placed on the artwork?",
-        resolve: saleArtwork => {
+        resolve: (saleArtwork, options, request, { rootValue: { saleLoader } }) => {
           if (!!saleArtwork.sale) {
             return isBiddable(saleArtwork.sale, saleArtwork)
           }
-          return gravity(`sale/${saleArtwork.sale_id}`).then(sale => isBiddable(sale, saleArtwork))
+          return saleLoader(saleArtwork.sale_id).then(sale => isBiddable(sale, saleArtwork))
         },
       },
       is_with_reserve: {
@@ -231,9 +239,9 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       sale: {
         type: Sale.type,
-        resolve: ({ sale, sale_id }) => {
+        resolve: ({ sale, sale_id }, options, request, { rootValue: { saleLoader } }) => {
           if (!!sale) return sale
-          return gravity(`sale/${sale_id}`)
+          return saleLoader(sale_id)
         },
       },
       symbol: {
@@ -253,8 +261,9 @@ const SaleArtwork = {
       description: "The slug or ID of the SaleArtwork",
     },
   },
-  resolve: (root, { id }) => {
-    return gravity(`sale_artwork/${id}`)
+  resolve: async (root, { id }, request, { rootValue: { saleArtworkRootLoader } }) => {
+    const data = await saleArtworkRootLoader(id)
+    return data
   },
 }
 

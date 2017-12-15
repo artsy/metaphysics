@@ -108,7 +108,14 @@
   },
   "jest": {
     "setupTestFrameworkScriptFile": "<rootDir>/test/helper.js",
-    "testPathIgnorePatterns": ["/node_modules/", "/test/helper.js", "/test/utils.js", "/test/gql.js", "/test/__mocks__"]
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/build/",
+      "/test/helper.js",
+      "/test/utils.js",
+      "/test/gql.js",
+      "/test/__mocks__"
+    ]
   },
   "prettier": {
     "printWidth": 120,

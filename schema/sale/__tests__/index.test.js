@@ -1,12 +1,8 @@
 import moment from "moment"
-import schema from "schema"
 import { fill } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "test/utils"
 
 describe("Sale type", () => {
-  let gravity
-  const Sale = schema.__get__("Sale")
-
   const sale = {
     id: "foo-foo",
     _id: "123",
@@ -15,17 +11,12 @@ describe("Sale type", () => {
     increment_strategy: "default",
   }
 
-  beforeEach(() => {
-    gravity = sinon
-      .stub()
-      .withArgs("sale/foo-foo")
-      .returns(Promise.resolve(sale))
-    Sale.__Rewire__("gravity", gravity)
-  })
-
-  afterEach(() => {
-    Sale.__ResetDependency__("gravity")
-  })
+  const execute = async (query, gravityResponse = sale, rootValue = {}) => {
+    return await runQuery(query, {
+      saleLoader: () => Promise.resolve(gravityResponse),
+      ...rootValue,
+    })
+  }
 
   describe("auction state", () => {
     const query = `
@@ -43,120 +34,94 @@ describe("Sale type", () => {
       }
     `
 
-    it("returns the correct values when the sale is closed", () => {
+    it("returns the correct values when the sale is closed", async () => {
       sale.auction_state = "closed"
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            _id: "123",
-            is_preview: false,
-            is_open: false,
-            is_live_open: false,
-            is_closed: true,
-            is_registration_closed: false,
-            auction_state: "closed",
-            status: "closed",
-          },
-        })
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          is_preview: false,
+          is_open: false,
+          is_live_open: false,
+          is_closed: true,
+          is_registration_closed: false,
+          auction_state: "closed",
+          status: "closed",
+        },
       })
     })
 
-    it("returns the correct values when the sale is in preview mode", () => {
+    it("returns the correct values when the sale is in preview mode", async () => {
       sale.auction_state = "preview"
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            _id: "123",
-            is_preview: true,
-            is_open: false,
-            is_live_open: false,
-            is_closed: false,
-            is_registration_closed: false,
-            auction_state: "preview",
-            status: "preview",
-          },
-        })
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          is_preview: true,
+          is_open: false,
+          is_live_open: false,
+          is_closed: false,
+          is_registration_closed: false,
+          auction_state: "preview",
+          status: "preview",
+        },
       })
     })
 
-    it("returns the correct values when the sale is open", () => {
+    it("returns the correct values when the sale is open", async () => {
       sale.auction_state = "open"
       sale.live_start_at = moment().add(2, "days")
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            _id: "123",
-            is_preview: false,
-            is_open: true,
-            is_live_open: false,
-            is_closed: false,
-            is_registration_closed: false,
-            auction_state: "open",
-            status: "open",
-          },
-        })
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          is_preview: false,
+          is_open: true,
+          is_live_open: false,
+          is_closed: false,
+          is_registration_closed: false,
+          auction_state: "open",
+          status: "open",
+        },
       })
     })
 
-    it("returns the correct values when the sale is in live mode", () => {
+    it("returns the correct values when the sale is in live mode", async () => {
       sale.auction_state = "open"
       sale.live_start_at = moment().subtract(2, "days")
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            _id: "123",
-            is_preview: false,
-            is_open: true,
-            is_live_open: true,
-            is_closed: false,
-            is_registration_closed: false,
-            auction_state: "open",
-            status: "open",
-          },
-        })
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          is_preview: false,
+          is_open: true,
+          is_live_open: true,
+          is_closed: false,
+          is_registration_closed: false,
+          auction_state: "open",
+          status: "open",
+        },
       })
     })
 
-    it("returns the correct values when sale registration is closed", () => {
+    it("returns the correct values when sale registration is closed", async () => {
       sale.auction_state = "open"
       sale.registration_ends_at = moment().subtract(2, "days")
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            _id: "123",
-            is_preview: false,
-            is_open: true,
-            is_live_open: true,
-            is_closed: false,
-            is_registration_closed: true,
-            auction_state: "open",
-            status: "open",
-          },
-        })
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          is_preview: false,
+          is_open: true,
+          is_live_open: true,
+          is_closed: false,
+          is_registration_closed: true,
+          auction_state: "open",
+          status: "open",
+        },
       })
     })
   })
 
-  describe("live_url", () => {
-    it("returns live_url if is_live_open", () => {
+  describe("live_url_if_open", () => {
+    it("returns live_url_if_open if is_live_open", async () => {
+      sale.auction_state = "open"
       sale.is_live_open = true
-      const query = `
-        {
-          sale(id: "foo-foo") {
-            live_url_if_open
-          }
-        }
-      `
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            live_url_if_open: "https://live.artsy.net/foo-foo",
-          },
-        })
-      })
-    })
-
-    it("returns live_url if live_start_at < now", () => {
       sale.live_start_at = moment().subtract(2, "days")
       const query = `
         {
@@ -165,16 +130,32 @@ describe("Sale type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            live_url_if_open: "https://live.artsy.net/foo-foo",
-          },
-        })
+      expect(await execute(query)).toEqual({
+        sale: {
+          live_url_if_open: "https://live.artsy.net/foo-foo",
+        },
       })
     })
 
-    it("returns null if not is_live_open", () => {
+    it("returns live_url_if_open if live_start_at < now", async () => {
+      sale.auction_state = "open"
+      sale.live_start_at = moment().subtract(2, "days")
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            live_url_if_open
+          }
+        }
+      `
+      expect(await execute(query)).toEqual({
+        sale: {
+          live_url_if_open: "https://live.artsy.net/foo-foo",
+        },
+      })
+    })
+
+    it("returns null if not is_live_open", async () => {
+      sale.auction_state = "open"
       sale.live_start_at = moment().add(2, "days")
       const query = `
         {
@@ -183,17 +164,15 @@ describe("Sale type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            live_url_if_open: null,
-          },
-        })
+      expect(await execute(query)).toEqual({
+        sale: {
+          live_url_if_open: null,
+        },
       })
     })
   })
 
-  describe("sale_artworks_connection", () => {
+  describe("sale_artworks_connection", async () => {
     it("returns data from gravity", () => {
       const query = `
         {
@@ -212,13 +191,16 @@ describe("Sale type", () => {
         }
       `
       sale.eligible_sale_artworks_count = 20
+
       const rootValue = {
-        saleArtworksLoader: () =>
-          Promise.resolve(
+        saleLoader: () => Promise.resolve(sale),
+        saleArtworksLoader: () => {
+          return Promise.resolve(
             fill(Array(sale.eligible_sale_artworks_count), {
               id: "some-id",
             })
-          ),
+          )
+        },
       }
 
       return runAuthenticatedQuery(query, rootValue).then(data => {
@@ -228,34 +210,35 @@ describe("Sale type", () => {
   })
 
   describe("sale_artworks", () => {
-    const SaleArtwork = schema.__get__("SaleArtwork")
     const saleArtworks = [
       {
+        id: "foo",
         minimum_next_bid_cents: 400000,
         sale_id: "foo-foo",
       },
       {
+        id: "bar",
         minimum_next_bid_cents: 20000,
         sale_id: "foo-foo",
       },
     ]
 
-    beforeEach(() => {
-      gravity = sinon.stub()
-      gravity.withArgs("sale/foo-foo").returns(Promise.resolve(sale))
-      gravity
-        .withArgs("sale/foo-foo/sale_artworks", {
-          page: 1,
-          size: 25,
-          all: false,
-        })
-        .returns(Promise.resolve(saleArtworks))
-      gravity
-        .withArgs("increments", {
-          key: "default",
-        })
-        .returns(
-          Promise.resolve([
+    it("returns data from gravity", async () => {
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            sale_artworks {
+              bid_increments
+            }
+          }
+        }
+      `
+
+      const rootValue = {
+        saleLoader: () => Promise.resolve(sale),
+        saleArtworksLoader: () => Promise.resolve(saleArtworks),
+        incrementsLoader: () => {
+          return Promise.resolve([
             {
               key: "default",
               increments: [
@@ -272,28 +255,10 @@ describe("Sale type", () => {
               ],
             },
           ])
-        )
-      Sale.__Rewire__("gravity", gravity)
-      SaleArtwork.__Rewire__("gravity", gravity)
-    })
+        },
+      }
 
-    afterEach(() => {
-      Sale.__ResetDependency__("gravity")
-      SaleArtwork.__ResetDependency__("gravity")
-    })
-
-    it("returns data from gravity", () => {
-      const query = `
-        {
-          sale(id: "foo-foo") {
-            sale_artworks {
-              bid_increments
-            }
-          }
-        }
-      `
-
-      return runAuthenticatedQuery(query).then(data => {
+      return runAuthenticatedQuery(query, rootValue).then(data => {
         expect(data.sale.sale_artworks[0].bid_increments.slice(0, 5)).toEqual([400000, 410000, 420000, 430000, 440000])
         expect(data.sale.sale_artworks[1].bid_increments.slice(0, 5)).toEqual([20000, 25000, 30000, 35000, 40000])
       })
@@ -301,7 +266,7 @@ describe("Sale type", () => {
   })
 
   describe("buyers premium", () => {
-    it("returns a valid object even if the sale has no buyers premium", () => {
+    it("returns a valid object even if the sale has no buyers premium", async () => {
       const query = `
         {
           sale(id: "foo-foo") {
@@ -314,17 +279,15 @@ describe("Sale type", () => {
         }
       `
 
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            _id: "123",
-            buyers_premium: null,
-          },
-        })
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          buyers_premium: null,
+        },
       })
     })
 
-    it("returns a valid object if there is a complete buyers premium", () => {
+    it("returns a valid object if there is a complete buyers premium", async () => {
       sale.buyers_premium = {
         schedule: [
           {
@@ -346,18 +309,16 @@ describe("Sale type", () => {
         }
       `
 
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            _id: "123",
-            buyers_premium: [
-              {
-                amount: "$100",
-                cents: 10000,
-              },
-            ],
-          },
-        })
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          buyers_premium: [
+            {
+              amount: "$100",
+              cents: 10000,
+            },
+          ],
+        },
       })
     })
   })
@@ -367,37 +328,164 @@ describe("Sale type", () => {
       {
         sale(id: "foo-foo") {
           _id
-          associated_sale{
+          associated_sale {
             id
           }
         }
       }
     `
 
-    it("does not error, but returns null for associated sale", () => {
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            _id: "123",
-            associated_sale: null,
-          },
-        })
+    it("does not error, but returns null for associated sale", async () => {
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          associated_sale: null,
+        },
       })
     })
 
-    it("returns the associated sale", () => {
+    it("returns the associated sale", async () => {
       sale.associated_sale = {
         id: "foo-foo",
       }
-      return runQuery(query).then(data => {
-        expect(data).toEqual({
-          sale: {
-            _id: "123",
-            associated_sale: {
-              id: "foo-foo",
-            },
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          associated_sale: {
+            id: "foo-foo",
           },
+        },
+      })
+    })
+  })
+
+  describe("display_timely_at", () => {
+    const testData = [
+      [
+        {
+          auction_state: "open",
+          live_start_at: moment().subtract(1, "days"),
+          registration_ends_at: moment().subtract(2, "days"),
+        },
+        "In Progress",
+      ],
+      [
+        {
+          auction_state: "open",
+          live_start_at: moment().subtract(2, "days"),
+          registration_ends_at: moment().subtract(3, "days"),
+        },
+        "In Progress",
+      ],
+      [
+        {
+          live_start_at: moment().add(10, "minutes"),
+          registration_ends_at: moment().subtract(2, "days"),
+        },
+        "Live in 10 minutes",
+      ],
+      [
+        {
+          live_start_at: moment().add(20, "minutes"),
+          registration_ends_at: moment().subtract(2, "days"),
+        },
+        "Live in 20 minutes",
+      ],
+      [
+        {
+          live_start_at: moment().add(20, "days"),
+          registration_ends_at: moment().add(10, "minutes"),
+        },
+        `Register by\n${moment(moment().add(10, "minutes")).format("ha")}`,
+      ],
+      [
+        {
+          live_start_at: moment().add(30, "days"),
+          registration_ends_at: moment().add(10, "days"),
+        },
+        `Register by\n${moment(moment().add(10, "days")).format("MMM D, ha")}`,
+      ],
+      [
+        {
+          start_at: moment().add(10, "minutes"),
+          end_at: moment().add(2, "days"),
+        },
+        "10 minutes left",
+      ],
+      [
+        {
+          start_at: moment().add(20, "minutes"),
+          end_at: moment().add(2, "days"),
+        },
+        "20 minutes left",
+      ],
+      [
+        {
+          start_at: moment().add(10, "hours"),
+          end_at: moment().add(2, "days"),
+        },
+        "10 hours left",
+      ],
+      [
+        {
+          start_at: moment().add(20, "hours"),
+          end_at: moment().add(2, "days"),
+        },
+        "20 hours left",
+      ],
+      [
+        {
+          start_at: moment().add(2, "days"),
+          end_at: moment().add(4, "days"),
+        },
+        "2 days left",
+      ],
+      [
+        {
+          start_at: moment().add(5, "days"),
+          end_at: moment().add(10, "days"),
+        },
+        "5 days left",
+      ],
+      [
+        {
+          start_at: moment().add(20, "days"),
+          end_at: moment().add(30, "days"),
+        },
+        `Ends on ${moment(moment().add(30, "days")).format("MMM D, ha")}`,
+      ],
+      [
+        {
+          start_at: moment().add(30, "days"),
+          end_at: moment().add(40, "days"),
+        },
+        `Ends on ${moment(moment().add(40, "days")).format("MMM D, ha")}`,
+      ],
+    ]
+
+    const query = `
+      {
+        sale(id: "foo-foo") {
+          display_timely_at
+        }
+      }
+    `
+
+    it("returns proper labels", async () => {
+      const results = await Promise.all(
+        testData.map(async ([input]) => {
+          return await execute(query, {
+            currency: "$",
+            is_auction: true,
+            ...input,
+          })
         })
+      )
+
+      const labels = testData.map(test => test[1])
+
+      results.forEach(({ sale: { display_timely_at } }, index) => {
+        expect(display_timely_at).toEqual(labels[index])
       })
     })
   })
