@@ -164,6 +164,9 @@ export const filterArtworksArgs = {
   include_artworks_by_followed_artists: {
     type: GraphQLBoolean,
   },
+  include_medium_filter_in_aggregation: {
+    type: GraphQLBoolean,
+  },
   for_sale: {
     type: GraphQLBoolean,
   },
