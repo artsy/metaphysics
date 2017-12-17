@@ -1,35 +1,20 @@
+import gql from "test/gql"
 import { resolve } from "path"
 import { readFileSync } from "fs"
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("me { saved_artwork", () => {
   describe("Handles getting collection metadata", () => {
-    const Collection = schema.__get__("Collection")
-    let gravity = null
-    beforeEach(() => {
-      gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
-
-      Collection.__Rewire__("gravity", gravity)
-    })
-
-    afterEach(() => {
-      Collection.__ResetDependency__("gravity")
-    })
-
-    it("returns artworks for a collection", () => {
+    it("returns artworks for a collection", async () => {
       const artworksPath = resolve("test", "fixtures", "gravity", "artworks_array.json")
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
-      gravity
-        .withArgs("collection/saved-artwork/artworks", { size: 10, offset: 0, total_count: true, user_id: "user-42" })
-        .returns(Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } }))
 
-      const query = `
+      const query = gql`
         {
           me {
             saved_artworks {
-              artworks_connection(first:10) {
+              description
+              artworks_connection(first: 10) {
                 edges {
                   node {
                     id
@@ -41,9 +26,16 @@ describe("me { saved_artwork", () => {
           }
         }
       `
-      return runAuthenticatedQuery(query).then(data => {
-        expect(data).toMatchSnapshot()
-      })
+      const rootValue = {
+        collectionLoader: id => id === "saved-artwork" && Promise.resolve({ description: "My beautiful collection" }),
+        collectionArtworksLoader: params => {
+          if (params === { size: 10, offset: 0, total_count: true }) {
+            return Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } })
+          }
+        },
+      }
+      const data = await runAuthenticatedQuery(query, rootValue)
+      expect(data).toMatchSnapshot()
     })
   })
 })
