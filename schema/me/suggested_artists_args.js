@@ -1,4 +1,4 @@
-import { GraphQLBoolean, GraphQLString, GraphQLInt } from "graphql"
+import { GraphQLBoolean, GraphQLString, GraphQLInt, GraphQLList } from "graphql"
 
 export const SuggestedArtistsArgs = {
   artist_id: {
@@ -16,6 +16,10 @@ export const SuggestedArtistsArgs = {
   exclude_followed_artists: {
     type: GraphQLBoolean,
     description: "Exclude artists the user already follows",
+  },
+  exclude_artist_ids: {
+    type: new GraphQLList(GraphQLString),
+    description: "Exclude these ids from results, may result in all artists being excluded.",
   },
   page: {
     type: GraphQLInt,
