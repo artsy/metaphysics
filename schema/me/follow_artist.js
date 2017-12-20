@@ -2,6 +2,7 @@ import gravity from "lib/loaders/legacy/gravity"
 import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ArtistType } from "schema/artist/index"
+import PopularArtists from "schema/artists/popular"
 
 export default mutationWithClientMutationId({
   name: "FollowArtist",
@@ -18,12 +19,9 @@ export default mutationWithClientMutationId({
   outputFields: {
     artist: {
       type: ArtistType,
-      resolve: ({ artist_id }, options, request, { rootValue: { artistLoader } }) => {
-        return artistLoader(artist_id).then(artist => {
-          return artist
-        })
-      },
+      resolve: ({ artist_id }, options, request, { rootValue: { artistLoader } }) => artistLoader(artist_id),
     },
+    popular_artists: PopularArtists,
   },
   mutateAndGetPayload: ({ artist_id, unfollow }, request, { rootValue: { accessToken } }) => {
     if (!accessToken) return new Error("You need to be signed in to perform this action")
