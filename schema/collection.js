@@ -1,10 +1,8 @@
 // @ts-check
-import type { GraphQLFieldConfig } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
 import { error } from "lib/loggers"
-import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import CollectionSorts from "./sorts/collection_sorts"
 import { artworkConnection } from "./artwork"
@@ -33,14 +31,11 @@ export const CollectionType = new GraphQLObjectType({
         },
         sort: CollectionSorts,
       },
-      resolve: ({ id }, options, request, { rootValue: { accessToken, userID } }) => {
-        const gravityOptions = parseRelayOptions(options)
-
-        gravityOptions.total_count = true
-        gravityOptions.user_id = userID
-
+      resolve: ({ id }, options, _request, { rootValue: { collectionArtworksLoader } }) => {
+        const gravityOptions = Object.assign({ total_count: true }, parseRelayOptions(options))
         delete gravityOptions.page // this can't also be used with the offset in gravity
-        return gravity.with(accessToken, { headers: true })(`collection/${id}/artworks`, gravityOptions)
+
+        return collectionArtworksLoader(id, gravityOptions)
           .then(({ body, headers }) => {
             return connectionFromArraySlice(body, options, {
               arrayLength: headers["x-total-count"],
@@ -52,10 +47,7 @@ export const CollectionType = new GraphQLObjectType({
             // For some users with no favourites, Gravity produces an error of "Collection Not Found".
             // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
             // and return an empty list instead.
-            return connectionFromArray([], options, {
-              arrayLength: 0,
-              sliceStart: 0,
-            })
+            return connectionFromArray([], options)
           })
       },
     },
@@ -78,19 +70,22 @@ export const CollectionType = new GraphQLObjectType({
 })
 
 // This resolver is re-used by `me { saved_artworks }`
-export const collectionResolver = (fieldNodes: any, accessToken: string, userID: string, id: string) => {
-  const blacklistedFields = ["artworks_connection", "id", "__id"]
+export const collectionResolverFactory = collection_id => {
+  return (_root, options, _request, { fieldNodes, rootValue: { collectionLoader } }) => {
+    const id = collection_id || options.id
+    const blacklistedFields = ["artworks_connection", "id", "__id"]
 
-  if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-    return gravity.with(accessToken)(`collection/${id}`, { user_id: userID })
+    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+      return collectionLoader(id)
+    }
+
+    // These are here so that the type system's `isTypeOf`
+    // resolves correctly when we're skipping gravity data
+    return { id, name: null, private: null, default: null }
   }
-
-  // These are here so that the type system's `isTypeOf`
-  // resolves correctly when we're skipping gravity data
-  return { id, name: null, private: null, default: null }
 }
 
-const Collection: GraphQLFieldConfig<CollectionType, *> = {
+const Collection = {
   type: CollectionType,
   args: {
     id: {
@@ -98,11 +93,7 @@ const Collection: GraphQLFieldConfig<CollectionType, *> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { id }, request, { fieldNodes, rootValue }) => {
-    // Only make a grav call for the Collection if you need info from it
-    const { accessToken, userID } = (rootValue: any)
-    return collectionResolver(fieldNodes, accessToken, userID, id)
-  },
+  resolve: collectionResolverFactory(),
 }
 
 export default Collection
