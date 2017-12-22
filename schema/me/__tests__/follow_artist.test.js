@@ -21,6 +21,11 @@ describe("FollowArtist", () => {
 
     rootValue = {
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
+      popularArtistsLoader: () =>
+        Promise.resolve([
+          { birthday: "1900", artworks_count: 100, id: "antonio-carreno", name: "Antonio Carreno" },
+          { birthday: "1900", artworks_count: 100, id: "benjamin-schmitt", name: "Benjamin Schmit" },
+        ]),
     }
   })
 
@@ -35,6 +40,11 @@ describe("FollowArtist", () => {
           artist {
             name
           }
+          popular_artists {
+            artists {
+              name
+            }
+          }
         }
       }
     `
@@ -46,6 +56,12 @@ describe("FollowArtist", () => {
       expect(followArtist).toEqual({
         artist: {
           name: "Damon Zucconi",
+        },
+        popular_artists: {
+          artists: [
+            { name: "Antonio Carreno" },
+            { name: "Benjamin Schmit" },
+          ],
         },
       })
     })

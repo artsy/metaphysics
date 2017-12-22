@@ -1,5 +1,3 @@
-import delta from "lib/loaders/legacy/delta"
-import gravity from "lib/loaders/legacy/gravity"
 import { keys, without } from "lodash"
 import Artist from "../artist"
 import {
@@ -17,9 +15,9 @@ const TrendingArtistsType = new GraphQLObjectType({
   fields: () => ({
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: results => {
-        const ids = without(keys(results), "cached", "context_type")
-        return Promise.all(ids.map(id => gravity(`/artist/${id}`)))
+      resolve: (deltaResponse, _args, _request, { rootValue: { artistLoader } }) => {
+        const ids = without(keys(deltaResponse), "cached", "context_type")
+        return Promise.all(ids.map(id => artistLoader(id)))
       },
     },
   }),
@@ -79,8 +77,8 @@ const TrendingArtists = {
       defaultValue: 40,
     },
   },
-  resolve: (root, { method, name, size, double_time_period }) =>
-    delta("/", {
+  resolve: (root, { method, name, size, double_time_period }, _request, { rootValue: { deltaLoader } }) =>
+    deltaLoader({
       method,
       n: size,
       name: name + (double_time_period ? "_2t" : ""),

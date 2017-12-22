@@ -3,6 +3,7 @@ import moment from "moment"
 
 import schema from "schema"
 import { runQuery } from "test/utils"
+import gql from "test/gql"
 
 describe("Artwork type", () => {
   let gravity
@@ -582,6 +583,27 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("sale_artwork", () => {
+    it("returns the first sale artwork", async () => {
+      const query = gql`
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            sale_artwork {
+              sale_id
+            }
+          }
+        }
+      `
+      rootValue.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
+        saleId === artwork.sale_ids[0] &&
+        saleArtworkId === "richard-prince-untitled-portrait" &&
+        Promise.resolve({ sale_id: saleId })
+      const { artwork: { sale_artwork: { sale_id } } } = await runQuery(query, rootValue)
+      expect(sale_id).toEqual(artwork.sale_ids[0])
+    })
+  })
+
   describe("#is_biddable", () => {
     const query = `
       {
@@ -591,6 +613,7 @@ describe("Artwork type", () => {
         }
       }
     `
+
     it("is true if the artwork has any sales that are open auctions", () => {
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([{}]))
       return runQuery(query, rootValue).then(data => {
@@ -602,6 +625,7 @@ describe("Artwork type", () => {
         })
       })
     })
+
     it("is false if the artwork is not in any sales that are auctions", () => {
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]))
       return runQuery(query, rootValue).then(data => {
@@ -614,6 +638,7 @@ describe("Artwork type", () => {
       })
     })
   })
+
   describe("#is_buy_nowable", () => {
     const query = `
       {
@@ -623,6 +648,7 @@ describe("Artwork type", () => {
         }
       }
     `
+
     it("is true if the artwork is acquireable and in an open auction", () => {
       artwork.acquireable = true
       rootValue.salesLoader = sinon.stub().returns(
@@ -641,6 +667,7 @@ describe("Artwork type", () => {
         })
       })
     })
+
     it("is false if the artwork is not acquireable", () => {
       artwork.acquireable = false
       rootValue.salesLoader = sinon.stub().returns(
@@ -659,6 +686,7 @@ describe("Artwork type", () => {
         })
       })
     })
+
     it("is false if the artwork is acquireable but not in any open sales", () => {
       artwork.acquireable = false
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]))
@@ -672,6 +700,7 @@ describe("Artwork type", () => {
       })
     })
   })
+
   describe("#context", () => {
     it("returns either one Fair, Sale, or PartnerShow", () => {
       const relatedSale = assign({}, sale, {
@@ -710,6 +739,7 @@ describe("Artwork type", () => {
       })
     })
   })
+
   describe("predicates", () => {
     describe("#is_shareable", () => {
       const query = `
@@ -720,6 +750,7 @@ describe("Artwork type", () => {
           }
         }
       `
+
       it("returns false if the artwork is not shareable", () => {
         artwork.can_share_image = false
         return runQuery(query, rootValue).then(data => {
@@ -727,6 +758,7 @@ describe("Artwork type", () => {
         })
       })
     })
+
     describe("#is_hangable", () => {
       const query = `
         {
@@ -736,6 +768,7 @@ describe("Artwork type", () => {
           }
         }
       `
+
       describe("if the artwork is able to be used with View in Room", () => {
         it("is hangable if the artwork is 2d and has reasonable dimensions", () => {
           artwork.width = 100
@@ -745,6 +778,7 @@ describe("Artwork type", () => {
           })
         })
       })
+
       describe("if the artwork is not able to be used with View in Room", () => {
         it("is not hangable if the category is not applicable to wall display", () => {
           artwork.category = "sculpture"
@@ -754,6 +788,7 @@ describe("Artwork type", () => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
+
         it("is not hangable if the work is 3d", () => {
           artwork.width = 100
           artwork.height = 100
@@ -762,6 +797,7 @@ describe("Artwork type", () => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
+
         it("is not hangable if the dimensions are unreasonably large", () => {
           artwork.width = "10000"
           artwork.height = "10000"
@@ -770,6 +806,7 @@ describe("Artwork type", () => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
+
         it("is not hangable if there is no dimensions", () => {
           artwork.dimensions = {}
           return runQuery(query, rootValue).then(data => {
@@ -789,6 +826,7 @@ describe("Artwork type", () => {
           }
         }
       `
+
       it("removes the hardcoded signature label if present", () => {
         artwork.signature = "Signature: Foo *bar*"
         return runQuery(query, rootValue).then(({ artwork: { signature } }) => {
@@ -797,6 +835,7 @@ describe("Artwork type", () => {
       })
     })
   })
+
   describe("#is_price_range", () => {
     const query = `
       {
@@ -806,6 +845,7 @@ describe("Artwork type", () => {
         }
       }
     `
+
     it("returns true if artwork price is a range.", () => {
       artwork.price = "$200 - $300"
       return runQuery(query, rootValue).then(data => {
@@ -817,6 +857,7 @@ describe("Artwork type", () => {
         })
       })
     })
+
     it("returns false if artwork price is not a range.", () => {
       artwork.price = "$1000"
       return runQuery(query, rootValue).then(data => {
@@ -828,6 +869,7 @@ describe("Artwork type", () => {
         })
       })
     })
+
     it("returns false if artwork price is a range with multiple editions.", () => {
       artwork.price = "$200 - $300"
       artwork.edition_sets = [{}]
@@ -841,6 +883,7 @@ describe("Artwork type", () => {
       })
     })
   })
+
   describe("A title", () => {
     const query = `
       {
@@ -849,6 +892,7 @@ describe("Artwork type", () => {
         }
       }
     `
+
     it("is Untitled when its title is null", () => {
       artwork.title = null
       return runQuery(query, rootValue).then(data => {
@@ -859,6 +903,7 @@ describe("Artwork type", () => {
         })
       })
     })
+
     it("is Untitled title when its title is empty", () => {
       artwork.title = ""
       return runQuery(query, rootValue).then(data => {

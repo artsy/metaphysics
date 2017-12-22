@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import Artist from "./artist"
 import ArtistSorts from "./sorts/artist_sorts"
 import { GraphQLList, GraphQLInt } from "graphql"
@@ -16,7 +15,7 @@ const Artists = {
     },
     sort: ArtistSorts,
   },
-  resolve: (root, options) => gravity("artists", options),
+  resolve: (root, options, _request, { rootValue: { artistsLoader } }) => artistsLoader(options),
 }
 
 export default Artists
