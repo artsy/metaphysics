@@ -27,8 +27,7 @@ export default mutationWithClientMutationId({
     { rootValue: { conversationUpdateLoader } }
   ) => {
     if (!conversationUpdateLoader) return null
-    return conversationUpdateLoader({
-      conversation_id: conversationId,
+    return conversationUpdateLoader(conversationId, {
       from_last_viewed_message_id: fromLastViewedMessageId,
     })
   },
