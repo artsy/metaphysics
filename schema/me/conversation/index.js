@@ -167,6 +167,9 @@ export const ConversationFields = {
   purchase_request: {
     type: GraphQLBoolean,
   },
+  from_last_viewed_message_id: {
+    type: GraphQLString,
+  },
   initial_message: {
     type: new GraphQLNonNull(GraphQLString),
     resolve: ({ initial_message, from_name }) => {
