@@ -44,9 +44,8 @@ import MatchArtist from "./match/artist"
 import MatchGene from "./match/gene"
 import Me from "./me"
 
-import UpdateConversationMutation from "./me/conversation/update_mutation"
+import UpdateConversationMutation from "./me/conversation/update_conversation_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
-import MarkReadMessageMutation from "./me/conversation/mark_read_message_mutation"
 import UpdateCollectorProfile from "./me/update_collector_profile"
 import CreateSubmissionMutation from "./me/consignments/create_submission_mutation"
 import UpdateSubmissionMutation from "./me/consignments/update_submission_mutation"
@@ -139,7 +138,6 @@ const schema = new GraphQLSchema({
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
       sendConversationMessage: SendConversationMessageMutation,
-      markReadMessage: MarkReadMessageMutation,
       saveArtwork: SaveArtworkMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
