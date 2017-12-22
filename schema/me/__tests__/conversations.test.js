@@ -7,6 +7,7 @@ describe("Me", () => {
         {
           me {
             conversations(first: 10) {
+              totalUnreadCount
               edges {
                 node {
                   id
@@ -33,6 +34,7 @@ describe("Me", () => {
       }
 
       const expectedConversationData = {
+        totalUnreadCount: 1,
         edges: [
           {
             node: {
@@ -56,7 +58,8 @@ describe("Me", () => {
       }
 
       return runAuthenticatedQuery(query, {
-        conversationsLoader: () => Promise.resolve({ total_count: 2, conversations: [conversation1, conversation2] }),
+        conversationsLoader: () =>
+          Promise.resolve({ total_unread_count: 1, total_count: 2, conversations: [conversation1, conversation2] }),
       }).then(({ me: { conversations } }) => {
         expect(conversations).toEqual(expectedConversationData)
       })
