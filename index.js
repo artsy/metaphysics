@@ -6,7 +6,6 @@ import express from "express"
 import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
 import config from "./src/config"
-import { createReloadable } from "@artsy/express-reloadable"
 import { info, error } from "./src/lib/loggers"
 
 const { GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, NODE_ENV, PORT } = process.env
@@ -52,6 +51,7 @@ function bootApp() {
   app.all("/graphql", (_req, res) => res.redirect("/"))
 
   if (isDevelopment) {
+    const { createReloadable } = require("@artsy/express-reloadable")
     const mountAndReload = createReloadable(app, require)
     mountAndReload("./src")
   } else {
