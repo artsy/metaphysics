@@ -20,7 +20,7 @@ const isProduction = NODE_ENV === "production"
 
 xapp.on("error", err => {
   error(err)
-  process.exit()
+  process.exit(1)
 })
 
 const xappConfig = {

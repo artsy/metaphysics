@@ -20,7 +20,8 @@
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild": "babel ./src/index.js ./src/config.js -s inline -d build && babel ./src/lib -s inline -d build/lib && babel ./src/schema -s inline -d build/schema",
+    "heroku-postbuild":
+      "babel src --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src && babel index.js -s inline -d build",
     "precommit": "lint-staged",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"
@@ -124,14 +125,7 @@
     "bracketSpacing": true
   },
   "lint-staged": {
-    "*.json, *.md": [
-      "yarn prettier --write",
-      "git add"
-    ],
-    "*.js": [
-      "eslint --fix",
-      "yarn prettier --write",
-      "git add"
-    ]
+    "*.json, *.md": ["yarn prettier --write", "git add"],
+    "*.js": ["eslint --fix", "yarn prettier --write", "git add"]
   }
 }
