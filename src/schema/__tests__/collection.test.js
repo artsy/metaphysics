@@ -48,7 +48,7 @@ describe("Collections", () => {
           }
         }
       `
-      const artworksPath = resolve("test", "fixtures", "gravity", "artworks_array.json")
+      const artworksPath = resolve("src", "test", "fixtures", "gravity", "artworks_array.json")
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
       const rootValue = {
         collectionArtworksLoader: (id, params) => {
