@@ -1,5 +1,5 @@
 // @ts-check
-import type { GraphQLFieldConfig } from "graphql"
+
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { assign, compact, defaults, first, has, reject, includes } from "lodash"
 import { exclude } from "lib/helpers"
@@ -555,7 +555,8 @@ export const ArtistType = new GraphQLObjectType({
     }
   },
 })
-const Artist: GraphQLFieldConfig<ArtistType, *> = {
+
+const Artist = {
   type: ArtistType,
   description: "An Artist",
   args: {
@@ -568,7 +569,7 @@ const Artist: GraphQLFieldConfig<ArtistType, *> = {
     if (id.length === 0) {
       return null
     }
-    const { artistLoader } = (resolver.rootValue: any)
+    const { artistLoader } = resolver.rootValue
     return artistLoader(id)
   },
 }
