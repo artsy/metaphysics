@@ -1,4 +1,5 @@
-import gravity from "lib/loaders/legacy/gravity"
+// @ts-check
+
 import Artwork from "schema/artwork/index"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
@@ -6,6 +7,7 @@ import { GraphQLObjectType, GraphQLID, GraphQLNonNull, GraphQLString } from "gra
 
 export const ArtworkInquiryType = new GraphQLObjectType({
   name: "ArtworkInquiry",
+  description: "An inquiry on an Artwork",
   fields: () => ({
     artwork: {
       type: new GraphQLNonNull(Artwork.type),
@@ -24,7 +26,7 @@ export default {
   type: connectionDefinitions({ nodeType: ArtworkInquiryType }).connectionType,
   args: pageable({}),
   description: "A list of the current user’s inquiry requests",
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
+  resolve: (_root, options, _request, { rootValue: { accessToken, inquiryRequestsLoader } }) => {
     if (!accessToken) return null
     const { limit: size, offset } = getPagingParameters(options)
     const gravityArgs = {
@@ -33,10 +35,7 @@ export default {
       inquireable_type: "artwork",
       total_count: true,
     }
-    return gravity.with(accessToken, { headers: true })(
-      "me/inquiry_requests",
-      gravityArgs
-    ).then(({ body, headers }) => {
+    return inquiryRequestsLoader(gravityArgs).then(({ body, headers }) => {
       return connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,

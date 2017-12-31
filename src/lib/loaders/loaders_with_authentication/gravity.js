@@ -27,6 +27,7 @@ export default (accessToken, userID, requestIDs) => {
       "is_followed",
       "profile"
     ),
+    inquiryRequestsLoader: gravityLoader("me/inquiry_requests", {}, { headers: true }),
     lotStandingLoader: gravityLoader("me/lot_standings"),
     popularArtistsLoader: gravityLoader("artists/popular"),
     savedArtworkLoader: trackedEntityLoaderFactory(

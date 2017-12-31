@@ -1,22 +1,8 @@
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 import gql from "test/gql"
 
 describe("Me", () => {
   describe("ArtworkInquiries", () => {
-    const gravity = sinon.stub()
-    const Me = schema.__get__("Me")
-    const ArtworkInquiries = Me.__get__("ArtworkInquiries")
-
-    beforeEach(() => {
-      gravity.with = sinon.stub().returns(gravity)
-      ArtworkInquiries.__Rewire__("gravity", gravity)
-    })
-
-    afterEach(() => {
-      ArtworkInquiries.__ResetDependency__("gravity")
-    })
-
     it("returns notification feed items w/ Relay pagination", () => {
       const query = gql`
         {
@@ -61,7 +47,7 @@ describe("Me", () => {
         ],
       }
 
-      gravity.returns(
+      const inquiryRequestsLoader = () =>
         Promise.resolve({
           headers: { "x-total-count": 3 },
           body: [
@@ -74,11 +60,12 @@ describe("Me", () => {
             },
           ],
         })
-      )
 
-      return runAuthenticatedQuery(query).then(({ me: { artwork_inquiries_connection } }) => {
-        expect(artwork_inquiries_connection).toEqual(expectedConnectionData)
-      })
+      return runAuthenticatedQuery(query, { inquiryRequestsLoader }).then(
+        ({ me: { artwork_inquiries_connection } }) => {
+          expect(artwork_inquiries_connection).toEqual(expectedConnectionData)
+        }
+      )
     })
   })
 })
