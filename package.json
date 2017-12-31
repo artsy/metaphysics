@@ -20,8 +20,8 @@
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild":
-      "babel src --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src && babel index.js -s inline -d build",
+    "heroku-postbuild": "babel src --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src && babel index.js -s inline -d build",
+    "prepare": "yarn patch-package",
     "precommit": "lint-staged",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"
@@ -30,9 +30,9 @@
   "license": "MIT",
   "dependencies": {
     "accounting": "^0.4.1",
-    "apollo-link": "^1.0.0",
-    "apollo-link-context": "^1.0.0",
-    "apollo-link-http": "^1.1.0",
+    "apollo-link": "^1.0.7",
+    "apollo-link-context": "^1.0.3",
+    "apollo-link-http": "^1.3.2",
     "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
     "artsy-newrelic": "^1.3.0",
     "artsy-xapp": "^1.0.4",
@@ -53,11 +53,11 @@
     "express-force-ssl": "^0.3.0",
     "express-graphql": "^0.6.1",
     "forever": "^0.15.3",
-    "graphiql": "^0.11.5",
-    "graphql": "^0.11.7",
+    "graphiql": "^0.11.11",
+    "graphql": "^0.12.3",
     "graphql-depth-limit": "^1.1.0",
-    "graphql-relay": "0.5.3",
-    "graphql-tools": "^2.8.0",
+    "graphql-relay": "0.5.4",
+    "graphql-tools": "^2.14.1",
     "graphql-type-json": "^0.1.4",
     "i": "^0.3.5",
     "jwt-simple": "^0.5.0",
@@ -69,7 +69,9 @@
     "node-fetch": "^1.7.3",
     "numeral": "^1.5.3",
     "opentracing": "^0.14.1",
+    "patch-package": "^5.0.0",
     "performance-now": "^2.1.0",
+    "postinstall-prepare": "^1.0.1",
     "qs": "^5.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
@@ -125,7 +127,14 @@
     "bracketSpacing": true
   },
   "lint-staged": {
-    "*.json, *.md": ["yarn prettier --write", "git add"],
-    "*.js": ["eslint --fix", "yarn prettier --write", "git add"]
+    "*.json, *.md": [
+      "yarn prettier --write",
+      "git add"
+    ],
+    "*.js": [
+      "eslint --fix",
+      "yarn prettier --write",
+      "git add"
+    ]
   }
 }
