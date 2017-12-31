@@ -43,5 +43,7 @@ export default (accessToken, userID, requestIDs) => {
     suggestedArtistsLoader: gravityLoader("me/suggested/artists", {}, { headers: true }),
     updateCollectorProfileLoader: gravityLoader("me/collector_profile", {}, { method: "PUT" }),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
+    saveArtworkLoader: gravityLoader(id => `collection/saved-artwork/artwork/${id}`, {}, { method: "POST" }),
+    deleteArtworkLoader: gravityLoader(id => `collection/saved-artwork/artwork/${id}`, {}, { method: "DELETE" }),
   }
 }
