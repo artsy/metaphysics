@@ -27,6 +27,6 @@ module.exports = wallaby => {
     },
 
     testFramework: "jest",
-    debug: true,
+    // debug: true,
   }
 }
