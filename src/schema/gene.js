@@ -9,15 +9,7 @@ import Image from "./image"
 import filterArtworks, { ArtworkFilterAggregations, filterArtworksArgs, FilterArtworksCounts } from "./filter_artworks"
 import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt,
-  GraphQLBoolean,
-  GraphQLFieldConfig,
-} from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -173,7 +165,7 @@ export const GeneType = new GraphQLObjectType({
   },
 })
 
-const Gene: GraphQLFieldConfig<GeneType, *> = {
+const Gene = {
   type: GeneType,
   args: {
     id: {
