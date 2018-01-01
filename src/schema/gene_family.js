@@ -1,4 +1,4 @@
-import { GraphQLFieldConfig, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
+import { GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
 import Gene from "./gene"
 
 const GeneFamilyType = new GraphQLObjectType({
@@ -16,7 +16,7 @@ const GeneFamilyType = new GraphQLObjectType({
   },
 })
 
-const GeneFamily: GraphQLFieldConfig<GeneFamilyType, *> = {
+const GeneFamily = {
   type: GeneFamilyType,
 }
 
