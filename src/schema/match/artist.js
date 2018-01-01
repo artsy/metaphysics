@@ -3,8 +3,6 @@
 import { GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"
 import Artist from "schema/artist"
 
-import gravity from "lib/loaders/legacy/gravity"
-
 const ArtistMatch = {
   type: new GraphQLList(Artist.type),
   description: "A Search for Artists",
@@ -26,7 +24,7 @@ const ArtistMatch = {
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (_root, options) => gravity("match/artists", options),
+  resolve: (_root, options, _request, { rootValue: { matchArtistsLoader } }) => matchArtistsLoader(options),
 }
 
 export default ArtistMatch
