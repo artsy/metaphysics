@@ -1,22 +1,9 @@
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
+import gql from "test/gql"
 
 describe("SaveArtworkMutation", () => {
-  const gravity = sinon.stub()
-  const SaveArtworkMutation = schema.__get__("SaveArtworkMutation")
-
-  beforeEach(() => {
-    gravity.with = sinon.stub().returns(gravity)
-
-    SaveArtworkMutation.__Rewire__("gravity", gravity)
-  })
-
-  afterEach(() => {
-    SaveArtworkMutation.__ResetDependency__("gravity")
-  })
-
   it("saves an artwork", () => {
-    const mutation = `
+    const mutation = gql`
       mutation {
         saveArtwork(input: { artwork_id: "damon-zucconi-slow-verb" }) {
           artwork {
@@ -26,6 +13,10 @@ describe("SaveArtworkMutation", () => {
         }
       }
     `
+
+    const mutationResponse = {
+      artwork_id: "hello",
+    }
 
     const artwork = {
       date: "2015",
@@ -40,10 +31,49 @@ describe("SaveArtworkMutation", () => {
       },
     }
 
-    gravity.returns(Promise.resolve(artwork))
+    const saveArtworkLoader = () => Promise.resolve(mutationResponse)
+    const artworkLoader = () => Promise.resolve(artwork)
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation).then(({ saveArtwork }) => {
+    return runAuthenticatedQuery(mutation, { saveArtworkLoader, artworkLoader }).then(({ saveArtwork }) => {
+      expect(saveArtwork).toEqual(expectedArtworkData)
+    })
+  })
+
+  it("removes an artwork", () => {
+    const mutation = gql`
+      mutation {
+        saveArtwork(input: { artwork_id: "damon-zucconi-slow-verb", remove: true }) {
+          artwork {
+            date
+            title
+          }
+        }
+      }
+    `
+
+    const mutationResponse = {
+      artwork_id: "hello",
+    }
+
+    const artwork = {
+      date: "2015",
+      title: "Slow Verb",
+      artists: [],
+    }
+
+    const expectedArtworkData = {
+      artwork: {
+        date: "2015",
+        title: "Slow Verb",
+      },
+    }
+
+    const deleteArtworkLoader = () => Promise.resolve(mutationResponse)
+    const artworkLoader = () => Promise.resolve(artwork)
+
+    expect.assertions(1)
+    return runAuthenticatedQuery(mutation, { deleteArtworkLoader, artworkLoader }).then(({ saveArtwork }) => {
       expect(saveArtwork).toEqual(expectedArtworkData)
     })
   })

@@ -16,6 +16,7 @@ export default requestIDs => {
     geneLoader: gravityLoader(id => `/gene/${id}`),
     incrementsLoader: gravityLoader("increments"),
     matchGeneLoader: gravityLoader("match/genes"),
+    matchArtistsLoader: gravityLoader("match/artists"),
     partnerArtistsForArtistLoader: gravityLoader(id => `artist/${id}/partner_artists`),
     partnerArtistsLoader: gravityLoader("partner_artists", {}, { headers: true }),
     partnerLoader: gravityLoader(id => `partner/${id}`),
