@@ -16,6 +16,7 @@ describe("Me", () => {
               id: "25",
             },
           },
+          from_last_viewed_message_id: "20",
           items: [
             {
               item_type: "Artwork",
@@ -124,6 +125,7 @@ describe("Me", () => {
                 email
               }
               last_message_id
+              unread
               messages(first: 10) {
                 edges {
                   node {
