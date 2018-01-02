@@ -1,5 +1,4 @@
 // @ts-check
-import type { GraphQLFieldConfig } from "graphql"
 
 import _ from "lodash"
 import Image from "schema/image"
@@ -16,10 +15,10 @@ const ArtistCarouselType = new GraphQLObjectType({
   },
 })
 
-const ArtistCarousel: GraphQLFieldConfig<ArtistCarouselType, *> = {
+const ArtistCarousel = {
   type: ArtistCarouselType,
-  resolve: ({ id }, options, request, resolver) => {
-    const { artistArtworksLoader, partnerShowImagesLoader, relatedShowsLoader } = (resolver.rootValue: any)
+  resolve: ({ id }, _options, _request, resolver) => {
+    const { artistArtworksLoader, partnerShowImagesLoader, relatedShowsLoader } = resolver.rootValue
 
     return Promise.all([
       relatedShowsLoader({

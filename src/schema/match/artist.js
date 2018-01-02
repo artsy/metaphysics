@@ -1,12 +1,9 @@
 // @ts-check
-import type { GraphQLFieldConfig } from "graphql"
 
 import { GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"
 import Artist from "schema/artist"
 
-import gravity from "lib/loaders/legacy/gravity"
-
-const ArtistMatch: GraphQLFieldConfig<typeof Artist, *> = {
+const ArtistMatch = {
   type: new GraphQLList(Artist.type),
   description: "A Search for Artists",
   args: {
@@ -27,7 +24,7 @@ const ArtistMatch: GraphQLFieldConfig<typeof Artist, *> = {
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (root: any, options: any) => gravity("match/artists", options),
+  resolve: (_root, options, _request, { rootValue: { matchArtistsLoader } }) => matchArtistsLoader(options),
 }
 
 export default ArtistMatch
