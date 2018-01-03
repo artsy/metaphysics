@@ -20,7 +20,8 @@
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "heroku-postbuild": "babel src --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src && babel index.js -s inline -d build",
+    "heroku-postbuild":
+      "babel src --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src && babel index.js -s inline -d build && cp src/lib/currency_codes.json build/src/lib/currency_codes.json",
     "prepare": "yarn patch-package",
     "precommit": "lint-staged",
     "prettier-project": "prettier --write '**/*.js'",
@@ -127,14 +128,7 @@
     "bracketSpacing": true
   },
   "lint-staged": {
-    "*.json, *.md": [
-      "yarn prettier --write",
-      "git add"
-    ],
-    "*.js": [
-      "eslint --fix",
-      "yarn prettier --write",
-      "git add"
-    ]
+    "*.json, *.md": ["yarn prettier --write", "git add"],
+    "*.js": ["eslint --fix", "yarn prettier --write", "git add"]
   }
 }
