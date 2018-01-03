@@ -29,8 +29,8 @@ describe("Artist type", () => {
               },
             ],
             currency: "JPY",
-            price_realized_cents: 420,
-            price_realized_cents_usd: 100,
+            price_realized_cents: 420000,
+            price_realized_cents_usd: 100000,
           },
         ],
       },
@@ -63,7 +63,7 @@ describe("Artist type", () => {
                 }
                 currency
                 price_realized {
-                  display
+                  display(format: "0a")
                   cents
                   cents_usd
                 }
@@ -92,9 +92,9 @@ describe("Artist type", () => {
                   },
                   currency: "JPY",
                   price_realized: {
-                    cents: 420,
-                    cents_usd: 100,
-                    display: "¥ JPY420",
+                    cents: 420000,
+                    cents_usd: 100000,
+                    display: "JPY ¥420k",
                   },
                 },
               },
