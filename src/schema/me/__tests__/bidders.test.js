@@ -1,23 +1,7 @@
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("Bidders", () => {
-    let gravity
-
-    const Me = schema.__get__("Me")
-    const Bidders = Me.__get__("Bidders")
-
-    beforeEach(() => {
-      gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
-      Bidders.__Rewire__("gravity", gravity)
-    })
-
-    afterEach(() => {
-      Bidders.__ResetDependency__("gravity")
-    })
-
     it("returns bidder ids that the user is registered in sales for", () => {
       const query = `
         {
@@ -29,9 +13,10 @@ describe("Me", () => {
         }
       `
 
-      gravity.withArgs("me/bidders", {}).returns(Promise.resolve([{ id: "Foo ID" }, { id: "Bar ID" }]))
+      const response = () => Promise.resolve([{ id: "Foo ID" }, { id: "Bar ID" }])
+      const meBiddersLoader = jest.fn(response)
 
-      return runAuthenticatedQuery(query).then(({ me: { bidders } }) => {
+      return runAuthenticatedQuery(query, { meBiddersLoader }).then(({ me: { bidders } }) => {
         expect(bidders).toEqual([{ id: "Foo ID" }, { id: "Bar ID" }])
       })
     })
@@ -46,12 +31,11 @@ describe("Me", () => {
           }
         }
       `
+      const response = () => Promise.resolve([{ id: "Foo ID" }, { id: "Bar ID" }])
+      const meBiddersLoader = jest.fn(response)
 
-      gravity
-        .withArgs("me/bidders", { sale_id: "the-fun-sale" })
-        .returns(Promise.resolve([{ id: "Foo ID" }, { id: "Bar ID" }]))
-
-      return runAuthenticatedQuery(query).then(({ me: { bidders } }) => {
+      return runAuthenticatedQuery(query, { meBiddersLoader }).then(({ me: { bidders } }) => {
+        expect(meBiddersLoader).toBeCalledWith({ sale_id: "the-fun-sale" })
         expect(bidders).toEqual([{ id: "Foo ID" }, { id: "Bar ID" }])
       })
     })
