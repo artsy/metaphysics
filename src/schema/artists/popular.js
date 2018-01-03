@@ -24,9 +24,7 @@ const PopularArtists = {
       description: "Number of results to return",
     },
   },
-  resolve: (_root, options, _request, { rootValue: { popularArtistsLoader } }) => {
-    return popularArtistsLoader(options)
-  },
+  resolve: (_root, options, _request, { rootValue: { popularArtistsLoader } }) => popularArtistsLoader(options),
 }
 
 export default PopularArtists
