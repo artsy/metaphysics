@@ -1,4 +1,5 @@
 import date from "./fields/date"
+import numeral from "numeral"
 import { IDFields, NodeInterface } from "./object_identification"
 import { GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLString, GraphQLObjectType, GraphQLEnumType } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
@@ -121,7 +122,14 @@ const AuctionResultType = new GraphQLObjectType({
           },
           display: {
             type: GraphQLString,
-            resolve: ({ currency, price_realized_cents }) => {
+            args: {
+              format: {
+                type: GraphQLString,
+                description: "Passes in to numeral, such as `'0.00'`",
+                defaultValue: "",
+              },
+            },
+            resolve: ({ currency, price_realized_cents }, { format }) => {
               const { symbol, subunit_to_unit } = currencyCodes[currency.toLowerCase()]
               let display = ""
 
@@ -133,7 +141,9 @@ const AuctionResultType = new GraphQLObjectType({
                 display += " " + currency
               }
 
-              display += Math.round(price_realized_cents / subunit_to_unit).toLocaleString()
+              const amount = Math.round(price_realized_cents / subunit_to_unit)
+
+              display += numeral(amount).format(format)
 
               return display
             },
