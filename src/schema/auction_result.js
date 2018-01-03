@@ -6,7 +6,7 @@ import { has, indexOf } from "lodash"
 import Image from "schema/image"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
-const currencyCodes = require("./../lib/currency_codes.json")
+const currencyCodes = require("../lib/currency_codes.json")
 const symbolOnly = ["USD", "GBP", "EUR", "MYR"]
 
 export const AuctionResultSorts = {
