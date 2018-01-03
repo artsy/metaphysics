@@ -1,10 +1,13 @@
 import date from "./fields/date"
-import { amount } from "./fields/money"
 import { IDFields, NodeInterface } from "./object_identification"
-import { GraphQLFloat, GraphQLNonNull, GraphQLString, GraphQLObjectType, GraphQLEnumType } from "graphql"
+import { GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLString, GraphQLObjectType, GraphQLEnumType } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
-import { has } from "lodash"
+import { has, indexOf } from "lodash"
 import Image from "schema/image"
+
+// Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
+const currencyCodes = require("./../lib/currency_codes.json")
+const symbolOnly = ["USD", "GBP", "EUR", "MYR"]
 
 export const AuctionResultSorts = {
   type: new GraphQLEnumType({
@@ -103,9 +106,42 @@ const AuctionResultType = new GraphQLObjectType({
         }
       },
     },
-    low_estimate: amount(({ low_estimate_cents_usd }) => low_estimate_cents_usd),
-    high_estimate: amount(({ high_estimate_cents_usd }) => high_estimate_cents_usd),
-    price_realized: amount(({ price_realized_cents_usd }) => price_realized_cents_usd),
+
+    price_realized: {
+      type: new GraphQLObjectType({
+        name: "AuctionResultPriceRealized",
+        fields: {
+          cents: {
+            type: GraphQLInt,
+            resolve: ({ price_realized_cents }) => price_realized_cents,
+          },
+          cents_usd: {
+            type: GraphQLInt,
+            resolve: ({ price_realized_cents_usd }) => price_realized_cents_usd,
+          },
+          display: {
+            type: GraphQLString,
+            resolve: ({ currency, price_realized_cents }) => {
+              const { symbol, subunit_to_unit } = currencyCodes[currency.toLowerCase()]
+              let display = ""
+
+              if (symbol) {
+                display = symbol
+              }
+
+              if (indexOf(symbolOnly, currency) === -1) {
+                display += " " + currency
+              }
+
+              display += Math.round(price_realized_cents / subunit_to_unit).toLocaleString()
+
+              return display
+            },
+          },
+        },
+      }),
+      resolve: lot => lot,
+    },
   }),
 })
 
