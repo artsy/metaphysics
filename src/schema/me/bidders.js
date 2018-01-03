@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import Bidder from "schema/bidder"
 import { GraphQLList, GraphQLString } from "graphql"
 
@@ -11,8 +10,8 @@ export default {
       description: "The slug or ID of a Sale",
     },
   },
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
-    if (!accessToken) return null
-    return gravity.with(accessToken)("me/bidders", options)
+  resolve: (root, options, request, { rootValue: { meBiddersLoader } }) => {
+    if (!meBiddersLoader) return null
+    return meBiddersLoader(options)
   },
 }
