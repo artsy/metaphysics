@@ -131,14 +131,14 @@ const AuctionResultType = new GraphQLObjectType({
             },
             resolve: ({ currency, price_realized_cents }, { format }) => {
               const { symbol, subunit_to_unit } = currencyCodes[currency.toLowerCase()]
-              let display = ""
-
-              if (symbol) {
-                display = symbol
-              }
+              let display
 
               if (indexOf(symbolOnly, currency) === -1) {
-                display += " " + currency
+                display = currency
+              }
+
+              if (symbol) {
+                display = display ? display + " " + symbol : symbol
               }
 
               const amount = Math.round(price_realized_cents / subunit_to_unit)

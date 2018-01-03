@@ -94,7 +94,7 @@ describe("Artist type", () => {
                   price_realized: {
                     cents: 420000,
                     cents_usd: 100000,
-                    display: "¥ JPY420k",
+                    display: "JPY ¥420k",
                   },
                 },
               },
