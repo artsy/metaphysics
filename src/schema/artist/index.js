@@ -33,6 +33,8 @@ import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, Graph
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
 
+const whitelistHighlightedAuctionResults = require("../../lib/auction_result_artists.json").artists
+
 const artistArtworkArrayLength = (artist, filter) => {
   let length
   if (first(filter) === "for_sale") {
@@ -200,8 +202,17 @@ export const ArtistType = new GraphQLObjectType({
         type: auctionResultConnection,
         args: pageable({
           sort: AuctionResultSorts,
+          recordsTrusted: {
+            type: GraphQLBoolean,
+            defaultValue: false,
+            description: "When true, will only return records for whitelisted artists.",
+          },
         }),
         resolve: ({ _id }, options, _request, { rootValue: { auctionLotLoader } }) => {
+          if (options.recordsTrusted && !includes(whitelistHighlightedAuctionResults, _id)) {
+            return null
+          }
+
           // Convert `after` cursors to page params
           const { page, size, offset } = parseRelayOptions(options)
           const diffusionArgs = { page, size, artist_id: _id, sort: options.sort }

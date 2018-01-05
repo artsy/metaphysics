@@ -9,7 +9,7 @@ describe("Artist type", () => {
       id: "percy-z",
       birthday: "2005",
       artworks_count: 42,
-      _id: "artist",
+      _id: "4d8b92b34eb68a1b2c0003f4",
     }
 
     const auctionResultResponse = {
@@ -49,7 +49,7 @@ describe("Artist type", () => {
     const query = `
       {
         artist(id: "percy-z") {
-          auctionResults(first: 1) {
+          auctionResults(recordsTrusted: true, first: 1) {
             edges {
               node {
                 category_text
