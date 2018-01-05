@@ -49,7 +49,7 @@ describe("Artist type", () => {
     const query = `
       {
         artist(id: "percy-z") {
-          auctionResults(recordsTrusted: true, first: 1) {
+          auctionResults(first: 1) {
             edges {
               node {
                 category_text
