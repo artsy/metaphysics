@@ -206,7 +206,7 @@ export const ArtistType = new GraphQLObjectType({
           sort: AuctionResultSorts,
           recordsTrusted: {
             type: GraphQLBoolean,
-            defaultValue: false,
+            defaultValue: true,
             description: "When true, will only return records for whitelisted artists.",
           },
         }),
