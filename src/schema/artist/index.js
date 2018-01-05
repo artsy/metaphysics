@@ -33,7 +33,9 @@ import { GraphQLObjectType, GraphQLBoolean, GraphQLString, GraphQLNonNull, Graph
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
 
-const whitelistHighlightedAuctionResults = require("../../lib/auction_result_artists.json").artists
+// Manually curated list of artist id's who has verified auction lots that can be
+// returned, when queried for via `recordsTrusted: true`.
+const auctionRecordsTrusted = require("../../lib/auction_records_trusted.json").artists
 
 const artistArtworkArrayLength = (artist, filter) => {
   let length
@@ -209,7 +211,7 @@ export const ArtistType = new GraphQLObjectType({
           },
         }),
         resolve: ({ _id }, options, _request, { rootValue: { auctionLotLoader } }) => {
-          if (options.recordsTrusted && !includes(whitelistHighlightedAuctionResults, _id)) {
+          if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
             return null
           }
 
