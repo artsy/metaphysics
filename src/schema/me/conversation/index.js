@@ -121,6 +121,10 @@ const isLastMessageToUser = ({ _embedded, from_email }) => {
   return from_email !== lastMessageFromEmail
 }
 
+const lastMessageId = conversation => {
+  return get(conversation, "_embedded.last_message.id")
+}
+
 export const ConversationFields = {
   __id: GlobalIDField,
   id: {
@@ -163,6 +167,9 @@ export const ConversationFields = {
   purchase_request: {
     type: GraphQLBoolean,
   },
+  from_last_viewed_message_id: {
+    type: GraphQLString,
+  },
   initial_message: {
     type: new GraphQLNonNull(GraphQLString),
     resolve: ({ initial_message, from_name }) => {
@@ -182,9 +189,7 @@ export const ConversationFields = {
   last_message_id: {
     type: GraphQLString,
     description: "Impulse id of the last message.",
-    resolve: conversation => {
-      return get(conversation, "_embedded.last_message.id")
-    },
+    resolve: conversation => lastMessageId(conversation),
   },
 
   // TODO: Currently if the user is not the sender of a message, we assume they are a recipient.
@@ -198,6 +203,7 @@ export const ConversationFields = {
   // If the user is a recipient of the last message, return their timestamped
   // 'read' event, otherwise null.
   last_message_open: {
+    deprecationReason: "Prefer to use `unread`",
     type: GraphQLString,
     description: "Timestamp if the user opened the last message, null in all other cases",
     resolve: (conversation, options, request, { rootValue: { conversationMessagesLoader } }) => {
@@ -317,6 +323,18 @@ export const ConversationFields = {
           sliceStart: offset,
         })
       })
+    },
+  },
+
+  unread: {
+    type: GraphQLBoolean,
+    description: "True if there is an unread message by the user.",
+    resolve: conversation => {
+      const memoizedLastMessageId = lastMessageId(conversation)
+      const { from_last_viewed_message_id } = conversation
+      return (
+        !!from_last_viewed_message_id && !!memoizedLastMessageId && from_last_viewed_message_id < memoizedLastMessageId
+      )
     },
   },
 }

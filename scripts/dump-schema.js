@@ -2,7 +2,7 @@
 
 import fs from "fs"
 import path from "path"
-import schema from "../schema"
+import schema from "../src/schema"
 import { graphql } from "graphql"
 import { introspectionQuery, printSchema } from "graphql/utilities"
 
@@ -23,4 +23,4 @@ graphql(schema, introspectionQuery).then(
 )
 
 // Save user readable type system shorthand of schema
-fs.writeFileSync(path.join(destination, "schema.graphql"), printSchema(schema))
+fs.writeFileSync(path.join(destination, "schema.graphql"), printSchema(schema, { commentDescriptions: true }))

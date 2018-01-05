@@ -28,6 +28,9 @@ describe("Artist type", () => {
                 larger: "https://path.to.larger.jpg",
               },
             ],
+            currency: "JPY",
+            price_realized_cents: 420000,
+            price_realized_cents_usd: 100000,
           },
         ],
       },
@@ -58,6 +61,12 @@ describe("Artist type", () => {
                     image_url
                   }
                 }
+                currency
+                price_realized {
+                  display(format: "0a")
+                  cents
+                  cents_usd
+                }
               }
             }
           }
@@ -80,6 +89,12 @@ describe("Artist type", () => {
                     larger: {
                       image_url: "https://path.to.larger.jpg",
                     },
+                  },
+                  currency: "JPY",
+                  price_realized: {
+                    cents: 420000,
+                    cents_usd: 100000,
+                    display: "JPY ¥420k",
                   },
                 },
               },

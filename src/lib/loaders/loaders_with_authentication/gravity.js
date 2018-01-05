@@ -27,7 +27,9 @@ export default (accessToken, userID, requestIDs) => {
       "is_followed",
       "profile"
     ),
+    inquiryRequestsLoader: gravityLoader("me/inquiry_requests", {}, { headers: true }),
     lotStandingLoader: gravityLoader("me/lot_standings"),
+    meBiddersLoader: gravityLoader("me/bidders"),
     popularArtistsLoader: gravityLoader("artists/popular"),
     savedArtworkLoader: trackedEntityLoaderFactory(
       gravityLoader("collection/saved-artwork/artworks", {
@@ -42,5 +44,7 @@ export default (accessToken, userID, requestIDs) => {
     suggestedArtistsLoader: gravityLoader("me/suggested/artists", {}, { headers: true }),
     updateCollectorProfileLoader: gravityLoader("me/collector_profile", {}, { method: "PUT" }),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
+    saveArtworkLoader: gravityLoader(id => `collection/saved-artwork/artwork/${id}`, {}, { method: "POST" }),
+    deleteArtworkLoader: gravityLoader(id => `collection/saved-artwork/artwork/${id}`, {}, { method: "DELETE" }),
   }
 }

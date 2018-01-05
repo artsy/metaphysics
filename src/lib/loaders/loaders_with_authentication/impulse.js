@@ -1,5 +1,3 @@
-import moment from "moment"
-
 import factories from "../api"
 
 const { IMPULSE_APPLICATION_ID } = process.env
@@ -31,14 +29,6 @@ export default (accessToken, userID, requestIDs) => {
       {
         reply_all: true,
         from_id: userID,
-      },
-      { method: "POST" }
-    ),
-    markMessageReadLoader: impulseLoader(
-      "events",
-      {
-        event: "open",
-        timestamp: moment().unix(),
       },
       { method: "POST" }
     ),
