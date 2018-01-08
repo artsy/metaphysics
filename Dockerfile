@@ -24,9 +24,9 @@ ENV USER deploy
 ENV HOME /home/deploy
 
 # Run babel compiler
-RUN node_modules/.bin/babel index.js config.js -s inline -d build
-RUN node_modules/.bin/babel lib -s inline -d build/lib
-RUN node_modules/.bin/babel schema -s inline -d build/schema
+RUN yarn build:lib
+RUN yarn build:index
+RUN yarn build:fixtures
 
 ENV PORT 5001
 EXPOSE 5001
