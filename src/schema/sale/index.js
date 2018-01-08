@@ -191,7 +191,7 @@ const SaleType = new GraphQLObjectType({
               return (
                 moment(saleDate)
                   .fromNow()
-                  .replace("in", "")
+                  .replace("in ", "")
                   .replace("ago", "")
                   .trim() + " left" // e.g., X min left
               )
