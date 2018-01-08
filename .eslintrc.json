@@ -10,21 +10,11 @@
   "parser": "babel-eslint",
   "rules": {
     "camelcase": 0,
-    "max-len": [
-      2,
-      120
-    ],
-    "quotes": [
-      2,
-      "double"
-    ],
-    "semi": [
-      0
-    ]
+    "max-len": [2, 120],
+    "quotes": [2, "double"],
+    "semi": [0]
   },
-  "ignore": [
-    "/flow-typed/npm/*"
-  ],
+  "ignore": ["/flow-typed/npm/*"],
   "globals": {
     "expect": false,
     "schema": false,
