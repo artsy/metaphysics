@@ -20,6 +20,8 @@ RUN chown -R deploy:deploy /app
 
 # Switch to deploy user
 USER deploy
+ENV USER deploy
+ENV HOME /home/deploy
 
 # Run babel compiler
 RUN node_modules/.bin/babel index.js config.js -s inline -d build
