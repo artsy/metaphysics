@@ -272,6 +272,15 @@ const SaleType = new GraphQLObjectType({
         type: Profile.type,
         resolve: ({ profile }) => profile,
       },
+      promoted_sale: {
+        type: SaleType,
+        resolve: ({ promoted_sale }, options, request, { rootValue: { saleLoader } }) => {
+          if (promoted_sale && promoted_sale.id) {
+            return saleLoader(promoted_sale.id)
+          }
+          return null
+        },
+      },
       registration_ends_at: date,
       require_bidder_approval: {
         type: GraphQLBoolean,
