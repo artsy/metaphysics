@@ -359,6 +359,42 @@ describe("Sale type", () => {
     })
   })
 
+  describe("promoted sale", () => {
+    const query = `
+      {
+        sale(id: "foo-foo") {
+          _id
+          promoted_sale {
+            id
+          }
+        }
+      }
+    `
+
+    it("does not error, but returns null for promoted sale", async () => {
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          promoted_sale: null,
+        },
+      })
+    })
+
+    it("returns the promoted sale", async () => {
+      sale.promoted_sale = {
+        id: "foo-foo",
+      }
+      expect(await execute(query)).toEqual({
+        sale: {
+          _id: "123",
+          promoted_sale: {
+            id: "foo-foo",
+          },
+        },
+      })
+    })
+  })
+
   describe("display_timely_at", () => {
     const testData = [
       [
