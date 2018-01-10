@@ -28,6 +28,6 @@ export default mutationWithClientMutationId({
   ) => {
     if (!accessToken) return new Error("You need to be signed in to perform this action")
     const loader = remove ? deleteArtworkLoader : saveArtworkLoader
-    return loader({ user_id: userID }).then(() => ({ artwork_id }))
+    return loader(artwork_id, { user_id: userID }).then(() => ({ artwork_id }))
   },
 })
