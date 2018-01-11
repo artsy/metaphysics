@@ -71,7 +71,7 @@ export const GeneType = new GraphQLObjectType({
           gravityOptions.aggregations = options.aggregations || []
           gravityOptions.aggregations.push("total")
           // Remove medium if we are trying to get all mediums
-          if (options.medium === "*") {
+          if (gravityOptions.medium === "*" || !gravityOptions.medium) {
             delete gravityOptions.medium
           }
           // Manually set the gene_id to the current id
