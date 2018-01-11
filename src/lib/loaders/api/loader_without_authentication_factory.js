@@ -53,23 +53,27 @@ export const apiLoaderWithoutAuthenticationFactory = (api, apiName, globalAPIOpt
                   logger(globalAPIOptions.requestIDs.requestID, apiName, key, { time, cache: true })
 
                   // Then refresh cache
-                  throttled(key, () => {
-                    api(key, null, apiOptions)
-                      .then(({ body, headers }) => {
-                        if (apiOptions.headers) {
-                          cache.set(key, { body, headers })
-                        } else {
-                          cache.set(key, body)
-                        }
-                        verbose(`Refreshing: ${key}`)
-                      })
-                      .catch(err => {
-                        if (err.statusCode === 404) {
-                          // Unpublished
-                          cache.delete(key)
-                        }
-                      })
-                  })
+                  throttled(
+                    key,
+                    () => {
+                      api(key, null, apiOptions)
+                        .then(({ body, headers }) => {
+                          if (apiOptions.headers) {
+                            cache.set(key, { body, headers })
+                          } else {
+                            cache.set(key, body)
+                          }
+                          verbose(`Refreshing: ${key}`)
+                        })
+                        .catch(err => {
+                          if (err.statusCode === 404) {
+                            // Unpublished
+                            cache.delete(key)
+                          }
+                        })
+                    },
+                    { requestThrottleMs: apiOptions.requestThrottleMs }
+                  )
                 },
                 // Cache miss
                 () => {

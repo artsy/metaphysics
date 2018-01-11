@@ -1,4 +1,5 @@
 // @ts-check
+import config from "config"
 
 import convection from "lib/apis/convection"
 import delta from "lib/apis/delta"
@@ -25,6 +26,7 @@ export default requestIDs => ({
    */
   diffusionLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(diffusion, "diffusion", {
     requestIDs,
+    requestThrottleMs: config.DIFFUSION_REQUEST_THROTTLE_MS,
   }),
 
   /**
