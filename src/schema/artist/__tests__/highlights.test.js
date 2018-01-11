@@ -25,6 +25,7 @@ describe("Artist Statuses", () => {
     rootValue = {
       partnerArtistsLoader: sinon
         .stub()
+        .withArgs("partner_artists", sinon.match({ display_on_partner_profile: true }))
         .returns(Promise.resolve({ headers: { "x-total-count": 1 }, body: partnerArtistResp })),
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
     }
@@ -35,7 +36,7 @@ describe("Artist Statuses", () => {
       {
         artist(id: "foo-bar") {
           highlights {
-            partners(first: 1) {
+            partners(first: 1, display_on_partner_profile: true) {
               edges {
                 is_represented_by
                 node {
