@@ -14,6 +14,9 @@ const ArtistHighlightsType = new GraphQLObjectType({
         partner_category: {
           type: new GraphQLList(GraphQLString),
         },
+        display_on_partner_profile: {
+          type: GraphQLBoolean,
+        },
       }),
       resolve: ({ id: artist_id }, options, _request, { rootValue: { partnerArtistsLoader } }) => {
         return partnersForArtist(artist_id, options, partnerArtistsLoader)

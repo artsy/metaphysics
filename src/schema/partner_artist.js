@@ -85,8 +85,16 @@ export const partnersForArtist = (artist_id, options, loader) => {
   // Convert `after` cursors to page params
   const { limit: size, offset } = getPagingParameters(options)
   // Construct an object of all the params gravity will listen to
-  const { represented_by, partner_category } = options
-  const gravityArgs = { total_count: true, size, offset, artist_id, represented_by, partner_category }
+  const { represented_by, partner_category, display_on_partner_profile } = options
+  const gravityArgs = {
+    total_count: true,
+    size,
+    offset,
+    artist_id,
+    display_on_partner_profile,
+    represented_by,
+    partner_category,
+  }
 
   return loader(gravityArgs).then(({ body, headers }) => {
     const connection = connectionFromArraySlice(body, options, {
