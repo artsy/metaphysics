@@ -7,11 +7,11 @@ patch-package
    var sliceStart = meta.sliceStart,
 -      arrayLength = meta.arrayLength;
 +      arrayLength = meta.arrayLength,
-+      nodeField= meta.nodeField;
++      resolveNode= meta.resolveNode;
  
    var sliceEnd = sliceStart + arraySlice.length;
    var beforeOffset = getOffsetWithDefault(before, arrayLength);
-@@ -88,10 +89,14 @@ function connectionFromArraySlice(arraySlice, args, meta) {
+@@ -88,10 +89,15 @@ function connectionFromArraySlice(arraySlice, args, meta) {
    var slice = arraySlice.slice(Math.max(startOffset - sliceStart, 0), arraySlice.length - (sliceEnd - endOffset));
  
    var edges = slice.map(function (value, index) {
@@ -19,10 +19,11 @@ patch-package
 +    const newEdge = {
        cursor: offsetToCursor(startOffset + index),
 -      node: value
-+      node: !!nodeField ? value[nodeField] : value,
++      node: !!resolveNode ? Promise.resolve(resolveNode(value)) : value,
      };
-+    if (nodeField) {
-+      return Object.assign({ ...value }, newEdge, {});
++
++    if (resolveNode) {
++      return { ...value, ...newEdge };
 +    }
 +    return newEdge;
    });

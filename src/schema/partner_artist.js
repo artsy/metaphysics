@@ -99,7 +99,7 @@ export const partnersForArtist = (artist_id, options, loader) => {
     return connectionFromArraySlice(body, options, {
       arrayLength: headers["x-total-count"],
       sliceStart: offset,
-      nodeField: "partner",
+      resolveNode: node => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`
     })
   })
 }
