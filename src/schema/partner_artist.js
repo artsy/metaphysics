@@ -6,6 +6,7 @@ import { IDFields } from "./object_identification"
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters } from "relay-cursor-paging"
+import { assign } from "lodash"
 
 const counts = {
   type: new GraphQLObjectType({
@@ -96,10 +97,26 @@ export const partnersForArtist = (artist_id, options, loader) => {
   }
 
   return loader(gravityArgs).then(({ body, headers }) => {
-    return connectionFromArraySlice(body, options, {
+    const connection = connectionFromArraySlice(body, options, {
       arrayLength: headers["x-total-count"],
       sliceStart: offset,
-      resolveNode: node => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`
     })
+
+    // Inject the partner artist data into edges, and set the partner as the node.
+    let newEdges = []
+    connection.edges.forEach(edge => {
+      const newEdge = assign(
+        {
+          ...edge.node,
+        },
+        {},
+        edge
+      )
+      newEdge.node = edge.node.partner
+      newEdges = newEdges.concat(newEdge)
+    })
+    connection.edges = newEdges
+
+    return connection
   })
 }
