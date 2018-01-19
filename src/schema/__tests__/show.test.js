@@ -352,7 +352,9 @@ describe("Show type", () => {
     `
 
     return runQuery(query).then(data => {
-      expect(Show.__get__("gravity").args[0][0]).toBe("show/new-museum-1-2015-triennial-surround-audience")
+      expect(Show.__get__("gravity").args[0][0]).toBe(
+        "show/new-museum-1-2015-triennial-surround-audience"
+      )
 
       expect(data).toEqual({
         show: {
@@ -407,7 +409,9 @@ describe("Show type", () => {
       }
     `
     return runQuery(query).then(data => {
-      expect(Show.__get__("gravity").args[0][0]).toBe("show/new-museum-1-2015-triennial-surround-audience")
+      expect(Show.__get__("gravity").args[0][0]).toBe(
+        "show/new-museum-1-2015-triennial-surround-audience"
+      )
       expect(data).toEqual({
         show: {
           press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",

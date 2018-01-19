@@ -259,8 +259,20 @@ describe("Sale type", () => {
       }
 
       return runAuthenticatedQuery(query, rootValue).then(data => {
-        expect(data.sale.sale_artworks[0].bid_increments.slice(0, 5)).toEqual([400000, 410000, 420000, 430000, 440000])
-        expect(data.sale.sale_artworks[1].bid_increments.slice(0, 5)).toEqual([20000, 25000, 30000, 35000, 40000])
+        expect(data.sale.sale_artworks[0].bid_increments.slice(0, 5)).toEqual([
+          400000,
+          410000,
+          420000,
+          430000,
+          440000,
+        ])
+        expect(data.sale.sale_artworks[1].bid_increments.slice(0, 5)).toEqual([
+          20000,
+          25000,
+          30000,
+          35000,
+          40000,
+        ])
       })
     })
   })

@@ -27,7 +27,8 @@ describe("Collections", () => {
         }
       `
       const rootValue = {
-        collectionLoader: id => id === "saved-artwork" && Promise.resolve(gravityData),
+        collectionLoader: id =>
+          id === "saved-artwork" && Promise.resolve(gravityData),
       }
       const data = await runAuthenticatedQuery(query, rootValue)
       expect(data).toMatchSnapshot()
@@ -48,15 +49,30 @@ describe("Collections", () => {
           }
         }
       `
-      const artworksPath = resolve("src", "test", "fixtures", "gravity", "artworks_array.json")
+      const artworksPath = resolve(
+        "src",
+        "test",
+        "fixtures",
+        "gravity",
+        "artworks_array.json"
+      )
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
       const rootValue = {
         collectionArtworksLoader: (id, params) => {
           if (
             id === "saved-artwork" &&
-            isEqual(params, { total_count: true, size: 10, offset: 0, private: false, sort: "-position" })
+            isEqual(params, {
+              total_count: true,
+              size: 10,
+              offset: 0,
+              private: false,
+              sort: "-position",
+            })
           ) {
-            return Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } })
+            return Promise.resolve({
+              body: artworks,
+              headers: { "x-total-count": 10 },
+            })
           }
         },
       }
@@ -80,9 +96,12 @@ describe("Collections", () => {
         }
       `
       const rootValue = {
-        collectionArtworksLoader: () => Promise.reject(new Error("Collection Not Found")),
+        collectionArtworksLoader: () =>
+          Promise.reject(new Error("Collection Not Found")),
       }
-      const { collection: { artworks_connection: { edges } } } = await runAuthenticatedQuery(query, rootValue)
+      const {
+        collection: { artworks_connection: { edges } },
+      } = await runAuthenticatedQuery(query, rootValue)
       expect(edges).toEqual([])
     })
   })

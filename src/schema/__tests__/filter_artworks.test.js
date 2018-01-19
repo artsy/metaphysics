@@ -55,9 +55,11 @@ describe("Filter Artworks", () => {
         }
       `
 
-      return runQuery(query).then(({ gene: { filtered_artworks: { hits } } }) => {
-        expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
-      })
+      return runQuery(query).then(
+        ({ gene: { filtered_artworks: { hits } } }) => {
+          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+        }
+      )
     })
 
     it("implements the NodeInterface", () => {
@@ -76,10 +78,15 @@ describe("Filter Artworks", () => {
         for_sale: true,
         gene_id: "500-1000-ce",
       }
-      const expectedId = toGlobalId("FilterArtworks", JSON.stringify(filterOptions))
-      return runQuery(query).then(({ gene: { filtered_artworks: { __id } } }) => {
-        expect(__id).toEqual(expectedId)
-      })
+      const expectedId = toGlobalId(
+        "FilterArtworks",
+        JSON.stringify(filterOptions)
+      )
+      return runQuery(query).then(
+        ({ gene: { filtered_artworks: { __id } } }) => {
+          expect(__id).toEqual(expectedId)
+        }
+      )
     })
 
     it("fetches FilterArtworks using the node root field", () => {
@@ -88,7 +95,10 @@ describe("Filter Artworks", () => {
         for_sale: true,
         gene_id: "500-1000-ce",
       }
-      const generatedId = toGlobalId("FilterArtworks", JSON.stringify(filterOptions))
+      const generatedId = toGlobalId(
+        "FilterArtworks",
+        JSON.stringify(filterOptions)
+      )
 
       const query = `
         {

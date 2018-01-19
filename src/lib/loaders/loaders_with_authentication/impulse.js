@@ -5,14 +5,26 @@ const { IMPULSE_APPLICATION_ID } = process.env
 export default (accessToken, userID, requestIDs) => {
   let impulseTokenLoader
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
-  const impulseAccessTokenLoader = () => impulseTokenLoader().then(data => data.token)
+  const impulseAccessTokenLoader = () =>
+    impulseTokenLoader().then(data => data.token)
 
-  const { gravityLoaderWithAuthenticationFactory, impulseLoaderWithAuthenticationFactory } = factories(requestIDs)
-  const gravityLoader = gravityLoaderWithAuthenticationFactory(gravityAccessTokenLoader)
-  const impulseLoader = impulseLoaderWithAuthenticationFactory(impulseAccessTokenLoader)
+  const {
+    gravityLoaderWithAuthenticationFactory,
+    impulseLoaderWithAuthenticationFactory,
+  } = factories(requestIDs)
+  const gravityLoader = gravityLoaderWithAuthenticationFactory(
+    gravityAccessTokenLoader
+  )
+  const impulseLoader = impulseLoaderWithAuthenticationFactory(
+    impulseAccessTokenLoader
+  )
 
   // This generates a token with a lifetime of 1 minute, which should be plenty of time to fulfill a full query.
-  impulseTokenLoader = gravityLoader("me/token", { client_application_id: IMPULSE_APPLICATION_ID }, { method: "POST" })
+  impulseTokenLoader = gravityLoader(
+    "me/token",
+    { client_application_id: IMPULSE_APPLICATION_ID },
+    { method: "POST" }
+  )
 
   return {
     conversationsLoader: impulseLoader("conversations", {
@@ -21,7 +33,11 @@ export default (accessToken, userID, requestIDs) => {
       has_message: true,
     }),
     conversationLoader: impulseLoader(id => `conversations/${id}`),
-    conversationUpdateLoader: impulseLoader(id => `conversations/${id}`, {}, { method: "PUT" }),
+    conversationUpdateLoader: impulseLoader(
+      id => `conversations/${id}`,
+      {},
+      { method: "PUT" }
+    ),
     conversationMessagesLoader: impulseLoader("message_details"),
     conversationInvoiceLoader: impulseLoader("invoice_detail"),
     conversationCreateMessageLoader: impulseLoader(

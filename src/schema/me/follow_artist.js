@@ -19,17 +19,31 @@ export default mutationWithClientMutationId({
   outputFields: {
     artist: {
       type: ArtistType,
-      resolve: ({ artist_id }, options, request, { rootValue: { artistLoader } }) => artistLoader(artist_id),
+      resolve: (
+        { artist_id },
+        options,
+        request,
+        { rootValue: { artistLoader } }
+      ) => artistLoader(artist_id),
     },
     popular_artists: PopularArtists,
   },
-  mutateAndGetPayload: ({ artist_id, unfollow }, request, { rootValue: { accessToken } }) => {
-    if (!accessToken) return new Error("You need to be signed in to perform this action")
+  mutateAndGetPayload: (
+    { artist_id, unfollow },
+    request,
+    { rootValue: { accessToken } }
+  ) => {
+    if (!accessToken) {
+      return new Error("You need to be signed in to perform this action")
+    }
+
     const saveMethod = unfollow ? "DELETE" : "POST"
     const options = unfollow ? {} : { artist_id }
     const followPath = unfollow ? `/${artist_id}` : ""
-    return gravity.with(accessToken, {
-      method: saveMethod,
-    })(`/me/follow/artist${followPath}`, options).then(() => ({ artist_id }))
+    return gravity
+      .with(accessToken, {
+        method: saveMethod,
+      })(`/me/follow/artist${followPath}`, options)
+      .then(() => ({ artist_id }))
   },
 })

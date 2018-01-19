@@ -58,8 +58,13 @@ describe("OrderedSets type", () => {
   it("fetches sets by key", () => {
     return runQuery(query).then(data => {
       expect(OrderedSets.__get__("gravity").args[0][0]).toEqual("sets")
-      expect(OrderedSets.__get__("gravity").args[0][1]).toMatchObject({ key: "artists:featured-genes", public: true })
-      expect(OrderedSets.__get__("gravity").args[1]).toEqual(["set/52dd3c2e4b8480091700027f/items"])
+      expect(OrderedSets.__get__("gravity").args[0][1]).toMatchObject({
+        key: "artists:featured-genes",
+        public: true,
+      })
+      expect(OrderedSets.__get__("gravity").args[1]).toEqual([
+        "set/52dd3c2e4b8480091700027f/items",
+      ])
 
       expect(data).toEqual({
         ordered_sets: [
@@ -80,7 +85,10 @@ describe("OrderedSets type", () => {
 
   it("includes pagination params", () => {
     return runQuery(query).then(() => {
-      expect(OrderedSets.__get__("gravity").args[0][1]).toMatchObject({ page: 1, size: 5 })
+      expect(OrderedSets.__get__("gravity").args[0][1]).toMatchObject({
+        page: 1,
+        size: 5,
+      })
     })
   })
 })

@@ -7,7 +7,9 @@ describe("Loaders", () => {
   describe("http", () => {
     describe("error", () => {
       it("propagates the error through rejection if the API rejects", () => {
-        const api = sinon.stub().returns(Promise.reject(new Error("Something went wrong")))
+        const api = sinon
+          .stub()
+          .returns(Promise.reject(new Error("Something went wrong")))
 
         const loader = httpLoader(api)
         return loader.load("/foo/bar").catch(e => {
@@ -31,7 +33,11 @@ describe("Loaders", () => {
         return loader
           .load("/my/cached/request")
           .then(data =>
-            Promise.all([Promise.resolve(data), loader.load("/my/cached/request"), cache.get("/my/cached/request")])
+            Promise.all([
+              Promise.resolve(data),
+              loader.load("/my/cached/request"),
+              cache.get("/my/cached/request"),
+            ])
           )
           .then(([data, memoized, cached]) => {
             expect(api.callCount).toBe(1)

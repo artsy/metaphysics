@@ -15,7 +15,11 @@ export const config = {
       resolve: submission => submission,
     },
   },
-  mutateAndGetPayload: (submission, _request, { rootValue: { submissionUpdateLoader } }) => {
+  mutateAndGetPayload: (
+    submission,
+    _request,
+    { rootValue: { submissionUpdateLoader } }
+  ) => {
     if (!submissionUpdateLoader) return null
     return submissionUpdateLoader(submission.id, submission)
   },

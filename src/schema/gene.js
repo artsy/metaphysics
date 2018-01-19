@@ -6,10 +6,24 @@ import cached from "./fields/cached"
 import Artwork from "./artwork"
 import Artist, { artistConnection } from "./artist"
 import Image from "./image"
-import filterArtworks, { ArtworkFilterAggregations, filterArtworksArgs, FilterArtworksCounts } from "./filter_artworks"
-import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "lib/helpers"
+import filterArtworks, {
+  ArtworkFilterAggregations,
+  filterArtworksArgs,
+  FilterArtworksCounts,
+} from "./filter_artworks"
+import {
+  queriedForFieldsOtherThanBlacklisted,
+  parseRelayOptions,
+} from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+} from "graphql"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -26,7 +40,9 @@ const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 export const GeneType = new GraphQLObjectType({
   name: "Gene",
   interfaces: [NodeInterface],
-  isTypeOf: obj => _.has(obj, "browseable") && (_.has(obj, "published") || _.has(obj, "family")),
+  isTypeOf: obj =>
+    _.has(obj, "browseable") &&
+    (_.has(obj, "published") || _.has(obj, "family")),
   fields: () => {
     return {
       ...GravityIDFields,
@@ -47,12 +63,14 @@ export const GeneType = new GraphQLObjectType({
           const gravityOptions = _.extend(parsedOptions, {
             exclude_artists_without_artworks: true,
           })
-          return gravity(`gene/${id}/artists`, gravityOptions).then(response => {
-            return connectionFromArraySlice(response, options, {
-              arrayLength: counts.artists,
-              sliceStart: gravityOptions.offset,
-            })
-          })
+          return gravity(`gene/${id}/artists`, gravityOptions).then(
+            response => {
+              return connectionFromArraySlice(response, options, {
+                arrayLength: counts.artists,
+                sliceStart: gravityOptions.offset,
+              })
+            }
+          )
         },
       },
       artworks_connection: {
@@ -114,7 +132,8 @@ export const GeneType = new GraphQLObjectType({
       mode: {
         type: GraphQLString,
         resolve: ({ type }) => {
-          const isSubjectMatter = type && type.name && type.name.match(SUBJECT_MATTER_REGEX)
+          const isSubjectMatter =
+            type && type.name && type.name.match(SUBJECT_MATTER_REGEX)
           return isSubjectMatter ? "artworks" : "artist"
         },
       },
@@ -126,23 +145,36 @@ export const GeneType = new GraphQLObjectType({
         args: pageable({
           exclude_gene_ids: {
             type: new GraphQLList(GraphQLString),
-            description: "Array of gene ids (not slugs) to exclude, may result in all genes being excluded.",
+            description:
+              "Array of gene ids (not slugs) to exclude, may result in all genes being excluded.",
           },
         }),
         description: "A list of genes similar to the specified gene",
-        resolve: (gene, options, request, { rootValue: { similarGenesLoader } }) => {
+        resolve: (
+          gene,
+          options,
+          request,
+          { rootValue: { similarGenesLoader } }
+        ) => {
           const { limit: size, offset } = getPagingParameters(options)
-          const gravityArgs = { size, offset, exclude_gene_ids: options.exclude_gene_ids, total_count: true }
+          const gravityArgs = {
+            size,
+            offset,
+            exclude_gene_ids: options.exclude_gene_ids,
+            total_count: true,
+          }
 
-          return similarGenesLoader(gene.id, gravityArgs).then(({ body, headers }) => {
-            const genes = body
-            const totalCount = headers["x-total-count"]
+          return similarGenesLoader(gene.id, gravityArgs).then(
+            ({ body, headers }) => {
+              const genes = body
+              const totalCount = headers["x-total-count"]
 
-            return connectionFromArraySlice(genes, options, {
-              arrayLength: totalCount,
-              sliceStart: offset,
-            })
-          })
+              return connectionFromArraySlice(genes, options, {
+                arrayLength: totalCount,
+                sliceStart: offset,
+              })
+            }
+          )
         },
       },
       trending_artists: {
@@ -156,7 +188,9 @@ export const GeneType = new GraphQLObjectType({
           return gravity(`artists/trending`, {
             gene: id,
           }).then(artists => {
-            if (_.has(options, "sample")) return _.take(_.shuffle(artists), options.sample)
+            if (_.has(options, "sample")) {
+              return _.take(_.shuffle(artists), options.sample)
+            }
             return artists
           })
         },

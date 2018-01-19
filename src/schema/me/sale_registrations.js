@@ -27,13 +27,15 @@ export default {
     return gravity("sales", options).then(sales => {
       return Promise.all(
         sales.map(sale => {
-          return gravity.with(accessToken)("me/bidders", { sale_id: sale.id }).then(bidders => {
-            return {
-              sale,
-              bidder: first(bidders),
-              is_registered: bidders.length > 0,
-            }
-          })
+          return gravity
+            .with(accessToken)("me/bidders", { sale_id: sale.id })
+            .then(bidders => {
+              return {
+                sale,
+                bidder: first(bidders),
+                is_registered: bidders.length > 0,
+              }
+            })
         })
       )
     })

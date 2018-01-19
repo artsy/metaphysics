@@ -59,7 +59,11 @@ describe("Me", () => {
 
       return runAuthenticatedQuery(query, {
         conversationsLoader: () =>
-          Promise.resolve({ total_unread_count: 1, total_count: 2, conversations: [conversation1, conversation2] }),
+          Promise.resolve({
+            total_unread_count: 1,
+            total_count: 2,
+            conversations: [conversation1, conversation2],
+          }),
       }).then(({ me: { conversations } }) => {
         expect(conversations).toEqual(expectedConversationData)
       })

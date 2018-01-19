@@ -106,7 +106,12 @@ describe("Object Identification", () => {
       const api = _.keys(tests[typeName])[0]
       const payload = tests[typeName][api]
       beforeEach(() => {
-        type.__Rewire__(api, sinon.stub().returns(Promise.resolve(_.assign({ id: "foo-bar" }, payload))))
+        type.__Rewire__(
+          api,
+          sinon
+            .stub()
+            .returns(Promise.resolve(_.assign({ id: "foo-bar" }, payload)))
+        )
       })
       afterEach(() => {
         type.__ResetDependency__(api)
@@ -190,7 +195,10 @@ describe("Object Identification", () => {
   })
   describe("for a HomePageArtworkModule", () => {
     describe("with a specific module", () => {
-      const globalId = toGlobalId("HomePageArtworkModule", JSON.stringify({ key: "popular_artists" }))
+      const globalId = toGlobalId(
+        "HomePageArtworkModule",
+        JSON.stringify({ key: "popular_artists" })
+      )
       it("generates a Global ID", () => {
         const query = `
           {
@@ -233,7 +241,10 @@ describe("Object Identification", () => {
       })
     })
     describe("with a generic gene", () => {
-      const globalId = toGlobalId("HomePageArtworkModule", JSON.stringify({ id: "abstract-art", key: "generic_gene" }))
+      const globalId = toGlobalId(
+        "HomePageArtworkModule",
+        JSON.stringify({ id: "abstract-art", key: "generic_gene" })
+      )
       it("generates a Global ID", () => {
         const query = `
           {
@@ -343,7 +354,10 @@ describe("Object Identification", () => {
     })
   })
   describe("for a HomePageArtistModule", () => {
-    const globalId = toGlobalId("HomePageArtistModule", JSON.stringify({ key: "TRENDING" }))
+    const globalId = toGlobalId(
+      "HomePageArtistModule",
+      JSON.stringify({ key: "TRENDING" })
+    )
     it("generates a Global ID", () => {
       const query = `
         {

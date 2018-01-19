@@ -19,7 +19,9 @@ describe("requestID (with the real data loaders)", () => {
     const rootValue = createLoaders("access-token", "user-id", requestIDs)
     expect.assertions(1)
     return runQuery(query, rootValue).then(() => {
-      expect(gravity).toBeCalledWith("artist/andy-warhol?", null, { requestIDs })
+      expect(gravity).toBeCalledWith("artist/andy-warhol?", null, {
+        requestIDs,
+      })
     })
   })
 
@@ -39,7 +41,9 @@ describe("requestID (with the real data loaders)", () => {
     const rootValue = createLoaders("secret", "user-42", requestIDs)
     expect.assertions(1)
     return runAuthenticatedQuery(query, rootValue).then(() => {
-      expect(gravity).toBeCalledWith("me/lot_standings?", "secret", { requestIDs })
+      expect(gravity).toBeCalledWith("me/lot_standings?", "secret", {
+        requestIDs,
+      })
     })
   })
 })

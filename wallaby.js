@@ -3,7 +3,14 @@ const babelRC = fs.readFileSync("./.babelrc")
 
 module.exports = wallaby => {
   return {
-    files: [".env.test", "config.js", "src/**/*.js", "src/**/*.json", "src/**/*.snap", "!src/**/*.test.js"],
+    files: [
+      ".env.test",
+      "config.js",
+      "src/**/*.js",
+      "src/**/*.json",
+      "src/**/*.snap",
+      "!src/**/*.test.js",
+    ],
     tests: ["src/**/*.test.js"],
 
     preprocessors: {

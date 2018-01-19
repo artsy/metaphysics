@@ -15,7 +15,8 @@ const Artists = {
     },
     sort: ArtistSorts,
   },
-  resolve: (root, options, _request, { rootValue: { artistsLoader } }) => artistsLoader(options),
+  resolve: (root, options, _request, { rootValue: { artistsLoader } }) =>
+    artistsLoader(options),
 }
 
 export default Artists

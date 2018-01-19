@@ -13,7 +13,12 @@ export default {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (root, { sale_id, artwork_id }, request, { rootValue: { accessToken } }) =>
+  resolve: (
+    root,
+    { sale_id, artwork_id },
+    request,
+    { rootValue: { accessToken } }
+  ) =>
     Promise.all([
       gravity.with(accessToken)("me/lot_standings", {
         sale_id,

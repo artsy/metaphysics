@@ -6,13 +6,18 @@ import { runQuery } from "test/utils"
 describe("getDefault", () => {
   it("returns the default image", () => {
     expect(
-      getDefault([{ id: "foo", is_default: false }, { id: "bar", is_default: true }, { id: "baz", is_default: false }])
-        .id
+      getDefault([
+        { id: "foo", is_default: false },
+        { id: "bar", is_default: true },
+        { id: "baz", is_default: false },
+      ]).id
     ).toBe("bar")
   })
 
   it("returns the first object if there is no default", () => {
-    expect(getDefault([{ id: "foo" }, { id: "bar" }, { id: "baz" }]).id).toBe("foo")
+    expect(getDefault([{ id: "foo" }, { id: "bar" }, { id: "baz" }]).id).toBe(
+      "foo"
+    )
   })
 })
 

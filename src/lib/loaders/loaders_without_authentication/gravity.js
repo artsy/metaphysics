@@ -17,24 +17,39 @@ export default requestIDs => {
     incrementsLoader: gravityLoader("increments"),
     matchGeneLoader: gravityLoader("match/genes"),
     matchArtistsLoader: gravityLoader("match/artists"),
-    partnerArtistsForArtistLoader: gravityLoader(id => `artist/${id}/partner_artists`),
-    partnerArtistsLoader: gravityLoader("partner_artists", {}, { headers: true }),
+    partnerArtistsForArtistLoader: gravityLoader(
+      id => `artist/${id}/partner_artists`
+    ),
+    partnerArtistsLoader: gravityLoader(
+      "partner_artists",
+      {},
+      { headers: true }
+    ),
     partnerLoader: gravityLoader(id => `partner/${id}`),
     partnerShowImagesLoader: gravityLoader(id => `partner_show/${id}/images`),
     partnersLoader: gravityLoader("partners"),
     popularArtistsLoader: gravityLoader(`artists/popular`),
     relatedArtworksLoader: gravityLoader("related/artworks"),
-    relatedContemporaryArtistsLoader: gravityLoader("related/layer/contemporary/artists"),
+    relatedContemporaryArtistsLoader: gravityLoader(
+      "related/layer/contemporary/artists"
+    ),
     relatedFairsLoader: gravityLoader("related/fairs"),
     relatedMainArtistsLoader: gravityLoader("related/layer/main/artists"),
     relatedSalesLoader: gravityLoader("related/sales"),
     relatedShowsLoader: gravityLoader("related/shows"),
     saleLoader: gravityLoader(id => `sale/${id}`),
     salesLoader: gravityLoader("sales"),
-    saleArtworkLoader: gravityLoader(({ saleId, saleArtworkId }) => `sale/${saleId}/sale_artwork/${saleArtworkId}`),
+    saleArtworkLoader: gravityLoader(
+      ({ saleId, saleArtworkId }) =>
+        `sale/${saleId}/sale_artwork/${saleArtworkId}`
+    ),
     saleArtworkRootLoader: gravityLoader(id => `sale_artwork/${id}`),
     saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`),
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
-    similarGenesLoader: gravityLoader(id => `gene/${id}/similar`, {}, { headers: true }),
+    similarGenesLoader: gravityLoader(
+      id => `gene/${id}/similar`,
+      {},
+      { headers: true }
+    ),
   }
 }

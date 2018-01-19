@@ -51,7 +51,12 @@ const moduleTitle = {
 
 export default {
   type: GraphQLString,
-  resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {
+  resolve: (
+    { key, display, params },
+    options,
+    request,
+    { rootValue: { accessToken } }
+  ) => {
     if (display) return moduleTitle[key]({ accessToken, params: params || {} })
   },
 }

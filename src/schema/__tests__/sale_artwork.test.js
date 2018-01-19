@@ -28,7 +28,11 @@ describe("SaleArtwork type", () => {
     symbol: "€",
   }
 
-  const execute = async (query, gravityResponse = saleArtwork, rootValue = {}) => {
+  const execute = async (
+    query,
+    gravityResponse = saleArtwork,
+    rootValue = {}
+  ) => {
     return await runQuery(query, {
       saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
       ...rootValue,
@@ -109,7 +113,9 @@ describe("SaleArtwork type", () => {
         incrementsLoader: () => Promise.resolve(),
       }
 
-      expect(execute(query, gravityResponse, rootValue)).rejects.toContain("Missing increment strategy")
+      expect(execute(query, gravityResponse, rootValue)).rejects.toContain(
+        "Missing increment strategy"
+      )
     })
 
     it("can return bid increments that are above the size of a GraphQLInt", async () => {
@@ -237,11 +243,16 @@ describe("SaleArtwork type", () => {
 
     describe("with a max amount set", () => {
       beforeEach(() => {
-        SaleArtwork.__Rewire__("BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT", "400000")
+        SaleArtwork.__Rewire__(
+          "BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT",
+          "400000"
+        )
       })
 
       afterEach(() => {
-        SaleArtwork.__ResetDependency__("BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT")
+        SaleArtwork.__ResetDependency__(
+          "BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT"
+        )
       })
 
       it("does not return increments above the max allowed", async () => {

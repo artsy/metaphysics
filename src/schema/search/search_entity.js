@@ -27,7 +27,12 @@ export const PartnerShowSearchEntityType = _.create(PartnerShow.type, {
 
 export const SearchEntityType = new GraphQLUnionType({
   name: "SearchEntity",
-  types: [ArtistSearchEntityType, ArtworkSearchEntityType, PartnerShowSearchEntityType, ProfileSearchEntityType],
+  types: [
+    ArtistSearchEntityType,
+    ArtworkSearchEntityType,
+    PartnerShowSearchEntityType,
+    ProfileSearchEntityType,
+  ],
 })
 
 export default SearchEntityType

@@ -19,7 +19,8 @@ export const SuggestedArtistsArgs = {
   },
   exclude_artist_ids: {
     type: new GraphQLList(GraphQLString),
-    description: "Exclude these ids from results, may result in all artists being excluded.",
+    description:
+      "Exclude these ids from results, may result in all artists being excluded.",
   },
   page: {
     type: GraphQLInt,

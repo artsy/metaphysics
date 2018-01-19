@@ -8,7 +8,13 @@ import bodyParser from "body-parser"
 import config from "./src/config"
 import { info, error } from "./src/lib/loggers"
 
-const { GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, NODE_ENV, PORT } = process.env
+const {
+  GRAVITY_API_URL,
+  GRAVITY_ID,
+  GRAVITY_SECRET,
+  NODE_ENV,
+  PORT,
+} = process.env
 
 global.Promise = Bluebird
 

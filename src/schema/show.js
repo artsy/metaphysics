@@ -32,10 +32,17 @@ import {
 
 const kind = ({ artists, fair, artists_without_artworks, group }) => {
   if (isExisty(fair)) return "fair"
-  if (group || artists.length > 1 || (artists_without_artworks && artists_without_artworks.length > 1)) {
+  if (
+    group ||
+    artists.length > 1 ||
+    (artists_without_artworks && artists_without_artworks.length > 1)
+  ) {
     return "group"
   }
-  if (artists.length === 1 || (artists_without_artworks && artists_without_artworks.length === 1)) {
+  if (
+    artists.length === 1 ||
+    (artists_without_artworks && artists_without_artworks.length === 1)
+  ) {
     return "solo"
   }
 }
@@ -64,14 +71,16 @@ const artworksArgs = {
   },
   exclude: {
     type: new GraphQLList(GraphQLString),
-    description: "List of artwork IDs to exclude from the response (irrespective of size)",
+    description:
+      "List of artwork IDs to exclude from the response (irrespective of size)",
   },
 }
 
 export const ShowType = new GraphQLObjectType({
   name: "Show",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "is_reference") && has(obj, "display_on_partner_profile"),
+  isTypeOf: obj =>
+    has(obj, "is_reference") && has(obj, "display_on_partner_profile"),
   fields: () => ({
     ...GravityIDFields,
     cached,
@@ -162,7 +171,9 @@ export const ShowType = new GraphQLObjectType({
               return total(`partner/${partner.id}/show/${id}/artworks`, options)
             },
           },
-          eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
+          eligible_artworks: numeral(
+            ({ eligible_artworks_count }) => eligible_artworks_count
+          ),
         },
       }),
       resolve: partner_show => partner_show,
@@ -181,7 +192,9 @@ export const ShowType = new GraphQLObjectType({
         // Gravity redirects from /api/v1/show/:id => /api/v1/partner/:partner_id/show/:show_id
         // this creates issues where events will remain cached. Fetch the non-redirected
         // route to circumvent this
-        gravity(`partner/${partner.id}/show/${id}`).then(({ events }) => events),
+        gravity(`partner/${partner.id}/show/${id}`).then(
+          ({ events }) => events
+        ),
     },
     exhibition_period: {
       type: GraphQLString,
@@ -220,7 +233,8 @@ export const ShowType = new GraphQLObjectType({
     },
     is_active: {
       type: GraphQLBoolean,
-      description: "Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.",
+      description:
+        "Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.",
       resolve: ({ start_at, end_at }) => {
         const start = moment.utc(start_at).subtract(7, "days")
         const end = moment.utc(end_at).add(7, "days")
@@ -305,7 +319,8 @@ export const ShowType = new GraphQLObjectType({
           description: "Before this many days no update will be generated",
         },
       },
-      resolve: ({ start_at, end_at }, options) => exhibitionStatus(start_at, end_at, options.max_days),
+      resolve: ({ start_at, end_at }, options) =>
+        exhibitionStatus(start_at, end_at, options.max_days),
     },
     type: {
       type: GraphQLString,

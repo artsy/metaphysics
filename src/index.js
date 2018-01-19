@@ -8,13 +8,21 @@ import legacyLoaders from "./lib/loaders/legacy"
 import localSchema from "./schema"
 import moment from "moment"
 import morgan from "artsy-morgan"
-import { fetchLoggerSetup, fetchLoggerRequestDone } from "lib/loaders/api/logger"
+import {
+  fetchLoggerSetup,
+  fetchLoggerRequestDone,
+} from "lib/loaders/api/logger"
 import { info } from "./lib/loggers"
 import { mergeSchemas } from "./lib/mergeSchemas"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { middleware as requestTracer, makeSchemaTraceable } from "./lib/tracer"
 
-const { ENABLE_QUERY_TRACING, ENABLE_SCHEMA_STITCHING, NODE_ENV, QUERY_DEPTH_LIMIT } = process.env
+const {
+  ENABLE_QUERY_TRACING,
+  ENABLE_SCHEMA_STITCHING,
+  NODE_ENV,
+  QUERY_DEPTH_LIMIT,
+} = process.env
 const isProduction = NODE_ENV === "production"
 const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
@@ -84,7 +92,9 @@ async function startApp() {
         },
         formatError: graphqlErrorHandler(req.body),
         validationRules: [depthLimit(queryLimit)],
-        extensions: isProduction ? undefined : fetchLoggerRequestDone(requestID),
+        extensions: isProduction
+          ? undefined
+          : fetchLoggerRequestDone(requestID),
       }
     })
   )

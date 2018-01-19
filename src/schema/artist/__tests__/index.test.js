@@ -51,10 +51,12 @@ describe("Artist type", () => {
   })
 
   it("fetches an artist by ID", () => {
-    return runQuery(`{ artist(id: "foo-bar") { id, name } }`, rootValue).then(data => {
-      expect(data.artist.id).toBe("foo-bar")
-      expect(data.artist.name).toBe("Foo Bar")
-    })
+    return runQuery(`{ artist(id: "foo-bar") { id, name } }`, rootValue).then(
+      data => {
+        expect(data.artist.id).toBe("foo-bar")
+        expect(data.artist.name).toBe("Foo Bar")
+      }
+    )
   })
 
   it("returns the total number of partner shows for an artist", () => {
@@ -153,7 +155,10 @@ describe("Artist type", () => {
     return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         artist: {
-          collections: ["Catty Art Collections", "Matt's Personal Art Collection"],
+          collections: [
+            "Catty Art Collections",
+            "Matt's Personal Art Collection",
+          ],
         },
       })
     })
@@ -468,7 +473,9 @@ describe("Artist type", () => {
       })
       describe("without a featured partner bio", () => {
         it("returns the artsy blurb if there is no featured partner bio", () => {
-          rootValue.partnerArtistsForArtistLoader = sinon.stub().returns(Promise.resolve([]))
+          rootValue.partnerArtistsForArtistLoader = sinon
+            .stub()
+            .returns(Promise.resolve([]))
           artist.blurb = "artsy blurb"
           const query = `
             {
@@ -594,7 +601,14 @@ describe("Artist type", () => {
       rootValue.relatedShowsLoader = sinon
         .stub()
         .withArgs(artist.id)
-        .returns(Promise.resolve([privateShow, publicShow, partnerlessShow, galaxyShow]))
+        .returns(
+          Promise.resolve([
+            privateShow,
+            publicShow,
+            partnerlessShow,
+            galaxyShow,
+          ])
+        )
     })
     it("excludes shows from private partners for related shows", () => {
       const query = `

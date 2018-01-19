@@ -12,7 +12,14 @@ import Image from "./image"
 import { showConnection } from "./show"
 import Location from "./location"
 import { GravityIDFields } from "./object_identification"
-import { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLBoolean, GraphQLNonNull, GraphQLEnumType } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLID,
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLEnumType,
+} from "graphql"
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",

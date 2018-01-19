@@ -1,7 +1,10 @@
 import _ from "lodash"
 import gravity from "lib/loaders/legacy/gravity"
 import Partners from "./partners"
-import { FilterPartnersType, PartnersAggregation } from "./aggregations/filter_partners_aggregation"
+import {
+  FilterPartnersType,
+  PartnersAggregation,
+} from "./aggregations/filter_partners_aggregation"
 import { GraphQLList, GraphQLNonNull } from "graphql"
 
 const FilterPartners = {

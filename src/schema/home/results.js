@@ -1,6 +1,13 @@
 import gravity from "lib/loaders/legacy/gravity"
 import uncachedGravity from "lib/apis/gravity"
-import { activeSaleArtworks, featuredAuction, featuredFair, featuredGene, geneArtworks, popularArtists } from "./fetch"
+import {
+  activeSaleArtworks,
+  featuredAuction,
+  featuredFair,
+  featuredGene,
+  geneArtworks,
+  popularArtists,
+} from "./fetch"
 import { map, assign, keys, without, shuffle, slice } from "lodash"
 import { toQueryString } from "lib/helpers"
 import Artwork from "schema/artwork/index"
@@ -37,12 +44,14 @@ const moduleResults = {
     })
   },
   followed_galleries: ({ accessToken }) => {
-    return gravity.with(accessToken)("me/follow/profiles/artworks", {
-      for_sale: true,
-      size: 60,
-    }).then(artworks => {
-      return slice(shuffle(artworks), 0, RESULTS_SIZE)
-    })
+    return gravity
+      .with(accessToken)("me/follow/profiles/artworks", {
+        for_sale: true,
+        size: 60,
+      })
+      .then(artworks => {
+        return slice(shuffle(artworks), 0, RESULTS_SIZE)
+      })
   },
   genes: ({ accessToken, params: { id } }) => {
     if (id) {
@@ -56,9 +65,10 @@ const moduleResults = {
     })
   },
   generic_gene: ({ params }) => {
-    return gravity("filter/artworks", assign({}, params, { size: RESULTS_SIZE, for_sale: true })).then(
-      ({ hits }) => hits
-    )
+    return gravity(
+      "filter/artworks",
+      assign({}, params, { size: RESULTS_SIZE, for_sale: true })
+    ).then(({ hits }) => hits)
   },
   live_auctions: () => {
     return featuredAuction().then(auction => {
@@ -109,7 +119,14 @@ const moduleResults = {
 
 export default {
   type: new GraphQLList(Artwork.type),
-  resolve: ({ key, display, params }, options, request, { rootValue: { accessToken, userID } }) => {
-    if (display) return moduleResults[key]({ accessToken, userID, params: params || {} })
+  resolve: (
+    { key, display, params },
+    options,
+    request,
+    { rootValue: { accessToken, userID } }
+  ) => {
+    if (display) {
+      return moduleResults[key]({ accessToken, userID, params: params || {} })
+    }
   },
 }

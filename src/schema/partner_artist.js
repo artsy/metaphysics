@@ -3,7 +3,12 @@ import Partner from "./partner"
 import Artist from "./artist/index"
 import numeral from "./fields/numeral"
 import { IDFields } from "./object_identification"
-import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLBoolean,
+} from "graphql"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters } from "relay-cursor-paging"
 import { assign } from "lodash"
@@ -12,8 +17,13 @@ const counts = {
   type: new GraphQLObjectType({
     name: "PartnerArtistCounts",
     fields: {
-      artworks: numeral(({ published_artworks_count }) => published_artworks_count),
-      for_sale_artworks: numeral(({ published_for_sale_artworks_count }) => published_for_sale_artworks_count),
+      artworks: numeral(
+        ({ published_artworks_count }) => published_artworks_count
+      ),
+      for_sale_artworks: numeral(
+        ({ published_for_sale_artworks_count }) =>
+          published_for_sale_artworks_count
+      ),
     },
   }),
   resolve: partner_artist => partner_artist,
@@ -67,7 +77,8 @@ const PartnerArtist = {
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (root, { partner_id, artist_id }) => gravity(`partner/${partner_id}/artist/${artist_id}`),
+  resolve: (root, { partner_id, artist_id }) =>
+    gravity(`partner/${partner_id}/artist/${artist_id}`),
 }
 
 export default PartnerArtist
@@ -85,7 +96,11 @@ export const partnersForArtist = (artist_id, options, loader) => {
   // Convert `after` cursors to page params
   const { limit: size, offset } = getPagingParameters(options)
   // Construct an object of all the params gravity will listen to
-  const { represented_by, partner_category, display_on_partner_profile } = options
+  const {
+    represented_by,
+    partner_category,
+    display_on_partner_profile,
+  } = options
   const gravityArgs = {
     total_count: true,
     size,

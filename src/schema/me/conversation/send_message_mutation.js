@@ -1,5 +1,8 @@
 import { GraphQLString, GraphQLNonNull } from "graphql"
-import { mutationWithClientMutationId, cursorForObjectInConnection } from "graphql-relay"
+import {
+  mutationWithClientMutationId,
+  cursorForObjectInConnection,
+} from "graphql-relay"
 import { ConversationType, MessageEdge } from "./index"
 
 export default mutationWithClientMutationId({
@@ -31,7 +34,10 @@ export default mutationWithClientMutationId({
       type: MessageEdge,
       resolve: ({ newMessagePayload }) => {
         return {
-          cursor: cursorForObjectInConnection([newMessagePayload], newMessagePayload),
+          cursor: cursorForObjectInConnection(
+            [newMessagePayload],
+            newMessagePayload
+          ),
           node: newMessagePayload,
         }
       },
@@ -40,7 +46,13 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: (
     { id, from, from_id, to, body_text, reply_to_message_id },
     request,
-    { rootValue: { conversationLoader, conversationCreateMessageLoader, userID } }
+    {
+      rootValue: {
+        conversationLoader,
+        conversationCreateMessageLoader,
+        userID,
+      },
+    }
   ) => {
     if (!conversationCreateMessageLoader) return null
     return conversationCreateMessageLoader(id, {

@@ -4,7 +4,14 @@ import gravity from "lib/loaders/legacy/gravity"
 import { total } from "lib/loaders/legacy/total"
 import { NodeInterface } from "schema/object_identification"
 import { toGlobalId } from "graphql-relay"
-import { GraphQLEnumType, GraphQLID, GraphQLNonNull, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLEnumType,
+  GraphQLID,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 
 function fetchArtists(path) {
   return accessToken => {
@@ -29,12 +36,16 @@ export const HomePageArtistModuleTypes = {
     },
     resolve: (accessToken, userID) => {
       if (!accessToken || !userID) {
-        throw new Error("Both the X-USER-ID and X-ACCESS-TOKEN headers are required.")
+        throw new Error(
+          "Both the X-USER-ID and X-ACCESS-TOKEN headers are required."
+        )
       }
-      return gravity.with(accessToken)(`user/${userID}/suggested/similar/artists`, {
-        exclude_followed_artists: true,
-        exclude_artists_without_forsale_artworks: true,
-      }).then(results => map(results, "artist"))
+      return gravity
+        .with(accessToken)(`user/${userID}/suggested/similar/artists`, {
+          exclude_followed_artists: true,
+          exclude_artists_without_forsale_artworks: true,
+        })
+        .then(results => map(results, "artist"))
     },
   },
   TRENDING: {
@@ -67,7 +78,12 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     },
     results: {
       type: new GraphQLList(Artist.type),
-      resolve: ({ key }, options, request, { rootValue: { accessToken, userID } }) => {
+      resolve: (
+        { key },
+        options,
+        request,
+        { rootValue: { accessToken, userID } }
+      ) => {
         return HomePageArtistModuleTypes[key].resolve(accessToken, userID)
       },
     },
@@ -86,7 +102,8 @@ const HomePageArtistModule = {
       }),
     },
   },
-  resolve: (root, obj) => (obj.key && HomePageArtistModuleTypes[obj.key] ? obj : null),
+  resolve: (root, obj) =>
+    obj.key && HomePageArtistModuleTypes[obj.key] ? obj : null,
 }
 
 export default HomePageArtistModule

@@ -1,6 +1,12 @@
 import gravity from "lib/loaders/legacy/gravity"
 import OrderedSet from "./ordered_set"
-import { GraphQLString, GraphQLNonNull, GraphQLList, GraphQLBoolean, GraphQLInt } from "graphql"
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLBoolean,
+  GraphQLInt,
+} from "graphql"
 
 const OrderedSets = {
   type: new GraphQLList(OrderedSet.type),

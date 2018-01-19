@@ -6,7 +6,13 @@ import { runAuthenticatedQuery } from "test/utils"
 describe("me { saved_artwork", () => {
   describe("Handles getting collection metadata", () => {
     it("returns artworks for a collection", async () => {
-      const artworksPath = resolve("src", "test", "fixtures", "gravity", "artworks_array.json")
+      const artworksPath = resolve(
+        "src",
+        "test",
+        "fixtures",
+        "gravity",
+        "artworks_array.json"
+      )
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
 
       const query = gql`
@@ -27,10 +33,15 @@ describe("me { saved_artwork", () => {
         }
       `
       const rootValue = {
-        collectionLoader: id => id === "saved-artwork" && Promise.resolve({ description: "My beautiful collection" }),
+        collectionLoader: id =>
+          id === "saved-artwork" &&
+          Promise.resolve({ description: "My beautiful collection" }),
         collectionArtworksLoader: params => {
           if (params === { size: 10, offset: 0, total_count: true }) {
-            return Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } })
+            return Promise.resolve({
+              body: artworks,
+              headers: { "x-total-count": 10 },
+            })
           }
         },
       }

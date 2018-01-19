@@ -22,10 +22,14 @@ describe("MatchGene", () => {
         id: "pop-art",
         name: "Pop Art",
         image_urls: {
-          big_and_tall: "https://d32dm0rphc51dk.cloudfront.net/zwMP_9kbs2XcSP\n >  TaGLJ6qw/big_and_tall.jpg",
-          square500: "https://d32dm0rphc51dk.cloudfront.net/zwMP_9kbs2XcSPTaG\n >  LJ6qw/square500.jpg",
-          tall: "https://d32dm0rphc51dk.cloudfront.net/zwMP_9kbs2XcSPTaGLJ6qw\n >  /tall.jpg",
-          thumb: "https://d32dm0rphc51dk.cloudfront.net/zwMP_9kbs2XcSPTaGLJ6q\n >  w/thumb.jpg",
+          big_and_tall:
+            "https://d32dm0rphc51dk.cloudfront.net/zwMP_9kbs2XcSP\n >  TaGLJ6qw/big_and_tall.jpg",
+          square500:
+            "https://d32dm0rphc51dk.cloudfront.net/zwMP_9kbs2XcSPTaG\n >  LJ6qw/square500.jpg",
+          tall:
+            "https://d32dm0rphc51dk.cloudfront.net/zwMP_9kbs2XcSPTaGLJ6qw\n >  /tall.jpg",
+          thumb:
+            "https://d32dm0rphc51dk.cloudfront.net/zwMP_9kbs2XcSPTaGLJ6q\n >  w/thumb.jpg",
         },
         browseable: true,
       },

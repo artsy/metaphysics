@@ -4,7 +4,9 @@ describe("APIs", () => {
   describe("gravity", () => {
     const fetch = gravity.__get__("fetch")
 
-    beforeAll(() => gravity.__Rewire__("config", { GRAVITY_XAPP_TOKEN: "secret" }))
+    beforeAll(() =>
+      gravity.__Rewire__("config", { GRAVITY_XAPP_TOKEN: "secret" })
+    )
 
     afterAll(() => gravity.__ResetDependency__("config"))
 
@@ -27,7 +29,9 @@ describe("APIs", () => {
     })
 
     it("resolves when there is a successful JSON response", () => {
-      const request = sinon.stub().yields(null, { statusCode: 200, body: { foo: "bar" } })
+      const request = sinon
+        .stub()
+        .yields(null, { statusCode: 200, body: { foo: "bar" } })
       fetch.__Rewire__("request", request)
 
       return gravity("foo/bar").then(({ body: { foo } }) => {
@@ -55,17 +59,24 @@ describe("APIs", () => {
     })
 
     it("rejects API errors", () => {
-      const request = sinon.stub().yields(null, { statusCode: 401, body: "Unauthorized" })
+      const request = sinon
+        .stub()
+        .yields(null, { statusCode: 401, body: "Unauthorized" })
       fetch.__Rewire__("request", request)
 
       return expectPromiseRejectionToMatch(gravity("foo/bar"), /Unauthorized/)
     })
 
     it("rejects parse errors", () => {
-      const request = sinon.stub().yields(null, { statusCode: 200, body: "not json" })
+      const request = sinon
+        .stub()
+        .yields(null, { statusCode: 200, body: "not json" })
       fetch.__Rewire__("request", request)
 
-      return expectPromiseRejectionToMatch(gravity("foo/bar"), /Unexpected token/)
+      return expectPromiseRejectionToMatch(
+        gravity("foo/bar"),
+        /Unexpected token/
+      )
     })
   })
 })

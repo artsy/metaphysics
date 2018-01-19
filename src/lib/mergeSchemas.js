@@ -1,4 +1,8 @@
-import { mergeSchemas as _mergeSchemas, introspectSchema, makeRemoteExecutableSchema } from "graphql-tools"
+import {
+  mergeSchemas as _mergeSchemas,
+  introspectSchema,
+  makeRemoteExecutableSchema,
+} from "graphql-tools"
 import { ApolloLink } from "apollo-link"
 import { createHttpLink } from "apollo-link-http"
 import { setContext } from "apollo-link-context"
@@ -13,7 +17,9 @@ export function createConvectionLink() {
     uri: `${process.env.CONVECTION_API_BASE}/graphql`,
   })
 
-  const middlewareLink = new ApolloLink((operation, forward) => forward(operation))
+  const middlewareLink = new ApolloLink((operation, forward) =>
+    forward(operation)
+  )
 
   const authMiddleware = setContext((_request, context) => {
     const locals = context.graphqlContext && context.graphqlContext.res.locals

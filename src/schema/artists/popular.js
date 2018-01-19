@@ -1,5 +1,11 @@
 import Artist from "../artist"
-import { GraphQLObjectType, GraphQLList, GraphQLInt, GraphQLBoolean, GraphQLString } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+  GraphQLString,
+} from "graphql"
 
 const PopularArtistsType = new GraphQLObjectType({
   name: "PopularArtists",
@@ -21,14 +27,20 @@ const PopularArtists = {
     },
     exclude_artist_ids: {
       type: new GraphQLList(GraphQLString),
-      description: "Exclude these ids from results, may result in all artists being excluded.",
+      description:
+        "Exclude these ids from results, may result in all artists being excluded.",
     },
     size: {
       type: GraphQLInt,
       description: "Number of results to return",
     },
   },
-  resolve: (_root, options, _request, { rootValue: { popularArtistsLoader } }) => popularArtistsLoader(options),
+  resolve: (
+    _root,
+    options,
+    _request,
+    { rootValue: { popularArtistsLoader } }
+  ) => popularArtistsLoader(options),
 }
 
 export default PopularArtists

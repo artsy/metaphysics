@@ -17,7 +17,14 @@ import Location from "./location"
 import Image, { getDefault } from "./image"
 import PartnerShowEventType from "./partner_show_event"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+} from "graphql"
 
 const kind = ({ artists, fair }) => {
   if (isExisty(fair)) return "fair"
@@ -29,7 +36,8 @@ const PartnerShowType = new GraphQLObjectType({
   name: "PartnerShow",
   deprecationReason: "Prefer to use Show schema",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "partner") && has(obj, "display_on_partner_profile"),
+  isTypeOf: obj =>
+    has(obj, "partner") && has(obj, "display_on_partner_profile"),
   fields: () => ({
     ...GravityIDFields,
     cached,
@@ -46,7 +54,8 @@ const PartnerShowType = new GraphQLObjectType({
         },
         exclude: {
           type: new GraphQLList(GraphQLString),
-          description: "List of artwork IDs to exclude from the response (irrespective of size)",
+          description:
+            "List of artwork IDs to exclude from the response (irrespective of size)",
         },
         for_sale: {
           type: GraphQLBoolean,
@@ -96,7 +105,9 @@ const PartnerShowType = new GraphQLObjectType({
               return total(`partner/${partner.id}/show/${id}/artworks`, options)
             },
           },
-          eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
+          eligible_artworks: numeral(
+            ({ eligible_artworks_count }) => eligible_artworks_count
+          ),
         },
       }),
       resolve: partner_show => partner_show,
@@ -135,7 +146,9 @@ const PartnerShowType = new GraphQLObjectType({
         // Gravity redirects from /api/v1/show/:id => /api/v1/partner/:partner_id/show/:show_id
         // this creates issues where events will remain cached. Fetch the non-redirected
         // route to circumvent this
-        gravity(`partner/${partner.id}/show/${id}`).then(({ events }) => events),
+        gravity(`partner/${partner.id}/show/${id}`).then(
+          ({ events }) => events
+        ),
     },
     exhibition_period: {
       type: GraphQLString,
@@ -171,7 +184,8 @@ const PartnerShowType = new GraphQLObjectType({
     },
     is_active: {
       type: GraphQLBoolean,
-      description: "Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.",
+      description:
+        "Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.",
       resolve: ({ start_at, end_at }) => {
         const start = moment.utc(start_at).subtract(7, "days")
         const end = moment.utc(end_at).add(7, "days")
@@ -233,7 +247,8 @@ const PartnerShowType = new GraphQLObjectType({
           description: "Before this many days no update will be generated",
         },
       },
-      resolve: ({ start_at, end_at }, options) => exhibitionStatus(start_at, end_at, options.max_days),
+      resolve: ({ start_at, end_at }, options) =>
+        exhibitionStatus(start_at, end_at, options.max_days),
     },
     type: {
       type: GraphQLString,

@@ -12,7 +12,11 @@ const load = (path, options = {}) => {
 }
 
 load.with = (accessToken, loaderOptions = {}) => {
-  const authenticatedGravityLoader = authenticatedHttpLoader(gravity, accessToken, loaderOptions)
+  const authenticatedGravityLoader = authenticatedHttpLoader(
+    gravity,
+    accessToken,
+    loaderOptions
+  )
   return (path, options = {}) => {
     const key = toKey(path, options)
     if (accessToken) {

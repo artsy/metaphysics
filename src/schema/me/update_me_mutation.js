@@ -81,7 +81,9 @@ export default mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (user, _request, { rootValue: { updateMeLoader } }) => {
-    if (!updateMeLoader) throw new Error("No updateMeLoader loader found in root values")
+    if (!updateMeLoader) {
+      throw new Error("No updateMeLoader loader found in root values")
+    }
     return updateMeLoader(user)
   },
 })

@@ -187,22 +187,24 @@ describe("HomePageArtworkModules", () => {
         }
       `
 
-      return runAuthenticatedQuery(query).then(({ home_page: { artwork_modules } }) => {
-        // The order of rails not included in the preferred order list is left as-is from Gravity’s
-        // modules endpoint response. Rails in the preferred order list that aren’t even included in
-        // Gravity’s response do not lead to an error (the FOLLOWED_ARTISTS rail).
-        expect(map(artwork_modules, "key")).toEqual([
-          "recommended_works",
-          "generic_gene",
-          "generic_gene",
-          "generic_gene",
-          "followed_galleries",
-          "saved_works",
-          "current_fairs",
-          "followed_artist",
-          "related_artists",
-        ])
-      })
+      return runAuthenticatedQuery(query).then(
+        ({ home_page: { artwork_modules } }) => {
+          // The order of rails not included in the preferred order list is left as-is from Gravity’s
+          // modules endpoint response. Rails in the preferred order list that aren’t even included in
+          // Gravity’s response do not lead to an error (the FOLLOWED_ARTISTS rail).
+          expect(map(artwork_modules, "key")).toEqual([
+            "recommended_works",
+            "generic_gene",
+            "generic_gene",
+            "generic_gene",
+            "followed_galleries",
+            "saved_works",
+            "current_fairs",
+            "followed_artist",
+            "related_artists",
+          ])
+        }
+      )
     })
 
     it("excludes modules upon request", () => {

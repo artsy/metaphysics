@@ -4,7 +4,14 @@ import CroppedUrl from "./cropped"
 import ResizedUrl from "./resized"
 import DeepZoom, { isZoomable } from "./deep_zoom"
 import normalize from "./normalize"
-import { GraphQLObjectType, GraphQLString, GraphQLList, GraphQLFloat, GraphQLInt, GraphQLBoolean } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLList,
+  GraphQLFloat,
+  GraphQLInt,
+  GraphQLBoolean,
+} from "graphql"
 
 export const getDefault = images => {
   if (isArray(images)) {
@@ -69,8 +76,10 @@ const ImageType = new GraphQLObjectType({
     },
     placeholder: {
       type: GraphQLString,
-      description: "Value to use when `padding-bottom` for fluid image placeholders",
-      resolve: ({ original_height, original_width }) => `${original_height / original_width * 100}%`,
+      description:
+        "Value to use when `padding-bottom` for fluid image placeholders",
+      resolve: ({ original_height, original_width }) =>
+        `${original_height / original_width * 100}%`,
     },
     position: {
       type: GraphQLInt,
