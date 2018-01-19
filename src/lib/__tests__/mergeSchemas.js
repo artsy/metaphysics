@@ -1,6 +1,7 @@
 import { createConvectionLink } from "lib/mergeSchemas"
 
-const runLinkChain = (link, op, complete) => link.request(op).subscribe({ complete })
+const runLinkChain = (link, op, complete) =>
+  link.request(op).subscribe({ complete })
 
 // FIXME: This seems to be hitting the actual network and thus fails without it.
 describe("convection link", () => {
@@ -12,7 +13,11 @@ describe("convection link", () => {
       graphqlContext: {
         res: {
           locals: {
-            requestIDs: { requestID: "req123", traceId: "trace123", parentSpanId: "span123" },
+            requestIDs: {
+              requestID: "req123",
+              traceId: "trace123",
+              parentSpanId: "span123",
+            },
             dataLoaders: {},
           },
         },
@@ -27,7 +32,11 @@ describe("convection link", () => {
     return new Promise(done => {
       runLinkChain(link, op, () => {
         expect(op.setContext).toBeCalledWith({
-          headers: { "X-Request-Id": "req123", "x-datadog-parent-id": "span123", "x-datadog-trace-id": "trace123" },
+          headers: {
+            "X-Request-Id": "req123",
+            "x-datadog-parent-id": "span123",
+            "x-datadog-trace-id": "trace123",
+          },
         })
 
         done()
@@ -46,8 +55,15 @@ describe("convection link", () => {
         graphqlContext: {
           res: {
             locals: {
-              requestIDs: { requestID: "req123", traceId: "trace123", parentSpanId: "span123" },
-              dataLoaders: { convectionTokenLoader: () => Promise.resolve({ token: "token_123" }) },
+              requestIDs: {
+                requestID: "req123",
+                traceId: "trace123",
+                parentSpanId: "span123",
+              },
+              dataLoaders: {
+                convectionTokenLoader: () =>
+                  Promise.resolve({ token: "token_123" }),
+              },
             },
           },
         },

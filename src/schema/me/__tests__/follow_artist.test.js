@@ -23,8 +23,18 @@ describe("FollowArtist", () => {
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
       popularArtistsLoader: () =>
         Promise.resolve([
-          { birthday: "1900", artworks_count: 100, id: "antonio-carreno", name: "Antonio Carreno" },
-          { birthday: "1900", artworks_count: 100, id: "benjamin-schmitt", name: "Benjamin Schmit" },
+          {
+            birthday: "1900",
+            artworks_count: 100,
+            id: "antonio-carreno",
+            name: "Antonio Carreno",
+          },
+          {
+            birthday: "1900",
+            artworks_count: 100,
+            id: "benjamin-schmitt",
+            name: "Benjamin Schmit",
+          },
         ]),
     }
   })
@@ -52,18 +62,17 @@ describe("FollowArtist", () => {
     gravity.returns(Promise.resolve(artist))
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(({ followArtist }) => {
-      expect(followArtist).toEqual({
-        artist: {
-          name: "Damon Zucconi",
-        },
-        popular_artists: {
-          artists: [
-            { name: "Antonio Carreno" },
-            { name: "Benjamin Schmit" },
-          ],
-        },
-      })
-    })
+    return runAuthenticatedQuery(mutation, rootValue).then(
+      ({ followArtist }) => {
+        expect(followArtist).toEqual({
+          artist: {
+            name: "Damon Zucconi",
+          },
+          popular_artists: {
+            artists: [{ name: "Antonio Carreno" }, { name: "Benjamin Schmit" }],
+          },
+        })
+      }
+    )
   })
 })

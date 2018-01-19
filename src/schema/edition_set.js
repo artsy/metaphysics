@@ -4,7 +4,12 @@ import Dimensions from "./dimensions"
 import { GraphQLString, GraphQLBoolean, GraphQLObjectType } from "graphql"
 import { capitalizeFirstCharacter } from "lib/helpers"
 
-const EditionSetAvailabilities = ["sold", "on hold", "on loan", "permanent collection"]
+const EditionSetAvailabilities = [
+  "sold",
+  "on hold",
+  "on loan",
+  "permanent collection",
+]
 
 const EditionSetType = new GraphQLObjectType({
   name: "EditionSet",

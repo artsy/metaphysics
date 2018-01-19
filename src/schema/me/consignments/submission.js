@@ -98,7 +98,8 @@ export const SubmissionType = new GraphQLObjectType({
   name: "ConsignmentSubmission",
   description: "A work to be consigned to the user",
   interfaces: [NodeInterface],
-  isTypeOf: obj => _.has(obj, "authenticity_certificate") && _.has(obj, "artist_id"),
+  isTypeOf: obj =>
+    _.has(obj, "authenticity_certificate") && _.has(obj, "artist_id"),
   fields: {
     ...GravityIDFields,
     artist_id: {
@@ -183,7 +184,12 @@ export const SubmissionType = new GraphQLObjectType({
     },
     artist: {
       type: Artist.type,
-      resolve: ({ artist_id }, _args, _request, { rootValue: { artistLoader } }) => {
+      resolve: (
+        { artist_id },
+        _args,
+        _request,
+        { rootValue: { artistLoader } }
+      ) => {
         if (!artist_id) return null
         return artistLoader(artist_id).catch(() => null)
       },

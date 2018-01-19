@@ -21,7 +21,11 @@ import logger from "lib/loaders/api/logger"
  * @param {string} apiName a function that performs an API request
  * @param {any} globalAPIOptions options that need to be passed to any API loader created with this factory
  */
-export const apiLoaderWithAuthenticationFactory = (api, apiName, globalAPIOptions) => {
+export const apiLoaderWithAuthenticationFactory = (
+  api,
+  apiName,
+  globalAPIOptions
+) => {
   return accessTokenLoader => {
     return (path, globalParams = {}, pathAPIOptions = {}) => {
       const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
@@ -42,7 +46,12 @@ export const apiLoaderWithAuthenticationFactory = (api, apiName, globalAPIOption
                         resolve(response.body)
                       }
                       const time = clock.end()
-                      logger(globalAPIOptions.requestIDs.requestID, apiName, key, { time, cache: false })
+                      logger(
+                        globalAPIOptions.requestIDs.requestID,
+                        apiName,
+                        key,
+                        { time, cache: false }
+                      )
                     })
                     .catch(err => {
                       error(path, err)

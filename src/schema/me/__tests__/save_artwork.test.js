@@ -35,7 +35,10 @@ describe("SaveArtworkMutation", () => {
     const artworkLoader = () => Promise.resolve(artwork)
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, { saveArtworkLoader, artworkLoader }).then(({ saveArtwork }) => {
+    return runAuthenticatedQuery(mutation, {
+      saveArtworkLoader,
+      artworkLoader,
+    }).then(({ saveArtwork }) => {
       expect(saveArtwork).toEqual(expectedArtworkData)
     })
   })
@@ -43,7 +46,9 @@ describe("SaveArtworkMutation", () => {
   it("removes an artwork", () => {
     const mutation = gql`
       mutation {
-        saveArtwork(input: { artwork_id: "damon-zucconi-slow-verb", remove: true }) {
+        saveArtwork(
+          input: { artwork_id: "damon-zucconi-slow-verb", remove: true }
+        ) {
           artwork {
             date
             title
@@ -73,7 +78,10 @@ describe("SaveArtworkMutation", () => {
     const artworkLoader = () => Promise.resolve(artwork)
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, { deleteArtworkLoader, artworkLoader }).then(({ saveArtwork }) => {
+    return runAuthenticatedQuery(mutation, {
+      deleteArtworkLoader,
+      artworkLoader,
+    }).then(({ saveArtwork }) => {
       expect(saveArtwork).toEqual(expectedArtworkData)
     })
   })

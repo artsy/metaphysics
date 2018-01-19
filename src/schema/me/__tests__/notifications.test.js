@@ -89,9 +89,11 @@ describe("Me", () => {
         .onCall(1)
         .returns(Promise.resolve([artwork1, artwork2]))
 
-      return runAuthenticatedQuery(query).then(({ me: { notifications_connection } }) => {
-        expect(notifications_connection).toEqual(expectedConnectionData)
-      })
+      return runAuthenticatedQuery(query).then(
+        ({ me: { notifications_connection } }) => {
+          expect(notifications_connection).toEqual(expectedConnectionData)
+        }
+      )
     })
   })
 })

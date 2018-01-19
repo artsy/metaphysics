@@ -77,37 +77,39 @@ describe("Filter Sale Artworks", () => {
       }
     `
 
-    return runQuery(query).then(({ filter_sale_artworks: { aggregations, counts } }) => {
-      expect(counts).toEqual({ followed_artists: 2, total: 400 })
-      expect(aggregations).toEqual([
-        {
-          counts: [
-            { id: "prints", name: "Prints", sortable_id: null },
-            { id: "painting", name: "Painting", sortable_id: null },
-          ],
-          slice: "MEDIUM",
-        },
-        {
-          counts: [
-            {
-              id: "donald-judd",
-              name: "Donald Judd",
-              sortable_id: "judd-donald",
-            },
-            {
-              id: "kara-walker",
-              name: "Kara Walker",
-              sortable_id: "walker-kara",
-            },
-            {
-              id: "andy-warhol",
-              name: "Andy Warhol",
-              sortable_id: "warhol-andy",
-            },
-          ],
-          slice: "ARTIST",
-        },
-      ])
-    })
+    return runQuery(query).then(
+      ({ filter_sale_artworks: { aggregations, counts } }) => {
+        expect(counts).toEqual({ followed_artists: 2, total: 400 })
+        expect(aggregations).toEqual([
+          {
+            counts: [
+              { id: "prints", name: "Prints", sortable_id: null },
+              { id: "painting", name: "Painting", sortable_id: null },
+            ],
+            slice: "MEDIUM",
+          },
+          {
+            counts: [
+              {
+                id: "donald-judd",
+                name: "Donald Judd",
+                sortable_id: "judd-donald",
+              },
+              {
+                id: "kara-walker",
+                name: "Kara Walker",
+                sortable_id: "walker-kara",
+              },
+              {
+                id: "andy-warhol",
+                name: "Andy Warhol",
+                sortable_id: "warhol-andy",
+              },
+            ],
+            slice: "ARTIST",
+          },
+        ])
+      }
+    )
   })
 })

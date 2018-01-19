@@ -1,6 +1,11 @@
 import { create, assign } from "lodash"
 import gravity from "lib/loaders/legacy/gravity"
-import { featuredAuction, featuredFair, featuredGene, popularArtists } from "./fetch"
+import {
+  featuredAuction,
+  featuredFair,
+  featuredGene,
+  popularArtists,
+} from "./fetch"
 import Fair from "schema/fair"
 import Sale from "schema/sale/index"
 import Gene from "schema/gene"
@@ -29,10 +34,13 @@ export const HomePageModuleContextTrendingType = create(Trending.type, {
   isTypeOf: ({ context_type }) => context_type === "Trending",
 })
 
-export const HomePageModuleContextFollowArtistsType = create(FollowArtists.type, {
-  name: "HomePageModuleContextFollowArtists",
-  isTypeOf: ({ context_type }) => context_type === "FollowArtists",
-})
+export const HomePageModuleContextFollowArtistsType = create(
+  FollowArtists.type,
+  {
+    name: "HomePageModuleContextFollowArtists",
+    isTypeOf: ({ context_type }) => context_type === "FollowArtists",
+  }
+)
 
 export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
   name: "HomePageModuleContextRelatedArtist",
@@ -65,9 +73,11 @@ export const moduleContext = {
   },
   active_bids: () => null,
   followed_artists: ({ accessToken }) => {
-    return gravity.with(accessToken)("me/follow/artists", { size: 9, page: 1 }).then(artists => {
-      return assign({}, { artists }, { context_type: "FollowArtists" })
-    })
+    return gravity
+      .with(accessToken)("me/follow/artists", { size: 9, page: 1 })
+      .then(artists => {
+        return assign({}, { artists }, { context_type: "FollowArtists" })
+      })
   },
   followed_galleries: () => null,
   saved_works: () => null,
@@ -137,7 +147,12 @@ export default {
       HomePageModuleContextTrendingType,
     ],
   }),
-  resolve: ({ key, display, params }, options, request, { rootValue: { accessToken } }) => {
+  resolve: (
+    { key, display, params },
+    options,
+    request,
+    { rootValue: { accessToken } }
+  ) => {
     return moduleContext[key]({ accessToken, params: params || {} })
   },
 }

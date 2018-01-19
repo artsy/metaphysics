@@ -17,33 +17,49 @@ export default requestIDs => ({
   /**
    * The Delta loaders produced by this factory _will_ cache all responses to memcache.
    */
-  deltaLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(delta, "delta", {
-    requestIDs,
-  }),
+  deltaLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    delta,
+    "delta",
+    {
+      requestIDs,
+    }
+  ),
 
   /**
    * The Diffusion loaders produced by this factory _will_ cache all responses to memcache.
    */
-  diffusionLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(diffusion, "diffusion", {
-    requestIDs,
-    requestThrottleMs: config.DIFFUSION_REQUEST_THROTTLE_MS,
-  }),
+  diffusionLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    diffusion,
+    "diffusion",
+    {
+      requestIDs,
+      requestThrottleMs: config.DIFFUSION_REQUEST_THROTTLE_MS,
+    }
+  ),
 
   /**
    * The Gravity loaders produced by this factory _will_ cache all responses to memcache.
    *
    * Do **not** use it for authenticated requests!
    */
-  gravityLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(gravity, "gravity", { requestIDs }),
+  gravityLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    gravity,
+    "gravity",
+    { requestIDs }
+  ),
 
   /**
    * The Positron loaders produced by this factory _will_ cache all responses to memcache.
    *
    * Do **not** use it for authenticated requests!
    */
-  positronLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(positron, "positron", {
-    requestIDs,
-  }),
+  positronLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    positron,
+    "positron",
+    {
+      requestIDs,
+    }
+  ),
 
   // Authenticated loaders
 
@@ -53,9 +69,13 @@ export default requestIDs => ({
    *
    * Use this for authenticated requests.
    */
-  convectionLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(convection, "convection", {
-    requestIDs,
-  }),
+  convectionLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+    convection,
+    "convection",
+    {
+      requestIDs,
+    }
+  ),
 
   /**
    * The Gravity loaders produced by this factory _will_ cache responses for the duration of query execution but do
@@ -63,7 +83,11 @@ export default requestIDs => ({
    *
    * Use this for authenticated requests.
    */
-  gravityLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(gravity, "gravity", { requestIDs }),
+  gravityLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+    gravity,
+    "gravity",
+    { requestIDs }
+  ),
 
   /**
    * The Impulse loaders produced by this factory _will_ cache responses for the duration of query execution but do
@@ -71,5 +95,9 @@ export default requestIDs => ({
    *
    * Use this for authenticated requests.
    */
-  impulseLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(impulse, "impulse", { requestIDs }),
+  impulseLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+    impulse,
+    "impulse",
+    { requestIDs }
+  ),
 })

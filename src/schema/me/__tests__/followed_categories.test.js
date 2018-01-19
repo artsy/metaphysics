@@ -4,7 +4,13 @@ import { runAuthenticatedQuery } from "test/utils"
 import gql from "test/gql"
 
 it("returns artworks for a collection", () => {
-  const genesPath = resolve("src", "test", "fixtures", "gravity", "follow_genes.json")
+  const genesPath = resolve(
+    "src",
+    "test",
+    "fixtures",
+    "gravity",
+    "follow_genes.json"
+  )
   const genes = JSON.parse(readFileSync(genesPath, "utf8"))
 
   const followedGenesLoader = sinon

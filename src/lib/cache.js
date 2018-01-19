@@ -43,9 +43,14 @@ export default {
       data.cached = timestamp // eslint-disable-line no-param-reassign
     }
 
-    return client.set(key, JSON.stringify(data), { expires: CACHE_LIFETIME_IN_SECONDS }, err => {
-      if (err) error(err)
-    })
+    return client.set(
+      key,
+      JSON.stringify(data),
+      { expires: CACHE_LIFETIME_IN_SECONDS },
+      err => {
+        if (err) error(err)
+      }
+    )
   },
 
   delete: key =>

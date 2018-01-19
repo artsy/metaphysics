@@ -91,7 +91,11 @@ export default mutationWithClientMutationId({
       resolve: asset => asset,
     },
   },
-  mutateAndGetPayload: ({ name, acl }, request, { rootValue: { createNewGeminiAssetLoader } }) => {
+  mutateAndGetPayload: (
+    { name, acl },
+    request,
+    { rootValue: { createNewGeminiAssetLoader } }
+  ) => {
     if (!createNewGeminiAssetLoader) return null
     return createNewGeminiAssetLoader({ name, acl })
   },

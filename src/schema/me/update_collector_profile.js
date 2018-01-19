@@ -1,5 +1,10 @@
 import { CollectorProfileFields } from "./collector_profile"
-import { GraphQLBoolean, GraphQLString, GraphQLList, GraphQLEnumType } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLString,
+  GraphQLList,
+  GraphQLEnumType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 export const IntentsType = new GraphQLEnumType({
@@ -44,9 +49,15 @@ export default mutationWithClientMutationId({
     },
   },
   outputFields: CollectorProfileFields,
-  mutateAndGetPayload: (options, request, { rootValue: { updateCollectorProfileLoader } }) => {
+  mutateAndGetPayload: (
+    options,
+    request,
+    { rootValue: { updateCollectorProfileLoader } }
+  ) => {
     if (!updateCollectorProfileLoader) {
-      throw new Error("Missing Update Collector Profile Loader. Check your access token.")
+      throw new Error(
+        "Missing Update Collector Profile Loader. Check your access token."
+      )
     }
     return updateCollectorProfileLoader(options)
   },

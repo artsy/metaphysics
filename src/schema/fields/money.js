@@ -1,6 +1,11 @@
 import { assign } from "lodash"
 import { formatMoney } from "accounting"
-import { GraphQLString, GraphQLInt, GraphQLObjectType, GraphQLFloat } from "graphql"
+import {
+  GraphQLString,
+  GraphQLInt,
+  GraphQLObjectType,
+  GraphQLFloat,
+} from "graphql"
 
 export const amount = resolve => ({
   type: GraphQLString,
@@ -12,7 +17,8 @@ export const amount = resolve => ({
     },
     format: {
       type: GraphQLString,
-      description: "Allows control of symbol position (%v = value, %s = symbol)",
+      description:
+        "Allows control of symbol position (%v = value, %s = symbol)",
       defaultValue: "%s%v",
     },
     precision: {

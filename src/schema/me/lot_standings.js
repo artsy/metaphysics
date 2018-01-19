@@ -7,7 +7,8 @@ export default {
   args: {
     active_positions: {
       type: GraphQLBoolean,
-      description: "Only includes lots on which you have a leading bidder position.",
+      description:
+        "Only includes lots on which you have a leading bidder position.",
     },
     artwork_id: {
       type: GraphQLString,
@@ -15,16 +16,27 @@ export default {
     },
     live: {
       type: GraphQLBoolean,
-      description: "Only the lot standings for currently open or closed auctions.",
+      description:
+        "Only the lot standings for currently open or closed auctions.",
     },
     sale_id: {
       type: GraphQLString,
       description: "Only the lot standings for a specific auction",
     },
   },
-  resolve: (root, { active_positions, artwork_id, live, sale_id }, request, { rootValue: { lotStandingLoader } }) => {
+  resolve: (
+    root,
+    { active_positions, artwork_id, live, sale_id },
+    request,
+    { rootValue: { lotStandingLoader } }
+  ) => {
     if (!lotStandingLoader) return null
-    return lotStandingLoader({ active_positions, artwork_id, live, sale_id }).then(lotStandings => {
+    return lotStandingLoader({
+      active_positions,
+      artwork_id,
+      live,
+      sale_id,
+    }).then(lotStandings => {
       return lotStandings
     })
   },

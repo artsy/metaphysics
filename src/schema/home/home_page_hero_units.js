@@ -1,7 +1,14 @@
 import cached from "schema/fields/cached"
 import gravity from "lib/loaders/legacy/gravity"
 import { GravityIDFields } from "schema/object_identification"
-import { GraphQLEnumType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLBoolean } from "graphql"
+import {
+  GraphQLEnumType,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLBoolean,
+} from "graphql"
 import { shuffle } from "lodash"
 
 const HomePageHeroUnitType = new GraphQLObjectType({
@@ -75,7 +82,8 @@ const HomePageHeroUnitType = new GraphQLObjectType({
     },
     background_image_url: {
       type: GraphQLString,
-      description: "The image to show, on desktop this defaults to the wide version.",
+      description:
+        "The image to show, on desktop this defaults to the wide version.",
       args: {
         version: {
           type: new GraphQLEnumType({
@@ -91,11 +99,18 @@ const HomePageHeroUnitType = new GraphQLObjectType({
           }),
         },
       },
-      resolve: ({ platform, background_image_url, background_image_mobile_url }, { version }) => {
+      resolve: (
+        { platform, background_image_url, background_image_mobile_url },
+        { version }
+      ) => {
         if (version) {
-          return version === "wide" ? background_image_url : background_image_mobile_url
+          return version === "wide"
+            ? background_image_url
+            : background_image_mobile_url
         }
-        return platform === "desktop" ? background_image_url : background_image_mobile_url
+        return platform === "desktop"
+          ? background_image_url
+          : background_image_mobile_url
       },
     },
   },

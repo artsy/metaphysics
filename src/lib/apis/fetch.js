@@ -14,10 +14,16 @@ export default (url, options = {}) => {
 
     request(url, opts, (err, response) => {
       // If there is an error or non-200 status code, reject.
-      if (!!err || (response.statusCode && !response.statusCode.toString().match(/^2/))) {
+      if (
+        !!err ||
+        (response.statusCode && !response.statusCode.toString().match(/^2/))
+      ) {
         if (err) return reject(err)
 
-        const message = compact([get(response, "request.uri.href"), response.body]).join(" - ")
+        const message = compact([
+          get(response, "request.uri.href"),
+          response.body,
+        ]).join(" - ")
         return reject(new HTTPError(message, response.statusCode))
       }
 

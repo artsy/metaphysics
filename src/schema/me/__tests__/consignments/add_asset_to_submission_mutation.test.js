@@ -6,7 +6,12 @@ describe("addAssetToConsignmentSubmission", () => {
     const mutation = gql`
       mutation {
         addAssetToConsignmentSubmission(
-          input: { asset_type: "image", gemini_token: "12345", submission_id: "123", clientMutationId: "123" }
+          input: {
+            asset_type: "image"
+            gemini_token: "12345"
+            submission_id: "123"
+            clientMutationId: "123"
+          }
         ) {
           asset {
             submission_id

@@ -14,8 +14,15 @@ describe("Trending Artists", () => {
     `
     const rootValue = {
       deltaLoader: ({ name }) =>
-        name === "artist_fair" && Promise.resolve({ ortina: null, xtina: null, cached: null, context_type: null }),
-      artistLoader: id => Promise.resolve({ id, birthday: "1900", artworks_count: 100 }),
+        name === "artist_fair" &&
+        Promise.resolve({
+          ortina: null,
+          xtina: null,
+          cached: null,
+          context_type: null,
+        }),
+      artistLoader: id =>
+        Promise.resolve({ id, birthday: "1900", artworks_count: 100 }),
     }
 
     const { trending_artists: { artists } } = await runQuery(query, rootValue)

@@ -2,7 +2,14 @@ import gravity from "lib/loaders/legacy/gravity"
 import { map, omit } from "lodash"
 import SaleArtwork from "./sale_artwork"
 import numeral from "./fields/numeral"
-import { GraphQLList, GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLID } from "graphql"
+import {
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLInt,
+  GraphQLID,
+} from "graphql"
 import {
   SaleArtworksAggregationResultsType,
   SaleArtworksAggregation,
@@ -46,7 +53,10 @@ export const SaleArtworkAggregations = {
   description: "Returns aggregation counts for the given filter query.",
   type: new GraphQLList(SaleArtworksAggregationResultsType),
   resolve: ({ aggregations }) => {
-    const whitelistedAggregations = omit(aggregations, ["total", "followed_artists"])
+    const whitelistedAggregations = omit(aggregations, [
+      "total",
+      "followed_artists",
+    ])
     return map(whitelistedAggregations, (counts, slice) => ({
       slice,
       counts,
@@ -59,7 +69,9 @@ export const SaleArtworkCounts = {
     name: "FilterSaleArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
-      followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
+      followed_artists: numeral(
+        ({ aggregations }) => aggregations.followed_artists.value
+      ),
     },
   }),
   resolve: artist => artist,

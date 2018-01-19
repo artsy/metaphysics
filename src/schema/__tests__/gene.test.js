@@ -51,9 +51,11 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query).then(({ gene: { filtered_artworks: { hits } } }) => {
-        expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
-      })
+      return runQuery(query).then(
+        ({ gene: { filtered_artworks: { hits } } }) => {
+          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+        }
+      )
     })
   })
 
@@ -402,9 +404,11 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query).then(({ gene: { filtered_artworks: { hits } } }) => {
-        expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
-      })
+      return runQuery(query).then(
+        ({ gene: { filtered_artworks: { hits } } }) => {
+          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+        }
+      )
     })
   })
 })

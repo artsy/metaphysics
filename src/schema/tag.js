@@ -2,7 +2,12 @@ import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import Image from "./image"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLNonNull,
+} from "graphql"
 import filterArtworks from "./filter_artworks"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 

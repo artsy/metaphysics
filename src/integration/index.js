@@ -2,7 +2,10 @@ import { keys, isUndefined } from "lodash"
 import request from "request"
 import deepEqual from "deep-equal"
 
-const { METAPHYSICS_STAGING_ENDPOINT, METAPHYSICS_PRODUCTION_ENDPOINT } = process.env
+const {
+  METAPHYSICS_STAGING_ENDPOINT,
+  METAPHYSICS_PRODUCTION_ENDPOINT,
+} = process.env
 
 const get = (url, options) => {
   return new Promise((resolve, reject) =>

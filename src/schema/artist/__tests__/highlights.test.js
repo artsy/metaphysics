@@ -25,8 +25,16 @@ describe("Artist Statuses", () => {
     rootValue = {
       partnerArtistsLoader: sinon
         .stub()
-        .withArgs("partner_artists", sinon.match({ display_on_partner_profile: true }))
-        .returns(Promise.resolve({ headers: { "x-total-count": 1 }, body: partnerArtistResp })),
+        .withArgs(
+          "partner_artists",
+          sinon.match({ display_on_partner_profile: true })
+        )
+        .returns(
+          Promise.resolve({
+            headers: { "x-total-count": 1 },
+            body: partnerArtistResp,
+          })
+        ),
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
     }
   })

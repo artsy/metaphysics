@@ -50,7 +50,8 @@ export const existyValue = x => {
   if (isExisty(x)) return x
 }
 
-export const capitalizeFirstCharacter = x => x.charAt(0).toUpperCase() + x.slice(1)
+export const capitalizeFirstCharacter = x =>
+  x.charAt(0).toUpperCase() + x.slice(1)
 
 export const classify = flow(camelCase, capitalizeFirstCharacter)
 
@@ -67,7 +68,8 @@ export const toQueryString = (options = {}) =>
     sort: (a, b) => a.localeCompare(b),
   })
 export const toKey = (path, options = {}) => `${path}?${toQueryString(options)}`
-export const exclude = (values, property) => xs => reject(xs, x => includes(values, x[property]))
+export const exclude = (values, property) => xs =>
+  reject(xs, x => includes(values, x[property]))
 export const stripTags = str => {
   if (!str) return ""
   return String(str).replace(/<\/?[^>]+>/g, "")
@@ -78,7 +80,10 @@ export const markdownToText = str => {
 export const parseFieldASTsIntoArray = fieldASTs => {
   return map(flatMap(fieldASTs, "selectionSet.selections"), "name.value")
 }
-export const queriedForFieldsOtherThanBlacklisted = (fieldASTs, blacklistedFields) => {
+export const queriedForFieldsOtherThanBlacklisted = (
+  fieldASTs,
+  blacklistedFields
+) => {
   if (!fieldASTs) return true
   const queriedFields = parseFieldASTsIntoArray(fieldASTs)
   return difference(queriedFields, blacklistedFields).length > 0

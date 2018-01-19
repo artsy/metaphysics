@@ -24,7 +24,8 @@ const ArtistMatch = {
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (_root, options, _request, { rootValue: { matchArtistsLoader } }) => matchArtistsLoader(options),
+  resolve: (_root, options, _request, { rootValue: { matchArtistsLoader } }) =>
+    matchArtistsLoader(options),
 }
 
 export default ArtistMatch

@@ -1,4 +1,9 @@
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLEnumType,
+} from "graphql"
 import { amount } from "../../fields/money"
 import { IDFields, NodeInterface } from "../../object_identification"
 import { has } from "lodash"
@@ -57,7 +62,12 @@ export default {
       description: "The ID of the invoice",
     },
   },
-  resolve: (root, { conversationId, invoiceId }, request, { rootValue: { conversationInvoiceLoader } }) => {
+  resolve: (
+    root,
+    { conversationId, invoiceId },
+    request,
+    { rootValue: { conversationInvoiceLoader } }
+  ) => {
     if (!conversationInvoiceLoader) return null
     return conversationInvoiceLoader({
       conversation_id: conversationId,

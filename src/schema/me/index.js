@@ -32,7 +32,9 @@ import Submissions from "./consignments/submissions"
 const { ENABLE_SCHEMA_STITCHING } = process.env
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 
-const mySubmissions = enableSchemaStitching ? {} : { consignment_submissions: Submissions }
+const mySubmissions = enableSchemaStitching
+  ? {}
+  : { consignment_submissions: Submissions }
 
 const Me = new GraphQLObjectType({
   name: "Me",
@@ -86,7 +88,12 @@ const Me = new GraphQLObjectType({
 
 export default {
   type: Me,
-  resolve: (root, options, request, { rootValue: { accessToken, userID }, fieldNodes }) => {
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { accessToken, userID }, fieldNodes }
+  ) => {
     if (!accessToken) return null
     const blacklistedFields = [
       "id",

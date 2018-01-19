@@ -20,7 +20,12 @@ const FollowArtistsType = new GraphQLObjectType({
         fields: {
           artists: {
             type: GraphQLInt,
-            resolve: (data, options, request, { rootValue: { accessToken } }) => {
+            resolve: (
+              data,
+              options,
+              request,
+              { rootValue: { accessToken } }
+            ) => {
               return getTotal("me/follow/artists", accessToken, {
                 total_count: true,
               }).then(({ body: { total } }) => total)

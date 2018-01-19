@@ -57,8 +57,12 @@ describe("OrderedSet type", () => {
     `
 
     return runQuery(query).then(data => {
-      expect(OrderedSet.__get__("gravity").args[0]).toEqual(["set/52dd3c2e4b8480091700027f"])
-      expect(OrderedSet.__get__("gravity").args[1]).toEqual(["set/52dd3c2e4b8480091700027f/items"])
+      expect(OrderedSet.__get__("gravity").args[0]).toEqual([
+        "set/52dd3c2e4b8480091700027f",
+      ])
+      expect(OrderedSet.__get__("gravity").args[1]).toEqual([
+        "set/52dd3c2e4b8480091700027f/items",
+      ])
 
       expect(data).toEqual({
         ordered_set: {

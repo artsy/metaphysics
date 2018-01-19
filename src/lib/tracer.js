@@ -23,7 +23,9 @@ function wrapResolve(typeName, fieldName, resolver) {
     const parentSpan = rootValue.span
     const span = parentSpan
       .tracer()
-      .startSpan("metaphysics.resolver." + typeName + "." + fieldName, { childOf: parentSpan.context() })
+      .startSpan("metaphysics.resolver." + typeName + "." + fieldName, {
+        childOf: parentSpan.context(),
+      })
     span.addTags({
       resource: typeName + ": " + fieldName,
       type: "web",
@@ -52,7 +54,10 @@ export function makeSchemaTraceable(schema) {
   forIn(schema._typeMap, (type, typeName) => {
     if (!introspectionQuery[type] && has(type, "_fields")) {
       forIn(type._fields, (field, fieldName) => {
-        if (field.resolve instanceof Function && getNamedType(field.type) instanceof GraphQLObjectType) {
+        if (
+          field.resolve instanceof Function &&
+          getNamedType(field.type) instanceof GraphQLObjectType
+        ) {
           field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
         }
       })

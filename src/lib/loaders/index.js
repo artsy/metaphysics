@@ -13,7 +13,11 @@ import loadersWithoutAuthentication from "./loaders_without_authentication"
 export default (accessToken, userID, requestIDs) => {
   const loaders = loadersWithoutAuthentication(requestIDs)
   if (accessToken) {
-    return Object.assign({}, loaders, loadersWithAuthentication(accessToken, userID, requestIDs))
+    return Object.assign(
+      {},
+      loaders,
+      loadersWithAuthentication(accessToken, userID, requestIDs)
+    )
   }
   return loaders
 }

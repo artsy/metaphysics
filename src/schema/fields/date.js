@@ -31,10 +31,16 @@ export default {
     // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     timezone: {
       type: GraphQLString,
-      description: "Specify a tz database time zone, otherwise falls back to `X-TIMEZONE` header",
+      description:
+        "Specify a tz database time zone, otherwise falls back to `X-TIMEZONE` header",
     },
   },
-  resolve: (obj, { format, timezone, ignoreTimezone }, request, { fieldName, rootValue: { defaultTimezone } }) => {
+  resolve: (
+    obj,
+    { format, timezone, ignoreTimezone },
+    request,
+    { fieldName, rootValue: { defaultTimezone } }
+  ) => {
     const rawDate = obj[fieldName]
     const timezoneString = timezone ? timezone : defaultTimezone
     return date(rawDate, format, timezoneString)

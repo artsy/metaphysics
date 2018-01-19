@@ -7,7 +7,13 @@ import Context from "./context"
 import Params from "./params"
 import { NodeInterface } from "schema/object_identification"
 import { toGlobalId } from "graphql-relay"
-import { GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLID, GraphQLNonNull } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLID,
+  GraphQLNonNull,
+} from "graphql"
 
 let possibleArgs
 
@@ -31,7 +37,8 @@ export const HomePageArtworkModuleType = new GraphQLObjectType({
     context: Context,
     display: {
       type: GraphQLString,
-      deprecationReason: "Favor `is_`-prefixed Booleans (*and* this should be a Boolean)",
+      deprecationReason:
+        "Favor `is_`-prefixed Booleans (*and* this should be a Boolean)",
     },
     is_displayable: {
       type: GraphQLBoolean,

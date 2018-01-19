@@ -1,5 +1,8 @@
 import { filter, map } from "lodash"
-import { HomePageArtistModuleType, HomePageArtistModuleTypes } from "./home_page_artist_module"
+import {
+  HomePageArtistModuleType,
+  HomePageArtistModuleTypes,
+} from "./home_page_artist_module"
 import { GraphQLList } from "graphql"
 
 const HomePageArtistModules = {

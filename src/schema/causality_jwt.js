@@ -75,7 +75,10 @@ export default {
 
       // Operator role if logged in as an admin
     } else if (options.role === "OPERATOR" && accessToken) {
-      return Promise.all([gravity(`sale/${options.sale_id}`), gravity.with(accessToken)("me")]).then(([sale, me]) => {
+      return Promise.all([
+        gravity(`sale/${options.sale_id}`),
+        gravity.with(accessToken)("me"),
+      ]).then(([sale, me]) => {
         if (me.type !== "Admin") throw new Error("Unauthorized to be operator")
         return jwt.encode(
           {

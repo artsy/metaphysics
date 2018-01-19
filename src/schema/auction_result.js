@@ -1,7 +1,14 @@
 import date from "./fields/date"
 import numeral from "numeral"
 import { IDFields, NodeInterface } from "./object_identification"
-import { GraphQLFloat, GraphQLInt, GraphQLNonNull, GraphQLString, GraphQLObjectType, GraphQLEnumType } from "graphql"
+import {
+  GraphQLFloat,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLEnumType,
+} from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 import { has, indexOf } from "lodash"
 import Image from "schema/image"
@@ -130,7 +137,9 @@ const AuctionResultType = new GraphQLObjectType({
               },
             },
             resolve: ({ currency, price_realized_cents }, { format }) => {
-              const { symbol, subunit_to_unit } = currencyCodes[currency.toLowerCase()]
+              const { symbol, subunit_to_unit } = currencyCodes[
+                currency.toLowerCase()
+              ]
               let display
 
               if (indexOf(symbolOnly, currency) === -1) {

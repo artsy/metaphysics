@@ -49,9 +49,11 @@ describe("Me", () => {
 
       gravity.returns(Promise.resolve(collectorProfile))
 
-      return runAuthenticatedQuery(query).then(({ me: { collector_profile } }) => {
-        expect(collector_profile).toEqual(expectedProfileData)
-      })
+      return runAuthenticatedQuery(query).then(
+        ({ me: { collector_profile } }) => {
+          expect(collector_profile).toEqual(expectedProfileData)
+        }
+      )
     })
   })
 })
