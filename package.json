@@ -13,20 +13,17 @@
     "start": "yarn run dev",
     "verbose-dev": "DEBUG=verbose,info,error nf start --procfile Procfile.dev",
     "dev": "DEBUG=info,error nf start --procfile Procfile.dev -w",
-    "staging":
-      "DEBUG=info,error nf start --procfile Procfile.dev --env .env.staging",
+    "staging": "DEBUG=info,error nf start --procfile Procfile.dev --env .env.staging",
     "test": "yarn run lint && jest",
     "watch": "jest --watch",
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "promote": "heroku pipelines:promote -r staging",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "build:lib":
-      "babel src --copy-files --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src",
+    "build:lib": "babel src --copy-files --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src",
     "build:index": "babel index.js -s inline -d build",
     "build:fixtures": "cp src/lib/*.json build/src/lib/",
-    "heroku-postbuild":
-      "yarn patch-package && yarn build:lib && yarn build:index && yarn build:fixtures",
+    "heroku-postbuild": "yarn patch-package && yarn build:lib && yarn build:index && yarn build:fixtures",
     "precommit": "lint-staged",
     "prepare": "patch-package",
     "prettier-project": "prettier --write '**/*.js'",
@@ -52,8 +49,7 @@
     "bluebird": "^3.3.4",
     "body-parser": "^1.15.2",
     "cors": "^2.7.1",
-    "datadog-tracer":
-      "github:artsy/datadog-tracer-js#99c3f411cc19bb11729b56c699fd21d50f24507d",
+    "datadog-tracer": "github:artsy/datadog-tracer-js#99c3f411cc19bb11729b56c699fd21d50f24507d",
     "dataloader": "^1.3.0",
     "debug": "^2.2.0",
     "express": "^4.13.3",
@@ -76,7 +72,9 @@
     "node-fetch": "^1.7.3",
     "numeral": "^1.5.3",
     "opentracing": "^0.14.1",
+    "patch-package": "^5.0.0",
     "performance-now": "^2.1.0",
+    "postinstall-prepare": "^1.0.1",
     "qs": "^5.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
@@ -109,8 +107,6 @@
     "husky": "^0.13.3",
     "jest": "^21",
     "lint-staged": "^3.4.0",
-    "patch-package": "^5.0.0",
-    "postinstall-prepare": "^1.0.1",
     "prettier": "^1.7",
     "sinon": "^1.17.2",
     "typescript": "^2.5.2"
@@ -133,7 +129,14 @@
     "bracketSpacing": true
   },
   "lint-staged": {
-    "*.json, *.md": ["yarn prettier --write", "git add"],
-    "*.js": ["eslint --fix", "yarn prettier --write", "git add"]
+    "*.json, *.md": [
+      "yarn prettier --write",
+      "git add"
+    ],
+    "*.js": [
+      "eslint --fix",
+      "yarn prettier --write",
+      "git add"
+    ]
   }
 }
