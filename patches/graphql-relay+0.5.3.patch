@@ -19,7 +19,7 @@ patch-package
 +    const newEdge = {
        cursor: offsetToCursor(startOffset + index),
 -      node: value
-+      node: !!resolveNode ? Promise.resolve(resolveNode(value)) : value,
++      node: !!resolveNode ? resolveNode(value) : value,
      };
 +
 +    if (resolveNode) {
