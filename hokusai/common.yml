@@ -4,3 +4,4 @@ services:
   metaphysics:
     build:
       context: ../
+    env_file: ../.env

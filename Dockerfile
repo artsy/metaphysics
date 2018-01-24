@@ -29,7 +29,9 @@ RUN yarn build:index
 RUN yarn build:fixtures
 
 ENV PORT 5001
+ENV DEBUG=info,error
 EXPOSE 5001
 
 # Start node-forman
-CMD node_modules/.bin/nf start
+#CMD node_modules/.bin/forever -c "node --max_old_space_size=960" build/index.js
+CMD node build/index.js
