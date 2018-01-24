@@ -12,7 +12,7 @@
   "scripts": {
     "start": "yarn run dev",
     "verbose-dev": "DEBUG=verbose,info,error nf start --procfile Procfile.dev",
-    "dev": "DEBUG=info,error nf start --procfile Procfile.dev -w",
+    "dev": "DEBUG=info,error nf start --procfile Procfile.dev",
     "staging": "DEBUG=info,error nf start --procfile Procfile.dev --env .env.staging",
     "test": "yarn run lint && jest",
     "watch": "jest --watch",
