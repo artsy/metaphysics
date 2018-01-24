@@ -1,0 +1,8 @@
+---
+version: '2'
+services:
+  metaphysics:
+    command: yarn test
+    extends:
+      file: common.yml
+      service: metaphysics
