@@ -184,7 +184,7 @@ export const ConversationFields = {
     },
   },
   last_message: {
-    type: new GraphQLNonNull(GraphQLString),
+    type: GraphQLString,
     description: "This is a snippet of text from the last message.",
     resolve: conversation => {
       return get(conversation, "_embedded.last_message.snippet")
