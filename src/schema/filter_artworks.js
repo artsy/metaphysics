@@ -131,11 +131,16 @@ export const FilterArtworksType = new GraphQLObjectType({
       type: new GraphQLList(Artist.type),
       description:
         "Returns a list of merchandisable artists sorted by merch score.",
-      resolve: ({ aggregations }) => {
+      resolve: (
+        { aggregations },
+        options,
+        request,
+        { rootValue: { artistsLoader } }
+      ) => {
         if (!isExisty(aggregations.merchandisable_artists)) {
           return null
         }
-        return gravity(`artists`, {
+        return artistsLoader({
           ids: keys(aggregations.merchandisable_artists),
         })
       },
@@ -151,11 +156,11 @@ export const FilterArtworksType = new GraphQLObjectType({
         { options },
         _options,
         _request,
-        { rootValue: { geneLoader } }
+        { rootValue: { geneLoader, tagLoader } }
       ) => {
         const { tag_id, gene_id } = options
         if (tag_id) {
-          return gravity(`tag/${tag_id}`).then(tag =>
+          return tagLoader(tag_id).then(tag =>
             assign({ context_type: "Tag" }, tag)
           )
         }

@@ -23,10 +23,15 @@ export default {
       description: "The id of the auction to participate in",
     },
   },
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { accessToken, meBiddersLoader, saleLoader, userID } }
+  ) => {
     // Observer role for logged out users
     if (!accessToken) {
-      return gravity(`sale/${options.sale_id}`).then(sale =>
+      return saleLoader(options.sale_id).then(sale =>
         jwt.encode(
           {
             aud: "auctions",
@@ -43,16 +48,15 @@ export default {
       // For logged in and...
     } else if (options.role === "PARTICIPANT" && accessToken) {
       return Promise.all([
-        gravity(`sale/${options.sale_id}`),
-        gravity.with(accessToken)("me"),
-        gravity.with(accessToken)("me/bidders", { sale_id: options.sale_id }),
+        saleLoader(options.sale_id),
+        meBiddersLoader({ sale_id: options.sale_id }),
       ]).then(([sale, me, bidders]) => {
         if (bidders.length && bidders[0].qualified_for_bidding) {
           return jwt.encode(
             {
               aud: "auctions",
               role: "bidder",
-              userId: me._id,
+              userId: userID,
               saleId: sale._id,
               bidderId: bidders[0].id,
               iat: new Date().getTime(),
@@ -76,7 +80,7 @@ export default {
       // Operator role if logged in as an admin
     } else if (options.role === "OPERATOR" && accessToken) {
       return Promise.all([
-        gravity(`sale/${options.sale_id}`),
+        saleLoader(options.sale_id),
         gravity.with(accessToken)("me"),
       ]).then(([sale, me]) => {
         if (me.type !== "Admin") throw new Error("Unauthorized to be operator")
@@ -84,7 +88,7 @@ export default {
           {
             aud: "auctions",
             role: "operator",
-            userId: me._id,
+            userId: userID,
             saleId: sale._id,
             bidderId: me.paddle_number,
             iat: new Date().getTime(),

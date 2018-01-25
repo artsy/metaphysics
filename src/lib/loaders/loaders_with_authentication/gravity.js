@@ -54,6 +54,7 @@ export default (accessToken, userID, requestIDs) => {
     ),
     lotStandingLoader: gravityLoader("me/lot_standings"),
     meBiddersLoader: gravityLoader("me/bidders"),
+    meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     popularArtistsLoader: gravityLoader("artists/popular"),
     savedArtworkLoader: trackedEntityLoaderFactory(
       gravityLoader("collection/saved-artwork/artworks", {
