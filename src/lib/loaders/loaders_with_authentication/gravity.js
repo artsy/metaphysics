@@ -53,8 +53,10 @@ export default (accessToken, userID, requestIDs) => {
       { headers: true }
     ),
     lotStandingLoader: gravityLoader("me/lot_standings"),
+    meLoader: gravityLoader("me"),
     meBiddersLoader: gravityLoader("me/bidders"),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
+    notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     popularArtistsLoader: gravityLoader("artists/popular"),
     savedArtworkLoader: trackedEntityLoaderFactory(
       gravityLoader("collection/saved-artwork/artworks", {
@@ -65,6 +67,7 @@ export default (accessToken, userID, requestIDs) => {
       "is_saved"
     ),
     saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`),
+    filterArtworksLoader: gravityLoader("filter/artworks"),
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     suggestedArtistsLoader: gravityLoader(
       "me/suggested/artists",

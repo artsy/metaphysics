@@ -13,6 +13,7 @@ export default requestIDs => {
     artworkLoader: gravityLoader(id => `artwork/${id}`),
     fairLoader: gravityLoader(id => `fair/${id}`),
     fairsLoader: gravityLoader("fairs"),
+    filterArtworksLoader: gravityLoader("filter/artworks"),
     geneArtistsLoader: gravityLoader(id => `gene/${id}/artists`),
     geneFamiliesLoader: gravityLoader("gene_families"),
     geneLoader: gravityLoader(id => `/gene/${id}`),

@@ -220,8 +220,9 @@ const Fair = {
       description: "The slug or ID of the Fair",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { fairLoader } }) =>
-    fairLoader(id),
+  resolve: (root, { id }, request, { rootValue: { fairLoader } }) => {
+    return fairLoader(id)
+  },
 }
 
 export default Fair
