@@ -52,7 +52,7 @@ export const GeneType = new GraphQLObjectType({
           { id },
           options,
           request,
-          { rootValue: geneArtistsLoader }
+          { rootValue: { geneArtistsLoader } }
         ) => {
           return geneArtistsLoader(id, {
             exclude_artists_without_artworks: true,

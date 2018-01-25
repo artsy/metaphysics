@@ -19,7 +19,6 @@ describe("CausalityJWT", () => {
     rootValue = {
       saleLoader: sinon.stub().returns(Promise.resolve(sale)),
       meLoader: sinon.stub().returns(Promise.resolve(me)),
-      userID: "craig",
       accessToken: "token",
       meBiddersLoader: sinon.stub().returns(
         Promise.resolve([

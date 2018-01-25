@@ -26,9 +26,7 @@ export default {
     root,
     options,
     request,
-    {
-      rootValue: { accessToken, meLoader, meBiddersLoader, saleLoader, userID },
-    }
+    { rootValue: { accessToken, meLoader, meBiddersLoader, saleLoader } }
   ) => {
     // Observer role for logged out users
     if (!accessToken) {
@@ -50,14 +48,15 @@ export default {
     } else if (options.role === "PARTICIPANT") {
       return Promise.all([
         saleLoader(options.sale_id),
+        meLoader(),
         meBiddersLoader({ sale_id: options.sale_id }),
-      ]).then(([sale, bidders]) => {
+      ]).then(([sale, me, bidders]) => {
         if (bidders.length && bidders[0].qualified_for_bidding) {
           return jwt.encode(
             {
               aud: "auctions",
               role: "bidder",
-              userId: userID,
+              userId: me._id,
               saleId: sale._id,
               bidderId: bidders[0].id,
               iat: new Date().getTime(),
@@ -69,7 +68,7 @@ export default {
           {
             aud: "auctions",
             role: "observer",
-            userId: userID,
+            userId: me._id,
             saleId: sale._id,
             bidderId: null,
             iat: new Date().getTime(),
@@ -89,7 +88,7 @@ export default {
             {
               aud: "auctions",
               role: "operator",
-              userId: userID,
+              userId: me._id,
               saleId: sale._id,
               bidderId: me.paddle_number,
               iat: new Date().getTime(),
