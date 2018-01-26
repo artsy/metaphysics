@@ -1,4 +1,3 @@
-import { has } from "lodash"
 import cached from "./fields/cached"
 import AuthorType from "./author"
 import Image from "./image"
@@ -15,7 +14,6 @@ import {
 const ArticleType = new GraphQLObjectType({
   name: "Article",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "title") && has(obj, "author"),
   fields: () => ({
     ...IDFields,
     cached,

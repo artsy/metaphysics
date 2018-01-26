@@ -1,5 +1,3 @@
-import { has } from "lodash"
-
 import Gene from "schema/gene"
 import { IDFields } from "schema/object_identification"
 
@@ -15,7 +13,6 @@ export const FollowGeneType = new GraphQLObjectType({
     },
     ...IDFields,
   },
-  isTypeOf: obj => has(obj, "gene"),
 })
 
 export default {

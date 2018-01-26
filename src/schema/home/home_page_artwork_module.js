@@ -1,4 +1,4 @@
-import { chain, find, has } from "lodash"
+import { chain, find } from "lodash"
 import gravity from "lib/loaders/legacy/gravity"
 import { params as genericGenes } from "./add_generic_genes"
 import Results from "./results"
@@ -20,7 +20,6 @@ let possibleArgs
 export const HomePageArtworkModuleType = new GraphQLObjectType({
   name: "HomePageArtworkModule",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "key") && has(obj, "display"),
   fields: () => ({
     __id: {
       type: new GraphQLNonNull(GraphQLID),

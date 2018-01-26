@@ -1,7 +1,7 @@
 import { isExisty } from "lib/helpers"
 import date from "schema/fields/date"
 import initials from "schema/fields/initials"
-import { get, has, merge } from "lodash"
+import { get, merge } from "lodash"
 import {
   GraphQLBoolean,
   GraphQLList,
@@ -97,6 +97,16 @@ export const ConversationResponderType = new GraphQLObjectType({
 const ConversationItemType = new GraphQLUnionType({
   name: "ConversationItemType",
   types: [ArtworkType, ShowType],
+  resolveType: ({ __typename }) => {
+    switch (__typename) {
+      case "Artwork":
+        return ArtworkType
+      case "PartnerShow":
+        return ShowType
+      default:
+        return null
+    }
+  },
 })
 
 const ConversationItem = new GraphQLObjectType({
@@ -104,7 +114,10 @@ const ConversationItem = new GraphQLObjectType({
   fields: {
     item: {
       type: ConversationItemType,
-      resolve: ({ properties }) => properties,
+      resolve: ({ item_type, properties }) => ({
+        __typename: item_type,
+        ...properties,
+      }),
     },
     title: {
       type: GraphQLString,
@@ -382,7 +395,6 @@ export const ConversationType = new GraphQLObjectType({
   name: "Conversation",
   description: "A conversation.",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "initial_message") && has(obj, "from_email"),
   fields: ConversationFields,
 })
 

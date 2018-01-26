@@ -1,5 +1,5 @@
 import gravity from "lib/loaders/legacy/gravity"
-import { map, omit, keys, create, assign, has } from "lodash"
+import { map, omit, keys, create, assign } from "lodash"
 import { isExisty } from "lib/helpers"
 import Artwork from "./artwork"
 import Artist from "./artist"
@@ -75,7 +75,6 @@ export const FilterArtworksCounts = {
 export const FilterArtworksType = new GraphQLObjectType({
   name: "FilterArtworks",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "hits") && has(obj, "aggregations"),
   fields: () => ({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
