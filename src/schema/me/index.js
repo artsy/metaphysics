@@ -1,5 +1,4 @@
 import { GraphQLString, GraphQLObjectType } from "graphql"
-import { has } from "lodash"
 
 import { IDFields, NodeInterface } from "schema/object_identification"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
@@ -39,7 +38,6 @@ const mySubmissions = enableSchemaStitching
 const Me = new GraphQLObjectType({
   name: "Me",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "email") && has(obj, "is_collector"),
   fields: {
     ...IDFields,
     ...mySubmissions,

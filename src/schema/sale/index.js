@@ -11,7 +11,7 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { amount } from "schema/fields/money"
 import { exclude } from "lib/helpers"
-import { map, has } from "lodash"
+import { map } from "lodash"
 import { NodeInterface } from "schema/object_identification"
 
 import {
@@ -71,7 +71,6 @@ const saleArtworkConnection = connectionDefinitions({
 const SaleType = new GraphQLObjectType({
   name: "Sale",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "is_auction") && has(obj, "currency"),
   fields: () => {
     return {
       ...GravityIDFields,

@@ -9,14 +9,13 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { omit, has } from "lodash"
+import { omit } from "lodash"
 import { parseRelayOptions } from "lib/helpers"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 
 const NotificationsFeedItemType = new GraphQLObjectType({
   name: "NotificationsFeedItem",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "actors") && has(obj, "object_ids"),
   fields: () => ({
     __id: GlobalIDField,
     artists: {

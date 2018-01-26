@@ -1,4 +1,4 @@
-import { has, map } from "lodash"
+import { map } from "lodash"
 import Artist from "schema/artist"
 import gravity from "lib/loaders/legacy/gravity"
 import { total } from "lib/loaders/legacy/total"
@@ -63,7 +63,6 @@ export const HomePageArtistModuleTypes = {
 export const HomePageArtistModuleType = new GraphQLObjectType({
   name: "HomePageArtistModule",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "key") && !has(obj, "display"),
   fields: {
     __id: {
       type: new GraphQLNonNull(GraphQLID),

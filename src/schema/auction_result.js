@@ -10,7 +10,7 @@ import {
   GraphQLEnumType,
 } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
-import { has, indexOf } from "lodash"
+import { indexOf } from "lodash"
 import Image from "schema/image"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
@@ -31,7 +31,6 @@ export const AuctionResultSorts = {
 const AuctionResultType = new GraphQLObjectType({
   name: "AuctionResult",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "sale_date") && has(obj, "organization"),
   fields: () => ({
     ...IDFields,
     title: {
