@@ -68,6 +68,7 @@ export default (accessToken, userID, requestIDs) => {
     ),
     saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`),
     filterArtworksLoader: gravityLoader("filter/artworks"),
+    saleArtworksAllLoader: gravityLoader("sale_artworks"),
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     suggestedArtistsLoader: gravityLoader(
       "me/suggested/artists",

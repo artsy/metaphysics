@@ -9,7 +9,7 @@ import {
 } from "schema/filter_sale_artworks"
 
 const DEFAULTS = {
-  aggregations: ["total"],
+  // aggregations: ["total"],
   first: 10,
 }
 
@@ -30,11 +30,19 @@ export default {
     _root,
     options,
     _request,
-    { rootValue: { saleArtworksFilterLoader } }
+    { rootValue: { saleArtworksFilterLoader, saleArtworksAllLoader } }
   ) => {
     const relayOptions = { ...DEFAULTS, ...options }
     const params = parseRelayOptions(relayOptions)
-    const response = await saleArtworksFilterLoader(params)
+    let fetchLoader = saleArtworksFilterLoader
+
+    if (options.live_sale) {
+      fetchLoader = saleArtworksAllLoader
+    }
+
+    const response = await fetchLoader(params)
+
+    // const response = await saleArtworksFilterLoader(params)
     const data = {
       ...response,
       ...connectionFromArraySlice(response.hits, relayOptions, {
