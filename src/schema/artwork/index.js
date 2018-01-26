@@ -693,7 +693,6 @@ export const artworkFields = () => {
 export const ArtworkType = new GraphQLObjectType({
   name: "Artwork",
   interfaces: [NodeInterface],
-  isTypeOf: obj => _.has(obj, "title") && _.has(obj, "artists"),
   fields: () => {
     return {
       ...artworkFields(),

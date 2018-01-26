@@ -1,5 +1,3 @@
-import { has } from "lodash"
-
 import Artist from "schema/artist"
 import { IDFields } from "schema/object_identification"
 
@@ -18,7 +16,6 @@ export const FollowArtistType = new GraphQLObjectType({
     },
     ...IDFields,
   },
-  isTypeOf: obj => has(obj, "artist") && has(obj, "auto"),
 })
 
 export default {

@@ -3,8 +3,6 @@
  *
  * - specify that it implements the Node interface
  * - add the Node `__id` fields
- * - implement a `isTypeOf` function that from a payload determines if the
- *   payload is of that type
  * - add to the below `SupportedTypes` list.
  *
  * @example
@@ -19,7 +17,6 @@
  * const ArtworkType = new GraphQLObjectType({
  *   ...
  *   interfaces: [NodeInterface],
- *   isTypeOf: (obj) => has(obj, 'title') && has(obj, 'artists'),
  *   fields: () => ({
  *     __id: GlobalIDField,
  *     ...
@@ -114,6 +111,7 @@ export const NodeInterface = new GraphQLInterfaceType({
       description: "The ID of the object.",
     },
   }),
+  resolveType: ({ __type }) => __type,
 })
 
 const NodeField = {
@@ -128,19 +126,25 @@ const NodeField = {
   },
   // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
   resolve: (root, { __id }, request, rootValue) => {
-    const { type, id } = fromGlobalId(__id)
-    if (isSupportedType(type)) {
-      let exported = SupportedTypes.typeModules[type]
+    const { type: typeName, id } = fromGlobalId(__id)
+    if (isSupportedType(typeName)) {
+      let exported = SupportedTypes.typeModules[typeName]
       if (typeof exported === "function") {
         exported = exported()
       }
-      const { resolve } = exported
-      return resolve(
-        null,
-        argumentsForChild(type, id),
-        request,
-        rootValueForChild(rootValue)
-      )
+      const { resolve, type } = exported
+      return Promise.resolve(
+        resolve(
+          null,
+          argumentsForChild(typeName, id),
+          request,
+          rootValueForChild(rootValue)
+        )
+      ).then(data => {
+        // Add the already known type so `NodeInterface` can pluck that out in
+        // its `resolveType` implementation.
+        return { __type: type, ...data }
+      })
     }
   },
 }
