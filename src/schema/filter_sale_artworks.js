@@ -29,6 +29,9 @@ export const filterSaleArtworksArgs = {
   include_artworks_by_followed_artists: {
     type: GraphQLBoolean,
   },
+  live_sale: {
+    type: GraphQLBoolean,
+  },
   gene_ids: {
     type: new GraphQLList(GraphQLString),
   },
