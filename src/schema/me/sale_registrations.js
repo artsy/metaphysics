@@ -1,5 +1,4 @@
 import { first } from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
 import Sale from "schema/sale/index"
 import Sales from "schema/sales"
 import Bidder from "schema/bidder"
@@ -23,19 +22,22 @@ export const SaleRegistrationType = new GraphQLObjectType({
 export default {
   type: new GraphQLList(SaleRegistrationType),
   args: Sales.args,
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
-    return gravity("sales", options).then(sales => {
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { meBiddersLoader, salesLoader } }
+  ) => {
+    return salesLoader(options).then(sales => {
       return Promise.all(
         sales.map(sale => {
-          return gravity
-            .with(accessToken)("me/bidders", { sale_id: sale.id })
-            .then(bidders => {
-              return {
-                sale,
-                bidder: first(bidders),
-                is_registered: bidders.length > 0,
-              }
-            })
+          return meBiddersLoader({ sale_id: sale.id }).then(bidders => {
+            return {
+              sale,
+              bidder: first(bidders),
+              is_registered: bidders.length > 0,
+            }
+          })
         })
       )
     })

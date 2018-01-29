@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import OrderedSet from "./ordered_set"
 import {
   GraphQLString,
@@ -29,7 +28,8 @@ const OrderedSets = {
       defaultValue: 10,
     },
   },
-  resolve: (root, options) => gravity("sets", options),
+  resolve: (root, options, request, { rootValue: { setsLoader } }) =>
+    setsLoader(options),
 }
 
 export default OrderedSets

@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import PartnerCategory from "./partner_category"
 import CategoryType from "./input_fields/category_type"
 
@@ -18,7 +17,12 @@ const PartnerCategories = {
       type: GraphQLInt,
     },
   },
-  resolve: (root, options) => gravity("partner_categories", options),
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { partnerCategoriesLoader } }
+  ) => partnerCategoriesLoader(options),
 }
 
 export default PartnerCategories

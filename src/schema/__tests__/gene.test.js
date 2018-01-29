@@ -1,41 +1,34 @@
-import schema from "schema"
 import { runQuery } from "test/utils"
 
 describe("Gene", () => {
+  let rootValue
   describe("For just querying the gene artworks", () => {
-    const Gene = schema.__get__("Gene")
-    const filterArtworks = Gene.__get__("filterArtworks")
-
     // If this test fails because it's making a gravity request to /gene/x, it's
     // because the AST checks to find out which nodes we're requesting
     // is not working correctly. This test is to make sure we don't
     // request to gravity.
 
     beforeEach(() => {
-      const gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
-      gravity
-        .withArgs("filter/artworks", {
-          gene_id: "500-1000-ce",
-          aggregations: ["total"],
-        })
-        .returns(
-          Promise.resolve({
-            hits: [
-              {
-                id: "oseberg-norway-queens-ship",
-                title: "Queen's Ship",
-                artists: [],
-              },
-            ],
-            aggregations: [],
+      rootValue = {
+        filterArtworksLoader: sinon
+          .stub()
+          .withArgs("filter/artworks", {
+            gene_id: "500-1000-ce",
+            aggregations: ["total"],
           })
-        )
-      filterArtworks.__Rewire__("gravity", gravity)
-    })
-
-    afterEach(() => {
-      filterArtworks.__ResetDependency__("gravity")
+          .returns(
+            Promise.resolve({
+              hits: [
+                {
+                  id: "oseberg-norway-queens-ship",
+                  title: "Queen's Ship",
+                  artists: [],
+                },
+              ],
+              aggregations: [],
+            })
+          ),
+      }
     })
 
     it("returns filtered artworks", () => {
@@ -51,7 +44,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query).then(
+      return runQuery(query, rootValue).then(
         ({ gene: { filtered_artworks: { hits } } }) => {
           expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
         }
@@ -60,20 +53,11 @@ describe("Gene", () => {
   })
 
   describe("artworks_connection", () => {
-    const Gene = schema.__get__("Gene")
-
     beforeEach(() => {
-      Gene.__ResetDependency__("gravity")
-      const gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
-      gravity
-        // Gene
-        .onCall(0)
-        .returns(Promise.resolve(Object.assign({}, gene)))
-        // 20 artworks
-        .onCall(1)
-        .returns(
+      rootValue = {
+        geneLoader: sinon.stub().returns(Promise.resolve(gene)),
+        filterArtworksLoader: sinon.stub().returns(
           Promise.resolve({
             hits: Array(20),
             aggregations: {
@@ -86,9 +70,8 @@ describe("Gene", () => {
               },
             },
           })
-        )
-
-      Gene.__Rewire__("gravity", gravity)
+        ),
+      }
     })
 
     it("does not have a next page when the requested amount exceeds the count", () => {
@@ -104,7 +87,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -130,7 +113,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -164,7 +147,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -196,27 +179,18 @@ describe("Gene", () => {
   })
 
   describe("arist_connection", () => {
-    const Gene = schema.__get__("Gene")
-
     beforeEach(() => {
-      Gene.__ResetDependency__("gravity")
-      const gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
       const gene = {
         id: "500-1000-ce",
         browseable: true,
         family: "",
         counts: { artists: 20 },
       }
-      gravity
-        // Gene
-        .onCall(0)
-        .returns(Promise.resolve(Object.assign({}, gene)))
-        // 20 artworks
-        .onCall(1)
-        .returns(Promise.resolve(Array(20)))
 
-      Gene.__Rewire__("gravity", gravity)
+      rootValue = {
+        geneLoader: sinon.stub().returns(Promise.resolve(gene)),
+        geneArtistsLoader: sinon.stub().returns(Promise.resolve(Array(20))),
+      }
     })
 
     it("does not have a next page when the requested amount exceeds the count", () => {
@@ -232,7 +206,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             artists_connection: {
@@ -258,7 +232,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             artists_connection: {
@@ -273,12 +247,7 @@ describe("Gene", () => {
   })
 
   describe("similar", () => {
-    const Gene = schema.__get__("Gene")
-
     beforeEach(() => {
-      Gene.__ResetDependency__("gravity")
-      const gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
       const gene = {
         id: "500-1000-ce",
         browseable: true,
@@ -286,9 +255,9 @@ describe("Gene", () => {
         counts: { artists: 20 },
       }
 
-      gravity.onCall(0).returns(Promise.resolve(Object.assign({}, gene)))
-
-      Gene.__Rewire__("gravity", gravity)
+      rootValue = {
+        geneLoader: sinon.stub().returns(Promise.resolve(gene)),
+      }
     })
 
     it("returns similar genes", () => {
@@ -310,23 +279,22 @@ describe("Gene", () => {
         }
       `
 
-      const rootValue = {
-        similarGenesLoader: () =>
-          Promise.resolve({
-            body: [
-              {
-                id: "pop-art",
-                name: "Pop Art",
-                browseable: true,
-                family: "",
-                counts: { artists: 20 },
-              },
-            ],
-            headers: {
-              "x-total-count": 1,
+      rootValue.similarGenesLoader = sinon.stub().returns(
+        Promise.resolve({
+          body: [
+            {
+              id: "pop-art",
+              name: "Pop Art",
+              browseable: true,
+              family: "",
+              counts: { artists: 20 },
             },
-          }),
-      }
+          ],
+          headers: {
+            "x-total-count": 1,
+          },
+        })
+      )
 
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
@@ -356,38 +324,29 @@ describe("Gene", () => {
   // to happen.
 
   describe("For querying the gene artworks + gene metadata", () => {
-    const Gene = schema.__get__("Gene")
-    const filterArtworks = Gene.__get__("filterArtworks")
-
     beforeEach(() => {
-      const gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
-      gravity
-        .withArgs("filter/artworks", {
-          gene_id: "500-1000-ce",
-          aggregations: ["total"],
-        })
-        .returns(
-          Promise.resolve({
-            hits: [
-              {
-                id: "oseberg-norway-queens-ship",
-                title: "Queen's Ship",
-                artists: [],
-              },
-            ],
-            aggregations: [],
-          })
-        )
-
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
-      Gene.__Rewire__("gravity", sinon.stub().returns(Promise.resolve(gene)))
-      filterArtworks.__Rewire__("gravity", gravity)
-    })
-
-    afterEach(() => {
-      filterArtworks.__ResetDependency__("gravity")
-      Gene.__ResetDependency__("gravity")
+      rootValue = {
+        filterArtworksLoader: sinon
+          .stub()
+          .withArgs("filter/artworks", {
+            gene_id: "500-1000-ce",
+            aggregations: ["total"],
+          })
+          .returns(
+            Promise.resolve({
+              hits: [
+                {
+                  id: "oseberg-norway-queens-ship",
+                  title: "Queen's Ship",
+                  artists: [],
+                },
+              ],
+              aggregations: [],
+            })
+          ),
+        geneLoader: sinon.stub().returns(Promise.resolve(gene)),
+      }
     })
 
     it("returns filtered artworks, and makes a gravity call", () => {
@@ -404,7 +363,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query).then(
+      return runQuery(query, rootValue).then(
         ({ gene: { filtered_artworks: { hits } } }) => {
           expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
         }

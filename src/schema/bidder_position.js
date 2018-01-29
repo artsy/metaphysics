@@ -1,5 +1,4 @@
 import { get } from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
 import date from "./fields/date"
 import money, { amount } from "./fields/money"
 import SaleArtwork from "./sale_artwork"
@@ -73,12 +72,18 @@ const BidderPositionType = new GraphQLObjectType({
     },
     is_winning: {
       type: GraphQLBoolean,
-      resolve: position =>
-        gravity(`sale_artwork/${position.sale_artwork_id}`).then(
+      resolve: (
+        position,
+        options,
+        request,
+        { rootValue: { saleArtworkRootLoader } }
+      ) => {
+        return saleArtworkRootLoader(position.sale_artwork_id).then(
           saleArtwork =>
             get(saleArtwork, "highest_bid.id") ===
             get(position, "highest_bid.id")
-        ),
+        )
+      },
     },
     max_bid: money({
       name: "BidderPositionMaxBid",
@@ -93,7 +98,12 @@ const BidderPositionType = new GraphQLObjectType({
     },
     sale_artwork: {
       type: SaleArtwork.type,
-      resolve: position => gravity(`sale_artwork/${position.sale_artwork_id}`),
+      resolve: (
+        { sale_artwork_id },
+        options,
+        request,
+        { rootValue: { saleArtworkRootLoader } }
+      ) => saleArtworkRootLoader(sale_artwork_id),
     },
     suggested_next_bid: money({
       name: "BidderPositionSuggestedNextBid",
