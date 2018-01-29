@@ -341,6 +341,9 @@ export const ConversationFields = {
           },
         }),
       },
+      ignoreBlankMessages: {
+        type: GraphQLBoolean,
+      },
     }),
     resolve: (
       { id, from_email },
