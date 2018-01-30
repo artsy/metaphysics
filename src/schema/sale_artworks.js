@@ -24,7 +24,7 @@ const SaleArtworksType = connectionDefinitions({
 
 export default {
   args: pageable(filterSaleArtworksArgs),
-  description: "Sale Artworks Elastic Search results",
+  description: "Sale Artworks search results",
   type: SaleArtworksType,
   resolve: async (
     _root,
@@ -36,32 +36,38 @@ export default {
     const params = parseRelayOptions(relayOptions)
     let response
 
-    if (options.live_sale) {
-      delete params.page
-      response = await saleArtworksAllLoader(params)
+    try {
+      if (options.live_sale) {
+        delete params.page
+        params.total_count = true
+        const { body, headers } = await saleArtworksAllLoader(params)
+        response = body
 
-      // Piggyback on existing ES API. TODO: This could perhaps be unified
-      // better, but quickfix.
-      response = {
-        hits: response,
-        aggregations: {
-          total: {
-            value: 10,
+        // Piggyback on existing ES API. TODO: This could perhaps be unified
+        // better, but quickfix.
+        response = {
+          hits: response,
+          aggregations: {
+            total: {
+              value: headers["x-total-count"],
+            },
           },
-        },
+        }
+      } else {
+        response = await saleArtworksFilterLoader(params)
       }
-    } else {
-      response = await saleArtworksFilterLoader(params)
-    }
 
-    const data = {
-      ...response,
-      ...connectionFromArraySlice(response.hits, relayOptions, {
-        arrayLength: response.aggregations.total.value,
-        sliceStart: params.offset,
-      }),
-    }
+      const data = {
+        ...response,
+        ...connectionFromArraySlice(response.hits, relayOptions, {
+          arrayLength: response.aggregations.total.value,
+          sliceStart: params.offset,
+        }),
+      }
 
-    return data
+      return data
+    } catch (error) {
+      console.error("schema/sale_artworks Error:", error) // eslint-disable-line
+    }
   },
 }
