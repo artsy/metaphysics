@@ -536,7 +536,7 @@ describe("Artwork type", () => {
       }
     `
 
-    it("returns custom text for an auction partner type", () => {
+    it("returns bid text for an auction partner type", () => {
       artwork.partner = { type: "Auction" }
 
       return runQuery(query, rootValue).then(data => {
@@ -550,7 +550,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns custom text for a sold work", () => {
+    it("returns similar work text for a sold work", () => {
       artwork.availability = "sold"
 
       return runQuery(query, rootValue).then(data => {
@@ -563,7 +563,7 @@ describe("Artwork type", () => {
         })
       })
     })
-    it("returns custom text for an on hold work", () => {
+    it("returns purchase text for an on hold work", () => {
       artwork.availability = "on hold"
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
