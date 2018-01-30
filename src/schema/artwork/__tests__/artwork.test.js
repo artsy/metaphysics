@@ -563,6 +563,19 @@ describe("Artwork type", () => {
         })
       })
     })
+    it("returns similar work text for a on loan work", () => {
+      artwork.availability = "on loan"
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            contact_message:
+              "Hi, I’m interested in similar works by this artist. Could you please let me know if you have anything available?", // eslint-disable-line max-len
+          },
+        })
+      })
+    })
     it("returns purchase text for an on hold work", () => {
       artwork.availability = "on hold"
       return runQuery(query, rootValue).then(data => {
