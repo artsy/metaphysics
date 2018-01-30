@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import date from "schema/fields/date"
@@ -26,8 +25,13 @@ const NotificationsFeedItemType = new GraphQLObjectType({
     artworks: {
       type: new GraphQLList(Artwork.type),
       description: "List of artworks in this notification bundle",
-      resolve: ({ object_ids }) => {
-        return gravity("artworks", { ids: object_ids })
+      resolve: (
+        { object_ids },
+        options,
+        request,
+        { rootValue: { artworksLoader } }
+      ) => {
+        return artworksLoader({ ids: object_ids })
       },
     },
     date,
@@ -62,20 +66,21 @@ const Notifications = {
     "A list of feed items, indicating published artworks (grouped by date and artists).",
   args: pageable({}),
   deprecationReason: "Prefer to use followed_artists_artwork_groups.",
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { accessToken, notificationsFeedLoader } }
+  ) => {
     if (!accessToken) return null
     const gravityOptions = parseRelayOptions(options)
-    return gravity
-      .with(accessToken)(
-        "me/notifications/feed",
-        omit(gravityOptions, "offset")
-      )
-      .then(({ feed, total }) =>
+    return notificationsFeedLoader(omit(gravityOptions, "offset")).then(
+      ({ feed, total }) =>
         connectionFromArraySlice(feed, options, {
           arrayLength: total,
           sliceStart: gravityOptions.offset,
         })
-      )
+    )
   },
 }
 

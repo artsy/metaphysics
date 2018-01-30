@@ -1,5 +1,4 @@
 import _ from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
 import Partners from "./partners"
 import {
   FilterPartnersType,
@@ -15,7 +14,8 @@ const FilterPartners = {
       type: new GraphQLNonNull(new GraphQLList(PartnersAggregation)),
     },
   }),
-  resolve: (root, options) => gravity("partners", options),
+  resolve: (root, options, request, { rootValue: { partnersLoader } }) =>
+    partnersLoader(options),
 }
 
 export default FilterPartners
