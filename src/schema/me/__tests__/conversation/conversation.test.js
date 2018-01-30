@@ -255,12 +255,14 @@ describe("Me", () => {
     })
 
     describe("messages", () => {
-      const getQuery = (sort = "ASC") => {
+      const getQuery = (sort = "ASC", ignoreBlankMessages = null) => {
         return `
           {
             me {
               conversation(id: "420") {
-                messages(first: 10, sort: ${sort}) {
+                messages(first: 10, sort: ${sort}, ignoreBlankMessages: ${
+          ignoreBlankMessages
+        }) {
                   edges {
                     node {
                       id
@@ -291,6 +293,17 @@ describe("Me", () => {
           ({ me: { conversation: { messages } } }) => {
             expect(messages.edges.length).toEqual(4)
             expect(messages.edges[0].node.id).toEqual("243")
+          }
+        )
+      })
+
+      it("filters empty messages if ignoreBlankMessages is true", () => {
+        const query = getQuery("ASC", true)
+
+        return runAuthenticatedQuery(query, rootValue).then(
+          ({ me: { conversation: { messages } } }) => {
+            expect(messages.edges.length).toEqual(1)
+            expect(messages.edges[0].node.id).toEqual("240")
           }
         )
       })
