@@ -370,8 +370,16 @@ export const ConversationFields = {
             conversation_id: id,
           })
         })
+
+        const filtered_messages = options.ignoreBlankMessages
+          ? message_details.filter(
+              message =>
+                (message.body && message.body.length) ||
+                (message.attachments && message.attachments.length)
+            )
+          : message_details
         /* eslint-disable no-param-reassign */
-        return connectionFromArraySlice(message_details, options, {
+        return connectionFromArraySlice(filtered_messages, options, {
           arrayLength: total_count,
           sliceStart: offset,
         })
