@@ -143,7 +143,7 @@ export const artworkFields = () => {
             "Please send me more information.",
           ].join(" ")
         }
-        if (availability === "sold") {
+        if (availability === "sold" || availability === "on loan") {
           return [
             "Hi, I’m interested in similar works by this artist.",
             "Could you please let me know if you have anything available?",
