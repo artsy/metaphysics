@@ -24,25 +24,50 @@ const SaleArtworksType = connectionDefinitions({
 
 export default {
   args: pageable(filterSaleArtworksArgs),
-  description: "Sale Artworks Elastic Search results",
+  description: "Sale Artworks search results",
   type: SaleArtworksType,
   resolve: async (
     _root,
     options,
     _request,
-    { rootValue: { saleArtworksFilterLoader } }
+    { rootValue: { saleArtworksFilterLoader, saleArtworksAllLoader } }
   ) => {
     const relayOptions = { ...DEFAULTS, ...options }
     const params = parseRelayOptions(relayOptions)
-    const response = await saleArtworksFilterLoader(params)
-    const data = {
-      ...response,
-      ...connectionFromArraySlice(response.hits, relayOptions, {
-        arrayLength: response.aggregations.total.value,
-        sliceStart: params.offset,
-      }),
-    }
+    let response
 
-    return data
+    try {
+      if (options.live_sale) {
+        delete params.page
+        params.total_count = true
+        const { body, headers } = await saleArtworksAllLoader(params)
+        response = body
+
+        // Piggyback on existing ES API. TODO: This could perhaps be unified
+        // better, but quickfix.
+        response = {
+          hits: response,
+          aggregations: {
+            total: {
+              value: headers["x-total-count"],
+            },
+          },
+        }
+      } else {
+        response = await saleArtworksFilterLoader(params)
+      }
+
+      const data = {
+        ...response,
+        ...connectionFromArraySlice(response.hits, relayOptions, {
+          arrayLength: response.aggregations.total.value,
+          sliceStart: params.offset,
+        }),
+      }
+
+      return data
+    } catch (error) {
+      console.error("schema/sale_artworks Error:", error) // eslint-disable-line
+    }
   },
 }

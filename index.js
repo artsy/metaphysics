@@ -5,7 +5,6 @@ import xapp from "artsy-xapp"
 import express from "express"
 import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
-import config from "./src/config"
 import { info, error } from "./src/lib/loggers"
 
 const {
@@ -34,10 +33,7 @@ const xappConfig = {
   secret: GRAVITY_SECRET,
 }
 
-xapp.init(xappConfig, () => {
-  config.GRAVITY_XAPP_TOKEN = xapp.token
-  bootApp() // eslint-disable-line
-})
+xapp.init(xappConfig, bootApp) // eslint-disable-line
 
 function bootApp() {
   if (isProduction) {
@@ -64,5 +60,7 @@ function bootApp() {
     app.use(require("./src").default)
   }
 
-  app.listen(port, () => info(`Listening on ${port}`))
+  app.listen(port, () =>
+    info(`[Metaphysics] Listening on http://localhost:${port}`)
+  )
 }
