@@ -1,4 +1,5 @@
 import cached from "schema/fields/cached"
+import gravity from "lib/loaders/legacy/gravity"
 import { GravityIDFields } from "schema/object_identification"
 import {
   GraphQLEnumType,
@@ -138,10 +139,10 @@ const HomePageHeroUnits = {
       ),
     },
   },
-  resolve: (_, { platform }, request, { rootValue: { heroUnitsLoader } }) => {
+  resolve: (_, { platform }) => {
     const params = { enabled: true }
     params[platform] = true
-    return heroUnitsLoader(params).then(units => {
+    return gravity("site_hero_units", params).then(units => {
       return shuffle(units.map(unit => Object.assign({ platform }, unit)))
     })
   },

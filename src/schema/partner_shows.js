@@ -1,4 +1,5 @@
 import _ from "lodash"
+import gravity from "lib/loaders/legacy/gravity"
 import PartnerShowSorts from "./sorts/partner_show_sorts"
 import EventStatus from "./input_fields/event_status"
 import Near from "./input_fields/near"
@@ -34,7 +35,7 @@ const PartnerShows = {
     sort: PartnerShowSorts,
     status: EventStatus,
   },
-  resolve: (root, options, request, { rootValue: { showsLoader } }) => {
+  resolve: (root, options) => {
     let gravityOptions = options
     if (options.near) {
       gravityOptions = _.assign(options, {
@@ -43,7 +44,7 @@ const PartnerShows = {
         max_distance: options.near.max_distance,
       })
     }
-    return showsLoader(gravityOptions)
+    return gravity("shows", gravityOptions)
   },
 }
 

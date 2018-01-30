@@ -7,22 +7,49 @@ describe("PartnerShows type", () => {
 
   beforeEach(() => {
     const gravity = sinon.stub()
+
     gravity
       .onCall(0)
+      .returns(
+        Promise.resolve([
+          {
+            id: "new-museum-solo-show",
+            partner: {
+              id: "new-museum",
+            },
+            display_on_partner_profile: true,
+          },
+          {
+            id: "new-museum-group-show",
+            partner: {
+              id: "new-museum",
+            },
+            display_on_partner_profile: true,
+          },
+          {
+            id: "new-museum-fair-booth",
+            partner: {
+              id: "new-museum",
+            },
+            display_on_partner_profile: true,
+          },
+        ])
+      )
+      .onCall(1)
       .returns(
         Promise.resolve({
           artists: [{}],
           fair: null,
         })
       )
-      .onCall(1)
+      .onCall(2)
       .returns(
         Promise.resolve({
           artists: [{}, {}],
           fair: null,
         })
       )
-      .onCall(2)
+      .onCall(3)
       .returns(
         Promise.resolve({
           artists: [{}],
@@ -50,35 +77,7 @@ describe("PartnerShows type", () => {
         }
       `
 
-      const rootValue = {
-        showsLoader: sinon.stub().returns(
-          Promise.resolve([
-            {
-              id: "new-museum-solo-show",
-              partner: {
-                id: "new-museum",
-              },
-              display_on_partner_profile: true,
-            },
-            {
-              id: "new-museum-group-show",
-              partner: {
-                id: "new-museum",
-              },
-              display_on_partner_profile: true,
-            },
-            {
-              id: "new-museum-fair-booth",
-              partner: {
-                id: "new-museum",
-              },
-              display_on_partner_profile: true,
-            },
-          ])
-        ),
-      }
-
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query).then(data => {
         expect(data).toEqual({
           partner_shows: [
             { id: "new-museum-solo-show", kind: "solo" },

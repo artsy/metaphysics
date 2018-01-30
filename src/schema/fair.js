@@ -29,13 +29,8 @@ const FairOrganizerType = new GraphQLObjectType({
     },
     profile: {
       type: Profile.type,
-      resolve: (
-        { profile_id },
-        options,
-        request,
-        { rootValue: { profileLoader } }
-      ) => {
-        return profileLoader(profile_id).catch(() => null)
+      resolve: ({ profile_id }) => {
+        return gravity(`profile/${profile_id}`).catch(() => null)
       },
     },
   },
@@ -133,16 +128,11 @@ const FairType = new GraphQLObjectType({
     },
     location: {
       type: Location.type,
-      resolve: (
-        { id, location, published },
-        options,
-        request,
-        { rootValue: { fairLoader } }
-      ) => {
+      resolve: ({ id, location, published }, options) => {
         if (location) {
           return location
         } else if (published) {
-          return fairLoader(id, options).then(fair => {
+          return gravity(`fair/${id}`, options).then(fair => {
             return fair.location
           })
         }
@@ -154,15 +144,10 @@ const FairType = new GraphQLObjectType({
     },
     profile: {
       type: Profile.type,
-      resolve: (
-        { default_profile_id, organizer },
-        options,
-        request,
-        { rootValue: { profileLoader } }
-      ) => {
+      resolve: ({ default_profile_id, organizer }) => {
         const id = default_profile_id || (organizer && organizer.profile_id)
         return (
-          profileLoader(id)
+          gravity(`profile/${id}`)
             // Some profiles are private and return 403
             .catch(() => null)
         )
@@ -220,9 +205,7 @@ const Fair = {
       description: "The slug or ID of the Fair",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { fairLoader } }) => {
-    return fairLoader(id)
-  },
+  resolve: (root, { id }) => gravity(`fair/${id}`),
 }
 
 export default Fair

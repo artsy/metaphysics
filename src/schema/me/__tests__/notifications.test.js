@@ -1,8 +1,22 @@
 import { assign } from "lodash"
+import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("Notifications", () => {
+    const gravity = sinon.stub()
+    const Me = schema.__get__("Me")
+    const Notifications = Me.__get__("Notifications")
+
+    beforeEach(() => {
+      gravity.with = sinon.stub().returns(gravity)
+      Notifications.__Rewire__("gravity", gravity)
+    })
+
+    afterEach(() => {
+      Notifications.__ResetDependency__("gravity")
+    })
+
     it("returns notification feed items w/ Relay pagination", () => {
       const query = `
         {
@@ -53,8 +67,10 @@ describe("Me", () => {
         ],
       }
 
-      const rootValue = {
-        notificationsFeedLoader: sinon.stub().returns(
+      gravity
+        // Feed fetch
+        .onCall(0)
+        .returns(
           Promise.resolve({
             total: 2,
             feed: [
@@ -68,13 +84,12 @@ describe("Me", () => {
               },
             ],
           })
-        ),
-        artworksLoader: sinon
-          .stub()
-          .returns(Promise.resolve([artwork1, artwork2])),
-      }
+        )
+        // Artwork fetches
+        .onCall(1)
+        .returns(Promise.resolve([artwork1, artwork2]))
 
-      return runAuthenticatedQuery(query, rootValue).then(
+      return runAuthenticatedQuery(query).then(
         ({ me: { notifications_connection } }) => {
           expect(notifications_connection).toEqual(expectedConnectionData)
         }
