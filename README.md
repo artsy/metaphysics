@@ -71,3 +71,5 @@ Then promote using the command:
 ```sh
 $ heroku pipelines:promote -r staging
 ```
+
+For a list of all deployments, see the [Activity Log](https://dashboard.heroku.com/apps/artsy-metaphysics-production/activity).
