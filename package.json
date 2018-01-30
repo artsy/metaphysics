@@ -27,6 +27,7 @@
     "precommit": "lint-staged",
     "prepare": "patch-package",
     "prettier-project": "prettier --write '**/*.js'",
+    "promote:production": "heroku pipelines:promote -r staging",
     "type-check": "tsc --noEmit --pretty"
   },
   "author": "Art.sy Inc",
