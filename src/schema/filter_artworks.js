@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import { map, omit, keys, create, assign } from "lodash"
 import { isExisty } from "lib/helpers"
 import Artwork from "./artwork"
@@ -96,24 +95,21 @@ export const FilterArtworksType = new GraphQLObjectType({
         { options: gravityOptions },
         args,
         request,
-        { rootValue: { accessToken } }
+        { rootValue: { filterArtworksLoader } }
       ) => {
         const relayOptions = parseRelayOptions(args)
-        return gravity
-          .with(accessToken)(
-            "filter/artworks",
-            assign(gravityOptions, relayOptions, {})
-          )
-          .then(({ aggregations, hits }) => {
-            if (!aggregations || !aggregations.total) {
-              throw new Error("This query must contain the total aggregation")
-            }
+        return filterArtworksLoader(
+          assign(gravityOptions, relayOptions, {})
+        ).then(({ aggregations, hits }) => {
+          if (!aggregations || !aggregations.total) {
+            throw new Error("This query must contain the total aggregation")
+          }
 
-            return connectionFromArraySlice(hits, args, {
-              arrayLength: aggregations.total.value,
-              sliceStart: relayOptions.offset,
-            })
+          return connectionFromArraySlice(hits, args, {
+            arrayLength: aggregations.total.value,
+            sliceStart: relayOptions.offset,
           })
+        })
       },
     },
     counts: FilterArtworksCounts,
@@ -130,11 +126,16 @@ export const FilterArtworksType = new GraphQLObjectType({
       type: new GraphQLList(Artist.type),
       description:
         "Returns a list of merchandisable artists sorted by merch score.",
-      resolve: ({ aggregations }) => {
+      resolve: (
+        { aggregations },
+        options,
+        request,
+        { rootValue: { artistsLoader } }
+      ) => {
         if (!isExisty(aggregations.merchandisable_artists)) {
           return null
         }
-        return gravity(`artists`, {
+        return artistsLoader({
           ids: keys(aggregations.merchandisable_artists),
         })
       },
@@ -150,11 +151,11 @@ export const FilterArtworksType = new GraphQLObjectType({
         { options },
         _options,
         _request,
-        { rootValue: { geneLoader } }
+        { rootValue: { geneLoader, tagLoader } }
       ) => {
         const { tag_id, gene_id } = options
         if (tag_id) {
-          return gravity(`tag/${tag_id}`).then(tag =>
+          return tagLoader(tag_id).then(tag =>
             assign({ context_type: "Tag" }, tag)
           )
         }
@@ -271,7 +272,7 @@ function filterArtworks(primaryKey) {
       root,
       options,
       request,
-      { fieldNodes, rootValue: { accessToken } }
+      { fieldNodes, rootValue: { filterArtworksLoader } }
     ) => {
       const gravityOptions = Object.assign({}, options)
       if (primaryKey) {
@@ -287,9 +288,9 @@ function filterArtworks(primaryKey) {
 
       const blacklistedFields = ["artworks_connection", "__id"]
       if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-        return gravity
-          .with(accessToken)("filter/artworks", gravityOptions)
-          .then(response => assign({}, response, { options: gravityOptions }))
+        return filterArtworksLoader(gravityOptions).then(response =>
+          assign({}, response, { options: gravityOptions })
+        )
       }
       return { hits: null, aggregations: null, options: gravityOptions }
     },

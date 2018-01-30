@@ -1,5 +1,4 @@
 import _ from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import Partners from "./partners"
 import CategoryType from "./input_fields/category_type"
@@ -18,9 +17,8 @@ const PartnerCategoryType = new GraphQLObjectType({
     partners: {
       type: Partners.type,
       args: Partners.args,
-      resolve: ({ id }, options) =>
-        gravity(
-          "partners",
+      resolve: ({ id }, options, request, { rootValue: { partnersLoader } }) =>
+        partnersLoader(
           _.defaults(options, {
             partner_categories: [id],
           })
@@ -38,7 +36,8 @@ const PartnerCategory = {
       description: "The slug or ID of the PartnerCategory",
     },
   },
-  resolve: (root, { id }) => gravity(`partner_category/${id}`),
+  resolve: (root, { id }, request, { rootValue: { partnerCategoryLoader } }) =>
+    partnerCategoryLoader(id),
 }
 
 export default PartnerCategory
