@@ -1,99 +1,99 @@
-import { map } from "lodash"
+import { map, times } from "lodash"
 import gql from "test/gql"
 
+import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me type", () => {
-  let rootValue
-  let saleArtworkRootLoader
+  const Me = schema.__get__("Me")
+  const BidderPositions = Me.__get__("BidderPositions")
+  const BidderPosition = BidderPositions.__get__("BidderPosition")
+
+  let gravity
+  let gravity2
+
   beforeEach(() => {
-    saleArtworkRootLoader = jest.fn()
-    saleArtworkRootLoader
-      .mockReturnValueOnce(
-        Promise.resolve({
-          id: "foo",
-          _id: 0,
-          artwork: { title: "Andy Warhol Skull" },
-          sale_id: "else-auction",
-        })
-      )
-      .mockReturnValueOnce(
-        Promise.resolve({
-          id: "bar",
-          _id: 1,
-          artwork: { title: "Andy Warhol Skull" },
-          highest_bid: { id: "hb2" },
-          sale_id: "bar-auction",
-        })
-      )
-      .mockReturnValueOnce(
-        Promise.resolve({
-          id: "baz",
-          _id: 2,
-          artwork: { title: "Andy Warhol Skull" },
-          sale_id: "else-auction",
-        })
-      )
+    gravity = sinon.stub()
+    gravity2 = sinon.stub()
+    gravity.with = sinon.stub().returns(gravity)
 
-    const saleLoader = jest.fn()
-    saleLoader
-      .mockReturnValueOnce(
-        Promise.resolve({
-          id: "else-auction",
-          auction_state: "open",
-        })
-      )
-      .mockReturnValueOnce(
-        Promise.resolve({
-          id: "bar-auction",
-          auction_state: "closed",
-        })
-      )
-      .mockReturnValueOnce(
-        Promise.resolve({
-          id: "else-auction",
-          auction_state: "open",
-        })
-      )
-
-    rootValue = {
-      saleLoader,
-      saleArtworkRootLoader,
-      meBidderPositionsLoader: sinon.stub().returns(
+    gravity
+      // Bidder positions fetch
+      .onCall(0)
+      .returns(
         Promise.resolve([
           {
             id: 0,
             max_bid_amount_cents: 1000000,
-            sale_artwork_id: 0,
+            sale_artwork_id: "foo",
             highest_bid: null,
           },
           {
             id: 1,
             max_bid_amount_cents: 1000000,
-            sale_artwork_id: 0,
+            sale_artwork_id: "foo",
             highest_bid: { id: "hb1" },
           },
           {
             id: 2,
             max_bid_amount_cents: 1000000,
-            sale_artwork_id: 1,
+            sale_artwork_id: "bar",
             highest_bid: { id: "hb2" },
           },
           {
             id: 3,
             max_bid_amount_cents: 1000000,
-            sale_artwork_id: 0,
+            sale_artwork_id: "foo",
             highest_bid: { id: "hb13" },
           },
           {
             id: 4,
             max_bid_amount_cents: 1000000,
-            sale_artwork_id: 2,
+            sale_artwork_id: "baz",
             highest_bid: { id: "hb4" },
           },
         ])
-      ),
-    }
+      )
+    // Sale artworks fetches
+    times(3, i => {
+      let id
+      if (i === 0) id = "foo"
+      if (i === 1) id = "bar"
+      if (i === 2) id = "baz"
+      gravity.onCall(i + 1).returns(
+        Promise.resolve({
+          id,
+          _id: id,
+          artwork: { title: "Andy Warhol Skull" },
+          sale_id: i === 1 ? "bar-auction" : "else-auction",
+        })
+      )
+    })
+    // Sale fetches
+    times(3, i => {
+      gravity.onCall(i + 4).returns(
+        Promise.resolve({
+          id: i === 1 ? "bar-auction" : "else-auction",
+          auction_state: i === 1 ? "closed" : "open",
+        })
+      )
+    })
+    // Sale artwork fetch used in `is_winning` property
+    gravity2.returns(
+      Promise.resolve({
+        id: "456",
+        highest_bid: { id: "hb2" },
+        artwork: { title: "Andy Warhol Skull" },
+      })
+    )
+
+    BidderPositions.__Rewire__("gravity", gravity)
+    BidderPosition.__Rewire__("gravity", gravity2)
+  })
+
+  afterEach(() => {
+    BidderPositions.__ResetDependency__("gravity")
+    BidderPosition.__ResetDependency__("gravity")
   })
 
   it("returns all bidder positions", () => {
@@ -106,7 +106,7 @@ describe("Me type", () => {
         }
       }
     `
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query).then(data => {
       expect(map(data.me.bidder_positions, "id").join("")).toEqual("01234")
     })
   })
@@ -121,7 +121,7 @@ describe("Me type", () => {
         }
       }
     `
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query).then(data => {
       expect(map(data.me.bidder_positions, "id").join("")).toEqual("14")
     })
   })
@@ -136,28 +136,8 @@ describe("Me type", () => {
         }
       }
     `
-    rootValue.saleArtworkRootLoader = jest
-      .fn()
-      .mockReturnValueOnce(Promise.resolve(new Error("Forbidden")))
-      .mockReturnValueOnce(
-        Promise.resolve({
-          id: "bar",
-          _id: 1,
-          artwork: { title: "Andy Warhol Skull" },
-          highest_bid: { id: "hb2" },
-          sale_id: "bar-auction",
-        })
-      )
-      .mockReturnValueOnce(
-        Promise.resolve({
-          id: "baz",
-          _id: 0,
-          artwork: { title: "Andy Warhol Skull" },
-          sale_id: "else-auction",
-        })
-      )
-
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    gravity.onCall(3).returns(Promise.reject(new Error("Forbidden")))
+    return runAuthenticatedQuery(query).then(data => {
       expect(map(data.me.bidder_positions, "id").join("")).toEqual("1")
     })
   })
@@ -173,24 +153,7 @@ describe("Me type", () => {
         }
       }
     `
-
-    rootValue.saleArtworkRootLoader = jest
-      .fn()
-      .mockReturnValueOnce(Promise.resolve({}))
-      .mockReturnValueOnce(Promise.resolve({}))
-      .mockReturnValueOnce(
-        Promise.resolve({
-          id: "bar",
-          _id: 1,
-          artwork: { title: "Andy Warhol Skull" },
-          highest_bid: { id: "hb2" },
-          sale_id: "bar-auction",
-        })
-      )
-      .mockReturnValueOnce(Promise.resolve({}))
-      .mockReturnValueOnce(Promise.resolve({}))
-
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query).then(data => {
       expect(data.me.bidder_positions[2].is_winning).toEqual(true)
     })
   })

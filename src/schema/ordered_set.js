@@ -1,3 +1,4 @@
+import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import ItemType from "./item"
 import { IDFields } from "./object_identification"
@@ -24,13 +25,8 @@ const OrderedSetType = new GraphQLObjectType({
     },
     items: {
       type: new GraphQLList(ItemType),
-      resolve: (
-        { id, item_type },
-        options,
-        request,
-        { rootValue: { setItemsLoader } }
-      ) => {
-        return setItemsLoader(id).then(items => {
+      resolve: ({ id, item_type }) => {
+        return gravity(`set/${id}/items`).then(items => {
           return items.map(item => {
             item.item_type = item_type // eslint-disable-line no-param-reassign
             return item
@@ -53,8 +49,7 @@ const OrderedSet = {
       description: "The ID of the OrderedSet",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { setLoader } }) =>
-    setLoader(id),
+  resolve: (root, { id }) => gravity(`set/${id}`),
 }
 
 export default OrderedSet

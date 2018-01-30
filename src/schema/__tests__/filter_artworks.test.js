@@ -1,35 +1,44 @@
+import schema from "schema"
 import { runQuery } from "test/utils"
 import { toGlobalId } from "graphql-relay"
 
 describe("Filter Artworks", () => {
-  let rootValue = null
   describe(`Does not pass along the medium param if it is "*"`, () => {
+    const Gene = schema.__get__("Gene")
+    const filterArtworks = Gene.__get__("filterArtworks")
+
     beforeEach(() => {
-      const gene = { id: "500-1000-ce", browseable: true, family: "" }
-
-      rootValue = {
-        filterArtworksLoader: sinon
-          .stub()
-          .withArgs("filter/artworks", {
-            gene_id: "500-1000-ce",
-            aggregations: ["total"],
-            for_sale: true,
+      const gravity = sinon.stub()
+      gravity.with = sinon.stub().returns(gravity)
+      // This is the key to the test
+      // the 2nd parameter _should not_ include the mediums option, even though it's included below
+      gravity
+        .withArgs("filter/artworks", {
+          gene_id: "500-1000-ce",
+          aggregations: ["total"],
+          for_sale: true,
+        })
+        .returns(
+          Promise.resolve({
+            hits: [
+              {
+                id: "oseberg-norway-queens-ship",
+                title: "Queen's Ship",
+                artists: [],
+              },
+            ],
+            aggregations: [],
           })
-          .returns(
-            Promise.resolve({
-              hits: [
-                {
-                  id: "oseberg-norway-queens-ship",
-                  title: "Queen's Ship",
-                  artists: [],
-                },
-              ],
-              aggregations: [],
-            })
-          ),
+        )
 
-        geneLoader: sinon.stub().returns(Promise.resolve(gene)),
-      }
+      const gene = { id: "500-1000-ce", browseable: true, family: "" }
+      Gene.__Rewire__("gravity", sinon.stub().returns(Promise.resolve(gene)))
+      filterArtworks.__Rewire__("gravity", gravity)
+    })
+
+    afterEach(() => {
+      filterArtworks.__ResetDependency__("gravity")
+      Gene.__ResetDependency__("gravity")
     })
 
     it("returns filtered artworks, and makes a gravity call", () => {
@@ -46,7 +55,7 @@ describe("Filter Artworks", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
+      return runQuery(query).then(
         ({ gene: { filtered_artworks: { hits } } }) => {
           expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
         }
@@ -73,7 +82,7 @@ describe("Filter Artworks", () => {
         "FilterArtworks",
         JSON.stringify(filterOptions)
       )
-      return runQuery(query, rootValue).then(
+      return runQuery(query).then(
         ({ gene: { filtered_artworks: { __id } } }) => {
           expect(__id).toEqual(expectedId)
         }
@@ -98,7 +107,7 @@ describe("Filter Artworks", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(({ node: { __id } }) => {
+      return runQuery(query).then(({ node: { __id } }) => {
         expect(__id).toEqual(generatedId)
       })
     })

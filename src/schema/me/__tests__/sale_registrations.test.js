@@ -1,7 +1,21 @@
+import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("SaleRegistrations", () => {
+    const gravity = sinon.stub()
+    const Me = schema.__get__("Me")
+    const SaleRegistrations = Me.__get__("SaleRegistrations")
+
+    beforeEach(() => {
+      gravity.with = sinon.stub().returns(gravity)
+      SaleRegistrations.__Rewire__("gravity", gravity)
+    })
+
+    afterEach(() => {
+      SaleRegistrations.__ResetDependency__("gravity")
+    })
+
     it("returns the sales along with the registration status", () => {
       const query = `
         {
@@ -15,13 +29,11 @@ describe("Me", () => {
           }
         }
       `
-      const meBiddersLoader = jest.fn()
-      meBiddersLoader
-        .mockReturnValueOnce(Promise.resolve([]))
-        .mockReturnValueOnce(Promise.resolve([{ id: "bidder-id" }]))
 
-      const rootValue = {
-        salesLoader: sinon.stub().returns(
+      gravity
+        // Sale fetch
+        .onCall(0)
+        .returns(
           Promise.resolve([
             {
               name: "Foo Sale",
@@ -34,11 +46,14 @@ describe("Me", () => {
               is_auction: true,
             },
           ])
-        ),
-        meBiddersLoader,
-      }
+        )
+        // Registration fetches
+        .onCall(1)
+        .returns(Promise.resolve([]))
+        .onCall(2)
+        .returns(Promise.resolve([{ id: "bidder-id" }]))
 
-      return runAuthenticatedQuery(query, rootValue).then(
+      return runAuthenticatedQuery(query).then(
         ({ me: { sale_registrations } }) => {
           expect(sale_registrations).toEqual([
             { is_registered: false, sale: { name: "Foo Sale" } },

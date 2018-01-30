@@ -1,16 +1,33 @@
+import schema from "schema"
 import { runQuery } from "test/utils"
 
 describe("Fair type", () => {
-  const fair = {
-    id: "the-armory-show-2017",
-    name: "The Armory Show 2017",
-    organizer: {
-      profile_id: "the-armory-show",
-    },
-    mobile_image: {
-      image_url: "circle-image.jpg",
-    },
-  }
+  const Fair = schema.__get__("Fair")
+  let gravity = null
+  let fairData = null
+
+  beforeEach(() => {
+    gravity = sinon.stub()
+
+    fairData = {
+      id: "the-armory-show-2017",
+      name: "The Armory Show 2017",
+      organizer: {
+        profile_id: "the-armory-show",
+      },
+      mobile_image: {
+        image_url: "circle-image.jpg",
+      },
+    }
+
+    gravity.returns(Promise.resolve(fairData))
+
+    Fair.__Rewire__("gravity", gravity)
+  })
+
+  afterEach(() => {
+    Fair.__ResetDependency__("gravity")
+  })
 
   const query = `
     {
@@ -30,20 +47,16 @@ describe("Fair type", () => {
     }
   `
 
-  const rootValue = {
-    fairLoader: sinon.stub().returns(Promise.resolve(fair)),
-  }
-
   it("is_publically_visible returns true when profile is published", () => {
-    const profile = {
+    const profileData = {
       id: "the-armory-show",
       published: true,
       private: false,
     }
 
-    rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
+    gravity.onCall(1).returns(Promise.resolve(profileData))
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -63,15 +76,15 @@ describe("Fair type", () => {
   })
 
   it("is_publically_visible returns false when profile is not published", () => {
-    const profile = {
+    const unpublishedProfileData = {
       id: "context",
       published: false,
       private: false,
     }
 
-    rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
+    gravity.onCall(1).returns(Promise.resolve(unpublishedProfileData))
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -91,15 +104,15 @@ describe("Fair type", () => {
   })
 
   it("is_publically_visible returns false when profile is not published", () => {
-    const profile = {
+    const privateProfileData = {
       id: "context",
       published: false,
       private: false,
     }
 
-    rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
+    gravity.onCall(1).returns(Promise.resolve(privateProfileData))
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",

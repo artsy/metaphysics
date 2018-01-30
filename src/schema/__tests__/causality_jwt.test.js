@@ -1,26 +1,31 @@
 import jwt from "jwt-simple"
 import { omit } from "lodash"
+import schema from "schema"
 import { runQuery, runAuthenticatedQuery } from "test/utils"
 
 const { HMAC_SECRET } = process.env
 
 describe("CausalityJWT", () => {
-  let rootValue
+  const CausalityJWT = schema.__get__("CausalityJWT")
+
+  let gravity
 
   beforeEach(() => {
-    const me = {
-      _id: "craig",
-      paddle_number: "123",
-      type: "User",
-    }
-
-    const sale = { _id: "foo", name: "Foo sale", id: "slug" }
-
-    rootValue = {
-      saleLoader: sinon.stub().returns(Promise.resolve(sale)),
-      meLoader: sinon.stub().returns(Promise.resolve(me)),
-      accessToken: "token",
-      meBiddersLoader: sinon.stub().returns(
+    gravity = sinon.stub()
+    gravity.with = sinon.stub().returns(gravity)
+    gravity
+      .onCall(0)
+      .returns(Promise.resolve({ _id: "foo", name: "Foo sale", id: "slug" }))
+      .onCall(1)
+      .returns(
+        Promise.resolve({
+          _id: "craig",
+          paddle_number: "123",
+          type: "User",
+        })
+      )
+      .onCall(2)
+      .returns(
         Promise.resolve([
           {
             id: "bidder1",
@@ -28,15 +33,19 @@ describe("CausalityJWT", () => {
             qualified_for_bidding: true,
           },
         ])
-      ),
-    }
+      )
+    CausalityJWT.__Rewire__("gravity", gravity)
+  })
+
+  afterEach(() => {
+    CausalityJWT.__ResetDependency__("gravity")
   })
 
   it("encodes a bidder JWT for logged in registered users", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "foo")
     }`
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "bidder",
@@ -51,7 +60,7 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "slug")
     }`
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "bidder",
@@ -66,8 +75,8 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "slug")
     }`
-    delete rootValue.accessToken
-    return runQuery(query, rootValue).then(data => {
+    gravity.onCall(0).returns(Promise.resolve({ _id: "foo" }))
+    return runQuery(query).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
@@ -82,8 +91,8 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "bar")
     }`
-    rootValue.meBiddersLoader = sinon.stub().returns(Promise.resolve([]))
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    gravity.onCall(2).returns(Promise.resolve([]))
+    return runAuthenticatedQuery(query).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
@@ -98,7 +107,7 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "foo")
     }`
-    rootValue.meBiddersLoader = sinon.stub().returns(
+    gravity.onCall(2).returns(
       Promise.resolve([
         {
           id: "bidder1",
@@ -107,7 +116,7 @@ describe("CausalityJWT", () => {
         },
       ])
     )
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
@@ -123,7 +132,7 @@ describe("CausalityJWT", () => {
       causality_jwt(role: OPERATOR, sale_id: "foo")
     }`
 
-    return runAuthenticatedQuery(query, rootValue).catch(e => {
+    return runAuthenticatedQuery(query).catch(e => {
       expect(e.message).toEqual("Unauthorized to be operator")
     })
   })
