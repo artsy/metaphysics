@@ -44,9 +44,6 @@ export const filterSaleArtworksArgs = {
   sale_id: {
     type: GraphQLID,
   },
-  live_sale: {
-    type: GraphQLBoolean,
-  },
   size: {
     type: GraphQLInt,
   },

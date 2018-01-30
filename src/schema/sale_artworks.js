@@ -9,7 +9,7 @@ import {
 } from "schema/filter_sale_artworks"
 
 const DEFAULTS = {
-  // aggregations: ["total"],
+  aggregations: ["total"],
   first: 10,
 }
 
@@ -34,15 +34,26 @@ export default {
   ) => {
     const relayOptions = { ...DEFAULTS, ...options }
     const params = parseRelayOptions(relayOptions)
-    let fetchLoader = saleArtworksFilterLoader
+    let response
 
     if (options.live_sale) {
-      fetchLoader = saleArtworksAllLoader
+      delete params.page
+      response = await saleArtworksAllLoader(params)
+
+      // Piggyback on existing ES API. TODO: This could perhaps be unified
+      // better, but quickfix.
+      response = {
+        hits: response,
+        aggregations: {
+          total: {
+            value: 10,
+          },
+        },
+      }
+    } else {
+      response = await saleArtworksFilterLoader(params)
     }
 
-    const response = await fetchLoader(params)
-
-    // const response = await saleArtworksFilterLoader(params)
     const data = {
       ...response,
       ...connectionFromArraySlice(response.hits, relayOptions, {

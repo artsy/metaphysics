@@ -52,7 +52,6 @@ export default requestIDs => {
     ),
     saleArtworkRootLoader: gravityLoader(id => `sale_artwork/${id}`),
     saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`),
-    saleArtworksAllLoader: gravityLoader("sale_artworks"),
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     setLoader: gravityLoader(id => `set/${id}`),
     setItemsLoader: gravityLoader(id => `set/${id}/items`),
