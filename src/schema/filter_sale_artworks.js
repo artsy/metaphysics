@@ -32,6 +32,9 @@ export const filterSaleArtworksArgs = {
   live_sale: {
     type: GraphQLBoolean,
   },
+  is_auction: {
+    type: GraphQLBoolean,
+  },
   gene_ids: {
     type: new GraphQLList(GraphQLString),
   },
