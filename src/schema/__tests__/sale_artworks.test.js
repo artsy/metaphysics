@@ -10,7 +10,7 @@ describe("Sale Artworks", () => {
     })
   }
 
-  it("pulls from /sale_artworks endpoint if `live_sale=true` and `include_lots_by_followed_artists=true`", async () => {
+  it("pulls from /sale_artworks if `live_sale, include_lots_by_followed_artists, is_auction to true` ", async () => {
     const hits = _.fill(Array(10), { id: "foo" })
     const totalCount = hits.length * 2
     const gravityResponse = {
@@ -24,6 +24,7 @@ describe("Sale Artworks", () => {
         sale_artworks(
           live_sale: true
           include_artworks_by_followed_artists: true
+          is_auction: true
         ) {
           counts {
             total
