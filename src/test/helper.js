@@ -3,11 +3,6 @@
 import dotenv from "dotenv"
 dotenv.config({ path: ".env.test" })
 
-// Because we use `__id` as a UUID identifier, then
-// we have to tell GraphQL that we don't need a
-// warning about our usage of this.
-process.env.GRAPHQL_NO_NAME_WARNING = true
-
 // Set up our globals
 import sinon from "sinon"
 global.sinon = sinon

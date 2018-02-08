@@ -129,6 +129,7 @@ const convectionMutations = enableSchemaStitching
   }
 
 const schema = new GraphQLSchema({
+  allowedLegacyNames: ["__id"],
   mutation: new GraphQLObjectType({
     name: "Mutation",
     fields: {
