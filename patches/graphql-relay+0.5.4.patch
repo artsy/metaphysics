@@ -1,7 +1,7 @@
 patch-package
 --- a/node_modules/graphql-relay/lib/connection/arrayconnection.js
 +++ b/node_modules/graphql-relay/lib/connection/arrayconnection.js
-@@ -61,7 +61,8 @@ function connectionFromArraySlice(arraySlice, args, meta) {
+@@ -60,7 +60,8 @@ function connectionFromArraySlice(arraySlice, args, meta) {
        first = args.first,
        last = args.last;
    var sliceStart = meta.sliceStart,
@@ -11,7 +11,7 @@ patch-package
  
    var sliceEnd = sliceStart + arraySlice.length;
    var beforeOffset = getOffsetWithDefault(before, arrayLength);
-@@ -88,10 +89,15 @@ function connectionFromArraySlice(arraySlice, args, meta) {
+@@ -87,10 +88,15 @@ function connectionFromArraySlice(arraySlice, args, meta) {
    var slice = arraySlice.slice(Math.max(startOffset - sliceStart, 0), arraySlice.length - (sliceEnd - endOffset));
  
    var edges = slice.map(function (value, index) {
