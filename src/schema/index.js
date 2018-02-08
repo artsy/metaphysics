@@ -123,12 +123,13 @@ const Viewer = {
 const convectionMutations = enableSchemaStitching
   ? {}
   : {
-    createConsignmentSubmission: CreateSubmissionMutation,
-    updateConsignmentSubmission: UpdateSubmissionMutation,
-    addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
-  }
+      createConsignmentSubmission: CreateSubmissionMutation,
+      updateConsignmentSubmission: UpdateSubmissionMutation,
+      addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
+    }
 
 const schema = new GraphQLSchema({
+  allowedLegacyNames: ["__id"],
   mutation: new GraphQLObjectType({
     name: "Mutation",
     fields: {
