@@ -199,8 +199,25 @@ export const ConversationFields = {
   last_message: {
     type: GraphQLString,
     description: "This is a snippet of text from the last message.",
-    resolve: conversation => {
-      return get(conversation, "_embedded.last_message.snippet")
+    resolve: (
+      conversation,
+      options,
+      request,
+      { rootValue: { conversationMessagesLoader } }
+    ) => {
+      // return ""
+
+      return conversationMessagesLoader({
+        conversation_id: conversation.id,
+        "expand[]": "deliveries",
+      }).then(({ message_details }) => {
+        const relevantDelivery = message_details.find(
+          m =>
+            m.from_email === conversation.from_email ||
+            m.deliveries.find(d => d.email === conversation.from_email)
+        )
+        return relevantDelivery.snippet
+      })
     },
   },
   last_message_at: date,
