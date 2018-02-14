@@ -182,6 +182,13 @@ const PartnerShowType = new GraphQLObjectType({
         return gravity(`partner_show/${id}/images`, options).then(Image.resolve)
       },
     },
+    is_online_exclusive: {
+      type: GraphQLBoolean,
+      description: "Flag showing if show is online exclusive or not.",
+      resolve: ({ location, fair_location, partner_city }) => {
+        return !location && !fair_location && !partner_city
+      },
+    },
     is_active: {
       type: GraphQLBoolean,
       description:

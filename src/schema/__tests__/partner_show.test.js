@@ -35,6 +35,73 @@ describe("PartnerShow type", () => {
     PartnerShow.__ResetDependency__("total")
   })
 
+  it("include false is_online_exclusive flag for shows with location", () => {
+    showData.location = "test location"
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          is_online_exclusive
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        partner_show: {
+          is_online_exclusive: false,
+        },
+      })
+    })
+  })
+  it("include false is_online_exclusive flag for shows with fair_location", () => {
+    showData.fair_location = "test location"
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          is_online_exclusive
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        partner_show: {
+          is_online_exclusive: false,
+        },
+      })
+    })
+  })
+  it("include false is_online_exclusive flag for shows with partner_city", () => {
+    showData.partner_city = "test location"
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          is_online_exclusive
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        partner_show: {
+          is_online_exclusive: false,
+        },
+      })
+    })
+  })
+  it("include true is_online_exclusive flag for shows without any location", () => {
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          is_online_exclusive
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        partner_show: {
+          is_online_exclusive: true,
+        },
+      })
+    })
+  })
   it("doesn't return a show that’s not displayable", () => {
     showData.displayable = false
     const query = `
