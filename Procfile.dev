@@ -1,2 +1,2 @@
 web: node_modules/.bin/babel-node --inspect index.js
-memcached: memcached -p 11211
+redis: redis-server redis.conf
