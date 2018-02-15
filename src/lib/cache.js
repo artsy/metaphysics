@@ -51,8 +51,8 @@ function createRedisClient() {
       return Math.min(options.attempt * 100, 3000)
     },
   })
-  if (url.auth) {
-    client.auth(url.auth.split(":")[1])
+  if (redisURL.auth) {
+    client.auth(redisURL.auth.split(":")[1])
   }
   client.on("error", error)
   VerboseEvents.forEach(event => {
