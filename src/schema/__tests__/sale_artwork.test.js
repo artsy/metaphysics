@@ -113,8 +113,11 @@ describe("SaleArtwork type", () => {
         incrementsLoader: () => Promise.resolve(),
       }
 
-      expect(execute(query, gravityResponse, rootValue)).rejects.toContain(
-        "Missing increment strategy"
+      await expect(
+        execute(query, gravityResponse, rootValue)
+      ).rejects.toHaveProperty(
+        "message",
+        "schema/sale_artwork - Missing increment strategy"
       )
     })
 
