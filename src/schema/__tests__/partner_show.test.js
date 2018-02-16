@@ -35,69 +35,69 @@ describe("PartnerShow type", () => {
     PartnerShow.__ResetDependency__("total")
   })
 
-  it("include false is_online_exclusive flag for shows with location", () => {
+  it("include true has_location flag for shows with location", () => {
     showData.location = "test location"
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
-          is_online_exclusive
+          has_location
         }
       }
     `
     return runQuery(query).then(data => {
       expect(data).toEqual({
         partner_show: {
-          is_online_exclusive: false,
+          has_location: true,
         },
       })
     })
   })
-  it("include false is_online_exclusive flag for shows with fair_location", () => {
-    showData.fair_location = "test location"
+  it("include true has_location flag for shows with fair_location", () => {
+    showData.fair = "test location"
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
-          is_online_exclusive
+          has_location
         }
       }
     `
     return runQuery(query).then(data => {
       expect(data).toEqual({
         partner_show: {
-          is_online_exclusive: false,
+          has_location: true,
         },
       })
     })
   })
-  it("include false is_online_exclusive flag for shows with partner_city", () => {
+  it("include true has_location flag for shows with partner_city", () => {
     showData.partner_city = "test location"
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
-          is_online_exclusive
+          has_location
         }
       }
     `
     return runQuery(query).then(data => {
       expect(data).toEqual({
         partner_show: {
-          is_online_exclusive: false,
+          has_location: true,
         },
       })
     })
   })
-  it("include true is_online_exclusive flag for shows without any location", () => {
+  it("include false has_location flag for shows without any location", () => {
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
-          is_online_exclusive
+          has_location
         }
       }
     `
     return runQuery(query).then(data => {
       expect(data).toEqual({
         partner_show: {
-          is_online_exclusive: true,
+          has_location: false,
         },
       })
     })
