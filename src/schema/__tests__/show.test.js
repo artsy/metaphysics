@@ -50,6 +50,73 @@ describe("Show type", () => {
     Show.__ResetDependency__("total")
   })
 
+  it("include false is_online_exclusive flag for shows with location", () => {
+    showData.location = "test location"
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          is_online_exclusive
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          is_online_exclusive: false,
+        },
+      })
+    })
+  })
+  it("include false is_online_exclusive flag for shows with fair_location", () => {
+    showData.fair_location = "test location"
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          is_online_exclusive
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          is_online_exclusive: false,
+        },
+      })
+    })
+  })
+  it("include false is_online_exclusive flag for shows with partner_city", () => {
+    showData.partner_city = "test location"
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          is_online_exclusive
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          is_online_exclusive: false,
+        },
+      })
+    })
+  })
+  it("include true is_online_exclusive flag for shows without any location", () => {
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          is_online_exclusive
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          is_online_exclusive: true,
+        },
+      })
+    })
+  })
   it("doesn't return a show that’s neither displayable nor a reference", () => {
     showData.displayable = false
     showData.is_reference = false
