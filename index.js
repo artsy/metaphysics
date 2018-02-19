@@ -8,6 +8,7 @@ import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
 
 const {
+  ENABLE_ASYNC_STACK_TRACES,
   GRAVITY_API_URL,
   GRAVITY_ID,
   GRAVITY_SECRET,
@@ -17,10 +18,17 @@ const {
 
 global.Promise = Bluebird
 
-const app = express()
 const port = PORT || 3000
 const isDevelopment = NODE_ENV === "development"
 const isProduction = NODE_ENV === "production"
+const enableAsyncStackTraces = ENABLE_ASYNC_STACK_TRACES === "true"
+
+if (enableAsyncStackTraces) {
+  console.warn("[FEATURE] Enabling long async stack traces") // eslint-disable-line
+  require("longjohn")
+}
+
+const app = express()
 
 xapp.on("error", err => {
   error(err)
