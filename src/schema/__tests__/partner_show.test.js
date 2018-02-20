@@ -35,6 +35,73 @@ describe("PartnerShow type", () => {
     PartnerShow.__ResetDependency__("total")
   })
 
+  it("include true has_location flag for shows with location", () => {
+    showData.location = "test location"
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          has_location
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        partner_show: {
+          has_location: true,
+        },
+      })
+    })
+  })
+  it("include true has_location flag for shows with fair_location", () => {
+    showData.fair = "test location"
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          has_location
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        partner_show: {
+          has_location: true,
+        },
+      })
+    })
+  })
+  it("include true has_location flag for shows with partner_city", () => {
+    showData.partner_city = "test location"
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          has_location
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        partner_show: {
+          has_location: true,
+        },
+      })
+    })
+  })
+  it("include false has_location flag for shows without any location", () => {
+    const query = `
+      {
+        partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
+          has_location
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        partner_show: {
+          has_location: false,
+        },
+      })
+    })
+  })
   it("doesn't return a show that’s not displayable", () => {
     showData.displayable = false
     const query = `

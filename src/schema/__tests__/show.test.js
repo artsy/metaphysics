@@ -50,6 +50,73 @@ describe("Show type", () => {
     Show.__ResetDependency__("total")
   })
 
+  it("include true has_location flag for shows with location", () => {
+    showData.location = "test location"
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          has_location
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          has_location: true,
+        },
+      })
+    })
+  })
+  it("include true has_location flag for shows with fair_location", () => {
+    showData.fair = "test location"
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          has_location
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          has_location: true,
+        },
+      })
+    })
+  })
+  it("include true has_location flag for shows with partner_city", () => {
+    showData.partner_city = "test location"
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          has_location
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          has_location: true,
+        },
+      })
+    })
+  })
+  it("include false has_location flag for shows without any location", () => {
+    const query = `
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          has_location
+        }
+      }
+    `
+    return runQuery(query).then(data => {
+      expect(data).toEqual({
+        show: {
+          has_location: false,
+        },
+      })
+    })
+  })
   it("doesn't return a show that’s neither displayable nor a reference", () => {
     showData.displayable = false
     showData.is_reference = false
