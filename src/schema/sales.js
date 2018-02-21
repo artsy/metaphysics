@@ -1,8 +1,9 @@
 // @ts-check
+import { clone } from "lodash"
 import gravity from "lib/loaders/legacy/gravity"
 import Sale from "./sale/index"
 import SaleSorts from "./sale/sorts"
-import { GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
+import { GraphQLList, GraphQLInt, GraphQLBoolean, GraphQLString } from "graphql"
 
 const Sales = {
   type: new GraphQLList(Sale.type),
@@ -12,6 +13,13 @@ const Sales = {
       description: "Limit by auction.",
       type: GraphQLBoolean,
       defaultValue: true,
+    },
+    ids: {
+      type: new GraphQLList(GraphQLString),
+      description: `
+        Only return sales matching specified ids.
+        Accepts list of ids.
+      `,
     },
     live: {
       description: "Limit by live status.",
@@ -28,7 +36,15 @@ const Sales = {
     },
     sort: SaleSorts,
   },
-  resolve: (root, options) => gravity("sales", options),
+  resolve: (root, options) => {
+    const cleanedOptions = clone(options)
+    // Rename ids plural to id to match Gravity
+    if (options.ids) {
+      cleanedOptions.id = options.ids
+      delete cleanedOptions.ids
+    }
+    return gravity("sales", cleanedOptions)
+  },
 }
 
 export default Sales
