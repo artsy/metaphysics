@@ -473,6 +473,7 @@ export const ArtistType = new GraphQLObjectType({
             sort: "-relevance,-start_at",
             is_reference: true,
             visible_to_public: false,
+            has_location: true,
             size: options.size,
           }).then(shows => showsWithBLacklistedPartnersRemoved(shows))
         },
