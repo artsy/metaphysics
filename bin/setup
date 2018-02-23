@@ -38,7 +38,7 @@ if ! command -v yarn > /dev/null; then
   exit -1
 fi
 
-if ! command -v redis > /dev/null; then
+if ! command -v redis-server > /dev/null; then
   printf "${CLEAR_LINE}${RED}  You must install redis before setup can continue${NO_COLOR}\n"
   printf "    You should:\n"
   printf "      $ brew install redis\n"
