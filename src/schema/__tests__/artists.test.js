@@ -30,12 +30,9 @@ describe("Artists", () => {
   it("returns a list of artists matching array of ids", async () => {
     const artistsLoader = ({ ids }) => {
       if (ids) {
-        return Promise.resolve([
-          {
-            _id: "52c721e5b202a3edf1000072",
-            name: "Han Myung-Ok",
-          },
-        ])
+        return Promise.resolve(
+          ids.map(_id => ({ _id }))
+        )
       }
       throw new Error("Unexpected invocation")
     }
