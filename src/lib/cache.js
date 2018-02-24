@@ -101,7 +101,7 @@ export default {
 
   delete: key =>
     new Promise((resolve, reject) =>
-      client.delete(key, (err, response) => {
+      client.del(key, (err, response) => {
         if (err) return reject(err)
         resolve(response)
       })
