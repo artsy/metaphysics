@@ -17,6 +17,7 @@ function createMockClient() {
     store,
     get: (key, cb) => cb(null, store[key]),
     set: (key, data) => (store[key] = data),
+    del: key => delete store[key],
   }
 }
 
