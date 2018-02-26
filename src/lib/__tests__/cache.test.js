@@ -38,6 +38,17 @@ describe("Cache", () => {
       })
     })
 
+    describe("#delete", () => {
+      beforeEach(() => cache.set("get_foo", { bar: "baz" }))
+
+      it("deletes the data", () => {
+        cache.delete("get_foo")
+        return cache.get("get_foo").catch(e => {
+          expect(e.message).toEqual("cache#get did not return `data`")
+        })
+      })
+    })
+
     describe("#set", () => {
       describe("with a plain Object", () => {
         it("sets the cache and includes a timestamp", done => {
