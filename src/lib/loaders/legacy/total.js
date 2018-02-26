@@ -1,5 +1,5 @@
 import { assign, omit } from "lodash"
-import { toKey } from "lib/helpers"
+import { toKey, isExisty } from "lib/helpers"
 import qs from "qs"
 import url from "url"
 import gravity from "lib/apis/gravity"
@@ -21,6 +21,26 @@ export const total = (path, accessToken, options = {}) => {
       total: parseInt(headers["x-total-count"] || 0, 10),
     },
   }))
+}
+
+export const totalViaLoader = (loader, loaderOptions, apiOptions = {}) => {
+  const countOptions = assign(
+    {},
+    {
+      size: 0,
+      total_count: true,
+    },
+    apiOptions
+  )
+  let fetch = null
+  if (isExisty(loaderOptions)) {
+    fetch = loader(loaderOptions, countOptions)
+  } else {
+    fetch = loader(countOptions)
+  }
+  return fetch.then(({ headers }) => {
+    return parseInt(headers["x-total-count"] || 0, 10)
+  })
 }
 
 export const totalLoader = httpLoader(total)

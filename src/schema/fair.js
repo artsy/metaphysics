@@ -1,6 +1,4 @@
 import { omit } from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
-import total from "lib/loaders/legacy/total"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
@@ -20,6 +18,7 @@ import {
   GraphQLNonNull,
   GraphQLEnumType,
 } from "graphql"
+import { totalViaLoader } from "../lib/loaders/legacy/total"
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",
@@ -181,14 +180,18 @@ const FairType = new GraphQLObjectType({
           defaultValue: "-featured",
         },
       }),
-      resolve: ({ id }, options) => {
-        const path = `fair/${id}/shows`
+      resolve: (
+        { id },
+        options,
+        request,
+        { rootValue: { fairBoothsLoader } }
+      ) => {
         const gravityOptions = omit(parseRelayOptions(options), ["page"])
 
         return Promise.all([
-          total(path, Object.assign({}, gravityOptions, { size: 0 })),
-          gravity(path, gravityOptions),
-        ]).then(([count, { results }]) => {
+          totalViaLoader(fairBoothsLoader, id, gravityOptions),
+          fairBoothsLoader(id, gravityOptions),
+        ]).then(([count, { body: { results } }]) => {
           return connectionFromArraySlice(results, options, {
             arrayLength: count,
             sliceStart: gravityOptions.offset,
