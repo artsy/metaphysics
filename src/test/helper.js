@@ -1,7 +1,11 @@
 // Do not require the use of node-foreman during testing
 
+import fs from "fs"
 import dotenv from "dotenv"
-dotenv.config({ path: ".env.test" })
+
+if (fs.existsSync(".env.test")) {
+  dotenv.config({ path: ".env.test" })
+}
 
 // Set up our globals
 import sinon from "sinon"
