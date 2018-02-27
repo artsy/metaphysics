@@ -1,16 +1,11 @@
 import moment from "moment"
-import schema from "schema"
 import { runQuery } from "test/utils"
 
 describe("PartnerShow type", () => {
-  const PartnerShow = schema.__get__("PartnerShow")
-  let total = null
   let showData = null
   let rootValue = null
 
   beforeEach(() => {
-    total = sinon.stub()
-
     showData = {
       id: "new-museum-1-2015-triennial-surround-audience",
       start_at: "2015-02-25T12:00:00+00:00",
@@ -27,11 +22,6 @@ describe("PartnerShow type", () => {
     rootValue = {
       showLoader: sinon.stub().returns(Promise.resolve(showData)),
     }
-    PartnerShow.__Rewire__("total", total)
-  })
-
-  afterEach(() => {
-    PartnerShow.__ResetDependency__("total")
   })
 
   it("include true has_location flag for shows with location", () => {
@@ -192,7 +182,9 @@ describe("PartnerShow type", () => {
     })
   })
   it("includes the total number of artworks", () => {
-    total.onCall(0).returns(Promise.resolve(42))
+    rootValue.partnerShowArtworksLoader = sinon
+      .stub()
+      .returns(Promise.resolve({ headers: { "x-total-count": 42 } }))
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -233,7 +225,9 @@ describe("PartnerShow type", () => {
     })
   })
   it("includes the number of artworks by a specific artist", () => {
-    total.onCall(0).returns(Promise.resolve(2))
+    rootValue.partnerShowArtworksLoader = sinon
+      .stub()
+      .returns(Promise.resolve({ headers: { "x-total-count": 2 } }))
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {

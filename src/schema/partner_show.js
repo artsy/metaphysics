@@ -1,7 +1,6 @@
 import moment from "moment"
 import { isExisty, exclude } from "lib/helpers"
 import { find, has } from "lodash"
-import total from "lib/loaders/legacy/total"
 import HTTPError from "lib/http_error"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
@@ -25,6 +24,7 @@ import {
   GraphQLBoolean,
 } from "graphql"
 import { allViaLoader } from "../lib/all"
+import { totalViaLoader } from "../lib/loaders/legacy/total"
 
 const kind = ({ artists, fair }) => {
   if (isExisty(fair)) return "fair"
@@ -110,8 +110,17 @@ const PartnerShowType = new GraphQLObjectType({
                 description: "The slug or ID of an artist in the show.",
               },
             },
-            resolve: ({ id, partner }, options) => {
-              return total(`partner/${partner.id}/show/${id}/artworks`, options)
+            resolve: (
+              { id, partner },
+              options,
+              request,
+              { rootValue: { partnerShowArtworksLoader } }
+            ) => {
+              return totalViaLoader(
+                partnerShowArtworksLoader,
+                { partner_id: partner.id, show_id: id },
+                options
+              )
             },
           },
           eligible_artworks: numeral(
