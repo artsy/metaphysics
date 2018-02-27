@@ -3,7 +3,6 @@ import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { isExisty, exclude, existyValue, parseRelayOptions } from "lib/helpers"
 import { find, has } from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
 import total from "lib/loaders/legacy/total"
 import HTTPError from "lib/http_error"
 import numeral from "./fields/numeral"
@@ -29,6 +28,8 @@ import {
   GraphQLBoolean,
   GraphQLUnionType,
 } from "graphql"
+import { allViaLoader } from "../lib/all"
+import { totalViaLoader } from "../lib/loaders/legacy/total"
 
 const kind = ({ artists, fair, artists_without_artworks, group }) => {
   if (isExisty(fair)) return "fair"
@@ -91,15 +92,25 @@ export const ShowType = new GraphQLObjectType({
     artworks: {
       type: new GraphQLList(Artwork.type),
       args: artworksArgs,
-      resolve: (show, options) => {
-        const path = `partner/${show.partner.id}/show/${show.id}/artworks`
-
+      resolve: (
+        show,
+        options,
+        request,
+        { rootValue: { partnerShowArtworksLoader } }
+      ) => {
         let fetch = null
 
         if (options.all) {
-          fetch = gravity.all(path, options)
+          fetch = allViaLoader(
+            partnerShowArtworksLoader,
+            { partner_id: show.partner.id, show_id: show.id },
+            options
+          )
         } else {
-          fetch = gravity(path, options)
+          fetch = partnerShowArtworksLoader(
+            { partner_id: show.partner.id, show_id: show.id },
+            options
+          ).then(({ body }) => body)
         }
 
         return fetch.then(exclude(options.exclude, "id"))
@@ -108,15 +119,27 @@ export const ShowType = new GraphQLObjectType({
     artworks_connection: {
       type: artworkConnection,
       args: pageable(artworksArgs),
-      resolve: (show, options) => {
-        const path = `partner/${show.partner.id}/show/${show.id}/artworks`
+      resolve: (
+        show,
+        options,
+        request,
+        { rootValue: { partnerShowArtworksLoader } }
+      ) => {
+        const loaderOptions = {
+          partner_id: show.partner.id,
+          show_id: show.id,
+        }
         const gravityOptions = parseRelayOptions(options)
         delete gravityOptions.page
 
         return Promise.all([
-          total(path, Object.assign({}, gravityOptions, { size: 0 })),
-          gravity(path, gravityOptions),
-        ]).then(([count, body]) => {
+          totalViaLoader(
+            partnerShowArtworksLoader,
+            loaderOptions,
+            Object.assign({}, gravityOptions, { size: 0 })
+          ),
+          partnerShowArtworksLoader(loaderOptions, gravityOptions),
+        ]).then(([count, { body }]) => {
           return connectionFromArraySlice(body, options, {
             arrayLength: count,
             sliceStart: gravityOptions.offset,
@@ -139,17 +162,25 @@ export const ShowType = new GraphQLObjectType({
     },
     cover_image: {
       type: Image.type,
-      resolve: ({ id, partner, image_versions, image_url }) => {
+      resolve: (
+        { id, partner, image_versions, image_url },
+        options,
+        request,
+        { rootValue: { partnerShowArtworksLoader } }
+      ) => {
         if (image_versions && image_versions.length && image_url) {
           return Image.resolve({ image_versions, image_url })
         }
 
         if (partner) {
-          return gravity(`partner/${partner.id}/show/${id}/artworks`, {
-            size: 1,
-            published: true,
-          }).then(artworks => {
-            const artwork = artworks[0]
+          partnerShowArtworksLoader(
+            { partner_id: partner.id, show_id: id },
+            {
+              size: 1,
+              published: true,
+            }
+          ).then(({ body }) => {
+            const artwork = body[0]
             return artwork && Image.resolve(getDefault(artwork.images))
           })
         }
@@ -188,11 +219,13 @@ export const ShowType = new GraphQLObjectType({
     end_at: date,
     events: {
       type: new GraphQLList(PartnerShowEventType),
-      resolve: ({ partner, id }) =>
-        // Gravity redirects from /api/v1/show/:id => /api/v1/partner/:partner_id/show/:show_id
-        // this creates issues where events will remain cached. Fetch the non-redirected
-        // route to circumvent this
-        gravity(`partner/${partner.id}/show/${id}`).then(
+      resolve: (
+        { partner, id },
+        options,
+        request,
+        { rootValue: { partnerShowLoader } }
+      ) =>
+        partnerShowLoader({ partner_id: partner.id, show_id: id }).then(
           ({ events }) => events
         ),
     },
@@ -227,8 +260,13 @@ export const ShowType = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: ({ id }, options) => {
-        return gravity(`partner_show/${id}/images`, options).then(Image.resolve)
+      resolve: (
+        { id },
+        options,
+        request,
+        { rootValue: partnerShowImagesLoader }
+      ) => {
+        return partnerShowImagesLoader(id, options).then(Image.resolve)
       },
     },
     has_location: {
@@ -262,9 +300,17 @@ export const ShowType = new GraphQLObjectType({
     },
     kind: {
       type: GraphQLString,
-      resolve: show => {
+      resolve: (
+        show,
+        options,
+        request,
+        { rootValue: { partnerShowLoader } }
+      ) => {
         if (show.artists || show.artists_without_artworks) return kind(show)
-        return gravity(`partner/${show.partner.id}/show/${show.id}`).then(kind)
+        return partnerShowLoader({
+          partner_id: show.partner.id,
+          show_id: show.id,
+        }).then(kind)
       },
     },
     location: {
@@ -273,17 +319,25 @@ export const ShowType = new GraphQLObjectType({
     },
     meta_image: {
       type: Image.type,
-      resolve: ({ id, partner, image_versions, image_url }) => {
+      resolve: (
+        { id, partner, image_versions, image_url },
+        options,
+        request,
+        { rootValue: { partnerShowArtworksLoader } }
+      ) => {
         if (image_versions && image_versions.length && image_url) {
           return Image.resolve({
             image_versions,
             image_url,
           })
         }
-        return gravity(`partner/${partner.id}/show/${id}/artworks`, {
-          published: true,
-        }).then(artworks => {
-          Image.resolve(getDefault(find(artworks, { can_share_image: true })))
+        return partnerShowArtworksLoader(
+          { partner_id: partner.id, show_id: id },
+          {
+            published: true,
+          }
+        ).then(({ body }) => {
+          Image.resolve(getDefault(find(body, { can_share_image: true })))
         })
       },
     },
@@ -303,12 +357,17 @@ export const ShowType = new GraphQLObjectType({
           return Partner.type
         },
       }),
-      resolve: ({ partner, galaxy_partner_id }) => {
+      resolve: (
+        { partner, galaxy_partner_id },
+        options,
+        request,
+        { rootValue: { galaxyGalleriesLoader } }
+      ) => {
         if (partner) {
           return partner
         }
         if (galaxy_partner_id) {
-          return ExternalPartner.resolve(galaxy_partner_id)
+          return galaxyGalleriesLoader(galaxy_partner_id)
         }
       },
     },
@@ -344,8 +403,8 @@ const Show = {
       description: "The slug or ID of the Show",
     },
   },
-  resolve: (root, { id }) => {
-    return gravity(`show/${id}`)
+  resolve: (root, { id }, request, { rootValue: { showLoader } }) => {
+    return showLoader(id)
       .then(show => {
         if (!show.displayable && !show.is_reference) {
           return new HTTPError("Show Not Found", 404)

@@ -4,6 +4,7 @@ import config from "config"
 import convection from "lib/apis/convection"
 import delta from "lib/apis/delta"
 import diffusion from "lib/apis/diffusion"
+import galaxy from "lib/apis/galaxy"
 import gravity from "lib/apis/gravity"
 import impulse from "lib/apis/impulse"
 import positron from "lib/apis/positron"
@@ -35,6 +36,17 @@ export default requestIDs => ({
       requestIDs,
       requestThrottleMs: config.DIFFUSION_REQUEST_THROTTLE_MS,
     }
+  ),
+
+  /**
+   * The Galaxy loaders produced by this factory _will_ cache all responses to memcache.
+   *
+   * Do **not** use it for authenticated requests!
+   */
+  galaxyLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    galaxy,
+    "galaxy",
+    { requestIDs }
   ),
 
   /**

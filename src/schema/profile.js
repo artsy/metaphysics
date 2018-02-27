@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import numeral from "./fields/numeral"
@@ -77,7 +76,8 @@ const Profile = {
       description: "The slug or ID of the Profile",
     },
   },
-  resolve: (root, { id }) => gravity(`profile/${id}`),
+  resolve: (root, { id }, request, { rootValue: { profileLoader } }) =>
+    profileLoader(id),
 }
 
 export default Profile

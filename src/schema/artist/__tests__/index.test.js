@@ -23,25 +23,16 @@ describe("Artist type", () => {
         .stub()
         .withArgs(artist.id)
         .returns(Promise.resolve(artist)),
+      articlesLoader: sinon.stub().returns(Promise.resolve({ count: 22 })),
     }
 
-    Artist.__Rewire__(
-      "positron",
-      sinon.stub().returns(
-        Promise.resolve({
-          count: 22,
-        })
-      )
-    )
-
-    const total = sinon.stub()
-    total.onCall(0).returns(Promise.resolve(42))
-    Artist.__Rewire__("total", total)
+    const totalViaLoader = sinon.stub()
+    totalViaLoader.onCall(0).returns(Promise.resolve(42))
+    Artist.__Rewire__("totalViaLoader", totalViaLoader)
   })
 
   afterEach(() => {
-    Artist.__ResetDependency__("total")
-    Artist.__ResetDependency__("positron")
+    Artist.__ResetDependency__("totalViaLoader")
   })
 
   it("returns null for an empty ID string", () => {
