@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import Partner from "./partner"
 import Artist from "./artist/index"
 import numeral from "./fields/numeral"
@@ -76,8 +75,12 @@ const PartnerArtist = {
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (root, { partner_id, artist_id }) =>
-    gravity(`partner/${partner_id}/artist/${artist_id}`),
+  resolve: (
+    root,
+    { partner_id, artist_id },
+    request,
+    { rootValue: { partnerArtistLoader } }
+  ) => partnerArtistLoader({ artist_id, partner_id }),
 }
 
 export default PartnerArtist

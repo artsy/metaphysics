@@ -194,13 +194,13 @@ describe("Sale type", () => {
 
       const rootValue = {
         saleLoader: () => Promise.resolve(sale),
-        saleArtworksLoader: () => {
-          return Promise.resolve(
-            fill(Array(sale.eligible_sale_artworks_count), {
+        saleArtworksLoader: sinon.stub().returns(
+          Promise.resolve({
+            body: fill(Array(sale.eligible_sale_artworks_count), {
               id: "some-id",
-            })
-          )
-        },
+            }),
+          })
+        ),
       }
 
       return runAuthenticatedQuery(query, rootValue).then(data => {
@@ -236,7 +236,9 @@ describe("Sale type", () => {
 
       const rootValue = {
         saleLoader: () => Promise.resolve(sale),
-        saleArtworksLoader: () => Promise.resolve(saleArtworks),
+        saleArtworksLoader: sinon
+          .stub()
+          .returns(Promise.resolve({ body: saleArtworks })),
         incrementsLoader: () => {
           return Promise.resolve([
             {

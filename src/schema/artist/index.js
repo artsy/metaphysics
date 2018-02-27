@@ -31,8 +31,6 @@ import {
   AuctionResultSorts,
 } from "schema/auction_result"
 import ArtistArtworksFilters from "./artwork_filters"
-import positron from "lib/loaders/legacy/positron"
-import total from "lib/loaders/legacy/total"
 import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import {
@@ -45,6 +43,7 @@ import {
 } from "graphql"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
+import { totalViaLoader } from "../../lib/loaders/legacy/total"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -180,7 +179,7 @@ export const ArtistType = new GraphQLObjectType({
             defaults(options, {
               artist: [id],
             })
-          ),
+          ).then(({ body }) => body),
       },
       artworks: {
         type: new GraphQLList(Artwork.type),
@@ -409,7 +408,7 @@ export const ArtistType = new GraphQLObjectType({
             defaults(options, {
               artist: [id],
             })
-          ),
+          ).then(({ body }) => body),
       },
       consignable: {
         type: GraphQLBoolean,
@@ -429,20 +428,45 @@ export const ArtistType = new GraphQLObjectType({
             partner_shows: numeral(
               ({ partner_shows_count }) => partner_shows_count
             ),
-            related_artists: numeral(({ id }) =>
-              total(`related/layer/main/artists`, { artist: id })
-            ),
-            articles: numeral(({ _id }) =>
-              positron("articles", {
-                artist_id: _id,
-                published: true,
-                limit: 1,
-                count: true,
-              }).then(({ count }) => count)
-            ),
+            related_artists: numeral(({ related_artists }) => related_artists),
+            articles: numeral(({ articles }) => articles),
           },
         }),
-        resolve: artist => artist,
+        resolve: (
+          {
+            published_artworks_count,
+            forsale_artworks_count,
+            partner_shows_count,
+            follow_count,
+            id,
+            _id,
+          },
+          _options,
+          _request,
+          { rootValue: { articlesLoader, relatedMainArtistsLoader } }
+        ) => {
+          const related_artists = totalViaLoader(
+            relatedMainArtistsLoader,
+            {},
+            {
+              artist: [id],
+            }
+          )
+          const articles = articlesLoader({
+            artist_id: _id,
+            published: true,
+            limit: 1,
+            count: true,
+          }).then(({ count }) => count)
+          return {
+            published_artworks_count,
+            forsale_artworks_count,
+            follow_count,
+            partner_shows_count,
+            related_artists,
+            articles,
+          }
+        },
       },
       deathday: {
         type: GraphQLString,

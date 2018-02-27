@@ -1,21 +1,7 @@
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("CollectorProfile", () => {
-    const gravity = sinon.stub()
-    const Me = schema.__get__("Me")
-    const CollectorProfile = Me.__get__("CollectorProfile")
-
-    beforeEach(() => {
-      gravity.with = sinon.stub().returns(gravity)
-      CollectorProfile.__Rewire__("gravity", gravity)
-    })
-
-    afterEach(() => {
-      CollectorProfile.__ResetDependency__("gravity")
-    })
-
     it("returns the collector profile", () => {
       const query = `
         {
@@ -47,9 +33,13 @@ describe("Me", () => {
         intents: ["buy art & design"],
       }
 
-      gravity.returns(Promise.resolve(collectorProfile))
+      const rootValue = {
+        collectorProfileLoader: sinon
+          .stub()
+          .returns(Promise.resolve(collectorProfile)),
+      }
 
-      return runAuthenticatedQuery(query).then(
+      return runAuthenticatedQuery(query, rootValue).then(
         ({ me: { collector_profile } }) => {
           expect(collector_profile).toEqual(expectedProfileData)
         }

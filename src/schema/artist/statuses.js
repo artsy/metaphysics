@@ -1,17 +1,22 @@
-import total from "lib/loaders/legacy/total"
 import { GraphQLObjectType, GraphQLBoolean } from "graphql"
+import { totalViaLoader } from "../../lib/loaders/legacy/total"
 
 const ArtistStatusesType = new GraphQLObjectType({
   name: "ArtistStatuses",
   fields: {
     artists: {
       type: GraphQLBoolean,
-      resolve: ({ id }) => {
-        return total(`related/layer/main/artists`, {
-          exclude_artists_without_artworks: true,
-          artist: [id],
-          size: 0,
-        }).then(count => count > 0)
+      resolve: (
+        { id },
+        options,
+        request,
+        { rootValue: { relatedMainArtistsLoader } }
+      ) => {
+        totalViaLoader(
+          relatedMainArtistsLoader,
+          {},
+          { exclude_artists_without_artworks: true, artist: [id] }
+        ).then(count => count > 0)
       },
     },
     articles: {
@@ -45,12 +50,20 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     contemporary: {
       type: GraphQLBoolean,
-      resolve: ({ id }) => {
-        return total(`related/layer/contemporary/artists`, {
-          exclude_artists_without_artworks: true,
-          artist: [id],
-          size: 0,
-        }).then(count => count > 0)
+      resolve: (
+        { id },
+        options,
+        request,
+        { rootValue: { relatedContemporaryArtistsLoader } }
+      ) => {
+        return totalViaLoader(
+          relatedContemporaryArtistsLoader,
+          {},
+          {
+            exclude_artists_without_artworks: true,
+            artist: [id],
+          }
+        ).then(total => total > 0)
       },
     },
     cv: {

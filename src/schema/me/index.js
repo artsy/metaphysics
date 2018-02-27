@@ -6,8 +6,6 @@ import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 import date from "schema/fields/date"
 import initials from "schema/fields/initials"
 
-import gravity from "lib/loaders/legacy/gravity"
-
 import ArtworkInquiries from "./artwork_inquiries"
 import BidderPositions from "./bidder_positions"
 import Bidders from "./bidders"
@@ -90,7 +88,7 @@ export default {
     root,
     options,
     request,
-    { rootValue: { accessToken, userID }, fieldNodes }
+    { rootValue: { accessToken, userID, meLoader }, fieldNodes }
   ) => {
     if (!accessToken) return null
     const blacklistedFields = [
@@ -113,13 +111,11 @@ export default {
       "notifications_connection",
       "consignment_submissions",
       "followsAndSaves",
+      "saved_artworks",
     ]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return gravity
-        .with(accessToken)("me")
-        .catch(() => null)
+      return meLoader().catch(() => null)
     }
-
     // The email and is_collector are here so that the type system's `isTypeOf`
     // resolves correctly when we're skipping gravity data
     return { id: userID, email: null, is_collector: null }

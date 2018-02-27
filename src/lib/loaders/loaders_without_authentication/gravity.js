@@ -12,6 +12,11 @@ export default requestIDs => {
     artistsLoader: gravityLoader("artists"),
     artworkLoader: gravityLoader(id => `artwork/${id}`),
     fairLoader: gravityLoader(id => `fair/${id}`),
+    fairBoothsLoader: gravityLoader(
+      id => `fair/${id}/shows`,
+      {},
+      { headers: true }
+    ),
     fairsLoader: gravityLoader("fairs"),
     filterArtworksLoader: gravityLoader("filter/artworks"),
     geneArtistsLoader: gravityLoader(id => `gene/${id}/artists`),
@@ -29,19 +34,43 @@ export default requestIDs => {
       {},
       { headers: true }
     ),
+    partnerArtistLoader: gravityLoader(
+      ({ artist_id, partner_id }) => `partner/${partner_id}/artist/${artist_id}`
+    ),
+    partnerArtworksLoader: gravityLoader(id => `partner/${id}/artworks`),
     partnerCategoriesLoader: gravityLoader("partner_categories"),
     partnerCategoryLoader: gravityLoader(id => `partner_category/${id}`),
     partnerLoader: gravityLoader(id => `partner/${id}`),
+    partnerLocationsLoader: gravityLoader(id => `partner/${id}/locations`),
+    partnerShowLoader: gravityLoader(
+      ({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}`
+    ),
+    partnerShowArtworksLoader: gravityLoader(
+      ({ partner_id, show_id }) =>
+        `partner/${partner_id}/show/${show_id}/artworks`,
+      {},
+      { headers: true }
+    ),
     partnerShowImagesLoader: gravityLoader(id => `partner_show/${id}/images`),
     partnersLoader: gravityLoader("partners"),
     popularArtistsLoader: gravityLoader(`artists/popular`),
     profileLoader: gravityLoader(id => `profile/${id}`),
     relatedArtworksLoader: gravityLoader("related/artworks"),
+    relatedLayersLoader: gravityLoader("related/layers"),
+    relatedLayerArtworksLoader: gravityLoader(
+      ({ type, id }) => `related/layer/${type}/${id}/artworks`
+    ),
     relatedContemporaryArtistsLoader: gravityLoader(
-      "related/layer/contemporary/artists"
+      "related/layer/contemporary/artists",
+      {},
+      { headers: true }
     ),
     relatedFairsLoader: gravityLoader("related/fairs"),
-    relatedMainArtistsLoader: gravityLoader("related/layer/main/artists"),
+    relatedMainArtistsLoader: gravityLoader(
+      "related/layer/main/artists",
+      {},
+      { headers: true }
+    ),
     relatedSalesLoader: gravityLoader("related/sales"),
     relatedShowsLoader: gravityLoader("related/shows"),
     saleLoader: gravityLoader(id => `sale/${id}`),
@@ -51,11 +80,16 @@ export default requestIDs => {
         `sale/${saleId}/sale_artwork/${saleArtworkId}`
     ),
     saleArtworkRootLoader: gravityLoader(id => `sale_artwork/${id}`),
-    saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`),
+    saleArtworksLoader: gravityLoader(
+      id => `sale/${id}/sale_artworks`,
+      {},
+      { headers: true }
+    ),
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     setLoader: gravityLoader(id => `set/${id}`),
     setItemsLoader: gravityLoader(id => `set/${id}/items`),
     setsLoader: gravityLoader("sets"),
+    showLoader: gravityLoader(id => `show/${id}`),
     showsLoader: gravityLoader("shows"),
     similarGenesLoader: gravityLoader(
       id => `gene/${id}/similar`,

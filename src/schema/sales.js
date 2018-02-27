@@ -1,6 +1,5 @@
 // @ts-check
 import { clone } from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
 import Sale from "./sale/index"
 import SaleSorts from "./sale/sorts"
 import { GraphQLList, GraphQLInt, GraphQLBoolean, GraphQLString } from "graphql"
@@ -36,14 +35,14 @@ const Sales = {
     },
     sort: SaleSorts,
   },
-  resolve: (root, options) => {
+  resolve: (root, options, request, { rootValue: { salesLoader } }) => {
     const cleanedOptions = clone(options)
     // Rename ids plural to id to match Gravity
     if (options.ids) {
       cleanedOptions.id = options.ids
       delete cleanedOptions.ids
     }
-    return gravity("sales", cleanedOptions)
+    return salesLoader(cleanedOptions)
   },
 }
 

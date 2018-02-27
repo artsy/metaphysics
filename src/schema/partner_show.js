@@ -1,7 +1,6 @@
 import moment from "moment"
 import { isExisty, exclude } from "lib/helpers"
 import { find, has } from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
 import total from "lib/loaders/legacy/total"
 import HTTPError from "lib/http_error"
 import numeral from "./fields/numeral"
@@ -25,6 +24,7 @@ import {
   GraphQLInt,
   GraphQLBoolean,
 } from "graphql"
+import { allViaLoader } from "../lib/all"
 
 const kind = ({ artists, fair }) => {
   if (isExisty(fair)) return "fair"
@@ -75,15 +75,24 @@ const PartnerShowType = new GraphQLObjectType({
           defaultValue: 25,
         },
       },
-      resolve: (show, options) => {
-        const path = `partner/${show.partner.id}/show/${show.id}/artworks`
-
+      resolve: (
+        show,
+        options,
+        request,
+        { rootValue: { partnerShowArtworksLoader } }
+      ) => {
         let fetch = null
-
         if (options.all) {
-          fetch = gravity.all(path, options)
+          fetch = allViaLoader(
+            partnerShowArtworksLoader,
+            { partner_id: show.partner.id, show_id: show.id },
+            options
+          )
         } else {
-          fetch = gravity(path, options)
+          fetch = partnerShowArtworksLoader(
+            { partner_id: show.partner.id, show_id: show.id },
+            options
+          ).then(({ body }) => body)
         }
 
         return fetch.then(exclude(options.exclude, "id"))
@@ -114,18 +123,26 @@ const PartnerShowType = new GraphQLObjectType({
     },
     cover_image: {
       type: Image.type,
-      resolve: ({ id, partner, image_versions, image_url }) => {
+      resolve: (
+        { id, partner, image_versions, image_url },
+        options,
+        request,
+        { rootValue: { partnerShowArtworksLoader } }
+      ) => {
         if (image_versions && image_versions.length && image_url) {
           return Image.resolve({ image_versions, image_url })
         }
 
         return (
           partner &&
-          gravity(`partner/${partner.id}/show/${id}/artworks`, {
-            size: 1,
-            published: true,
-          }).then(artworks => {
-            const artwork = artworks[0]
+          partnerShowArtworksLoader(
+            { partner_id: partner.id, show_id: id },
+            {
+              size: 1,
+              published: true,
+            }
+          ).then(({ body }) => {
+            const artwork = body[0]
             return artwork && Image.resolve(getDefault(artwork.images))
           })
         )
@@ -142,11 +159,16 @@ const PartnerShowType = new GraphQLObjectType({
     end_at: date,
     events: {
       type: new GraphQLList(PartnerShowEventType),
-      resolve: ({ partner, id }) =>
+      resolve: (
+        { partner, id },
+        options,
+        request,
+        { rootValue: { partnerShowLoader } }
+      ) =>
         // Gravity redirects from /api/v1/show/:id => /api/v1/partner/:partner_id/show/:show_id
         // this creates issues where events will remain cached. Fetch the non-redirected
         // route to circumvent this
-        gravity(`partner/${partner.id}/show/${id}`).then(
+        partnerShowLoader({ partner_id: partner.id, show_id: id }).then(
           ({ events }) => events
         ),
     },
@@ -178,8 +200,13 @@ const PartnerShowType = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: ({ id }, options) => {
-        return gravity(`partner_show/${id}/images`, options).then(Image.resolve)
+      resolve: (
+        { id },
+        options,
+        request,
+        { rootValue: { partnerShowImagesLoader } }
+      ) => {
+        return partnerShowImagesLoader(id, options).then(Image.resolve)
       },
     },
     has_location: {
@@ -209,9 +236,17 @@ const PartnerShowType = new GraphQLObjectType({
     },
     kind: {
       type: GraphQLString,
-      resolve: show => {
+      resolve: (
+        show,
+        options,
+        request,
+        { rootValue: { partnerShowLoader } }
+      ) => {
         if (show.artists) return kind(show)
-        return gravity(`partner/${show.partner.id}/show/${show.id}`).then(kind)
+        return partnerShowLoader({
+          partner_id: show.partner.id,
+          show_id: show.id,
+        }).then(kind)
       },
     },
     location: {
@@ -220,15 +255,23 @@ const PartnerShowType = new GraphQLObjectType({
     },
     meta_image: {
       type: Image.type,
-      resolve: ({ id, partner, image_versions, image_url }) => {
+      resolve: (
+        { id, partner, image_versions, image_url },
+        options,
+        request,
+        { rootValue: { partnerShowArtworksLoader } }
+      ) => {
         if (image_versions && image_versions.length && image_url) {
           return Image.resolve({ image_versions, image_url })
         }
 
-        return gravity(`partner/${partner.id}/show/${id}/artworks`, {
-          published: true,
-        }).then(artworks => {
-          Image.resolve(getDefault(find(artworks, { can_share_image: true })))
+        return partnerShowArtworksLoader(
+          { partner_id: partner.id, show_id: id },
+          {
+            published: true,
+          }
+        ).then(({ body }) => {
+          Image.resolve(getDefault(find(body, { can_share_image: true })))
         })
       },
     },
@@ -273,8 +316,8 @@ const PartnerShow = {
       description: "The slug or ID of the PartnerShow",
     },
   },
-  resolve: (root, { id }) => {
-    return gravity(`show/${id}`).then(show => {
+  resolve: (root, { id }, request, { rootValue: { showLoader } }) => {
+    return showLoader(id).then(show => {
       if (!show.displayable) {
         return new HTTPError("Show Not Found", 404)
       }
