@@ -5,19 +5,15 @@ services:
     extends:
       file: common.yml
       service: metaphysics
-    environment:
-    - NODE_ENV=development
-    - MEMCACHE_SERVERS=metaphysics-memcached:11211
-    - ENABLE_QUERY_TRACING=false
-    - DEBUG=info,error
-    - PORT=5001
-    env_file: ../.env
     command: node_modules/.bin/babel-node --inspect index.js
+    environment:
+    - REDIS_URL=redis://metaphysics-redis:6379
+    env_file: ../.env
     ports:
     - 5001:5001
     depends_on:
-    - metaphysics-memcached
-  metaphysics-memcached:
-    image: memcached
+    - metaphysics-redis
+  metaphysics-redis:
+    image: redis
     ports:
-    - 11211:11211
+    - 6379:6379
