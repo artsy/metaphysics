@@ -6,3 +6,6 @@ services:
     extends:
       file: common.yml
       service: metaphysics
+    environment:
+    - NODE_ENV=test
+    env_file: ../.env.test
