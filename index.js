@@ -2,6 +2,7 @@ import "moment-timezone"
 import "artsy-newrelic"
 import Bluebird from "bluebird"
 import xapp from "artsy-xapp"
+import compression from "compression"
 import express from "express"
 import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
@@ -29,6 +30,8 @@ if (enableAsyncStackTraces) {
 }
 
 const app = express()
+
+app.use(compression())
 
 xapp.on("error", err => {
   error(err)
