@@ -19,7 +19,7 @@ export default (src, mode, width, height) => {
     resize_to: resizeTo(mode, width, height),
     width,
     height,
-    quality: 95,
+    quality: 80,
     src,
   }
 

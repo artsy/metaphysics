@@ -15,7 +15,7 @@ describe("Image", () => {
         height: 333,
         width: 500,
         url:
-          "https://gemini.cloudfront.test/?resize_to=fit&width=500&height=333&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg", // eslint-disable-line
+          "https://gemini.cloudfront.test/?resize_to=fit&width=500&height=333&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg", // eslint-disable-line
       })
     })
 
@@ -25,7 +25,7 @@ describe("Image", () => {
         height: 333,
         width: 500,
         url:
-          "https://gemini.cloudfront.test/?resize_to=fit&width=500&height=333&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg", // eslint-disable-line
+          "https://gemini.cloudfront.test/?resize_to=fit&width=500&height=333&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg", // eslint-disable-line
       })
     })
 
@@ -46,7 +46,7 @@ describe("Image", () => {
         width: null,
         height: null,
         url:
-          "https://gemini.cloudfront.test/?resize_to=fit&width=500&height=500&quality=95&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg", // eslint-disable-line
+          "https://gemini.cloudfront.test/?resize_to=fit&width=500&height=500&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg", // eslint-disable-line
       })
     })
   })
