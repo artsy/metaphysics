@@ -4,7 +4,7 @@ FROM node:8.4.0
 RUN adduser --disabled-password --gecos '' deploy
 RUN mkdir -p /app
 
-RUN npm install -g yarn@1.2.1
+RUN npm install -g yarn@1.1.0
 
 # Set up node_modules
 WORKDIR /tmp
