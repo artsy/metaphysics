@@ -1,0 +1,16 @@
+.git
+.gitignore
+
+README.md
+LICENSE
+VERSION
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+.env
+.env.*
+log
+tmp
+node_modules
