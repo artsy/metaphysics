@@ -23,7 +23,7 @@
     "build:lib": "babel src --copy-files --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src",
     "build:index": "babel index.js -s inline -d build",
     "build:fixtures": "cp src/lib/*.json build/src/lib/",
-    "heroku-postbuild": "yarn patch-package && yarn build:lib && yarn build:index && yarn build:fixtures",
+    "build": "yarn build:lib && yarn build:index && yarn build:fixtures",
     "precommit": "lint-staged",
     "prepare": "patch-package",
     "prettier-project": "prettier --write '**/*.js'",
