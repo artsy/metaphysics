@@ -22,8 +22,4 @@ RUN yarn install
 # Run babel compiler
 RUN yarn build
 
-ENV PORT 5001
-ENV DEBUG=info,error
-EXPOSE 5001
-
 CMD node build/index.js
