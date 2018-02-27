@@ -7,7 +7,7 @@
   "engines": {
     "node": "8.4.x",
     "npm": "5.4.x",
-    "yarn": "1.x"
+    "yarn": "1.1.0"
   },
   "scripts": {
     "start": "yarn run dev",
