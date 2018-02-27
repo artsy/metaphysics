@@ -10,6 +10,45 @@ describe("Sale Artworks", () => {
     })
   }
 
+  it("pulls from /sale_artworks if `live_sale, include_lots_by_followed_artists, is_auction to true` ", async () => {
+    const hits = _.fill(Array(10), { id: "foo" })
+    const totalCount = hits.length * 2
+    const gravityResponse = {
+      body: hits,
+      headers: {
+        "x-total-count": totalCount,
+      },
+    }
+    const query = gql`
+      {
+        sale_artworks(
+          live_sale: true
+          include_artworks_by_followed_artists: true
+          is_auction: true
+        ) {
+          counts {
+            total
+          }
+          edges {
+            node {
+              id
+            }
+          }
+        }
+      }
+    `
+
+    const { sale_artworks: { counts: { total }, edges } } = await execute(
+      gravityResponse,
+      query,
+      {
+        saleArtworksAllLoader: () => Promise.resolve(gravityResponse),
+      }
+    )
+    expect(total).toEqual(totalCount)
+    expect(edges.length).toEqual(hits.length)
+  })
+
   it("returns 10 items by default", async () => {
     const hits = _.fill(Array(10), { id: "foo" })
     const totalCount = hits.length * 2

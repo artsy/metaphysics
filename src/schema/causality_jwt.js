@@ -1,6 +1,5 @@
 import jwt from "jwt-simple"
 import { GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
-import gravity from "lib/loaders/legacy/gravity"
 
 const { HMAC_SECRET } = process.env
 
@@ -23,10 +22,15 @@ export default {
       description: "The id of the auction to participate in",
     },
   },
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { accessToken, meLoader, meBiddersLoader, saleLoader } }
+  ) => {
     // Observer role for logged out users
     if (!accessToken) {
-      return gravity(`sale/${options.sale_id}`).then(sale =>
+      return saleLoader(options.sale_id).then(sale =>
         jwt.encode(
           {
             aud: "auctions",
@@ -41,11 +45,11 @@ export default {
       )
 
       // For logged in and...
-    } else if (options.role === "PARTICIPANT" && accessToken) {
+    } else if (options.role === "PARTICIPANT") {
       return Promise.all([
-        gravity(`sale/${options.sale_id}`),
-        gravity.with(accessToken)("me"),
-        gravity.with(accessToken)("me/bidders", { sale_id: options.sale_id }),
+        saleLoader(options.sale_id),
+        meLoader(),
+        meBiddersLoader({ sale_id: options.sale_id }),
       ]).then(([sale, me, bidders]) => {
         if (bidders.length && bidders[0].qualified_for_bidding) {
           return jwt.encode(
@@ -74,24 +78,25 @@ export default {
       })
 
       // Operator role if logged in as an admin
-    } else if (options.role === "OPERATOR" && accessToken) {
-      return Promise.all([
-        gravity(`sale/${options.sale_id}`),
-        gravity.with(accessToken)("me"),
-      ]).then(([sale, me]) => {
-        if (me.type !== "Admin") throw new Error("Unauthorized to be operator")
-        return jwt.encode(
-          {
-            aud: "auctions",
-            role: "operator",
-            userId: me._id,
-            saleId: sale._id,
-            bidderId: me.paddle_number,
-            iat: new Date().getTime(),
-          },
-          HMAC_SECRET
-        )
-      })
+    } else if (options.role === "OPERATOR") {
+      return Promise.all([saleLoader(options.sale_id), meLoader()]).then(
+        ([sale, me]) => {
+          if (me.type !== "Admin") {
+            throw new Error("Unauthorized to be operator")
+          }
+          return jwt.encode(
+            {
+              aud: "auctions",
+              role: "operator",
+              userId: me._id,
+              saleId: sale._id,
+              bidderId: me.paddle_number,
+              iat: new Date().getTime(),
+            },
+            HMAC_SECRET
+          )
+        }
+      )
     }
   },
 }

@@ -231,6 +231,13 @@ export const ShowType = new GraphQLObjectType({
         return gravity(`partner_show/${id}/images`, options).then(Image.resolve)
       },
     },
+    has_location: {
+      type: GraphQLBoolean,
+      description: "Flag showing if show has any location.",
+      resolve: ({ location, fair, partner_city }) => {
+        return isExisty(location || fair || partner_city)
+      },
+    },
     is_active: {
       type: GraphQLBoolean,
       description:

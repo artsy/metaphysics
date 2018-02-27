@@ -5,10 +5,10 @@ import xapp from "artsy-xapp"
 import express from "express"
 import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
-import config from "./src/config"
 import { info, error } from "./src/lib/loggers"
 
 const {
+  ENABLE_ASYNC_STACK_TRACES,
   GRAVITY_API_URL,
   GRAVITY_ID,
   GRAVITY_SECRET,
@@ -18,10 +18,17 @@ const {
 
 global.Promise = Bluebird
 
-const app = express()
 const port = PORT || 3000
 const isDevelopment = NODE_ENV === "development"
 const isProduction = NODE_ENV === "production"
+const enableAsyncStackTraces = ENABLE_ASYNC_STACK_TRACES === "true"
+
+if (enableAsyncStackTraces) {
+  console.warn("[FEATURE] Enabling long async stack traces") // eslint-disable-line
+  require("longjohn")
+}
+
+const app = express()
 
 xapp.on("error", err => {
   error(err)
@@ -34,10 +41,7 @@ const xappConfig = {
   secret: GRAVITY_SECRET,
 }
 
-xapp.init(xappConfig, () => {
-  config.GRAVITY_XAPP_TOKEN = xapp.token
-  bootApp() // eslint-disable-line
-})
+xapp.init(xappConfig, bootApp) // eslint-disable-line
 
 function bootApp() {
   if (isProduction) {
@@ -64,5 +68,7 @@ function bootApp() {
     app.use(require("./src").default)
   }
 
-  app.listen(port, () => info(`Listening on ${port}`))
+  app.listen(port, () =>
+    info(`[Metaphysics] Listening on http://localhost:${port}`)
+  )
 }

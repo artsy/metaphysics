@@ -1,13 +1,15 @@
+import config from "./config"
 import cors from "cors"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
-import graphqlErrorHandler from "./lib/graphql-error-handler"
+import graphqlErrorHandler from "./lib/graphqlErrorHandler"
 import graphqlHTTP from "express-graphql"
 import legacyLoaders from "./lib/loaders/legacy"
 import localSchema from "./schema"
 import moment from "moment"
 import morgan from "artsy-morgan"
+import xapp from "artsy-xapp"
 import {
   fetchLoggerSetup,
   fetchLoggerRequestDone,
@@ -31,6 +33,8 @@ const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
 const app = express()
 
 async function startApp() {
+  config.GRAVITY_XAPP_TOKEN = xapp.token
+
   let schema = localSchema
 
   if (enableSchemaStitching) {

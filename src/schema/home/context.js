@@ -72,7 +72,7 @@ export const moduleContext = {
     })
   },
   active_bids: () => null,
-  followed_artists: ({ accessToken }) => {
+  followed_artists: ({ rootValue: { accessToken } }) => {
     return gravity
       .with(accessToken)("me/follow/artists", { size: 9, page: 1 })
       .then(artists => {
@@ -92,8 +92,8 @@ export const moduleContext = {
       return assign({}, fair, { context_type: "Fair" })
     })
   },
-  followed_artist: ({ params }) => {
-    return gravity(`artist/${params.followed_artist_id}`).then(artist => {
+  followed_artist: ({ rootValue: { artistLoader }, params }) => {
+    return artistLoader(params.followed_artist_id).then(artist => {
       return assign(
         {},
         {
@@ -103,10 +103,10 @@ export const moduleContext = {
       )
     })
   },
-  related_artists: ({ params }) => {
+  related_artists: ({ rootValue: { artistLoader }, params }) => {
     return Promise.all([
-      gravity(`artist/${params.related_artist_id}`),
-      gravity(`artist/${params.followed_artist_id}`),
+      artistLoader(params.related_artist_id),
+      artistLoader(params.followed_artist_id),
     ]).then(([related_artist, follow_artist]) => {
       return assign(
         {},
@@ -118,7 +118,7 @@ export const moduleContext = {
       )
     })
   },
-  genes: ({ accessToken, params: { gene } }) => {
+  genes: ({ rootValue: { accessToken }, params: { gene } }) => {
     if (gene) {
       return assign({}, gene, { context_type: "Gene" })
     }
@@ -147,12 +147,7 @@ export default {
       HomePageModuleContextTrendingType,
     ],
   }),
-  resolve: (
-    { key, display, params },
-    options,
-    request,
-    { rootValue: { accessToken } }
-  ) => {
-    return moduleContext[key]({ accessToken, params: params || {} })
+  resolve: ({ key, display, params }, options, request, { rootValue }) => {
+    return moduleContext[key]({ rootValue, params: params || {} })
   },
 }

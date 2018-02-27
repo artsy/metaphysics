@@ -143,7 +143,7 @@ describe("Artist type", () => {
     })
   })
 
-  it("rincludes collections data", () => {
+  it("includes collections data", () => {
     const query = `
       {
         artist(id: "foo-bar") {

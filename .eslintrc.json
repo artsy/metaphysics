@@ -12,7 +12,9 @@
     "camelcase": 0,
     "max-len": [2, 120],
     "quotes": [2, "double"],
-    "semi": [0]
+    "semi": [0],
+    "no-extra-semi": 0,
+    "indent": 0
   },
   "ignore": ["/flow-typed/npm/*"],
   "globals": {

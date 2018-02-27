@@ -1,5 +1,4 @@
-import { chain, find, has } from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
+import { chain, find } from "lodash"
 import { params as genericGenes } from "./add_generic_genes"
 import Results from "./results"
 import Title from "./title"
@@ -20,7 +19,6 @@ let possibleArgs
 export const HomePageArtworkModuleType = new GraphQLObjectType({
   name: "HomePageArtworkModule",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "key") && has(obj, "display"),
   fields: () => ({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -79,14 +77,19 @@ const HomePageArtworkModule = {
       description: "ID of related artist to target for related artist rails",
     },
   },
-  resolve: (root, { key, id, followed_artist_id, related_artist_id }) => {
+  resolve: (
+    root,
+    { key, id, followed_artist_id, related_artist_id },
+    request,
+    { rootValue: { geneLoader } }
+  ) => {
     // TODO Really not entirely sure what this `display` param is about.
     const display = true
     switch (key) {
       case "generic_gene":
         return { key, display, params: find(genericGenes, ["id", id]) }
       case "genes":
-        return gravity(`gene/${id}`).then(gene => {
+        return geneLoader(id).then(gene => {
           return { key, display, params: { id, gene } }
         })
       case "followed_artist":

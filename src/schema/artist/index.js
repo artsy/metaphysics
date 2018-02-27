@@ -1,7 +1,7 @@
 // @ts-check
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
-import { assign, compact, defaults, first, has, reject, includes } from "lodash"
+import { assign, compact, defaults, first, reject, includes } from "lodash"
 import { exclude } from "lib/helpers"
 import cached from "schema/fields/cached"
 import initials from "schema/fields/initials"
@@ -130,7 +130,6 @@ const ShowField = {
 export const ArtistType = new GraphQLObjectType({
   name: "Artist",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "birthday") && has(obj, "artworks_count"),
   fields: () => {
     return {
       ...GravityIDFields,
@@ -474,6 +473,7 @@ export const ArtistType = new GraphQLObjectType({
             sort: "-relevance,-start_at",
             is_reference: true,
             visible_to_public: false,
+            has_location: true,
             size: options.size,
           }).then(shows => showsWithBLacklistedPartnersRemoved(shows))
         },

@@ -7,7 +7,7 @@
   "engines": {
     "node": "8.4.x",
     "npm": "5.4.x",
-    "yarn": "1.x"
+    "yarn": "1.1.0"
   },
   "scripts": {
     "start": "yarn run dev",
@@ -27,6 +27,7 @@
     "precommit": "lint-staged",
     "prepare": "patch-package",
     "prettier-project": "prettier --write '**/*.js'",
+    "promote:production": "heroku pipelines:promote -r staging",
     "type-check": "tsc --noEmit --pretty"
   },
   "author": "Art.sy Inc",
@@ -56,17 +57,17 @@
     "express-force-ssl": "^0.3.0",
     "express-graphql": "^0.6.1",
     "forever": "^0.15.3",
-    "graphiql": "^0.11.5",
-    "graphql": "^0.11.7",
+    "graphiql": "^0.11.11",
+    "graphql": "^0.13.0",
     "graphql-depth-limit": "^1.1.0",
-    "graphql-relay": "0.5.3",
+    "graphql-relay": "^0.5.4",
     "graphql-tools": "^2.8.0",
     "graphql-type-json": "^0.1.4",
     "i": "^0.3.5",
     "jwt-simple": "^0.5.0",
     "lodash": "^4.3.0",
+    "longjohn": "^0.2.12",
     "marked": "^0.3.9",
-    "memjs": "^0.10.0",
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
     "node-fetch": "^1.7.3",
@@ -78,13 +79,14 @@
     "qs": "^5.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
+    "redis": "^2.8.0",
     "relay-cursor-paging": "^0.2.0",
     "request": "^2.67.0",
     "source-map-support": "^0.4.3",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
-    "@artsy/express-reloadable": "^1.2.0",
+    "@artsy/express-reloadable": "^1.2.3",
     "@types/express-graphql": "^0.0.35",
     "@types/graphql": "^0.8.2",
     "@types/jest": "^21",

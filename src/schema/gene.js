@@ -1,7 +1,6 @@
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import Artwork from "./artwork"
 import Artist, { artistConnection } from "./artist"
@@ -49,8 +48,13 @@ export const GeneType = new GraphQLObjectType({
       cached,
       artists: {
         type: new GraphQLList(Artist.type),
-        resolve: ({ id }) => {
-          return gravity(`gene/${id}/artists`, {
+        resolve: (
+          { id },
+          options,
+          request,
+          { rootValue: { geneArtistsLoader } }
+        ) => {
+          return geneArtistsLoader(id, {
             exclude_artists_without_artworks: true,
           })
         },
@@ -58,19 +62,22 @@ export const GeneType = new GraphQLObjectType({
       artists_connection: {
         type: artistConnection,
         args: pageable(),
-        resolve: ({ id, counts }, options) => {
+        resolve: (
+          { id, counts },
+          options,
+          request,
+          { rootValue: { geneArtistsLoader } }
+        ) => {
           const parsedOptions = _.omit(parseRelayOptions(options), "page")
           const gravityOptions = _.extend(parsedOptions, {
             exclude_artists_without_artworks: true,
           })
-          return gravity(`gene/${id}/artists`, gravityOptions).then(
-            response => {
-              return connectionFromArraySlice(response, options, {
-                arrayLength: counts.artists,
-                sliceStart: gravityOptions.offset,
-              })
-            }
-          )
+          return geneArtistsLoader(id, gravityOptions).then(response => {
+            return connectionFromArraySlice(response, options, {
+              arrayLength: counts.artists,
+              sliceStart: gravityOptions.offset,
+            })
+          })
         },
       },
       artworks_connection: {
@@ -83,7 +90,12 @@ export const GeneType = new GraphQLObjectType({
           },
         }).connectionType,
         args: pageable(filterArtworksArgs),
-        resolve: ({ id }, options, request, { rootValue: { accessToken } }) => {
+        resolve: (
+          { id },
+          options,
+          request,
+          { rootValue: { filterArtworksLoader } }
+        ) => {
           const gravityOptions = parseRelayOptions(options)
           // Do some massaging of the options for ElasticSearch
           gravityOptions.aggregations = options.aggregations || []
@@ -100,9 +112,8 @@ export const GeneType = new GraphQLObjectType({
            *        that compose authenticated and unauthenticated loaders based on the request?
            *        Here’s an example of such a setup https://gist.github.com/alloy/69bb274039ecd552de76c3f1739c519e
            */
-          return gravity
-            .with(accessToken)("filter/artworks", gravityOptions)
-            .then(({ aggregations, hits }) => {
+          return filterArtworksLoader(gravityOptions).then(
+            ({ aggregations, hits }) => {
               return Object.assign(
                 { aggregations }, // Add data to connection so the `aggregations` connection field can resolve it
                 connectionFromArraySlice(hits, options, {
@@ -110,7 +121,8 @@ export const GeneType = new GraphQLObjectType({
                   sliceStart: gravityOptions.offset,
                 })
               )
-            })
+            }
+          )
         },
       },
       description: {
@@ -184,8 +196,13 @@ export const GeneType = new GraphQLObjectType({
             type: GraphQLInt,
           },
         },
-        resolve: ({ id }, options) => {
-          return gravity(`artists/trending`, {
+        resolve: (
+          { id },
+          options,
+          request,
+          { rootValue: { trendingArtistsLoader } }
+        ) => {
+          return trendingArtistsLoader({
             gene: id,
           }).then(artists => {
             if (_.has(options, "sample")) {
@@ -207,12 +224,17 @@ const Gene = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, _request, { fieldNodes }) => {
+  resolve: (
+    _root,
+    { id },
+    _request,
+    { fieldNodes, rootValue: { geneLoader } }
+  ) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ["filtered_artworks", "id", "__id"]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return gravity(`gene/${id}`)
+      return geneLoader(id)
     }
 
     // The family and browsable are here so that the type system's `isTypeOf`
