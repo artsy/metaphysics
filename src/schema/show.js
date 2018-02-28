@@ -3,7 +3,6 @@ import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { isExisty, exclude, existyValue, parseRelayOptions } from "lib/helpers"
 import { find, has } from "lodash"
-import total from "lib/loaders/legacy/total"
 import HTTPError from "lib/http_error"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
@@ -198,8 +197,17 @@ export const ShowType = new GraphQLObjectType({
                 description: "The slug or ID of an artist in the show.",
               },
             },
-            resolve: ({ id, partner }, options) => {
-              return total(`partner/${partner.id}/show/${id}/artworks`, options)
+            resolve: (
+              { id, partner },
+              options,
+              request,
+              { rootValue: { partnerShowArtworksLoader } }
+            ) => {
+              return totalViaLoader(
+                partnerShowArtworksLoader,
+                { partner_id: partner.id, show_id: id },
+                options
+              )
             },
           },
           eligible_artworks: numeral(
