@@ -8,7 +8,7 @@ export default (src, mode, width, height) => {
       width,
       height,
       key: EMBEDLY_KEY,
-      quality: 95,
+      quality: 80,
     },
     resize: {
       grow: false,
@@ -16,7 +16,7 @@ export default (src, mode, width, height) => {
       width,
       height,
       key: EMBEDLY_KEY,
-      quality: 95,
+      quality: 80,
     },
   }
 

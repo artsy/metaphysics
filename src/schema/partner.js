@@ -1,6 +1,5 @@
 import { assign, has, omit } from "lodash"
 import { exclude } from "lib/helpers"
-import gravity from "lib/loaders/legacy/gravity"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import Profile from "./profile"
@@ -64,9 +63,14 @@ const PartnerType = new GraphQLObjectType({
             type: new GraphQLList(GraphQLString),
           },
         },
-        resolve: ({ id }, options) => {
-          return gravity(
-            `partner/${id}/artworks`,
+        resolve: (
+          { id },
+          options,
+          request,
+          { rootValue: { partnerArtworksLoader } }
+        ) => {
+          return partnerArtworksLoader(
+            id,
             assign({}, options, {
               published: true,
             })
@@ -171,8 +175,12 @@ const PartnerType = new GraphQLObjectType({
             defaultValue: 25,
           },
         },
-        resolve: ({ id }, options) =>
-          gravity(`partner/${id}/locations`, options),
+        resolve: (
+          { id },
+          options,
+          request,
+          { rootValue: { partnerLocationsLoader } }
+        ) => partnerLocationsLoader(id, options),
       },
       name: {
         type: GraphQLString,
@@ -180,8 +188,12 @@ const PartnerType = new GraphQLObjectType({
       },
       profile: {
         type: Profile.type,
-        resolve: ({ default_profile_id }) =>
-          gravity(`profile/${default_profile_id}`).catch(() => null),
+        resolve: (
+          { default_profile_id },
+          options,
+          request,
+          { rootValue: { profileLoader } }
+        ) => profileLoader(default_profile_id).catch(() => null),
       },
       shows: {
         type: PartnerShows.type,

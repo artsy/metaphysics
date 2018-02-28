@@ -1,26 +1,9 @@
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("BidderStatus type", () => {
-  const Me = schema.__get__("Me")
-  const BidderStatus = Me.__get__("BidderStatus")
-
-  let gravity
-
-  beforeEach(() => {
-    gravity = sinon.stub()
-    gravity.with = sinon.stub().returns(gravity)
-    BidderStatus.__Rewire__("gravity", gravity)
-  })
-
-  afterEach(() => {
-    BidderStatus.__ResetDependency__("gravity")
-  })
-
   it("returns the correct state when you are the high bidder on a work", () => {
-    gravity
-      // LotStanding fetch
-      .returns(
+    const rootValue = {
+      lotStandingLoader: sinon.stub().returns(
         Promise.resolve([
           {
             sale_artwork: {
@@ -55,8 +38,8 @@ describe("BidderStatus type", () => {
             },
           },
         ])
-      )
-
+      ),
+    }
     const query = `
       {
         me {
@@ -73,7 +56,7 @@ describe("BidderStatus type", () => {
       }
     `
 
-    return runAuthenticatedQuery(query).then(({ me }) => {
+    return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
       expect(me).toEqual({
         bidder_status: {
           is_highest_bidder: true,
@@ -85,10 +68,8 @@ describe("BidderStatus type", () => {
   })
 
   it("returns the correct state when you are outbid on a work", () => {
-    gravity
-      // LotStanding fetch
-      .onCall(0)
-      .returns(
+    const rootValue = {
+      lotStandingLoader: sinon.stub().returns(
         Promise.resolve([
           {
             sale_artwork: {
@@ -107,7 +88,8 @@ describe("BidderStatus type", () => {
             },
           },
         ])
-      )
+      ),
+    }
 
     const query = `
       {
@@ -125,7 +107,7 @@ describe("BidderStatus type", () => {
       }
     `
 
-    return runAuthenticatedQuery(query).then(({ me }) => {
+    return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
       expect(me).toEqual({
         bidder_status: {
           is_highest_bidder: false,

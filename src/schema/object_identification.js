@@ -51,6 +51,7 @@ const SupportedTypes = {
     "./partner_show",
     "./show",
     "./sale",
+    "./collection",
   ],
 }
 

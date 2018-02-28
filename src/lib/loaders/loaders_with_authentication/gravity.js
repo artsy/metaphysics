@@ -19,6 +19,7 @@ export default (accessToken, userID, requestIDs) => {
       { user_id: userID },
       { headers: true }
     ),
+    collectorProfileLoader: gravityLoader("me/collector_profile"),
     followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
     followedArtistLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/artists"),
@@ -66,7 +67,11 @@ export default (accessToken, userID, requestIDs) => {
       "artworks",
       "is_saved"
     ),
-    saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`),
+    saleArtworksLoader: gravityLoader(
+      id => `sale/${id}/sale_artworks`,
+      {},
+      { headers: true }
+    ),
     filterArtworksLoader: gravityLoader("filter/artworks"),
     saleArtworksAllLoader: gravityLoader(
       "sale_artworks",

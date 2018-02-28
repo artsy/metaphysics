@@ -1,5 +1,4 @@
 import date from "schema/fields/date"
-import gravity from "lib/loaders/legacy/gravity"
 import { IDFields } from "schema/object_identification"
 import {
   GraphQLObjectType,
@@ -39,8 +38,13 @@ export const CollectorProfileType = new GraphQLObjectType({
 export default {
   type: CollectorProfileType,
   decription: "A collector profile.",
-  resolve: (root, option, request, { rootValue: { accessToken } }) => {
+  resolve: (
+    root,
+    option,
+    request,
+    { rootValue: { accessToken, collectorProfileLoader } }
+  ) => {
     if (!accessToken) return null
-    return gravity.with(accessToken)("me/collector_profile")
+    return collectorProfileLoader()
   },
 }

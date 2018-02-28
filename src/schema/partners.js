@@ -1,3 +1,4 @@
+import { clone } from "lodash"
 import Partner from "./partner"
 import PartnerTypeType from "./input_fields/partner_type_type"
 import {
@@ -29,6 +30,9 @@ const Partners = {
     eligible_for_secondary_bucket: {
       type: GraphQLBoolean,
       description: "Indicates tier 3/4 for gallery, 2 for institution",
+    },
+    ids: {
+      type: new GraphQLList(GraphQLString),
     },
     has_full_profile: {
       type: GraphQLBoolean,
@@ -89,8 +93,15 @@ const Partners = {
       type: new GraphQLList(PartnerTypeType),
     },
   },
-  resolve: (root, options, request, { rootValue: { partnersLoader } }) =>
-    partnersLoader(options),
+  resolve: (root, options, request, { rootValue: { partnersLoader } }) => {
+    const cleanedOptions = clone(options)
+    // make ids singular to match gravity :id
+    if (options.ids) {
+      cleanedOptions.id = options.ids
+      delete cleanedOptions.ids
+    }
+    return partnersLoader(cleanedOptions)
+  },
 }
 
 export default Partners

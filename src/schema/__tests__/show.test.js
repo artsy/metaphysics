@@ -4,17 +4,13 @@ import { runQuery } from "test/utils"
 
 describe("Show type", () => {
   const Show = schema.__get__("Show")
-  const ExternalPartner = schema.__get__("ExternalPartner")
   let total = null
-  let gravity = null
-  let galaxy = null
   let showData = null
+  let rootValue = null
   let galaxyData = null
 
   beforeEach(() => {
-    gravity = sinon.stub()
     total = sinon.stub()
-    galaxy = sinon.stub()
 
     showData = {
       id: "new-museum-1-2015-triennial-surround-audience",
@@ -30,23 +26,22 @@ describe("Show type", () => {
       is_reference: true,
       name: " Whitespace Abounds ",
     }
-    gravity.returns(Promise.resolve(showData))
 
     galaxyData = {
       id: "1",
       name: "Galaxy Partner",
       _links: "blah",
     }
-    galaxy.returns(Promise.resolve(galaxyData))
 
-    Show.__Rewire__("gravity", gravity)
-    ExternalPartner.__Rewire__("galaxy", galaxy)
+    rootValue = {
+      showLoader: sinon.stub().returns(Promise.resolve(showData)),
+      galaxyGalleriesLoader: sinon.stub().returns(Promise.resolve(galaxyData)),
+      partnerShowLoader: sinon.stub().returns(Promise.resolve(showData)),
+    }
     Show.__Rewire__("total", total)
   })
 
   afterEach(() => {
-    Show.__ResetDependency__("gravity")
-    ExternalPartner.__ResetDependency__("galaxy")
     Show.__ResetDependency__("total")
   })
 
@@ -59,7 +54,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           has_location: true,
@@ -76,7 +71,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           has_location: true,
@@ -93,7 +88,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           has_location: true,
@@ -109,7 +104,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           has_location: false,
@@ -127,7 +122,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query)
+    return runQuery(query, rootValue)
       .then(() => {
         throw new Error("Did not expect query to not throw an error")
       })
@@ -145,7 +140,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             name: "Whitespace Abounds",
@@ -163,7 +158,7 @@ describe("Show type", () => {
         }
       `
       showData.name = null
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             name: null,
@@ -184,7 +179,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             city: "Quonochontaug",
@@ -202,7 +197,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             city: "Quonochontaug",
@@ -222,7 +217,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "fair",
@@ -240,7 +235,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "solo",
@@ -258,7 +253,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "group",
@@ -276,7 +271,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "solo",
@@ -294,7 +289,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "group",
@@ -313,7 +308,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "group",
@@ -333,7 +328,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             href: "/show/new-museum-1-2015-triennial-surround-audience",
@@ -349,7 +344,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             href: null,
@@ -373,7 +368,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           partner: {
@@ -398,7 +393,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           partner: null,
@@ -418,11 +413,7 @@ describe("Show type", () => {
       }
     `
 
-    return runQuery(query).then(data => {
-      expect(Show.__get__("gravity").args[0][0]).toBe(
-        "show/new-museum-1-2015-triennial-surround-audience"
-      )
-
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           id: "new-museum-1-2015-triennial-surround-audience",
@@ -442,7 +433,7 @@ describe("Show type", () => {
       }
     `
 
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           exhibition_period: "Feb 25 – May 24, 2015",
@@ -459,7 +450,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           status_update: "Closing tomorrow",
@@ -475,10 +466,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
-      expect(Show.__get__("gravity").args[0][0]).toBe(
-        "show/new-museum-1-2015-triennial-surround-audience"
-      )
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
@@ -497,7 +485,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           counts: {
@@ -517,7 +505,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           counts: {
@@ -538,7 +526,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(data => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           counts: {
@@ -549,7 +537,9 @@ describe("Show type", () => {
     })
   })
   it("does not return errors when there is no cover image", () => {
-    gravity.onCall(1).returns(Promise.resolve([]))
+    rootValue.partnerShowArtworksLoader = sinon
+      .stub()
+      .returns(Promise.resolve([]))
     const query = `
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -559,7 +549,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query).then(({ show }) => {
+    return runQuery(query, rootValue).then(({ show }) => {
       expect(show).toEqual({
         cover_image: null,
       })
