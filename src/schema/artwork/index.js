@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { isTwoDimensional, isTooBig, isEmbeddedVideo, embed } from "./utilities"
-import { enhance, existyValue, isExisty, capitalizeFirstCharacter } from "lib/helpers"
+import { enhance, existyValue, isExisty } from "lib/helpers"
 import { connectionDefinitions } from "graphql-relay"
 import cached from "schema/fields/cached"
 import { markdown } from "schema/fields/markdown"
@@ -29,6 +29,9 @@ import {
   GraphQLList,
   GraphQLInt,
 } from "graphql"
+import AttributionClass from "schema/types/attribution_class"
+// Mapping of attribution_class ids to AttributionClass values
+import attributionClasses from "../../lib/attribution_classes.js"
 
 const is_inquireable = ({ inquireable, acquireable }) => {
   return inquireable && !acquireable
@@ -123,84 +126,11 @@ export const artworkFields = () => {
       type: GraphQLString,
     },
     attribution_class: {
-      type: GraphQLString,
-      description: "Attribution class as classification name",
-      resolve: artwork => {
-        if (artwork.attribution_class) {
-          return capitalizeFirstCharacter(artwork.attribution_class)
-        }
-      },
-    },
-    attribution_class_hover: {
-      type: GraphQLString,
-      description: "Descriptive sentance used as companion for attribution class name display",
-      resolve: artwork => {
-        switch (artwork.attribution_class) {
-          case "editioned multiple": return "High quantity editions, without direct artist involvement."
-          case "ephemera": return "Peripheral artifacts related to the artist."
-          case "limited edition": return "Original works created in multiple."
-          case "made-to-order": return "A made-to-order piece."
-          case "non-editioned multiple": return "Works made in unlimited or unknown numbers of copies."
-          case "reproduction": return "Reproduction authorized by artist’s studio or estate."
-          case "unique": return "One of a kind piece."
-          default: return null
-        }
-      },
-    },
-    attribution_short_description: {
-      type: GraphQLString,
-      description: "Short description of attribution class",
-      resolve: artwork => {
-        switch (artwork.attribution_class) {
-          case "editioned multiple": return "This is an editioned multiple."
-          case "ephemera": return "This is a peripheral artifact related to the artist."
-          case "limited edition": return "This is part of a limited edition set."
-          case "made-to-order": return "This is a made-to-order piece."
-          case "non-editioned multiple": return "This is a non-editioned multiple."
-          case "reproduction": return "This work is a reproduction."
-          case "unique": return "This is a unique work."
-          default: return null
-        }
-      },
-    },
-    attribution_long_description: {
-      type: GraphQLString,
-      description: "Long description of attribution class",
-      resolve: artwork => {
-        switch (artwork.attribution_class) {
-          case "editioned multiple": {
-            return [
-              "Pieces created in larger limited editions, authorized by the artist’s studio or estate.",
-              "Not produced with direct involvement of the artist.",
-            ].join(" ")
-          }
-          case "ephemera": {
-            return [
-              "Peripheral artifacts related to the artist.",
-              "Exhibition materials, memorabilia, photos of the artist, autographs, etc.",
-            ].join(" ")
-          }
-          case "limited edition": {
-            return [
-              "Original works created in multiple with direct involvement of the artist.",
-              "Generally, less than 150 pieces total.",
-            ].join(" ")
-          }
-          case "made-to-order": return "A piece that is made-to-order, taking into account the collector’s preferences."
-          case "non-editioned multiple": {
-            return [
-              "Works made in unlimited or unknown numbers of copies, authorized by the artist’s studio or estate.",
-              "Not produced with direct involvement of the artist.",
-            ].join(" ")
-          }
-          case "reproduction": {
-            return [
-              "Reproduction of an original work authorized by artist’s studio or estate.",
-              "The artist was not directly involved in production.",
-            ].join(" ")
-          }
-          case "unique": return "One of a kind piece, created by the artist."
-          default: return null
+      type: AttributionClass,
+      description: "Attribution class object",
+      resolve: ({ attribution_class }) => {
+        if (attribution_class) {
+          return attributionClasses[attribution_class]
         }
       },
     },
