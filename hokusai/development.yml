@@ -5,7 +5,6 @@ services:
     extends:
       file: common.yml
       service: metaphysics
-    command: node_modules/.bin/babel-node --inspect index.js
     environment:
     - REDIS_URL=redis://metaphysics-redis:6379
     env_file: ../.env
