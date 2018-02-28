@@ -1,8 +1,9 @@
 import jwt from "jwt-simple"
 import { omit } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "test/utils"
+import config from "config"
 
-const { HMAC_SECRET } = process.env
+const { HMAC_SECRET } = config
 
 describe("CausalityJWT", () => {
   let rootValue

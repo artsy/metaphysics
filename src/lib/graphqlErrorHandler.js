@@ -1,8 +1,9 @@
-const isProduction = process.env.NODE_ENV === "production"
+import config from "config"
+const isProduction = config.NODE_ENV === "production"
 
 export default function graphqlErrorHandler() {
   // export default function graphqlErrorHandler(query) {
-  // if (process.env.NEW_RELIC_LICENSE_KEY) {
+  // if (config.NEW_RELIC_LICENSE_KEY) {
   //   const newrelic = require("newrelic")
   //   return graphqlError => {
   //     const error = graphqlError.originalError || graphqlError

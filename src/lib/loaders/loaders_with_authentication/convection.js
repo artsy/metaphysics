@@ -1,7 +1,8 @@
 // @ts-check
 import factories from "../api"
+import config from "config"
 
-const { CONVECTION_APP_ID } = process.env
+const { CONVECTION_APP_ID } = config
 
 export default (accessToken, requestIDs) => {
   let convectionTokenLoader

@@ -1,6 +1,7 @@
 // @ts-check
 
 import fetch from "./fetch"
-const { POSITRON_API_BASE } = process.env
+import config from "config"
 
 export default path => fetch(`${POSITRON_API_BASE}/${path}`)
+const { POSITRON_API_BASE } = config

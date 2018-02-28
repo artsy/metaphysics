@@ -11,6 +11,10 @@ import fetch from "node-fetch"
 import localSchema from "../schema"
 import { headers as requestIDHeaders } from "./requestIDs"
 
+import config from "config"
+
+const { CONVECTION_API_BASE } = config
+
 export function createConvectionLink() {
   const httpLink = createHttpLink({
     fetch,

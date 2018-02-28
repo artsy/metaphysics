@@ -1,7 +1,8 @@
 import qs from "qs"
 import { isExisty } from "lib/helpers"
+import config from "config"
 
-const { GEMINI_ENDPOINT } = process.env
+const { GEMINI_ENDPOINT } = config
 
 function resizeTo(mode, width, height) {
   if (mode === "crop") {

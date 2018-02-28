@@ -4,8 +4,7 @@ import { error, verbose } from "./loggers"
 import redis from "redis"
 import url from "url"
 
-const { NODE_ENV, REDIS_URL } = process.env
-const { CACHE_LIFETIME_IN_SECONDS } = config
+const { NODE_ENV, REDIS_URL, CACHE_LIFETIME_IN_SECONDS } = config
 
 const isTest = NODE_ENV === "test"
 

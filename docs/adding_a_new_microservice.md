@@ -13,7 +13,7 @@ Let's pretend we're mapping an API called `Three Body` which uses Gravity to gen
    THREE_BODY_GEMINI_TEMPLATE="three-body-submission"
    ```
 
-   These will need to be added to : Your `.env`, `.env.example`, `.env.test` and the live environments.
+   These will need to be added to : Your `.env`, `.env.example`, `.env.test` and the live environments, as well as included in `./src/config.js`
 
 1. Create an API: `lib/apis/threeBody.js`
 
@@ -23,8 +23,9 @@ Let's pretend we're mapping an API called `Three Body` which uses Gravity to gen
    ```js
    import { assign } from "lodash"
    import fetch from "./fetch"
+   import config from "config"
 
-   const { THREE_BODY_API_BASE } = process.env
+   const { THREE_BODY_API_BASE } = config
 
    export default (path, accessToken, fetchOptions = {}) => {
      const headers = {}
@@ -37,7 +38,7 @@ Let's pretend we're mapping an API called `Three Body` which uses Gravity to gen
 
    ```js
    import fetch from "./fetch"
-   const { THREE_BODY_API_BASE } = process.env
+   const { THREE_BODY_API_BASE } = config
 
    export default path => fetch(`${THREE_BODY_API_BASE}/${path}`)
    ```
@@ -63,7 +64,7 @@ Let's pretend we're mapping an API called `Three Body` which uses Gravity to gen
    ```js
    import { gravityLoaderWithAuthenticationFactory, threeBodyLoaderWithAuthenticationFactory } from "../api"
 
-   const { THREE_BODY_APP_ID } = process.env
+   const { THREE_BODY_APP_ID } = config
 
    export default accessToken => {
      let threeBodyTokenLoader
@@ -122,7 +123,7 @@ Let's pretend we're mapping an API called `Three Body` which uses Gravity to gen
      description: "The schema for Three Body's ENV settings",
      args: {},
      resolve: () => ({
-       threeBodyTemplateKey: process.env.THREE_BODY_GEMINI_TEMPLATE,
+       threeBodyTemplateKey: config.THREE_BODY_GEMINI_TEMPLATE,
      }),
    }
 

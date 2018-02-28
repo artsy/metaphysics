@@ -1,5 +1,6 @@
 // @ts-check
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
+import config from "config"
 
 const ConvectionSchema = new GraphQLObjectType({
   name: "Convection",
@@ -15,7 +16,7 @@ const Convection = {
   description: "The schema for convection's ENV settings",
   args: {},
   resolve: () => ({
-    geminiTemplateKey: process.env.CONVECTION_GEMINI_TEMPLATE,
+    geminiTemplateKey: config.CONVECTION_GEMINI_TEMPLATE,
   }),
 }
 

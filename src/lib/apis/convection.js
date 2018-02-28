@@ -1,8 +1,9 @@
 // @ts-check
 import { assign } from "lodash"
 import fetch from "./fetch"
+import config from "config"
 
-const { CONVECTION_API_BASE } = process.env
+const { CONVECTION_API_BASE } = config
 
 export default (path, accessToken, fetchOptions = {}) => {
   const headers = { Accept: "application/json" }

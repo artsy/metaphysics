@@ -4,7 +4,7 @@ import fetch from "./fetch"
 import config from "config"
 import { headers as requestIDHeaders } from "../requestIDs"
 
-const { GRAVITY_API_BASE } = process.env
+const { GRAVITY_API_BASE } = config
 
 export default (path, accessToken, fetchOptions = {}) => {
   const headers = { "X-XAPP-TOKEN": config.GRAVITY_XAPP_TOKEN }

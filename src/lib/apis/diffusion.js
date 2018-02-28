@@ -1,8 +1,9 @@
 // @ts-check
 import { assign } from "lodash"
 import fetch from "./fetch"
+import config from "config"
 
-const { DIFFUSION_API_BASE, DIFFUSION_TOKEN } = process.env
+const { DIFFUSION_API_BASE, DIFFUSION_TOKEN } = config
 
 export default (path, _accessToken, fetchOptions = {}) => {
   const headers = { Accept: "application/json" }
