@@ -6,7 +6,7 @@ RUN apk update && apk upgrade && apk add alpine-sdk
 RUN adduser -D -g '' deploy
 RUN mkdir -p /app
 
-RUN npm install -g yarn@1.1.0
+RUN npm install -g yarn@1.0.1
 
 # Set up /app for deploy user
 ADD . /app
