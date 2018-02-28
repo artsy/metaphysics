@@ -20,14 +20,24 @@ spec:
       namespace: default
     spec:
       containers:
-        - name: metaphysics-web
-          envFrom:
-          - configMapRef:
-              name: metaphysics-environment
-          image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:production
-          imagePullPolicy: Always
-          ports:
-          - containerPort: 3000
+      - name: metaphysics-web
+        envFrom:
+        - configMapRef:
+            name: metaphysics-environment
+        image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:production
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: tier
+                operator: In
+                values:
+                - foreground
 ---
 apiVersion: v1
 kind: Service
