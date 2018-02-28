@@ -1,5 +1,4 @@
 import "moment-timezone"
-import "artsy-newrelic"
 import Bluebird from "bluebird"
 import xapp from "artsy-xapp"
 import compression from "compression"
