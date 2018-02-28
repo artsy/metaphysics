@@ -1,0 +1,19 @@
+---
+version: '2'
+services:
+  metaphysics:
+    depends_on:
+    - metaphysics-memcached
+    environment:
+    - NODE_ENV=development
+    - MEMCACHE_SERVERS=metaphysics-memcached:11211
+    - ENABLE_QUERY_TRACING=false
+    extends:
+      file: common.yml
+      service: metaphysics
+    ports:
+    - 5001:5001
+  metaphysics-memcached:
+    image: memcached
+    ports:
+    - 11211:11211
