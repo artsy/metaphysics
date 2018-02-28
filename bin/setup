@@ -3,7 +3,7 @@
 # Exit if any subcommand fails
 set -e
 
-STEPS=5
+STEPS=3
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -47,20 +47,11 @@ fi
 
 # STEP 2
 printf "${CLEAR_LINE}[2/${STEPS}]  installing packages"
-yarn install > /dev/null
+yarn install
 
 # STEP 3
-printf "${CLEAR_LINE}[3/${STEPS}]  adding remotes"
-git remote add staging git@heroku.com:artsy-metaphysics-staging.git
-git remote add production git@heroku.com:artsy-metaphysics-production.git
-
-# STEP 4
-printf "${CLEAR_LINE}[4/${STEPS}]  fetching remotes"
-git fetch --all --quiet > /dev/null
-
-# STEP 5
 printf "${CLEAR_LINE}[5/${STEPS}]  setting up dotenv"
-cp .env{.test,}
+cp .env.example .env
 
 # FINISH
 printf "${CLEAR_LINE}[${STEPS}/${STEPS}]${GREEN}  finished!${NO_COLOR}\n"
