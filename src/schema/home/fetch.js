@@ -1,5 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
-import delta from "lib/loaders/legacy/delta"
 import {
   clone,
   first,
@@ -13,8 +11,8 @@ import {
 } from "lodash"
 import blacklist from "lib/artist_blacklist"
 
-export const featuredFair = () => {
-  return gravity("fairs", {
+export const featuredFair = fairsLoader => {
+  fairsLoader({
     size: 5,
     active: true,
     has_homepage_section: true,
@@ -31,19 +29,18 @@ export const featuredFair = () => {
   })
 }
 
-export const activeSaleArtworks = accessToken => {
-  return gravity
-    .with(accessToken)("me/lot_standings", {
-      live: true,
-    })
+export const activeSaleArtworks = lotStandingLoader => {
+  return lotStandingLoader({
+    live: true,
+  })
     .then(results => {
       return results.map(result => result.sale_artwork)
     })
     .then(sale_artworks => map(sale_artworks, "artwork"))
 }
 
-export const featuredAuction = () => {
-  return gravity("sales", {
+export const featuredAuction = salesLoader => {
+  return salesLoader({
     live: true,
     size: 1,
     sort: "timely_at,name",
@@ -54,20 +51,20 @@ export const featuredAuction = () => {
   })
 }
 
-export const followedGenes = (accessToken, size) => {
-  return gravity.with(accessToken)("me/follow/genes", { size })
+export const followedGenes = (followedGenesLoader, size) => {
+  return followedGenesLoader({ size }).then(({ body }) => body)
 }
 
-export const featuredGene = accessToken => {
-  return followedGenes(accessToken, 1).then(follows => {
+export const featuredGene = followedGenesLoader => {
+  return followedGenes(followedGenesLoader, 1).then(follows => {
     if (follows.length) {
       return first(follows).gene
     }
   })
 }
 
-export const geneArtworks = (id, size) => {
-  return gravity("filter/artworks", {
+export const geneArtworks = (filterArtworksLoader, id, size) => {
+  return filterArtworksLoader({
     gene_id: id,
     for_sale: true,
     size: 60,
@@ -76,23 +73,21 @@ export const geneArtworks = (id, size) => {
   })
 }
 
-export const relatedArtists = (accessToken, userID) => {
-  return gravity
-    .with(accessToken)(`user/${userID}/suggested/similar/artists`, {
-      exclude_artists_without_forsale_artworks: true,
-      exclude_followed_artists: true,
-      size: 20,
+export const relatedArtists = suggestedSimilarArtistsLoader => {
+  return suggestedSimilarArtistsLoader({
+    exclude_artists_without_forsale_artworks: true,
+    exclude_followed_artists: true,
+    size: 20,
+  }).then(results => {
+    const filteredResults = filter(results, result => {
+      return result.sim_artist.forsale_artworks_count > 0
     })
-    .then(results => {
-      const filteredResults = filter(results, result => {
-        return result.sim_artist.forsale_artworks_count > 0
-      })
-      return sampleSize(filteredResults, 2)
-    })
+    return sampleSize(filteredResults, 2)
+  })
 }
 
-export const popularArtists = () => {
-  return delta("/", {
+export const popularArtists = deltaLoader => {
+  return deltaLoader({
     method: "fetch",
     n: 9,
     name: "artist_follow_2t",

@@ -21,7 +21,7 @@ export default requestIDs => {
     filterArtworksLoader: gravityLoader("filter/artworks"),
     geneArtistsLoader: gravityLoader(id => `gene/${id}/artists`),
     geneFamiliesLoader: gravityLoader("gene_families"),
-    geneLoader: gravityLoader(id => `/gene/${id}`),
+    geneLoader: gravityLoader(id => `gene/${id}`),
     heroUnitsLoader: gravityLoader("site_hero_units"),
     incrementsLoader: gravityLoader("increments"),
     matchGeneLoader: gravityLoader("match/genes"),

@@ -1,5 +1,4 @@
 import { create, assign } from "lodash"
-import gravity from "lib/loaders/legacy/gravity"
 import {
   featuredAuction,
   featuredFair,
@@ -66,29 +65,27 @@ export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType({
 })
 
 export const moduleContext = {
-  popular_artists: () => {
-    return popularArtists().then(trending => {
+  popular_artists: ({ rootValue: { deltaLoader } }) => {
+    return popularArtists(deltaLoader).then(trending => {
       return assign({}, trending, { context_type: "Trending" })
     })
   },
   active_bids: () => null,
-  followed_artists: ({ rootValue: { accessToken } }) => {
-    return gravity
-      .with(accessToken)("me/follow/artists", { size: 9, page: 1 })
-      .then(artists => {
-        return assign({}, { artists }, { context_type: "FollowArtists" })
-      })
+  followed_artists: ({ rootValue: { followedArtistsLoader } }) => {
+    return followedArtistsLoader({ size: 9, page: 1 }).then(({ body }) => {
+      return assign({}, body, { context_type: "FollowArtists" })
+    })
   },
   followed_galleries: () => null,
   saved_works: () => null,
   recommended_works: () => null,
-  live_auctions: () => {
-    return featuredAuction().then(sale => {
+  live_auctions: ({ rootValue: { salesLoader } }) => {
+    return featuredAuction(salesLoader).then(sale => {
       return assign({}, sale, { context_type: "Sale" })
     })
   },
-  current_fairs: () => {
-    return featuredFair().then(fair => {
+  current_fairs: ({ rootValue: { fairsLoader } }) => {
+    return featuredFair(fairsLoader).then(fair => {
       return assign({}, fair, { context_type: "Fair" })
     })
   },
@@ -118,17 +115,17 @@ export const moduleContext = {
       )
     })
   },
-  genes: ({ rootValue: { accessToken }, params: { gene } }) => {
+  genes: ({ rootValue: { followedGenesLoader }, params: { gene } }) => {
     if (gene) {
       return assign({}, gene, { context_type: "Gene" })
     }
     // Backward compatibility for Force.
-    return featuredGene(accessToken).then(fetchedGene => {
+    return featuredGene(followedGenesLoader).then(fetchedGene => {
       return assign({}, fetchedGene, { context_type: "Gene" })
     })
   },
-  generic_gene: ({ params }) => {
-    return gravity(`gene/${params.gene_id}`).then(gene => {
+  generic_gene: ({ rootValue: { geneLoader }, params: { gene_id } }) => {
+    return geneLoader(gene_id).then(gene => {
       return assign({}, gene, { context_type: "Gene" })
     })
   },
