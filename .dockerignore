@@ -1,9 +1,13 @@
 .git
 .gitignore
+.dockerignore
+Dockerfile
+hokusai
 
 README.md
 LICENSE
 VERSION
+docs
 
 .DS_Store
 .AppleDouble
@@ -15,3 +19,4 @@ log
 tmp
 node_modules
 .vscode
+redis.conf
