@@ -2,7 +2,6 @@ import { toKey } from "lib/helpers"
 import gravity from "lib/apis/gravity"
 import httpLoader from "./http"
 import authenticatedHttpLoader from "./authenticated_http"
-import all from "lib/all"
 
 export const gravityLoader = httpLoader(gravity)
 
@@ -25,7 +24,5 @@ load.with = (accessToken, loaderOptions = {}) => {
     return gravityLoader.load(key)
   }
 }
-
-load.all = all
 
 export default load
