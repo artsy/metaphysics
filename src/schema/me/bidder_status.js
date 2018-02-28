@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import { LotStandingType } from "./lot_standing"
 import { GraphQLNonNull, GraphQLString } from "graphql"
 
@@ -17,14 +16,12 @@ export default {
     root,
     { sale_id, artwork_id },
     request,
-    { rootValue: { accessToken } }
+    { rootValue: { lotStandingLoader } }
   ) =>
-    Promise.all([
-      gravity.with(accessToken)("me/lot_standings", {
-        sale_id,
-        artwork_id,
-      }),
-    ]).then(([lotStanding]) => {
+    lotStandingLoader({
+      sale_id,
+      artwork_id,
+    }).then(lotStanding => {
       if (lotStanding.length === 0) return null
       return lotStanding[0]
     }),

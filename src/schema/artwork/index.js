@@ -561,14 +561,24 @@ export const artworkFields = () => {
           type: GraphQLString,
         },
       },
-      resolve: (artwork, { id }) =>
-        artworkLayers(artwork.id).then(
+      resolve: (
+        artwork,
+        { id },
+        request,
+        { rootValue: { relatedLayersLoader } }
+      ) =>
+        artworkLayers(artwork.id, relatedLayersLoader).then(
           layers => (!!id ? _.find(layers, { id }) : _.first(layers))
         ),
     },
     layers: {
       type: ArtworkLayers.type,
-      resolve: ({ id }) => artworkLayers(id),
+      resolve: (
+        { id },
+        options,
+        request,
+        { rootValue: { relatedLayersLoader } }
+      ) => artworkLayers(id, relatedLayersLoader),
     },
     literature: markdown(({ literature }) =>
       literature.replace(/^literature:\s+/i, "")

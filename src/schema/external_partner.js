@@ -1,4 +1,3 @@
-import galaxy from "lib/loaders/legacy/galaxy"
 import { IDFields } from "./object_identification"
 
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
@@ -29,7 +28,14 @@ const ExternalPartner = {
       description: "The ID of the Partner",
     },
   },
-  resolve: id => galaxy(`galleries/${id}`),
+  resolve: (
+    root,
+    { id },
+    request,
+    { rootValue: { galaxyGalleriesLoader } }
+  ) => {
+    return galaxyGalleriesLoader(id)
+  },
 }
 
 export default ExternalPartner

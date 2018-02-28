@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import { map, omit } from "lodash"
 import SaleArtwork from "./sale_artwork"
 import numeral from "./fields/numeral"
@@ -100,8 +99,13 @@ const FilterSaleArtworks = {
   description: "Sale Artworks Elastic Search results",
   deprecationReason: "This type has been superceded by `sale_artworks`",
   args: filterSaleArtworksArgs,
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
-    return gravity.with(accessToken)("filter/sale_artworks", options)
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { saleArtworksFilterLoader } }
+  ) => {
+    return saleArtworksFilterLoader(options)
   },
 }
 

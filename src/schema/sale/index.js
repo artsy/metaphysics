@@ -4,7 +4,6 @@ import Profile from "schema/profile"
 import SaleArtwork from "schema/sale_artwork"
 import cached from "schema/fields/cached"
 import date from "schema/fields/date"
-import gravity from "lib/loaders/legacy/gravity"
 import moment from "moment"
 import { GravityIDFields } from "schema/object_identification"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
@@ -13,6 +12,7 @@ import { amount } from "schema/fields/money"
 import { exclude } from "lib/helpers"
 import { map } from "lodash"
 import { NodeInterface } from "schema/object_identification"
+import { allViaLoader } from "../../lib/all"
 
 import {
   GraphQLString,
@@ -96,19 +96,21 @@ const SaleType = new GraphQLObjectType({
               "List of artwork IDs to exclude from the response (irrespective of size)",
           },
         },
-        resolve: ({ id }, options) => {
+        resolve: (
+          { id },
+          options,
+          request,
+          { rootValue: { saleArtworksLoader } }
+        ) => {
           const invert = saleArtworks => map(saleArtworks, "artwork")
-
+          let fetch = null
           if (options.all) {
-            return gravity
-              .all(`sale/${id}/sale_artworks`, options)
-              .then(invert)
-              .then(exclude(options.exclude, "id"))
+            fetch = allViaLoader(saleArtworksLoader, id, options)
+          } else {
+            fetch = saleArtworksLoader(id, options).then(({ body }) => body)
           }
 
-          return gravity(`sale/${id}/sale_artworks`, options)
-            .then(invert)
-            .then(exclude(options.exclude, "id"))
+          return fetch.then(invert).then(exclude(options.exclude, "id"))
         },
       },
       associated_sale: {
@@ -333,13 +335,14 @@ const SaleType = new GraphQLObjectType({
           request,
           { rootValue: { saleArtworksLoader } }
         ) => {
-          // TODO: Implement additional `allSaleArtworksLoader` loader (or something) to
-          // tap into this legacy request.
+          let fetch = null
           if (options.all) {
-            return gravity.all(`sale/${id}/sale_artworks`, options)
+            fetch = allViaLoader(saleArtworksLoader, id, options)
+          } else {
+            fetch = saleArtworksLoader(id, options).then(({ body }) => body)
           }
 
-          return saleArtworksLoader(id, options)
+          return fetch
         },
       },
       sale_artworks_connection: {
@@ -353,8 +356,8 @@ const SaleType = new GraphQLObjectType({
         ) => {
           const { limit: size, offset } = getPagingParameters(options)
           return saleArtworksLoader(sale.id, { size, offset }).then(
-            saleArtworks =>
-              connectionFromArraySlice(saleArtworks, options, {
+            ({ body }) =>
+              connectionFromArraySlice(body, options, {
                 arrayLength: sale.eligible_sale_artworks_count,
                 sliceStart: offset,
               })

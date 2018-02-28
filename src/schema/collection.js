@@ -51,7 +51,6 @@ export const CollectionType = new GraphQLObjectType({
           parseRelayOptions(options)
         )
         delete gravityOptions.page // this can't also be used with the offset in gravity
-
         return collectionArtworksLoader(id, gravityOptions)
           .then(({ body, headers }) => {
             return connectionFromArraySlice(body, options, {

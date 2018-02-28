@@ -1,58 +1,51 @@
-import schema from "schema"
 import { runQuery } from "test/utils"
 
 describe("Filter Sale Artworks", () => {
-  const FilterSaleArtworks = schema.__get__("FilterSaleArtworks")
-
+  let rootValue = null
   beforeEach(() => {
-    const gravity = sinon.stub()
-    gravity.with = sinon.stub().returns(gravity)
-    gravity
-      .withArgs("filter/sale_artworks", {
-        aggregations: ["total", "medium", "followed_artists", "artist"],
-      })
-      .returns(
-        Promise.resolve({
-          aggregations: {
-            followed_artists: {
-              value: 2,
-            },
-            total: {
-              value: 400,
-            },
-            medium: {
-              prints: {
-                name: "Prints",
-                count: 123,
-              },
-              painting: {
-                name: "Painting",
-                count: 24,
-              },
-            },
-            artist: {
-              "andy-warhol": {
-                name: "Andy Warhol",
-                sortable_id: "warhol-andy",
-              },
-              "donald-judd": {
-                name: "Donald Judd",
-                sortable_id: "judd-donald",
-              },
-              "kara-walker": {
-                name: "Kara Walker",
-                sortable_id: "walker-kara",
-              },
-            },
-          },
+    rootValue = {
+      saleArtworksFilterLoader: sinon
+        .stub()
+        .withArgs("filter/sale_artworks", {
+          aggregations: ["total", "medium", "followed_artists", "artist"],
         })
-      )
-
-    FilterSaleArtworks.__Rewire__("gravity", gravity)
-  })
-
-  afterEach(() => {
-    FilterSaleArtworks.__ResetDependency__("gravity")
+        .returns(
+          Promise.resolve({
+            aggregations: {
+              followed_artists: {
+                value: 2,
+              },
+              total: {
+                value: 400,
+              },
+              medium: {
+                prints: {
+                  name: "Prints",
+                  count: 123,
+                },
+                painting: {
+                  name: "Painting",
+                  count: 24,
+                },
+              },
+              artist: {
+                "andy-warhol": {
+                  name: "Andy Warhol",
+                  sortable_id: "warhol-andy",
+                },
+                "donald-judd": {
+                  name: "Donald Judd",
+                  sortable_id: "judd-donald",
+                },
+                "kara-walker": {
+                  name: "Kara Walker",
+                  sortable_id: "walker-kara",
+                },
+              },
+            },
+          })
+        ),
+    }
   })
 
   it("formats the counts and aggregations, and sorts the artists correctly", () => {
@@ -77,7 +70,7 @@ describe("Filter Sale Artworks", () => {
       }
     `
 
-    return runQuery(query).then(
+    return runQuery(query, rootValue).then(
       ({ filter_sale_artworks: { aggregations, counts } }) => {
         expect(counts).toEqual({ followed_artists: 2, total: 400 })
         expect(aggregations).toEqual([

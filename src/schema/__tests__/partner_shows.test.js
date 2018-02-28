@@ -1,44 +1,6 @@
-import schema from "schema"
 import { runQuery } from "test/utils"
 
 describe("PartnerShows type", () => {
-  const PartnerShows = schema.__get__("PartnerShows")
-  const PartnerShow = PartnerShows.__get__("PartnerShow")
-
-  beforeEach(() => {
-    const gravity = sinon.stub()
-    gravity
-      .onCall(0)
-      .returns(
-        Promise.resolve({
-          artists: [{}],
-          fair: null,
-        })
-      )
-      .onCall(1)
-      .returns(
-        Promise.resolve({
-          artists: [{}, {}],
-          fair: null,
-        })
-      )
-      .onCall(2)
-      .returns(
-        Promise.resolve({
-          artists: [{}],
-          fair: { id: "existy" },
-        })
-      )
-
-    PartnerShows.__Rewire__("gravity", gravity)
-    PartnerShow.__Rewire__("gravity", gravity)
-  })
-
-  afterEach(() => {
-    PartnerShows.__ResetDependency__("gravity")
-    PartnerShow.__ResetDependency__("gravity")
-  })
-
   describe("#kind", () => {
     it("returns the correct computed `kind` field for each show", () => {
       const query = `
@@ -76,6 +38,26 @@ describe("PartnerShows type", () => {
             },
           ])
         ),
+        partnerShowLoader: jest
+          .fn()
+          .mockReturnValueOnce(
+            Promise.resolve({
+              artists: [{}],
+              fair: null,
+            })
+          )
+          .mockReturnValueOnce(
+            Promise.resolve({
+              artists: [{}, {}],
+              fair: null,
+            })
+          )
+          .mockReturnValueOnce(
+            Promise.resolve({
+              artists: [{}],
+              fair: { id: "existy" },
+            })
+          ),
       }
 
       return runQuery(query, rootValue).then(data => {
