@@ -1,4 +1,5 @@
 import { assign } from "lodash"
+import _ from "lodash"
 import moment from "moment"
 
 import schema from "schema"
@@ -933,6 +934,142 @@ describe("Artwork type", () => {
           artwork: {
             title: "Untitled",
           },
+        })
+      })
+    })
+  })
+
+  describe("Attribution class", () => {
+    const attributionClasses = {
+      unique: {
+        name: "Unique",
+        hover: "One of a kind piece.",
+        short_description: "This is a unique work.",
+        long_description: "One of a kind piece, created by the artist.",
+      },
+      "limited edition": {
+        name: "Limited edition",
+        hover: "Original works created in multiple.",
+        short_description: "This is part of a limited edition set.",
+        long_description: [
+          "Original works created in multiple with direct involvement of the artist.",
+          "Generally, less than 150 pieces total.",
+        ].join(" "),
+      },
+      "made-to-order": {
+        name: "Made-to-order",
+        hover: "A made-to-order piece.",
+        short_description: "This is a made-to-order piece.",
+        long_description: "A piece that is made-to-order, taking into account the collector’s preferences.",
+      },
+      reproduction: {
+        name: "Reproduction",
+        hover: "Reproduction authorized by artist’s studio or estate.",
+        short_description: "This work is a reproduction.",
+        long_description: [
+          "Reproduction of an original work authorized by artist’s studio or estate.",
+          "The artist was not directly involved in production.",
+        ].join(" "),
+      },
+      "editioned multiple": {
+        name: "Editioned multiple",
+        hover: "High quantity editions, without direct artist involvement.",
+        short_description: "This is an editioned multiple.",
+        long_description: [
+          "Pieces created in larger limited editions, authorized by the artist’s studio or estate.",
+          "Not produced with direct involvement of the artist.",
+        ].join(" "),
+      },
+      "non-editioned multiple": {
+        name: "Non-editioned multiple",
+        hover: "Works made in unlimited or unknown numbers of copies.",
+        short_description: "This is a non-editioned multiple.",
+        long_description: [
+          "Works made in unlimited or unknown numbers of copies, authorized by the artist’s studio or estate.",
+          "Not produced with direct involvement of the artist.",
+        ].join(" "),
+      },
+      ephemera: {
+        name: "Ephemera",
+        hover: "Peripheral artifacts related to the artist.",
+        short_description: "This is a peripheral artifact related to the artist.",
+        long_description: [
+          "Peripheral artifacts related to the artist.",
+          "Exhibition materials, memorabilia, photos of the artist, autographs, etc.",
+        ].join(" "),
+      },
+    }
+
+    _.keys(attributionClasses).forEach(attributionClass => {
+      it(`returns proper attribution class name for ${attributionClass} artwork`, () => {
+        artwork.attribution_class = attributionClass
+        const query = `
+          {
+            artwork(id: "richard-prince-untitled-portrait") {
+              attribution_class
+            }
+          }
+        `
+        return runQuery(query, rootValue).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              attribution_class: attributionClasses[attributionClass].name,
+            },
+          })
+        })
+      })
+
+      it(`returns proper attribution class hover description for ${attributionClass} artwork`, () => {
+        artwork.attribution_class = attributionClass
+        const query = `
+          {
+            artwork(id: "richard-prince-untitled-portrait") {
+              attribution_class_hover
+            }
+          }
+        `
+        return runQuery(query, rootValue).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              attribution_class_hover: attributionClasses[attributionClass].hover,
+            },
+          })
+        })
+      })
+
+      it(`returns proper short desctiption of attribution class for ${attributionClass} artwork`, () => {
+        artwork.attribution_class = attributionClass
+        const query = `
+          {
+            artwork(id: "richard-prince-untitled-portrait") {
+              attribution_short_description
+            }
+          }
+        `
+        return runQuery(query, rootValue).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              attribution_short_description: attributionClasses[attributionClass].short_description,
+            },
+          })
+        })
+      })
+
+      it(`returns proper long description of attribution class for ${attributionClass} artwork`, () => {
+        artwork.attribution_class = attributionClass
+        const query = `
+          {
+            artwork(id: "richard-prince-untitled-portrait") {
+              attribution_long_description
+            }
+          }
+        `
+        return runQuery(query, rootValue).then(data => {
+          expect(data).toEqual({
+            artwork: {
+              attribution_long_description: attributionClasses[attributionClass].long_description,
+            },
+          })
         })
       })
     })
