@@ -13,7 +13,7 @@ Let's pretend we're mapping an API called `Three Body` which uses Gravity to gen
    THREE_BODY_GEMINI_TEMPLATE="three-body-submission"
    ```
 
-   These will need to be added to : Your `.env`, the `.env.test` and the metaphysics Heroku instances.
+   These will need to be added to : Your `.env`, `.env.example`, `.env.test` and the live environments.
 
 1. Create an API: `lib/apis/threeBody.js`
 

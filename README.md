@@ -30,9 +30,8 @@ $ cat bin/setup
 $ bin/setup
 ```
 
-Set up your `.env` file based on our example `.env.test` (the variables you must
-change for development are separated at the bottom). For Artsy staff, grab the
-config from 1Password.
+Set up your `.env` file based on `.env.example`. For Artsy staff, grab the
+keys/secrets from 1Password.
 
 To start up a development server, clone this repo and run:
 
@@ -69,23 +68,4 @@ between `<` and `>`.
 
 ### Deployment
 
-PRs merged to master are deployed to staging via Circle.
-
-We then use the heroku
-[pipelines](https://blog.heroku.com/archives/2013/7/10/heroku-pipelines-beta) to
-deploy to production when happy with staging.
-
-Add the staging instance as a git remote named `staging`:
-
-```sh
-git remote add staging git@heroku.com:artsy-metaphysics-staging.git
-```
-
-Then promote using the command:
-
-```sh
-$ yarn promote:production
-```
-
-For a list of all deployments, see the
-[Activity Log](https://dashboard.heroku.com/apps/artsy-metaphysics-production/activity).
+PRs merged to master are deployed to staging via CircleCI.
