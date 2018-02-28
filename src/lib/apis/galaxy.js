@@ -1,4 +1,6 @@
 // @ts-check
+
+import urljoin from "url-join"
 import fetch from "./fetch"
 import config from "config"
 
@@ -10,5 +12,5 @@ export default path => {
     "Content-Type": "application/hal+json",
     "Http-Authorization": GALAXY_TOKEN,
   }
-  return fetch(`${GALAXY_API_BASE}/${path}`, { headers })
+  return fetch(urljoin(GALAXY_API_BASE, path), { headers })
 }

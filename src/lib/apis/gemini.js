@@ -1,7 +1,8 @@
 // @ts-check
 
+import urljoin from "url-join"
 import fetch from "./fetch"
-export default (path, params) => fetch(`${GEMINI_API_BASE}/${path}`, params)
 import config from "config"
 
 const { GEMINI_API_BASE } = config
+export default (path, params) => fetch(urljoin(GEMINI_API_BASE, path), params)

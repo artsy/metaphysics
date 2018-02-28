@@ -1,4 +1,6 @@
 // @ts-check
+
+import urljoin from "url-join"
 import { assign, omit } from "lodash"
 import fetch from "./fetch"
 import config from "config"
@@ -19,7 +21,7 @@ export default (path, accessToken, fetchOptions = {}) => {
   if (accessToken) assign(headers, { "X-ACCESS-TOKEN": accessToken })
 
   return fetch(
-    `${GRAVITY_API_BASE}/${path}`,
+    urljoin(GRAVITY_API_BASE, path),
     assign({}, fetchParams, { headers })
   )
 }

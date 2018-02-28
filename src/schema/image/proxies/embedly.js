@@ -1,3 +1,4 @@
+import urljoin from "url-join"
 import qs from "qs"
 import config from "config"
 
@@ -21,6 +22,5 @@ export default (src, mode, width, height) => {
       quality: 80,
     },
   }
-
-  return `${EMBEDLY_ENDPOINT}/${mode}?${qs.stringify(options[mode])}`
+  return urljoin(EMBEDLY_ENDPOINT, `${mode}?${qs.stringify(options[mode])}`)
 }

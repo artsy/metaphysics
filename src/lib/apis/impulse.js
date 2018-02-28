@@ -1,5 +1,6 @@
 // @ts-check
 
+import urljoin from "url-join"
 import { assign } from "lodash"
 import fetch from "./fetch"
 import config from "config"
@@ -10,7 +11,7 @@ export default (path, accessToken, fetchOptions = {}) => {
   const headers = {}
   if (accessToken) assign(headers, { Authorization: `Bearer ${accessToken}` })
   return fetch(
-    `${IMPULSE_API_BASE}/${path}`,
+    urljoin(IMPULSE_API_BASE, path),
     assign({}, fetchOptions, { headers })
   )
 }

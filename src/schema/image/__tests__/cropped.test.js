@@ -13,7 +13,7 @@ describe("Image", () => {
         width: 500,
         height: 500,
         url:
-          "https://gemini.cloudfront.test/?resize_to=fill&width=500&height=500&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg", // eslint-disable-line
+          "https://gemini.cloudfront.test?resize_to=fill&width=500&height=500&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Flarge.jpg", // eslint-disable-line
       })
     })
 
@@ -25,7 +25,7 @@ describe("Image", () => {
         width: 500,
         height: 500,
         url:
-          "https://gemini.cloudfront.test/?resize_to=fill&width=500&height=500&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg", // eslint-disable-line
+          "https://gemini.cloudfront.test?resize_to=fill&width=500&height=500&quality=80&src=https%3A%2F%2Fxxx.cloudfront.net%2Fxxx%2Fcat.jpg", // eslint-disable-line
       })
     })
   })

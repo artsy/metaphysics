@@ -1,3 +1,4 @@
+import urljoin from "url-join"
 import qs from "qs"
 import { isExisty } from "lib/helpers"
 import config from "config"
@@ -24,5 +25,5 @@ export default (src, mode, width, height) => {
     src,
   }
 
-  return `${GEMINI_ENDPOINT}/?${qs.stringify(options)}`
+  return urljoin(GEMINI_ENDPOINT, `?${qs.stringify(options)}`)
 }
