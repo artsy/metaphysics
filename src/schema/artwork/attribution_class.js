@@ -6,14 +6,14 @@ import {
 
 const AttributionClass = new GraphQLObjectType({
   name: "AttributionClass",
-  description: "Collection of fileds that describe attribution class",
+  description: "Collection of fields that describe attribution class",
   fields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
     },
     name: {
       type: GraphQLString,
-      description: "Shortest form of arttribution class display",
+      description: "Shortest form of attribution class display",
     },
     info: {
       type: GraphQLString,
@@ -21,7 +21,7 @@ const AttributionClass = new GraphQLObjectType({
     },
     short_description: {
       type: GraphQLString,
-      description: "Longer version of arttribution class display",
+      description: "Longer version of attribution class display",
     },
     long_description: {
       type: GraphQLString,

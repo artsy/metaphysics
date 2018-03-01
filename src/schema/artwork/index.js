@@ -29,7 +29,7 @@ import {
   GraphQLList,
   GraphQLInt,
 } from "graphql"
-import AttributionClass from "schema/types/attribution_class"
+import AttributionClass from "schema/artwork/attribution_class"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "../../lib/attribution_classes.js"
 

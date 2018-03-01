@@ -7,7 +7,7 @@ export default {
     long_description: "One of a kind piece, created by the artist.",
   },
   "limited edition": {
-    id: "limited_edition",
+    id: "limited edition",
     name: "Limited edition",
     info: "Original works created in multiple.",
     short_description: "This is part of a limited edition set.",
