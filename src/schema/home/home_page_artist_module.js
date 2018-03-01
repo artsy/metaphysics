@@ -18,6 +18,7 @@ export const HomePageArtistModuleTypes = {
   SUGGESTED: {
     description: "Artists recommended for the specific user.",
     display: ({ rootValue: { suggestedSimilarArtistsLoader } }) => {
+      if (!suggestedSimilarArtistsLoader) return Promise.resolve(false)
       return totalViaLoader(
         suggestedSimilarArtistsLoader,
         {},
@@ -25,9 +26,14 @@ export const HomePageArtistModuleTypes = {
           exclude_followed_artists: true,
           exclude_artists_without_forsale_artworks: true,
         }
-      ).then(response => response.body.total > 0)
+      ).then(total => total > 0)
     },
     resolve: ({ rootValue: { suggestedSimilarArtistsLoader } }) => {
+      if (!suggestedSimilarArtistsLoader) {
+        throw new Error(
+          "Both the X-USER-ID and X-ACCESS-TOKEN headers are required."
+        )
+      }
       return suggestedSimilarArtistsLoader({
         exclude_followed_artists: true,
         exclude_artists_without_forsale_artworks: true,

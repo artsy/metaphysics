@@ -18,7 +18,7 @@ const moduleResults = {
   current_fairs: ({ rootValue: { fairsLoader, filterArtworksLoader } }) => {
     return featuredFair(fairsLoader).then(fair => {
       if (fair) {
-        filterArtworksLoader({
+        return filterArtworksLoader({
           fair_id: fair.id,
           for_sale: true,
           size: 60,

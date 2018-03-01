@@ -1,4 +1,3 @@
-import schema from "schema"
 import { runQuery } from "test/utils"
 import gql from "test/gql"
 
@@ -65,20 +64,6 @@ describe("HomePageArtworkModule", () => {
   })
 
   describe("when signed out", () => {
-    const HomePage = schema.__get__("HomePage")
-    const HomePageArtworkModule = HomePage.__get__("HomePageArtworkModule")
-
-    beforeEach(() => {
-      const gravity = sinon.stub()
-      gravity.with = sinon.stub().returns(gravity)
-
-      HomePageArtworkModule.__Rewire__("gravity", gravity)
-    })
-
-    afterEach(() => {
-      HomePageArtworkModule.__ResetDependency__("gravity")
-    })
-
     it("returns the proper title for popular_artists", () => {
       const query = gql`
         {

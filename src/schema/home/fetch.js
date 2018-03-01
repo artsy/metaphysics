@@ -12,7 +12,7 @@ import {
 import blacklist from "lib/artist_blacklist"
 
 export const featuredFair = fairsLoader => {
-  fairsLoader({
+  return fairsLoader({
     size: 5,
     active: true,
     has_homepage_section: true,
