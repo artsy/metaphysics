@@ -1,34 +1,26 @@
-import all from "lib/all"
+import { allViaLoader } from "lib/all"
 
 describe("all", () => {
-  afterEach(() => {
-    all.__ResetDependency__("total")
-    all.__ResetDependency__("gravity")
-  })
+  it("fans out all the requests", () => {
+    const loader = jest
+      .fn()
+      .mockReturnValueOnce(
+        Promise.resolve({
+          headers: { "x-total-count": 22 },
+        })
+      )
+      .mockReturnValue(Promise.resolve({}))
 
-  it("fans out all the request", () => {
-    const gravity = sinon.stub()
+    return allViaLoader(loader, {}, { size: 10 }).then(artworks => {
+      expect(artworks.length).toBe(3) // 3 pages of 10 each to get 22 works
 
-    all.__Rewire__("total", sinon.stub().returns(Promise.resolve(120)))
-    all.__Rewire__("gravity", gravity.returns(Promise.resolve([{}])))
-
-    return all(`artist/foo-bar/artworks`, { size: 10 }).then(artworks => {
-      expect(gravity.args).toEqual([
-        ["artist/foo-bar/artworks", { size: 10, page: 1 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 2 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 3 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 4 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 5 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 6 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 7 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 8 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 9 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 10 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 11 }],
-        ["artist/foo-bar/artworks", { size: 10, page: 12 }],
-      ])
-
-      expect(artworks.length).toBe(12) // 12 pages
+      // Initial count fetch
+      expect(loader.mock.calls[0].slice(-1)[0].size).toBe(0)
+      expect(loader.mock.calls[0].slice(-1)[0].page).toBe(1)
+      expect(loader.mock.calls[0].slice(-1)[0].total_count).toBe(true)
+      expect(loader.mock.calls[1].slice(-1)[0].page).toBe(1)
+      expect(loader.mock.calls[2].slice(-1)[0].page).toBe(2)
+      expect(loader.mock.calls[3].slice(-1)[0].page).toBe(3)
     })
   })
 })
