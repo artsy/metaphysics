@@ -43,11 +43,11 @@ import {
 } from "graphql"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
-import { totalViaLoader } from "../../lib/loaders/legacy/total"
+import { totalViaLoader } from "lib/total"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
-const auctionRecordsTrusted = require("../../lib/auction_records_trusted.json")
+const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
   .artists
 
 const artistArtworkArrayLength = (artist, filter) => {

@@ -5,7 +5,6 @@ import depthLimit from "graphql-depth-limit"
 import express from "express"
 import graphqlErrorHandler from "./lib/graphqlErrorHandler"
 import graphqlHTTP from "express-graphql"
-import legacyLoaders from "./lib/loaders/legacy"
 import localSchema from "./schema"
 import moment from "moment"
 import morgan from "artsy-morgan"
@@ -59,8 +58,6 @@ async function startApp() {
     morgan,
     graphqlHTTP((req, res) => {
       info("----------")
-
-      legacyLoaders.clearAll()
 
       const accessToken = req.headers["x-access-token"]
       const userID = req.headers["x-user-id"]

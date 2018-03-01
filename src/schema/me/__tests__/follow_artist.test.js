@@ -1,18 +1,10 @@
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("FollowArtist", () => {
-  const gravity = sinon.stub()
-  const FollowArtist = schema.__get__("FollowArtist")
-
   let artist = null
   let rootValue = null
 
   beforeEach(() => {
-    gravity.with = sinon.stub().returns(gravity)
-
-    FollowArtist.__Rewire__("gravity", gravity)
-
     artist = {
       name: "Damon Zucconi",
       birthday: "1/1/1979",
@@ -36,11 +28,9 @@ describe("FollowArtist", () => {
             name: "Benjamin Schmit",
           },
         ]),
+      followArtistLoader: () => Promise.resolve(artist),
+      unfollowArtistLoader: () => Promise.resolve(artist),
     }
-  })
-
-  afterEach(() => {
-    FollowArtist.__ResetDependency__("gravity")
   })
 
   it("follows an artist", () => {
@@ -58,8 +48,6 @@ describe("FollowArtist", () => {
         }
       }
     `
-
-    gravity.returns(Promise.resolve(artist))
 
     expect.assertions(1)
     return runAuthenticatedQuery(mutation, rootValue).then(

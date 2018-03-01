@@ -18,7 +18,7 @@ import {
   GraphQLNonNull,
   GraphQLEnumType,
 } from "graphql"
-import { totalViaLoader } from "../lib/loaders/legacy/total"
+import { totalViaLoader } from "lib/total"
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",
