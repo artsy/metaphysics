@@ -29,6 +29,9 @@ import {
   GraphQLList,
   GraphQLInt,
 } from "graphql"
+import AttributionClass from "schema/artwork/attributionClass"
+// Mapping of attribution_class ids to AttributionClass values
+import attributionClasses from "../../lib/attributionClasses.js"
 
 const is_inquireable = ({ inquireable, acquireable }) => {
   return inquireable && !acquireable
@@ -121,6 +124,15 @@ export const artworkFields = () => {
     },
     category: {
       type: GraphQLString,
+    },
+    attribution_class: {
+      type: AttributionClass,
+      description: "Attribution class object",
+      resolve: ({ attribution_class }) => {
+        if (attribution_class) {
+          return attributionClasses[attribution_class]
+        }
+      },
     },
     collecting_institution: {
       type: GraphQLString,

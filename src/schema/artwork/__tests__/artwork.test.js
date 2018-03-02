@@ -46,6 +46,7 @@ describe("Artwork type", () => {
       acquireable: false,
       artists: [],
       sale_ids: ["sale-id-not-auction", "sale-id-auction"],
+      attribution_class: "unique",
     }
 
     gravity = sinon.stub()
@@ -932,6 +933,92 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             title: "Untitled",
+          },
+        })
+      })
+    })
+  })
+
+  describe("Attribution class", () => {
+    it(`returns proper attribution class name for unique artwork`, () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            attribution_class {
+              name,
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            attribution_class: {
+              name: "Unique",
+            },
+          },
+        })
+      })
+    })
+
+    it(`returns proper attribution class info for unique artwork`, () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            attribution_class {
+              info,
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            attribution_class: {
+              info: "One of a kind piece.",
+            },
+          },
+        })
+      })
+    })
+
+    it(`returns proper attribution class short_description for unique artwork`, () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            attribution_class {
+              short_description,
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            attribution_class: {
+              short_description: "This is a unique work.",
+            },
+          },
+        })
+      })
+    })
+
+    it(`returns proper attribution class long_description for unique artwork`, () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            attribution_class {
+              long_description,
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            attribution_class: {
+              long_description: "One of a kind piece, created by the artist.",
+            },
           },
         })
       })
