@@ -29,9 +29,9 @@ import {
   GraphQLList,
   GraphQLInt,
 } from "graphql"
-import AttributionClass from "schema/artwork/attribution_class"
+import AttributionClass from "schema/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
-import attributionClasses from "../../lib/attribution_classes.js"
+import attributionClasses from "../../lib/attributionClasses.js"
 
 const is_inquireable = ({ inquireable, acquireable }) => {
   return inquireable && !acquireable
