@@ -428,45 +428,41 @@ export const ArtistType = new GraphQLObjectType({
             partner_shows: numeral(
               ({ partner_shows_count }) => partner_shows_count
             ),
-            related_artists: numeral(({ related_artists }) => related_artists),
-            articles: numeral(({ articles }) => articles),
+            related_artists: {
+              type: GraphQLInt,
+              resolve: (
+                { id },
+                _options,
+                _request,
+                { rootValue: { relatedMainArtistsLoader } }
+              ) => {
+                return totalViaLoader(
+                  relatedMainArtistsLoader,
+                  {},
+                  {
+                    artist: [id],
+                  }
+                )
+              },
+            },
+            articles: {
+              type: GraphQLInt,
+              resolve: (
+                { _id },
+                _options,
+                _request,
+                { rootValue: { articlesLoader } }
+              ) =>
+                articlesLoader({
+                  artist_id: _id,
+                  published: true,
+                  limit: 0,
+                  count: true,
+                }).then(({ count }) => count),
+            },
           },
         }),
-        resolve: (
-          {
-            published_artworks_count,
-            forsale_artworks_count,
-            partner_shows_count,
-            follow_count,
-            id,
-            _id,
-          },
-          _options,
-          _request,
-          { rootValue: { articlesLoader, relatedMainArtistsLoader } }
-        ) => {
-          const related_artists = totalViaLoader(
-            relatedMainArtistsLoader,
-            {},
-            {
-              artist: [id],
-            }
-          )
-          const articles = articlesLoader({
-            artist_id: _id,
-            published: true,
-            limit: 1,
-            count: true,
-          }).then(({ count }) => count)
-          return {
-            published_artworks_count,
-            forsale_artworks_count,
-            follow_count,
-            partner_shows_count,
-            related_artists,
-            articles,
-          }
-        },
+        resolve: artist => artist,
       },
       deathday: {
         type: GraphQLString,
