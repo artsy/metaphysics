@@ -1,18 +1,17 @@
 import { featuredAuction, featuredFair, featuredGene } from "./fetch"
-import gravity from "lib/loaders/legacy/gravity"
 import { GraphQLString } from "graphql"
 
 const moduleTitle = {
   active_bids: () => "Your Active Bids",
-  current_fairs: () => {
-    return featuredFair().then(fair => {
+  current_fairs: ({ rootValue: { fairsLoader } }) => {
+    return featuredFair(fairsLoader).then(fair => {
       if (fair) {
         return `Current Fair: ${fair.name}`
       }
     })
   },
-  followed_artist: ({ params }) => {
-    return gravity(`artist/${params.followed_artist_id}`).then(artist => {
+  followed_artist: ({ rootValue: { artistLoader }, params }) => {
+    return artistLoader(params.followed_artist_id).then(artist => {
       return `Works by ${artist.name}`
     })
   },
@@ -21,19 +20,19 @@ const moduleTitle = {
   generic_gene: ({ params }) => {
     return params.title
   },
-  genes: ({ accessToken, params: { gene } }) => {
+  genes: ({ rootValue: { followedGenesLoader }, params: { gene } }) => {
     if (gene) {
       return gene.name
     }
     // Backward compatibility for Force.
-    return featuredGene(accessToken).then(fetchedGene => {
+    return featuredGene(followedGenesLoader).then(fetchedGene => {
       if (fetchedGene) {
         return fetchedGene.name
       }
     })
   },
-  live_auctions: () => {
-    return featuredAuction().then(auction => {
+  live_auctions: ({ rootValue: { salesLoader } }) => {
+    return featuredAuction(salesLoader).then(auction => {
       if (auction) {
         return `Current Auction: ${auction.name}`
       }
@@ -41,8 +40,8 @@ const moduleTitle = {
   },
   popular_artists: () => "Works by Popular Artists",
   recommended_works: () => "Recommended Works for You",
-  related_artists: ({ params }) => {
-    return gravity(`artist/${params.related_artist_id}`).then(artist => {
+  related_artists: ({ rootValue: { artistLoader }, params }) => {
+    return artistLoader(params.related_artist_id).then(artist => {
       return `Works by ${artist.name}`
     })
   },
@@ -51,12 +50,7 @@ const moduleTitle = {
 
 export default {
   type: GraphQLString,
-  resolve: (
-    { key, display, params },
-    options,
-    request,
-    { rootValue: { accessToken } }
-  ) => {
-    if (display) return moduleTitle[key]({ accessToken, params: params || {} })
+  resolve: ({ key, display, params }, options, request, { rootValue }) => {
+    if (display) return moduleTitle[key]({ rootValue, params: params || {} })
   },
 }

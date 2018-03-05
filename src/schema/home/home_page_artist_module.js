@@ -1,7 +1,5 @@
 import { map } from "lodash"
 import Artist from "schema/artist"
-import gravity from "lib/loaders/legacy/gravity"
-import { total } from "lib/loaders/legacy/total"
 import { NodeInterface } from "schema/object_identification"
 import { toGlobalId } from "graphql-relay"
 import {
@@ -12,51 +10,47 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-
-function fetchArtists(path) {
-  return accessToken => {
-    const loader = accessToken ? gravity.with(accessToken) : gravity
-    return loader(path, accessToken && { exclude_followed_artists: true })
-  }
-}
+import { totalViaLoader } from "../../lib/loaders/legacy/total"
 
 // This object is used for both the `key` argument enum and to do fetching.
 // The order of the artists should be 1. suggested, 2. trending, 3. popular
 export const HomePageArtistModuleTypes = {
   SUGGESTED: {
     description: "Artists recommended for the specific user.",
-    display: (accessToken, userID) => {
-      if (!accessToken || !userID) {
-        return Promise.resolve(false)
-      }
-      return total(`user/${userID}/suggested/similar/artists`, accessToken, {
-        exclude_followed_artists: true,
-        exclude_artists_without_forsale_artworks: true,
-      }).then(response => response.body.total > 0)
+    display: ({ rootValue: { suggestedSimilarArtistsLoader } }) => {
+      if (!suggestedSimilarArtistsLoader) return Promise.resolve(false)
+      return totalViaLoader(
+        suggestedSimilarArtistsLoader,
+        {},
+        {
+          exclude_followed_artists: true,
+          exclude_artists_without_forsale_artworks: true,
+        }
+      ).then(total => total > 0)
     },
-    resolve: (accessToken, userID) => {
-      if (!accessToken || !userID) {
+    resolve: ({ rootValue: { suggestedSimilarArtistsLoader } }) => {
+      if (!suggestedSimilarArtistsLoader) {
         throw new Error(
           "Both the X-USER-ID and X-ACCESS-TOKEN headers are required."
         )
       }
-      return gravity
-        .with(accessToken)(`user/${userID}/suggested/similar/artists`, {
-          exclude_followed_artists: true,
-          exclude_artists_without_forsale_artworks: true,
-        })
-        .then(results => map(results, "artist"))
+      return suggestedSimilarArtistsLoader({
+        exclude_followed_artists: true,
+        exclude_artists_without_forsale_artworks: true,
+      }).then(results => map(results, "artist"))
     },
   },
   TRENDING: {
     description: "The trending artists.",
     display: () => Promise.resolve(true),
-    resolve: fetchArtists("artists/trending"),
+    resolve: ({ rootValue: { trendingArtistsLoader } }) =>
+      trendingArtistsLoader(),
   },
   POPULAR: {
     description: "The most searched for artists.",
     display: () => Promise.resolve(true),
-    resolve: fetchArtists("artists/popular"),
+    resolve: ({ rootValue: { popularArtistsLoader } }) =>
+      popularArtistsLoader(),
   },
 }
 
@@ -77,13 +71,8 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     },
     results: {
       type: new GraphQLList(Artist.type),
-      resolve: (
-        { key },
-        options,
-        request,
-        { rootValue: { accessToken, userID } }
-      ) => {
-        return HomePageArtistModuleTypes[key].resolve(accessToken, userID)
+      resolve: ({ key }, options, request, { rootValue }) => {
+        return HomePageArtistModuleTypes[key].resolve({ rootValue })
       },
     },
   },

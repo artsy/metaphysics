@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import {
   filter,
   find,
@@ -26,14 +25,18 @@ const filterModules = (modules, max_rails) => {
   return max_rails < 0 ? allModules : slice(allModules, 0, max_rails)
 }
 
-const addFollowedGenes = (accessToken, modules, max_followed_gene_rails) => {
+const addFollowedGenes = (
+  followedGenesLoader,
+  modules,
+  max_followed_gene_rails
+) => {
   const followedGeneIndex = findIndex(modules, { key: "genes" })
-  if (followedGeneIndex && max_followed_gene_rails !== 1) {
+  if (followedGeneIndex && max_followed_gene_rails >= 1) {
     // 100 is the max that Gravity will return per page.
     const size = max_followed_gene_rails < 0 ? 100 : max_followed_gene_rails
-    return followedGenes(accessToken, size).then(follows => {
+    return followedGenes(followedGenesLoader, size).then(results => {
       const blueprint = modules[followedGeneIndex]
-      const genes = map(follows, ({ gene }) => {
+      const genes = map(results, ({ gene }) => {
         return Object.assign({ params: { id: gene.id, gene } }, blueprint)
       })
       const copy = modules.slice(0)
@@ -132,87 +135,94 @@ const HomePageArtworkModules = {
     root,
     { max_rails, max_followed_gene_rails, order, exclude },
     request,
-    { rootValue: { accessToken, userID } }
+    {
+      rootValue: {
+        accessToken,
+        followedGenesLoader,
+        homepageModulesLoader,
+        fairsLoader,
+        salesLoader,
+        suggestedSimilarArtistsLoader,
+      },
+    }
   ) => {
     // If user is logged in, get their specific modules
     if (accessToken) {
-      return gravity
-        .with(accessToken)("me/modules")
-        .then(response => {
-          const keysToDisplay = without(keys(response), ...exclude)
-          const modulesToDisplay = map(keysToDisplay, key => ({
-            key,
-            display: response[key],
-          }))
-          return addFollowedGenes(
-            accessToken,
-            modulesToDisplay,
-            max_followed_gene_rails
-          ).then(allModulesToDisplay => {
-            let modules = allModulesToDisplay
+      return homepageModulesLoader().then(response => {
+        const keysToDisplay = without(keys(response), ...exclude)
+        const modulesToDisplay = map(keysToDisplay, key => ({
+          key,
+          display: response[key],
+        }))
+        return addFollowedGenes(
+          followedGenesLoader,
+          modulesToDisplay,
+          max_followed_gene_rails
+        ).then(allModulesToDisplay => {
+          let modules = allModulesToDisplay
 
-            modules = filterModules(modules, max_rails)
-            modules = reorderModules(modules, order)
+          modules = filterModules(modules, max_rails)
+          modules = reorderModules(modules, order)
 
-            // For the related artists rail, we need to fetch a random
-            // set of followed artist + related artist initially
-            // and pass it along so that any placeholder titles are consistent
-            let relatedArtistIndex = findIndex(modules, {
-              key: "related_artists",
-            })
+          // For the related artists rail, we need to fetch a random
+          // set of followed artist + related artist initially
+          // and pass it along so that any placeholder titles are consistent
+          let relatedArtistIndex = findIndex(modules, {
+            key: "related_artists",
+          })
 
-            if (relatedArtistIndex > -1) {
-              return Promise.resolve(relatedArtists(accessToken, userID)).then(
-                artistPairs => {
-                  // relatedArtist now returns 2 random artist pairs
-                  // we will use one for the related_artist rail and one for
-                  // the followed_artist rail
-                  if (artistPairs && artistPairs.length) {
-                    const { artist, sim_artist } = artistPairs[0]
+          if (relatedArtistIndex > -1) {
+            return relatedArtists(suggestedSimilarArtistsLoader).then(
+              artistPairs => {
+                // relatedArtist now returns 2 random artist pairs
+                // we will use one for the related_artist rail and one for
+                // the followed_artist rail
+                if (artistPairs && artistPairs.length) {
+                  const { artist, sim_artist } = artistPairs[0]
 
-                    const relatedArtistModuleParams = {
-                      followed_artist_id: sim_artist.id,
-                      related_artist_id: artist.id,
-                    }
-
-                    if (artistPairs[1]) {
-                      modules.splice(relatedArtistIndex, 0, {
-                        key: "followed_artist",
-                        display: true,
-                        params: {
-                          followed_artist_id: artistPairs[1].sim_artist.id,
-                        },
-                      })
-                      relatedArtistIndex++
-                    }
-
-                    return set(
-                      modules,
-                      `[${relatedArtistIndex}].params`,
-                      relatedArtistModuleParams
-                    )
+                  const relatedArtistModuleParams = {
+                    followed_artist_id: sim_artist.id,
+                    related_artist_id: artist.id,
                   }
-                  // if we don't find an artist pair,
-                  // remove the related artist rail
-                  return without(
+
+                  if (artistPairs[1]) {
+                    modules.splice(relatedArtistIndex, 0, {
+                      key: "followed_artist",
+                      display: true,
+                      params: {
+                        followed_artist_id: artistPairs[1].sim_artist.id,
+                      },
+                    })
+                    relatedArtistIndex++
+                  }
+
+                  return set(
                     modules,
-                    find(modules, { key: "related_artists" })
+                    `[${relatedArtistIndex}].params`,
+                    relatedArtistModuleParams
                   )
                 }
-              )
-            }
-            return modules
-          })
+                // if we don't find an artist pair,
+                // remove the related artist rail
+                return without(
+                  modules,
+                  find(modules, { key: "related_artists" })
+                )
+              }
+            )
+          }
+          return modules
         })
+      })
     }
-
     // Otherwise, get the generic set of modules
-    return Promise.all([featuredAuction(), featuredFair()]).then(
-      ([auction, fair]) => {
-        const modules = loggedOutModules(auction, fair)
-        return filterModules(modules, max_rails)
-      }
-    )
+    return Promise.all([
+      featuredAuction(salesLoader),
+      featuredFair(fairsLoader),
+    ]).then(([auction, fair]) => {
+      const modules = loggedOutModules(auction, fair)
+      return filterModules(modules, max_rails)
+    })
   },
 }
 
