@@ -11,13 +11,12 @@ const ArtistStatusesType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { relatedMainArtistsLoader } }
-      ) => {
+      ) =>
         totalViaLoader(
           relatedMainArtistsLoader,
           {},
           { exclude_artists_without_artworks: true, artist: [id] }
-        ).then(count => count > 0)
-      },
+        ).then(count => count > 0),
     },
     articles: {
       type: GraphQLBoolean,
