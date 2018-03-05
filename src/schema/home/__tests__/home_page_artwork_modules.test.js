@@ -21,16 +21,18 @@ describe("HomePageArtworkModules", () => {
       genes: false,
     }
 
-    relatedArtistsResponse = [
-      {
-        sim_artist: { id: "pablo-picasso", forsale_artworks_count: 1 },
-        artist: { id: "charles-broskoski" },
-      },
-      {
-        sim_artist: { id: "ann-craven", forsale_artworks_count: 1 },
-        artist: { id: "margaret-lee" },
-      },
-    ]
+    relatedArtistsResponse = {
+      body: [
+        {
+          sim_artist: { id: "pablo-picasso", forsale_artworks_count: 1 },
+          artist: { id: "charles-broskoski" },
+        },
+        {
+          sim_artist: { id: "ann-craven", forsale_artworks_count: 1 },
+          artist: { id: "margaret-lee" },
+        },
+      ],
+    }
 
     gravity = sinon.stub()
     gravity.with = sinon.stub().returns(gravity)
@@ -87,12 +89,14 @@ describe("HomePageArtworkModules", () => {
   })
 
   it("shows skips the followed_artist module if no 2nd pair is returned", () => {
-    relatedArtistsResponse = [
-      {
-        sim_artist: { id: "pablo-picasso", forsale_artworks_count: 1 },
-        artist: { id: "charles-broskoski" },
-      },
-    ]
+    relatedArtistsResponse = {
+      body: [
+        {
+          sim_artist: { id: "pablo-picasso", forsale_artworks_count: 1 },
+          artist: { id: "charles-broskoski" },
+        },
+      ],
+    }
     rootValue.suggestedSimilarArtistsLoader = () =>
       Promise.resolve(relatedArtistsResponse)
 

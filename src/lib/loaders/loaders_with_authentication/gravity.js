@@ -98,7 +98,9 @@ export default (accessToken, userID, requestIDs) => {
       { headers: true }
     ),
     suggestedSimilarArtistsLoader: gravityLoader(
-      `user/${userID}/suggested/similar/artists`
+      `user/${userID}/suggested/similar/artists`,
+      {},
+      { headers: true }
     ),
     updateCollectorProfileLoader: gravityLoader(
       "me/collector_profile",
