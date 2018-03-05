@@ -1,5 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
-import uncachedGravity from "lib/apis/gravity"
 import {
   activeSaleArtworks,
   featuredAuction,
@@ -9,18 +7,18 @@ import {
   popularArtists,
 } from "./fetch"
 import { map, assign, keys, without, shuffle, slice } from "lodash"
-import { toQueryString } from "lib/helpers"
 import Artwork from "schema/artwork/index"
 import { GraphQLList } from "graphql"
 
 const RESULTS_SIZE = 20
 
 const moduleResults = {
-  active_bids: ({ accessToken }) => activeSaleArtworks(accessToken),
-  current_fairs: () => {
-    return featuredFair().then(fair => {
+  active_bids: ({ rootValue: { lotStandingLoader } }) =>
+    activeSaleArtworks(lotStandingLoader),
+  current_fairs: ({ rootValue: { fairsLoader, filterArtworksLoader } }) => {
+    return featuredFair(fairsLoader).then(fair => {
       if (fair) {
-        return gravity("filter/artworks", {
+        return filterArtworksLoader({
           fair_id: fair.id,
           for_sale: true,
           size: 60,
@@ -30,88 +28,83 @@ const moduleResults = {
       }
     })
   },
-  followed_artist: ({ params }) => {
-    return gravity("filter/artworks", {
+  followed_artist: ({ rootValue: { filterArtworksLoader }, params }) => {
+    return filterArtworksLoader({
       artist_id: params.followed_artist_id,
       for_sale: true,
       size: RESULTS_SIZE,
     }).then(({ hits }) => hits)
   },
-  followed_artists: ({ accessToken }) => {
-    return gravity.with(accessToken)("me/follow/artists/artworks", {
+  followed_artists: ({ rootValue: { followedArtistsArtworksLoader } }) => {
+    return followedArtistsArtworksLoader({
       for_sale: true,
       size: RESULTS_SIZE,
+    }).then(({ body }) => body)
+  },
+  followed_galleries: ({ rootValue: { followedProfilesArtworksLoader } }) => {
+    return followedProfilesArtworksLoader({
+      for_sale: true,
+      size: 60,
+    }).then(({ body }) => {
+      return slice(shuffle(body), 0, RESULTS_SIZE)
     })
   },
-  followed_galleries: ({ accessToken }) => {
-    return gravity
-      .with(accessToken)("me/follow/profiles/artworks", {
-        for_sale: true,
-        size: 60,
-      })
-      .then(artworks => {
-        return slice(shuffle(artworks), 0, RESULTS_SIZE)
-      })
-  },
-  genes: ({ accessToken, params: { id } }) => {
+  genes: ({
+    rootValue: { filterArtworksLoader, followedGenesLoader },
+    params: { id },
+  }) => {
     if (id) {
-      return geneArtworks(id, RESULTS_SIZE)
+      return geneArtworks(filterArtworksLoader, id, RESULTS_SIZE)
     }
     // Backward compatibility for Force.
-    return featuredGene(accessToken).then(gene => {
+    return featuredGene(followedGenesLoader).then(gene => {
       if (gene) {
-        return geneArtworks(gene.id, RESULTS_SIZE)
+        return geneArtworks(filterArtworksLoader, gene.id, RESULTS_SIZE)
       }
     })
   },
-  generic_gene: ({ params }) => {
-    return gravity(
-      "filter/artworks",
+  generic_gene: ({ rootValue: { filterArtworksLoader }, params }) => {
+    return filterArtworksLoader(
       assign({}, params, { size: RESULTS_SIZE, for_sale: true })
     ).then(({ hits }) => hits)
   },
-  live_auctions: () => {
-    return featuredAuction().then(auction => {
+  live_auctions: ({ rootValue: { salesLoader, saleArtworksLoader } }) => {
+    return featuredAuction(salesLoader).then(auction => {
       if (auction) {
-        return gravity(`sale/${auction.id}/sale_artworks`, {
+        return saleArtworksLoader(auction.id, {
           size: RESULTS_SIZE,
-        }).then(sale_artworks => {
-          return map(sale_artworks, "artwork")
+        }).then(({ body }) => {
+          return map(body, "artwork")
         })
       }
     })
   },
-  popular_artists: () => {
+  popular_artists: ({ rootValue: { filterArtworksLoader, deltaLoader } }) => {
     // TODO This appears to largely replicate Gravity’s /api/v1/artists/popular endpoint
-    return popularArtists().then(artists => {
+    return popularArtists(deltaLoader).then(artists => {
       const ids = without(keys(artists), "cached", "context_type")
-      return uncachedGravity(
-        "filter/artworks?" +
-          toQueryString({
-            artist_ids: ids,
-            size: RESULTS_SIZE,
-            sort: "-partner_updated_at",
-          })
-      ).then(({ body: { hits } }) => hits)
+      return filterArtworksLoader({
+        artist_ids: ids,
+        size: RESULTS_SIZE,
+        sort: "-partner_updated_at",
+      }).then(({ hits }) => hits)
     })
   },
-  recommended_works: ({ accessToken }) => {
-    return gravity.with(accessToken)("me/suggested/artworks/homepage", {
+  recommended_works: ({ rootValue: { homepageSuggestedArtworksLoader } }) => {
+    return homepageSuggestedArtworksLoader({
       limit: RESULTS_SIZE,
     })
   },
-  related_artists: ({ params }) => {
-    return gravity("filter/artworks", {
+  related_artists: ({ rootValue: { filterArtworksLoader }, params }) => {
+    return filterArtworksLoader({
       artist_id: params.related_artist_id,
       for_sale: true,
       size: RESULTS_SIZE,
     }).then(({ hits }) => hits)
   },
-  saved_works: ({ accessToken, userID }) => {
-    return gravity.with(accessToken)("collection/saved-artwork/artworks", {
+  saved_works: ({ rootValue: { savedArtworksLoader } }) => {
+    return savedArtworksLoader({
       size: RESULTS_SIZE,
-      user_id: userID,
-      private: true,
       sort: "-position",
     })
   },
@@ -119,14 +112,9 @@ const moduleResults = {
 
 export default {
   type: new GraphQLList(Artwork.type),
-  resolve: (
-    { key, display, params },
-    options,
-    request,
-    { rootValue: { accessToken, userID } }
-  ) => {
+  resolve: ({ key, display, params }, options, request, { rootValue }) => {
     if (display) {
-      return moduleResults[key]({ accessToken, userID, params: params || {} })
+      return moduleResults[key]({ rootValue, params: params || {} })
     }
   },
 }

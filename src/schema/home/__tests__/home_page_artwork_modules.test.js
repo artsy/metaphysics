@@ -1,16 +1,12 @@
 import { map, find } from "lodash"
-
-import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("HomePageArtworkModules", () => {
-  const HomePage = schema.__get__("HomePage")
-  const HomePageArtworkModules = HomePage.__get__("HomePageArtworkModules")
+  let rootValue = null
 
   let gravity
   let modules
   let relatedArtistsResponse
-  let relatedArtists
 
   beforeEach(() => {
     modules = {
@@ -25,33 +21,28 @@ describe("HomePageArtworkModules", () => {
       genes: false,
     }
 
-    relatedArtistsResponse = [
-      {
-        sim_artist: { id: "pablo-picasso" },
-        artist: { id: "charles-broskoski" },
-      },
-      {
-        sim_artist: { id: "ann-craven" },
-        artist: { id: "margaret-lee" },
-      },
-    ]
+    relatedArtistsResponse = {
+      body: [
+        {
+          sim_artist: { id: "pablo-picasso", forsale_artworks_count: 1 },
+          artist: { id: "charles-broskoski" },
+        },
+        {
+          sim_artist: { id: "ann-craven", forsale_artworks_count: 1 },
+          artist: { id: "margaret-lee" },
+        },
+      ],
+    }
 
     gravity = sinon.stub()
     gravity.with = sinon.stub().returns(gravity)
-    relatedArtists = sinon.stub()
 
-    HomePageArtworkModules.__Rewire__("gravity", gravity)
-    HomePageArtworkModules.__Rewire__("relatedArtists", relatedArtists)
-
-    gravity
-      // Modules fetch
-      .onCall(0)
-      .returns(Promise.resolve(modules))
-    relatedArtists.onCall(0).returns(Promise.resolve(relatedArtistsResponse))
-  })
-
-  afterEach(() => {
-    HomePageArtworkModules.__ResetDependency__("gravity")
+    rootValue = {
+      homepageModulesLoader: () => Promise.resolve(modules),
+      suggestedSimilarArtistsLoader: () =>
+        Promise.resolve(relatedArtistsResponse),
+      followedGenesLoader: () => Promise.resolve({ body: [] }),
+    }
   })
 
   it("shows all modules that should be returned", () => {
@@ -69,7 +60,7 @@ describe("HomePageArtworkModules", () => {
       }
     `
 
-    return runAuthenticatedQuery(query).then(({ home_page }) => {
+    return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
       const keys = map(home_page.artwork_modules, "key")
 
       // the default module response is 8 keys
@@ -88,22 +79,26 @@ describe("HomePageArtworkModules", () => {
       const relatedArtistsModule = find(home_page.artwork_modules, {
         key: "related_artists",
       })
-      expect(relatedArtistsModule.params).toEqual({
-        related_artist_id: "charles-broskoski",
-        followed_artist_id: "pablo-picasso",
-      })
+
+      const relatedArtistId = relatedArtistsModule.params.related_artist_id
+      expect(["charles-broskoski", "margaret-lee"]).toContain(relatedArtistId)
+
+      const followedArtistId = relatedArtistsModule.params.followed_artist_id
+      expect(["pablo-picasso", "ann-craven"]).toContain(followedArtistId)
     })
   })
 
   it("shows skips the followed_artist module if no 2nd pair is returned", () => {
-    relatedArtistsResponse = [
-      {
-        sim_artist: { id: "pablo-picasso" },
-        artist: { id: "charles-broskoski" },
-      },
-    ]
-
-    relatedArtists.onCall(0).returns(Promise.resolve(relatedArtistsResponse))
+    relatedArtistsResponse = {
+      body: [
+        {
+          sim_artist: { id: "pablo-picasso", forsale_artworks_count: 1 },
+          artist: { id: "charles-broskoski" },
+        },
+      ],
+    }
+    rootValue.suggestedSimilarArtistsLoader = () =>
+      Promise.resolve(relatedArtistsResponse)
 
     const query = `
       {
@@ -119,7 +114,7 @@ describe("HomePageArtworkModules", () => {
       }
     `
 
-    return runAuthenticatedQuery(query).then(({ home_page }) => {
+    return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
       const keys = map(home_page.artwork_modules, "key")
 
       // the default module response is 8 keys
@@ -145,8 +140,7 @@ describe("HomePageArtworkModules", () => {
   })
 
   it("skips the followed_artist module if the pairs are empty", () => {
-    relatedArtists.onCall(0).returns(Promise.resolve([]))
-
+    rootValue.suggestedSimilarArtistsLoader = () => Promise.resolve([])
     const query = `
       {
         home_page {
@@ -161,7 +155,7 @@ describe("HomePageArtworkModules", () => {
       }
     `
 
-    return runAuthenticatedQuery(query).then(({ home_page }) => {
+    return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
       const keys = map(home_page.artwork_modules, "key")
       expect(keys).toEqual([
         "followed_galleries",
@@ -186,7 +180,7 @@ describe("HomePageArtworkModules", () => {
       }
     `
 
-    return runAuthenticatedQuery(query).then(
+    return runAuthenticatedQuery(query, rootValue).then(
       ({ home_page: { artwork_modules } }) => {
         // The order of rails not included in the preferred order list is left as-is from Gravity’s
         // modules endpoint response. Rails in the preferred order list that aren’t even included in
@@ -217,7 +211,7 @@ describe("HomePageArtworkModules", () => {
       }
     `
 
-    return runAuthenticatedQuery(query).then(({ home_page }) => {
+    return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
       const keys = map(home_page.artwork_modules, "key")
       expect(keys).not.toContain("recommended_works")
     })

@@ -37,6 +37,11 @@ export default (accessToken, userID, requestIDs) => {
       {},
       { headers: true }
     ),
+    followedProfilesArtworksLoader: gravityLoader(
+      "me/follow/profiles/artworks",
+      {},
+      { headers: true }
+    ),
     followedGenesLoader: gravityLoader(
       "me/follow/genes",
       {},
@@ -47,6 +52,10 @@ export default (accessToken, userID, requestIDs) => {
       "profiles",
       "is_followed",
       "profile"
+    ),
+    homepageModulesLoader: gravityLoader("me/modules"),
+    homepageSuggestedArtworksLoader: gravityLoader(
+      "me/suggested/artworks/homepage"
     ),
     inquiryRequestsLoader: gravityLoader(
       "me/inquiry_requests",
@@ -72,6 +81,10 @@ export default (accessToken, userID, requestIDs) => {
       {},
       { headers: true }
     ),
+    savedArtworksLoader: gravityLoader("collection/saved-artwork/artworks", {
+      user_id: userID,
+      private: true,
+    }),
     filterArtworksLoader: gravityLoader("filter/artworks"),
     saleArtworksAllLoader: gravityLoader(
       "sale_artworks",
@@ -81,6 +94,11 @@ export default (accessToken, userID, requestIDs) => {
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     suggestedArtistsLoader: gravityLoader(
       "me/suggested/artists",
+      {},
+      { headers: true }
+    ),
+    suggestedSimilarArtistsLoader: gravityLoader(
+      `user/${userID}/suggested/similar/artists`,
       {},
       { headers: true }
     ),
