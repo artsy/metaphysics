@@ -78,8 +78,8 @@ export const relatedArtists = suggestedSimilarArtistsLoader => {
     exclude_artists_without_forsale_artworks: true,
     exclude_followed_artists: true,
     size: 20,
-  }).then(results => {
-    const filteredResults = filter(results, result => {
+  }).then(({ body }) => {
+    const filteredResults = filter(body, result => {
       return result.sim_artist.forsale_artworks_count > 0
     })
     return sampleSize(filteredResults, 2)
