@@ -6,7 +6,10 @@ import * as introspectionQuery from "graphql/type/introspection"
 
 const { DD_TRACER_SERVICE_NAME, DD_TRACER_HOSTNAME } = config
 
-const tracer = new Tracer({ service: DD_TRACER_SERVICE_NAME, hostname: DD_TRACER_HOSTNAME })
+const tracer = new Tracer({
+  service: DD_TRACER_SERVICE_NAME,
+  hostname: DD_TRACER_HOSTNAME,
+})
 
 function parse_args() {
   return "( ... )"
@@ -28,7 +31,7 @@ function wrapResolve(typeName, fieldName, resolver) {
     const parentSpan = rootValue.span
     const span = parentSpan
       .tracer()
-      .startSpan("metaphysics.resolver." + typeName + "." + fieldName, {
+      .startSpan("metaphysics-k8s.resolver." + typeName + "." + fieldName, {
         childOf: parentSpan.context(),
       })
     span.addTags({
@@ -71,7 +74,7 @@ export function makeSchemaTraceable(schema) {
 }
 
 export function middleware(req, res, next) {
-  const span = tracer.startSpan("metaphysics.query")
+  const span = tracer.startSpan("metaphysics-k8s.query")
   span.addTags({
     type: "web",
     "span.kind": "server",
