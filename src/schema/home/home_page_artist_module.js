@@ -37,7 +37,7 @@ export const HomePageArtistModuleTypes = {
       return suggestedSimilarArtistsLoader({
         exclude_followed_artists: true,
         exclude_artists_without_forsale_artworks: true,
-      }).then(results => map(results, "artist"))
+      }).then(({ body }) => map(body, "artist"))
     },
   },
   TRENDING: {
