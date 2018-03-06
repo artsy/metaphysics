@@ -1,0 +1,73 @@
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26230,"time":"2016-10-07T14:53:29.646Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26230,"time":"2016-10-07T14:53:35.250Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26249,"time":"2016-10-07T14:54:16.040Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26249,"time":"2016-10-07T14:54:17.460Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26255,"time":"2016-10-07T14:54:37.959Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26255,"time":"2016-10-07T14:55:39.931Z","msg":"No connection has been established to New Relic after 4 attempts.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26306,"time":"2016-10-07T14:57:38.024Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26306,"time":"2016-10-07T14:58:40.232Z","msg":"No connection has been established to New Relic after 4 attempts.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26347,"time":"2016-10-07T15:00:09.400Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26347,"time":"2016-10-07T15:00:13.687Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26367,"time":"2016-10-07T15:01:10.825Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26367,"time":"2016-10-07T15:01:14.518Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26377,"time":"2016-10-07T15:01:36.872Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26380,"time":"2016-10-07T15:01:39.754Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26413,"time":"2016-10-07T15:02:22.927Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26423,"time":"2016-10-07T15:02:42.789Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26423,"time":"2016-10-07T15:03:44.923Z","msg":"No connection has been established to New Relic after 4 attempts.","component":"collector_api"}
+{"v":0,"level":50,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26423,"time":"2016-10-07T15:06:45.287Z","msg":"New Relic for Node.js halted startup due to an error:","class":"NewRelic::Agent::LicenseException","statusCode":200}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26546,"time":"2016-10-07T15:09:00.740Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26557,"time":"2016-10-07T15:09:10.982Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":26557,"time":"2016-10-07T15:09:15.017Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33759,"time":"2016-10-07T23:47:48.211Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33762,"time":"2016-10-07T23:48:14.903Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33772,"time":"2016-10-07T23:48:23.772Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33772,"time":"2016-10-07T23:49:03.629Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33791,"time":"2016-10-07T23:49:23.148Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33810,"time":"2016-10-07T23:50:19.998Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33810,"time":"2016-10-07T23:50:22.450Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33820,"time":"2016-10-07T23:50:37.398Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33820,"time":"2016-10-07T23:50:39.157Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33820,"time":"2016-10-07T23:51:39.816Z","msg":"No connection has been established to New Relic after 4 attempts.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33861,"time":"2016-10-07T23:53:20.592Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33861,"time":"2016-10-07T23:54:22.599Z","msg":"No connection has been established to New Relic after 4 attempts.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33884,"time":"2016-10-07T23:54:37.771Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33894,"time":"2016-10-07T23:54:42.030Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33897,"time":"2016-10-07T23:54:55.547Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33897,"time":"2016-10-07T23:54:57.829Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33900,"time":"2016-10-07T23:55:08.162Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":33999,"time":"2016-10-07T23:55:35.505Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34069,"time":"2016-10-07T23:55:39.321Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34069,"time":"2016-10-07T23:56:40.805Z","msg":"No connection has been established to New Relic after 4 attempts.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-07T23:57:54.327Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-07T23:58:56.332Z","msg":"No connection has been established to New Relic after 4 attempts.","component":"collector_api"}
+{"v":0,"level":50,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T00:01:56.703Z","msg":"New Relic for Node.js halted startup due to an error:","class":"NewRelic::Agent::LicenseException","statusCode":200}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:39:47.710Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:39:52.299Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:39:52.331Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:39:52.409Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:39:52.413Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:39:52.418Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:39:52.421Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:39:52.425Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:39:55.079Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:40:00.181Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:40:00.279Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:40:07.233Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:40:09.705Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:40:09.792Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:40:09.892Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:40:55.950Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:40:59.012Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:40:59.099Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":34144,"time":"2016-10-08T16:41:01.054Z","msg":"NREUM: browser_monitoring requires valid application_id","component":"api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":55786,"time":"2016-10-10T15:01:14.358Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":55812,"time":"2016-10-10T15:01:49.469Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":55842,"time":"2016-10-10T15:02:34.141Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":55842,"time":"2016-10-10T15:03:38.977Z","msg":"No connection has been established to New Relic after 4 attempts.","component":"collector_api"}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":56060,"time":"2016-10-10T15:04:24.519Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":56060,"time":"2016-10-10T15:05:27.579Z","msg":"No connection has been established to New Relic after 4 attempts.","component":"collector_api"}
+{"v":0,"level":50,"name":"newrelic","hostname":"Matthews-MBP.home","pid":56060,"time":"2016-10-10T15:08:28.928Z","msg":"New Relic for Node.js halted startup due to an error:","class":"NewRelic::Agent::LicenseException","statusCode":200}
+{"v":0,"level":30,"name":"newrelic","hostname":"Matthews-MBP.home","pid":57203,"time":"2016-10-10T16:06:07.420Z","msg":"Starting New Relic for Node.js connection process."}
+{"v":0,"level":40,"name":"newrelic","hostname":"Matthews-MBP.home","pid":57203,"time":"2016-10-10T16:07:09.759Z","msg":"No connection has been established to New Relic after 4 attempts.","component":"collector_api"}
+{"v":0,"level":50,"name":"newrelic","hostname":"Matthews-MBP.home","pid":57203,"time":"2016-10-10T16:10:10.068Z","msg":"New Relic for Node.js halted startup due to an error:","class":"NewRelic::Agent::LicenseException","statusCode":200}
