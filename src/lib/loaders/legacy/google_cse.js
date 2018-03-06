@@ -2,7 +2,9 @@ import { assign } from "lodash"
 import { toQueryString } from "lib/helpers"
 import googleCSE from "lib/apis/google_cse"
 import httpLoader from "./http"
-const { GOOGLE_CSE_KEY, GOOGLE_CSE_CX } = process.env
+import config from "config"
+
+const { GOOGLE_CSE_KEY, GOOGLE_CSE_CX } = config
 
 export const googleCSELoader = httpLoader(googleCSE)
 

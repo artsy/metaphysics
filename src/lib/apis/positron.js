@@ -1,6 +1,9 @@
 // @ts-check
 
+import urljoin from "url-join"
 import fetch from "./fetch"
-const { POSITRON_API_BASE } = process.env
+import config from "config"
 
-export default path => fetch(`${POSITRON_API_BASE}/${path}`)
+const { POSITRON_API_BASE } = config
+
+export default path => fetch(urljoin(POSITRON_API_BASE, path))

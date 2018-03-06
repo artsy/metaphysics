@@ -1,7 +1,9 @@
+import urljoin from "url-join"
 import qs from "qs"
 import { isExisty } from "lib/helpers"
+import config from "config"
 
-const { GEMINI_ENDPOINT } = process.env
+const { GEMINI_ENDPOINT } = config
 
 function resizeTo(mode, width, height) {
   if (mode === "crop") {
@@ -23,5 +25,5 @@ export default (src, mode, width, height) => {
     src,
   }
 
-  return `${GEMINI_ENDPOINT}/?${qs.stringify(options)}`
+  return urljoin(GEMINI_ENDPOINT, `?${qs.stringify(options)}`)
 }

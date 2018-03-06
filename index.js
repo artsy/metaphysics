@@ -1,5 +1,4 @@
 import "moment-timezone"
-import "artsy-newrelic"
 import Bluebird from "bluebird"
 import xapp from "artsy-xapp"
 import compression from "compression"
@@ -7,6 +6,7 @@ import express from "express"
 import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
+import config from "config"
 
 const {
   ENABLE_ASYNC_STACK_TRACES,
@@ -15,11 +15,11 @@ const {
   GRAVITY_SECRET,
   NODE_ENV,
   PORT,
-} = process.env
+} = config
 
 global.Promise = Bluebird
 
-const port = PORT || 3000
+const port = PORT
 const isDevelopment = NODE_ENV === "development"
 const isProduction = NODE_ENV === "production"
 const enableAsyncStackTraces = ENABLE_ASYNC_STACK_TRACES === "true"

@@ -4,8 +4,7 @@ import { error, verbose } from "./loggers"
 import redis from "redis"
 import url from "url"
 
-const { NODE_ENV, OPENREDIS_URL } = process.env
-const { CACHE_LIFETIME_IN_SECONDS } = config
+const { NODE_ENV, REDIS_URL, CACHE_LIFETIME_IN_SECONDS } = config
 
 const isTest = NODE_ENV === "test"
 
@@ -22,7 +21,7 @@ function createMockClient() {
 }
 
 function createRedisClient() {
-  const redisURL = url.parse(OPENREDIS_URL)
+  const redisURL = url.parse(REDIS_URL)
   const client = redis.createClient({
     host: redisURL.hostname,
     port: redisURL.port,

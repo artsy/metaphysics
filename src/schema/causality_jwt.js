@@ -1,7 +1,8 @@
 import jwt from "jwt-simple"
 import { GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
+import config from "config"
 
-const { HMAC_SECRET } = process.env
+const { HMAC_SECRET } = config
 
 export default {
   type: GraphQLString,

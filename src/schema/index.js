@@ -59,7 +59,9 @@ import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
 import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
-const { ENABLE_SCHEMA_STITCHING } = process.env
+import config from "config"
+
+const { ENABLE_SCHEMA_STITCHING } = config
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 
 const rootFields = {

@@ -24,7 +24,9 @@ import {
   GraphQLFloat,
 } from "graphql"
 
-const { PREDICTION_ENDPOINT } = process.env
+import config from "config"
+
+const { PREDICTION_ENDPOINT } = config
 
 const isLiveOpen = sale => {
   const liveStart = moment(sale.live_start_at)

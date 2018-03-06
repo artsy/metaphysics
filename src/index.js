@@ -24,7 +24,7 @@ const {
   ENABLE_SCHEMA_STITCHING,
   NODE_ENV,
   QUERY_DEPTH_LIMIT,
-} = process.env
+} = config
 const isProduction = NODE_ENV === "production"
 const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"

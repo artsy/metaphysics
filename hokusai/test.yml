@@ -1,0 +1,17 @@
+---
+version: '2'
+services:
+  metaphysics:
+    command: yarn test
+    extends:
+      file: common.yml
+      service: metaphysics
+    environment:
+    - REDIS_URL=redis://metaphysics-redis:6379
+    env_file: ../.env.test
+    depends_on:
+    - metaphysics-redis
+  metaphysics-redis:
+    image: redis
+    ports:
+    - 6379:6379
