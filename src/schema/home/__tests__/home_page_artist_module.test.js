@@ -33,15 +33,17 @@ describe("HomePageArtistModule", () => {
     },
   ]
 
-  const similarArtistData = [
-    {
-      artist: {
-        id: "suggested",
-        birthday: null,
-        artworks_count: null,
+  const similarArtistData = {
+    body: [
+      {
+        artist: {
+          id: "suggested",
+          birthday: null,
+          artworks_count: null,
+        },
       },
-    },
-  ]
+    ],
+  }
 
   const rootValue = {
     trendingArtistsLoader: () => Promise.resolve(trendingArtistData),
