@@ -31,9 +31,12 @@ function wrapResolve(typeName, fieldName, resolver) {
     const parentSpan = rootValue.span
     const span = parentSpan
       .tracer()
-      .startSpan("metaphysics-k8s.resolver." + typeName + "." + fieldName, {
-        childOf: parentSpan.context(),
-      })
+      .startSpan(
+        DD_TRACER_SERVICE_NAME + ".resolver." + typeName + "." + fieldName,
+        {
+          childOf: parentSpan.context(),
+        }
+      )
     span.addTags({
       resource: typeName + ": " + fieldName,
       type: "web",
@@ -74,7 +77,7 @@ export function makeSchemaTraceable(schema) {
 }
 
 export function middleware(req, res, next) {
-  const span = tracer.startSpan("metaphysics-k8s.query")
+  const span = tracer.startSpan(DD_TRACER_SERVICE_NAME + ".query")
   span.addTags({
     type: "web",
     "span.kind": "server",
