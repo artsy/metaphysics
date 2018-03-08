@@ -1,9 +1,10 @@
 import raven from "raven"
 import { assign } from "lodash"
 
+const blacklistHttpStatuses = [401, 403, 404]
 const shouldLogError = originalError => {
   if (originalError && originalError.statusCode) {
-    return originalError.statusCode !== 404
+    return !blacklistHttpStatuses.includes(originalError.statusCode)
   }
   return true
 }
