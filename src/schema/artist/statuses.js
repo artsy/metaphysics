@@ -1,5 +1,5 @@
 import { GraphQLObjectType, GraphQLBoolean } from "graphql"
-import { totalViaLoader } from "../../lib/loaders/legacy/total"
+import { totalViaLoader } from "lib/total"
 
 const ArtistStatusesType = new GraphQLObjectType({
   name: "ArtistStatuses",

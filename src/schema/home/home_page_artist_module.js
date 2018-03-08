@@ -10,7 +10,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { totalViaLoader } from "../../lib/loaders/legacy/total"
+import { totalViaLoader } from "lib/total"
 
 // This object is used for both the `key` argument enum and to do fetching.
 // The order of the artists should be 1. suggested, 2. trending, 3. popular
