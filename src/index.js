@@ -8,6 +8,7 @@ import graphqlHTTP from "express-graphql"
 import localSchema from "./schema"
 import moment from "moment"
 import morgan from "artsy-morgan"
+import raven from "raven"
 import xapp from "artsy-xapp"
 import {
   fetchLoggerSetup,
@@ -23,11 +24,13 @@ const {
   ENABLE_SCHEMA_STITCHING,
   NODE_ENV,
   QUERY_DEPTH_LIMIT,
+  SENTRY_PRIVATE_DSN,
 } = config
 const isProduction = NODE_ENV === "production"
 const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
+const enableSentry = !!SENTRY_PRIVATE_DSN
 
 const app = express()
 
@@ -51,6 +54,11 @@ async function startApp() {
   }
 
   app.use(requestIDsAdder)
+
+  if (enableSentry) {
+    raven.config(SENTRY_PRIVATE_DSN).install()
+    app.use(raven.requestHandler())
+  }
 
   app.use(
     "/",
@@ -91,7 +99,7 @@ async function startApp() {
           span,
           ...createLoaders(accessToken, userID, requestIDs),
         },
-        formatError: graphqlErrorHandler(req.body),
+        formatError: graphqlErrorHandler(req, { enableSentry, isProduction }),
         validationRules: [depthLimit(queryLimit)],
         extensions: isProduction
           ? undefined
@@ -99,6 +107,10 @@ async function startApp() {
       }
     })
   )
+
+  if (enableSentry) {
+    app.use(raven.errorHandler())
+  }
 }
 
 startApp()
