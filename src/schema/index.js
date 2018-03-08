@@ -34,7 +34,6 @@ import Sale from "./sale/index"
 import Sales from "./sales"
 import SaleArtwork from "./sale_artwork"
 import SaleArtworks from "./sale_artworks"
-import Search from "./search"
 import Services from "./services"
 import Show from "./show"
 import SuggestedGenes from "./suggested_genes"
@@ -99,7 +98,6 @@ const rootFields = {
   sale_artwork: SaleArtwork,
   sale_artworks: SaleArtworks,
   sales: Sales,
-  search: Search,
   services: Services,
   show: Show,
   status: Status,

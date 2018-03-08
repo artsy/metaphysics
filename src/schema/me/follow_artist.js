@@ -1,4 +1,3 @@
-import gravity from "lib/loaders/legacy/gravity"
 import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ArtistType } from "schema/artist/index"
@@ -31,19 +30,19 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: (
     { artist_id, unfollow },
     request,
-    { rootValue: { accessToken } }
+    { rootValue: { accessToken, followArtistLoader, unfollowArtistLoader } }
   ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }
 
-    const saveMethod = unfollow ? "DELETE" : "POST"
-    const options = unfollow ? {} : { artist_id }
-    const followPath = unfollow ? `/${artist_id}` : ""
-    return gravity
-      .with(accessToken, {
-        method: saveMethod,
-      })(`/me/follow/artist${followPath}`, options)
-      .then(() => ({ artist_id }))
+    let performAction = null
+    if (unfollow) {
+      performAction = unfollowArtistLoader(artist_id)
+    } else {
+      performAction = followArtistLoader({ artist_id })
+    }
+
+    return performAction.then(() => ({ artist_id }))
   },
 })

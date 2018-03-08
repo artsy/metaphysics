@@ -1,6 +1,5 @@
-import gravity from "lib/loaders/legacy/gravity"
 import { map } from "lodash"
-import { total as getTotal } from "lib/loaders/legacy/total"
+import { totalViaLoader } from "lib/total"
 import Artist from "schema/artist"
 import { GraphQLInt, GraphQLList, GraphQLObjectType } from "graphql"
 
@@ -24,11 +23,9 @@ const FollowArtistsType = new GraphQLObjectType({
               data,
               options,
               request,
-              { rootValue: { accessToken } }
+              { rootValue: { followedArtistsLoader } }
             ) => {
-              return getTotal("me/follow/artists", accessToken, {
-                total_count: true,
-              }).then(({ body: { total } }) => total)
+              return totalViaLoader(followedArtistsLoader)
             },
           },
         },
@@ -49,8 +46,13 @@ export default {
       type: GraphQLInt,
     },
   },
-  resolve: (root, options, request, { rootValue: { accessToken } }) => {
-    if (!accessToken) return null
-    return gravity.with(accessToken)("me/follow/artists", options)
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { followedArtistsLoader } }
+  ) => {
+    if (!followedArtistsLoader) return null
+    return followedArtistsLoader(options).then(({ body }) => body)
   },
 }

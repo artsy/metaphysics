@@ -108,6 +108,16 @@ export default (accessToken, userID, requestIDs) => {
       { method: "PUT" }
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
+    followArtistLoader: gravityLoader(
+      "me/follow/artist",
+      {},
+      { method: "POST" }
+    ),
+    unfollowArtistLoader: gravityLoader(
+      id => `me/follow/artist/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     saveArtworkLoader: gravityLoader(
       id => `collection/saved-artwork/artwork/${id}`,
       {},

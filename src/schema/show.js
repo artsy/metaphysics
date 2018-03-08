@@ -28,7 +28,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { allViaLoader } from "../lib/all"
-import { totalViaLoader } from "../lib/loaders/legacy/total"
+import { totalViaLoader } from "lib/total"
 
 const kind = ({ artists, fair, artists_without_artworks, group }) => {
   if (isExisty(fair)) return "fair"
