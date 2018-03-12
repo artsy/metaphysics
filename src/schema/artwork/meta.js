@@ -16,8 +16,7 @@ const forSaleIndication = artwork =>
 const dimensions = artwork => artwork.dimensions[artwork.metric]
 
 const partnerDescription = ({ partner, forsale }) => {
-  if (isEmpty(partner)) return undefined
-  const name = partner.name
+  const name = partner && partner.name
   if (isEmpty(name)) return undefined
   return forsale ? `Available for sale from ${name}` : `From ${name}`
 }
