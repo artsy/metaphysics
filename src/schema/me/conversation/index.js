@@ -137,7 +137,8 @@ export const {
 
 const isLastMessageToUser = ({ _embedded, from_email }) => {
   const lastMessageFromEmail = get(_embedded, "last_message.from_email_address")
-  return from_email !== lastMessageFromEmail
+  const lastMessagePrincipal = get(_embedded, "last_message.from_principal")
+  return lastMessagePrincipal === false || from_email !== lastMessageFromEmail
 }
 
 const lastMessageId = conversation => {

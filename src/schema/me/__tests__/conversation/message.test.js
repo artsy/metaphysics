@@ -24,6 +24,7 @@ describe("Me", () => {
                   lewitt_invoice_id: "420i",
                 },
                 from: `"Percy Z" <percy@cat.com>`,
+                from_principal: true,
                 original_text: "I'm a cat oh yea!",
                 body: "I'm a cat",
               },
@@ -103,6 +104,41 @@ describe("Me", () => {
 
         return runAuthenticatedQuery(query, customRootValue).then(
           ({ me: { conversation } }) => {
+            expect(conversation).toMatchSnapshot()
+          }
+        )
+      })
+
+      it("returns proper is_from_user", () => {
+        const query = `
+          {
+            me {
+              conversation(id: "420") {
+                id
+                initial_message
+                from {
+                  email
+                }
+                messages(first: 10) {
+                  edges {
+                    node {
+                      body
+                      id
+                      is_from_user
+                      from {
+                        email
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `
+
+        return runAuthenticatedQuery(query, rootValue).then(
+          ({ me: conversation }) => {
             expect(conversation).toMatchSnapshot()
           }
         )

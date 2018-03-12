@@ -57,6 +57,7 @@ describe("Me", () => {
               lewitt_invoice_id: "420i",
             },
             from: `"Percy Z" <percy@cat.com>`,
+            from_principal: true,
             body: "I'm a cat",
           },
           {
@@ -67,6 +68,7 @@ describe("Me", () => {
             attachments: [],
             metadata: {},
             from: `"Bitty Z" <Bitty@cat.com>`,
+            from_principal: false,
             body: "",
           },
           {
@@ -87,6 +89,7 @@ describe("Me", () => {
             attachments: [],
             metadata: {},
             from: "<email@email.com>",
+            from_principal: null,
             deliveries: [
               {
                 opened_at: "2020-12-31T12:00:00+00:00",
@@ -264,6 +267,7 @@ describe("Me", () => {
                   edges {
                     node {
                       id
+                      is_from_user
                     }
                   }
                 }
@@ -291,6 +295,19 @@ describe("Me", () => {
           ({ me: { conversation: { messages } } }) => {
             expect(messages.edges.length).toEqual(4)
             expect(messages.edges[0].node.id).toEqual("243")
+          }
+        )
+      })
+      it("returns proper is_from_user for different values of `from_principal`", () => {
+        const query = getQuery()
+
+        return runAuthenticatedQuery(query, rootValue).then(
+          ({ me: { conversation: { messages } } }) => {
+            expect(messages.edges.length).toEqual(4)
+            expect(messages.edges[0].node.is_from_user).toEqual(true)
+            expect(messages.edges[1].node.is_from_user).toEqual(false)
+            expect(messages.edges[2].node.is_from_user).toEqual(true)
+            expect(messages.edges[3].node.is_from_user).toEqual(false)
           }
         )
       })
