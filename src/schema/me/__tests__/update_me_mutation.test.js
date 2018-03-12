@@ -12,7 +12,7 @@ describe("UpdateMeMutation", () => {
             phone: "1234890"
             location: { address: "123 my street" }
             price_range_min: -1
-            price_range_max: 50000
+            price_range_max: 1000000000000
           }
         ) {
           user {
@@ -37,7 +37,7 @@ describe("UpdateMeMutation", () => {
           location: {
             address: "123 my street",
           },
-          price_range: "-1:50000",
+          price_range: "-1:1000000000000",
         }),
     }
 

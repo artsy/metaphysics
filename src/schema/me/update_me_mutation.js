@@ -1,4 +1,9 @@
-import { GraphQLString, GraphQLInt, GraphQLInputObjectType } from "graphql"
+import {
+  GraphQLString,
+  GraphQLFloat,
+  GraphQLInt,
+  GraphQLInputObjectType,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 import UserType from "../user"
@@ -71,7 +76,7 @@ export default mutationWithClientMutationId({
     },
     price_range_max: {
       description: "The maximum price collector has selected",
-      type: GraphQLInt,
+      type: GraphQLFloat,
     },
   },
   outputFields: {
