@@ -1,4 +1,4 @@
-import { map } from "lodash"
+import { isEmpty, map } from "lodash"
 import { join, truncate } from "lib/helpers"
 import { getDefault } from "schema/image"
 import { setVersion } from "schema/image/normalize"
@@ -15,8 +15,10 @@ const forSaleIndication = artwork =>
 
 const dimensions = artwork => artwork.dimensions[artwork.metric]
 
-const partnerDescription = ({ partner: { name }, forsale }) => {
-  if (!name) return undefined
+const partnerDescription = ({ partner, forsale }) => {
+  if (isEmpty(partner)) return undefined
+  const name = partner.name
+  if (isEmpty(name)) return undefined
   return forsale ? `Available for sale from ${name}` : `From ${name}`
 }
 

@@ -534,6 +534,7 @@ export const artworkFields = () => {
         { rootValue: { partnerLoader } }
       ) => {
         if (shallow) return partner
+        if (_.isEmpty(partner)) return null
         return partnerLoader(partner.id).catch(() => null)
       },
     },
