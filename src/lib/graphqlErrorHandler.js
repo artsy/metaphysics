@@ -1,20 +1,46 @@
-const isProduction = process.env.NODE_ENV === "production"
+import raven from "raven"
+import { assign } from "lodash"
 
-export default function graphqlErrorHandler() {
-  // export default function graphqlErrorHandler(query) {
-  // if (process.env.NEW_RELIC_LICENSE_KEY) {
-  //   const newrelic = require("newrelic")
-  //   return graphqlError => {
-  //     const error = graphqlError.originalError || graphqlError
-  //     if (error.statusCode === undefined || error.statusCode >= 500) {
-  //       newrelic.noticeError(error, query)
-  //     }
-  //     return { message: error.message }
-  //   }
-  // }
-  return error => ({
-    message: error.message,
-    locations: error.locations,
-    stack: isProduction ? null : error.stack,
-  })
+const blacklistHttpStatuses = [401, 403, 404]
+
+export const shouldLogError = originalError => {
+  if (originalError && originalError.statusCode) {
+    return (
+      originalError.statusCode < 500 &&
+      !blacklistHttpStatuses.includes(originalError.statusCode)
+    )
+  }
+  return true
+}
+
+export default function graphqlErrorHandler(
+  req,
+  { isProduction, enableSentry }
+) {
+  return error => {
+    if (enableSentry) {
+      if (shouldLogError(error.originalError)) {
+        raven.captureException(
+          error,
+          assign(
+            {},
+            {
+              tags: { graphql: "exec_error" },
+              extra: {
+                source: error.source && error.source.body,
+                positions: error.positions,
+                path: error.path,
+              },
+            },
+            raven.parsers.parseRequest(req)
+          )
+        )
+      }
+    }
+    return {
+      message: error.message,
+      locations: error.locations,
+      stack: isProduction ? null : error.stack,
+    }
+  }
 }

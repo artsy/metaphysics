@@ -1,7 +1,15 @@
 import Tracer from "datadog-tracer"
+import config from "config"
 import { forIn, has } from "lodash"
 import { getNamedType, GraphQLObjectType } from "graphql"
 import * as introspectionQuery from "graphql/type/introspection"
+
+const { DD_TRACER_SERVICE_NAME, DD_TRACER_HOSTNAME } = config
+
+const tracer = new Tracer({
+  service: DD_TRACER_SERVICE_NAME,
+  hostname: DD_TRACER_HOSTNAME,
+})
 
 function parse_args() {
   return "( ... )"
@@ -23,9 +31,12 @@ function wrapResolve(typeName, fieldName, resolver) {
     const parentSpan = rootValue.span
     const span = parentSpan
       .tracer()
-      .startSpan("metaphysics.resolver." + typeName + "." + fieldName, {
-        childOf: parentSpan.context(),
-      })
+      .startSpan(
+        DD_TRACER_SERVICE_NAME + ".resolver." + typeName + "." + fieldName,
+        {
+          childOf: parentSpan.context(),
+        }
+      )
     span.addTags({
       resource: typeName + ": " + fieldName,
       type: "web",
@@ -65,10 +76,8 @@ export function makeSchemaTraceable(schema) {
   })
 }
 
-const tracer = new Tracer({ service: "metaphysics" })
-
 export function middleware(req, res, next) {
-  const span = tracer.startSpan("metaphysics.query")
+  const span = tracer.startSpan(DD_TRACER_SERVICE_NAME + ".query")
   span.addTags({
     type: "web",
     "span.kind": "server",

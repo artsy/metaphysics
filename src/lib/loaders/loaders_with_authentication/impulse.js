@@ -1,6 +1,7 @@
 import factories from "../api"
+import config from "config"
 
-const { IMPULSE_APPLICATION_ID } = process.env
+const { IMPULSE_APPLICATION_ID } = config
 
 export default (accessToken, userID, requestIDs) => {
   let impulseTokenLoader

@@ -16,8 +16,9 @@ import {
   GraphQLBoolean,
   GraphQLList,
 } from "graphql"
+import config from "config"
 
-const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = process.env
+const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
 export const isBiddable = (sale, { artwork: { sold } }) => {
   return !sold && sale.is_auction && sale.auction_state === "open"
@@ -60,9 +61,7 @@ const SaleArtworkType = new GraphQLObjectType({
               // tiers to avoid mutating the cached value.
               const tiers = incrs[0].increments.slice()
               const increments = [minimum_next_bid_cents]
-              const limit =
-                BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT ||
-                Number.MAX_SAFE_INTEGER
+              const limit = BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT
               let current = 0 // Always start from zero, so that all prices are on-increment
               while (increments.length < 100 && current <= limit) {
                 if (current > minimum_next_bid_cents) increments.push(current)

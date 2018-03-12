@@ -25,8 +25,9 @@ import SaleRegistrations from "./sale_registrations"
 import SavedArtworks from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
 import Submissions from "./consignments/submissions"
+import config from "config"
 
-const { ENABLE_SCHEMA_STITCHING } = process.env
+const { ENABLE_SCHEMA_STITCHING } = config
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 
 const mySubmissions = enableSchemaStitching

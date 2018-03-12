@@ -1,7 +1,10 @@
 // @ts-check
-import fetch from "./fetch"
 
-const { GALAXY_API_BASE, GALAXY_TOKEN } = process.env
+import urljoin from "url-join"
+import fetch from "./fetch"
+import config from "config"
+
+const { GALAXY_API_BASE, GALAXY_TOKEN } = config
 
 export default path => {
   const headers = {
@@ -9,5 +12,5 @@ export default path => {
     "Content-Type": "application/hal+json",
     "Http-Authorization": GALAXY_TOKEN,
   }
-  return fetch(`${GALAXY_API_BASE}/${path}`, { headers })
+  return fetch(urljoin(GALAXY_API_BASE, path), { headers })
 }

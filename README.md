@@ -15,9 +15,17 @@ It is currently used in production all over the place in
 
 * **State:** production
 * **Production:**
-  [metaphysics-production.artsy.net](https://metaphysics-production.artsy.net/)
+  - [Endpoint](https://metaphysics-production.artsy.net/)
+  - [Kubernetes deployment dashboard](https://kubernetes.artsy.net/#!/deployment/default/metaphysics-web?namespace=default)
+  - [DataDog monitoring dashboard](https://app.datadoghq.com/apm/service/metaphysics/metaphysics.query?env=production)
+  - [Sentry error reporting dashboard](https://sentry.io/artsynet/metaphysics-production/)
+  - [Papertrail logs dashboard](https://papertrailapp.com/groups/3675843/events?q=host%3Ametaphysics-web)
 * **Staging:**
-  [metaphysics-staging.artsy.net](https://metaphysics-staging.artsy.net/)
+  - [Endpoint](https://metaphysics-staging.artsy.net/)
+  - [Kubernetes deployment dashboard](https://kubernetes-staging.artsy.net/#!/deployment/default/metaphysics-web?namespace=default)
+  - [DataDog monitoring dashboard](https://app.datadoghq.com/apm/service/metaphysics/metaphysics.query?env=staging)
+  - [Sentry error reporting dashboard](https://sentry.io/artsynet/metaphysics-staging/)
+  - [Papertrail logs dashboard](https://papertrailapp.com/groups/3674473/events?q=host%3Ametaphysics-web)
 * **Point People:** [@alloy](https://github.com/alloy) &
   [@mzikherman](https://github.com/mzikherman)
 
@@ -30,11 +38,35 @@ $ cat bin/setup
 $ bin/setup
 ```
 
-Set up your `.env` file based on our example `.env.test` (the variables you must
-change for development are separated at the bottom). For Artsy staff, grab the
-config from 1Password.
+Set up your `.env` file based on `.env.example`. For Artsy staff, grab the
+keys/secrets from 1Password.
 
-To start up a development server, clone this repo and run:
+### Docker and Kubernetes setup
+
+* Install [Docker for Mac](https://github.com/artsy/hokusai#requirements) and [Hokusai](https://github.com/artsy/hokusai#setup)
+  ```
+  $ brew tap caskroom/cask && brew cask install docker
+  $ pip install hokusai
+  ```
+
+  If you are using your system Python distribution, you may need to run this as:
+  ```
+  $ sudo pip install hokusai --ignore-installed
+  ```
+
+* Configure Hokusai
+  ```
+  $ export AWS_ACCESS_KEY_ID={{ MY_AWS_ACCESS_KEY_ID }}
+  $ export AWS_SECRET_ACCESS_KEY={{ MY_AWS_SECRET_ACCESS_KEY }}
+  $ hokusai configure --kubectl-version {{ kubectl_version }} --s3-bucket {{ kubectl_config_s3_bucket }} --s3-key {{ kubectl_config_s3_key }}
+  $ hokusai check
+  ```
+
+  Artsy staff should find follow the instructions in https://github.com/artsy/potential/blob/master/platform/Kubernetes.md#hokusai
+
+### Development
+
+To start up a development server, run:
 
 ```sh
 yarn install
@@ -59,7 +91,13 @@ between `<` and `>`.
 
 ### Testing
 
-`npm test` to run the entire suite `npm run watch` to spin up the test watcher
+* Run tests in the Docker Compose test stack via Hokusai:
+  ```
+  $ hokusai test
+  ```
+
+* Or, to run tests locally:
+  `npm test` to run the entire suite `npm run watch` to spin up the test watcher
 
 ### Docs
 
@@ -69,23 +107,10 @@ between `<` and `>`.
 
 ### Deployment
 
-PRs merged to master are deployed to staging via Circle.
+PRs merged to the `master` branch are automatically deployed to staging. The release on staging can be promoted to production via the command `hokusai pipeline promote`.  See Hokusai's [docs on the Staging -> Production pipeline](https://github.com/artsy/hokusai/blob/master/docs/Command_Reference.md#working-with-the-staging---production-pipeline) for more details.
 
-We then use the heroku
-[pipelines](https://blog.heroku.com/archives/2013/7/10/heroku-pipelines-beta) to
-deploy to production when happy with staging.
+## Interacting with the staging and production deployments
 
-Add the staging instance as a git remote named `staging`:
+Use `hokusai staging` [commands](https://github.com/artsy/hokusai/blob/master/docs/Command_Reference.md#working-with-the-kubernetes-staging-environment) to interact with the staging environment.
 
-```sh
-git remote add staging git@heroku.com:artsy-metaphysics-staging.git
-```
-
-Then promote using the command:
-
-```sh
-$ yarn promote:production
-```
-
-For a list of all deployments, see the
-[Activity Log](https://dashboard.heroku.com/apps/artsy-metaphysics-production/activity).
+Use `hokusai production` [commands](https://github.com/artsy/hokusai/blob/master/docs/Command_Reference.md#working-with-the-kubernetes-production-environment) to interact with the production environment.

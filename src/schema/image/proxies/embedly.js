@@ -1,5 +1,8 @@
+import urljoin from "url-join"
 import qs from "qs"
-const { EMBEDLY_KEY, EMBEDLY_ENDPOINT } = process.env
+import config from "config"
+
+const { EMBEDLY_KEY, EMBEDLY_ENDPOINT } = config
 
 export default (src, mode, width, height) => {
   const options = {
@@ -19,6 +22,5 @@ export default (src, mode, width, height) => {
       quality: 80,
     },
   }
-
-  return `${EMBEDLY_ENDPOINT}/${mode}?${qs.stringify(options[mode])}`
+  return urljoin(EMBEDLY_ENDPOINT, `${mode}?${qs.stringify(options[mode])}`)
 }

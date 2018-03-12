@@ -1,3 +1,4 @@
+import urljoin from "url-join"
 import {
   mergeSchemas as _mergeSchemas,
   introspectSchema,
@@ -11,10 +12,14 @@ import fetch from "node-fetch"
 import localSchema from "../schema"
 import { headers as requestIDHeaders } from "./requestIDs"
 
+import config from "config"
+
+const { CONVECTION_API_BASE } = config
+
 export function createConvectionLink() {
   const httpLink = createHttpLink({
     fetch,
-    uri: `${process.env.CONVECTION_API_BASE}/graphql`,
+    uri: urljoin(CONVECTION_API_BASE, "graphql"),
   })
 
   const middlewareLink = new ApolloLink((operation, forward) =>
