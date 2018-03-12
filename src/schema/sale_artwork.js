@@ -128,7 +128,7 @@ const SaleArtworkType = new GraphQLObjectType({
         }),
       }),
       high_estimate_cents: {
-        type: GraphQLInt,
+        type: GraphQLFloat,
         deprecationReason: "Favor `high_estimate",
       },
       highest_bid: {
@@ -153,7 +153,7 @@ const SaleArtworkType = new GraphQLObjectType({
               resolve: ({ display_amount_dollars }) => display_amount_dollars,
             },
             amount_cents: {
-              type: GraphQLInt,
+              type: GraphQLFloat,
               deprecationReason: "Favor `cents`",
             },
           },
@@ -206,7 +206,7 @@ const SaleArtworkType = new GraphQLObjectType({
         }),
       }),
       low_estimate_cents: {
-        type: GraphQLInt,
+        type: GraphQLFloat,
         deprecationReason: "Favor `low_estimate`",
       },
       minimum_next_bid: money({
@@ -220,7 +220,7 @@ const SaleArtworkType = new GraphQLObjectType({
         }),
       }),
       minimum_next_bid_cents: {
-        type: GraphQLInt,
+        type: GraphQLFloat,
         deprecationReason: "Favor `minimum_next_bid`",
       },
       opening_bid: money({
@@ -231,7 +231,7 @@ const SaleArtworkType = new GraphQLObjectType({
         }),
       }),
       opening_bid_cents: {
-        type: GraphQLInt,
+        type: GraphQLFloat,
         deprecationReason: "Favor `opening_bid`",
       },
       position: {
