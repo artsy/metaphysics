@@ -40,12 +40,12 @@ workflows:
       - push:
           filters:
             branches:
-              only: hokusai
+              only: master
           requires:
             - test
       - deploy:
           filters:
             branches:
-              only: hokusai
+              only: master
           requires:
             - push
