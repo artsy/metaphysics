@@ -30,7 +30,7 @@ spec:
         - containerPort: 3000
         resources:
           limits:
-            memory: "512Mi"
+            memory: "768Mi"
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
