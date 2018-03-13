@@ -1,14 +1,10 @@
 import { assign } from "lodash"
 import moment from "moment"
 
-import schema from "schema"
 import { runQuery } from "test/utils"
 import gql from "test/gql"
 
 describe("Artwork type", () => {
-  let gravity
-  const Artwork = schema.__get__("Artwork")
-
   const partner = { id: "existy" }
   const sale = { id: "existy" }
 
@@ -47,21 +43,15 @@ describe("Artwork type", () => {
       artists: [],
       sale_ids: ["sale-id-not-auction", "sale-id-auction"],
       attribution_class: "unique",
+      dimensions: { in: "2 x 3in." },
+      metric: "in",
     }
-
-    gravity = sinon.stub()
-    Artwork.__Rewire__("gravity", gravity)
-
     rootValue = {
       artworkLoader: sinon
         .stub()
         .withArgs(artwork.id)
         .returns(Promise.resolve(artwork)),
     }
-  })
-
-  afterEach(() => {
-    Artwork.__ResetDependency__("gravity")
   })
 
   describe("#is_contactable", () => {
@@ -1018,6 +1008,36 @@ describe("Artwork type", () => {
           artwork: {
             attribution_class: {
               long_description: "One of a kind piece, created by the artist.",
+            },
+          },
+        })
+      })
+    })
+  })
+
+  describe("Without a partner", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          partner {
+            id
+          }
+          meta {
+            description
+          }
+        }
+      }
+    `
+
+    it("returns null appropriately and doesnt error", () => {
+      artwork.partner = null
+      artwork.title = "A Cat"
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            partner: null,
+            meta: {
+              description: "A Cat, 2 x 3in.",
             },
           },
         })
