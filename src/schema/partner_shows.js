@@ -22,6 +22,13 @@ const PartnerShows = {
     featured: {
       type: GraphQLBoolean,
     },
+    ids: {
+      type: new GraphQLList(GraphQLString),
+      description: `
+        Only return shows matching specified ids.
+        Accepts list of ids.
+      `,
+    },
     near: {
       type: Near,
     },
@@ -42,6 +49,10 @@ const PartnerShows = {
         near: `${options.near.lat},${options.near.lng}`,
         max_distance: options.near.max_distance,
       })
+    }
+    if (options.ids) {
+      gravityOptions.id = options.ids
+      delete gravityOptions.ids
     }
     return showsLoader(gravityOptions)
   },
