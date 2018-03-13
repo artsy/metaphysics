@@ -1,4 +1,5 @@
 import { runQuery } from "test/utils"
+import gql from "test/gql"
 
 describe("PartnerShows type", () => {
   describe("#kind", () => {
@@ -70,5 +71,31 @@ describe("PartnerShows type", () => {
         })
       })
     })
+  })
+
+  it("returns a list of shows matching array of ids", async () => {
+    const showsLoader = ({ id }) => {
+      if (id) {
+        return Promise.resolve(
+          id.map(_id => ({
+            _id,
+            partner: {
+              id: "new-museum",
+            },
+            display_on_partner_profile: true,
+          }))
+        )
+      }
+      throw new Error("Unexpected invocation")
+    }
+    const query = gql`
+      {
+        partner_shows(ids: ["52c721e5b202a3edf1000072"]) {
+          _id
+        }
+      }
+    `
+    const { partner_shows } = await runQuery(query, { showsLoader })
+    expect(partner_shows[0]._id).toEqual("52c721e5b202a3edf1000072")
   })
 })
