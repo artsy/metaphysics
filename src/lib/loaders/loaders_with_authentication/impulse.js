@@ -3,7 +3,7 @@ import config from "config"
 
 const { IMPULSE_APPLICATION_ID } = config
 
-export default (accessToken, userID, requestIDs) => {
+export default (accessToken, userID, opts) => {
   let impulseTokenLoader
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
   const impulseAccessTokenLoader = () =>
@@ -12,7 +12,7 @@ export default (accessToken, userID, requestIDs) => {
   const {
     gravityLoaderWithAuthenticationFactory,
     impulseLoaderWithAuthenticationFactory,
-  } = factories(requestIDs)
+  } = factories(opts)
   const gravityLoader = gravityLoaderWithAuthenticationFactory(
     gravityAccessTokenLoader
   )

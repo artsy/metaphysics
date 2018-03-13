@@ -66,6 +66,7 @@ describe("API loaders", () => {
     beforeEach(() => {
       apiLoader = apiLoaderWithoutAuthenticationFactory(api, "test_name", {
         requestIDs: { requestID: "1234" },
+        userAgent: "catty browser",
       })
       loader = apiLoader("some/path")
     })
@@ -100,7 +101,10 @@ describe("API loaders", () => {
   describe("with authentication", () => {
     beforeEach(() => {
       apiLoader = apiLoaderWithAuthenticationFactory(api, "test_name", {
-        requestID: 1234,
+        userAgent: "catty browser",
+        requestIDs: {
+          requestID: 1234,
+        },
       })(() => Promise.resolve("secret-token"))
       loader = apiLoader("some/path")
     })

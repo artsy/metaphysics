@@ -18,14 +18,21 @@ describe("APIs", () => {
       const request = sinon.stub().yields(null, { statusCode: 200, body: {} })
       fetch.__Rewire__("request", request)
 
-      return gravity("foo/bar").then(() => {
-        expect(request.args[0][0]).toBe("https://api.artsy.test/api/v1/foo/bar")
-        expect(request.args[0][1]).toEqual({
-          headers: { "X-XAPP-TOKEN": "secret" },
-          method: "GET",
-          timeout: 5000,
-        })
-      })
+      return gravity("foo/bar", null, { userAgent: "catty browser" }).then(
+        () => {
+          expect(request.args[0][0]).toBe(
+            "https://api.artsy.test/api/v1/foo/bar"
+          )
+          expect(request.args[0][1]).toEqual({
+            headers: {
+              "X-XAPP-TOKEN": "secret",
+              "User-Agent": "catty browser; Metaphysics",
+            },
+            method: "GET",
+            timeout: 5000,
+          })
+        }
+      )
     })
 
     it("resolves when there is a successful JSON response", () => {

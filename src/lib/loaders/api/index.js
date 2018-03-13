@@ -12,7 +12,7 @@ import positron from "lib/apis/positron"
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
 
-export default requestIDs => ({
+export default opts => ({
   // Unauthenticated loaders
 
   /**
@@ -22,7 +22,8 @@ export default requestIDs => ({
     delta,
     "delta",
     {
-      requestIDs,
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
     }
   ),
 
@@ -33,7 +34,8 @@ export default requestIDs => ({
     diffusion,
     "diffusion",
     {
-      requestIDs,
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
       requestThrottleMs: config.DIFFUSION_REQUEST_THROTTLE_MS,
     }
   ),
@@ -46,7 +48,10 @@ export default requestIDs => ({
   galaxyLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
     galaxy,
     "galaxy",
-    { requestIDs }
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
   ),
 
   /**
@@ -57,7 +62,10 @@ export default requestIDs => ({
   gravityLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
     gravity,
     "gravity",
-    { requestIDs }
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
   ),
 
   /**
@@ -69,7 +77,8 @@ export default requestIDs => ({
     positron,
     "positron",
     {
-      requestIDs,
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
     }
   ),
 
@@ -85,7 +94,8 @@ export default requestIDs => ({
     convection,
     "convection",
     {
-      requestIDs,
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
     }
   ),
 
@@ -98,7 +108,10 @@ export default requestIDs => ({
   gravityLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
     gravity,
     "gravity",
-    { requestIDs }
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
   ),
 
   /**
@@ -110,6 +123,9 @@ export default requestIDs => ({
   impulseLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
     impulse,
     "impulse",
-    { requestIDs }
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
   ),
 })

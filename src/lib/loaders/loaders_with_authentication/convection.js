@@ -4,14 +4,14 @@ import config from "config"
 
 const { CONVECTION_APP_ID } = config
 
-export default (accessToken, requestIDs) => {
+export default (accessToken, opts) => {
   let convectionTokenLoader
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
 
   const {
     gravityLoaderWithAuthenticationFactory,
     convectionLoaderWithAuthenticationFactory,
-  } = factories(requestIDs)
+  } = factories(opts)
 
   const convectionAccessTokenLoader = () =>
     convectionTokenLoader().then(data => data.token)

@@ -2,8 +2,8 @@
 
 import factories from "../api"
 
-export default requestIDs => {
-  const { positronLoaderWithoutAuthenticationFactory } = factories(requestIDs)
+export default opts => {
+  const { positronLoaderWithoutAuthenticationFactory } = factories(opts)
   const positronLoader = positronLoaderWithoutAuthenticationFactory
 
   return {

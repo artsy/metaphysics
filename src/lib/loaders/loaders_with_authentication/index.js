@@ -2,8 +2,8 @@ import convectionLoaders from "./convection"
 import impulseLoaders from "./impulse"
 import gravityLoaders from "./gravity"
 
-export default (accessToken, userID, requestIDs) => ({
-  ...gravityLoaders(accessToken, userID, requestIDs),
-  ...convectionLoaders(accessToken, requestIDs),
-  ...impulseLoaders(accessToken, userID, requestIDs),
+export default (accessToken, userID, opts) => ({
+  ...gravityLoaders(accessToken, userID, opts),
+  ...convectionLoaders(accessToken, opts),
+  ...impulseLoaders(accessToken, userID, opts),
 })

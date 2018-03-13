@@ -4,8 +4,8 @@ import gql from "test/gql"
 
 import factories from "../../../lib/loaders/api"
 
-describe("requestID (with the real data loaders)", () => {
-  it("resolves to add the initial request ID to a gravity header", () => {
+describe("User-Agent (with the real data loaders)", () => {
+  it("resolves to add the initial user agent to a gravity header", () => {
     const query = gql`
       {
         artist(id: "andy-warhol") {
@@ -15,12 +15,14 @@ describe("requestID (with the real data loaders)", () => {
     `
     const gravity = jest.fn(() => Promise.resolve({}))
     factories.__Rewire__("gravity", gravity)
-    const requestIDs = { requestId: "request-id" }
-    const rootValue = createLoaders("access-token", "user-id", { requestIDs })
+    const userAgent = "catty browser"
+    const rootValue = createLoaders("access-token", "user-id", {
+      userAgent,
+    })
     expect.assertions(1)
     return runQuery(query, rootValue).then(() => {
       expect(gravity).toBeCalledWith("artist/andy-warhol?", null, {
-        requestIDs,
+        userAgent,
       })
     })
   })
@@ -37,12 +39,12 @@ describe("requestID (with the real data loaders)", () => {
     `
     const gravity = jest.fn(() => Promise.resolve({}))
     factories.__Rewire__("gravity", gravity)
-    const requestIDs = { requestId: "request-id" }
-    const rootValue = createLoaders("secret", "user-42", { requestIDs })
+    const userAgent = "catty browser"
+    const rootValue = createLoaders("secret", "user-42", { userAgent })
     expect.assertions(1)
     return runAuthenticatedQuery(query, rootValue).then(() => {
       expect(gravity).toBeCalledWith("me/lot_standings?", "secret", {
-        requestIDs,
+        userAgent,
       })
     })
   })
