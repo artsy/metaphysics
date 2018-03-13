@@ -17,15 +17,16 @@ It is currently used in production all over the place in
 * **Production:**
   - [Endpoint](https://metaphysics-production.artsy.net/)
   - [Kubernetes deployment dashboard](https://kubernetes.artsy.net/#!/deployment/default/metaphysics-web?namespace=default)
-  - [DataDog monitoring dashboard](https://app.datadoghq.com/apm/service/metaphysics/metaphysics.query?env=production)
-  - [Sentry error reporting dashboard](https://sentry.io/artsynet/metaphysics-production/)
-  - [Papertrail logs dashboard](https://papertrailapp.com/groups/3675843/events?q=host%3Ametaphysics-web)
+  - [Datadog monitoring](https://app.datadoghq.com/screen/302489/metaphysics-production)
+  - [DataDog query-level monitoring](https://app.datadoghq.com/apm/service/metaphysics/metaphysics.query?env=production)
+  - [Sentry error reporting](https://sentry.io/artsynet/metaphysics-production/)
+  - [Papertrail logs](https://papertrailapp.com/groups/3675843/events?q=host%3Ametaphysics-web)
 * **Staging:**
   - [Endpoint](https://metaphysics-staging.artsy.net/)
   - [Kubernetes deployment dashboard](https://kubernetes-staging.artsy.net/#!/deployment/default/metaphysics-web?namespace=default)
-  - [DataDog monitoring dashboard](https://app.datadoghq.com/apm/service/metaphysics/metaphysics.query?env=staging)
-  - [Sentry error reporting dashboard](https://sentry.io/artsynet/metaphysics-staging/)
-  - [Papertrail logs dashboard](https://papertrailapp.com/groups/3674473/events?q=host%3Ametaphysics-web)
+  - [DataDog monitoring](https://app.datadoghq.com/apm/service/metaphysics/metaphysics.query?env=staging)
+  - [Sentry error reporting](https://sentry.io/artsynet/metaphysics-staging/)
+  - [Papertrail logs](https://papertrailapp.com/groups/3674473/events?q=host%3Ametaphysics-web)
 * **Point People:** [@alloy](https://github.com/alloy) &
   [@mzikherman](https://github.com/mzikherman)
 
