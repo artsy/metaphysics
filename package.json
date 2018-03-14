@@ -117,7 +117,8 @@
     "lint-staged": "^3.4.0",
     "prettier": "^1.7",
     "sinon": "^1.17.2",
-    "typescript": "^2.5.2"
+    "typescript": "^2.7.2",
+    "typescript-babel-jest": "^1.0.5"
   },
   "jest": {
     "setupTestFrameworkScriptFile": "<rootDir>/src/test/helper.js",
@@ -128,7 +129,10 @@
       "/src/test/utils.js",
       "/src/test/gql.js",
       "/src/test/__mocks__"
-    ]
+    ],
+    "transform": {
+      "^.+\\.(js|ts)$": "typescript-babel-jest"
+    }
   },
   "prettier": {
     "semi": false,

@@ -1,6 +1,3 @@
-require("@babel/register")({
-  extensions: [".ts", ".js", ".tsx", ".jsx"],
-})
 import "moment-timezone"
 import Bluebird from "bluebird"
 import xapp from "artsy-xapp"
