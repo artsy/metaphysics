@@ -1,8 +1,8 @@
 // @ts-check
 import factories from "../api"
 
-export default requestIDs => {
-  const { galaxyLoaderWithoutAuthenticationFactory } = factories(requestIDs)
+export default opts => {
+  const { galaxyLoaderWithoutAuthenticationFactory } = factories(opts)
   const galaxyLoader = galaxyLoaderWithoutAuthenticationFactory
 
   return {

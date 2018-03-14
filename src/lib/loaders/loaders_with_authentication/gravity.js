@@ -3,9 +3,9 @@
 import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
-export default (accessToken, userID, requestIDs) => {
+export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
-  const { gravityLoaderWithAuthenticationFactory } = factories(requestIDs)
+  const { gravityLoaderWithAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithAuthenticationFactory(
     gravityAccessTokenLoader
   )

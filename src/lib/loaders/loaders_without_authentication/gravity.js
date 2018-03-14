@@ -1,8 +1,8 @@
 // @ts-check
 import factories from "../api"
 
-export default requestIDs => {
-  const { gravityLoaderWithoutAuthenticationFactory } = factories(requestIDs)
+export default opts => {
+  const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
 
   return {

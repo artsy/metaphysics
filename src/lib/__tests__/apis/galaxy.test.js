@@ -21,6 +21,7 @@ describe("APIs", () => {
             Accept: "application/vnd.galaxy-public+json",
             "Content-Type": "application/hal+json",
             "Http-Authorization": "galaxy_token",
+            "User-Agent": "Metaphysics",
           },
           method: "GET",
           timeout: 5000,

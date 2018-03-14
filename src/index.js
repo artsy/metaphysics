@@ -70,6 +70,7 @@ async function startApp() {
       const accessToken = req.headers["x-access-token"]
       const userID = req.headers["x-user-id"]
       const timezone = req.headers["x-timezone"]
+      const userAgent = req.headers["user-agent"]
 
       const { requestIDs, span } = res.locals
       const requestID = requestIDs.requestID
@@ -85,7 +86,10 @@ async function startApp() {
         defaultTimezone = timezone
       }
 
-      const loaders = createLoaders(accessToken, userID, requestID)
+      const loaders = createLoaders(accessToken, userID, {
+        requestID,
+        userAgent,
+      })
       // Share with e.g. the Convection ApolloLink in mergedSchema.
       res.locals.dataLoaders = loaders // eslint-disable-line no-param-reassign
 
@@ -97,7 +101,7 @@ async function startApp() {
           userID,
           defaultTimezone,
           span,
-          ...createLoaders(accessToken, userID, requestIDs),
+          ...createLoaders(accessToken, userID, { requestIDs, userAgent }),
         },
         formatError: graphqlErrorHandler(req, { enableSentry, isProduction }),
         validationRules: [depthLimit(queryLimit)],

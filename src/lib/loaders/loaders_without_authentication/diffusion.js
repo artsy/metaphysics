@@ -1,8 +1,8 @@
 // @ts-check
 import factories from "../api"
 
-export default requestID => {
-  const { diffusionLoaderWithoutAuthenticationFactory } = factories(requestID)
+export default opts => {
+  const { diffusionLoaderWithoutAuthenticationFactory } = factories(opts)
   const diffusionLoader = diffusionLoaderWithoutAuthenticationFactory
 
   return {

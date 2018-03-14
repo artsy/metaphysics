@@ -1,6 +1,6 @@
 // @ts-check
 
-import { get, defaults, compact } from "lodash"
+import { assign, get, defaults, compact } from "lodash"
 import request from "request"
 import config from "config"
 import HTTPError from "lib/http_error"
@@ -11,6 +11,13 @@ export default (url, options = {}) => {
       method: "GET",
       timeout: config.REQUEST_TIMEOUT_MS,
     })
+
+    // Wrap user agent
+    const userAgent = opts.userAgent
+      ? opts.userAgent + "; Metaphysics"
+      : "Metaphysics"
+    delete opts.userAgent
+    opts.headers = assign({}, { "User-Agent": userAgent }, opts.headers)
 
     request(url, opts, (err, response) => {
       // If there is an error or non-200 status code, reject.

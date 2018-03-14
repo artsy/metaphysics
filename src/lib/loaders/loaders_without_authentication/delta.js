@@ -1,7 +1,7 @@
 // @ts-check
 import factories from "../api"
 
-export default requestIDs => {
-  const { deltaLoaderWithoutAuthenticationFactory } = factories(requestIDs)
+export default opts => {
+  const { deltaLoaderWithoutAuthenticationFactory } = factories(opts)
   return { deltaLoader: deltaLoaderWithoutAuthenticationFactory("/") }
 }
