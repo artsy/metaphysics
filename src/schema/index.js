@@ -39,6 +39,7 @@ import Show from "./show"
 import SuggestedGenes from "./suggested_genes"
 import Tag from "./tag"
 import TrendingArtists from "./artists/trending"
+import Users from "./users"
 import MatchArtist from "./match/artist"
 import MatchGene from "./match/gene"
 import Me from "./me"
@@ -105,6 +106,7 @@ const rootFields = {
   status: Status,
   tag: Tag,
   trending_artists: TrendingArtists,
+  users: Users,
   popular_artists: PopularArtists,
 }
 
@@ -123,10 +125,10 @@ const Viewer = {
 const convectionMutations = enableSchemaStitching
   ? {}
   : {
-      createConsignmentSubmission: CreateSubmissionMutation,
-      updateConsignmentSubmission: UpdateSubmissionMutation,
-      addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
-    }
+    createConsignmentSubmission: CreateSubmissionMutation,
+    updateConsignmentSubmission: UpdateSubmissionMutation,
+    addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
+  }
 
 const schema = new GraphQLSchema({
   allowedLegacyNames: ["__id"],
