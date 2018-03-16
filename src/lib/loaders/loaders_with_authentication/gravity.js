@@ -128,9 +128,6 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
-    usersLoader: gravityLoader(
-      "users",
-      {}
-    ),
+    usersLoader: gravityLoader("users"),
   }
 }
