@@ -98,6 +98,5 @@ export default opts => {
     ),
     tagLoader: gravityLoader(id => `tag/${id}`),
     trendingArtistsLoader: gravityLoader("artists/trending"),
-    usersLoader: gravityLoader("users"),
   }
 }

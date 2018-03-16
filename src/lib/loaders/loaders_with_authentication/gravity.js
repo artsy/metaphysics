@@ -130,8 +130,7 @@ export default (accessToken, userID, opts) => {
     ),
     usersLoader: gravityLoader(
       "users",
-      {},
-      { headers: true }
+      {}
     ),
   }
 }
