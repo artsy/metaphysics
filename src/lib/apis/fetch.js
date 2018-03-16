@@ -1,16 +1,18 @@
 // @ts-check
 
-import { assign, get, defaults, compact } from "lodash"
+import { assign, clone, get, defaults, compact } from "lodash"
 import request from "request"
 import config from "config"
 import HTTPError from "lib/http_error"
 
 export default (url, options = {}) => {
   return new Promise((resolve, reject) => {
-    const opts = defaults(options, {
-      method: "GET",
-      timeout: config.REQUEST_TIMEOUT_MS,
-    })
+    const opts = clone(
+      defaults(options, {
+        method: "GET",
+        timeout: config.REQUEST_TIMEOUT_MS,
+      })
+    )
 
     // Wrap user agent
     const userAgent = opts.userAgent
