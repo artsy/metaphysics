@@ -1,9 +1,7 @@
-FROM node:8.4.0-alpine
-
-RUN apk update && apk upgrade && apk add alpine-sdk
+FROM node:8.4.0
 
 # Set up deploy user and working directory
-RUN adduser -D -g '' deploy
+RUN adduser --disabled-password --gecos '' deploy
 RUN mkdir -p /app
 
 RUN npm install -g yarn@1.0.1
