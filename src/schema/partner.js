@@ -158,6 +158,12 @@ const PartnerType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ default_profile_public }) => default_profile_public,
       },
+      is_limited_fair_partner: {
+        type: GraphQLBoolean,
+        deprecationReason:
+          "This field no longer exists, this is for backwards compatability",
+        resolve: () => false,
+      },
       is_linkable: {
         type: GraphQLBoolean,
         resolve: ({ default_profile_id, default_profile_public, type }) =>
