@@ -57,10 +57,10 @@ export default {
     id: "ephemera",
     name: "Ephemera",
     info: "Peripheral artifacts related to the artist.",
-    short_description: "This is a peripheral artifact related to the artist.",
+    short_description: "This is ephemera, an artifact related to the artist.",
     long_description: [
-      "Peripheral artifacts related to the artist.",
-      "Exhibition materials, memorabilia, photos of the artist, autographs, etc.",
+      "Items related to the artist, created or manufactured for a specific, limited use.",
+      "This includes exhibition materials, memorabilia, autographs, etc.",
     ].join(" "),
   },
 }
