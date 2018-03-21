@@ -58,7 +58,7 @@ export async function mergeSchemas() {
     }
   `
 
-  return _mergeSchemas({
+  const mergedSchema = _mergeSchemas({
     schemas: [localSchema, convectionSchema, linkTypeDefs],
     // Prefer others over the local MP schema.
     onTypeConflict: (_leftType, rightType) => {
@@ -77,4 +77,6 @@ export async function mergeSchemas() {
       },
     }),
   })
+  mergedSchema.__allowedLegacyNames = ["__id"]
+  return mergedSchema
 }
