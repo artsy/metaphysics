@@ -1,17 +1,22 @@
 {
-  "presets": ["es2015"],
-  "plugins": [
-    [
-      "module-resolver",
-      {
-        "root": ["./src"]
+  "presets": [
+    ["@babel/env", {
+      "targets": {
+        "node": "current"
       }
-    ],
-    "transform-object-rest-spread"
+    }],
+    "@babel/stage-3",
+    "@babel/typescript"
+  ],
+  "plugins": [
+    ["module-resolver", {
+      "extensions": [".js", ".jsx", ".ts", ".tsx"],
+      "root": ["./src"]
+    }]
   ],
   "env": {
     "test": {
-      "plugins": ["rewire"]
+      "plugins": ["babel-plugin-rewire"]
     }
   }
 }

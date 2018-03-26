@@ -11,7 +11,7 @@ describe("date", () => {
     expect(date(rawDate, format)).toBe("12/31/2020 12:00 +00:00")
   })
 
-  it("returns unformmated, local time if no format is specified", () => {
+  it("returns unformatted, local time if no format is specified", () => {
     expect(date(rawDate, null, "America/Boise")).toBe(
       "2020-12-31T05:00:00-07:00"
     )
