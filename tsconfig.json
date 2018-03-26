@@ -12,9 +12,11 @@
     "noImplicitAny": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "./build",
     "rootDir": "./src",
+    "pretty": true,
+    "skipLibCheck": true,
     "strict": true,
     "target": "es5"
-  }
+  },
+  "exclude": ["node_modules", "**/node_modules/*"]
 }

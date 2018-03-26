@@ -1,5 +1,5 @@
 import moment from "moment"
-import * as tz from "moment-timezone" // eslint-disable-line no-unused-vars
+import "moment-timezone"
 import { GraphQLString, GraphQLBoolean } from "graphql"
 
 export function date(rawDate, format, timezone) {
