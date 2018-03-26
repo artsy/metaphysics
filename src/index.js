@@ -87,7 +87,7 @@ async function startApp() {
       }
 
       const loaders = createLoaders(accessToken, userID, {
-        requestID,
+        requestIDs,
         userAgent,
       })
       // Share with e.g. the Convection ApolloLink in mergedSchema.

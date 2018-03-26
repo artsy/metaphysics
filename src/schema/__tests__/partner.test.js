@@ -31,6 +31,7 @@ describe("Partner type", () => {
       {
         partner(id: "catty-partner") {
           name
+          is_limited_fair_partner
           categories {
             id
             name
@@ -43,6 +44,7 @@ describe("Partner type", () => {
       expect(data).toEqual({
         partner: {
           name: "Catty Partner",
+          is_limited_fair_partner: false,
           categories: [
             {
               id: "blue-chip",
