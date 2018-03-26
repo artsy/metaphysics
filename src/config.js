@@ -43,6 +43,31 @@ const {
   SENTRY_PRIVATE_DSN,
 } = process.env
 
+const mustHave = {
+  // Runtime Deps
+  REDIS_URL,
+
+  // Reliant Artsy Services
+  CONVECTION_API_BASE,
+  CONVECTION_APP_ID,
+  DELTA_API_BASE,
+  GEMINI_API_BASE,
+  GEMINI_ENDPOINT,
+  GRAVITY_API_BASE,
+  GRAVITY_API_URL,
+  GRAVITY_ID,
+  GRAVITY_SECRET,
+  IMPULSE_API_BASE,
+  IMPULSE_APPLICATION_ID,
+  POSITRON_API_BASE,
+}
+
+Object.keys(mustHave).forEach(key => {
+  if (!mustHave[key]) {
+    throw new Error(`You need to have the ENV var ${key} set up.`)
+  }
+})
+
 export default {
   BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT:
     Number(BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT) ||
