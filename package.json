@@ -132,7 +132,11 @@
     ],
     "transform": {
       "^.+\\.(js|ts)$": "typescript-babel-jest"
-    }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ]
   },
   "prettier": {
     "semi": false,

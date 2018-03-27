@@ -1,6 +1,7 @@
 // @ts-check
 
 import { toKey } from "lib/helpers"
+import DataLoader from "dataloader"
 
 const encodeStaticPath = (path, globalParams, params) => {
   return toKey(path, Object.assign({}, globalParams, params))
@@ -27,11 +28,31 @@ const encodeDynamicPath = (pathGenerator, globalParams, id, params) => {
  * @param {string|function} pathOrGenerator a query path or function that generates one
  * @param {object} globalParams a dictionary of query params that are to be included in each request
  */
-export const loaderInterface = (loader, pathOrGenerator, globalParams) => (
-  ...idAndOrParams
-) => {
-  const keyGenerator =
-    typeof pathOrGenerator === "function" ? encodeDynamicPath : encodeStaticPath
-  const key = keyGenerator(pathOrGenerator, globalParams, ...idAndOrParams)
-  return loader.load(key)
+
+export function loaderInterface<R>(
+  loader: DataLoader<string, R>,
+  pathOrGenerator: () => string | string,
+  globalParams: any
+) {
+  return (...idAndOrParams) => {
+    const keyGenerator: any =
+      typeof pathOrGenerator === "function"
+        ? encodeDynamicPath
+        : encodeStaticPath
+
+    const key = keyGenerator(pathOrGenerator, globalParams, ...idAndOrParams)
+    return loader.load(key)
+  }
 }
+
+// export const loaderInterface = (
+//   loader: DataLoader<string, any>,
+//   pathOrGenerator: () => string | string,
+//   globalParams: any
+// ) => (...idAndOrParams) => {
+//   const keyGenerator: any =
+//     typeof pathOrGenerator === "function" ? encodeDynamicPath : encodeStaticPath
+
+//   const key = keyGenerator(pathOrGenerator, globalParams, ...idAndOrParams)
+//   return loader.load(key)
+// }
