@@ -34,14 +34,12 @@ spec:
             memory: "768Mi"
       affinity:
         nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
               - key: tier
                 operator: In
                 values:
-                - foreground
                 - foreground
 
 ---
