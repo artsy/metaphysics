@@ -6,7 +6,6 @@ import {
 } from "graphql"
 import { amount } from "../../fields/money"
 import { IDFields, NodeInterface } from "../../object_identification"
-import { has } from "lodash"
 
 const InvoiceState = new GraphQLEnumType({
   name: "InvoiceState",
@@ -30,7 +29,6 @@ export const InvoiceType = new GraphQLObjectType({
   name: "Invoice",
   desciption: "Fields of an invoice (currently from Lewitt)",
   interfaces: [NodeInterface],
-  isTypeOf: obj => has(obj, "payment_url") && has(obj, "lewitt_invoice_id"),
   fields: {
     ...IDFields,
     lewitt_invoice_id: {

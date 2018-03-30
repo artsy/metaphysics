@@ -1,6 +1,6 @@
 import moment from "moment"
 import { isExisty, exclude } from "lib/helpers"
-import { find, has } from "lodash"
+import { find } from "lodash"
 import HTTPError from "lib/http_error"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
@@ -36,8 +36,6 @@ const PartnerShowType = new GraphQLObjectType({
   name: "PartnerShow",
   deprecationReason: "Prefer to use Show schema",
   interfaces: [NodeInterface],
-  isTypeOf: obj =>
-    has(obj, "partner") && has(obj, "display_on_partner_profile"),
   fields: () => ({
     ...GravityIDFields,
     cached,

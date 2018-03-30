@@ -11,7 +11,6 @@ import { GlobalIDField, NodeInterface } from "schema/object_identification"
 const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
   name: "FollowedArtistsArtworksGroup",
   interfaces: [NodeInterface],
-  isTypeOf: obj => obj._type === "FollowedArtistsArtworksGroup",
   fields: () => ({
     __id: GlobalIDField,
     artworks: {
