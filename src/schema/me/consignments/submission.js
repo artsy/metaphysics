@@ -9,7 +9,6 @@ import {
   GraphQLInt,
   GraphQLID,
 } from "graphql"
-import * as _ from "lodash"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import Artist from "schema/artist"
 
@@ -98,8 +97,6 @@ export const SubmissionType = new GraphQLObjectType({
   name: "ConsignmentSubmission",
   description: "A work to be consigned to the user",
   interfaces: [NodeInterface],
-  isTypeOf: obj =>
-    _.has(obj, "authenticity_certificate") && _.has(obj, "artist_id"),
   fields: {
     ...GravityIDFields,
     artist_id: {

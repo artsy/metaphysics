@@ -13,7 +13,6 @@ import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 const TagType = new GraphQLObjectType({
   name: "Tag",
   interfaces: [NodeInterface],
-  isTypeOf: obj => obj._type === "Tag",
   fields: () => {
     return {
       ...GravityIDFields,
