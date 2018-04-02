@@ -4,7 +4,7 @@ import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { SaleType } from "schema/sale/index"
 
-export default mutationWithClientMutationId({
+export const endSaleMutation = mutationWithClientMutationId({
   name: "EndSale",
   description:
     "Mark sale as ended.",
