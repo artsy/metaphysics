@@ -70,7 +70,7 @@ const saleArtworkConnection = connectionDefinitions({
   nodeType: SaleArtwork.type,
 }).connectionType
 
-const SaleType = new GraphQLObjectType({
+export const SaleType = new GraphQLObjectType({
   name: "Sale",
   interfaces: [NodeInterface],
   fields: () => {
