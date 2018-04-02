@@ -20,13 +20,8 @@ describe("End sale mutation", () => {
   `
 
   const rootValue = {
-    saleLoader: sinon.stub().returns(sale),
     endSaleLoader: sinon.stub().returns(
-      Promise.resolve({
-        sale: {
-          id: "foo-foo",
-        },
-      })
+      Promise.resolve(sale)
     ),
   }
 

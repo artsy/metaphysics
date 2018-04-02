@@ -85,7 +85,6 @@ export default (accessToken, userID, opts) => {
       id => `sale/${id}/end_sale`,
       {},
       {
-        headers: true,
         method: "PUT",
       }
     ),

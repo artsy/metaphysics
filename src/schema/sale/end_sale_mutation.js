@@ -16,12 +16,7 @@ export default mutationWithClientMutationId({
   outputFields: {
     sale: {
       type: SaleType,
-      resolve: (
-        { sale_id },
-        _,
-        _request,
-        { rootValue: { saleLoader } }
-      ) => saleLoader(sale_id),
+      resolve: sale => sale,
     },
   },
   mutateAndGetPayload: (
@@ -38,6 +33,6 @@ export default mutationWithClientMutationId({
       return new Error("You need to be signed in to perform this action")
     }
 
-    return endSaleLoader(sale_id).then(() => ({ sale_id }))
+    return endSaleLoader(sale_id)
   },
 })
