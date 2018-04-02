@@ -81,6 +81,14 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    endSaleLoader: gravityLoader(
+      id => `sale/${id}/end_sale`,
+      {},
+      {
+        headers: true,
+        method: "PUT",
+      }
+    ),
     savedArtworksLoader: gravityLoader("collection/saved-artwork/artworks", {
       user_id: userID,
       private: true,
