@@ -65,17 +65,24 @@ export async function mergeSchemas() {
       console.warn(`[!] Type collision ${rightType}`) // eslint-disable-line no-console
       return rightType
     },
-    resolvers: mergeInfo => ({
+    resolvers: {
       Submission: {
         artist: {
           fragment: `fragment SubmissionArtist on Submission { artist_id }`,
           resolve: (parent, args, context, info) => {
             const id = parent.artist_id
-            return mergeInfo.delegate("query", "artist", { id }, context, info)
+            return info.mergeInfo.delegateToSchema(
+              localSchema,
+              "query",
+              "artist",
+              { id },
+              context,
+              info
+            )
           },
         },
       },
-    }),
+    },
   })
   mergedSchema.__allowedLegacyNames = ["__id"]
   return mergedSchema
