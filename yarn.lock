@@ -2820,9 +2820,9 @@ graphql-relay@^0.5.4:
   version "0.5.4"
   resolved "https://registry.yarnpkg.com/graphql-relay/-/graphql-relay-0.5.4.tgz#58050cfe16118595f82ab3aabfc974546ce755a8"
 
-graphql-tools@^3.0.0-alpha.12:
-  version "3.0.0-alpha.12"
-  resolved "https://registry.yarnpkg.com/graphql-tools/-/graphql-tools-3.0.0-alpha.12.tgz#966d49ea2ba8795f7b636e0db1656e462abd7b3c"
+graphql-tools@^3.0.0-alpha.13:
+  version "3.0.0-alpha.13"
+  resolved "https://registry.yarnpkg.com/graphql-tools/-/graphql-tools-3.0.0-alpha.13.tgz#f5c74642dd50cd96d5d5ebdb70060d9ee915d9cf"
   dependencies:
     apollo-link "^1.2.1"
     apollo-utilities "^1.0.1"
