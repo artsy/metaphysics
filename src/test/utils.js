@@ -1,4 +1,5 @@
 import schema from "schema"
+import { mergeSchemas } from "lib/mergeSchemas"
 import { graphql } from "graphql"
 
 /**
@@ -40,4 +41,30 @@ export const runAuthenticatedQuery = (query, rootValue = {}) => {
     query,
     Object.assign({ accessToken: "secret", userID: "user-42" }, rootValue)
   )
+}
+
+let mergedSchema
+
+/**
+ * Same as `runQuery`, but runs against stitched schema
+ *
+ * @param {String} query      The GraphQL query to run.
+ * @param {Object} rootValue  The request params, which currently are `accessToken` and `userID`.
+ * @see runQuery
+ */
+export const runQueryMerged = async (
+  query,
+  rootValue = { accessToken: null, userID: null }
+) => {
+  if (!mergedSchema) {
+    mergedSchema = await mergeSchemas()
+  }
+  return graphql(mergedSchema, query, rootValue, {}).then(result => {
+    if (result.errors) {
+      const error = result.errors[0]
+      throw error.originalError || error
+    } else {
+      return Promise.resolve(result.data)
+    }
+  })
 }
