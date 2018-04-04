@@ -94,13 +94,13 @@ describe("convection link", () => {
 })
 
 describe("stiched schema regressions", () => {
-  it.only("union in interface fragment issue", async () => {
+  it("union in interface fragment issue", async () => {
     const artworkResponse = {
       id: "banksy-di-faced-tenner-21",
       sale_ids: ["foo-foo"],
     }
 
-    const sales = [
+    const salesResponse = [
       {
         id: "foo-foo",
         _id: "123",
@@ -126,7 +126,7 @@ describe("stiched schema regressions", () => {
     `,
       {
         artworkLoader: async () => artworkResponse,
-        salesLoader: async () => sales,
+        salesLoader: async () => salesResponse,
         relatedFairsLoader: async () => ({}),
         relatedShowsLoader: async () => ({}),
       }

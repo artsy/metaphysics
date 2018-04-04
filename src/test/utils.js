@@ -24,7 +24,7 @@ export const runQuery = (
       const error = result.errors[0]
       throw error.originalError || error
     } else {
-      return Promise.resolve(result.data)
+      return result.data
     }
   })
 }
@@ -64,7 +64,7 @@ export const runQueryMerged = async (
       const error = result.errors[0]
       throw error.originalError || error
     } else {
-      return Promise.resolve(result.data)
+      return result.data
     }
   })
 }
