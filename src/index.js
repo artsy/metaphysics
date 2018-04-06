@@ -108,8 +108,8 @@ async function startApp() {
         formatError: graphqlErrorHandler(req, { enableSentry, isProduction }),
         validationRules: [depthLimit(queryLimit)],
         extensions: enableRequestLogging
-          ? undefined
-          : fetchLoggerRequestDone(requestID),
+          ? fetchLoggerRequestDone(requestID)
+          : undefined,
       }
     })
   )
