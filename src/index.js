@@ -21,6 +21,7 @@ import { middleware as requestTracer, makeSchemaTraceable } from "./lib/tracer"
 
 const {
   ENABLE_QUERY_TRACING,
+  ENABLE_REQUEST_LOGGING,
   ENABLE_SCHEMA_STITCHING,
   NODE_ENV,
   QUERY_DEPTH_LIMIT,
@@ -31,6 +32,7 @@ const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
 const enableSentry = !!SENTRY_PRIVATE_DSN
+const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 
 const app = express()
 
@@ -75,7 +77,7 @@ async function startApp() {
       const { requestIDs, span } = res.locals
       const requestID = requestIDs.requestID
 
-      if (!isProduction) {
+      if (enableRequestLogging) {
         fetchLoggerSetup(requestID)
       }
 
@@ -105,7 +107,7 @@ async function startApp() {
         },
         formatError: graphqlErrorHandler(req, { enableSentry, isProduction }),
         validationRules: [depthLimit(queryLimit)],
-        extensions: isProduction
+        extensions: enableRequestLogging
           ? undefined
           : fetchLoggerRequestDone(requestID),
       }
