@@ -29,7 +29,7 @@ const encodeDynamicPath = (pathGenerator, globalParams, id, params) => {
  * @param {object} globalParams a dictionary of query params that are to be included in each request
  */
 
-export function loaderInterface<R>(
+export function loaderInterface<R = any>(
   loader: DataLoader<string, R>,
   pathOrGenerator: () => string | string,
   globalParams: any
@@ -44,15 +44,3 @@ export function loaderInterface<R>(
     return loader.load(key)
   }
 }
-
-// export const loaderInterface = (
-//   loader: DataLoader<string, any>,
-//   pathOrGenerator: () => string | string,
-//   globalParams: any
-// ) => (...idAndOrParams) => {
-//   const keyGenerator: any =
-//     typeof pathOrGenerator === "function" ? encodeDynamicPath : encodeStaticPath
-
-//   const key = keyGenerator(pathOrGenerator, globalParams, ...idAndOrParams)
-//   return loader.load(key)
-// }

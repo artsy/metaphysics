@@ -39,9 +39,6 @@ const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 export const GeneType = new GraphQLObjectType({
   name: "Gene",
   interfaces: [NodeInterface],
-  isTypeOf: obj =>
-    _.has(obj, "browseable") &&
-    (_.has(obj, "published") || _.has(obj, "family")),
   fields: () => {
     return {
       ...GravityIDFields,

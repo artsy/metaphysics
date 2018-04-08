@@ -1,4 +1,4 @@
-import { assign, has, omit } from "lodash"
+import { assign, omit } from "lodash"
 import { exclude } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
@@ -40,8 +40,6 @@ const PartnerCategoryType = new GraphQLObjectType({
 const PartnerType = new GraphQLObjectType({
   name: "Partner",
   interfaces: [NodeInterface],
-  isTypeOf: obj =>
-    has(obj, "has_full_profile") && has(obj, "profile_banner_display"),
   fields: () => {
     // Prevent circular dependency
     const PartnerShows = require("./partner_shows").default

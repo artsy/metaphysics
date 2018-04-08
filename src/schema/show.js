@@ -2,7 +2,7 @@ import moment from "moment"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { isExisty, exclude, existyValue, parseRelayOptions } from "lib/helpers"
-import { find, has } from "lodash"
+import { find } from "lodash"
 import HTTPError from "lib/http_error"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
@@ -79,8 +79,6 @@ const artworksArgs = {
 export const ShowType = new GraphQLObjectType({
   name: "Show",
   interfaces: [NodeInterface],
-  isTypeOf: obj =>
-    has(obj, "is_reference") && has(obj, "display_on_partner_profile"),
   fields: () => ({
     ...GravityIDFields,
     cached,
