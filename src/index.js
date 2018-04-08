@@ -1,3 +1,4 @@
+import bodyParser from "body-parser"
 import config from "./config"
 import cors from "cors"
 import createLoaders from "./lib/loaders"
@@ -14,6 +15,7 @@ import {
   fetchLoggerSetup,
   fetchLoggerRequestDone,
 } from "lib/loaders/api/logger"
+import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
 import { mergeSchemas } from "./lib/mergeSchemas"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
@@ -44,8 +46,8 @@ async function startApp() {
   if (enableSchemaStitching) {
     try {
       schema = await mergeSchemas()
-    } catch (error) {
-      console.log("Error merging schemas:", error) // eslint-disable-line
+    } catch (err) {
+      console.log("Error merging schemas:", err) // eslint-disable-line
     }
   }
 
@@ -66,9 +68,15 @@ async function startApp() {
     "/",
     cors(),
     morgan,
-    graphqlHTTP((req, res) => {
+    // Gotta parse the JSON body before passing it to fetchPersistedQuery
+    bodyParser.json(),
+    // Ensure this divider is logged before both fetchPersistedQuery and graphqlHTTP
+    (req, res, next) => {
       info("----------")
-
+      next()
+    },
+    fetchPersistedQuery,
+    graphqlHTTP((req, res) => {
       const accessToken = req.headers["x-access-token"]
       const userID = req.headers["x-user-id"]
       const timezone = req.headers["x-timezone"]
