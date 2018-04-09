@@ -54,6 +54,7 @@ import SaveArtworkMutation from "./me/save_artwork_mutation"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
+import { recordArtworkViewMutation } from "./me/recently_viewed_artworks"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 
 import CausalityJWT from "./causality_jwt"
@@ -123,13 +124,14 @@ const Viewer = {
   resolve: x => x,
 }
 
-const convectionMutations = enableSchemaStitching
+const stitchedMutations = enableSchemaStitching
   ? {}
   : {
-    createConsignmentSubmission: CreateSubmissionMutation,
-    updateConsignmentSubmission: UpdateSubmissionMutation,
-    addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
-  }
+      createConsignmentSubmission: CreateSubmissionMutation,
+      updateConsignmentSubmission: UpdateSubmissionMutation,
+      addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
+      recordArtworkView: recordArtworkViewMutation,
+    }
 
 const schema = new GraphQLSchema({
   allowedLegacyNames: ["__id"],
@@ -146,7 +148,7 @@ const schema = new GraphQLSchema({
       endSale: endSaleMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
-      ...convectionMutations,
+      ...stitchedMutations,
     },
   }),
   query: new GraphQLObjectType({
