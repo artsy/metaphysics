@@ -21,6 +21,7 @@ import Invoice from "./conversation/invoice"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import Notifications from "./notifications"
+import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import SaleRegistrations from "./sale_registrations"
 import SavedArtworks from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
@@ -74,6 +75,7 @@ const Me = new GraphQLObjectType({
     paddle_number: {
       type: GraphQLString,
     },
+    recentlyViewedArtworks: RecentlyViewedArtworks,
     sale_registrations: SaleRegistrations,
     saved_artworks: SavedArtworks,
     suggested_artists: SuggestedArtists,
