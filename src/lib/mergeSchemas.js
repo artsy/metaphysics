@@ -1,9 +1,10 @@
 import urljoin from "url-join"
 import {
   mergeSchemas as _mergeSchemas,
-  introspectSchema,
   makeRemoteExecutableSchema,
 } from "graphql-tools"
+import fs from "fs"
+import path from "path"
 import { ApolloLink } from "apollo-link"
 import { createHttpLink } from "apollo-link-http"
 import { setContext } from "apollo-link-context"
@@ -45,10 +46,17 @@ export function createConvectionLink() {
 }
 
 export async function mergeSchemas() {
+  // The below all relate to Convection stitching.
+  // TODO: Refactor when adding another service.
+  const convectionTypeDefs = fs.readFileSync(
+    path.join("src/data/convection.graphql"),
+    "utf8"
+  )
+
   const convectionLink = createConvectionLink()
 
   const convectionSchema = await makeRemoteExecutableSchema({
-    schema: await introspectSchema(convectionLink),
+    schema: convectionTypeDefs,
     link: convectionLink,
   })
 
@@ -65,17 +73,24 @@ export async function mergeSchemas() {
       console.warn(`[!] Type collision ${rightType}`) // eslint-disable-line no-console
       return rightType
     },
-    resolvers: mergeInfo => ({
+    resolvers: {
       Submission: {
         artist: {
           fragment: `fragment SubmissionArtist on Submission { artist_id }`,
           resolve: (parent, args, context, info) => {
             const id = parent.artist_id
-            return mergeInfo.delegate("query", "artist", { id }, context, info)
+            return info.mergeInfo.delegateToSchema(
+              localSchema,
+              "query",
+              "artist",
+              { id },
+              context,
+              info
+            )
           },
         },
       },
-    }),
+    },
   })
   mergedSchema.__allowedLegacyNames = ["__id"]
   return mergedSchema

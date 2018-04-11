@@ -51,6 +51,7 @@ import CreateSubmissionMutation from "./me/consignments/create_submission_mutati
 import UpdateSubmissionMutation from "./me/consignments/update_submission_mutation"
 import AddAssetToConsignmentSubmission from "./me/consignments/add_asset_to_submission_mutation"
 import SaveArtworkMutation from "./me/save_artwork_mutation"
+import { endSaleMutation } from "./sale/end_sale_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
@@ -142,6 +143,7 @@ const schema = new GraphQLSchema({
       updateConversation: UpdateConversationMutation,
       sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtworkMutation,
+      endSale: endSaleMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
       ...convectionMutations,

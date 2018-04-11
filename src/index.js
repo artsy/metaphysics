@@ -1,3 +1,4 @@
+import bodyParser from "body-parser"
 import config from "./config"
 import cors from "cors"
 import createLoaders from "./lib/loaders"
@@ -14,6 +15,7 @@ import {
   fetchLoggerSetup,
   fetchLoggerRequestDone,
 } from "lib/loaders/api/logger"
+import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
 import { mergeSchemas } from "./lib/mergeSchemas"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
@@ -21,6 +23,7 @@ import { middleware as requestTracer, makeSchemaTraceable } from "./lib/tracer"
 
 const {
   ENABLE_QUERY_TRACING,
+  ENABLE_REQUEST_LOGGING,
   ENABLE_SCHEMA_STITCHING,
   NODE_ENV,
   QUERY_DEPTH_LIMIT,
@@ -31,6 +34,7 @@ const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
 const enableSentry = !!SENTRY_PRIVATE_DSN
+const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 
 const app = express()
 
@@ -42,8 +46,8 @@ async function startApp() {
   if (enableSchemaStitching) {
     try {
       schema = await mergeSchemas()
-    } catch (error) {
-      console.log("Error merging schemas:", error) // eslint-disable-line
+    } catch (err) {
+      console.log("Error merging schemas:", err) // eslint-disable-line
     }
   }
 
@@ -64,9 +68,15 @@ async function startApp() {
     "/",
     cors(),
     morgan,
-    graphqlHTTP((req, res) => {
+    // Gotta parse the JSON body before passing it to fetchPersistedQuery
+    bodyParser.json(),
+    // Ensure this divider is logged before both fetchPersistedQuery and graphqlHTTP
+    (req, res, next) => {
       info("----------")
-
+      next()
+    },
+    fetchPersistedQuery,
+    graphqlHTTP((req, res) => {
       const accessToken = req.headers["x-access-token"]
       const userID = req.headers["x-user-id"]
       const timezone = req.headers["x-timezone"]
@@ -75,7 +85,7 @@ async function startApp() {
       const { requestIDs, span } = res.locals
       const requestID = requestIDs.requestID
 
-      if (!isProduction) {
+      if (enableRequestLogging) {
         fetchLoggerSetup(requestID)
       }
 
@@ -105,9 +115,9 @@ async function startApp() {
         },
         formatError: graphqlErrorHandler(req, { enableSentry, isProduction }),
         validationRules: [depthLimit(queryLimit)],
-        extensions: isProduction
-          ? undefined
-          : fetchLoggerRequestDone(requestID),
+        extensions: enableRequestLogging
+          ? fetchLoggerRequestDone(requestID)
+          : undefined,
       }
     })
   )

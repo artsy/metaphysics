@@ -18,10 +18,12 @@
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "build": "yarn build:lib && yarn build:index && yarn build:fixtures",
-    "build:lib": "babel src --copy-files --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src",
+    "dump-remote-schema": "babel-node ./scripts/dump-remote-schema.js",
+    "build": "yarn build:lib && yarn build:index && yarn build:fixtures && yarn build:remote-schemas",
+    "build:lib": "babel src --copy-files --extensions '.ts,.js' --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src",
     "build:index": "babel index.js -s inline -d build",
     "build:fixtures": "cp src/lib/*.json build/src/lib/",
+    "build:remote-schemas": "cp src/data/*.graphql build/src/data/",
     "precommit": "lint-staged",
     "prepare": "patch-package",
     "prettier-project": "prettier --write '**/*.js'",
@@ -38,6 +40,7 @@
     "@babel/preset-stage-3": "^7.0.0-beta.41",
     "@babel/preset-typescript": "7.0.0-beta.41",
     "@babel/register": "7.0.0-beta.41",
+    "@heroku/foreman": "^2.0.2",
     "accounting": "^0.4.1",
     "apollo-link": "^1.0.0",
     "apollo-link-context": "^1.0.0",
@@ -62,7 +65,7 @@
     "graphql": "^0.13.2",
     "graphql-depth-limit": "^1.1.0",
     "graphql-relay": "^0.5.4",
-    "graphql-tools": "^2.23.1",
+    "graphql-tools": "^3.0.0-alpha.14",
     "graphql-type-json": "^0.1.4",
     "i": "^0.3.5",
     "jwt-simple": "^0.5.0",
@@ -111,7 +114,6 @@
     "eslint-config-airbnb": "^3.1.0",
     "eslint-plugin-react": "^3.14.0",
     "expect.js": "^0.3.1",
-    "foreman": "^1.4.1",
     "husky": "^0.13.3",
     "jest": "^22.4.2",
     "lint-staged": "^3.4.0",
@@ -131,8 +133,9 @@
       "/src/test/__mocks__"
     ],
     "transform": {
-      "^.+\\.(js|ts)$": "typescript-babel-jest"
-    }
+      "^.+\\.(js|ts)$": "babel-jest"
+    },
+    "moduleFileExtensions": ["js", "jsx", "json", "ts", "tsx"]
   },
   "prettier": {
     "semi": false,

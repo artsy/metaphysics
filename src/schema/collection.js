@@ -1,7 +1,6 @@
 // @ts-check
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
-import _ from "lodash"
 import { error } from "lib/loggers"
 import cached from "./fields/cached"
 import CollectionSorts from "./sorts/collection_sorts"
@@ -25,8 +24,6 @@ import {
 export const CollectionType = new GraphQLObjectType({
   name: "Collection",
   interfaces: [NodeInterface],
-  isTypeOf: obj =>
-    _.has(obj, "name") && _.has(obj, "private") && _.has(obj, "default"),
   fields: {
     ...GravityIDFields,
     cached,
