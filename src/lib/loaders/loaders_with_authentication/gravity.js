@@ -115,6 +115,11 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
+    recordArtworkViewLoader: gravityLoader(
+      "me/recently_viewed_artworks",
+      {},
+      { method: "POST" }
+    ),
     followArtistLoader: gravityLoader(
       "me/follow/artist",
       {},
