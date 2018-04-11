@@ -8,6 +8,7 @@ import { GravityIDFields, NodeInterface } from "./object_identification"
 import Artwork from "./artwork"
 import numeral from "./fields/numeral"
 import ArtworkSorts from "./sorts/artwork_sorts"
+import { graphql } from "graphql"
 
 import {
   GraphQLString,
@@ -221,6 +222,38 @@ const PartnerType = new GraphQLObjectType({
           }
 
           return exceptions[type] || type
+        },
+      },
+      acceptsCardPayments: {
+        type: GraphQLBoolean,
+        resolve: (
+          partner,
+          _args,
+          _request,
+          { rootValue: { lewittSchema } }
+        ) => {
+          const { _id, payments_enabled } = partner
+          if (!payments_enabled) {
+            return false
+          }
+          const query = `
+            query MerchantAccountQuery($partner_id: String!) {
+              partner_product_merchant_account(partner_id: $partner_id) {
+                credit_card_enabled
+              }
+            }
+          `
+          return graphql(lewittSchema, query, null, null, {
+            partner_id: _id,
+          }).then(response => {
+            if (response.errors) {
+              throw new Error(
+                `Lewitt errors: ${JSON.stringify(response.errors)}`
+              )
+            }
+            const { data: { partner_product_merchant_account } } = response
+            return partner_product_merchant_account.credit_card_enabled
+          })
         },
       },
     }

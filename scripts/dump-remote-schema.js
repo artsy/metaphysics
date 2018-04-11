@@ -12,14 +12,26 @@ import fetch from "node-fetch"
 
 const destination = "src/data"
 
-const httpLink = createHttpLink({
+const httpConvectionLink = createHttpLink({
   fetch,
   uri: urljoin("https://convection-staging.artsy.net/api", "graphql"),
 })
 
-introspectSchema(httpLink).then(schema => {
+introspectSchema(httpConvectionLink).then(schema => {
   fs.writeFileSync(
     path.join(destination, "convection.graphql"),
+    printSchema(schema, { commentDescriptions: true })
+  )
+})
+
+const httpLewittLink = createHttpLink({
+  fetch,
+  uri: urljoin("https://lewitt-api-staging.artsy.net", "graphql"),
+})
+
+introspectSchema(httpLewittLink).then(schema => {
+  fs.writeFileSync(
+    path.join(destination, "lewitt.graphql"),
     printSchema(schema, { commentDescriptions: true })
   )
 })
