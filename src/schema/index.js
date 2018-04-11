@@ -140,6 +140,7 @@ const schema = new GraphQLSchema({
     fields: {
       followArtist: FollowArtist,
       followGene: FollowGene,
+      recordArtworkView: recordArtworkViewMutation,
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
