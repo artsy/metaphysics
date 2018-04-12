@@ -57,6 +57,39 @@ describe("RecentlyViewedArtworks", () => {
     )
   })
 
+  it("can return an empty connection", () => {
+    const query = gql`
+      {
+        me {
+          recentlyViewedArtworks(first: 1) {
+            edges {
+              node {
+                id
+                title
+              }
+            }
+            pageInfo {
+              hasNextPage
+            }
+          }
+        }
+      }
+    `
+    rootValue.meLoader = () =>
+      Promise.resolve({ recently_viewed_artwork_ids: [] })
+    expect.assertions(1)
+    return runAuthenticatedQuery(query, rootValue).then(
+      ({ me: { recentlyViewedArtworks } }) => {
+        expect(recentlyViewedArtworks).toEqual({
+          edges: [],
+          pageInfo: {
+            hasNextPage: false,
+          },
+        })
+      }
+    )
+  })
+
   it("records an artwork view", () => {
     const mutation = gql`
       mutation {
