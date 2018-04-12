@@ -29,8 +29,10 @@ spec:
         - containerPort: 3000
         resources:
           requests:
-            cpu: "0.5"
+            cpu: "0.2"
+            memory: "256Mi"
           limits:
+            cpu: "0.5"
             memory: "512Mi"
       affinity:
         nodeAffinity:
@@ -55,7 +57,7 @@ spec:
     name: metaphysics-web
   minReplicas: 1
   maxReplicas: 3
-  targetCPUUtilizationPercentage: 80
+  targetCPUUtilizationPercentage: 95
 
 ---
 apiVersion: v1
