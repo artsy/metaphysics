@@ -15,7 +15,7 @@ import { headers as requestIDHeaders } from "./requestIDs"
 
 import config from "config"
 
-const { CONVECTION_API_BASE } = config
+const { CONVECTION_API_BASE, GRAVITY_GRAPHQL_ENDPOINT } = config
 
 export function createConvectionLink() {
   const httpLink = createHttpLink({
@@ -45,6 +45,29 @@ export function createConvectionLink() {
   return middlewareLink.concat(authMiddleware).concat(httpLink)
 }
 
+export function createGravityLink() {
+  const httpLink = createHttpLink({
+    fetch,
+    uri: urljoin(GRAVITY_GRAPHQL_ENDPOINT, "graphql"),
+  })
+
+  const middlewareLink = new ApolloLink((operation, forward) =>
+    forward(operation)
+  )
+
+  const authMiddleware = setContext((_request, context) => {
+    const locals = context.graphqlContext && context.graphqlContext.res.locals
+    const headers = { ...(locals && requestIDHeaders(locals.requestIDs)) }
+    Object.assign(headers, { "X-XAPP-TOKEN": config.GRAVITY_XAPP_TOKEN })
+    if (locals.accessToken) {
+      Object.assign(headers, { "X-ACCESS-TOKEN": locals.accessToken })
+    }
+    return { headers }
+  })
+
+  return middlewareLink.concat(authMiddleware).concat(httpLink)
+}
+
 export async function mergeSchemas() {
   // The below all relate to Convection stitching.
   // TODO: Refactor when adding another service.
@@ -60,15 +83,28 @@ export async function mergeSchemas() {
     link: convectionLink,
   })
 
+  const gravityTypeDefs = fs.readFileSync(
+    path.join("src/data/gravity.graphql"),
+    "utf8"
+  )
+
+  const gravityLink = createGravityLink()
+
+  const gravitySchema = await makeRemoteExecutableSchema({
+    schema: gravityTypeDefs,
+    link: gravityLink,
+  })
+
   const linkTypeDefs = `
     extend type Submission {
       artist: Artist
     }
   `
 
+  // Add gravity schema first to prefer local MP schema.
+  // Add schemas after localSchema to prefer those over MP.
   const mergedSchema = _mergeSchemas({
-    schemas: [localSchema, convectionSchema, linkTypeDefs],
-    // Prefer others over the local MP schema.
+    schemas: [gravitySchema, localSchema, convectionSchema, linkTypeDefs],
     onTypeConflict: (_leftType, rightType) => {
       console.warn(`[!] Type collision ${rightType}`) // eslint-disable-line no-console
       return rightType

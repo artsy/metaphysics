@@ -51,6 +51,6 @@ export const recordArtworkViewMutation = mutationWithClientMutationId({
         "Missing recordArtworkViewLoader. Check that `X-Access-Token` and `X-User-Id` headers are set."
       )
     }
-    return recordArtworkViewLoader(artwork_id)
+    return recordArtworkViewLoader({ artwork_id })
   },
 })

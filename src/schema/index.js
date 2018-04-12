@@ -124,12 +124,13 @@ const Viewer = {
   resolve: x => x,
 }
 
-const convectionMutations = enableSchemaStitching
+const stitchedMutations = enableSchemaStitching
   ? {}
   : {
       createConsignmentSubmission: CreateSubmissionMutation,
       updateConsignmentSubmission: UpdateSubmissionMutation,
       addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
+      recordArtworkView: recordArtworkViewMutation,
     }
 
 const schema = new GraphQLSchema({
@@ -148,7 +149,7 @@ const schema = new GraphQLSchema({
       endSale: endSaleMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
-      ...convectionMutations,
+      ...stitchedMutations,
     },
   }),
   query: new GraphQLObjectType({
