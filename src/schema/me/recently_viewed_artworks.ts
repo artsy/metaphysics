@@ -1,5 +1,6 @@
 import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
 import {
+  connectionFromArray,
   connectionFromArraySlice,
   mutationWithClientMutationId,
 } from "graphql-relay"
@@ -17,6 +18,9 @@ export const RecentlyViewedArtworks = {
     _request,
     { rootValue: { artworksLoader } }
   ) => {
+    if (ids.length === 0) {
+      return connectionFromArray(ids, options)
+    }
     const { offset } = getPagingParameters(options)
     return artworksLoader({ ids }).then(body => {
       return connectionFromArraySlice(body, options, {
