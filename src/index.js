@@ -103,7 +103,7 @@ async function startApp() {
       })
       // Share with e.g. the Convection ApolloLink in mergedSchema.
       res.locals.dataLoaders = loaders // eslint-disable-line no-param-reassign
-
+      res.locals.accessToken = accessToken // eslint-disable-line no-param-reassign
       return {
         schema,
         graphiql: true,
@@ -113,9 +113,15 @@ async function startApp() {
           defaultTimezone,
           span,
           lewittSchema,
-          ...createLoaders(accessToken, userID, { requestIDs, userAgent }),
+          ...createLoaders(accessToken, userID, {
+            requestIDs,
+            userAgent,
+          }),
         },
-        formatError: graphqlErrorHandler(req, { enableSentry, isProduction }),
+        formatError: graphqlErrorHandler(req, {
+          enableSentry,
+          isProduction,
+        }),
         validationRules: [depthLimit(queryLimit)],
         extensions: enableRequestLogging
           ? fetchLoggerRequestDone(requestID)
