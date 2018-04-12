@@ -17,7 +17,7 @@ import {
 } from "lib/loaders/api/logger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
-import { mergeSchemas } from "./lib/mergeSchemas"
+import { executableLewittSchema, mergeSchemas } from "./lib/mergeSchemas"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { middleware as requestTracer, makeSchemaTraceable } from "./lib/tracer"
 
@@ -42,6 +42,7 @@ async function startApp() {
   config.GRAVITY_XAPP_TOKEN = xapp.token
 
   let schema = localSchema
+  const lewittSchema = await executableLewittSchema()
 
   if (enableSchemaStitching) {
     try {
@@ -111,6 +112,7 @@ async function startApp() {
           userID,
           defaultTimezone,
           span,
+          lewittSchema,
           ...createLoaders(accessToken, userID, {
             requestIDs,
             userAgent,

@@ -15,7 +15,11 @@ import { headers as requestIDHeaders } from "./requestIDs"
 
 import config from "config"
 
-const { CONVECTION_API_BASE, GRAVITY_GRAPHQL_ENDPOINT } = config
+const {
+  CONVECTION_API_BASE,
+  GRAVITY_GRAPHQL_ENDPOINT,
+  LEWITT_API_BASE,
+} = config
 
 export function createConvectionLink() {
   const httpLink = createHttpLink({
@@ -68,20 +72,54 @@ export function createGravityLink() {
   return middlewareLink.concat(authMiddleware).concat(httpLink)
 }
 
-export async function mergeSchemas() {
-  // The below all relate to Convection stitching.
-  // TODO: Refactor when adding another service.
+export async function executableConvectionSchema() {
+  const convectionLink = createConvectionLink()
   const convectionTypeDefs = fs.readFileSync(
     path.join("src/data/convection.graphql"),
     "utf8"
   )
-
-  const convectionLink = createConvectionLink()
-
-  const convectionSchema = await makeRemoteExecutableSchema({
+  return await makeRemoteExecutableSchema({
     schema: convectionTypeDefs,
     link: convectionLink,
   })
+}
+
+export function createLewittLink() {
+  const httpLink = createHttpLink({
+    fetch,
+    uri: urljoin(LEWITT_API_BASE, "graphql"),
+  })
+
+  const middlewareLink = new ApolloLink((operation, forward) =>
+    forward(operation)
+  )
+
+  const authMiddleware = setContext((_request, context) => {
+    const locals = context.graphqlContext && context.graphqlContext.res.locals
+    const headers = { ...(locals && requestIDHeaders(locals.requestIDs)) }
+    // Lewitt uses no authentication for now
+    return { headers }
+  })
+
+  return middlewareLink.concat(authMiddleware).concat(httpLink)
+}
+
+export async function executableLewittSchema() {
+  const lewittLink = createLewittLink()
+  const lewittTypeDefs = fs.readFileSync(
+    path.join("src/data/lewitt.graphql"),
+    "utf8"
+  )
+  return await makeRemoteExecutableSchema({
+    schema: lewittTypeDefs,
+    link: lewittLink,
+  })
+}
+
+export async function mergeSchemas() {
+  // The below all relate to Convection stitching.
+  // TODO: Refactor when adding another service.
+  const convectionSchema = await executableConvectionSchema()
 
   const gravityTypeDefs = fs.readFileSync(
     path.join("src/data/gravity.graphql"),
