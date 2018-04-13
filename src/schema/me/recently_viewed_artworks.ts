@@ -40,9 +40,9 @@ export const recordArtworkViewMutation = mutationWithClientMutationId({
     },
   },
   outputFields: {
-    success: {
-      type: GraphQLBoolean,
-      resolve: () => true,
+    artwork_id: {
+      type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ artwork_id }) => artwork_id,
     },
   },
   mutateAndGetPayload: (
@@ -55,6 +55,8 @@ export const recordArtworkViewMutation = mutationWithClientMutationId({
         "Missing recordArtworkViewLoader. Check that `X-Access-Token` and `X-User-Id` headers are set."
       )
     }
-    return recordArtworkViewLoader({ artwork_id })
+    return recordArtworkViewLoader({ artwork_id }).then(() => {
+      return { artwork_id }
+    })
   },
 })

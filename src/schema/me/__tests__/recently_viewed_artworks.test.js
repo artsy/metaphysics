@@ -94,15 +94,15 @@ describe("RecentlyViewedArtworks", () => {
     const mutation = gql`
       mutation {
         recordArtworkView(input: { artwork_id: "percy" }) {
-          success
+          artwork_id
         }
       }
     `
 
     expect.assertions(1)
     return runAuthenticatedQuery(mutation, rootValue).then(
-      ({ recordArtworkView: { success } }) => {
-        expect(success).toEqual(true)
+      ({ recordArtworkView: { artwork_id } }) => {
+        expect(artwork_id).toEqual("percy")
       }
     )
   })
