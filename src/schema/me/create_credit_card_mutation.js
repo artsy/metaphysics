@@ -1,4 +1,9 @@
-import { GraphQLInt, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GravityIDFields } from "schema/object_identification"
 
@@ -34,7 +39,7 @@ export default mutationWithClientMutationId({
   decription: "Create a credit card",
   inputFields: {
     token: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
   outputFields: {
