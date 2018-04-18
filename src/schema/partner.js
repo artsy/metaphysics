@@ -247,9 +247,8 @@ const PartnerType = new GraphQLObjectType({
             partner_id: _id,
           }).then(response => {
             if (response.errors) {
-              throw new Error(
-                `Lewitt errors: ${JSON.stringify(response.errors)}`
-              )
+              // Something is off in Lewitt so cards are not accepted at the moment
+              return false
             }
             const { data: { partner_product_merchant_account } } = response
             return partner_product_merchant_account.credit_card_enabled
