@@ -127,5 +127,35 @@ describe("Partner type", () => {
         })
       })
     })
+
+    it("returns false if partner_product_merchant_account call to lewitt returns errors", () => {
+      const typeDefs = fs.readFileSync(
+        path.resolve(__dirname, "../../data/lewitt.graphql"),
+        "utf8"
+      )
+
+      const resolvers = {
+        RootQuery: {
+          partner_product_merchant_account: () => {
+            throw new Error("Lewitt error")
+          },
+        },
+      }
+
+      const lewittSchema = makeExecutableSchema({
+        typeDefs,
+        resolvers,
+      })
+
+      rootValue.lewittSchema = lewittSchema
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          partner: {
+            acceptsCardPayments: false,
+          },
+        })
+      })
+    })
   })
 })
