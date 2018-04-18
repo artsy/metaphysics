@@ -24,7 +24,7 @@ describe("Credit card mutation", () => {
   `
 
   const rootValue = {
-    createCreditCardLoader: sinon.stub().returns(Promise.resolve(creditCard)),
+    createCreditCardLoader: () => Promise.resolve(creditCard),
   }
 
   it("creates a credit card", async () => {
