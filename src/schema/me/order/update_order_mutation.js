@@ -1,4 +1,4 @@
-import { GraphQLInputObjectType, GraphQLString } from "graphql"
+import { GraphQLInputObjectType, GraphQLNonNull, GraphQLString } from "graphql"
 import { OrderType } from "schema/me/order"
 import { mutationWithClientMutationId } from "graphql-relay"
 
@@ -33,7 +33,7 @@ export const OrderInputType = new GraphQLInputObjectType({
   name: "OrderInput",
   fields: {
     id: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "Order to be updated",
     },
     email: {

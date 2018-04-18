@@ -1,9 +1,20 @@
 import { runAuthenticatedQuery, runQuery } from "test/utils"
-import exampleOrder from "./__fixtures__/example_order"
-import exampleOrderResult from "./__fixtures__/example_order_result"
+import { readFileSync } from "fs"
+import { resolve } from "path"
+import exampleOrderResult from "test/fixtures/results/order_mutation"
 
 describe("Me", () => {
   describe("UpdateOrderMutation", () => {
+    const ordersPath = resolve(
+      "src",
+      "test",
+      "fixtures",
+      "gravity",
+      "order.json"
+    )
+    const order = JSON.parse(readFileSync(ordersPath, "utf8"))
+    console.log("HIIII", exampleOrderResult)
+
     describe("authenticated", () => {
       const mutation = `
         mutation {
@@ -23,15 +34,6 @@ describe("Me", () => {
               id
               telephone
               email
-              code
-              state
-              notes
-              total {
-                amount
-                cents
-                display
-              }
-              token
               line_items {
                 quantity
                 artwork {
@@ -49,17 +51,6 @@ describe("Me", () => {
                   is_acquireable
                   edition_of
                 }
-                price {
-                  amount
-                  cents
-                  display
-                }
-                subtotal {
-                  amount
-                  cents
-                  display
-                }
-                tax_cents
                 partner {
                   id
                 }
@@ -73,10 +64,6 @@ describe("Me", () => {
                 amount
                 display
               }
-              tax_total {
-                amount
-                display
-              }
               shipping_address {
                 name
                 street
@@ -84,19 +71,13 @@ describe("Me", () => {
                 region
                 postal_code
                 country
-                usps_address1
-                usps_city
-                usps_state
-                usps_zip
               }
             }
           }
         }
       `
       it("updates the order", () => {
-        const rootValue = {
-          updateOrderLoader: () => Promise.resolve(exampleOrder),
-        }
+        const rootValue = { updateOrderLoader: () => Promise.resolve(order) }
 
         return runAuthenticatedQuery(mutation, rootValue).then(data => {
           expect(data).toEqual(exampleOrderResult)
@@ -124,15 +105,6 @@ describe("Me", () => {
               id
               telephone
               email
-              code
-              state
-              notes
-              total {
-                amount
-                cents
-                display
-              }
-              token
               line_items {
                 quantity
                 artwork {
@@ -150,17 +122,6 @@ describe("Me", () => {
                   is_acquireable
                   edition_of
                 }
-                price {
-                  amount
-                  cents
-                  display
-                }
-                subtotal {
-                  amount
-                  cents
-                  display
-                }
-                tax_cents
                 partner {
                   id
                 }
@@ -174,10 +135,6 @@ describe("Me", () => {
                 amount
                 display
               }
-              tax_total {
-                amount
-                display
-              }
               shipping_address {
                 name
                 street
@@ -185,19 +142,13 @@ describe("Me", () => {
                 region
                 postal_code
                 country
-                usps_address1
-                usps_city
-                usps_state
-                usps_zip
               }
             }
           }
         }
       `
       it("updates the order", () => {
-        const rootValue = {
-          updateOrderLoader: () => Promise.resolve(exampleOrder),
-        }
+        const rootValue = { updateOrderLoader: () => Promise.resolve(order) }
 
         return runQuery(mutation, rootValue).then(data => {
           expect(data).toEqual(exampleOrderResult)
