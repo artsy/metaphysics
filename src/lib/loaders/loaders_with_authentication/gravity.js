@@ -20,6 +20,11 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     collectorProfileLoader: gravityLoader("me/collector_profile"),
+    createCreditCardLoader: gravityLoader(
+      "me/credit_cards",
+      {},
+      { method: "POST" }
+    ),
     followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
     followedArtistLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/artists"),
