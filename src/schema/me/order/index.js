@@ -22,7 +22,6 @@ export const OrderLineItemType = new GraphQLObjectType({
     artwork: {
       type: Artwork.type,
       description: "Artwork that is being ordered",
-      resolve: ({ artwork }) => artwork,
     },
     edition_set: {
       type: EditionSet.type,
@@ -50,8 +49,8 @@ export const OrderLineItemType = new GraphQLObjectType({
   }),
 })
 
-export const AddressType = new GraphQLObjectType({
-  name: "Address",
+export const OrderAddressType = new GraphQLObjectType({
+  name: "OrderAddress",
   fields: () => ({
     ...GravityIDFields,
     name: {
@@ -106,7 +105,7 @@ export const OrderType = new GraphQLObjectType({
       description: "Phone number associated with the order",
     },
     shipping_address: {
-      type: AddressType,
+      type: OrderAddressType,
       description: "Shipping address associated with the order",
     },
   }),

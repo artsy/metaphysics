@@ -61,9 +61,7 @@ export const OrderInputType = new GraphQLInputObjectType({
 export default mutationWithClientMutationId({
   name: "UpdateOrder",
   decription: "Update an order",
-  inputFields: {
-    ...OrderInputType.getFields(),
-  },
+  inputFields: OrderInputType.getFields(),
   outputFields: {
     order: {
       type: OrderType,
@@ -80,8 +78,14 @@ export default mutationWithClientMutationId({
       telephone,
     },
     request,
-    { rootValue: { updateOrderLoader } }
+    { rootValue: { accessToken, updateOrderLoader } }
   ) => {
+    if (!accessToken) {
+      if (!session_id) {
+        return new Error("This action requires a session_id.")
+      }
+    }
+
     return updateOrderLoader(id, {
       email,
       notes,
