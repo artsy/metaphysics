@@ -59,6 +59,7 @@ import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
 import UpdateOrderMutation from "./me/order/update_order_mutation"
 import SubmitOrderMutation from "./me/order/submit_order_mutation"
+import { BidderPositionMutation } from "./me/bidder_position_mutation"
 
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
@@ -141,6 +142,7 @@ const schema = new GraphQLSchema({
   mutation: new GraphQLObjectType({
     name: "Mutation",
     fields: {
+      bidderPosition: BidderPositionMutation,
       createCreditCard: createCreditCardMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,
