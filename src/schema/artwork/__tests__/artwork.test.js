@@ -965,7 +965,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
-              info: "One of a kind piece.",
+              info: "One of a kind piece",
             },
           },
         })
@@ -986,7 +986,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
-              short_description: "This is a unique work.",
+              short_description: "This is a unique work",
             },
           },
         })
