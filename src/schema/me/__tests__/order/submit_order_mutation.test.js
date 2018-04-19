@@ -1,22 +1,15 @@
 import { runAuthenticatedQuery, runQuery } from "test/utils"
-import exampleOrderResult from "test/fixtures/results/update_order_mutation"
+import exampleOrderResult from "test/fixtures/results/submit_order_mutation"
 import orderJSON from "test/fixtures/gravity/order.json"
 
 describe("Me", () => {
-  describe("UpdateOrderMutation", () => {
+  describe("SubmitOrderMutation", () => {
     describe("authenticated", () => {
       const mutation = `
         mutation {
-          updateOrder(input: {
+          submitOrder(input: {
             id: "fooid123",
-            telephone: "6073499419",
-            shipping_address: {
-              name: "sarah sarah",
-              street: "401 Broadway, 25th Floor",
-              city: "New York",
-              region: "NY",
-              country: "USA"
-            }
+            credit_card_id: "cc123"
           }) {
             clientMutationId
             order {
@@ -67,7 +60,7 @@ describe("Me", () => {
       `
       it("updates the order", () => {
         const rootValue = {
-          updateOrderLoader: () => Promise.resolve(orderJSON),
+          submitOrderLoader: () => Promise.resolve(orderJSON),
         }
 
         return runAuthenticatedQuery(mutation, rootValue).then(data => {
@@ -80,17 +73,10 @@ describe("Me", () => {
       it("updates the order", () => {
         const mutation = `
           mutation {
-            updateOrder(input: {
+            submitOrder(input: {
               id: "fooid123",
-              telephone: "6073499419",
-              session_id: "session123",
-              shipping_address: {
-                name: "sarah sarah",
-                street: "401 Broadway, 25th Floor",
-                city: "New York",
-                region: "NY",
-                country: "USA"
-              }
+              credit_card_id: "cc123",
+              session_id: "123456789"
             }) {
               clientMutationId
               order {
@@ -141,7 +127,7 @@ describe("Me", () => {
         `
 
         const rootValue = {
-          updateOrderLoader: () => Promise.resolve(orderJSON),
+          submitOrderLoader: () => Promise.resolve(orderJSON),
         }
 
         return runQuery(mutation, rootValue).then(data => {
@@ -152,16 +138,9 @@ describe("Me", () => {
       it("requires a session_id", () => {
         const mutation = `
           mutation {
-            updateOrder(input: {
+            submitOrder(input: {
               id: "fooid123",
-              telephone: "6073499419",
-              shipping_address: {
-                name: "sarah sarah",
-                street: "401 Broadway, 25th Floor",
-                city: "New York",
-                region: "NY",
-                country: "USA"
-              }
+              credit_card_id: "cc123"
             }) {
               clientMutationId
               order {
@@ -178,7 +157,7 @@ describe("Me", () => {
         `
 
         const rootValue = {
-          updateOrderLoader: () => Promise.resolve(orderJSON),
+          submitOrderLoader: () => Promise.resolve(orderJSON),
         }
 
         return runQuery(mutation, rootValue).catch(error => {
