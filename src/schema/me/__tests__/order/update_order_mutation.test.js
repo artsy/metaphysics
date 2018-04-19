@@ -9,6 +9,7 @@ describe("Me", () => {
         mutation {
           updateOrder(input: {
             id: "fooid123",
+            reserve: true,
             telephone: "6073499419",
             shipping_address: {
               name: "sarah sarah",
@@ -82,6 +83,7 @@ describe("Me", () => {
           mutation {
             updateOrder(input: {
               id: "fooid123",
+              reserve: true,
               telephone: "6073499419",
               session_id: "session123",
               shipping_address: {
@@ -154,6 +156,7 @@ describe("Me", () => {
           mutation {
             updateOrder(input: {
               id: "fooid123",
+              reserve: true,
               telephone: "6073499419",
               shipping_address: {
                 name: "sarah sarah",

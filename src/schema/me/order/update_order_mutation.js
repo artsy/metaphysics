@@ -1,4 +1,9 @@
-import { GraphQLInputObjectType, GraphQLNonNull, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLInputObjectType,
+  GraphQLNonNull,
+  GraphQLString,
+} from "graphql"
 import { OrderType } from "schema/me/order"
 import { mutationWithClientMutationId } from "graphql-relay"
 
@@ -44,6 +49,10 @@ export const OrderInputType = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "Additional notes",
     },
+    reserve: {
+      type: GraphQLBoolean,
+      description: "Whether or not to put the order on reserve",
+    },
     session_id: {
       type: GraphQLString,
       description: "Session ID necessary if there is no user present",
@@ -73,6 +82,7 @@ export default mutationWithClientMutationId({
       id,
       email,
       notes,
+      reserve,
       session_id,
       shipping_address: { name, street, city, region, postal_code, use_id },
       telephone,
@@ -89,6 +99,7 @@ export default mutationWithClientMutationId({
     return updateOrderLoader(id, {
       email,
       notes,
+      reserve,
       session_id,
       shipping_address: { name, street, city, region, postal_code, use_id },
       telephone,
