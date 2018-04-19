@@ -2,6 +2,7 @@ import { assign, compact } from "lodash"
 import cached from "./fields/cached"
 import date from "./fields/date"
 import money, { amount } from "./fields/money"
+import { formatMoney } from "accounting"
 import numeral from "./fields/numeral"
 import Artwork from "./artwork"
 import Sale from "./sale"
@@ -24,6 +25,51 @@ export const isBiddable = (sale, { artwork: { sold } }) => {
   return !sold && sale.is_auction && sale.auction_state === "open"
 }
 
+const bid_increments_calculator = ({
+  sale_id,
+  saleLoader,
+  incrementsLoader,
+  minimum_next_bid_cents,
+}) => {
+  return saleLoader(sale_id).then(sale => {
+    if (!sale.increment_strategy) {
+      return Promise.reject("schema/sale_artwork - Missing increment strategy")
+    }
+
+    return incrementsLoader({
+      key: sale.increment_strategy,
+    }).then(incrs => {
+      // We already have the asking price for the lot. Produce a list
+      // of increments beyond that amount. Make a local copy of the
+      // tiers to avoid mutating the cached value.
+      const tiers = incrs[0].increments.slice()
+      const increments = [minimum_next_bid_cents]
+      const limit = BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT
+      let current = 0 // Always start from zero, so that all prices are on-increment
+      while (increments.length < 100 && current <= limit) {
+        if (current > minimum_next_bid_cents) increments.push(current)
+        const { to, amount: increase } = tiers[0]
+        current += increase
+        if (current > to && tiers.length > 1) tiers.shift()
+      }
+      return increments
+    })
+  })
+}
+
+// We're not using money() for this because it is a function, and we need a list.
+const BidIncrementsFormatted = new GraphQLObjectType({
+  name: "BidIncrementsFormatted",
+  fields: {
+    cents: {
+      type: GraphQLFloat,
+    },
+    display: {
+      type: GraphQLString,
+    },
+  },
+})
+
 const SaleArtworkType = new GraphQLObjectType({
   name: "SaleArtwork",
   fields: () => {
@@ -40,37 +86,40 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       bid_increments: {
         type: new GraphQLList(GraphQLFloat),
+        deprecationReason: "Favor `bid_increments_formatted.cents`",
         resolve: (
           { minimum_next_bid_cents, sale_id },
           options,
           request,
           { rootValue: { incrementsLoader, saleLoader } }
         ) => {
-          return saleLoader(sale_id).then(sale => {
-            if (!sale.increment_strategy) {
-              return Promise.reject(
-                "schema/sale_artwork - Missing increment strategy"
-              )
+          return bid_increments_calculator({
+            sale_id,
+            saleLoader,
+            incrementsLoader,
+            minimum_next_bid_cents,
+          })
+        },
+      },
+      bid_increments_formatted: {
+        type: new GraphQLList(BidIncrementsFormatted),
+        resolve: async (
+          { minimum_next_bid_cents, sale_id, symbol },
+          options,
+          request,
+          { rootValue: { incrementsLoader, saleLoader } }
+        ) => {
+          const bid_increments = await bid_increments_calculator({
+            sale_id,
+            saleLoader,
+            incrementsLoader,
+            minimum_next_bid_cents,
+          })
+          return bid_increments.map(increment => {
+            return {
+              cents: increment,
+              display: formatMoney(increment / 100, { symbol, precision: 0 }),
             }
-
-            return incrementsLoader({
-              key: sale.increment_strategy,
-            }).then(incrs => {
-              // We already have the asking price for the lot. Produce a list
-              // of increments beyond that amount. Make a local copy of the
-              // tiers to avoid mutating the cached value.
-              const tiers = incrs[0].increments.slice()
-              const increments = [minimum_next_bid_cents]
-              const limit = BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT
-              let current = 0 // Always start from zero, so that all prices are on-increment
-              while (increments.length < 100 && current <= limit) {
-                if (current > minimum_next_bid_cents) increments.push(current)
-                const { to, amount: increase } = tiers[0]
-                current += increase
-                if (current > to && tiers.length > 1) tiers.shift()
-              }
-              return increments
-            })
           })
         },
       },
