@@ -123,6 +123,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "PUT" }
     ),
+    submitOrderLoader: gravityLoader(
+      id => `me/order/${id}/submit`,
+      {},
+      { method: "PUT" }
+    ),
     recordArtworkViewLoader: gravityLoader(
       "me/recently_viewed_artworks",
       {},

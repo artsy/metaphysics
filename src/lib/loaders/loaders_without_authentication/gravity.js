@@ -103,5 +103,10 @@ export default opts => {
       {},
       { method: "PUT" }
     ),
+    submitOrderLoader: gravityLoader(
+      id => `me/order/${id}/submit`,
+      {},
+      { method: "PUT" }
+    ),
   }
 }
