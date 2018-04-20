@@ -244,6 +244,58 @@ describe("SaleArtwork type", () => {
       ])
     })
 
+    it("formats bid increments", async () => {
+      const query = `
+        {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            increments {
+              cents
+              display
+            }
+          }
+        }
+      `
+
+      const rootValue = {
+        saleLoader: () => {
+          return Promise.resolve({
+            increment_strategy: "default",
+          })
+        },
+        incrementsLoader: sale => {
+          return Promise.resolve([
+            {
+              key: sale.increment_strategy,
+              increments: [
+                {
+                  from: 0,
+                  to: 399999,
+                  amount: 5000,
+                },
+                {
+                  from: 400000,
+                  to: 1000000,
+                  amount: 10000,
+                },
+              ],
+            },
+          ])
+        },
+      }
+
+      const data = await execute(query, saleArtwork, rootValue)
+      expect(data.sale_artwork.increments.slice(0, 2)).toEqual([
+        {
+          cents: 351000,
+          display: "€3,510",
+        },
+        {
+          cents: 355000,
+          display: "€3,550",
+        },
+      ])
+    })
+
     describe("with a max amount set", () => {
       beforeEach(() => {
         SaleArtwork.__Rewire__(
