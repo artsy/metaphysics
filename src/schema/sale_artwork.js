@@ -31,30 +31,29 @@ const bid_increments_calculator = async ({
   incrementsLoader,
   minimum_next_bid_cents,
 }) => {
-  return saleLoader(sale_id).then(sale => {
-    if (!sale.increment_strategy) {
-      return Promise.reject("schema/sale_artwork - Missing increment strategy")
-    }
+  const sale = await saleLoader(sale_id)
+  if (!sale.increment_strategy) {
+    return Promise.reject("schema/sale_artwork - Missing increment strategy")
+  }
 
-    return incrementsLoader({
-      key: sale.increment_strategy,
-    }).then(incrs => {
-      // We already have the asking price for the lot. Produce a list
-      // of increments beyond that amount. Make a local copy of the
-      // tiers to avoid mutating the cached value.
-      const tiers = incrs[0].increments.slice()
-      const increments = [minimum_next_bid_cents]
-      const limit = BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT
-      let current = 0 // Always start from zero, so that all prices are on-increment
-      while (increments.length < 100 && current <= limit) {
-        if (current > minimum_next_bid_cents) increments.push(current)
-        const { to, amount: increase } = tiers[0]
-        current += increase
-        if (current > to && tiers.length > 1) tiers.shift()
-      }
-      return increments
-    })
+  const incrs = await incrementsLoader({
+    key: sale.increment_strategy,
   })
+
+  // We already have the asking price for the lot. Produce a list
+  // of increments beyond that amount. Make a local copy of the
+  // tiers to avoid mutating the cached value.
+  const tiers = incrs[0].increments.slice()
+  const increments = [minimum_next_bid_cents]
+  const limit = BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT
+  let current = 0 // Always start from zero, so that all prices are on-increment
+  while (increments.length < 100 && current <= limit) {
+    if (current > minimum_next_bid_cents) increments.push(current)
+    const { to, amount: increase } = tiers[0]
+    current += increase
+    if (current > to && tiers.length > 1) tiers.shift()
+  }
+  return increments
 }
 
 // We're not using money() for this because it is a function, and we need a list.
