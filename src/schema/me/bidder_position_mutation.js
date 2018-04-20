@@ -1,7 +1,9 @@
 // @ts-check
 
-import { GraphQLString, GraphQLFloat } from "graphql"
+import { GraphQLString, GraphQLFloat, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+
+import BidderPosition from "schema/bidder_position"
 
 export const BidderPositionMutation = mutationWithClientMutationId({
   name: "BidderPosition",
@@ -9,19 +11,19 @@ export const BidderPositionMutation = mutationWithClientMutationId({
     "Creates a bidder position",
   inputFields: {
     sale_id: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     artwork_id: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     max_bid_amount_cents: {
-      type: GraphQLFloat,
+      type: new GraphQLNonNull(GraphQLFloat),
     },
   },
   outputFields: {
-    sale_id: {
-      type: GraphQLString,
-      resolve: (position) => position.bidder.sale.id,
+    position: {
+      type: BidderPosition.type,
+      resolve: (position) => position,
     },
   },
   mutateAndGetPayload: (
@@ -30,14 +32,13 @@ export const BidderPositionMutation = mutationWithClientMutationId({
     {
       rootValue: {
         accessToken,
-        meBidderPositionMutationLoader,
+        createBidderPositionLoader,
       },
     }
   ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }
-
-    return meBidderPositionMutationLoader({ sale_id, artwork_id, max_bid_amount_cents })
+    return createBidderPositionLoader({ sale_id, artwork_id, max_bid_amount_cents })
   },
 })

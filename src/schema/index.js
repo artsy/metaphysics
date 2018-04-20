@@ -142,7 +142,7 @@ const schema = new GraphQLSchema({
   mutation: new GraphQLObjectType({
     name: "Mutation",
     fields: {
-      bidderPosition: BidderPositionMutation,
+      createBidderPosition: BidderPositionMutation,
       createCreditCard: createCreditCardMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,

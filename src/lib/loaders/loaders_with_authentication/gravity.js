@@ -71,7 +71,7 @@ export default (accessToken, userID, opts) => {
     meLoader: gravityLoader("me"),
     meBiddersLoader: gravityLoader("me/bidders"),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
-    meBidderPositionMutationLoader: gravityLoader(
+    createBidderPositionLoader: gravityLoader(
       "me/bidder_position",
       {},
       { method: "POST" }
