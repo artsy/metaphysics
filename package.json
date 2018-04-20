@@ -133,9 +133,8 @@
       "/src/test/__mocks__"
     ],
     "transform": {
-      "^.+\\.(js|ts)$": "babel-jest"
-    },
-    "moduleFileExtensions": ["js", "jsx", "json", "ts", "tsx"]
+      "^.+\\.(js|ts)$": "typescript-babel-jest"
+    }
   },
   "prettier": {
     "semi": false,
