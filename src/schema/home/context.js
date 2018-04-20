@@ -78,6 +78,7 @@ export const moduleContext = {
   },
   followed_galleries: () => null,
   saved_works: () => null,
+  recently_viewed_works: () => null,
   recommended_works: () => null,
   live_auctions: ({ rootValue: { salesLoader } }) => {
     return featuredAuction(salesLoader).then(sale => {

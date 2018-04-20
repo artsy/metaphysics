@@ -46,6 +46,7 @@ const moduleTitle = {
     })
   },
   saved_works: () => "Recently Saved Works",
+  recently_viewed_works: () => "Recently Viewed Works",
 }
 
 export default {

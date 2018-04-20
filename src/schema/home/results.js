@@ -108,6 +108,15 @@ const moduleResults = {
       sort: "-position",
     })
   },
+  recently_viewed_works: ({ rootValue: { meLoader, artworksLoader } }) => {
+    return meLoader().then(({ recently_viewed_artwork_ids }) => {
+      if (recently_viewed_artwork_ids.length === 0) {
+        return []
+      }
+      const ids = recently_viewed_artwork_ids.slice(RESULTS_SIZE)
+      return artworksLoader({ ids })
+    })
+  },
 }
 
 export default {

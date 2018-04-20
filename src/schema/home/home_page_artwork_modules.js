@@ -101,6 +101,9 @@ const HomePageArtworkModuleTypes = new GraphQLEnumType({
     SAVED_WORKS: {
       value: "saved_works",
     },
+    RECENTLY_VIEWED_WORKS: {
+      value: "recently_viewed_works",
+    },
   },
 })
 
