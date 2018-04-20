@@ -248,7 +248,7 @@ describe("SaleArtwork type", () => {
       const query = `
         {
           sale_artwork(id: "54c7ed2a7261692bfa910200") {
-            bid_increments_formatted {
+            increments {
               cents
               display
             }
@@ -284,7 +284,7 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, saleArtwork, rootValue)
-      expect(data.sale_artwork.bid_increments_formatted.slice(0, 2)).toEqual([
+      expect(data.sale_artwork.increments.slice(0, 2)).toEqual([
         {
           cents: 351000,
           display: "€3,510",

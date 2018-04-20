@@ -25,7 +25,7 @@ export const isBiddable = (sale, { artwork: { sold } }) => {
   return !sold && sale.is_auction && sale.auction_state === "open"
 }
 
-const bid_increments_calculator = ({
+const bid_increments_calculator = async ({
   sale_id,
   saleLoader,
   incrementsLoader,
@@ -86,7 +86,7 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       bid_increments: {
         type: new GraphQLList(GraphQLFloat),
-        deprecationReason: "Favor `bid_increments_formatted.cents`",
+        deprecationReason: "Favor `increments.cents`",
         resolve: (
           { minimum_next_bid_cents, sale_id },
           options,
@@ -98,28 +98,6 @@ const SaleArtworkType = new GraphQLObjectType({
             saleLoader,
             incrementsLoader,
             minimum_next_bid_cents,
-          })
-        },
-      },
-      bid_increments_formatted: {
-        type: new GraphQLList(BidIncrementsFormatted),
-        resolve: async (
-          { minimum_next_bid_cents, sale_id, symbol },
-          options,
-          request,
-          { rootValue: { incrementsLoader, saleLoader } }
-        ) => {
-          const bid_increments = await bid_increments_calculator({
-            sale_id,
-            saleLoader,
-            incrementsLoader,
-            minimum_next_bid_cents,
-          })
-          return bid_increments.map(increment => {
-            return {
-              cents: increment,
-              display: formatMoney(increment / 100, { symbol, precision: 0 }),
-            }
           })
         },
       },
@@ -214,6 +192,29 @@ const SaleArtworkType = new GraphQLObjectType({
             },
             highest_bid
           ),
+      },
+      increments: {
+        type: new GraphQLList(BidIncrementsFormatted),
+        resolve: async (
+          { minimum_next_bid_cents, sale_id, symbol },
+          options,
+          request,
+          { rootValue: { incrementsLoader, saleLoader } }
+        ) => {
+          return bid_increments_calculator({
+            sale_id,
+            saleLoader,
+            incrementsLoader,
+            minimum_next_bid_cents,
+          }).then(bid_increments => {
+            return bid_increments.map(increment => {
+              return {
+                cents: increment,
+                display: formatMoney(increment / 100, { symbol, precision: 0 }),
+              }
+            })
+          })
+        },
       },
       is_bid_on: {
         type: GraphQLBoolean,
