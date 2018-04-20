@@ -2,9 +2,7 @@ import { runAuthenticatedQuery } from "test/utils"
 
 describe("Bidder position mutation", () => {
   const createBidderPosition = {
-    position: {
       suggested_next_bid_cents: 110000,
-    },
   }
 
   const query = `
