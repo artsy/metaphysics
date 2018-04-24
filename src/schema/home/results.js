@@ -113,7 +113,7 @@ const moduleResults = {
       if (recently_viewed_artwork_ids.length === 0) {
         return []
       }
-      const ids = recently_viewed_artwork_ids.slice(RESULTS_SIZE)
+      const ids = recently_viewed_artwork_ids.slice(0, RESULTS_SIZE)
       return artworksLoader({ ids })
     })
   },
