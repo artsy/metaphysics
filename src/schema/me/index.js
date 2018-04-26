@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import { GraphQLBoolean, GraphQLString, GraphQLObjectType } from "graphql"
 
 import { IDFields, NodeInterface } from "schema/object_identification"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
@@ -64,6 +64,21 @@ const Me = new GraphQLObjectType({
       }),
       resolve: () => ({}),
     },
+    has_qualified_credit_cards: {
+      type: GraphQLBoolean,
+      resolve: (
+        root,
+        options,
+        request,
+        { rootValue: { meCreditCardsLoader } }
+      ) => {
+        return meCreditCardsLoader({ qualified_for_bidding: true }).then(
+          results => {
+            return results.length > 0
+          }
+        )
+      },
+    },
     invoice: Invoice,
     lot_standing: LotStanding,
     lot_standings: LotStandings,
@@ -100,6 +115,7 @@ export default {
       "follow_artists",
       "followed_artists_connection",
       "followed_genes",
+      "has_qualified_credit_cards",
       "suggested_artists",
       "bidders",
       "bidder_positions",
