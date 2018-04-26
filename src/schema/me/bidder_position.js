@@ -1,8 +1,8 @@
 import { GraphQLNonNull, GraphQLString } from "graphql"
-import BidderPosition from "schema/bidder_position"
+import BidderPositionType from "schema/bidder_position"
 
-export const BidderPositionStatus = {
-  type: BidderPosition.type,
+export const BidderPosition = {
+  type: BidderPositionType.type,
   description: "Returns the bidder position status",
   args: {
     id: {
@@ -13,9 +13,9 @@ export const BidderPositionStatus = {
     root,
     { id },
     request,
-    { rootValue: { bidderPositionStatus } }
+    { rootValue: { bidderPositionLoader } }
   ) =>
-    bidderPositionStatus({
+    bidderPositionLoader({
       id,
     }).then(response => response.body),
 }

@@ -72,7 +72,7 @@ export default (accessToken, userID, opts) => {
     meLoader: gravityLoader("me"),
     meBiddersLoader: gravityLoader("me/bidders"),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
-    bidderPositionStatus: gravityLoader(
+    bidderPositionLoader: gravityLoader(
       ({ id }) => `me/bidder_position/${id}/`,
       {},
       { headers: true }
