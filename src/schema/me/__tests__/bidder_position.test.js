@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "test/utils"
 describe("BidderPosition", () => {
   it("returns processed_at", () => {
     const rootValue = {
-      bidderPositionLoader: sinon.stub().returns(
+      bidderPositionLoader: () =>
         Promise.resolve({
           body: {
             bidder: {
@@ -21,7 +21,6 @@ describe("BidderPosition", () => {
             processed_at: "2018-04-26T14:15:52+00:00",
           },
         }),
-      ),
     }
     const query = `
       {

@@ -3,7 +3,7 @@ import BidderPositionType from "schema/bidder_position"
 
 export const BidderPosition = {
   type: BidderPositionType.type,
-  description: "Returns the bidder position status",
+  description: "Returns a single bidder position",
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
