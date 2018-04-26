@@ -1,11 +1,6 @@
 import { featuredAuction, featuredFair, featuredGene } from "./fetch"
 import { GraphQLString } from "graphql"
 
-const simpleSentenceCase = (title) => {
-  const lowercase = title.toLowerCase()
-  return lowercase.charAt(0).toUpperCase() + lowercase.slice(1)
-}
-
 const moduleTitle = {
   active_bids: () => "Your active bids",
   current_fairs: ({ rootValue: { fairsLoader } }) => {
@@ -22,17 +17,15 @@ const moduleTitle = {
   },
   followed_artists: () => "Works by artists you follow",
   followed_galleries: () => "Works from galleries you follow",
-  generic_gene: ({ params: { title } }) => {
-    return simpleSentenceCase(title)
-  },
+  generic_gene: ({ params: { title } }) => title,
   genes: ({ rootValue: { followedGenesLoader }, params: { gene } }) => {
     if (gene) {
-      return simpleSentenceCase(gene.name)
+      return gene.name
     }
     // Backward compatibility for Force.
     return featuredGene(followedGenesLoader).then(fetchedGene => {
       if (fetchedGene) {
-        return simpleSentenceCase(fetchedGene.name)
+        return fetchedGene.name
       }
     })
   },
