@@ -10,6 +10,7 @@ import ArtworkInquiries from "./artwork_inquiries"
 import BidderPositions from "./bidder_positions"
 import Bidders from "./bidders"
 import BidderStatus from "./bidder_status"
+import { BidderPositionStatus } from "./bidder_position_status"
 import CollectorProfile from "./collector_profile"
 import Conversation from "./conversation"
 import Conversations from "./conversations"
@@ -45,6 +46,7 @@ const Me = new GraphQLObjectType({
     bidders: Bidders,
     bidder_status: BidderStatus,
     bidder_positions: BidderPositions,
+    bidder_position_status: BidderPositionStatus,
     collector_profile: CollectorProfile,
     conversation: Conversation,
     conversations: Conversations,
