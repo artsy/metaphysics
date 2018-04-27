@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "test/utils"
 describe("BidderPosition", () => {
   it("returns processed_at", () => {
     const rootValue = {
-      bidderPositionLoader: () =>
+      meBidderPositionLoader: () =>
         Promise.resolve({
           body: {
             bidder: {
