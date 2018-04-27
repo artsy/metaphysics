@@ -56,8 +56,8 @@ spec:
     kind: Deployment
     name: metaphysics-web
   minReplicas: 3
-  maxReplicas: 5
-  targetCPUUtilizationPercentage: 120
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 100
 
 ---
 apiVersion: v1
