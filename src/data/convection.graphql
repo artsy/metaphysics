@@ -79,6 +79,7 @@ type CreateConsignmentSubmissionPayload {
   consignment_submission: Submission
 }
 
+# Mutation root for this schema
 type Mutation {
   # Create an asset
   addAssetToConsignmentSubmission(input: AddAssetToConsignmentSubmissionInput): AddAssetToConsignmentSubmissionPayload

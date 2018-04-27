@@ -1,3 +1,7 @@
+require("dotenv").config({
+  path: require("path").join(process.cwd(), ".env"),
+})
+
 const {
   BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT,
   CACHE_LIFETIME_IN_SECONDS,
