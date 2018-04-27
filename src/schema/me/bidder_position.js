@@ -13,9 +13,9 @@ export const BidderPosition = {
     root,
     { id },
     request,
-    { rootValue: { bidderPositionLoader } }
+    { rootValue: { meBidderPositionLoader } }
   ) =>
-    bidderPositionLoader({
+    meBidderPositionLoader({
       id,
     }).then(response => response.body),
 }
