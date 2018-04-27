@@ -17,8 +17,8 @@
     "watch": "jest --watch",
     "lint": "eslint .",
     "fix": "eslint . --fix",
-    "dump-schema": "babel-node ./scripts/dump-schema.js",
-    "dump-remote-schema": "babel-node ./scripts/dump-remote-schema.js",
+    "dump-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-schema.js",
+    "dump-remote-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-remote-schema.js",
     "build": "yarn build:lib && yarn build:index && yarn build:fixtures && yarn build:remote-schemas",
     "build:lib": "babel src --copy-files --extensions '.ts,.js' --ignore src/test,src/integration,src/**/__tests__ -s inline -d build/src",
     "build:index": "babel index.js -s inline -d build",
@@ -109,7 +109,7 @@
     "babel-jest": "^22.4.1",
     "babel-plugin-rewire": "1.2.0-rc.1",
     "deep-equal": "^1.0.1",
-    "dotenv": "^2.0.0",
+    "dotenv": "^5.0.1",
     "eslint": "^1.10.3",
     "eslint-config-airbnb": "^3.1.0",
     "eslint-plugin-react": "^3.14.0",
@@ -135,7 +135,13 @@
     "transform": {
       "^.+\\.(js|ts)$": "babel-jest"
     },
-    "moduleFileExtensions": ["js", "jsx", "json", "ts", "tsx"]
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "ts",
+      "tsx"
+    ]
   },
   "prettier": {
     "semi": false,
