@@ -19,5 +19,8 @@
     "lib": "${workspaceRoot}/lib",
     "schema": "${workspaceRoot}/schema",
     "test": "${workspaceRoot}/test"
-  }
+  },
+  "cSpell.words": [
+    "urljoin"
+  ]
 }

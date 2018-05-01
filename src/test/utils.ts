@@ -1,5 +1,5 @@
-import schema from "schema"
-import { mergeSchemas } from "lib/mergeSchemas"
+// Please do not add schema imports here while stitching is an ENV flag
+//
 import { graphql } from "graphql"
 
 /**
@@ -19,6 +19,7 @@ export const runQuery = (
   query,
   rootValue = { accessToken: null, userID: null }
 ) => {
+  const schema = require("schema").default
   return graphql(schema, query, rootValue, {}).then(result => {
     if (result.errors) {
       const error = result.errors[0]
@@ -36,7 +37,7 @@ export const runQuery = (
  * @param {Object} rootValue  The request params, which currently are `accessToken` and `userID`.
  * @see runQuery
  */
-export const runAuthenticatedQuery = (query, rootValue = {}) => {
+export const runAuthenticatedQuery = (query, rootValue: any = {}) => {
   return runQuery(
     query,
     Object.assign({ accessToken: "secret", userID: "user-42" }, rootValue)
@@ -56,6 +57,9 @@ export const runQueryMerged = async (
   query,
   rootValue = { accessToken: null, userID: null }
 ) => {
+  process.env.ENABLE_SCHEMA_STITCHING = "true"
+  const { mergeSchemas } = require("lib/stitching/mergeSchemas")
+
   if (!mergedSchema) {
     mergedSchema = await mergeSchemas()
   }

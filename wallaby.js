@@ -7,14 +7,17 @@ module.exports = wallaby => {
       ".env.test",
       "config.js",
       "src/**/*.js",
+      "src/**/*.ts",
       "src/**/*.json",
       "src/**/*.snap",
       "!src/**/*.test.js",
+      "!src/**/*.test.ts",
     ],
-    tests: ["src/**/*.test.js"],
+    tests: ["src/**/*.test.js", "src/**/*.test.ts"],
 
     preprocessors: {
       "**/*.js": wallaby.compilers.babel(JSON.parse(babelRC)),
+      "**/*.ts": wallaby.compilers.babel(JSON.parse(babelRC)),
     },
 
     env: {

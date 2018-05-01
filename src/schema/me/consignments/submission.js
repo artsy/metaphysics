@@ -100,7 +100,7 @@ export const SubmissionType = new GraphQLObjectType({
   fields: {
     ...GravityIDFields,
     artist_id: {
-      decription: "The gravity ID for an Artist",
+      description: "The gravity ID for an Artist",
       type: new GraphQLNonNull(GraphQLString),
     },
     authenticity_certificate: {

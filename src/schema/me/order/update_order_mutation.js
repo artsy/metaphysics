@@ -69,7 +69,7 @@ export const OrderInputType = new GraphQLInputObjectType({
 
 export default mutationWithClientMutationId({
   name: "UpdateOrder",
-  decription: "Update an order",
+  description: "Update an order",
   inputFields: OrderInputType.getFields(),
   outputFields: {
     order: {

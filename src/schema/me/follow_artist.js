@@ -5,7 +5,7 @@ import PopularArtists from "schema/artists/popular"
 
 export default mutationWithClientMutationId({
   name: "FollowArtist",
-  decription: "Follow (or unfollow) an artist",
+  description: "Follow (or unfollow) an artist",
   inputFields: {
     artist_id: {
       type: GraphQLString,
