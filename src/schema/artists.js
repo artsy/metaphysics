@@ -13,6 +13,9 @@ const Artists = {
         Accepts list of ids.
       `,
     },
+    slugs: {
+      type: new GraphQLList(GraphQLString),
+    },
     page: {
       type: GraphQLInt,
       defaultValue: 1,
@@ -22,8 +25,18 @@ const Artists = {
     },
     sort: ArtistSorts,
   },
-  resolve: (root, options, _request, { rootValue: { artistsLoader } }) =>
-    artistsLoader(options),
+  resolve: (
+    root,
+    options,
+    _request,
+    { rootValue: { artistLoader, artistsLoader } }
+  ) => {
+    if (options.slugs) {
+      return Promise.all(options.slugs.map(slug => artistLoader(slug)))
+    }
+
+    return artistsLoader(options)
+  },
 }
 
 export default Artists
