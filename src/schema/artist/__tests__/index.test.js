@@ -24,6 +24,7 @@ describe("Artist type", () => {
         .withArgs(artist.id)
         .returns(Promise.resolve(artist)),
       articlesLoader: sinon.stub().returns(Promise.resolve({ count: 22 })),
+      artistGenesLoader: sinon.stub().returns(Promise.resolve([{ name: "Foo Bar" }])),
     }
 
     const totalViaLoader = sinon.stub()
@@ -457,7 +458,7 @@ describe("Artist type", () => {
             })
           })
         })
-        it("returns the featured partner bio without an artsy blurb", () => {})
+        it("returns the featured partner bio without an artsy blurb", () => { })
         it("returns the featured partner bio with an artsy blurb", () => {
           artist.blurb = "artsy blurb"
         })
@@ -721,6 +722,29 @@ describe("Artist type", () => {
         expect(data).toEqual({
           artist: {
             formatted_artworks_count: "1 work",
+          },
+        })
+      })
+    })
+  })
+
+  describe("genes", () => {
+    it("returns an array of assosciated genes", () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            genes {
+              name
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            genes: [
+              { name: "Foo Bar" },
+            ],
           },
         })
       })
