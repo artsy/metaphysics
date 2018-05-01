@@ -8,6 +8,7 @@ export default opts => {
   return {
     artworksLoader: gravityLoader("artworks"),
     artistArtworksLoader: gravityLoader(id => `artist/${id}/artworks`),
+    artistGenesLoader: gravityLoader(({ id }) => `artist/${id}/genome/genes`),
     artistLoader: gravityLoader(id => `artist/${id}`),
     artistsLoader: gravityLoader("artists"),
     artworkLoader: gravityLoader(id => `artwork/${id}`),
