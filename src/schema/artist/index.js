@@ -17,6 +17,7 @@ import {
   PartnerArtistConnection,
   partnersForArtist,
 } from "schema/partner_artist"
+import { GeneType } from "../gene"
 import Show from "schema/show"
 import Sale from "schema/sale/index"
 import ArtworkSorts from "schema/sorts/artwork_sorts"
@@ -538,6 +539,18 @@ export const ArtistType = new GraphQLObjectType({
           return nationality || formatted_bday
         },
       },
+      genes: {
+        description: `A list of genes associated with an artist`,
+        type: new GraphQLList(GeneType),
+        resolve: (
+          { id },
+          options,
+          request,
+          { rootValue: { artistGenesLoader } }
+        ) => {
+          return artistGenesLoader({ id }).then((genes) => genes)
+        },
+      },
       gender: {
         type: GraphQLString,
       },
@@ -570,7 +583,7 @@ export const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: (
           { id },
-          {},
+          { },
           request,
           { rootValue: { followedArtistLoader } }
         ) => {
