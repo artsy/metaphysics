@@ -103,6 +103,7 @@ export default opts => {
       {},
       { method: "PUT" }
     ),
+    userLoader: gravityLoader("user", {}, { method: "GET" }),
     submitOrderLoader: gravityLoader(
       id => `me/order/${id}/submit`,
       {},

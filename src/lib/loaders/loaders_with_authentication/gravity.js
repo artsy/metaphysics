@@ -164,7 +164,6 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
-    userLoader: gravityLoader("user", {}, { method: "GET" }),
     usersLoader: gravityLoader("users"),
   }
 }
