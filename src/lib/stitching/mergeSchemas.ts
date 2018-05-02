@@ -1,7 +1,8 @@
 import { mergeSchemas as _mergeSchemas } from "graphql-tools"
+import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
 import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitching"
-import { executableGravitySchema } from "lib/stitching/gravity/schema"
+import { executableLewittSchema } from "lib/stitching/lewitt/schema"
 import _ from "lodash"
 
 import localSchema from "../../schema"
@@ -22,14 +23,16 @@ export const mergeSchemas = async () => {
   )
 
   const gravitySchema = await executableGravitySchema()
+  const lewittSchema = await executableLewittSchema()
 
-  // Add gravity schema first to prefer local MP schema.
-  // Add schemas after localSchema to prefer those over MP.
+  // The order should only matter in that extension schemas come after the
+  // objects that they are expected to build upon
   const mergedSchema = _mergeSchemas({
     schemas: [
-      // gravitySchema,
+      gravitySchema,
       localSchema,
       convectionSchema,
+      lewittSchema,
       convectionStitching.extensionSchema,
     ],
     onTypeConflict: (leftType, rightType) => {

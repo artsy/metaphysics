@@ -8,7 +8,7 @@ import urljoin from "url-join"
 
 const { LEWITT_API_BASE } = config
 
-export function createLewittLink() {
+export const createLewittLink = () => {
   const httpLink = createHttpLink({
     fetch,
     uri: urljoin(LEWITT_API_BASE, "graphql"),
