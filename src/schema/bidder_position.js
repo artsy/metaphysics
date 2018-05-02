@@ -119,6 +119,10 @@ const BidderPositionType = new GraphQLObjectType({
       type: GraphQLInt,
       deprecationReason: "Favor `suggested_next_bid`",
     },
+    message: {
+      type: GraphQLString,
+      description: "used when createBidderPosition returns a message",
+    },
   }),
 })
 

@@ -40,5 +40,17 @@ export const BidderPositionMutation = mutationWithClientMutationId({
       return new Error("You need to be signed in to perform this action")
     }
     return createBidderPositionLoader({ sale_id, artwork_id, max_bid_amount_cents })
+      .then(p => p)
+      .catch((e) => {
+        const errorSplit = e.message.split(" - ")
+        const errorObject = errorSplit.length > 1 ? JSON.parse(e.message.split(" - ")[1]) : null
+        if (errorObject && errorObject.type === "param_error") {
+          return {
+            id: "BID_NOT_HIGH_ENOUGH",
+            message: errorObject ? errorObject.message : e.message,
+          }
+        }
+        return new Error(e)
+      })
   },
 })
