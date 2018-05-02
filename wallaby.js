@@ -6,6 +6,7 @@ module.exports = wallaby => {
     files: [
       ".env.test",
       "config.js",
+      "src/**/*.graphql",
       "src/**/*.js",
       "src/**/*.ts",
       "src/**/*.json",
@@ -26,6 +27,6 @@ module.exports = wallaby => {
     },
 
     testFramework: "jest",
-    // debug: true,
+    debug: true,
   }
 }

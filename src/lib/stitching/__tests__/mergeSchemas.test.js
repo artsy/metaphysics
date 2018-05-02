@@ -1,4 +1,5 @@
 import { runQueryMerged } from "test/utils"
+import gql from "test/gql"
 
 describe("stiched schema regressions", () => {
   it("union in interface fragment issue", async () => {
@@ -18,19 +19,19 @@ describe("stiched schema regressions", () => {
     ]
 
     const result = await runQueryMerged(
-      `
-      {
-        artwork(id:"banksy-di-faced-tenner-21") {
-          id
-          context {
-            ... on Node {
-              __id
-              __typename
+      gql`
+        {
+          artwork(id: "banksy-di-faced-tenner-21") {
+            id
+            context {
+              ... on Node {
+                __id
+                __typename
+              }
             }
           }
         }
-      }
-    `,
+      `,
       {
         artworkLoader: async () => artworkResponse,
         salesLoader: async () => salesResponse,
@@ -45,6 +46,33 @@ describe("stiched schema regressions", () => {
           __id: "QXJ0d29ya0NvbnRleHRBdWN0aW9uOmZvby1mb28=",
           __typename: "ArtworkContextAuction",
         },
+      },
+    })
+  })
+
+  it("handles dual root elements issue", async () => {
+    const result = await runQueryMerged(
+      gql`
+        {
+          artwork(id: "banksy-di-faced-tenner-21") {
+            id
+          }
+          artist(id: "banksy") {
+            id
+          }
+        }
+      `,
+      {
+        artworkLoader: async () => ({ id: "banksy-di-faced-tenner-21" }),
+        artistLoader: async () => ({ id: "banksy" }),
+      }
+    )
+    expect(result).toEqual({
+      artwork: {
+        id: "banksy-di-faced-tenner-21",
+      },
+      artist: {
+        id: "banksy",
       },
     })
   })

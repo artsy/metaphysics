@@ -1224,10 +1224,6 @@ babel-plugin-module-resolver@^3.0.0:
     reselect "^3.0.1"
     resolve "^1.4.0"
 
-babel-plugin-rewire@1.2.0-rc.1:
-  version "1.2.0-rc.1"
-  resolved "https://registry.yarnpkg.com/babel-plugin-rewire/-/babel-plugin-rewire-1.2.0-rc.1.tgz#9dfc4f13aaea9adf426738e6713969961446b2db"
-
 babel-plugin-syntax-flow@7.0.0-beta.3:
   version "7.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-flow/-/babel-plugin-syntax-flow-7.0.0-beta.3.tgz#b96eceea4ffa380b95ccb21e8c75a556bffce879"

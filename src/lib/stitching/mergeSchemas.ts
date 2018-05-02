@@ -27,7 +27,7 @@ export const mergeSchemas = async () => {
   // Add schemas after localSchema to prefer those over MP.
   const mergedSchema = _mergeSchemas({
     schemas: [
-      gravitySchema,
+      // gravitySchema,
       localSchema,
       convectionSchema,
       convectionStitching.extensionSchema,
