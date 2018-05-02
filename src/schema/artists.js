@@ -16,6 +16,10 @@ const Artists = {
     },
     slugs: {
       type: new GraphQLList(GraphQLString),
+      description: `
+        Only return artists matching specified slugs.
+        Accepts list of slugs. (e.g. 'andy-warhol', 'banksy')
+      `,
     },
     page: {
       type: GraphQLInt,
