@@ -119,14 +119,6 @@ const BidderPositionType = new GraphQLObjectType({
       type: GraphQLInt,
       deprecationReason: "Favor `suggested_next_bid`",
     },
-    message_header: {
-      type: GraphQLString,
-      description: "message header when gravity returns an error",
-    },
-    message_description: {
-      type: GraphQLString,
-      description: "message description when gravity returns an error",
-    },
   }),
 })
 
