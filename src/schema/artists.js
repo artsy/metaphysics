@@ -32,7 +32,17 @@ const Artists = {
     { rootValue: { artistLoader, artistsLoader } }
   ) => {
     if (options.slugs) {
-      return Promise.all(options.slugs.map(slug => artistLoader(slug)))
+      return Promise.all(
+        options.slugs.map(slug =>
+          artistLoader(
+            slug,
+            {},
+            {
+              requestThrottleMs: 60000,
+            }
+          )
+        )
+      )
     }
 
     return artistsLoader(options)

@@ -548,7 +548,7 @@ export const ArtistType = new GraphQLObjectType({
           request,
           { rootValue: { artistGenesLoader } }
         ) => {
-          return artistGenesLoader({ id }).then((genes) => genes)
+          return artistGenesLoader({ id }).then(genes => genes)
         },
       },
       gender: {
@@ -583,7 +583,7 @@ export const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: (
           { id },
-          { },
+          {},
           request,
           { rootValue: { followedArtistLoader } }
         ) => {
