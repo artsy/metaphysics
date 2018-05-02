@@ -13,10 +13,5 @@
       "extensions": [".js", ".jsx", ".ts", ".tsx"],
       "root": ["./src"]
     }]
-  ],
-  "env": {
-    "test": {
-      "plugins": ["babel-plugin-rewire"]
-    }
-  }
+  ]
 }
