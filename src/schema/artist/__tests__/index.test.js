@@ -8,6 +8,7 @@ describe("Artist type", () => {
     rootValue = {
       artistLoader: () => artist,
       articlesLoader: () => Promise.resolve({ count: 22 }),
+      artistGenesLoader: () => Promise.resolve([{ name: "Foo Bar" }]),
       relatedMainArtistsLoader: () =>
         Promise.resolve({ headers: { "x-total-count": 42 } }),
     }
@@ -23,23 +24,6 @@ describe("Artist type", () => {
       collections: "Catty Art Collections\nMatt's Personal Art Collection",
     }
   })
-
-  //   rootValue = {
-  //     artistLoader: sinon
-  //       .stub()
-  //       .withArgs(artist.id)
-  //       .returns(Promise.resolve(artist)),
-  //     articlesLoader: sinon.stub().returns(Promise.resolve({ count: 22 })),
-  //   }
-
-  //   const totalViaLoader = sinon.stub()
-  //   totalViaLoader.onCall(0).returns(Promise.resolve(42))
-  //   Artist.__Rewire__("totalViaLoader", totalViaLoader)
-  // })
-
-  // afterEach(() => {
-  //   Artist.__ResetDependency__("totalViaLoader")
-  // })
 
   it("returns null for an empty ID string", () => {
     return runQuery(`{ artist(id: "") { id } }`, rootValue).then(data => {
@@ -727,6 +711,27 @@ describe("Artist type", () => {
         expect(data).toEqual({
           artist: {
             formatted_artworks_count: "1 work",
+          },
+        })
+      })
+    })
+  })
+
+  describe("genes", () => {
+    it("returns an array of assosciated genes", () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            genes {
+              name
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            genes: [{ name: "Foo Bar" }],
           },
         })
       })
