@@ -1,6 +1,7 @@
 import Artist from "./artist"
 import ArtistSorts from "./sorts/artist_sorts"
 import { GraphQLList, GraphQLInt, GraphQLString } from "graphql"
+import config from "config"
 
 const Artists = {
   type: new GraphQLList(Artist.type),
@@ -38,7 +39,7 @@ const Artists = {
             slug,
             {},
             {
-              requestThrottleMs: 60000,
+              requestThrottleMs: config.ARTICLE_REQUEST_THROTTLE_MS,
             }
           )
         )
