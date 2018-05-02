@@ -37,7 +37,7 @@ export const CollectorProfileType = new GraphQLObjectType({
 
 export default {
   type: CollectorProfileType,
-  decription: "A collector profile.",
+  description: "A collector profile.",
   resolve: (
     root,
     option,
