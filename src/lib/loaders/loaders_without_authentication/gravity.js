@@ -20,6 +20,7 @@ export default opts => {
     ),
     fairsLoader: gravityLoader("fairs"),
     filterArtworksLoader: gravityLoader("filter/artworks"),
+    genesLoader: gravityLoader("genes"),
     geneArtistsLoader: gravityLoader(id => `gene/${id}/artists`),
     geneFamiliesLoader: gravityLoader("gene_families"),
     geneLoader: gravityLoader(id => `gene/${id}`),
