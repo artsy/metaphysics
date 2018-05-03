@@ -20,10 +20,10 @@ export const executableLewittSchema = async () => {
   const remap = {
     Currencies: "PartnerProductInvoiceCurrencies",
     Invoice: "PartnerProductInvoice",
-    CreateInvoiceInput: "PartnerProductCreateInvoiceInput",
+    CreateInvoiceInput: "CreatePartnerProductInvoiceInput",
     ArtworkGroup: "PartnerProductInvoiceArtworkGroup",
     LineItem: "PartnerProductInvoiceLineItem",
-    MerchantAccount: "PartnerProductInvoiceMerchantAccount",
+    MerchantAccount: "PartnerProductMerchantAccount",
     Json: "PartnerProductJson",
   }
 
