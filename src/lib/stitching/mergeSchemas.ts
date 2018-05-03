@@ -3,17 +3,8 @@ import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
 import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitching"
 import { executableLewittSchema } from "lib/stitching/lewitt/schema"
-import _ from "lodash"
 
 import localSchema from "../../schema"
-
-const scalarsToKeepInMetaphysics = [
-  "String",
-  "ID",
-  "Int",
-  "Boolean",
-  "PageInfo",
-]
 
 export const mergeSchemas = async () => {
   const convectionSchema = await executableConvectionSchema()
@@ -35,20 +26,6 @@ export const mergeSchemas = async () => {
       lewittSchema,
       convectionStitching.extensionSchema,
     ],
-    onTypeConflict: (leftType, rightType) => {
-      // Generated schemas can contain astNode references vs MP's null value
-      if (_.omit(leftType, ["astNode"]) === _.omit(rightType, ["astNode"])) {
-        return leftType
-      }
-      // These scalars are the same, but maybe have different comments etc
-      if (scalarsToKeepInMetaphysics.includes(leftType.name)) {
-        return leftType
-      }
-
-      // Bail, this should only happen during dev time, if you are seeing this
-      // you're gonna need to transform the incoming schema
-      throw new Error(`During merging two schemas contain ${leftType.name}.`)
-    },
     resolvers: {
       ...convectionStitching.resolvers,
     },

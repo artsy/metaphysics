@@ -20,9 +20,10 @@ export const executableConvectionSchema = async () => {
   // metaphysics ecosystem.
   const remap = {
     Submission: "ConsignmentSubmission",
-    Category: "SubmissionCategoryAggregation",
-    Asset: "SubmissionCategoryAsset",
-    State: "SubmissionStateAggregation",
+    Category: "ConsignmentSubmissionCategoryAggregation",
+    Asset: "ConsignmentSubmissionCategoryAsset",
+    State: "ConsignmentSubmissionStateAggregation",
+    SubmissionConnection: "ConsignmentSubmissionConnection",
   }
 
   // Return the new modified schema

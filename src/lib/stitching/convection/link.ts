@@ -1,11 +1,11 @@
-import urljoin from "url-join"
-
-import { ApolloLink } from "apollo-link"
 import { setContext } from "apollo-link-context"
 import { createHttpLink } from "apollo-link-http"
 import config from "config"
 import { headers as requestIDHeaders } from "lib/requestIDs"
 import fetch from "node-fetch"
+import urljoin from "url-join"
+
+import { middlewareLink } from "../lib/middlewareLink"
 
 const { CONVECTION_API_BASE } = config
 
@@ -14,10 +14,6 @@ export const createConvectionLink = () => {
     fetch,
     uri: urljoin(CONVECTION_API_BASE, "graphql"),
   })
-
-  const middlewareLink = new ApolloLink(
-    (operation, forward) => (forward && operation && forward(operation)) || null
-  )
 
   const authMiddleware = setContext((_request, context) => {
     const locals = context.graphqlContext && context.graphqlContext.res.locals

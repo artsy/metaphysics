@@ -1,10 +1,11 @@
-import { ApolloLink } from "apollo-link"
 import { setContext } from "apollo-link-context"
 import { createHttpLink } from "apollo-link-http"
 import config from "config"
 import { headers as requestIDHeaders } from "lib/requestIDs"
 import fetch from "node-fetch"
 import urljoin from "url-join"
+
+import { middlewareLink } from "../lib/middlewareLink"
 
 const { GRAVITY_GRAPHQL_ENDPOINT } = config
 
@@ -13,10 +14,6 @@ export const createGravityLink = () => {
     fetch,
     uri: urljoin(GRAVITY_GRAPHQL_ENDPOINT, "graphql"),
   })
-
-  const middlewareLink = new ApolloLink(
-    (operation, forward) => (forward && operation && forward(operation)) || null
-  )
 
   const authMiddleware = setContext((_request, context) => {
     const locals = context.graphqlContext && context.graphqlContext.res.locals

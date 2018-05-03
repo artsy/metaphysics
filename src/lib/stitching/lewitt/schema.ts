@@ -18,19 +18,24 @@ export const executableLewittSchema = async () => {
   // Remap the names of certain types from Lewitt to fit in the larger
   // metaphysics ecosystem.
   const remap = {
-    Currencies: "PartnerInvoiceCurrencies",
-    Invoice: "PartnerInvoice",
-    ArtworkGroup: "PartnerInvoiceArtworkGroup",
-    LineItem: "PartnerInvoiceLineItem",
-    MerchantAccount: "PartnerMerchantAccount",
+    Currencies: "PartnerProductInvoiceCurrencies",
+    Invoice: "PartnerProductInvoice",
+    CreateInvoiceInput: "PartnerProductCreateInvoiceInput",
+    ArtworkGroup: "PartnerProductInvoiceArtworkGroup",
+    LineItem: "PartnerProductInvoiceLineItem",
+    MerchantAccount: "PartnerProductInvoiceMerchantAccount",
+    Json: "PartnerProductJson",
   }
-
-  // TODO: Rename the mutation `create_invoice`?
 
   // Return the new modified schema
   return transformSchema(schema, [
     new RenameTypes(name => {
-      const newName = remap[name] || name
+      const newName = remap[name]
+      if (!newName) {
+        throw new Error(
+          `All types inside Lewitt should be mapped.\n Missing ${name}`
+        )
+      }
       return newName
     }),
   ])
