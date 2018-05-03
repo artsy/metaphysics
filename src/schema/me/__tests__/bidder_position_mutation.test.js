@@ -1,11 +1,12 @@
 import { runAuthenticatedQuery } from "test/utils"
+import config from "config"
 
 const query = `
   mutation {
     createBidderPosition(input: {
       artwork_id: "daryl-daniels-free-thyself-1"
       max_bid_amount_cents: 100000
-      sale_id: "one-year-of-resistance-benefit-auction-2018"
+      sale_id: "sixteen-year-of-resistance-benefit-auction-2032"
     }) {
       result {
         status
@@ -14,6 +15,7 @@ const query = `
         }
         message_header
         message_description
+        message_description_md
       }
     }
   }
@@ -92,11 +94,16 @@ describe("Bidder position mutation", () => {
         ),
       }
       return runAuthenticatedQuery(query, rootValue).then(data => {
+        const { PREDICTION_ENDPOINT } = config
         expect(data.createBidderPosition.result.position).toBeNull()
         expect(data.createBidderPosition.result.message_header).toEqual("Live bidding has started")
         expect(data.createBidderPosition.result.message_description).toEqual(
           `Sorry, your bid wasn’t received before live bidding started.\
  To continue bidding, please join the live auction.`)
+        expect(data.createBidderPosition.result.message_description_md).toEqual(
+          `Sorry, your bid wasn’t received before live bidding started.\
+ To continue bidding, please\
+ [join the live auction](${PREDICTION_ENDPOINT}/sixteen-year-of-resistance-benefit-auction-2032).`)
       })
     })
 
