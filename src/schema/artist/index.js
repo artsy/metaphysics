@@ -143,6 +143,9 @@ export const ArtistType = new GraphQLObjectType({
           limit: {
             type: GraphQLInt,
           },
+          in_editorial_feed: {
+            type: GraphQLBoolean,
+          },
         },
         type: new GraphQLList(Article.type),
         resolve: (
@@ -583,7 +586,7 @@ export const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: (
           { id },
-          {},
+          { },
           request,
           { rootValue: { followedArtistLoader } }
         ) => {
