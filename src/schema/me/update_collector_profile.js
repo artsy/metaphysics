@@ -33,7 +33,7 @@ export const IntentsType = new GraphQLEnumType({
 
 export default mutationWithClientMutationId({
   name: "UpdateCollectorProfile",
-  decription: "Updating a collector profile (loyalty applicant status).",
+  description: "Updating a collector profile (loyalty applicant status).",
   inputFields: {
     loyalty_applicant: {
       type: GraphQLBoolean,

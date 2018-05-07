@@ -17,7 +17,8 @@ import {
 } from "lib/loaders/api/logger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
-import { executableLewittSchema, mergeSchemas } from "./lib/mergeSchemas"
+import { mergeSchemas } from "./lib/stitching/mergeSchemas"
+import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { middleware as requestTracer, makeSchemaTraceable } from "./lib/tracer"
 
@@ -46,6 +47,7 @@ async function startApp() {
 
   if (enableSchemaStitching) {
     try {
+      console.warn("[FEATURE] Enabling Schema Stitching") // eslint-disable-line
       schema = await mergeSchemas()
     } catch (err) {
       console.log("Error merging schemas:", err) // eslint-disable-line

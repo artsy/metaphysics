@@ -21,7 +21,7 @@ import {
 
 const PartnerCategoryType = new GraphQLObjectType({
   name: "Category",
-  desciption: "Fields of partner category (currently from Gravity).",
+  description: "Fields of partner category (currently from Gravity).",
   fields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -160,7 +160,7 @@ const PartnerType = new GraphQLObjectType({
       is_limited_fair_partner: {
         type: GraphQLBoolean,
         deprecationReason:
-          "This field no longer exists, this is for backwards compatability",
+          "This field no longer exists, this is for backwards compatibility",
         resolve: () => false,
       },
       is_linkable: {

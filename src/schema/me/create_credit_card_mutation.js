@@ -36,7 +36,7 @@ export const CreditCardType = new GraphQLObjectType({
 
 export default mutationWithClientMutationId({
   name: "CreditCard",
-  decription: "Create a credit card",
+  description: "Create a credit card",
   inputFields: {
     token: {
       type: new GraphQLNonNull(GraphQLString),

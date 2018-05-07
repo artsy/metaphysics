@@ -88,7 +88,6 @@ type Mutation {
 type RootQuery {
   # Search Invoices
   invoices(ids: [ID], partner_id: String!, token: String): [Invoice]
-
   # Retrieve a Merchant Account
   partner_product_merchant_account(partner_id: String!): MerchantAccount
 }

@@ -1,12 +1,18 @@
-import schema from "schema"
 import { runQuery } from "test/utils"
 
 describe("Artist type", () => {
-  const Artist = schema.__get__("Artist")
   let artist = null
-  let rootValue = null
+  let rootValue
 
   beforeEach(() => {
+    rootValue = {
+      artistLoader: () => artist,
+      articlesLoader: () => Promise.resolve({ count: 22 }),
+      artistGenesLoader: () => Promise.resolve([{ name: "Foo Bar" }]),
+      relatedMainArtistsLoader: () =>
+        Promise.resolve({ headers: { "x-total-count": 42 } }),
+    }
+
     artist = {
       id: "foo-bar",
       name: "Foo Bar",
@@ -17,23 +23,6 @@ describe("Artist type", () => {
       partner_shows_count: 42,
       collections: "Catty Art Collections\nMatt's Personal Art Collection",
     }
-
-    rootValue = {
-      artistLoader: sinon
-        .stub()
-        .withArgs(artist.id)
-        .returns(Promise.resolve(artist)),
-      articlesLoader: sinon.stub().returns(Promise.resolve({ count: 22 })),
-      artistGenesLoader: sinon.stub().returns(Promise.resolve([{ name: "Foo Bar" }])),
-    }
-
-    const totalViaLoader = sinon.stub()
-    totalViaLoader.onCall(0).returns(Promise.resolve(42))
-    Artist.__Rewire__("totalViaLoader", totalViaLoader)
-  })
-
-  afterEach(() => {
-    Artist.__ResetDependency__("totalViaLoader")
   })
 
   it("returns null for an empty ID string", () => {
@@ -458,7 +447,7 @@ describe("Artist type", () => {
             })
           })
         })
-        it("returns the featured partner bio without an artsy blurb", () => { })
+        it("returns the featured partner bio without an artsy blurb", () => {})
         it("returns the featured partner bio with an artsy blurb", () => {
           artist.blurb = "artsy blurb"
         })
@@ -742,9 +731,7 @@ describe("Artist type", () => {
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artist: {
-            genes: [
-              { name: "Foo Bar" },
-            ],
+            genes: [{ name: "Foo Bar" }],
           },
         })
       })

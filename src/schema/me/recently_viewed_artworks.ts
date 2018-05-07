@@ -1,4 +1,4 @@
-import { GraphQLBoolean, GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLNonNull, GraphQLString } from "graphql"
 import {
   connectionFromArray,
   connectionFromArraySlice,

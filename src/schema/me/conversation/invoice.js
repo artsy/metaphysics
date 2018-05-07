@@ -27,7 +27,7 @@ const InvoiceState = new GraphQLEnumType({
 
 export const InvoiceType = new GraphQLObjectType({
   name: "Invoice",
-  desciption: "Fields of an invoice (currently from Lewitt)",
+  description: "Fields of an invoice (currently from Lewitt)",
   interfaces: [NodeInterface],
   fields: {
     ...IDFields,

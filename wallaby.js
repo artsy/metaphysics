@@ -6,15 +6,19 @@ module.exports = wallaby => {
     files: [
       ".env.test",
       "config.js",
+      "src/**/*.graphql",
       "src/**/*.js",
+      "src/**/*.ts",
       "src/**/*.json",
       "src/**/*.snap",
       "!src/**/*.test.js",
+      "!src/**/*.test.ts",
     ],
-    tests: ["src/**/*.test.js"],
+    tests: ["src/**/*.test.js", "src/**/*.test.ts"],
 
     preprocessors: {
       "**/*.js": wallaby.compilers.babel(JSON.parse(babelRC)),
+      "**/*.ts": wallaby.compilers.babel(JSON.parse(babelRC)),
     },
 
     env: {
@@ -23,6 +27,5 @@ module.exports = wallaby => {
     },
 
     testFramework: "jest",
-    // debug: true,
   }
 }

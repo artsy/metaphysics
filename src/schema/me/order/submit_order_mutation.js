@@ -26,7 +26,7 @@ export const SubmitOrderInputType = new GraphQLInputObjectType({
 
 export default mutationWithClientMutationId({
   name: "SubmitOrder",
-  decription: "Submit an order with payment",
+  description: "Submit an order with payment",
   inputFields: SubmitOrderInputType.getFields(),
   outputFields: {
     order: {
