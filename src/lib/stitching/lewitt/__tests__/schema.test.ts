@@ -8,4 +8,6 @@ it("Does not include generic type names", async () => {
   expect(lewittTypes).not.toContain("Invoice")
   expect(lewittTypes).not.toContain("LineItem")
   expect(lewittTypes).not.toContain("Json")
+
+  expect(lewittTypes).toContain("PartnerProductInvoice")
 })
