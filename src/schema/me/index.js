@@ -1,4 +1,10 @@
-import { GraphQLBoolean, GraphQLString, GraphQLObjectType } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLString,
+  GraphQLObjectType,
+} from "graphql"
 
 import { IDFields, NodeInterface } from "schema/object_identification"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
@@ -91,6 +97,10 @@ const Me = new GraphQLObjectType({
     notifications_connection: Notifications,
     paddle_number: {
       type: GraphQLString,
+    },
+    recentlyViewedArtworkIds: {
+      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+      resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
     },
     recentlyViewedArtworks: RecentlyViewedArtworks,
     sale_registrations: SaleRegistrations,
