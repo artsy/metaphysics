@@ -138,6 +138,18 @@ export const GeneType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ published }) => published,
       },
+      is_followed: {
+        type: GraphQLBoolean,
+        resolve: (
+          { id },
+          { },
+          request,
+          { rootValue: { followedGeneLoader } }
+        ) => {
+          if (!followedGeneLoader) return false
+          return followedGeneLoader(id).then(({ is_followed }) => is_followed)
+        },
+      },
       mode: {
         type: GraphQLString,
         resolve: ({ type }) => {
