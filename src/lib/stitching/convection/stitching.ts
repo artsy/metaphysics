@@ -1,4 +1,3 @@
-import gql from "test/gql"
 import { GraphQLSchema } from "graphql"
 
 export const consignmentStitchingEnvironment = (
@@ -6,7 +5,7 @@ export const consignmentStitchingEnvironment = (
   convectionSchema: GraphQLSchema
 ) => ({
   // The SDL used to declare how to stitch an object
-  extensionSchema: gql`
+  extensionSchema: `
     extend type ConsignmentSubmission {
       artist: Artist
     }
