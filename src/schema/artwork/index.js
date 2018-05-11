@@ -577,17 +577,25 @@ export const artworkFields = () => {
     },
     sale_artwork: {
       type: SaleArtwork.type,
+      args: {
+        sale_id: {
+          type: GraphQLString,
+          defaultValue: null,
+        },
+      },
       resolve: (
         { id, sale_ids },
-        _args,
+        { sale_id },
         _request,
         { rootValue: { saleArtworkLoader } }
       ) => {
+        // Note that we don't even try to call the saleArtworkLoader unless there's
+        // at least one element in sale_ids.
         if (sale_ids && sale_ids.length > 0) {
-          const sale_id = _.first(sale_ids)
+          const loader_sale_id = sale_id || _.first(sale_ids)
           // don't error if the sale/artwork is unpublished
           return saleArtworkLoader({
-            saleId: sale_id,
+            saleId: loader_sale_id,
             saleArtworkId: id,
           }).catch(() => null)
         }
