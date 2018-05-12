@@ -113,6 +113,7 @@
     "eslint-config-airbnb": "^3.1.0",
     "eslint-plugin-react": "^3.14.0",
     "expect.js": "^0.3.1",
+    "graphql-crunch": "^1.1.2",
     "husky": "^0.13.3",
     "jest": "^22.4.2",
     "lint-staged": "^3.4.0",
