@@ -105,8 +105,9 @@ export const BidderPositionMutation = mutationWithClientMutationId({
       .catch(e => {
         const errorSplit = e.message.split(" - ")
         const errorObject = errorSplit.length > 1 ? JSON.parse(e.message.split(" - ")[1]) : null
-        if (errorObject && errorObject.type === "param_error") {
-          const error = biddingErrors.find(d => errorObject.message.trim().startsWith(d.gravity_key)) ||
+        if (errorObject) {
+          const errorMessage = errorObject.message || errorObject.error
+          const error = biddingErrors.find(d => errorMessage.trim().startsWith(d.gravity_key)) ||
             errorObject.ERROR_UNKNOWN
           const liveAuctionUrl = `${PREDICTION_ENDPOINT}/${sale_id}`
           return {
