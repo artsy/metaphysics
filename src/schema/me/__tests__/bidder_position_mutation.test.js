@@ -65,7 +65,7 @@ describe("Bidder position mutation", () => {
     })
 
     it("creates correct message when sale is closed", async () => {
-      const errorObjectString = `{"type": "param_error", "message":"Sale Closed to Bids"}`
+      const errorObjectString = `{"error":"Sale Closed to Bids"}`
       const errorMessage = {
         message: errorMEssageTemplate + errorObjectString,
       }
@@ -82,7 +82,7 @@ describe("Bidder position mutation", () => {
     })
   })
   it("creates correct message when live bidding has started", async () => {
-    const errorObjectString = `{"type": "param_error", "message":"Live Bidding has Started"}`
+    const errorObjectString = `{"error":"Live Bidding has Started"}`
     const errorMessage = {
       message: errorMEssageTemplate + errorObjectString,
     }

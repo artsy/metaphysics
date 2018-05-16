@@ -613,6 +613,27 @@ describe("Artwork type", () => {
       )
       expect(sale_id).toEqual(artwork.sale_ids[0])
     })
+
+    it("returns the specified sale artwork", async () => {
+      const query = gql`
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            sale_artwork(sale_id: "sale-id-auction") {
+              sale_id
+            }
+          }
+        }
+      `
+      rootValue.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
+        saleId === artwork.sale_ids[1] &&
+        saleArtworkId === "richard-prince-untitled-portrait" &&
+        Promise.resolve({ sale_id: saleId })
+      const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
+        query,
+        rootValue
+      )
+      expect(sale_id).toEqual(artwork.sale_ids[1])
+    })
   })
 
   describe("#is_biddable", () => {
