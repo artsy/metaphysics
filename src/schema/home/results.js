@@ -129,9 +129,9 @@ const moduleResults = {
       if (recently_viewed_artwork_ids.length === 0) {
         return []
       }
-      const ids = recently_viewed_artwork_ids.slice(0, 7)
-      return similarArtworksLoader({ artwork_id: ids }).then(similarIds => {
-        return artworksLoader({ similarIds })
+      const recentlyViewedIds = recently_viewed_artwork_ids.slice(0, 7)
+      return similarArtworksLoader({ artwork_id: recentlyViewedIds }).then(ids => {
+        return artworksLoader({ ids })
       })
     })
   },
