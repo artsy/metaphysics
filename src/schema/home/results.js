@@ -108,6 +108,33 @@ const moduleResults = {
       sort: "-position",
     })
   },
+  similar_to_saved_works: ({
+    rootValue: { savedArtworksLoader, similarArtworksLoader, artworksLoader },
+  }) => {
+    return savedArtworksLoader({
+      size: RESULTS_SIZE,
+      sort: "-position",
+    }).then(works => {
+      return similarArtworksLoader(
+        { artwork_id: map(works, "_id").slice(0, 7) }
+      ).then(ids => {
+        return artworksLoader({ ids })
+      })
+    })
+  },
+  similar_to_recently_viewed: ({
+    rootValue: { meLoader, similarArtworksLoader, artworksLoader },
+  }) => {
+    return meLoader().then(({ recently_viewed_artwork_ids }) => {
+      if (recently_viewed_artwork_ids.length === 0) {
+        return []
+      }
+      const ids = recently_viewed_artwork_ids.slice(0, 7)
+      return similarArtworksLoader({ artwork_id: ids }).then(similarIds => {
+        return artworksLoader({ similarIds })
+      })
+    })
+  },
   recently_viewed_works: ({ rootValue: { meLoader, artworksLoader } }) => {
     return meLoader().then(({ recently_viewed_artwork_ids }) => {
       if (recently_viewed_artwork_ids.length === 0) {

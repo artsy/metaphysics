@@ -169,15 +169,94 @@ describe("HomePageArtworkModules", () => {
     })
   })
 
-  it("takes a preferred order of modules", () => {
+  it("returns works similar to recently viewed", () => {
     const query = `
       {
         home_page {
-          artwork_modules(order: [RECOMMENDED_WORKS, FOLLOWED_ARTISTS, GENERIC_GENES]) {
-            key
+          artwork_module(
+            key: "similar_to_recently_viewed"
+          ) {
+            results { id }
           }
         }
       }
+    `
+
+    const expectedResults =
+      {
+        home_page: {
+          artwork_module: {
+            results: [
+              { id: "artwork-foo" },
+              { id: "artwork-bar" },
+            ],
+          },
+        },
+      }
+
+    rootValue.meLoader = () => Promise.resolve({
+      recently_viewed_artwork_ids: ["artwork-foo", "artwork-bar"],
+    })
+    rootValue.similarArtworksLoader = () => Promise.resolve(["artwork-foo", "artwork-bar"])
+    rootValue.artworksLoader = () => Promise.resolve([
+      { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
+      { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
+    ])
+
+    return runAuthenticatedQuery(query, rootValue).then((results) => {
+      expect(results).toEqual(expectedResults)
+    })
+  })
+
+  it("returns works similar to saved works", () => {
+    const query = `
+      {
+        home_page {
+          artwork_module(
+            key: "similar_to_saved_works"
+          ) {
+            results { id }
+          }
+        }
+      }
+    `
+
+    const expectedResults =
+      {
+        home_page: {
+          artwork_module: {
+            results: [
+              { id: "artwork-foo" },
+              { id: "artwork-bar" },
+            ],
+          },
+        },
+      }
+
+    rootValue.savedArtworksLoader = () => Promise.resolve([
+      { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
+      { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
+    ])
+    rootValue.similarArtworksLoader = () => Promise.resolve(["artwork-foo", "artwork-bar"])
+    rootValue.artworksLoader = () => Promise.resolve([
+      { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
+      { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
+    ])
+
+    return runAuthenticatedQuery(query, rootValue).then((results) => {
+      expect(results).toEqual(expectedResults)
+    })
+  })
+
+  it("takes a preferred order of modules", () => {
+    const query = `
+    {
+      home_page {
+        artwork_modules(order: [RECOMMENDED_WORKS, FOLLOWED_ARTISTS, GENERIC_GENES]) {
+          key
+        }
+      }
+    }
     `
 
     return runAuthenticatedQuery(query, rootValue).then(
@@ -202,13 +281,13 @@ describe("HomePageArtworkModules", () => {
 
   it("excludes modules upon request", () => {
     const query = `
-      {
-        home_page {
-          artwork_modules(exclude: [RECOMMENDED_WORKS]) {
-            key
-          }
+    {
+      home_page {
+        artwork_modules(exclude: [RECOMMENDED_WORKS]) {
+          key
         }
       }
+    }
     `
 
     return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {

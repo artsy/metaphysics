@@ -93,6 +93,7 @@ export default opts => {
     setsLoader: gravityLoader("sets"),
     showLoader: gravityLoader(id => `show/${id}`),
     showsLoader: gravityLoader("shows"),
+    similarArtworksLoader: gravityLoader("related/artworks"),
     similarGenesLoader: gravityLoader(
       id => `gene/${id}/similar`,
       {},
