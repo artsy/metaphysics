@@ -11,7 +11,7 @@ import moment from "moment"
 import morgan from "artsy-morgan"
 import raven from "raven"
 import xapp from "artsy-xapp"
-import { crunch } from "graphql-crunch"
+import crunchInterceptor from "./lib/crunchInterceptor"
 import {
   fetchLoggerSetup,
   fetchLoggerRequestDone,
@@ -80,6 +80,7 @@ async function startApp() {
       next()
     },
     fetchPersistedQuery,
+    crunchInterceptor,
     graphqlHTTP((req, res) => {
       const accessToken = req.headers["x-access-token"]
       const userID = req.headers["x-user-id"]
@@ -125,12 +126,6 @@ async function startApp() {
           enableSentry,
           isProduction,
         }),
-        formatResponse: resp => {
-          if (req.query.crunch && resp.data && !resp.data.__schema) {
-            resp.data = crunch(resp.data) // eslint-disable-line no-param-reassign
-          }
-          return resp
-        },
         validationRules: [depthLimit(queryLimit)],
         extensions: enableRequestLogging
           ? fetchLoggerRequestDone(requestID)
