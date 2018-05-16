@@ -197,8 +197,7 @@ describe("HomePageArtworkModules", () => {
     rootValue.meLoader = () => Promise.resolve({
       recently_viewed_artwork_ids: ["artwork-foo", "artwork-bar"],
     })
-    rootValue.similarArtworksLoader = () => Promise.resolve(["artwork-foo", "artwork-bar"])
-    rootValue.artworksLoader = () => Promise.resolve([
+    rootValue.similarArtworksLoader = () => Promise.resolve([
       { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
       { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
     ])
@@ -237,8 +236,7 @@ describe("HomePageArtworkModules", () => {
       { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
       { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
     ])
-    rootValue.similarArtworksLoader = () => Promise.resolve(["artwork-foo", "artwork-bar"])
-    rootValue.artworksLoader = () => Promise.resolve([
+    rootValue.similarArtworksLoader = () => Promise.resolve([
       { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
       { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
     ])
