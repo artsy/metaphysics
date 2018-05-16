@@ -104,6 +104,12 @@ const HomePageArtworkModuleTypes = new GraphQLEnumType({
     RECENTLY_VIEWED_WORKS: {
       value: "recently_viewed_works",
     },
+    SIMILAR_TO_RECENTLY_VIEWED: {
+      value: "similar_to_recently_viewed",
+    },
+    SIMILAR_TO_SAVED_WORKS: {
+      value: "similar_to_saved_works",
+    },
   },
 })
 
