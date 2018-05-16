@@ -48,13 +48,4 @@ describe("crunchInterceptor", () => {
         expect(res.body.data).toMatchObject(crunch({ greeting: "Hello World" }))
       })
   })
-
-  it("should not crunch an introspection query", () => {
-    return request(app)
-      .get("/?query={__schema{types{name}}}&crunch")
-      .set("Accept", "application/json")
-      .expect(res => {
-        expect(Array.isArray(res.body.data)).toBeFalsy()
-      })
-  })
 })
