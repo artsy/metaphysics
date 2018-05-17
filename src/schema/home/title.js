@@ -32,9 +32,9 @@ const moduleTitle = {
     return artistLoader(params.related_artist_id).then(artist => artist && artist.name)
   },
   saved_works: () => "Recently saved",
-  similar_to_saved_works: () => "Similar to Recently Saved",
+  similar_to_saved_works: () => "Similar to works you've saved",
   recently_viewed_works: () => "Recently viewed",
-  similar_to_recently_viewed: () => "Similar to Recently Viewed",
+  similar_to_recently_viewed: () => "Similar to works you've viewed",
 }
 
 export default {
