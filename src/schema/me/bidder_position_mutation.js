@@ -51,13 +51,13 @@ export const BidderPositionMutation = mutationWithClientMutationId({
         const errorObject = errorSplit.length > 1 ? JSON.parse(e.message.split(" - ")[1]) : null
         if (errorObject) {
           const errorMessage = errorObject.message || errorObject.error
-          const error = BiddingMessages.find(d => errorMessage.trim().startsWith(d.gravity_key)) ||
-            errorObject.ERROR_UNKNOWN
+          const message = BiddingMessages.find(d => errorMessage.trim().startsWith(d.gravity_key)) ||
+            BiddingMessages[BiddingMessages.length - 1]
           const liveAuctionUrl = `${PREDICTION_ENDPOINT}/${sale_id}`
           return {
-            status: error.id,
-            message_header: error.header,
-            message_description_md: error.description_md({ liveAuctionUrl }),
+            status: message.id,
+            message_header: message.header,
+            message_description_md: message.description_md({ liveAuctionUrl }),
           }
         }
         return new Error(e)

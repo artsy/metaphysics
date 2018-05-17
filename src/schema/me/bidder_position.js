@@ -29,7 +29,7 @@ export const BidderPosition = {
       let status
       if (anyReserveMet(position) && position.processed_at && position.active) {
         return {
-          status: "SUCCESS",
+          status: "WINNING",
           position,
         }
       } else if (!position.processed_at) {
@@ -38,20 +38,18 @@ export const BidderPosition = {
           position,
         }
       } else if (position.processed_at && !anyReserveMet(position)) {
-        status = "ERROR_RESERVE_NOT_MET"
+        status = "RESERVE_NOT_MET"
       } else if (position.processed_at && !position.active) {
-        status = "ERROR_BID_LOW"
+        status = "OUTBID"
       } else {
-        status = "ERROR_UNKNOWN"
+        status = "ERROR"
       }
-      const error = BiddingMessages.find(d => status.trim().startsWith(d.id)) || {
-        header: "",
-        description_md: () => "",
-      }
+      const message = BiddingMessages.find(d => status.trim().startsWith(d.id)) ||
+        BiddingMessages[BiddingMessages.length - 1] // error
       return {
         status,
-        message_header: error.header,
-        message_description_md: error.description_md(),
+        message_header: message.header,
+        message_description_md: message.description_md(),
         position,
       }
     }),

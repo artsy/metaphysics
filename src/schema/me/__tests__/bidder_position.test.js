@@ -54,6 +54,7 @@ describe("BidderPosition", () => {
           bidder_position(id: "5ae1df168b3b8141bfc32e5d") {
             status
             message_header
+            message_description_md
             position {
               processed_at
             }
@@ -61,12 +62,13 @@ describe("BidderPosition", () => {
         }
       }
     `
-  it("returns success when processed and reserve is met and active", () => {
+  it("returns winning when processed and reserve is met and active", () => {
     return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
       expect(me).toEqual({
         bidder_position: {
-          status: "SUCCESS",
+          status: "WINNING",
           message_header: null,
+          message_description_md: null,
           position: {
             processed_at: "2018-04-26T14:15:52+00:00",
           },
@@ -80,6 +82,7 @@ describe("BidderPosition", () => {
         bidder_position: {
           status: "PENDING",
           message_header: null,
+          message_description_md: null,
           position: {
             processed_at: null,
           },
@@ -91,8 +94,10 @@ describe("BidderPosition", () => {
     return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
       expect(me).toEqual({
         bidder_position: {
-          status: "ERROR_RESERVE_NOT_MET",
+          status: "RESERVE_NOT_MET",
           message_header: "Your bid wasn't high enough",
+          message_description_md: `Your bid didn’t meet the reserve price for this work.  \
+ Bid again to take the lead.`,
           position: {
             processed_at: "2018-04-26T14:15:52+00:00",
           },
@@ -104,8 +109,10 @@ describe("BidderPosition", () => {
     return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
       expect(me).toEqual({
         bidder_position: {
-          status: "ERROR_BID_LOW",
+          status: "OUTBID",
           message_header: "Your bid wasn't high enough",
+          message_description_md: `Another bidder placed a higher max bid or the same max bid before you did.  \
+ Bid again to take the lead.`,
           position: {
             processed_at: "2018-04-26T14:15:52+00:00",
           },
