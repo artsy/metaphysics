@@ -22,9 +22,8 @@ export const gqlServer = ({
   const app = express()
   const execSchema = makeExecutableSchema({
     typeDefs: schema,
-    mocks,
   })
-  addMockFunctionsToSchema({ schema: execSchema })
+  addMockFunctionsToSchema({ schema: execSchema, mocks })
   app.use(
     "/",
     bodyParser.json(),
