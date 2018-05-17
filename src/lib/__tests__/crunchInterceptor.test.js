@@ -1,51 +1,45 @@
-import express from "express"
-import graphqlHTTP from "express-graphql"
 import request from "supertest"
-import bodyParser from "body-parser"
-import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools"
 import { crunch } from "graphql-crunch"
+import { app, invokeError } from "../../test/gql-server"
+import { stubInterceptor } from "../../test/interceptor"
 
-import crunchInterceptor from "../crunchInterceptor"
+import crunchInterceptor, { interceptorCallback } from "../crunchInterceptor"
 
-describe("crunchInterceptor", () => {
-  let app
-
-  beforeEach(() => {
-    const schema = makeExecutableSchema({
-      typeDefs: `
-        type Query {
-          greeting: String
-        }
-      `,
-    })
-    addMockFunctionsToSchema({ schema })
-    app = express()
-    app.use(
-      "/",
-      bodyParser.json(),
-      crunchInterceptor,
-      graphqlHTTP({
-        schema,
-        graphiql: false,
-      })
-    )
+const fakeCrunch = intercept =>
+  stubInterceptor(interceptorCallback, {
+    intercept,
   })
 
+describe("crunchInterceptor", () => {
   it("should pass the result through unchanged when no param is present", () => {
-    return request(app)
+    const intercept = jest.fn()
+    return request(app(fakeCrunch(intercept)))
       .get("/?query={greeting}")
       .set("Accept", "application/json")
-      .expect(res => {
-        expect(res.body.data).toMatchObject({ greeting: "Hello World" })
+      .expect(200)
+      .then(() => {
+        expect(intercept).not.toHaveBeenCalled()
       })
   })
 
   it("should crunch the result when param is present", () => {
-    return request(app)
+    return request(app(crunchInterceptor))
       .get("/?query={greeting}&crunch")
       .set("Accept", "application/json")
-      .expect(res => {
+      .expect(200)
+      .then(res => {
         expect(res.body.data).toMatchObject(crunch({ greeting: "Hello World" }))
+      })
+  })
+
+  it("should not try to crunch on an error", () => {
+    const intercept = jest.fn()
+    return request(app(invokeError(404), fakeCrunch(intercept)))
+      .get("/?query={greeting}&crunch")
+      .set("Accept", "application/json")
+      .expect(404)
+      .then(() => {
+        expect(intercept).not.toHaveBeenCalled()
       })
   })
 })

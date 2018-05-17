@@ -1,7 +1,7 @@
 import { crunch } from "graphql-crunch"
 import interceptor from "express-interceptor"
 
-export default interceptor(req => ({
+export const interceptorCallback = req => ({
   isInterceptable: () => req.query.hasOwnProperty("crunch"),
   intercept: (body, send) => {
     body = JSON.parse(body) // eslint-disable-line no-param-reassign
@@ -10,4 +10,6 @@ export default interceptor(req => ({
     }
     send(JSON.stringify(body))
   },
-}))
+})
+
+export default interceptor(interceptorCallback)
