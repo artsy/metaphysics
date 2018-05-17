@@ -1,12 +1,12 @@
 import request from "supertest"
 import { crunch } from "graphql-crunch"
 import { app, invokeError } from "../../test/gql-server"
-import { stubInterceptor } from "../../test/interceptor"
+import { mockInterceptor } from "../../test/interceptor"
 
 import crunchInterceptor, { interceptorCallback } from "../crunchInterceptor"
 
 const fakeCrunch = intercept =>
-  stubInterceptor(interceptorCallback, {
+  mockInterceptor(interceptorCallback, {
     intercept,
   })
 
