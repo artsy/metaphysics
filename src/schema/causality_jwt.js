@@ -4,6 +4,10 @@ import config from "config"
 
 const { HMAC_SECRET } = config
 
+const isExternalOperatorAuthorized = (sale, mePartners) => {
+  return mePartners.map(partner => partner._id).indexOf(sale.partner._id) === -1
+}
+
 export default {
   type: GraphQLString,
   description: "Creates, and authorizes, a JWT custom for Causality",
@@ -14,6 +18,7 @@ export default {
         values: {
           PARTICIPANT: { value: "PARTICIPANT" },
           OPERATOR: { value: "OPERATOR" },
+          EXTERNAL_OPERATOR: { value: "EXTERNAL_OPERATOR" },
         },
       }),
       description: "",
@@ -27,7 +32,7 @@ export default {
     root,
     options,
     request,
-    { rootValue: { accessToken, meLoader, meBiddersLoader, saleLoader } }
+    { rootValue: { accessToken, meLoader, meBiddersLoader, mePartnersLoader, saleLoader } }
   ) => {
     // Observer role for logged out users
     if (!accessToken) {
@@ -77,8 +82,31 @@ export default {
           HMAC_SECRET
         )
       })
-
-      // Operator role if logged in as an admin
+    } else if (options.role === "EXTERNAL_OPERATOR") {
+      return Promise.all([saleLoader(options.sale_id), meLoader()]).then(
+        ([sale, me]) => {
+          mePartnersLoader({ "partner_ids[]": sale.partner._id }).then(
+            mePartners => {
+              // Check if current user has access to partner running the sale
+              if (!isExternalOperatorAuthorized(sale, mePartners)) {
+                throw new Error("Unauthorized to be operator for this sale")
+              }
+              return jwt.encode(
+                {
+                  aud: "auctions",
+                  role: "external_operator",
+                  userId: me._id,
+                  saleId: sale._id,
+                  bidderId: me.paddle_number,
+                  iat: new Date().getTime(),
+                },
+                HMAC_SECRET
+              )
+            }
+          )
+        }
+      )
+    // Operator role if logged in as an admin
     } else if (options.role === "OPERATOR") {
       return Promise.all([saleLoader(options.sale_id), meLoader()]).then(
         ([sale, me]) => {

@@ -129,4 +129,12 @@ describe("CausalityJWT", () => {
       expect(e.message).toEqual("Unauthorized to be operator")
     })
   })
+
+  it("does not allow an unauthorized user to become an external operator", () => {
+
+  })
+
+  it("allows a user associated with the sale partner to be an external operator for that sale", () => {
+
+  })
 })
