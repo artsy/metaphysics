@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import bodyParser from "body-parser"
 import config from "./config"
 import cors from "cors"
@@ -22,11 +24,13 @@ import { mergeSchemas } from "./lib/stitching/mergeSchemas"
 import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { middleware as requestTracer, makeSchemaTraceable } from "./lib/tracer"
+import { logQueryDetails } from "./lib/logQueryDetails"
 
 const {
   ENABLE_QUERY_TRACING,
   ENABLE_REQUEST_LOGGING,
   ENABLE_SCHEMA_STITCHING,
+  LOG_QUERY_DETAILS_THRESHOLD,
   NODE_ENV,
   QUERY_DEPTH_LIMIT,
   SENTRY_PRIVATE_DSN,
@@ -37,6 +41,21 @@ const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
 const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
+const logQueryDetailsThreshold =
+  LOG_QUERY_DETAILS_THRESHOLD && parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10) // null by default
+
+function logQueryDetailsIfEnabled() {
+  if (Number.isInteger(logQueryDetailsThreshold)) {
+    console.warn(
+      `[FEATURE] Enabling logging of queries running past the ${
+        logQueryDetailsThreshold
+      } sec threshold.`
+    )
+    return logQueryDetails(logQueryDetailsThreshold)
+  }
+  // no-op
+  return (req, res, next) => next()
+}
 
 const app = express()
 
@@ -48,15 +67,15 @@ async function startApp() {
 
   if (enableSchemaStitching) {
     try {
-      console.warn("[FEATURE] Enabling Schema Stitching") // eslint-disable-line
+      console.warn("[FEATURE] Enabling Schema Stitching")
       schema = await mergeSchemas()
     } catch (err) {
-      console.log("Error merging schemas:", err) // eslint-disable-line
+      console.log("Error merging schemas:", err)
     }
   }
 
   if (enableQueryTracing) {
-    console.warn("[FEATURE] Enabling query tracing") // eslint-disable-line
+    console.warn("[FEATURE] Enabling query tracing")
     makeSchemaTraceable(schema)
     app.use(requestTracer)
   }
@@ -72,13 +91,14 @@ async function startApp() {
     "/",
     cors(),
     morgan,
-    // Gotta parse the JSON body before passing it to fetchPersistedQuery
+    // Gotta parse the JSON body before passing it to logQueryDetails/fetchPersistedQuery
     bodyParser.json(),
     // Ensure this divider is logged before both fetchPersistedQuery and graphqlHTTP
     (req, res, next) => {
       info("----------")
       next()
     },
+    logQueryDetailsIfEnabled(),
     fetchPersistedQuery,
     crunchInterceptor,
     graphqlHTTP((req, res) => {

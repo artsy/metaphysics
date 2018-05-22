@@ -5,7 +5,7 @@ import { pick } from "lodash"
 
 import { loaderInterface } from "./loader_interface"
 import timer from "lib/timer"
-import { verbose, error } from "lib/loggers"
+import { verbose, warn } from "lib/loggers"
 import logger from "lib/loaders/api/logger"
 
 /**
@@ -54,7 +54,7 @@ export const apiLoaderWithAuthenticationFactory = (
                       )
                     })
                     .catch(err => {
-                      error(path, err)
+                      warn(path, err)
                       reject(err)
                     })
                 })

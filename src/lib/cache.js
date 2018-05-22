@@ -4,7 +4,12 @@ import { error, verbose } from "./loggers"
 import redis from "redis"
 import url from "url"
 
-const { NODE_ENV, REDIS_URL, CACHE_LIFETIME_IN_SECONDS } = config
+const {
+  NODE_ENV,
+  REDIS_URL,
+  CACHE_LIFETIME_IN_SECONDS,
+  CACHE_QUERY_LOGGING_THRESHOLD_MS,
+} = config
 
 const isTest = NODE_ENV === "test"
 
@@ -67,8 +72,12 @@ export default {
   get: key => {
     return new Promise((resolve, reject) => {
       if (isNull(client)) return reject(new Error("Cache client is `null`"))
-
+      const start = Date.now()
       client.get(key, (err, data) => {
+        const time = Date.now() - start
+        if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
+          error(`Slow Cache#Get: ${time}ms`)
+        }
         if (err) return reject(err)
         if (data) return resolve(JSON.parse(data))
         reject(new Error("cache#get did not return `data`"))
