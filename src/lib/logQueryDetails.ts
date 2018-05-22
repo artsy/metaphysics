@@ -7,7 +7,7 @@ export function logQueryDetails(threshold: number) {
     res.on("finish", () => {
       const duration = process.hrtime(start)
       if (duration[0] >= threshold) {
-        error(`Query passed threshold:\n${JSON.stringify(req.body, null, 2)}`)
+        error(`[Query passed threshold]: ${JSON.stringify(req.body, null, 0)}`)
       }
     })
     next()
