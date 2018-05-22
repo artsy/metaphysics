@@ -46,9 +46,9 @@ const logQueryDetailsThreshold =
 function logQueryDetailsIfEnabled() {
   if (Number.isInteger(logQueryDetailsThreshold)) {
     console.warn(
-      `[FEATURE] Enabling logging of queries running longer than ${
+      `[FEATURE] Enabling logging of queries running past the ${
         logQueryDetailsThreshold
-      } sec.`
+      } sec threshold.`
     )
     return logQueryDetails(logQueryDetailsThreshold)
   }
