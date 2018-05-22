@@ -9,6 +9,7 @@ const {
   REDIS_URL,
   CACHE_LIFETIME_IN_SECONDS,
   CACHE_QUERY_LOGGING_THRESHOLD_MS,
+  CACHE_RETRIEVAL_TIMEOUT_MS,
 } = config
 
 const isTest = NODE_ENV === "test"
@@ -68,12 +69,35 @@ function createRedisClient() {
 
 export const client = isTest ? createMockClient() : createRedisClient()
 
+// Used to timeout Redis calls
+// From: https://medium.com/@stockholmux/tick-tock-setting-a-timeout-on-a-redis-call-with-node-js-be63733df98a
+function timeoutRedisCommand(command, timeoutValue) {
+  return function wrappedCommand() {
+    const argsAsArray = Array.prototype.slice.call(arguments)
+    let callback = argsAsArray.pop()
+    const timeoutHandler = setTimeout(() => {
+      error(`Cache ${command} timeout`)
+      callback(new Error(`Cache ${command} timeout`))
+      callback = () => {}
+    }, timeoutValue)
+
+    argsAsArray.push((err, data) => {
+      clearTimeout(timeoutHandler)
+      callback(err, data)
+    })
+
+    client[command].apply(client, argsAsArray)
+  }
+}
+
+const getWithTimeout = timeoutRedisCommand("get", CACHE_RETRIEVAL_TIMEOUT_MS)
+
 export default {
   get: key => {
     return new Promise((resolve, reject) => {
       if (isNull(client)) return reject(new Error("Cache client is `null`"))
       const start = Date.now()
-      client.get(key, (err, data) => {
+      getWithTimeout(key, (err, data) => {
         const time = Date.now() - start
         if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
           error(`Slow Cache#Get: ${time}ms key:${key}`)
