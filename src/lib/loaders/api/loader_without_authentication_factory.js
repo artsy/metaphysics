@@ -7,7 +7,7 @@ import { loaderInterface } from "./loader_interface"
 import cache from "lib/cache"
 import timer from "lib/timer"
 import { throttled } from "lib/throttle"
-import { verbose, error } from "lib/loggers"
+import { verbose, warn } from "lib/loggers"
 import logger from "lib/loaders/api/logger"
 
 // TODO Signatures for when we move to TypeScript (may not be 100% correct)
@@ -106,8 +106,8 @@ export const apiLoaderWithoutAuthenticationFactory = (
                       }
                     })
                     .catch(err => {
+                      warn(key, err)
                       reject(err)
-                      error(key, err)
                     })
                 }
               )
