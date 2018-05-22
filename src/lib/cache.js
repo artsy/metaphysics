@@ -76,7 +76,7 @@ export default {
       client.get(key, (err, data) => {
         const time = Date.now() - start
         if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
-          error(`Slow Cache#Get: ${time}ms`)
+          error(`Slow Cache#Get: ${time}ms key:${key}`)
         }
         if (err) return reject(err)
         if (data) return resolve(JSON.parse(data))
