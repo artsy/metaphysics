@@ -1,7 +1,7 @@
 // @ts-check
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
-import { error } from "lib/loggers"
+import { warn } from "lib/loggers"
 import cached from "./fields/cached"
 import CollectionSorts from "./sorts/collection_sorts"
 import { artworkConnection } from "./artwork"
@@ -56,7 +56,7 @@ export const CollectionType = new GraphQLObjectType({
             })
           })
           .catch(e => {
-            error("Bypassing Gravity error: ", e)
+            warn("Bypassing Gravity error: ", e)
             // For some users with no favourites, Gravity produces an error of "Collection Not Found".
             // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
             // and return an empty list instead.
