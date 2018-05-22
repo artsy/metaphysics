@@ -16,11 +16,19 @@ describe("CausalityJWT", () => {
       type: "User",
     }
 
-    const sale = { _id: "foo", name: "Foo sale", id: "slug" }
+    const sale = {
+      _id: "foo",
+      name: "Foo sale",
+      id: "slug",
+      partner: { _id: "fooPartner" },
+    }
+
+    const mePartners = [{ _id: "fooPartner" }]
 
     rootValue = {
       saleLoader: sinon.stub().returns(Promise.resolve(sale)),
       meLoader: sinon.stub().returns(Promise.resolve(me)),
+      mePartnersLoader: sinon.stub().returns(Promise.resolve(mePartners)),
       accessToken: "token",
       meBiddersLoader: sinon.stub().returns(
         Promise.resolve([
@@ -130,11 +138,28 @@ describe("CausalityJWT", () => {
     })
   })
 
-  it("does not allow an unauthorized user to become an external operator", () => {
-
+  it("allows a user associated with the sale partner to be an external operator for that sale", () => {
+    const query = `{
+      causality_jwt(role: EXTERNAL_OPERATOR, sale_id: "foo")
+    }`
+    return runAuthenticatedQuery(query, rootValue).then(data => {
+      expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
+        aud: "auctions",
+        role: "external_operator",
+        userId: "craig",
+        saleId: "foo",
+        bidderId: "123",
+      })
+    })
   })
 
-  it("allows a user associated with the sale partner to be an external operator for that sale", () => {
-
+  it("does not allow an unauthorized user to become an external operator", () => {
+    const query = `{
+      causality_jwt(role: EXTERNAL_OPERATOR, sale_id: "foo")
+    }`
+    rootValue.mePartnersLoader = sinon.stub().returns(Promise.resolve([]))
+    return runAuthenticatedQuery(query, rootValue).catch(e => {
+      expect(e.message).toEqual("Unauthorized to be operator for this sale")
+    })
   })
 })

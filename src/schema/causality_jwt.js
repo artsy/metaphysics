@@ -1,11 +1,12 @@
 import jwt from "jwt-simple"
 import { GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
 import config from "config"
+import { includes } from "lodash"
 
 const { HMAC_SECRET } = config
 
 const isExternalOperatorAuthorized = (sale, mePartners) => {
-  return mePartners.map(partner => partner._id).indexOf(sale.partner._id) === -1
+  return includes(mePartners.map(p => p._id), sale.partner._id)
 }
 
 export default {
@@ -32,7 +33,15 @@ export default {
     root,
     options,
     request,
-    { rootValue: { accessToken, meLoader, meBiddersLoader, mePartnersLoader, saleLoader } }
+    {
+      rootValue: {
+        accessToken,
+        meLoader,
+        meBiddersLoader,
+        mePartnersLoader,
+        saleLoader,
+      },
+    }
   ) => {
     // Observer role for logged out users
     if (!accessToken) {
@@ -85,7 +94,7 @@ export default {
     } else if (options.role === "EXTERNAL_OPERATOR") {
       return Promise.all([saleLoader(options.sale_id), meLoader()]).then(
         ([sale, me]) => {
-          mePartnersLoader({ "partner_ids[]": sale.partner._id }).then(
+          return mePartnersLoader({ "partner_ids[]": sale.partner._id }).then(
             mePartners => {
               // Check if current user has access to partner running the sale
               if (!isExternalOperatorAuthorized(sale, mePartners)) {
@@ -106,7 +115,7 @@ export default {
           )
         }
       )
-    // Operator role if logged in as an admin
+      // Operator role if logged in as an admin
     } else if (options.role === "OPERATOR") {
       return Promise.all([saleLoader(options.sale_id), meLoader()]).then(
         ([sale, me]) => {
