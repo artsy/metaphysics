@@ -122,6 +122,7 @@ async function startApp() {
       const loaders = createLoaders(accessToken, userID, {
         requestIDs,
         userAgent,
+        span,
       })
       // Share with e.g. the Convection ApolloLink in mergedSchema.
       res.locals.dataLoaders = loaders // eslint-disable-line no-param-reassign
@@ -138,6 +139,7 @@ async function startApp() {
           ...createLoaders(accessToken, userID, {
             requestIDs,
             userAgent,
+            span,
           }),
         },
         formatError: graphqlErrorHandler(req, {
