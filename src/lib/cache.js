@@ -102,9 +102,14 @@ export default {
         if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
           error(`Slow Cache#Get: ${time}ms key:${key}`)
         }
-        if (err) return reject(err)
-        if (data) return resolve(JSON.parse(data))
-        reject(new Error("cache#get did not return `data`"))
+        if (err) {
+          error(err)
+          reject(err)
+        } else if (data) {
+          resolve(JSON.parse(data))
+        } else {
+          reject(new Error("cache#get did not return `data`"))
+        }
       })
     })
   },
