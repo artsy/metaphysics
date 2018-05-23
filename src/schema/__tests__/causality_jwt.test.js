@@ -128,11 +128,11 @@ describe("CausalityJWT", () => {
     })
   })
 
-  it("denies a non-admin operator", () => {
+  it("does not allow a non-admin user or user not associated with sale partner to be operator", () => {
     const query = `{
       causality_jwt(role: OPERATOR, sale_id: "foo")
     }`
-
+    rootValue.mePartnersLoader = sinon.stub().returns(Promise.resolve([]))
     return runAuthenticatedQuery(query, rootValue).catch(e => {
       expect(e.message).toEqual("Unauthorized to be operator")
     })
@@ -140,7 +140,7 @@ describe("CausalityJWT", () => {
 
   it("allows a user associated with the sale partner to be an external operator for that sale", () => {
     const query = `{
-      causality_jwt(role: EXTERNAL_OPERATOR, sale_id: "foo")
+      causality_jwt(role: OPERATOR, sale_id: "foo")
     }`
     return runAuthenticatedQuery(query, rootValue).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
@@ -150,16 +150,6 @@ describe("CausalityJWT", () => {
         saleId: "foo",
         bidderId: "123",
       })
-    })
-  })
-
-  it("does not allow an unauthorized user to become an external operator", () => {
-    const query = `{
-      causality_jwt(role: EXTERNAL_OPERATOR, sale_id: "foo")
-    }`
-    rootValue.mePartnersLoader = sinon.stub().returns(Promise.resolve([]))
-    return runAuthenticatedQuery(query, rootValue).catch(e => {
-      expect(e.message).toEqual("Unauthorized to be operator for this sale")
     })
   })
 })
