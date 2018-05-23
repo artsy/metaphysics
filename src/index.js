@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 
+import { middleware as requestTracer, makeSchemaTraceable, tracer } from "./lib/tracer"
+
 import bodyParser from "body-parser"
 import config from "./config"
 import cors from "cors"
@@ -22,7 +24,7 @@ import { info } from "./lib/loggers"
 import { mergeSchemas } from "./lib/stitching/mergeSchemas"
 import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
-import { middleware as requestTracer, makeSchemaTraceable } from "./lib/tracer"
+
 import { logQueryDetails } from "./lib/logQueryDetails"
 
 const {
@@ -73,7 +75,8 @@ async function startApp() {
     }
   }
 
-  if (enableQueryTracing) {
+  //if (enableQueryTracing) {
+  if (false) {
     console.warn("[FEATURE] Enabling query tracing")
     makeSchemaTraceable(schema)
     app.use(requestTracer)

@@ -1,14 +1,28 @@
 import Tracer from "datadog-tracer"
+import * as ddTrace from "dd-trace"
 import config from "config"
 import { forIn, has } from "lodash"
 import { getNamedType, GraphQLObjectType } from "graphql"
 import * as introspectionQuery from "graphql/type/introspection"
+import { ConversationFields } from "schema/me/conversation";
 
 const { DD_TRACER_SERVICE_NAME, DD_TRACER_HOSTNAME } = config
 
-const tracer = new Tracer({
-  service: DD_TRACER_SERVICE_NAME,
-  hostname: DD_TRACER_HOSTNAME,
+console.log("initializing tracer on "+ DD_TRACER_HOSTNAME)
+const tracer = require('dd-trace').init(
+  {
+    service: DD_TRACER_SERVICE_NAME,
+    hostname: DD_TRACER_HOSTNAME,
+  }
+)
+tracer.use('express', {
+  service: DD_TRACER_SERVICE_NAME + ".request"
+})
+tracer.use('http', {
+  service: DD_TRACER_SERVICE_NAME + ".http-client"
+})
+tracer.use('redis', {
+  service: DD_TRACER_SERVICE_NAME + ".redis"
 })
 
 function parse_args() {
