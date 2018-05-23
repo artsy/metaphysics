@@ -18,7 +18,7 @@ describe("Cache", () => {
       it("deletes the data", () => {
         cache.delete("get_foo")
         return cache.get("get_foo").catch(e => {
-          expect(e.message).toEqual("cache#get did not return `data`")
+          expect(e.message).toEqual("[Cache#get] Cache miss")
         })
       })
     })
