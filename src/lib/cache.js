@@ -41,13 +41,13 @@ function createRedisClient() {
         // End reconnecting on a specific error and flush all commands with a
         // individual error.
         if (options.error.code === "ECONNREFUSED") {
-          return new Error("The server refused the connection")
+          return new Error("[Cache] The server refused the connection")
         }
       }
       // End reconnecting after a specific timeout and flush all commands with a
       // individual error.
       if (options.total_retry_time > 1000 * 60 * 60) {
-        return new Error("Retry time exhausted")
+        return new Error("[Cache] Retry time exhausted")
       }
       // End reconnecting with built in error.
       if (options.attempt > 10) {
@@ -62,53 +62,46 @@ function createRedisClient() {
   }
   client.on("error", error)
   VerboseEvents.forEach(event => {
-    client.on(event, () => verbose(`Redis: ${event}`))
+    client.on(event, () => verbose(`[Cache] ${event}`))
   })
   return client
 }
 
 export const client = isTest ? createMockClient() : createRedisClient()
 
-// Used to timeout Redis calls
-// From: https://medium.com/@stockholmux/tick-tock-setting-a-timeout-on-a-redis-call-with-node-js-be63733df98a
-function timeoutRedisCommand(command, timeoutValue) {
-  return function wrappedCommand() {
-    const argsAsArray = Array.prototype.slice.call(arguments)
-    let callback = argsAsArray.pop()
-    const timeoutHandler = setTimeout(() => {
-      error(`Cache ${command} timeout`)
-      callback(new Error(`Cache ${command} timeout`))
-      callback = () => {}
-    }, timeoutValue)
-
-    argsAsArray.push((err, data) => {
-      clearTimeout(timeoutHandler)
-      callback(err, data)
-    })
-
-    client[command].apply(client, argsAsArray)
-  }
-}
-
-const getWithTimeout = timeoutRedisCommand("get", CACHE_RETRIEVAL_TIMEOUT_MS)
-
 export default {
   get: key => {
     return new Promise((resolve, reject) => {
-      if (isNull(client)) return reject(new Error("Cache client is `null`"))
+      if (isNull(client)) return reject(new Error("[Cache] `client` is `null`"))
+
+      let timeoutId = setTimeout(() => {
+        timeoutId = null
+        const err = new Error(`[Cache#get] Timeout for key ${key}`)
+        error(err)
+        reject(err)
+      }, CACHE_RETRIEVAL_TIMEOUT_MS)
+
       const start = Date.now()
-      getWithTimeout(key, (err, data) => {
+      client.get(key, (err, data) => {
         const time = Date.now() - start
         if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
-          error(`Slow Cache#Get: ${time}ms key:${key}`)
+          error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
         }
+
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        } else {
+          // timed out and already rejected promise, no need to continue
+          return
+        }
+
         if (err) {
           error(err)
           reject(err)
         } else if (data) {
           resolve(JSON.parse(data))
         } else {
-          reject(new Error("cache#get did not return `data`"))
+          reject(new Error("[Cache#get] Cache miss"))
         }
       })
     })
