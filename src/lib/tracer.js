@@ -40,35 +40,24 @@ function trace(res, span) {
 
 function wrapResolve(typeName, fieldName, resolver) {
   return function wrappedResolver(_root, _opts, _req, { rootValue }) {
-    const parentSpan = rootValue.span
-    const span = parentSpan
-      .tracer()
-      .startSpan(
-        DD_TRACER_SERVICE_NAME + ".resolver." + typeName + "." + fieldName,
-        {
-          childOf: parentSpan.context(),
-        }
-      )
-    span.addTags({
-      resource: typeName + ": " + fieldName,
-      type: "web",
-      "span.kind": "server",
+    return tracer.trace('graphql.resolver', {
+      resource: typeName + ": " + fieldName
+    }).then(span => {
+      // Set the parent context to this span for any sub resolvers.
+      rootValue.span = span // eslint-disable-line no-param-reassign
+
+      result = resolver.apply(this, arguments)
+
+      // Return parent context to our parent for any resolvers called after this one.
+      rootValue.span = parentSpan // eslint-disable-line no-param-reassign
+
+      if (result instanceof Promise) {
+        return result.finally(() => span.finish())
+      }
+  
+      span.finish()
+      return result
     })
-
-    // Set the parent context to this span for any sub resolvers.
-    rootValue.span = span // eslint-disable-line no-param-reassign
-
-    const result = resolver.apply(this, arguments)
-
-    // Return parent context to our parent for any resolvers called after this one.
-    rootValue.span = parentSpan // eslint-disable-line no-param-reassign
-
-    if (result instanceof Promise) {
-      return result.finally(() => span.finish())
-    }
-
-    span.finish()
-    return result
   }
 }
 
@@ -94,13 +83,10 @@ export function middleware(req, res, next) {
     resource = drop_params(req.body.query)
   }
 
-  tracer.trace(resource, {
-    service: DD_TRACER_SERVICE_NAME + ".query"
-  }).then(span => {
-    span.setTag('resource', resource)
-    span.setTag('type', 'web')
+  tracer.trace('graphql.query', {resource: resource}).then(span => {
+    /* span.setTag('type', 'web')
     span.setTag('http.method', req.method)
-    span.setTag('http.url', req.url)
+    span.setTag('http.url', req.url) */
 
     res.locals.span = span // eslint-disable-line no-param-reassign
 
