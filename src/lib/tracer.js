@@ -34,9 +34,7 @@ function drop_params(query) {
 }
 
 function trace(res, span) {
-  span.addTags({
-    "http.status_code": res.statusCode,
-  })
+  span.setTag("http.status_code", res.statusCode)
   span.finish()
 }
 
@@ -91,26 +89,25 @@ export function makeSchemaTraceable(schema) {
 }
 
 export function middleware(req, res, next) {
-  const span = tracer.startSpan(DD_TRACER_SERVICE_NAME + ".query")
-  span.addTags({
-    type: "web",
-    "span.kind": "server",
-    "http.method": req.method,
-    "http.url": req.url,
-  })
-
+  var resource = req.path
   if (req.body && req.body.query) {
-    const query = drop_params(req.body.query)
-    span.addTags({ resource: query })
-  } else {
-    span.addTags({ resource: req.path })
+    resource = drop_params(req.body.query)
   }
 
-  res.locals.span = span // eslint-disable-line no-param-reassign
+  tracer.trace(resource, {
+    service: DD_TRACER_SERVICE_NAME + ".query"
+  }).then(span => {
+    span.setTag('resource', resource)
+    span.setTag('type', 'web')
+    span.setTag('http.method', req.method)
+    span.setTag('http.url', req.url)
 
-  const finish = trace.bind(null, res, span)
-  res.on("finish", finish)
-  res.on("close", finish)
+    res.locals.span = span // eslint-disable-line no-param-reassign
 
-  next()
+    const finish = trace.bind(null, res, span)
+    res.on("finish", finish)
+    res.on("close", finish)
+
+    next()
+  })
 }

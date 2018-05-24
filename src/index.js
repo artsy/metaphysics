@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { middleware as requestTracer, makeSchemaTraceable, tracer } from "./lib/tracer"
+import { middleware as requestTracer, tracer } from "./lib/tracer"
 
 import bodyParser from "body-parser"
 import config from "./config"
@@ -75,10 +75,9 @@ async function startApp() {
     }
   }
 
-  //if (enableQueryTracing) {
-  if (false) {
+  if (enableQueryTracing) {
     console.warn("[FEATURE] Enabling query tracing")
-    makeSchemaTraceable(schema)
+    // makeSchemaTraceable(schema)
     app.use(requestTracer)
   }
 
