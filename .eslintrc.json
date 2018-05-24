@@ -6,6 +6,7 @@
     "jasmine": true,
     "es6": true
   },
+  "plugins": ["promise"],
   "extends": "airbnb",
   "parser": "babel-eslint",
   "rules": {
@@ -14,9 +15,9 @@
     "quotes": [2, "double"],
     "semi": [0],
     "no-extra-semi": 0,
-    "indent": 0
+    "indent": 0,
+    "promise/catch-or-return": 2
   },
-  "ignore": ["/flow-typed/npm/*"],
   "globals": {
     "expect": false,
     "schema": false,
