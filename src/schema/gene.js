@@ -39,8 +39,7 @@ const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 export const GeneType = new GraphQLObjectType({
   name: "Gene",
   interfaces: [NodeInterface],
-  fields: () => {
-    return {
+  fields: () => ({
       ...GravityIDFields,
       cached,
       artists: {
@@ -49,12 +48,10 @@ export const GeneType = new GraphQLObjectType({
           { id },
           options,
           request,
-          { rootValue: { geneArtistsLoader } }
-        ) => {
-          return geneArtistsLoader(id, {
+          { rootValue: { geneArtistsLoader } },
+        ) => geneArtistsLoader(id, {
             exclude_artists_without_artworks: true,
-          })
-        },
+          }),
       },
       artists_connection: {
         type: artistConnection,
@@ -63,18 +60,16 @@ export const GeneType = new GraphQLObjectType({
           { id, counts },
           options,
           request,
-          { rootValue: { geneArtistsLoader } }
+          { rootValue: { geneArtistsLoader } },
         ) => {
           const parsedOptions = _.omit(parseRelayOptions(options), "page")
           const gravityOptions = _.extend(parsedOptions, {
             exclude_artists_without_artworks: true,
           })
-          return geneArtistsLoader(id, gravityOptions).then(response => {
-            return connectionFromArraySlice(response, options, {
+          return geneArtistsLoader(id, gravityOptions).then(response => connectionFromArraySlice(response, options, {
               arrayLength: counts.artists,
               sliceStart: gravityOptions.offset,
-            })
-          })
+            }))
         },
       },
       artworks_connection: {
@@ -91,7 +86,7 @@ export const GeneType = new GraphQLObjectType({
           { id },
           options,
           request,
-          { rootValue: { filterArtworksLoader } }
+          { rootValue: { filterArtworksLoader } },
         ) => {
           const gravityOptions = parseRelayOptions(options)
           // Do some massaging of the options for ElasticSearch
@@ -109,17 +104,13 @@ export const GeneType = new GraphQLObjectType({
            *        that compose authenticated and unauthenticated loaders based on the request?
            *        Here’s an example of such a setup https://gist.github.com/alloy/69bb274039ecd552de76c3f1739c519e
            */
-          return filterArtworksLoader(gravityOptions).then(
-            ({ aggregations, hits }) => {
-              return Object.assign(
+          return filterArtworksLoader(gravityOptions).then(({ aggregations, hits }) => Object.assign(
                 { aggregations }, // Add data to connection so the `aggregations` connection field can resolve it
                 connectionFromArraySlice(hits, options, {
                   arrayLength: aggregations.total.value,
                   sliceStart: gravityOptions.offset,
-                })
-              )
-            }
-          )
+                }),
+              ))
         },
       },
       description: {
@@ -144,7 +135,7 @@ export const GeneType = new GraphQLObjectType({
           { id },
           { },
           request,
-          { rootValue: { followedGeneLoader } }
+          { rootValue: { followedGeneLoader } },
         ) => {
           if (!followedGeneLoader) return false
           return followedGeneLoader(id).then(({ is_followed }) => is_followed)
@@ -175,7 +166,7 @@ export const GeneType = new GraphQLObjectType({
           gene,
           options,
           request,
-          { rootValue: { similarGenesLoader } }
+          { rootValue: { similarGenesLoader } },
         ) => {
           const { limit: size, offset } = getPagingParameters(options)
           const gravityArgs = {
@@ -185,8 +176,7 @@ export const GeneType = new GraphQLObjectType({
             total_count: true,
           }
 
-          return similarGenesLoader(gene.id, gravityArgs).then(
-            ({ body, headers }) => {
+          return similarGenesLoader(gene.id, gravityArgs).then(({ body, headers }) => {
               const genes = body
               const totalCount = headers["x-total-count"]
 
@@ -194,8 +184,7 @@ export const GeneType = new GraphQLObjectType({
                 arrayLength: totalCount,
                 sliceStart: offset,
               })
-            }
-          )
+            })
         },
       },
       trending_artists: {
@@ -209,20 +198,17 @@ export const GeneType = new GraphQLObjectType({
           { id },
           options,
           request,
-          { rootValue: { trendingArtistsLoader } }
-        ) => {
-          return trendingArtistsLoader({
+          { rootValue: { trendingArtistsLoader } },
+        ) => trendingArtistsLoader({
             gene: id,
-          }).then(artists => {
+          }).then((artists) => {
             if (_.has(options, "sample")) {
               return _.take(_.shuffle(artists), options.sample)
             }
             return artists
-          })
-        },
+          }),
       },
-    }
-  },
+    }),
 })
 
 const Gene = {
@@ -237,7 +223,7 @@ const Gene = {
     _root,
     { id },
     _request,
-    { fieldNodes, rootValue: { geneLoader } }
+    { fieldNodes, rootValue: { geneLoader } },
   ) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.

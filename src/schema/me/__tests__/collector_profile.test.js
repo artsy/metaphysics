@@ -39,11 +39,9 @@ describe("Me", () => {
           .returns(Promise.resolve(collectorProfile)),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(
-        ({ me: { collector_profile } }) => {
+      return runAuthenticatedQuery(query, rootValue).then(({ me: { collector_profile } }) => {
           expect(collector_profile).toEqual(expectedProfileData)
-        }
-      )
+        })
     })
   })
 })

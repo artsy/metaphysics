@@ -16,11 +16,7 @@ export const resizedImageUrl = (image, options) => {
 
   const desired = _.pick(opts, "width", "height")
   const factor =
-    _.min(
-      _.map(desired, (value, attr) => {
-        return value / image[`original_${attr}`]
-      })
-    ) || Infinity
+    _.min(_.map(desired, (value, attr) => value / image[`original_${attr}`])) || Infinity
 
   let width = null
   let height = null

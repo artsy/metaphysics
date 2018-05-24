@@ -84,11 +84,13 @@ export default mutationWithClientMutationId({
       notes,
       reserve,
       session_id,
-      shipping_address: { name, street, city, region, postal_code, use_id },
+      shipping_address: {
+ name, street, city, region, postal_code, use_id,
+},
       telephone,
     },
     request,
-    { rootValue: { accessToken, updateOrderLoader } }
+    { rootValue: { accessToken, updateOrderLoader } },
   ) => {
     if (!accessToken) {
       if (!session_id) {
@@ -101,7 +103,9 @@ export default mutationWithClientMutationId({
       notes,
       reserve,
       session_id,
-      shipping_address: { name, street, city, region, postal_code, use_id },
+      shipping_address: {
+ name, street, city, region, postal_code, use_id,
+},
       telephone,
     })
   },

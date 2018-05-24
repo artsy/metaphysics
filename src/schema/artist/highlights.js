@@ -27,10 +27,8 @@ const ArtistHighlightsType = new GraphQLObjectType({
         { id: artist_id },
         options,
         _request,
-        { rootValue: { partnerArtistsLoader } }
-      ) => {
-        return partnersForArtist(artist_id, options, partnerArtistsLoader)
-      },
+        { rootValue: { partnerArtistsLoader } },
+      ) => partnersForArtist(artist_id, options, partnerArtistsLoader),
     },
   },
 })

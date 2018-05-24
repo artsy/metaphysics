@@ -26,9 +26,11 @@ export default {
   },
   resolve: (
     root,
-    { active_positions, artwork_id, live, sale_id },
+    {
+ active_positions, artwork_id, live, sale_id,
+},
     request,
-    { rootValue: { lotStandingLoader } }
+    { rootValue: { lotStandingLoader } },
   ) => {
     if (!lotStandingLoader) return null
     return lotStandingLoader({
@@ -36,8 +38,6 @@ export default {
       artwork_id,
       live,
       sale_id,
-    }).then(lotStandings => {
-      return lotStandings
-    })
+    }).then(lotStandings => lotStandings)
   },
 }

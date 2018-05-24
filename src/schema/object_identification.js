@@ -71,7 +71,7 @@ Object.defineProperty(SupportedTypes, "typeModules", {
           modules[type] = require(SupportedTypes.typeMap[type]).default
           return modules
         },
-        {}
+        {},
       )
     }
     return SupportedTypes._typeModules
@@ -89,11 +89,9 @@ function argumentsForChild(type, id) {
 
 function rootValueForChild(rootValue) {
   const selections = rootValue.fieldNodes[0].selectionSet.selections
-  let fragment = _.find(selections, selection => {
-    return (
+  let fragment = _.find(selections, selection => (
       selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"
-    )
-  })
+    ))
   if (fragment && fragment.kind === "FragmentSpread") {
     fragment = rootValue.fragments[fragment.name.value]
   }
@@ -134,18 +132,15 @@ const NodeField = {
         exported = exported()
       }
       const { resolve, type } = exported
-      return Promise.resolve(
-        resolve(
+      return Promise.resolve(resolve(
           null,
           argumentsForChild(typeName, id),
           request,
-          rootValueForChild(rootValue)
-        )
-      ).then(data => {
+          rootValueForChild(rootValue),
+        )).then(data =>
         // Add the already known type so `NodeInterface` can pluck that out in
         // its `resolveType` implementation.
-        return { __type: type, ...data }
-      })
+         ({ __type: type, ...data }))
     }
   },
 }

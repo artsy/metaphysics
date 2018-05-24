@@ -74,9 +74,7 @@ export const SaleArtworkCounts = {
     name: "FilterSaleArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
-      followed_artists: numeral(
-        ({ aggregations }) => aggregations.followed_artists.value
-      ),
+      followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
     },
   }),
   resolve: artist => artist,
@@ -103,10 +101,8 @@ const FilterSaleArtworks = {
     root,
     options,
     request,
-    { rootValue: { saleArtworksFilterLoader } }
-  ) => {
-    return saleArtworksFilterLoader(options)
-  },
+    { rootValue: { saleArtworksFilterLoader } },
+  ) => saleArtworksFilterLoader(options),
 }
 
 export default FilterSaleArtworks

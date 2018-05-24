@@ -78,14 +78,8 @@ const Me = new GraphQLObjectType({
         root,
         options,
         request,
-        { rootValue: { meCreditCardsLoader } }
-      ) => {
-        return meCreditCardsLoader({ qualified_for_bidding: true }).then(
-          results => {
-            return results.length > 0
-          }
-        )
-      },
+        { rootValue: { meCreditCardsLoader } },
+      ) => meCreditCardsLoader({ qualified_for_bidding: true }).then(results => results.length > 0),
     },
     invoice: Invoice,
     lot_standing: LotStanding,
@@ -118,7 +112,7 @@ export default {
     root,
     options,
     request,
-    { rootValue: { accessToken, userID, meLoader }, fieldNodes }
+    { rootValue: { accessToken, userID, meLoader }, fieldNodes },
   ) => {
     if (!accessToken) return null
     const blacklistedFields = [

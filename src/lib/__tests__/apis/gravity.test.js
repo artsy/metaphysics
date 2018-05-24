@@ -1,9 +1,9 @@
 import gravity from "lib/apis/gravity"
-
-jest.mock("../../apis/fetch", () => jest.fn(() => Promise.resolve({})))
 import fetch from "../../apis/fetch"
 
 import config from "config"
+
+jest.mock("../../apis/fetch", () => jest.fn(() => Promise.resolve({})))
 config.GRAVITY_XAPP_TOKEN = "secret"
 
 describe("APIs", () => {

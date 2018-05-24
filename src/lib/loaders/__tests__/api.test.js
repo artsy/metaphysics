@@ -10,17 +10,14 @@ describe("API loaders", () => {
 
   beforeEach(() => {
     api = jest.fn((path, accessToken, options) =>
-      Promise.resolve({ body: { path, accessToken, options } })
-    )
+      Promise.resolve({ body: { path, accessToken, options } }))
   })
 
   const sharedExamples = () => {
     describe("concerning path", () => {
-      it("generates path specific loaders", () => {
-        return loader().then(({ path }) => {
+      it("generates path specific loaders", () => loader().then(({ path }) => {
           expect(path).toEqual("some/path?")
-        })
-      })
+        }))
 
       it("yields a given ID to the loader", () => {
         loader = apiLoader(id => `some/path/with/id/${id}`)
@@ -29,11 +26,9 @@ describe("API loaders", () => {
         })
       })
 
-      it("appends params to the path", () => {
-        return loader({ some: "param" }).then(({ path }) => {
+      it("appends params to the path", () => loader({ some: "param" }).then(({ path }) => {
           expect(path).toEqual("some/path?some=param")
-        })
-      })
+        }))
 
       it("sets default params and merges with specific params", () => {
         loader = apiLoader("some/path", { defaultParam: "value" })
@@ -43,22 +38,19 @@ describe("API loaders", () => {
       })
     })
 
-    it("caches the response for the lifetime of the loader", () => {
-      return Promise.all([loader(), loader()]).then(responses => {
+    it("caches the response for the lifetime of the loader", () => Promise.all([loader(), loader()]).then((responses) => {
         expect(responses.map(({ path }) => path)).toEqual([
           "some/path?",
           "some/path?",
         ])
         expect(api.mock.calls.length).toEqual(1)
-      })
-    })
+      }))
 
     it("passes options for the api function on", () => {
       // Needs to be a new path so that it hasn’t been cached in memcache yet
       loader = apiLoader("some/post/path", {}, { method: "POST" })
       return loader().then(({ options }) =>
-        expect(options.method).toEqual("POST")
-      )
+        expect(options.method).toEqual("POST"))
     })
   }
 
@@ -73,29 +65,23 @@ describe("API loaders", () => {
 
     sharedExamples()
 
-    it("does not try to pass an access token", () => {
-      return loader().then(({ accessToken }) => {
+    it("does not try to pass an access token", () => loader().then(({ accessToken }) => {
         expect(accessToken).toEqual(null)
-      })
-    })
+      }))
 
-    it("caches the response in memcache", () => {
-      return cache
+    it("caches the response in memcache", () => cache
         .get("some/unauthenticated/memcached/path?")
         .then(() => {
           throw new Error("Did not expect to be cached yet!")
         })
         .catch(() => {
           loader = apiLoader("some/unauthenticated/memcached/path")
-          return loader().then(() => {
-            return cache
+          return loader().then(() => cache
               .get("some/unauthenticated/memcached/path?")
               .then(({ path }) => {
                 expect(path).toEqual("some/unauthenticated/memcached/path?")
-              })
-          })
-        })
-    })
+              }))
+        }))
   })
 
   describe("with authentication", () => {
@@ -111,24 +97,20 @@ describe("API loaders", () => {
 
     sharedExamples()
 
-    it("does pass an access token", () => {
-      return loader().then(({ accessToken }) => {
+    it("does pass an access token", () => loader().then(({ accessToken }) => {
         expect(accessToken).toEqual("secret-token")
-      })
-    })
+      }))
 
     it("does NOT cache the response in memcache", () => {
       loader = apiLoader("some/authenticated/memcached/path")
-      return loader().then(() => {
-        return cache
+      return loader().then(() => cache
           .get("some/authenticated/memcached/path?")
           .then(() => {
             throw new Error("Did not expect response to be cached!")
           })
           .catch(() => {
             // swallow the error, because this is the expected code-path
-          })
-      })
+          }))
     })
   })
 })

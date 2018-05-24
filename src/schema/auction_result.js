@@ -15,6 +15,7 @@ import Image from "schema/image"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 const currencyCodes = require("../lib/currency_codes.json")
+
 const symbolOnly = ["USD", "GBP", "EUR", "MYR"]
 
 export const AuctionResultSorts = {
@@ -68,9 +69,7 @@ const AuctionResultType = new GraphQLObjectType({
           },
         },
       }),
-      resolve: ({ width_cm, height_cm, depth_cm }) => {
-        return { width: width_cm, height: height_cm, depth: depth_cm }
-      },
+      resolve: ({ width_cm, height_cm, depth_cm }) => ({ width: width_cm, height: height_cm, depth: depth_cm }),
     },
     organization: {
       type: GraphQLString,
@@ -146,7 +145,7 @@ const AuctionResultType = new GraphQLObjectType({
               }
 
               if (symbol) {
-                display = display ? display + " " + symbol : symbol
+                display = display ? `${display} ${symbol}` : symbol
               }
 
               const amount = Math.round(price_realized_cents / subunit_to_unit)

@@ -6,9 +6,7 @@ import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/
 export default (accessToken, userID, opts) => {
   const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
   const { gravityLoaderWithAuthenticationFactory } = factories(opts)
-  const gravityLoader = gravityLoaderWithAuthenticationFactory(
-    gravityAccessTokenLoader
-  )
+  const gravityLoader = gravityLoaderWithAuthenticationFactory(gravityAccessTokenLoader)
 
   return {
     collectionLoader: gravityLoader(id => `collection/${id}`, {
@@ -17,13 +15,13 @@ export default (accessToken, userID, opts) => {
     collectionArtworksLoader: gravityLoader(
       id => `collection/${id}/artworks`,
       { user_id: userID },
-      { headers: true }
+      { headers: true },
     ),
     collectorProfileLoader: gravityLoader("me/collector_profile"),
     createCreditCardLoader: gravityLoader(
       "me/credit_cards",
       {},
-      { method: "POST" }
+      { method: "POST" },
     ),
     meCreditCardsLoader: gravityLoader("me/credit_cards", {}),
     followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
@@ -31,48 +29,46 @@ export default (accessToken, userID, opts) => {
       gravityLoader("me/follow/genes"),
       "genes",
       "is_followed",
-      "gene"
+      "gene",
     ),
     followedArtistLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/artists"),
       "artists",
       "is_followed",
-      "artist"
+      "artist",
     ),
     followedArtistsLoader: gravityLoader(
       "me/follow/artists",
       {},
-      { headers: true }
+      { headers: true },
     ),
     followedArtistsArtworksLoader: gravityLoader(
       "me/follow/artists/artworks",
       {},
-      { headers: true }
+      { headers: true },
     ),
     followedProfilesArtworksLoader: gravityLoader(
       "me/follow/profiles/artworks",
       {},
-      { headers: true }
+      { headers: true },
     ),
     followedGenesLoader: gravityLoader(
       "me/follow/genes",
       {},
-      { headers: true }
+      { headers: true },
     ),
     followedProfileLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/profiles"),
       "profiles",
       "is_followed",
-      "profile"
+      "profile",
     ),
     homepageModulesLoader: gravityLoader("me/modules"),
-    homepageSuggestedArtworksLoader: gravityLoader(
-      "me/suggested/artworks/homepage"
-    ),
+    homepageSuggestedArtworksLoader: gravityLoader("me/suggested/artworks/homepage"),
     inquiryRequestsLoader: gravityLoader(
       "me/inquiry_requests",
       {},
-      { headers: true }
+      { headers: true },
     ),
     lotStandingLoader: gravityLoader("me/lot_standings"),
     meLoader: gravityLoader("me"),
@@ -81,12 +77,12 @@ export default (accessToken, userID, opts) => {
     meBidderPositionLoader: gravityLoader(
       ({ id }) => `me/bidder_position/${id}/`,
       {},
-      { headers: true }
+      { headers: true },
     ),
     createBidderPositionLoader: gravityLoader(
       "me/bidder_position",
       {},
-      { method: "POST" }
+      { method: "POST" },
     ),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     popularArtistsLoader: gravityLoader("artists/popular"),
@@ -96,17 +92,17 @@ export default (accessToken, userID, opts) => {
         private: true,
       }),
       "artworks",
-      "is_saved"
+      "is_saved",
     ),
     saleArtworksLoader: gravityLoader(
       id => `sale/${id}/sale_artworks`,
       {},
-      { headers: true }
+      { headers: true },
     ),
     endSaleLoader: gravityLoader(
       id => `sale/${id}/end_sale`,
       {},
-      { method: "PUT" }
+      { method: "PUT" },
     ),
     savedArtworksLoader: gravityLoader("collection/saved-artwork/artworks", {
       user_id: userID,
@@ -116,59 +112,59 @@ export default (accessToken, userID, opts) => {
     saleArtworksAllLoader: gravityLoader(
       "sale_artworks",
       {},
-      { headers: true }
+      { headers: true },
     ),
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     suggestedArtistsLoader: gravityLoader(
       "me/suggested/artists",
       {},
-      { headers: true }
+      { headers: true },
     ),
     suggestedSimilarArtistsLoader: gravityLoader(
       `user/${userID}/suggested/similar/artists`,
       {},
-      { headers: true }
+      { headers: true },
     ),
     updateCollectorProfileLoader: gravityLoader(
       "me/collector_profile",
       {},
-      { method: "PUT" }
+      { method: "PUT" },
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
     updateOrderLoader: gravityLoader(
       id => `me/order/${id}`,
       {},
-      { method: "PUT" }
+      { method: "PUT" },
     ),
     submitOrderLoader: gravityLoader(
       id => `me/order/${id}/submit`,
       {},
-      { method: "PUT" }
+      { method: "PUT" },
     ),
     recordArtworkViewLoader: gravityLoader(
       "me/recently_viewed_artworks",
       {},
-      { method: "POST" }
+      { method: "POST" },
     ),
     followArtistLoader: gravityLoader(
       "me/follow/artist",
       {},
-      { method: "POST" }
+      { method: "POST" },
     ),
     unfollowArtistLoader: gravityLoader(
       id => `me/follow/artist/${id}`,
       {},
-      { method: "DELETE" }
+      { method: "DELETE" },
     ),
     saveArtworkLoader: gravityLoader(
       id => `collection/saved-artwork/artwork/${id}`,
       {},
-      { method: "POST" }
+      { method: "POST" },
     ),
     deleteArtworkLoader: gravityLoader(
       id => `collection/saved-artwork/artwork/${id}`,
       {},
-      { method: "DELETE" }
+      { method: "DELETE" },
     ),
     usersLoader: gravityLoader("users"),
   }

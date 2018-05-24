@@ -39,7 +39,7 @@ const PopularArtists = {
     _root,
     options,
     _request,
-    { rootValue: { popularArtistsLoader } }
+    { rootValue: { popularArtistsLoader } },
   ) => popularArtistsLoader(options),
 }
 

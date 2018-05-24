@@ -41,21 +41,19 @@ export const CollectionType = new GraphQLObjectType({
         { id },
         options,
         _request,
-        { rootValue: { collectionArtworksLoader } }
+        { rootValue: { collectionArtworksLoader } },
       ) => {
         const gravityOptions = Object.assign(
           { total_count: true },
-          parseRelayOptions(options)
+          parseRelayOptions(options),
         )
         delete gravityOptions.page // this can't also be used with the offset in gravity
         return collectionArtworksLoader(id, gravityOptions)
-          .then(({ body, headers }) => {
-            return connectionFromArraySlice(body, options, {
+          .then(({ body, headers }) => connectionFromArraySlice(body, options, {
               arrayLength: headers["x-total-count"],
               sliceStart: gravityOptions.offset,
-            })
-          })
-          .catch(e => {
+            }))
+          .catch((e) => {
             error("Bypassing Gravity error: ", e)
             // For some users with no favourites, Gravity produces an error of "Collection Not Found".
             // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
@@ -83,12 +81,11 @@ export const CollectionType = new GraphQLObjectType({
 })
 
 // This resolver is re-used by `me { saved_artworks }`
-export const collectionResolverFactory = collection_id => {
-  return (
+export const collectionResolverFactory = collection_id => (
     _root,
     options,
     _request,
-    { fieldNodes, rootValue: { collectionLoader } }
+    { fieldNodes, rootValue: { collectionLoader } },
   ) => {
     const id = collection_id || options.id
     const blacklistedFields = ["artworks_connection", "id", "__id"]
@@ -99,9 +96,10 @@ export const collectionResolverFactory = collection_id => {
 
     // These are here so that the type system's `isTypeOf`
     // resolves correctly when we're skipping gravity data
-    return { id, name: null, private: null, default: null }
-  }
+    return {
+ id, name: null, private: null, default: null,
 }
+  }
 
 const Collection = {
   type: CollectionType,

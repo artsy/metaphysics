@@ -46,9 +46,11 @@ export default mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { name, template_key, source_key, source_bucket, metadata },
+    {
+ name, template_key, source_key, source_bucket, metadata,
+},
     request,
-    { rootValue: { createNewGeminiEntryAssetLoader } }
+    { rootValue: { createNewGeminiEntryAssetLoader } },
   ) => {
     if (!createNewGeminiEntryAssetLoader) return null
     return createNewGeminiEntryAssetLoader({

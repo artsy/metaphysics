@@ -27,7 +27,7 @@ export const endSaleMutation = mutationWithClientMutationId({
         accessToken,
         endSaleLoader,
       },
-    }
+    },
   ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")

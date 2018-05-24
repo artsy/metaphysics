@@ -33,7 +33,7 @@ const app = express()
 
 app.use(compression())
 
-xapp.on("error", err => {
+xapp.on("error", (err) => {
   error(err)
   process.exit(1)
 })
@@ -72,6 +72,5 @@ function bootApp() {
   }
 
   app.listen(port, () =>
-    info(`[Metaphysics] Listening on http://localhost:${port}`)
-  )
+    info(`[Metaphysics] Listening on http://localhost:${port}`))
 }

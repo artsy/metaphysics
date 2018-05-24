@@ -35,9 +35,11 @@ export default mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { id, credit_card_token, credit_card_id, session_id },
+    {
+ id, credit_card_token, credit_card_id, session_id,
+},
     request,
-    { rootValue: { accessToken, submitOrderLoader } }
+    { rootValue: { accessToken, submitOrderLoader } },
   ) => {
     if (!accessToken) {
       if (!session_id) {

@@ -30,21 +30,19 @@ import logger from "lib/loaders/api/logger"
 export const apiLoaderWithoutAuthenticationFactory = (
   api,
   apiName,
-  globalAPIOptions = {}
-) => {
-  return (path, globalParams = {}, pathAPIOptions = {}) => {
+  globalAPIOptions = {},
+) => (path, globalParams = {}, pathAPIOptions = {}) => {
     const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
     const loader = new DataLoader(
       keys =>
-        Promise.all(
-          keys.map(key => {
+        Promise.all(keys.map((key) => {
             const clock = timer(key)
             clock.start()
 
             return new Promise((resolve, reject) => {
               cache.get(key).then(
                 // Cache hit
-                data => {
+                (data) => {
                   // Return cached data first
                   if (apiOptions.headers) {
                     resolve(pick(data, ["body", "headers"]))
@@ -72,14 +70,14 @@ export const apiLoaderWithoutAuthenticationFactory = (
                           }
                           verbose(`Refreshing: ${key}`)
                         })
-                        .catch(err => {
+                        .catch((err) => {
                           if (err.statusCode === 404) {
                             // Unpublished
                             cache.delete(key)
                           }
                         })
                     },
-                    { requestThrottleMs: apiOptions.requestThrottleMs }
+                    { requestThrottleMs: apiOptions.requestThrottleMs },
                   )
                 },
                 // Cache miss
@@ -97,7 +95,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
                         globalAPIOptions.requestIDs.requestID,
                         apiName,
                         key,
-                        { time, cache: false }
+                        { time, cache: false },
                       )
                       if (apiOptions.headers) {
                         cache.set(key, { body, headers })
@@ -105,20 +103,18 @@ export const apiLoaderWithoutAuthenticationFactory = (
                         cache.set(key, body)
                       }
                     })
-                    .catch(err => {
+                    .catch((err) => {
                       reject(err)
                       error(key, err)
                     })
-                }
+                },
               )
             })
-          })
-        ),
+          })),
       {
         batch: false,
         cache: true,
-      }
+      },
     )
     return loaderInterface(loader, path, globalParams)
   }
-}

@@ -22,7 +22,7 @@ export default mutationWithClientMutationId({
         { artist_id },
         options,
         request,
-        { rootValue: { artistLoader } }
+        { rootValue: { artistLoader } },
       ) => artistLoader(artist_id),
     },
     popular_artists: PopularArtists,
@@ -30,7 +30,7 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: (
     { artist_id, unfollow },
     request,
-    { rootValue: { accessToken, followArtistLoader, unfollowArtistLoader } }
+    { rootValue: { accessToken, followArtistLoader, unfollowArtistLoader } },
   ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")

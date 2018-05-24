@@ -27,14 +27,12 @@ describe("Artist Statuses", () => {
         .stub()
         .withArgs(
           "partner_artists",
-          sinon.match({ display_on_partner_profile: true })
+          sinon.match({ display_on_partner_profile: true }),
         )
-        .returns(
-          Promise.resolve({
+        .returns(Promise.resolve({
             headers: { "x-total-count": 1 },
             body: partnerArtistResp,
-          })
-        ),
+          })),
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
     }
   })
@@ -76,7 +74,7 @@ describe("Artist Statuses", () => {
       },
     }
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, rootValue).then((data) => {
       expect(data).toEqual(expectedHighlightData)
     })
   })

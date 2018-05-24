@@ -12,6 +12,6 @@ export default (path, _accessToken, fetchOptions = {}) => {
   assign(headers, { Authorization: `Bearer ${DIFFUSION_TOKEN}` })
   return fetch(
     urljoin(DIFFUSION_API_BASE, path),
-    assign({}, fetchOptions, { headers })
+    assign({}, fetchOptions, { headers }),
   )
 }

@@ -13,7 +13,7 @@ export const BidderPosition = {
     root,
     { id },
     request,
-    { rootValue: { meBidderPositionLoader } }
+    { rootValue: { meBidderPositionLoader } },
   ) =>
     meBidderPositionLoader({
       id,

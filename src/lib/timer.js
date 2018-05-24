@@ -1,7 +1,7 @@
 import { info } from "./loggers"
 import { round } from "lodash"
 
-export default key => {
+export default (key) => {
   const start = process.hrtime()
 
   return {

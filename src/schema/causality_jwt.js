@@ -27,7 +27,11 @@ export default {
     root,
     options,
     request,
-    { rootValue: { accessToken, meLoader, meBiddersLoader, saleLoader } }
+    {
+ rootValue: {
+ accessToken, meLoader, meBiddersLoader, saleLoader,
+},
+},
   ) => {
     // Observer role for logged out users
     if (!accessToken) {
@@ -41,9 +45,8 @@ export default {
             bidderId: null,
             iat: new Date().getTime(),
           },
-          HMAC_SECRET
-        )
-      )
+          HMAC_SECRET,
+        ))
 
       // For logged in and...
     } else if (options.role === "PARTICIPANT") {
@@ -62,7 +65,7 @@ export default {
               bidderId: bidders[0].id,
               iat: new Date().getTime(),
             },
-            HMAC_SECRET
+            HMAC_SECRET,
           )
         }
         return jwt.encode(
@@ -74,14 +77,13 @@ export default {
             bidderId: null,
             iat: new Date().getTime(),
           },
-          HMAC_SECRET
+          HMAC_SECRET,
         )
       })
 
       // Operator role if logged in as an admin
     } else if (options.role === "OPERATOR") {
-      return Promise.all([saleLoader(options.sale_id), meLoader()]).then(
-        ([sale, me]) => {
+      return Promise.all([saleLoader(options.sale_id), meLoader()]).then(([sale, me]) => {
           if (me.type !== "Admin") {
             throw new Error("Unauthorized to be operator")
           }
@@ -94,10 +96,9 @@ export default {
               bidderId: me.paddle_number,
               iat: new Date().getTime(),
             },
-            HMAC_SECRET
+            HMAC_SECRET,
           )
-        }
-      )
+        })
     }
   },
 }

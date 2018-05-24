@@ -257,8 +257,7 @@ describe("HomePageArtworkModules", () => {
     }
     `
 
-    return runAuthenticatedQuery(query, rootValue).then(
-      ({ home_page: { artwork_modules } }) => {
+    return runAuthenticatedQuery(query, rootValue).then(({ home_page: { artwork_modules } }) => {
         // The order of rails not included in the preferred order list is left as-is from Gravity’s
         // modules endpoint response. Rails in the preferred order list that aren’t even included in
         // Gravity’s response do not lead to an error (the FOLLOWED_ARTISTS rail).
@@ -273,8 +272,7 @@ describe("HomePageArtworkModules", () => {
           "followed_artist",
           "related_artists",
         ])
-      }
-    )
+      })
   })
 
   it("excludes modules upon request", () => {

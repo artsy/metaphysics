@@ -35,8 +35,7 @@ describe("ArtistCarousel type", () => {
           sort: "-iconicity",
           published: true,
         })
-        .returns(
-          Promise.resolve([
+        .returns(Promise.resolve([
             {
               id: "foo-bar-artwork-1",
               images: [
@@ -48,8 +47,7 @@ describe("ArtistCarousel type", () => {
                 },
               ],
             },
-          ])
-        )
+          ]))
     })
 
     it("fetches an artist by ID", () => {
@@ -71,7 +69,7 @@ describe("ArtistCarousel type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, rootValue).then((data) => {
         expect(data.artist.carousel).toEqual({
           images: [
             {

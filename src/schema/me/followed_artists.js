@@ -26,7 +26,7 @@ export default {
     root,
     options,
     request,
-    { rootValue: { followedArtistsLoader } }
+    { rootValue: { followedArtistsLoader } },
   ) => {
     if (!followedArtistsLoader) return null
     const { limit: size, offset } = getPagingParameters(options)
@@ -35,11 +35,9 @@ export default {
       offset,
       total_count: true,
     }
-    return followedArtistsLoader(gravityArgs).then(({ body, headers }) => {
-      return connectionFromArraySlice(body, options, {
+    return followedArtistsLoader(gravityArgs).then(({ body, headers }) => connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
-      })
-    })
+      }))
   },
 }

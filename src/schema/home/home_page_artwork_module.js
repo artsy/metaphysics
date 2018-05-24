@@ -79,9 +79,11 @@ const HomePageArtworkModule = {
   },
   resolve: (
     root,
-    { key, id, followed_artist_id, related_artist_id },
+    {
+ key, id, followed_artist_id, related_artist_id,
+},
     request,
-    { rootValue: { geneLoader } }
+    { rootValue: { geneLoader } },
   ) => {
     // TODO Really not entirely sure what this `display` param is about.
     const display = true
@@ -89,9 +91,7 @@ const HomePageArtworkModule = {
       case "generic_gene":
         return { key, display, params: find(genericGenes, ["id", id]) }
       case "genes":
-        return geneLoader(id).then(gene => {
-          return { key, display, params: { id, gene } }
-        })
+        return geneLoader(id).then(gene => ({ key, display, params: { id, gene } }))
       case "followed_artist":
         return { key, display, params: { followed_artist_id } }
       case "related_artists":

@@ -14,12 +14,11 @@ const trackedEntityLoaderFactory = (
   dataLoader,
   paramKey,
   trackingKey,
-  entityKeyPath
+  entityKeyPath,
 ) => {
   const trackedEntityLoader = new DataLoader(
-    ids => {
-      return dataLoader({ [paramKey]: ids }).then(body => {
-        const parsedResults = map(ids, id => {
+    ids => dataLoader({ [paramKey]: ids }).then((body) => {
+        const parsedResults = map(ids, (id) => {
           const match = find(body, [
             entityKeyPath ? `${entityKeyPath}.id` : "id",
             id,
@@ -32,9 +31,8 @@ const trackedEntityLoaderFactory = (
           return { id, [trackingKey]: false }
         })
         return parsedResults
-      })
-    },
-    { batch: true, cache: true }
+      }),
+    { batch: true, cache: true },
   )
   return id => trackedEntityLoader.load(id)
 }

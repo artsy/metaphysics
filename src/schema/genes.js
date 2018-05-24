@@ -21,20 +21,17 @@ const Genes = {
     root,
     options,
     request,
-    { rootValue: { geneLoader, genesLoader } }
+    { rootValue: { geneLoader, genesLoader } },
   ) => {
     if (options.slugs) {
-      return Promise.all(
-        options.slugs.map(slug =>
+      return Promise.all(options.slugs.map(slug =>
           geneLoader(
             slug,
             {},
             {
               requestThrottleMs: config.ARTICLE_REQUEST_THROTTLE_MS,
-            }
-          )
-        )
-      )
+            },
+          )))
     }
     return genesLoader(options)
   },

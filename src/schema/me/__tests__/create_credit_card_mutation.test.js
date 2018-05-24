@@ -27,8 +27,7 @@ describe("Credit card mutation", () => {
     createCreditCardLoader: () => Promise.resolve(creditCard),
   }
 
-  it("creates a credit card", async () => {
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+  it("creates a credit card", async () => runAuthenticatedQuery(query, rootValue).then((data) => {
       expect(data).toEqual({
         createCreditCard: {
           credit_card: {
@@ -39,6 +38,5 @@ describe("Credit card mutation", () => {
           },
         },
       })
-    })
-  })
+    }))
 })

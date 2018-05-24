@@ -39,10 +39,10 @@ export default {
     obj,
     { format, timezone, ignoreTimezone },
     request,
-    { fieldName, rootValue: { defaultTimezone } }
+    { fieldName, rootValue: { defaultTimezone } },
   ) => {
     const rawDate = obj[fieldName]
-    const timezoneString = timezone ? timezone : defaultTimezone
+    const timezoneString = timezone || defaultTimezone
     return date(rawDate, format, timezoneString)
   },
 }

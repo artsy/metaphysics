@@ -13,7 +13,7 @@ import {
   GraphQLBoolean,
 } from "graphql"
 
-export const getDefault = images => {
+export const getDefault = (images) => {
   if (isArray(images)) {
     return find(images, { is_default: true }) || first(images)
   }

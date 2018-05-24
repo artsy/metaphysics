@@ -4,8 +4,7 @@ import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
 
 const ExternalPartnerType = new GraphQLObjectType({
   name: "ExternalPartner",
-  fields: () => {
-    return {
+  fields: () => ({
       ...IDFields,
       city: {
         type: GraphQLString,
@@ -15,8 +14,7 @@ const ExternalPartnerType = new GraphQLObjectType({
         type: GraphQLString,
         resolve: ({ name }) => name.trim(),
       },
-    }
-  },
+    }),
 })
 
 const ExternalPartner = {
@@ -32,10 +30,8 @@ const ExternalPartner = {
     root,
     { id },
     request,
-    { rootValue: { galaxyGalleriesLoader } }
-  ) => {
-    return galaxyGalleriesLoader(id)
-  },
+    { rootValue: { galaxyGalleriesLoader } },
+  ) => galaxyGalleriesLoader(id),
 }
 
 export default ExternalPartner

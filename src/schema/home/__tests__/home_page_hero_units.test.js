@@ -14,8 +14,8 @@ describe("HomePageHeroUnits", () => {
       description: "Discover works on your laptop",
       mobile_description: "Discover works on your phone",
     },
-  ]
-  ;[("mobile", "desktop")].forEach(platform => {
+  ];
+[("mobile", "desktop")].forEach((platform) => {
     it(`picks subtitle for ${platform}`, () => {
       const params = { enabled: true }
       params[platform] = true
@@ -36,19 +36,13 @@ describe("HomePageHeroUnits", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
-        ({ home_page: { hero_units } }) => {
+      return runQuery(query, rootValue).then(({ home_page: { hero_units } }) => {
           if (platform === "desktop") {
-            expect(hero_units[0].subtitle).toEqual(
-              "Discover works on your laptop"
-            )
+            expect(hero_units[0].subtitle).toEqual("Discover works on your laptop")
           } else {
-            expect(hero_units[0].subtitle).toEqual(
-              "Discover works on your phone"
-            )
+            expect(hero_units[0].subtitle).toEqual("Discover works on your phone")
           }
-        }
-      )
+        })
     })
 
     it(`returns enabled hero units for ${platform} only`, () => {
@@ -76,8 +70,7 @@ describe("HomePageHeroUnits", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
-        ({ home_page: { hero_units } }) => {
+      return runQuery(query, rootValue).then(({ home_page: { hero_units } }) => {
           expect(hero_units).toEqual([
             {
               _id: "57e2ec9b8b3b817dc10015f7",
@@ -89,8 +82,7 @@ describe("HomePageHeroUnits", () => {
                 platform === "desktop" ? "wide.jpg" : "narrow.jpg",
             },
           ])
-        }
-      )
+        })
     })
   })
 

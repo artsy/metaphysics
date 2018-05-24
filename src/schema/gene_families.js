@@ -20,7 +20,7 @@ const GeneFamilies = {
     })
     return connectionFromPromisedArray(
       rootValue.geneFamiliesLoader(gravityOptions),
-      gravityOptions
+      gravityOptions,
     )
   },
 }

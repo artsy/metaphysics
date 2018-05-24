@@ -11,7 +11,7 @@ export const artistNames = artwork =>
   artwork.cultural_maker || map(artwork.artists, "name").join(", ")
 
 const forSaleIndication = artwork =>
-  artwork.forsale ? "Available for Sale" : undefined
+  (artwork.forsale ? "Available for Sale" : undefined)
 
 const dimensions = artwork => artwork.dimensions[artwork.metric]
 
@@ -41,7 +41,7 @@ const ArtworkMetaType = new GraphQLObjectType({
             artwork.medium,
             dimensions(artwork),
           ]),
-          limit
+          limit,
         ),
     },
     image: {

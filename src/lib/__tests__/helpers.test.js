@@ -28,25 +28,21 @@ describe("toKey", () => {
   })
 
   it("returns a stringified key given a path and multiple options", () => {
-    expect(
-      toKey("foo/bar", {
+    expect(toKey("foo/bar", {
         sort: "asc",
         sleep: false,
         size: 10,
-      })
-    ).toBe("foo/bar?size=10&sleep=false&sort=asc")
+      })).toBe("foo/bar?size=10&sleep=false&sort=asc")
   })
 
   it("sorts the option keys in alphabetical order", () => {
-    expect(
-      toKey("foo/bar", {
+    expect(toKey("foo/bar", {
         a: 3,
         z: "whatever",
         b: 99,
         d: false,
         c: 0,
-      })
-    ).toBe("foo/bar?a=3&b=99&c=0&d=false&z=whatever")
+      })).toBe("foo/bar?a=3&b=99&c=0&d=false&z=whatever")
   })
 })
 
@@ -98,7 +94,7 @@ describe("isExisty", () => {
 })
 
 describe("stripTags", () => {
-  const html = `<a href="http://google.com">Cabbie</a>`
+  const html = "<a href=\"http://google.com\">Cabbie</a>"
 
   it("strips html from a string", () => {
     expect(stripTags(html)).toEqual("Cabbie")

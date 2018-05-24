@@ -21,9 +21,7 @@ import config from "config"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
-export const isBiddable = (sale, { artwork: { sold } }) => {
-  return !sold && sale.is_auction && sale.auction_state === "open"
-}
+export const isBiddable = (sale, { artwork: { sold } }) => !sold && sale.is_auction && sale.auction_state === "open"
 
 const bid_increments_calculator = async ({
   sale_id,
@@ -71,8 +69,7 @@ const BidIncrementsFormatted = new GraphQLObjectType({
 
 const SaleArtworkType = new GraphQLObjectType({
   name: "SaleArtwork",
-  fields: () => {
-    return {
+  fields: () => ({
       ...GravityIDFields,
       cached,
       artwork: {
@@ -90,30 +87,26 @@ const SaleArtworkType = new GraphQLObjectType({
           { minimum_next_bid_cents, sale_id },
           options,
           request,
-          { rootValue: { incrementsLoader, saleLoader } }
-        ) => {
-          return bid_increments_calculator({
+          { rootValue: { incrementsLoader, saleLoader } },
+        ) => bid_increments_calculator({
             sale_id,
             saleLoader,
             incrementsLoader,
             minimum_next_bid_cents,
-          })
-        },
+          }),
       },
       counts: {
         resolve: x => x,
         type: new GraphQLObjectType({
           name: "SaleArtworkCounts",
           fields: {
-            bidder_positions: numeral(
-              ({ bidder_positions_count }) => bidder_positions_count
-            ),
+            bidder_positions: numeral(({ bidder_positions_count }) => bidder_positions_count),
           },
         }),
       },
       currency: {
         type: GraphQLString,
-        description: `Currency abbreviation (e.g. "USD")`,
+        description: "Currency abbreviation (e.g. \"USD\")",
       },
       current_bid: money({
         name: "SaleArtworkCurrentBid",
@@ -133,14 +126,12 @@ const SaleArtworkType = new GraphQLObjectType({
           display_low_estimate_dollars,
           display_high_estimate_dollars,
           display_estimate_dollars,
-        }) => {
-          return (
+        }) => (
             compact([
               display_low_estimate_dollars,
               display_high_estimate_dollars,
             ]).join("–") || display_estimate_dollars
-          )
-        },
+          ),
       },
       estimate_cents: {
         type: GraphQLInt,
@@ -189,7 +180,7 @@ const SaleArtworkType = new GraphQLObjectType({
             {
               symbol,
             },
-            highest_bid
+            highest_bid,
           ),
       },
       increments: {
@@ -198,22 +189,16 @@ const SaleArtworkType = new GraphQLObjectType({
           { minimum_next_bid_cents, sale_id, symbol },
           options,
           request,
-          { rootValue: { incrementsLoader, saleLoader } }
-        ) => {
-          return bid_increments_calculator({
+          { rootValue: { incrementsLoader, saleLoader } },
+        ) => bid_increments_calculator({
             sale_id,
             saleLoader,
             incrementsLoader,
             minimum_next_bid_cents,
-          }).then(bid_increments => {
-            return bid_increments.map(increment => {
-              return {
+          }).then(bid_increments => bid_increments.map(increment => ({
                 cents: increment,
                 display: formatMoney(increment / 100, { symbol, precision: 0 }),
-              }
-            })
-          })
-        },
+              }))),
       },
       is_bid_on: {
         type: GraphQLBoolean,
@@ -226,14 +211,13 @@ const SaleArtworkType = new GraphQLObjectType({
           saleArtwork,
           options,
           request,
-          { rootValue: { saleLoader } }
+          { rootValue: { saleLoader } },
         ) => {
-          if (!!saleArtwork.sale) {
+          if (saleArtwork.sale) {
             return isBiddable(saleArtwork.sale, saleArtwork)
           }
           return saleLoader(saleArtwork.sale_id).then(sale =>
-            isBiddable(sale, saleArtwork)
-          )
+            isBiddable(sale, saleArtwork))
         },
       },
       is_with_reserve: {
@@ -324,18 +308,17 @@ const SaleArtworkType = new GraphQLObjectType({
           { sale, sale_id },
           options,
           request,
-          { rootValue: { saleLoader } }
+          { rootValue: { saleLoader } },
         ) => {
-          if (!!sale) return sale
+          if (sale) return sale
           return saleLoader(sale_id)
         },
       },
       symbol: {
         type: GraphQLString,
-        description: `Currency symbol (e.g. "$")`,
+        description: "Currency symbol (e.g. \"$\")",
       },
-    }
-  },
+    }),
 })
 
 const SaleArtwork = {
@@ -351,7 +334,7 @@ const SaleArtwork = {
     root,
     { id },
     request,
-    { rootValue: { saleArtworkRootLoader } }
+    { rootValue: { saleArtworkRootLoader } },
   ) => {
     const data = await saleArtworkRootLoader(id)
     return data

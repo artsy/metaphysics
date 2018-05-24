@@ -50,8 +50,7 @@ describe("FollowArtist", () => {
     `
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
-      ({ followArtist }) => {
+    return runAuthenticatedQuery(mutation, rootValue).then(({ followArtist }) => {
         expect(followArtist).toEqual({
           artist: {
             name: "Damon Zucconi",
@@ -60,7 +59,6 @@ describe("FollowArtist", () => {
             artists: [{ name: "Antonio Carreno" }, { name: "Benjamin Schmit" }],
           },
         })
-      }
-    )
+      })
   })
 })

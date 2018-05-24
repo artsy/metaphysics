@@ -19,28 +19,24 @@ describe("OrderedSet type", () => {
     `
 
     const rootValue = {
-      setLoader: sinon.stub().returns(
-        Promise.resolve({
+      setLoader: sinon.stub().returns(Promise.resolve({
           description: "",
           id: "52dd3c2e4b8480091700027f",
           item_type: "Artwork",
           key: "artworks:featured-artworks",
           name: "Featured Artworks",
-        })
-      ),
-      setItemsLoader: sinon.stub().returns(
-        Promise.resolve([
+        })),
+      setItemsLoader: sinon.stub().returns(Promise.resolve([
           {
             title: "My Artwork",
           },
           {
             title: "Another Artwork",
           },
-        ])
-      ),
+        ])),
     }
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, rootValue).then((data) => {
       expect(data).toEqual({
         ordered_set: {
           id: "52dd3c2e4b8480091700027f",

@@ -13,18 +13,14 @@ export default (accessToken, userID, opts) => {
     gravityLoaderWithAuthenticationFactory,
     impulseLoaderWithAuthenticationFactory,
   } = factories(opts)
-  const gravityLoader = gravityLoaderWithAuthenticationFactory(
-    gravityAccessTokenLoader
-  )
-  const impulseLoader = impulseLoaderWithAuthenticationFactory(
-    impulseAccessTokenLoader
-  )
+  const gravityLoader = gravityLoaderWithAuthenticationFactory(gravityAccessTokenLoader)
+  const impulseLoader = impulseLoaderWithAuthenticationFactory(impulseAccessTokenLoader)
 
   // This generates a token with a lifetime of 1 minute, which should be plenty of time to fulfill a full query.
   impulseTokenLoader = gravityLoader(
     "me/token",
     { client_application_id: IMPULSE_APPLICATION_ID },
-    { method: "POST" }
+    { method: "POST" },
   )
 
   return {
@@ -37,7 +33,7 @@ export default (accessToken, userID, opts) => {
     conversationUpdateLoader: impulseLoader(
       id => `conversations/${id}`,
       {},
-      { method: "PUT" }
+      { method: "PUT" },
     ),
     conversationMessagesLoader: impulseLoader("message_details"),
     conversationInvoiceLoader: impulseLoader("invoice_detail"),
@@ -47,7 +43,7 @@ export default (accessToken, userID, opts) => {
         reply_all: true,
         from_id: userID,
       },
-      { method: "POST" }
+      { method: "POST" },
     ),
   }
 }

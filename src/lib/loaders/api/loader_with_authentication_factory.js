@@ -24,22 +24,18 @@ import logger from "lib/loaders/api/logger"
 export const apiLoaderWithAuthenticationFactory = (
   api,
   apiName,
-  globalAPIOptions
-) => {
-  return accessTokenLoader => {
-    return (path, globalParams = {}, pathAPIOptions = {}) => {
+  globalAPIOptions,
+) => accessTokenLoader => (path, globalParams = {}, pathAPIOptions = {}) => {
       const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
       const loader = new DataLoader(
-        keys => {
-          return accessTokenLoader().then(accessToken =>
-            Promise.all(
-              keys.map(key => {
+        keys => accessTokenLoader().then(accessToken =>
+            Promise.all(keys.map((key) => {
                 const clock = timer(key)
                 clock.start()
                 return new Promise((resolve, reject) => {
                   verbose(`Requested: ${key}`)
                   api(key, accessToken, apiOptions)
-                    .then(response => {
+                    .then((response) => {
                       if (apiOptions.headers) {
                         resolve(pick(response, ["body", "headers"]))
                       } else {
@@ -50,24 +46,19 @@ export const apiLoaderWithAuthenticationFactory = (
                         globalAPIOptions.requestIDs.requestID,
                         apiName,
                         key,
-                        { time, cache: false }
+                        { time, cache: false },
                       )
                     })
-                    .catch(err => {
+                    .catch((err) => {
                       error(path, err)
                       reject(err)
                     })
                 })
-              })
-            )
-          )
-        },
+              }))),
         {
           batch: true,
           cache: true,
-        }
+        },
       )
       return loaderInterface(loader, path, globalParams)
     }
-  }
-}

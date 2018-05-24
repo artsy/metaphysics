@@ -52,12 +52,10 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: (
     options,
     request,
-    { rootValue: { updateCollectorProfileLoader } }
+    { rootValue: { updateCollectorProfileLoader } },
   ) => {
     if (!updateCollectorProfileLoader) {
-      throw new Error(
-        "Missing Update Collector Profile Loader. Check your access token."
-      )
+      throw new Error("Missing Update Collector Profile Loader. Check your access token.")
     }
     return updateCollectorProfileLoader(options)
   },

@@ -5,13 +5,11 @@ describe("Partners", () => {
   it("returns a list of partners matching array of ids", async () => {
     const partnersLoader = ({ id }) => {
       if (id) {
-        return Promise.resolve(
-          id.map(_id => ({
+        return Promise.resolve(id.map(_id => ({
             _id,
             has_full_profile: true,
             profile_banner_display: true,
-          }))
-        )
+          })))
       }
       throw new Error("Unexpected invocation")
     }

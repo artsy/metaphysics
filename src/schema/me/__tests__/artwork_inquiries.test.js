@@ -61,11 +61,9 @@ describe("Me", () => {
           ],
         })
 
-      return runAuthenticatedQuery(query, { inquiryRequestsLoader }).then(
-        ({ me: { artwork_inquiries_connection } }) => {
+      return runAuthenticatedQuery(query, { inquiryRequestsLoader }).then(({ me: { artwork_inquiries_connection } }) => {
           expect(artwork_inquiries_connection).toEqual(expectedConnectionData)
-        }
-      )
+        })
     })
   })
 })

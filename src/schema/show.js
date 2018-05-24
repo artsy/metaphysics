@@ -30,7 +30,9 @@ import {
 import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
 
-const kind = ({ artists, fair, artists_without_artworks, group }) => {
+const kind = ({
+ artists, fair, artists_without_artworks, group,
+}) => {
   if (isExisty(fair)) return "fair"
   if (
     group ||
@@ -93,7 +95,7 @@ export const ShowType = new GraphQLObjectType({
         show,
         options,
         request,
-        { rootValue: { partnerShowArtworksLoader } }
+        { rootValue: { partnerShowArtworksLoader } },
       ) => {
         let fetch = null
 
@@ -101,12 +103,12 @@ export const ShowType = new GraphQLObjectType({
           fetch = allViaLoader(
             partnerShowArtworksLoader,
             { partner_id: show.partner.id, show_id: show.id },
-            options
+            options,
           )
         } else {
           fetch = partnerShowArtworksLoader(
             { partner_id: show.partner.id, show_id: show.id },
-            options
+            options,
           ).then(({ body }) => body)
         }
 
@@ -120,7 +122,7 @@ export const ShowType = new GraphQLObjectType({
         show,
         options,
         request,
-        { rootValue: { partnerShowArtworksLoader } }
+        { rootValue: { partnerShowArtworksLoader } },
       ) => {
         const loaderOptions = {
           partner_id: show.partner.id,
@@ -133,15 +135,13 @@ export const ShowType = new GraphQLObjectType({
           totalViaLoader(
             partnerShowArtworksLoader,
             loaderOptions,
-            Object.assign({}, gravityOptions, { size: 0 })
+            Object.assign({}, gravityOptions, { size: 0 }),
           ),
           partnerShowArtworksLoader(loaderOptions, gravityOptions),
-        ]).then(([count, { body }]) => {
-          return connectionFromArraySlice(body, options, {
+        ]).then(([count, { body }]) => connectionFromArraySlice(body, options, {
             arrayLength: count,
             sliceStart: gravityOptions.offset,
-          })
-        })
+          }))
       },
     },
     artists_without_artworks: {
@@ -160,10 +160,12 @@ export const ShowType = new GraphQLObjectType({
     cover_image: {
       type: Image.type,
       resolve: (
-        { id, partner, image_versions, image_url },
+        {
+ id, partner, image_versions, image_url,
+},
         options,
         request,
-        { rootValue: { partnerShowArtworksLoader } }
+        { rootValue: { partnerShowArtworksLoader } },
       ) => {
         if (image_versions && image_versions.length && image_url) {
           return Image.resolve({ image_versions, image_url })
@@ -175,7 +177,7 @@ export const ShowType = new GraphQLObjectType({
             {
               size: 1,
               published: true,
-            }
+            },
           ).then(({ body }) => {
             const artwork = body[0]
             return artwork && Image.resolve(getDefault(artwork.images))
@@ -199,18 +201,14 @@ export const ShowType = new GraphQLObjectType({
               { id, partner },
               options,
               request,
-              { rootValue: { partnerShowArtworksLoader } }
-            ) => {
-              return totalViaLoader(
+              { rootValue: { partnerShowArtworksLoader } },
+            ) => totalViaLoader(
                 partnerShowArtworksLoader,
                 { partner_id: partner.id, show_id: id },
-                options
-              )
-            },
+                options,
+              ),
           },
-          eligible_artworks: numeral(
-            ({ eligible_artworks_count }) => eligible_artworks_count
-          ),
+          eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
         },
       }),
       resolve: partner_show => partner_show,
@@ -229,11 +227,9 @@ export const ShowType = new GraphQLObjectType({
         { partner, id },
         options,
         request,
-        { rootValue: { partnerShowLoader } }
+        { rootValue: { partnerShowLoader } },
       ) =>
-        partnerShowLoader({ partner_id: partner.id, show_id: id }).then(
-          ({ events }) => events
-        ),
+        partnerShowLoader({ partner_id: partner.id, show_id: id }).then(({ events }) => events),
     },
     exhibition_period: {
       type: GraphQLString,
@@ -270,17 +266,13 @@ export const ShowType = new GraphQLObjectType({
         { id },
         options,
         request,
-        { rootValue: partnerShowImagesLoader }
-      ) => {
-        return partnerShowImagesLoader(id, options).then(Image.resolve)
-      },
+        { rootValue: partnerShowImagesLoader },
+      ) => partnerShowImagesLoader(id, options).then(Image.resolve),
     },
     has_location: {
       type: GraphQLBoolean,
       description: "Flag showing if show has any location.",
-      resolve: ({ location, fair, partner_city }) => {
-        return isExisty(location || fair || partner_city)
-      },
+      resolve: ({ location, fair, partner_city }) => isExisty(location || fair || partner_city),
     },
     is_active: {
       type: GraphQLBoolean,
@@ -310,7 +302,7 @@ export const ShowType = new GraphQLObjectType({
         show,
         options,
         request,
-        { rootValue: { partnerShowLoader } }
+        { rootValue: { partnerShowLoader } },
       ) => {
         if (show.artists || show.artists_without_artworks) return kind(show)
         return partnerShowLoader({
@@ -326,10 +318,12 @@ export const ShowType = new GraphQLObjectType({
     meta_image: {
       type: Image.type,
       resolve: (
-        { id, partner, image_versions, image_url },
+        {
+ id, partner, image_versions, image_url,
+},
         options,
         request,
-        { rootValue: { partnerShowArtworksLoader } }
+        { rootValue: { partnerShowArtworksLoader } },
       ) => {
         if (image_versions && image_versions.length && image_url) {
           return Image.resolve({
@@ -341,7 +335,7 @@ export const ShowType = new GraphQLObjectType({
           { partner_id: partner.id, show_id: id },
           {
             published: true,
-          }
+          },
         ).then(({ body }) => {
           Image.resolve(getDefault(find(body, { can_share_image: true })))
         })
@@ -356,7 +350,7 @@ export const ShowType = new GraphQLObjectType({
       type: new GraphQLUnionType({
         name: "PartnerTypes",
         types: [Partner.type, ExternalPartner.type],
-        resolveType: value => {
+        resolveType: (value) => {
           if (value._links) {
             return ExternalPartner.type
           }
@@ -367,7 +361,7 @@ export const ShowType = new GraphQLObjectType({
         { partner, galaxy_partner_id },
         options,
         request,
-        { rootValue: { galaxyGalleriesLoader } }
+        { rootValue: { galaxyGalleriesLoader } },
       ) => {
         if (partner) {
           return partner
@@ -409,16 +403,14 @@ const Show = {
       description: "The slug or ID of the Show",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { showLoader } }) => {
-    return showLoader(id)
-      .then(show => {
+  resolve: (root, { id }, request, { rootValue: { showLoader } }) => showLoader(id)
+      .then((show) => {
         if (!show.displayable && !show.is_reference) {
           return new HTTPError("Show Not Found", 404)
         }
         return show
       })
-      .catch(() => null)
-  },
+      .catch(() => null),
 }
 export default Show
 export const showConnection = connectionDefinitions({

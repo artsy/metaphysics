@@ -29,7 +29,7 @@ describe("convection link", () => {
       getContext: () => defaultContext,
     }
     // As the link is an observable chain, we need to wrap it in a promise so that Jest can wait for it to resolve
-    return new Promise(done => {
+    return new Promise((done) => {
       runLinkChain(link, op, () => {
         expect(op.setContext).toBeCalledWith({
           headers: {
@@ -74,7 +74,7 @@ describe("convection link", () => {
         getContext: () => defaultContext,
       }
       // As the link is an observable chain, we need to wrap it in a promise so that Jest can wait for it to resolve
-      return new Promise(done => {
+      return new Promise((done) => {
         runLinkChain(link, op, () => {
           expect(op.setContext).toBeCalledWith({
             headers: {

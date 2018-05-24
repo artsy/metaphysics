@@ -18,7 +18,7 @@ export const config = {
   mutateAndGetPayload: (
     submission,
     _request,
-    { rootValue: { submissionUpdateLoader } }
+    { rootValue: { submissionUpdateLoader } },
   ) => {
     if (!submissionUpdateLoader) return null
     return submissionUpdateLoader(submission.id, submission)

@@ -54,7 +54,7 @@ describe("Collections", () => {
         "test",
         "fixtures",
         "gravity",
-        "artworks_array.json"
+        "artworks_array.json",
       )
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
       const rootValue = {

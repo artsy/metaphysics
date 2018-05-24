@@ -21,7 +21,7 @@ const PartnerCategories = {
     root,
     options,
     request,
-    { rootValue: { partnerCategoriesLoader } }
+    { rootValue: { partnerCategoriesLoader } },
   ) => partnerCategoriesLoader(options),
 }
 

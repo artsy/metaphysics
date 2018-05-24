@@ -19,8 +19,7 @@ const SuggestedGenes = {
   description: "List of curated genes with custom images",
   resolve: () =>
     fetch(SUGGESTED_GENES_JSON).then(({ body }) =>
-      body.map(suggestedGeneToGene)
-    ),
+      body.map(suggestedGeneToGene)),
 }
 
 export default SuggestedGenes

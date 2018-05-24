@@ -24,7 +24,7 @@ export default opts => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
-    }
+    },
   ),
 
   /**
@@ -37,7 +37,7 @@ export default opts => ({
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
       requestThrottleMs: config.DIFFUSION_REQUEST_THROTTLE_MS,
-    }
+    },
   ),
 
   /**
@@ -51,7 +51,7 @@ export default opts => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
-    }
+    },
   ),
 
   /**
@@ -65,7 +65,7 @@ export default opts => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
-    }
+    },
   ),
 
   /**
@@ -79,7 +79,7 @@ export default opts => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
-    }
+    },
   ),
 
   // Authenticated loaders
@@ -96,7 +96,7 @@ export default opts => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
-    }
+    },
   ),
 
   /**
@@ -111,7 +111,7 @@ export default opts => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
-    }
+    },
   ),
 
   /**
@@ -126,6 +126,6 @@ export default opts => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
-    }
+    },
   ),
 })

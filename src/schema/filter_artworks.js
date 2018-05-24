@@ -63,9 +63,7 @@ export const FilterArtworksCounts = {
     name: "FilterArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
-      followed_artists: numeral(
-        ({ aggregations }) => aggregations.followed_artists.value
-      ),
+      followed_artists: numeral(({ aggregations }) => aggregations.followed_artists.value),
     },
   }),
   resolve: data => data,
@@ -95,12 +93,10 @@ export const FilterArtworksType = new GraphQLObjectType({
         { options: gravityOptions },
         args,
         request,
-        { rootValue: { filterArtworksLoader } }
+        { rootValue: { filterArtworksLoader } },
       ) => {
         const relayOptions = parseRelayOptions(args)
-        return filterArtworksLoader(
-          assign(gravityOptions, relayOptions, {})
-        ).then(({ aggregations, hits }) => {
+        return filterArtworksLoader(assign(gravityOptions, relayOptions, {})).then(({ aggregations, hits }) => {
           if (!aggregations || !aggregations.total) {
             throw new Error("This query must contain the total aggregation")
           }
@@ -130,7 +126,7 @@ export const FilterArtworksType = new GraphQLObjectType({
         { aggregations },
         options,
         request,
-        { rootValue: { artistsLoader } }
+        { rootValue: { artistsLoader } },
       ) => {
         if (!isExisty(aggregations.merchandisable_artists)) {
           return null
@@ -151,18 +147,16 @@ export const FilterArtworksType = new GraphQLObjectType({
         { options },
         _options,
         _request,
-        { rootValue: { geneLoader, tagLoader } }
+        { rootValue: { geneLoader, tagLoader } },
       ) => {
         const { tag_id, gene_id } = options
         if (tag_id) {
           return tagLoader(tag_id).then(tag =>
-            assign({ context_type: "Tag" }, tag)
-          )
+            assign({ context_type: "Tag" }, tag))
         }
         if (gene_id) {
           return geneLoader(gene_id).then(gene =>
-            assign({ context_type: "Gene" }, gene)
-          )
+            assign({ context_type: "Gene" }, gene))
         }
         return null
       },
@@ -272,7 +266,7 @@ function filterArtworks(primaryKey) {
       root,
       options,
       request,
-      { fieldNodes, rootValue: { filterArtworksLoader } }
+      { fieldNodes, rootValue: { filterArtworksLoader } },
     ) => {
       const gravityOptions = Object.assign({}, options)
       if (primaryKey) {
@@ -289,8 +283,7 @@ function filterArtworks(primaryKey) {
       const blacklistedFields = ["artworks_connection", "__id"]
       if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
         return filterArtworksLoader(gravityOptions).then(response =>
-          assign({}, response, { options: gravityOptions })
-        )
+          assign({}, response, { options: gravityOptions }))
       }
       return { hits: null, aggregations: null, options: gravityOptions }
     },

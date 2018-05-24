@@ -22,6 +22,6 @@ export default (path, accessToken, fetchOptions = {}) => {
 
   return fetch(
     urljoin(GRAVITY_API_BASE, path),
-    assign({}, fetchParams, { headers })
+    assign({}, fetchParams, { headers }),
   )
 }

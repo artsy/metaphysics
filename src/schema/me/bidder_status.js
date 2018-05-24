@@ -16,12 +16,12 @@ export default {
     root,
     { sale_id, artwork_id },
     request,
-    { rootValue: { lotStandingLoader } }
+    { rootValue: { lotStandingLoader } },
   ) =>
     lotStandingLoader({
       sale_id,
       artwork_id,
-    }).then(lotStanding => {
+    }).then((lotStanding) => {
       if (lotStanding.length === 0) return null
       return lotStanding[0]
     }),

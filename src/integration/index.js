@@ -8,14 +8,11 @@ const {
   METAPHYSICS_PRODUCTION_ENDPOINT,
 } = config
 
-const get = (url, options) => {
-  return new Promise((resolve, reject) =>
+const get = (url, options) => new Promise((resolve, reject) =>
     request(url, options, (err, response) => {
       if (err) return reject(err)
       resolve(JSON.parse(response.body))
-    })
-  )
-}
+    }))
 
 const metaphysics = endpoint => (query, vars = {}) => {
   const variables = JSON.stringify(vars)
@@ -93,14 +90,12 @@ describe("Integration specs", () => {
       }
     `
 
-    it("is in sync with production", () => {
-      return Promise.all([
+    it("is in sync with production", () => Promise.all([
         staging(query, { id: "cindy-sherman-untitled" }),
         production(query, { id: "cindy-sherman-untitled" }),
       ]).then(([stagingResponse, productionResponse]) => {
         deepEqual(stagingResponse, productionResponse).should.be.true()
-      })
-    })
+      }))
   })
 
   describe("/artists", () => {
@@ -148,11 +143,9 @@ describe("Integration specs", () => {
       }
     `
 
-    it("makes the query without error", () => {
-      return staging(query).then(({ errors, data }) => {
+    it("makes the query without error", () => staging(query).then(({ errors, data }) => {
         isUndefined(errors).should.be.true()
         keys(data).should.eql(["featured_artists", "featured_genes"])
-      })
-    })
+      }))
   })
 })

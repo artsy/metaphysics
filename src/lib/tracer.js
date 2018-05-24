@@ -32,13 +32,13 @@ function wrapResolve(typeName, fieldName, resolver) {
     const span = parentSpan
       .tracer()
       .startSpan(
-        DD_TRACER_SERVICE_NAME + ".resolver." + typeName + "." + fieldName,
+        `${DD_TRACER_SERVICE_NAME}.resolver.${typeName}.${fieldName}`,
         {
           childOf: parentSpan.context(),
-        }
+        },
       )
     span.addTags({
-      resource: typeName + ": " + fieldName,
+      resource: `${typeName}: ${fieldName}`,
       type: "web",
       "span.kind": "server",
     })
@@ -77,7 +77,7 @@ export function makeSchemaTraceable(schema) {
 }
 
 export function middleware(req, res, next) {
-  const span = tracer.startSpan(DD_TRACER_SERVICE_NAME + ".query")
+  const span = tracer.startSpan(`${DD_TRACER_SERVICE_NAME}.query`)
   span.addTags({
     type: "web",
     "span.kind": "server",

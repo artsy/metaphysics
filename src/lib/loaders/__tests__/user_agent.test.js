@@ -1,9 +1,9 @@
 import { runAuthenticatedQuery, runQuery } from "test/utils"
 import createLoaders from "../../../lib/loaders"
 import gql from "test/gql"
+import gravity from "../../apis/gravity"
 
 jest.mock("../../apis/gravity", () => jest.fn(() => Promise.resolve({})))
-import gravity from "../../apis/gravity"
 
 describe("User-Agent (with the real data loaders)", () => {
   it("resolves to add the initial user agent to a gravity header", async () => {

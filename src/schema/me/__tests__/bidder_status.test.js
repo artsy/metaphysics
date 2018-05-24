@@ -3,8 +3,7 @@ import { runAuthenticatedQuery } from "test/utils"
 describe("BidderStatus type", () => {
   it("returns the correct state when you are the high bidder on a work", () => {
     const rootValue = {
-      lotStandingLoader: sinon.stub().returns(
-        Promise.resolve([
+      lotStandingLoader: sinon.stub().returns(Promise.resolve([
           {
             sale_artwork: {
               id: "untitled",
@@ -37,8 +36,7 @@ describe("BidderStatus type", () => {
               sale_artwork_id: "untitled-2",
             },
           },
-        ])
-      ),
+        ])),
     }
     const query = `
       {
@@ -69,8 +67,7 @@ describe("BidderStatus type", () => {
 
   it("returns the correct state when you are outbid on a work", () => {
     const rootValue = {
-      lotStandingLoader: sinon.stub().returns(
-        Promise.resolve([
+      lotStandingLoader: sinon.stub().returns(Promise.resolve([
           {
             sale_artwork: {
               id: "untitled",
@@ -87,8 +84,7 @@ describe("BidderStatus type", () => {
               sale_artwork_id: "untitled",
             },
           },
-        ])
-      ),
+        ])),
     }
 
     const query = `

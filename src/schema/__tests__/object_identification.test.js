@@ -45,7 +45,7 @@ describe("Object Identification", () => {
     },
   }
 
-  _.keys(loaderTests).forEach(typeName => {
+  _.keys(loaderTests).forEach((typeName) => {
     const fieldName = _.snakeCase(typeName)
     const loaderName = _.keys(loaderTests[typeName])[0]
     const payload = loaderTests[typeName][loaderName]
@@ -66,7 +66,7 @@ describe("Object Identification", () => {
           }
         `
 
-        return runQuery(query, rootValue).then(data => {
+        return runQuery(query, rootValue).then((data) => {
           const expectedData = {}
           expectedData[fieldName] = { __id: toGlobalId(typeName, "foo-bar") }
           expect(data).toEqual(expectedData)
@@ -85,7 +85,7 @@ describe("Object Identification", () => {
           }
         `
 
-        return runQuery(query, rootValue).then(data => {
+        return runQuery(query, rootValue).then((data) => {
           expect(data).toEqual({
             node: {
               __typename: typeName,
@@ -106,7 +106,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runAuthenticatedQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then((data) => {
         expect(data).toEqual({
           me: {
             __id: globalId,
@@ -125,7 +125,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runAuthenticatedQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then((data) => {
         expect(data).toEqual({
           node: {
             __typename: "Me",
@@ -139,7 +139,7 @@ describe("Object Identification", () => {
     describe("with a specific module", () => {
       const globalId = toGlobalId(
         "HomePageArtworkModule",
-        JSON.stringify({ key: "popular_artists" })
+        JSON.stringify({ key: "popular_artists" }),
       )
       it("generates a Global ID", () => {
         const query = `
@@ -151,7 +151,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             home_page: {
               artwork_module: {
@@ -172,7 +172,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             node: {
               __typename: "HomePageArtworkModule",
@@ -185,7 +185,7 @@ describe("Object Identification", () => {
     describe("with a generic gene", () => {
       const globalId = toGlobalId(
         "HomePageArtworkModule",
-        JSON.stringify({ id: "abstract-art", key: "generic_gene" })
+        JSON.stringify({ id: "abstract-art", key: "generic_gene" }),
       )
       it("generates a Global ID", () => {
         const query = `
@@ -197,7 +197,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             home_page: {
               artwork_module: {
@@ -221,7 +221,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             node: {
               __typename: "HomePageArtworkModule",
@@ -241,7 +241,7 @@ describe("Object Identification", () => {
           followed_artist_id: "pablo-picasso",
           related_artist_id: "charles-broskoski",
           key: "related_artists",
-        })
+        }),
       )
       it("generates a Global ID", () => {
         const query = `
@@ -255,7 +255,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             home_page: {
               artwork_module: {
@@ -280,7 +280,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runQuery(query).then((data) => {
           expect(data).toEqual({
             node: {
               __typename: "HomePageArtworkModule",
@@ -298,7 +298,7 @@ describe("Object Identification", () => {
   describe("for a HomePageArtistModule", () => {
     const globalId = toGlobalId(
       "HomePageArtistModule",
-      JSON.stringify({ key: "TRENDING" })
+      JSON.stringify({ key: "TRENDING" }),
     )
     it("generates a Global ID", () => {
       const query = `
@@ -310,7 +310,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query).then((data) => {
         expect(data).toEqual({
           home_page: {
             artist_module: {
@@ -331,7 +331,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runQuery(query).then((data) => {
         expect(data).toEqual({
           node: {
             __typename: "HomePageArtistModule",
@@ -358,7 +358,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runAuthenticatedQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then((data) => {
         expect(data).toEqual({
           node: {
             id: "user-42",
@@ -377,7 +377,7 @@ describe("Object Identification", () => {
           id
         }
       `
-      return runAuthenticatedQuery(query).then(data => {
+      return runAuthenticatedQuery(query).then((data) => {
         expect(data).toEqual({
           node: {
             id: "user-42",

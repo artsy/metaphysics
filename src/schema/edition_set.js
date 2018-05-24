@@ -42,7 +42,9 @@ const EditionSetType = new GraphQLObjectType({
     },
     sale_message: {
       type: GraphQLString,
-      resolve: ({ availability, availability_hidden, price, forsale }) => {
+      resolve: ({
+ availability, availability_hidden, price, forsale,
+}) => {
         // Don't display anything if availability is hidden.
         if (availability_hidden) {
           return null

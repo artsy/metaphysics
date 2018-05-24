@@ -25,13 +25,11 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
     },
     image: {
       type: Image.type,
-      resolve: ({ artworks }) => {
-        return (
+      resolve: ({ artworks }) => (
           artworks.length > 0 &&
           artworks[0].artists.length > 0 &&
           Image.resolve(artworks[0].artists[0])
-        )
-      },
+        ),
     },
   }),
 })
@@ -48,7 +46,7 @@ const FollowedArtistsArtworksGroup = {
     root,
     options,
     request,
-    { rootValue: { followedArtistsArtworksLoader } }
+    { rootValue: { followedArtistsArtworksLoader } },
   ) => {
     if (!followedArtistsArtworksLoader) return null
 
@@ -56,29 +54,24 @@ const FollowedArtistsArtworksGroup = {
     const gravityOptions = parseRelayOptions(options)
     gravityOptions.total_count = true
 
-    return followedArtistsArtworksLoader(omit(gravityOptions, "offset")).then(
-      ({ body, headers }) => {
+    return followedArtistsArtworksLoader(omit(gravityOptions, "offset")).then(({ body, headers }) => {
         const connection = connectionFromArraySlice(body, options, {
           arrayLength: headers["x-total-count"],
           sliceStart: gravityOptions.offset,
         })
 
-        const groupedByArtist = groupBy(connection.edges, item => {
-          return item.node.artist.id
-        })
+        const groupedByArtist = groupBy(connection.edges, item => item.node.artist.id)
 
         let newEdges = []
         let newEdge
-        Object.keys(groupedByArtist).forEach(artist => {
+        Object.keys(groupedByArtist).forEach((artist) => {
           const groupedNodes = groupedByArtist[artist]
           newEdge = {
             node: {
               summary: `${groupedNodes.length} Work${
                 groupedNodes.length === 1 ? "" : "s"
               } Added`,
-              artworks: map(groupedNodes, groupped => {
-                return groupped.node
-              }),
+              artworks: map(groupedNodes, groupped => groupped.node),
               id: groupedNodes[0].node._id,
               artists: groupedNodes[0].node.artist.name,
               _type: "FollowedArtistsArtworksGroup",
@@ -90,8 +83,7 @@ const FollowedArtistsArtworksGroup = {
 
         connection.edges = newEdges
         return connection
-      }
-    )
+      })
   },
 }
 

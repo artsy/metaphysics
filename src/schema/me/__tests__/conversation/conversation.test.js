@@ -3,8 +3,7 @@ import { runAuthenticatedQuery } from "test/utils"
 describe("Me", () => {
   describe("Conversation", () => {
     const rootValue = {
-      conversationLoader: () => {
-        return Promise.resolve({
+      conversationLoader: () => Promise.resolve({
           id: "420",
           initial_message:
             "Buncha secret stuff Message from Percy:\n\nLoved some of the works at your fair booth!",
@@ -43,8 +42,7 @@ describe("Me", () => {
               },
             },
           ],
-        })
-      },
+        }),
       conversationMessagesLoader: ({ sort } = { sort: "asc" }) => {
         let messages = [
           {
@@ -56,7 +54,7 @@ describe("Me", () => {
             metadata: {
               lewitt_invoice_id: "420i",
             },
-            from: `"Percy Z" <percy@cat.com>`,
+            from: "\"Percy Z\" <percy@cat.com>",
             from_principal: true,
             body: "I'm a cat",
           },
@@ -67,7 +65,7 @@ describe("Me", () => {
             from_id: null,
             attachments: [],
             metadata: {},
-            from: `"Bitty Z" <Bitty@cat.com>`,
+            from: "\"Bitty Z\" <Bitty@cat.com>",
             from_principal: false,
             body: "",
           },
@@ -78,7 +76,7 @@ describe("Me", () => {
             from_id: "user-42",
             attachments: [],
             metadata: {},
-            from: `"Matt Z" <matt@cat.com>`,
+            from: "\"Matt Z\" <matt@cat.com>",
             body: null,
           },
           {
@@ -159,11 +157,9 @@ describe("Me", () => {
         }
       `
 
-      return runAuthenticatedQuery(query, rootValue).then(
-        ({ me: conversation }) => {
+      return runAuthenticatedQuery(query, rootValue).then(({ me: conversation }) => {
           expect(conversation).toMatchSnapshot()
-        }
-      )
+        })
     })
 
     describe("concerning unread indicator", () => {
@@ -198,11 +194,9 @@ describe("Me", () => {
           conversationMessagesLoader: () => Promise.resolve(message),
         })
 
-        return runAuthenticatedQuery(query, customRootValue).then(
-          ({ me: { conversation } }) => {
+        return runAuthenticatedQuery(query, customRootValue).then(({ me: { conversation } }) => {
             expect(conversation).toMatchSnapshot()
-          }
-        )
+          })
       })
     })
 
@@ -228,38 +222,31 @@ describe("Me", () => {
         }
       `
 
-      it("returns the conversation items", () => {
-        return runAuthenticatedQuery(query, rootValue).then(
-          ({ me: { conversation: { items } } }) => {
+      it("returns the conversation items", () => runAuthenticatedQuery(query, rootValue).then(({ me: { conversation: { items } } }) => {
             expect(items.length).toEqual(2)
             expect(items).toMatchSnapshot()
-          }
-        )
-      })
+          }))
 
       it("doesnt return invalid items", () => {
         const customRootValue = Object.assign({}, rootValue, {
           // Get a copy of the conversation payload, mutate it, and return that instead.
           conversationLoader: () =>
-            rootValue.conversationLoader().then(conversation => {
+            rootValue.conversationLoader().then((conversation) => {
               const convo = conversation
               convo.items[0].properties = {}
               return convo
             }),
         })
 
-        return runAuthenticatedQuery(query, customRootValue).then(
-          ({ me: { conversation: { items } } }) => {
+        return runAuthenticatedQuery(query, customRootValue).then(({ me: { conversation: { items } } }) => {
             expect(items.length).toEqual(1)
             expect(items).toMatchSnapshot()
-          }
-        )
+          })
       })
     })
 
     describe("messages", () => {
-      const getQuery = (sort = "ASC") => {
-        return `
+      const getQuery = (sort = "ASC") => `
           {
             me {
               conversation(id: "420") {
@@ -275,41 +262,34 @@ describe("Me", () => {
             }
           }
         `
-      }
 
       it("returns messages in ascending order", () => {
         const query = getQuery()
 
-        return runAuthenticatedQuery(query, rootValue).then(
-          ({ me: { conversation: { messages } } }) => {
+        return runAuthenticatedQuery(query, rootValue).then(({ me: { conversation: { messages } } }) => {
             expect(messages.edges.length).toEqual(4)
             expect(messages.edges[0].node.id).toEqual("240")
-          }
-        )
+          })
       })
 
       it("returns messages in descending order", () => {
         const query = getQuery("DESC")
 
-        return runAuthenticatedQuery(query, rootValue).then(
-          ({ me: { conversation: { messages } } }) => {
+        return runAuthenticatedQuery(query, rootValue).then(({ me: { conversation: { messages } } }) => {
             expect(messages.edges.length).toEqual(4)
             expect(messages.edges[0].node.id).toEqual("243")
-          }
-        )
+          })
       })
       it("returns proper is_from_user for different values of `from_principal`", () => {
         const query = getQuery()
 
-        return runAuthenticatedQuery(query, rootValue).then(
-          ({ me: { conversation: { messages } } }) => {
+        return runAuthenticatedQuery(query, rootValue).then(({ me: { conversation: { messages } } }) => {
             expect(messages.edges.length).toEqual(4)
             expect(messages.edges[0].node.is_from_user).toEqual(true)
             expect(messages.edges[1].node.is_from_user).toEqual(false)
             expect(messages.edges[2].node.is_from_user).toEqual(true)
             expect(messages.edges[3].node.is_from_user).toEqual(false)
-          }
-        )
+          })
       })
     })
   })

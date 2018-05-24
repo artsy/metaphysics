@@ -12,6 +12,6 @@ export default (path, accessToken, fetchOptions = {}) => {
   if (accessToken) assign(headers, { Authorization: `Bearer ${accessToken}` })
   return fetch(
     urljoin(IMPULSE_API_BASE, path),
-    assign({}, fetchOptions, { headers })
+    assign({}, fetchOptions, { headers }),
   )
 }

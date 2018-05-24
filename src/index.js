@@ -129,7 +129,7 @@ async function startApp() {
           ? fetchLoggerRequestDone(requestID)
           : undefined,
       }
-    })
+    }),
   )
 
   if (enableSentry) {

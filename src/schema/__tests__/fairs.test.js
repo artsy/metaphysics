@@ -5,9 +5,7 @@ describe("Fairs", () => {
   it("returns a list of fairs matching array of ids", async () => {
     const fairsLoader = ({ id }) => {
       if (id) {
-        return Promise.resolve(
-          id.map(_id => ({ _id }))
-        )
+        return Promise.resolve(id.map(_id => ({ _id })))
       }
       throw new Error("Unexpected invocation")
     }

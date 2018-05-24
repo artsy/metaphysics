@@ -76,14 +76,10 @@ const BidderPositionType = new GraphQLObjectType({
         position,
         options,
         request,
-        { rootValue: { saleArtworkRootLoader } }
-      ) => {
-        return saleArtworkRootLoader(position.sale_artwork_id).then(
-          saleArtwork =>
+        { rootValue: { saleArtworkRootLoader } },
+      ) => saleArtworkRootLoader(position.sale_artwork_id).then(saleArtwork =>
             get(saleArtwork, "highest_bid.id") ===
-            get(position, "highest_bid.id")
-        )
-      },
+            get(position, "highest_bid.id")),
     },
     max_bid: money({
       name: "BidderPositionMaxBid",
@@ -102,7 +98,7 @@ const BidderPositionType = new GraphQLObjectType({
         { sale_artwork_id },
         options,
         request,
-        { rootValue: { saleArtworkRootLoader } }
+        { rootValue: { saleArtworkRootLoader } },
       ) => saleArtworkRootLoader(sale_artwork_id),
     },
     suggested_next_bid: money({

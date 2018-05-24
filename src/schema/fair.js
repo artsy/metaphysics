@@ -32,10 +32,8 @@ const FairOrganizerType = new GraphQLObjectType({
         { profile_id },
         options,
         request,
-        { rootValue: { profileLoader } }
-      ) => {
-        return profileLoader(profile_id).catch(() => null)
-      },
+        { rootValue: { profileLoader } },
+      ) => profileLoader(profile_id).catch(() => null),
     },
   },
 })
@@ -136,14 +134,12 @@ const FairType = new GraphQLObjectType({
         { id, location, published },
         options,
         request,
-        { rootValue: { fairLoader } }
+        { rootValue: { fairLoader } },
       ) => {
         if (location) {
           return location
         } else if (published) {
-          return fairLoader(id, options).then(fair => {
-            return fair.location
-          })
+          return fairLoader(id, options).then(fair => fair.location)
         }
         return null
       },
@@ -157,7 +153,7 @@ const FairType = new GraphQLObjectType({
         { default_profile_id, organizer },
         options,
         request,
-        { rootValue: { profileLoader } }
+        { rootValue: { profileLoader } },
       ) => {
         const id = default_profile_id || (organizer && organizer.profile_id)
         return (
@@ -184,19 +180,17 @@ const FairType = new GraphQLObjectType({
         { id },
         options,
         request,
-        { rootValue: { fairBoothsLoader } }
+        { rootValue: { fairBoothsLoader } },
       ) => {
         const gravityOptions = omit(parseRelayOptions(options), ["page"])
 
         return Promise.all([
           totalViaLoader(fairBoothsLoader, id, gravityOptions),
           fairBoothsLoader(id, gravityOptions),
-        ]).then(([count, { body: { results } }]) => {
-          return connectionFromArraySlice(results, options, {
+        ]).then(([count, { body: { results } }]) => connectionFromArraySlice(results, options, {
             arrayLength: count,
             sliceStart: gravityOptions.offset,
-          })
-        })
+          }))
       },
     },
     start_at: date,
@@ -223,9 +217,7 @@ const Fair = {
       description: "The slug or ID of the Fair",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { fairLoader } }) => {
-    return fairLoader(id)
-  },
+  resolve: (root, { id }, request, { rootValue: { fairLoader } }) => fairLoader(id),
 }
 
 export default Fair

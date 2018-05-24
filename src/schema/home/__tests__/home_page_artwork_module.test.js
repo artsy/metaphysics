@@ -76,9 +76,7 @@ describe("HomePageArtworkModule", () => {
         }
       `
       return runQuery(query).then(({ home_page }) => {
-        expect(home_page.artwork_module.title).toEqual(
-          "Works by popular artists"
-        )
+        expect(home_page.artwork_module.title).toEqual("Works by popular artists")
       })
     })
   })

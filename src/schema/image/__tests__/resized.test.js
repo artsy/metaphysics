@@ -30,8 +30,7 @@ describe("Image", () => {
     })
 
     it("returns a resized image URL when existing image dimensions are lacking", () => {
-      expect(
-        resizedImageUrl(
+      expect(resizedImageUrl(
           {
             image_url: "https://xxx.cloudfront.net/xxx/:version.jpg",
             image_versions: ["large"],
@@ -39,9 +38,8 @@ describe("Image", () => {
           {
             width: 500,
             height: 500,
-          }
-        )
-      ).toEqual({
+          },
+        )).toEqual({
         factor: Infinity,
         width: null,
         height: null,

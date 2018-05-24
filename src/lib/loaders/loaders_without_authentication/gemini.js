@@ -15,7 +15,7 @@ export default () => ({
     loaderOneOffFactory(gemini, "gemini", `uploads/new.json?acl=${acl}`, {
       acl,
       headers: {
-        Authorization: "Basic " + toBase64(name + ":"),
+        Authorization: `Basic ${toBase64(`${name}:`)}`,
       },
     }),
 
@@ -25,7 +25,7 @@ export default () => ({
     source_bucket,
     metadata,
   }) =>
-    loaderOneOffFactory(gemini, "gemini", `entries.json`, {
+    loaderOneOffFactory(gemini, "gemini", "entries.json", {
       method: "POST",
       form: {
         entry: {
@@ -36,7 +36,7 @@ export default () => ({
         },
       },
       headers: {
-        Authorization: "Basic " + toBase64(template_key + ":"),
+        Authorization: `Basic ${toBase64(`${template_key}:`)}`,
       },
     }),
 })

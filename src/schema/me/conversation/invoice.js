@@ -64,7 +64,7 @@ export default {
     root,
     { conversationId, invoiceId },
     request,
-    { rootValue: { conversationInvoiceLoader } }
+    { rootValue: { conversationInvoiceLoader } },
   ) => {
     if (!conversationInvoiceLoader) return null
     return conversationInvoiceLoader({

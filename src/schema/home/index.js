@@ -22,10 +22,10 @@ const HomePageType = new GraphQLObjectType({
 const HomePage = {
   type: HomePageType,
   description: "Home screen content",
-  resolve: () => {
+  resolve: () =>
     // dummy response object, otherwise the nested fields won’t work
-    return {}
-  },
+     ({})
+  ,
 }
 
 export default HomePage

@@ -25,9 +25,7 @@ const MessageInitiatorType = new GraphQLObjectType({
   },
 })
 
-const isInvoiceMessage = metadata => {
-  return !!metadata && isExisty(metadata.lewitt_invoice_id)
-}
+const isInvoiceMessage = metadata => !!metadata && isExisty(metadata.lewitt_invoice_id)
 
 export const MessageType = new GraphQLObjectType({
   name: "Message",
@@ -59,7 +57,7 @@ export const MessageType = new GraphQLObjectType({
         },
         options,
         req,
-        { rootValue: { userID } }
+        { rootValue: { userID } },
       ) =>
         from_principal ||
         (userID && from_id === userID) ||
@@ -118,7 +116,7 @@ export const MessageType = new GraphQLObjectType({
         { metadata, conversation_id },
         options,
         request,
-        { rootValue: { conversationInvoiceLoader } }
+        { rootValue: { conversationInvoiceLoader } },
       ) => {
         if (!isInvoiceMessage(metadata)) {
           return null

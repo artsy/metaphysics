@@ -41,7 +41,7 @@ export const amount = resolve => ({
       cents / 100,
       assign({}, options, {
         symbol,
-      })
+      }),
     )
   },
 })
@@ -55,7 +55,7 @@ const money = ({ name, resolve }) => ({
       cents: {
         type: GraphQLFloat,
         description: "An amount of money expressed in cents.",
-        resolve: obj => {
+        resolve: (obj) => {
           const { cents } = resolve(obj)
           if (!cents) return null
           return cents
@@ -64,7 +64,7 @@ const money = ({ name, resolve }) => ({
       display: {
         type: GraphQLString,
         description: "A pre-formatted price.",
-        resolve: obj => {
+        resolve: (obj) => {
           const { display } = resolve(obj)
           if (!display) return null
           return display

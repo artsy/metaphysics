@@ -47,10 +47,8 @@ describe("SendConversationMessageMutation", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
-      ({ sendConversationMessage }) => {
+    return runAuthenticatedQuery(mutation, rootValue).then(({ sendConversationMessage }) => {
         expect(sendConversationMessage).toMatchSnapshot()
-      }
-    )
+      })
   })
 })

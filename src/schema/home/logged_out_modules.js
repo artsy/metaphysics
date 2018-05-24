@@ -6,11 +6,11 @@ export default (auction, fair) => {
     },
     {
       key: "current_fairs",
-      display: fair ? true : false,
+      display: !!fair,
     },
     {
       key: "live_auctions",
-      display: auction ? true : false,
+      display: !!auction,
     },
   ]
   return modules

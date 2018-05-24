@@ -11,7 +11,7 @@ export default {
     root,
     options,
     request,
-    { rootValue: { suggestedArtistsLoader } }
+    { rootValue: { suggestedArtistsLoader } },
   ) => {
     if (!suggestedArtistsLoader) return null
     if (!options.artist_id) return null

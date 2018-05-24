@@ -28,7 +28,7 @@ import config from "config"
 
 const { PREDICTION_ENDPOINT } = config
 
-const isLiveOpen = sale => {
+const isLiveOpen = (sale) => {
   const liveStart = moment(sale.live_start_at)
   return (
     sale.auction_state === "open" &&
@@ -73,8 +73,7 @@ const saleArtworkConnection = connectionDefinitions({
 export const SaleType = new GraphQLObjectType({
   name: "Sale",
   interfaces: [NodeInterface],
-  fields: () => {
-    return {
+  fields: () => ({
       ...GravityIDFields,
       cached,
       artworks: {
@@ -102,7 +101,7 @@ export const SaleType = new GraphQLObjectType({
           { id },
           options,
           request,
-          { rootValue: { saleArtworksLoader } }
+          { rootValue: { saleArtworksLoader } },
         ) => {
           const invert = saleArtworks => map(saleArtworks, "artwork")
           let fetch = null
@@ -121,7 +120,7 @@ export const SaleType = new GraphQLObjectType({
           { associated_sale },
           options,
           request,
-          { rootValue: { saleLoader } }
+          { rootValue: { saleLoader } },
         ) => {
           if (associated_sale && associated_sale.id) {
             return saleLoader(associated_sale.id)
@@ -142,19 +141,13 @@ export const SaleType = new GraphQLObjectType({
           sale,
           options,
           request,
-          { rootValue: { incrementsLoader } }
-        ) => {
-          return incrementsLoader({ key: sale.increment_strategy }).then(
-            increments => {
-              return increments[0].increments
-            }
-          )
-        },
+          { rootValue: { incrementsLoader } },
+        ) => incrementsLoader({ key: sale.increment_strategy }).then(increments => increments[0].increments),
       },
       buyers_premium: {
         type: new GraphQLList(BuyersPremium),
         description: "Auction's buyer's premium policy.",
-        resolve: sale => {
+        resolve: (sale) => {
           if (!sale.buyers_premium) return null
 
           return map(sale.buyers_premium.schedule, item => ({
@@ -177,8 +170,10 @@ export const SaleType = new GraphQLObjectType({
       },
       display_timely_at: {
         type: GraphQLString,
-        resolve: sale => {
-          const { live_start_at, registration_ends_at, start_at, end_at } = sale
+        resolve: (sale) => {
+          const {
+ live_start_at, registration_ends_at, start_at, end_at,
+} = sale
 
           // Closed
           if (end_at && end_at < moment()) {
@@ -188,9 +183,7 @@ export const SaleType = new GraphQLObjectType({
           } else if (registration_ends_at > moment()) {
             const diff = moment().diff(moment(registration_ends_at), "hours")
             const format = diff > -24 ? "ha" : "MMM D, ha"
-            const label = `Register by\n${moment(registration_ends_at).format(
-              format
-            )}`
+            const label = `Register by\n${moment(registration_ends_at).format(format)}`
             return label
 
             // Live Auction
@@ -210,15 +203,13 @@ export const SaleType = new GraphQLObjectType({
             const isInProgress = startAt < moment()
             const isUpcoming = startAt > moment() && startAt < range
             const isNearFuture = startAt > range
-            const dateLabel = saleDate => {
-              return (
-                moment(saleDate)
+            const dateLabel = saleDate => (
+                `${moment(saleDate)
                   .fromNow()
                   .replace("in ", "")
                   .replace("ago", "")
-                  .trim() + " left" // e.g., X min left
+                  .trim()} left` // e.g., X min left
               )
-            }
 
             // Timed auction in progress
             if (isInProgress) {
@@ -287,9 +278,9 @@ export const SaleType = new GraphQLObjectType({
         type: GraphQLString,
         description:
           "Returns a live auctions url if the sale is open and start time is after now",
-        resolve: sale => {
+        resolve: (sale) => {
           if (isLiveOpen(sale)) {
-            return PREDICTION_ENDPOINT + "/" + sale.id
+            return `${PREDICTION_ENDPOINT}/${sale.id}`
           }
         },
       },
@@ -303,7 +294,7 @@ export const SaleType = new GraphQLObjectType({
           { promoted_sale },
           options,
           request,
-          { rootValue: { saleLoader } }
+          { rootValue: { saleLoader } },
         ) => {
           if (promoted_sale && promoted_sale.id) {
             return saleLoader(promoted_sale.id)
@@ -335,7 +326,7 @@ export const SaleType = new GraphQLObjectType({
           { id },
           options,
           request,
-          { rootValue: { saleArtworksLoader } }
+          { rootValue: { saleArtworksLoader } },
         ) => {
           let fetch = null
           if (options.all) {
@@ -354,16 +345,14 @@ export const SaleType = new GraphQLObjectType({
           sale,
           options,
           request,
-          { rootValue: { saleArtworksLoader } }
+          { rootValue: { saleArtworksLoader } },
         ) => {
           const { limit: size, offset } = getPagingParameters(options)
-          return saleArtworksLoader(sale.id, { size, offset }).then(
-            ({ body }) =>
+          return saleArtworksLoader(sale.id, { size, offset }).then(({ body }) =>
               connectionFromArraySlice(body, options, {
                 arrayLength: sale.eligible_sale_artworks_count,
                 sliceStart: offset,
-              })
-          )
+              }))
         },
       },
       sale_type: {
@@ -385,16 +374,13 @@ export const SaleType = new GraphQLObjectType({
           sale,
           { id },
           request,
-          { rootValue: { saleArtworkLoader } }
-        ) => {
-          return saleArtworkLoader({ saleId: sale.id, saleArtworkId: id })
-        },
+          { rootValue: { saleArtworkLoader } },
+        ) => saleArtworkLoader({ saleId: sale.id, saleArtworkId: id }),
       },
       symbol: {
         type: GraphQLString,
       },
-    }
-  },
+    }),
 })
 
 const Sale = {

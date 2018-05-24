@@ -12,15 +12,13 @@ const ArtworkLayerType = new GraphQLObjectType({
         { id, type, artwork_id },
         options,
         request,
-        { rootValue: { relatedLayerArtworksLoader } }
-      ) => {
-        return relatedLayerArtworksLoader(
+        { rootValue: { relatedLayerArtworksLoader } },
+      ) => relatedLayerArtworksLoader(
           { id, type },
           {
             artwork: [artwork_id],
-          }
-        )
-      },
+          },
+        ),
     },
     description: {
       type: GraphQLString,

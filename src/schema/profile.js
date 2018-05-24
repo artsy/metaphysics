@@ -46,7 +46,7 @@ const ProfileType = new GraphQLObjectType({
         { id },
         {},
         request,
-        { rootValue: { followedProfileLoader } }
+        { rootValue: { followedProfileLoader } },
       ) => {
         if (!followedProfileLoader) return false
         return followedProfileLoader(id).then(({ is_followed }) => is_followed)

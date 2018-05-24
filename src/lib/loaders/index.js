@@ -16,7 +16,7 @@ export default (accessToken, userID, opts) => {
     return Object.assign(
       {},
       loaders,
-      loadersWithAuthentication(accessToken, userID, opts)
+      loadersWithAuthentication(accessToken, userID, opts),
     )
   }
   return loaders

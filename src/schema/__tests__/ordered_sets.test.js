@@ -17,8 +17,7 @@ describe("OrderedSets type", () => {
 `
 
   const rootValue = {
-    setsLoader: sinon.stub().returns(
-      Promise.resolve([
+    setsLoader: sinon.stub().returns(Promise.resolve([
         {
           id: "52dd3c2e4b8480091700027f",
           item_type: "Gene",
@@ -26,19 +25,15 @@ describe("OrderedSets type", () => {
           name: "Featured Genes",
           description: "These Genes are featured",
         },
-      ])
-    ),
-    setItemsLoader: sinon.stub().returns(
-      Promise.resolve([
+      ])),
+    setItemsLoader: sinon.stub().returns(Promise.resolve([
         {
           name: "Painting",
         },
-      ])
-    ),
+      ])),
   }
 
-  it("fetches sets by key", () => {
-    return runQuery(query, rootValue).then(data => {
+  it("fetches sets by key", () => runQuery(query, rootValue).then((data) => {
       expect(data).toEqual({
         ordered_sets: [
           {
@@ -53,6 +48,5 @@ describe("OrderedSets type", () => {
           },
         ],
       })
-    })
-  })
+    }))
 })

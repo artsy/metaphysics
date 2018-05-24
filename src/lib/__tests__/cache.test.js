@@ -5,11 +5,9 @@ describe("Cache", () => {
     describe("#get", () => {
       beforeEach(() => cache.set("get_foo", { bar: "baz" }))
 
-      it("parses the data and resolves the promise", () => {
-        return cache.get("get_foo").then(data => {
+      it("parses the data and resolves the promise", () => cache.get("get_foo").then((data) => {
           expect(data.bar).toBe("baz")
-        })
-      })
+        }))
     })
 
     describe("#delete", () => {
@@ -17,7 +15,7 @@ describe("Cache", () => {
 
       it("deletes the data", () => {
         cache.delete("get_foo")
-        return cache.get("get_foo").catch(e => {
+        return cache.get("get_foo").catch((e) => {
           expect(e.message).toEqual("cache#get did not return `data`")
         })
       })
@@ -25,7 +23,7 @@ describe("Cache", () => {
 
     describe("#set", () => {
       describe("with a plain Object", () => {
-        it("sets the cache and includes a timestamp", done => {
+        it("sets the cache and includes a timestamp", (done) => {
           cache.set("set_foo", { bar: "baz" })
 
           client.get("set_foo", (err, data) => {
@@ -39,7 +37,7 @@ describe("Cache", () => {
         })
       })
 
-      it("with an Array it sets the cache and includes a timestamp", done => {
+      it("with an Array it sets the cache and includes a timestamp", (done) => {
         cache.set("set_bar", [{ baz: "qux" }])
 
         client.get("set_bar", (err, data) => {

@@ -40,29 +40,16 @@ const ArtistCarousel = {
     ])
       .then(([shows, artworks]) => {
         const elligibleShows = shows.filter(show => show.images_count > 0)
-        return Promise.all(
-          elligibleShows.map(show =>
-            partnerShowImagesLoader(show.id, { size: 1 })
-          )
-        )
-          .then(showImages => {
-            return _.zip(elligibleShows, showImages).map(([show, images]) => {
-              return _.assign(
+        return Promise.all(elligibleShows.map(show =>
+            partnerShowImagesLoader(show.id, { size: 1 })))
+          .then(showImages => _.zip(elligibleShows, showImages).map(([show, images]) => _.assign(
                 { href: `/show/${show.id}`, title: show.name },
-                _.first(images)
-              )
-            })
-          })
-          .then(showsWithImages => {
-            return showsWithImages.concat(
-              artworks.map(artwork => {
-                return _.assign(
+                _.first(images),
+              )))
+          .then(showsWithImages => showsWithImages.concat(artworks.map(artwork => _.assign(
                   { href: `/artwork/${artwork.id}`, title: artwork.title },
-                  _.first(artwork.images)
-                )
-              })
-            )
-          })
+                  _.first(artwork.images),
+                ))))
       })
       .catch(error)
   },

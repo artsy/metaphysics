@@ -23,7 +23,7 @@ export default mutationWithClientMutationId({
         { artwork_id },
         _,
         _request,
-        { rootValue: { artworkLoader } }
+        { rootValue: { artworkLoader } },
       ) => artworkLoader(artwork_id),
     },
   },
@@ -37,7 +37,7 @@ export default mutationWithClientMutationId({
         saveArtworkLoader,
         deleteArtworkLoader,
       },
-    }
+    },
   ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")

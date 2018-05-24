@@ -11,7 +11,7 @@ describe("me { saved_artwork", () => {
         "test",
         "fixtures",
         "gravity",
-        "artworks_array.json"
+        "artworks_array.json",
       )
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
 
@@ -33,23 +33,19 @@ describe("me { saved_artwork", () => {
         }
       `
       const rootValue = {
-        collectionLoader: sinon.stub().returns(
-          Promise.resolve({
+        collectionLoader: sinon.stub().returns(Promise.resolve({
             name: "collection",
             private: false,
             default: true,
             description: "My beautiful collection",
-          })
-        ),
-        collectionArtworksLoader: sinon.stub().returns(
-          Promise.resolve({
+          })),
+        collectionArtworksLoader: sinon.stub().returns(Promise.resolve({
             body: artworks,
             headers: { "x-total-count": 10 },
-          })
-        ),
+          })),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(data => {
+      return runAuthenticatedQuery(query, rootValue).then((data) => {
         expect(data).toMatchSnapshot()
       })
     })

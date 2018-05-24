@@ -25,7 +25,7 @@ function createRedisClient() {
   const client = redis.createClient({
     host: redisURL.hostname,
     port: redisURL.port,
-    retryStrategy: options => {
+    retryStrategy: (options) => {
       if (options.error) {
         // Errors that lead to the connection being dropped are not emitted to
         // the error event handler, so send it there ourselves so we can handle
@@ -55,7 +55,7 @@ function createRedisClient() {
     client.auth(redisURL.auth.split(":")[1])
   }
   client.on("error", error)
-  VerboseEvents.forEach(event => {
+  VerboseEvents.forEach((event) => {
     client.on(event, () => verbose(`Redis: ${event}`))
   })
   return client
@@ -64,8 +64,7 @@ function createRedisClient() {
 export const client = isTest ? createMockClient() : createRedisClient()
 
 export default {
-  get: key => {
-    return new Promise((resolve, reject) => {
+  get: key => new Promise((resolve, reject) => {
       if (isNull(client)) return reject(new Error("Cache client is `null`"))
 
       client.get(key, (err, data) => {
@@ -73,8 +72,7 @@ export default {
         if (data) return resolve(JSON.parse(data))
         reject(new Error("cache#get did not return `data`"))
       })
-    })
-  },
+    }),
 
   set: (key, data) => {
     if (isNull(client)) return false
@@ -93,9 +91,9 @@ export default {
       JSON.stringify(data),
       "EX",
       CACHE_LIFETIME_IN_SECONDS,
-      err => {
+      (err) => {
         if (err) error(err)
-      }
+      },
     )
   },
 
@@ -104,6 +102,5 @@ export default {
       client.del(key, (err, response) => {
         if (err) return reject(err)
         resolve(response)
-      })
-    ),
+      })),
 }

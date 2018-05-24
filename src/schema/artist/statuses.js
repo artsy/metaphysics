@@ -10,12 +10,12 @@ const ArtistStatusesType = new GraphQLObjectType({
         { id },
         options,
         request,
-        { rootValue: { relatedMainArtistsLoader } }
+        { rootValue: { relatedMainArtistsLoader } },
       ) =>
         totalViaLoader(
           relatedMainArtistsLoader,
           {},
-          { exclude_artists_without_artworks: true, artist: [id] }
+          { exclude_artists_without_artworks: true, artist: [id] },
         ).then(count => count > 0),
     },
     articles: {
@@ -34,9 +34,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     auction_lots: {
       type: GraphQLBoolean,
-      resolve: ({ display_auction_link, hide_auction_link }) => {
-        return display_auction_link && !hide_auction_link
-      },
+      resolve: ({ display_auction_link, hide_auction_link }) => display_auction_link && !hide_auction_link,
     },
     biography: {
       type: GraphQLBoolean,
@@ -53,17 +51,15 @@ const ArtistStatusesType = new GraphQLObjectType({
         { id },
         options,
         request,
-        { rootValue: { relatedContemporaryArtistsLoader } }
-      ) => {
-        return totalViaLoader(
+        { rootValue: { relatedContemporaryArtistsLoader } },
+      ) => totalViaLoader(
           relatedContemporaryArtistsLoader,
           {},
           {
             exclude_artists_without_artworks: true,
             artist: [id],
-          }
-        ).then(total => total > 0)
-      },
+          },
+        ).then(total => total > 0),
     },
     cv: {
       type: GraphQLBoolean,

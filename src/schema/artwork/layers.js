@@ -8,8 +8,7 @@ export const artworkLayers = (id, loader) =>
     .then(layers => enhance(layers, { artwork_id: id }))
     .then(layers =>
       // Move fair layer to the beginning
-      remove(layers, ({ type }) => type === "fair").concat(layers)
-    )
+      remove(layers, ({ type }) => type === "fair").concat(layers))
 
 export default {
   type: new GraphQLList(ArtworkLayer.type),

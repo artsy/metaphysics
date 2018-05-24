@@ -5,19 +5,15 @@ import { runQuery } from "test/utils"
 
 describe("getDefault", () => {
   it("returns the default image", () => {
-    expect(
-      getDefault([
+    expect(getDefault([
         { id: "foo", is_default: false },
         { id: "bar", is_default: true },
         { id: "baz", is_default: false },
-      ]).id
-    ).toBe("bar")
+      ]).id).toBe("bar")
   })
 
   it("returns the first object if there is no default", () => {
-    expect(getDefault([{ id: "foo" }, { id: "bar" }, { id: "baz" }]).id).toBe(
-      "foo"
-    )
+    expect(getDefault([{ id: "foo" }, { id: "bar" }, { id: "baz" }]).id).toBe("foo")
   })
 })
 
@@ -61,7 +57,7 @@ describe("Image type", () => {
     it("is square by default (when there is no image geometry)", () => {
       assign(image, { original_width: null, original_height: null })
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, rootValue).then((data) => {
         expect(data.artwork.image.orientation).toBe("square")
       })
     })
@@ -69,7 +65,7 @@ describe("Image type", () => {
     it("detects portrait", () => {
       assign(image, { original_width: 1000, original_height: 1500 })
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, rootValue).then((data) => {
         expect(data.artwork.image.orientation).toBe("portrait")
       })
     })
@@ -77,7 +73,7 @@ describe("Image type", () => {
     it("detects landscape", () => {
       assign(image, { original_width: 2000, original_height: 1500 })
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, rootValue).then((data) => {
         expect(data.artwork.image.orientation).toBe("landscape")
       })
     })
@@ -85,7 +81,7 @@ describe("Image type", () => {
     it("detects square", () => {
       assign(image, { original_width: 2000, original_height: 2000 })
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, rootValue).then((data) => {
         expect(data.artwork.image.orientation).toBe("square")
       })
     })

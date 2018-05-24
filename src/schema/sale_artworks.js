@@ -30,7 +30,7 @@ export default {
     _root,
     options,
     _request,
-    { rootValue: { saleArtworksFilterLoader, saleArtworksAllLoader } }
+    { rootValue: { saleArtworksFilterLoader, saleArtworksAllLoader } },
   ) => {
     const relayOptions = { ...DEFAULTS, ...options }
     const params = parseRelayOptions(relayOptions)

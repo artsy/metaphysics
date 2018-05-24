@@ -27,11 +27,9 @@ describe("Me", () => {
         }
       `
 
-      return runAuthenticatedQuery(query, rootValue).then(
-        ({ me: conversation }) => {
+      return runAuthenticatedQuery(query, rootValue).then(({ me: conversation }) => {
           expect(conversation).toMatchSnapshot()
-        }
-      )
+        })
     })
   })
 })

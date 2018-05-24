@@ -9,7 +9,7 @@ it("returns artworks for a collection", () => {
     "test",
     "fixtures",
     "gravity",
-    "follow_genes.json"
+    "follow_genes.json",
   )
   const genes = JSON.parse(readFileSync(genesPath, "utf8"))
 
@@ -34,7 +34,7 @@ it("returns artworks for a collection", () => {
       }
     }
   `
-  return runAuthenticatedQuery(query, { followedGenesLoader }).then(data => {
+  return runAuthenticatedQuery(query, { followedGenesLoader }).then((data) => {
     expect(data).toMatchSnapshot()
   })
 })

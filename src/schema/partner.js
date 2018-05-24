@@ -66,15 +66,13 @@ const PartnerType = new GraphQLObjectType({
           { id },
           options,
           request,
-          { rootValue: { partnerArtworksLoader } }
-        ) => {
-          return partnerArtworksLoader(
+          { rootValue: { partnerArtworksLoader } },
+        ) => partnerArtworksLoader(
             id,
             assign({}, options, {
               published: true,
-            })
-          ).then(exclude(options.exclude, "id"))
-        },
+            }),
+          ).then(exclude(options.exclude, "id")),
       },
       categories: {
         type: new GraphQLList(PartnerCategoryType),
@@ -106,34 +104,18 @@ const PartnerType = new GraphQLObjectType({
           fields: {
             artworks: numeral(({ artworks_count }) => artworks_count),
             artists: numeral(({ artists_count }) => artists_count),
-            partner_artists: numeral(
-              ({ partner_artists_count }) => partner_artists_count
-            ),
-            eligible_artworks: numeral(
-              ({ eligible_artworks_count }) => eligible_artworks_count
-            ),
-            published_for_sale_artworks: numeral(
-              ({ published_for_sale_artworks_count }) =>
-                published_for_sale_artworks_count
-            ),
-            published_not_for_sale_artworks: numeral(
-              ({ published_not_for_sale_artworks_count }) =>
-                published_not_for_sale_artworks_count
-            ),
+            partner_artists: numeral(({ partner_artists_count }) => partner_artists_count),
+            eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
+            published_for_sale_artworks: numeral(({ published_for_sale_artworks_count }) =>
+                published_for_sale_artworks_count),
+            published_not_for_sale_artworks: numeral(({ published_not_for_sale_artworks_count }) =>
+                published_not_for_sale_artworks_count),
             shows: numeral(({ shows_count }) => shows_count),
-            displayable_shows: numeral(
-              ({ displayable_shows_count }) => displayable_shows_count
-            ),
-            current_displayable_shows: numeral(
-              ({ current_displayable_shows_count }) =>
-                current_displayable_shows_count
-            ),
-            artist_documents: numeral(
-              ({ artist_documents_count }) => artist_documents_count
-            ),
-            partner_show_documents: numeral(
-              ({ partner_show_documents_count }) => partner_show_documents_count
-            ),
+            displayable_shows: numeral(({ displayable_shows_count }) => displayable_shows_count),
+            current_displayable_shows: numeral(({ current_displayable_shows_count }) =>
+                current_displayable_shows_count),
+            artist_documents: numeral(({ artist_documents_count }) => artist_documents_count),
+            partner_show_documents: numeral(({ partner_show_documents_count }) => partner_show_documents_count),
           },
         }),
         resolve: artist => artist,
@@ -148,9 +130,9 @@ const PartnerType = new GraphQLObjectType({
       href: {
         type: GraphQLString,
         resolve: ({ type, default_profile_id }) =>
-          type === "Auction"
+          (type === "Auction"
             ? `/auction/${default_profile_id}`
-            : `/${default_profile_id}`,
+            : `/${default_profile_id}`),
       },
       initials: initials("name"),
       is_default_profile_public: {
@@ -184,7 +166,7 @@ const PartnerType = new GraphQLObjectType({
           { id },
           options,
           request,
-          { rootValue: { partnerLocationsLoader } }
+          { rootValue: { partnerLocationsLoader } },
         ) => partnerLocationsLoader(id, options),
       },
       name: {
@@ -197,20 +179,18 @@ const PartnerType = new GraphQLObjectType({
           { default_profile_id },
           options,
           request,
-          { rootValue: { profileLoader } }
+          { rootValue: { profileLoader } },
         ) => profileLoader(default_profile_id).catch(() => null),
       },
       shows: {
         type: PartnerShows.type,
         args: omit(PartnerShows.args, "partner_id"),
-        resolve: ({ _id }, options) => {
-          return PartnerShows.resolve(
+        resolve: ({ _id }, options) => PartnerShows.resolve(
             null,
             assign({}, options, {
               partner_id: _id,
-            })
-          )
-        },
+            }),
+          ),
       },
       type: {
         type: GraphQLString,
@@ -230,7 +210,7 @@ const PartnerType = new GraphQLObjectType({
           partner,
           _args,
           _request,
-          { rootValue: { lewittSchema } }
+          { rootValue: { lewittSchema } },
         ) => {
           const { _id, payments_enabled } = partner
           if (!payments_enabled) {
@@ -245,7 +225,7 @@ const PartnerType = new GraphQLObjectType({
           `
           return graphql(lewittSchema, query, null, null, {
             partner_id: _id,
-          }).then(response => {
+          }).then((response) => {
             if (response.errors) {
               // Something is off in Lewitt so cards are not accepted at the moment
               return false

@@ -5,18 +5,15 @@ import request from "request"
 import config from "config"
 import HTTPError from "lib/http_error"
 
-export default (url, options = {}) => {
-  return new Promise((resolve, reject) => {
-    const opts = clone(
-      defaults(options, {
+export default (url, options = {}) => new Promise((resolve, reject) => {
+    const opts = clone(defaults(options, {
         method: "GET",
         timeout: config.REQUEST_TIMEOUT_MS,
-      })
-    )
+      }))
 
     // Wrap user agent
     const userAgent = opts.userAgent
-      ? opts.userAgent + "; Metaphysics"
+      ? `${opts.userAgent}; Metaphysics`
       : "Metaphysics"
     delete opts.userAgent
     opts.headers = assign({}, { "User-Agent": userAgent }, opts.headers)
@@ -49,4 +46,3 @@ export default (url, options = {}) => {
       }
     })
   })
-}

@@ -72,7 +72,7 @@ const mustHave = {
   POSITRON_API_BASE,
 }
 
-Object.keys(mustHave).forEach(key => {
+Object.keys(mustHave).forEach((key) => {
   if (!mustHave[key]) {
     throw new Error(`You need to have the ENV var ${key} set up.`)
   }

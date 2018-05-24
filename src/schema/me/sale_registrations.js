@@ -26,20 +26,10 @@ export default {
     root,
     options,
     request,
-    { rootValue: { meBiddersLoader, salesLoader } }
-  ) => {
-    return salesLoader(options).then(sales => {
-      return Promise.all(
-        sales.map(sale => {
-          return meBiddersLoader({ sale_id: sale.id }).then(bidders => {
-            return {
+    { rootValue: { meBiddersLoader, salesLoader } },
+  ) => salesLoader(options).then(sales => Promise.all(sales.map(sale => meBiddersLoader({ sale_id: sale.id }).then(bidders => ({
               sale,
               bidder: first(bidders),
               is_registered: bidders.length > 0,
-            }
-          })
-        })
-      )
-    })
-  },
+            }))))),
 }

@@ -25,14 +25,12 @@ export const HomePageArtistModuleTypes = {
         {
           exclude_followed_artists: true,
           exclude_artists_without_forsale_artworks: true,
-        }
+        },
       ).then(total => total > 0)
     },
     resolve: ({ rootValue: { suggestedSimilarArtistsLoader } }) => {
       if (!suggestedSimilarArtistsLoader) {
-        throw new Error(
-          "Both the X-USER-ID and X-ACCESS-TOKEN headers are required."
-        )
+        throw new Error("Both the X-USER-ID and X-ACCESS-TOKEN headers are required.")
       }
       return suggestedSimilarArtistsLoader({
         exclude_followed_artists: true,
@@ -61,9 +59,7 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       description: "A globally unique ID.",
-      resolve: ({ key }) => {
-        return toGlobalId("HomePageArtistModule", JSON.stringify({ key }))
-      },
+      resolve: ({ key }) => toGlobalId("HomePageArtistModule", JSON.stringify({ key })),
     },
     key: {
       description: "Module identifier.",
@@ -71,9 +67,7 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     },
     results: {
       type: new GraphQLList(Artist.type),
-      resolve: ({ key }, options, request, { rootValue }) => {
-        return HomePageArtistModuleTypes[key].resolve({ rootValue })
-      },
+      resolve: ({ key }, options, request, { rootValue }) => HomePageArtistModuleTypes[key].resolve({ rootValue }),
     },
   },
 })
@@ -91,7 +85,7 @@ const HomePageArtistModule = {
     },
   },
   resolve: (root, obj) =>
-    obj.key && HomePageArtistModuleTypes[obj.key] ? obj : null,
+    (obj.key && HomePageArtistModuleTypes[obj.key] ? obj : null),
 }
 
 export default HomePageArtistModule

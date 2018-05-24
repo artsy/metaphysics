@@ -25,7 +25,7 @@ export const LotStandingType = new GraphQLObjectType({
       type: BidderPosition.type,
       description: "Your bid if it is currently winning",
       resolve: lotStanding =>
-        isHighestBidder(lotStanding) ? lotStanding.leading_position : null,
+        (isHighestBidder(lotStanding) ? lotStanding.leading_position : null),
     },
     bidder: {
       type: Bidder.type,
@@ -52,7 +52,7 @@ export const LotStandingType = new GraphQLObjectType({
         { bidder },
         options,
         request,
-        { rootValue: { saleLoader } }
+        { rootValue: { saleLoader } },
       ) => {
         if (bidder.sale && bidder.sale.id) {
           // don't error if the sale is unpublished
@@ -82,11 +82,9 @@ export default {
     root,
     { sale_id, artwork_id },
     request,
-    { rootValue: { lotStandingLoader } }
+    { rootValue: { lotStandingLoader } },
   ) => {
     if (!lotStandingLoader) return null
-    return lotStandingLoader({ sale_id, artwork_id }).then(([lotStanding]) => {
-      return lotStanding
-    })
+    return lotStandingLoader({ sale_id, artwork_id }).then(([lotStanding]) => lotStanding)
   },
 }

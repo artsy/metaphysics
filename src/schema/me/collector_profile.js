@@ -42,7 +42,7 @@ export default {
     root,
     option,
     request,
-    { rootValue: { accessToken, collectorProfileLoader } }
+    { rootValue: { accessToken, collectorProfileLoader } },
   ) => {
     if (!accessToken) return null
     return collectorProfileLoader()

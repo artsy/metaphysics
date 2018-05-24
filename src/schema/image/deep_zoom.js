@@ -1,5 +1,7 @@
 import { isExisty } from "lib/helpers"
 
+import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
+
 export function isZoomable(image) {
   return (
     isExisty(image.tile_base_url) &&
@@ -10,8 +12,6 @@ export function isZoomable(image) {
     isExisty(image.max_tiled_width)
   )
 }
-
-import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
 
 const DeepZoomType = new GraphQLObjectType({
   name: "DeepZoom",
@@ -51,13 +51,11 @@ const DeepZoomType = new GraphQLObjectType({
           },
           Url: {
             type: GraphQLString,
-            resolve: ({ tile_base_url }) => {
-              return (
+            resolve: ({ tile_base_url }) => (
                 tile_base_url
                   // Ensure trailing slash
                   .replace(/\/?$/, "/")
-              )
-            },
+              ),
           },
           xmlns: {
             type: GraphQLString,

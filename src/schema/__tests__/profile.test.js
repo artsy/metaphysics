@@ -25,20 +25,18 @@ describe("Profile type", () => {
     }
   `
 
-  it("is_publically_visible returns true when profile is published", () => {
-    return runQuery(query, rootValue).then(data => {
+  it("is_publically_visible returns true when profile is published", () => runQuery(query, rootValue).then((data) => {
       expect(data).toEqual({
         profile: {
           id: "the-armory-show",
           is_publically_visible: true,
         },
       })
-    })
-  })
+    }))
 
   it("is_publically_visible returns false when profile is private", () => {
     profileData.private = true
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, rootValue).then((data) => {
       expect(data).toEqual({
         profile: {
           id: "the-armory-show",

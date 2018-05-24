@@ -51,7 +51,7 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: (
     { token },
     request,
-    { rootValue: { accessToken, createCreditCardLoader } }
+    { rootValue: { accessToken, createCreditCardLoader } },
   ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")

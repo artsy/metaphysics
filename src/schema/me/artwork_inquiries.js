@@ -35,7 +35,7 @@ export default {
     _root,
     options,
     _request,
-    { rootValue: { accessToken, inquiryRequestsLoader } }
+    { rootValue: { accessToken, inquiryRequestsLoader } },
   ) => {
     if (!accessToken) return null
     const { limit: size, offset } = getPagingParameters(options)
@@ -45,11 +45,9 @@ export default {
       inquireable_type: "artwork",
       total_count: true,
     }
-    return inquiryRequestsLoader(gravityArgs).then(({ body, headers }) => {
-      return connectionFromArraySlice(body, options, {
+    return inquiryRequestsLoader(gravityArgs).then(({ body, headers }) => connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
-      })
-    })
+      }))
   },
 }

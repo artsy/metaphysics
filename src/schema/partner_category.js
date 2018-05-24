@@ -18,11 +18,9 @@ const PartnerCategoryType = new GraphQLObjectType({
       type: Partners.type,
       args: Partners.args,
       resolve: ({ id }, options, request, { rootValue: { partnersLoader } }) =>
-        partnersLoader(
-          _.defaults(options, {
+        partnersLoader(_.defaults(options, {
             partner_categories: [id],
-          })
-        ),
+          })),
     },
   }),
 })

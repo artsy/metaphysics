@@ -19,7 +19,7 @@ const TrendingArtistsType = new GraphQLObjectType({
         deltaResponse,
         _args,
         _request,
-        { rootValue: { artistLoader } }
+        { rootValue: { artistLoader } },
       ) => {
         const ids = without(keys(deltaResponse), "cached", "context_type")
         return Promise.all(ids.map(id => artistLoader(id)))
@@ -86,9 +86,11 @@ const TrendingArtists = {
   },
   resolve: (
     root,
-    { method, name, size, double_time_period },
+    {
+ method, name, size, double_time_period,
+},
     _request,
-    { rootValue: { deltaLoader } }
+    { rootValue: { deltaLoader } },
   ) =>
     deltaLoader({
       method,

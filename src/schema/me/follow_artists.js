@@ -8,7 +8,7 @@ const FollowArtistsType = new GraphQLObjectType({
   fields: {
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: data => {
+      resolve: (data) => {
         const artists = data.artists ? data.artists : data
         return map(artists, "artist")
       },
@@ -23,10 +23,8 @@ const FollowArtistsType = new GraphQLObjectType({
               data,
               options,
               request,
-              { rootValue: { followedArtistsLoader } }
-            ) => {
-              return totalViaLoader(followedArtistsLoader)
-            },
+              { rootValue: { followedArtistsLoader } },
+            ) => totalViaLoader(followedArtistsLoader),
           },
         },
       }),
@@ -50,7 +48,7 @@ export default {
     root,
     options,
     request,
-    { rootValue: { followedArtistsLoader } }
+    { rootValue: { followedArtistsLoader } },
   ) => {
     if (!followedArtistsLoader) return null
     return followedArtistsLoader(options).then(({ body }) => body)

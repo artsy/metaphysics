@@ -47,7 +47,7 @@ describe("Artists", () => {
   })
 
   it("returns a list of artists matching array of slugs", async () => {
-    const artistLoader = slug => {
+    const artistLoader = (slug) => {
       if (slug) {
         const artists = [
           {

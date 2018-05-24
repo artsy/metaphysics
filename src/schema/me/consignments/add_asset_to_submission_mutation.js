@@ -30,7 +30,7 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: (
     assets,
     _request,
-    { rootValue: { assetCreateLoader } }
+    { rootValue: { assetCreateLoader } },
   ) => {
     if (!assetCreateLoader) return null
     return assetCreateLoader(assets)

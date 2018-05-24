@@ -28,17 +28,15 @@ const filterModules = (modules, max_rails) => {
 const addFollowedGenes = (
   followedGenesLoader,
   modules,
-  max_followed_gene_rails
+  max_followed_gene_rails,
 ) => {
   const followedGeneIndex = findIndex(modules, { key: "genes" })
   if (followedGeneIndex && max_followed_gene_rails >= 1) {
     // 100 is the max that Gravity will return per page.
     const size = max_followed_gene_rails < 0 ? 100 : max_followed_gene_rails
-    return followedGenes(followedGenesLoader, size).then(results => {
+    return followedGenes(followedGenesLoader, size).then((results) => {
       const blueprint = modules[followedGeneIndex]
-      const genes = map(results, ({ gene }) => {
-        return Object.assign({ params: { id: gene.id, gene } }, blueprint)
-      })
+      const genes = map(results, ({ gene }) => Object.assign({ params: { id: gene.id, gene } }, blueprint))
       const copy = modules.slice(0)
       const args = [followedGeneIndex, 1].concat(genes)
       Array.prototype.splice.apply(copy, args)
@@ -54,8 +52,8 @@ const reorderModules = (modules, preferredOrder) => {
   }
   const unordered = modules.slice(0)
   const reordered = []
-  preferredOrder.forEach(key => {
-    remove(unordered, mod => {
+  preferredOrder.forEach((key) => {
+    remove(unordered, (mod) => {
       if (mod.key === key) {
         reordered.push(mod)
         return true
@@ -142,7 +140,9 @@ const HomePageArtworkModules = {
   },
   resolve: (
     root,
-    { max_rails, max_followed_gene_rails, order, exclude },
+    {
+ max_rails, max_followed_gene_rails, order, exclude,
+},
     request,
     {
       rootValue: {
@@ -153,11 +153,11 @@ const HomePageArtworkModules = {
         salesLoader,
         suggestedSimilarArtistsLoader,
       },
-    }
+    },
   ) => {
     // If user is logged in, get their specific modules
     if (accessToken) {
-      return homepageModulesLoader().then(response => {
+      return homepageModulesLoader().then((response) => {
         const keysToDisplay = without(keys(response), ...exclude)
         const modulesToDisplay = map(keysToDisplay, key => ({
           key,
@@ -166,8 +166,8 @@ const HomePageArtworkModules = {
         return addFollowedGenes(
           followedGenesLoader,
           modulesToDisplay,
-          max_followed_gene_rails
-        ).then(allModulesToDisplay => {
+          max_followed_gene_rails,
+        ).then((allModulesToDisplay) => {
           let modules = allModulesToDisplay
 
           modules = filterModules(modules, max_rails)
@@ -181,8 +181,7 @@ const HomePageArtworkModules = {
           })
 
           if (relatedArtistIndex > -1) {
-            return relatedArtists(suggestedSimilarArtistsLoader).then(
-              artistPairs => {
+            return relatedArtists(suggestedSimilarArtistsLoader).then((artistPairs) => {
                 // relatedArtist now returns 2 random artist pairs
                 // we will use one for the related_artist rail and one for
                 // the followed_artist rail
@@ -208,17 +207,16 @@ const HomePageArtworkModules = {
                   return set(
                     modules,
                     `[${relatedArtistIndex}].params`,
-                    relatedArtistModuleParams
+                    relatedArtistModuleParams,
                   )
                 }
                 // if we don't find an artist pair,
                 // remove the related artist rail
                 return without(
                   modules,
-                  find(modules, { key: "related_artists" })
+                  find(modules, { key: "related_artists" }),
                 )
-              }
-            )
+              })
           }
           return modules
         })

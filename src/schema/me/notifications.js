@@ -29,10 +29,8 @@ const NotificationsFeedItemType = new GraphQLObjectType({
         { object_ids },
         options,
         request,
-        { rootValue: { artworksLoader } }
-      ) => {
-        return artworksLoader({ ids: object_ids })
-      },
+        { rootValue: { artworksLoader } },
+      ) => artworksLoader({ ids: object_ids }),
     },
     date,
     message: {
@@ -70,17 +68,15 @@ const Notifications = {
     root,
     options,
     request,
-    { rootValue: { accessToken, notificationsFeedLoader } }
+    { rootValue: { accessToken, notificationsFeedLoader } },
   ) => {
     if (!accessToken) return null
     const gravityOptions = parseRelayOptions(options)
-    return notificationsFeedLoader(omit(gravityOptions, "offset")).then(
-      ({ feed, total }) =>
+    return notificationsFeedLoader(omit(gravityOptions, "offset")).then(({ feed, total }) =>
         connectionFromArraySlice(feed, options, {
           arrayLength: total,
           sliceStart: gravityOptions.offset,
-        })
-    )
+        }))
   },
 }
 

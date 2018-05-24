@@ -15,20 +15,15 @@ const counts = {
   type: new GraphQLObjectType({
     name: "PartnerArtistCounts",
     fields: {
-      artworks: numeral(
-        ({ published_artworks_count }) => published_artworks_count
-      ),
-      for_sale_artworks: numeral(
-        ({ published_for_sale_artworks_count }) =>
-          published_for_sale_artworks_count
-      ),
+      artworks: numeral(({ published_artworks_count }) => published_artworks_count),
+      for_sale_artworks: numeral(({ published_for_sale_artworks_count }) =>
+          published_for_sale_artworks_count),
     },
   }),
   resolve: partner_artist => partner_artist,
 }
 
-const fields = () => {
-  return {
+const fields = () => ({
     ...IDFields,
     artist: {
       type: Artist.type,
@@ -54,8 +49,7 @@ const fields = () => {
     sortable_id: {
       type: GraphQLString,
     },
-  }
-}
+  })
 
 export const PartnerArtistType = new GraphQLObjectType({
   name: "PartnerArtist",
@@ -79,7 +73,7 @@ const PartnerArtist = {
     root,
     { partner_id, artist_id },
     request,
-    { rootValue: { partnerArtistLoader } }
+    { rootValue: { partnerArtistLoader } },
   ) => partnerArtistLoader({ artist_id, partner_id }),
 }
 
@@ -113,11 +107,9 @@ export const partnersForArtist = (artist_id, options, loader) => {
     partner_category,
   }
 
-  return loader(gravityArgs).then(({ body, headers }) => {
-    return connectionFromArraySlice(body, options, {
+  return loader(gravityArgs).then(({ body, headers }) => connectionFromArraySlice(body, options, {
       arrayLength: headers["x-total-count"],
       sliceStart: offset,
       resolveNode: node => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`
-    })
-  })
+    }))
 }
