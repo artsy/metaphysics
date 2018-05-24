@@ -10,8 +10,8 @@ import { throttled } from "lib/throttle"
 import { verbose, warn } from "lib/loggers"
 import logger from "lib/loaders/api/logger"
 
-import config from "config"
-const { DD_TRACER_SERVICE_NAME } = config
+// import config from "config"
+// const { DD_TRACER_SERVICE_NAME } = config
 
 // TODO Signatures for when we move to TypeScript (may not be 100% correct)
 //
@@ -36,7 +36,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
   globalAPIOptions = {}
 ) => {
   return (path, globalParams = {}, pathAPIOptions = {}) => {
-    //const span = globalAPIOptions.span
+    // const span = globalAPIOptions.span
     const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
     const loader = new DataLoader(
       keys =>
@@ -45,12 +45,13 @@ export const apiLoaderWithoutAuthenticationFactory = (
             const clock = timer(key)
             clock.start()
             return new Promise((resolve, reject) => {
-              //const newSpan = span.tracer().startSpan(DD_TRACER_SERVICE_NAME + ".cache." + key, { childOf: span.context() })
-              //newSpan.addTags({resource: key, type: "web", "span.kind": "server"})
+              // const newSpan = span.tracer().startSpan(DD_TRACER_SERVICE_NAME + ".cache." +
+              // key, { childOf: span.context() })
+              // newSpan.addTags({resource: key, type: "web", "span.kind": "server"})
               cache.get(key).then(
                 // Cache hit
                 data => {
-                  //newSpan.finish()
+                  // newSpan.finish()
                   // Return cached data first
                   if (apiOptions.headers) {
                     resolve(pick(data, ["body", "headers"]))
@@ -90,7 +91,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
                 },
                 // Cache miss
                 () => {
-                  //newSpan.finish()
+                  // newSpan.finish()
                   api(key, null, apiOptions)
                     .then(({ body, headers }) => {
                       if (apiOptions.headers) {

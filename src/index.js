@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { middleware as requestTracer, tracer } from "./lib/tracer"
+import { middleware as requestTracer } from "./lib/tracer"
 
 import bodyParser from "body-parser"
 import config from "./config"

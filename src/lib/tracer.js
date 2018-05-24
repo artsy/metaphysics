@@ -1,28 +1,24 @@
-import Tracer from "datadog-tracer"
-import * as ddTrace from "dd-trace"
 import config from "config"
 import { forIn, has } from "lodash"
 import { getNamedType, GraphQLObjectType } from "graphql"
 import * as introspectionQuery from "graphql/type/introspection"
-import { ConversationFields } from "schema/me/conversation";
 
 const { DD_TRACER_SERVICE_NAME, DD_TRACER_HOSTNAME } = config
 
-console.log("initializing tracer on "+ DD_TRACER_HOSTNAME)
-const tracer = require('dd-trace').init(
+const tracer = require("dd-trace").init(
   {
     service: DD_TRACER_SERVICE_NAME,
     hostname: DD_TRACER_HOSTNAME,
   }
 )
-tracer.use('express', {
-  service: DD_TRACER_SERVICE_NAME + ".request"
+tracer.use("express", {
+  service: DD_TRACER_SERVICE_NAME + ".request",
 })
-tracer.use('http', {
-  service: DD_TRACER_SERVICE_NAME + ".http-client"
+tracer.use("http", {
+  service: DD_TRACER_SERVICE_NAME + ".http-client",
 })
-tracer.use('redis', {
-  service: DD_TRACER_SERVICE_NAME + ".redis"
+tracer.use("redis", {
+  service: DD_TRACER_SERVICE_NAME + ".redis",
 })
 
 function parse_args() {
@@ -39,22 +35,16 @@ function trace(res, span) {
 }
 
 function wrapResolve(typeName, fieldName, resolver) {
-  return function wrappedResolver(_root, _opts, _req, { rootValue }) {
-    return tracer.trace('graphql.resolver', {
-      resource: typeName + ": " + fieldName
+  return function wrappedResolver() {
+    return tracer.trace("graphql.resolver", {
+      resource: typeName + ": " + fieldName,
     }).then(span => {
-      // Set the parent context to this span for any sub resolvers.
-      rootValue.span = span // eslint-disable-line no-param-reassign
-
-      result = resolver.apply(this, arguments)
-
-      // Return parent context to our parent for any resolvers called after this one.
-      rootValue.span = parentSpan // eslint-disable-line no-param-reassign
+      const result = resolver.apply(this, arguments)
 
       if (result instanceof Promise) {
         return result.finally(() => span.finish())
       }
-  
+
       span.finish()
       return result
     })
@@ -78,16 +68,16 @@ export function makeSchemaTraceable(schema) {
 }
 
 export function middleware(req, res, next) {
-  var resource = req.path
+  let resource = req.path
+  let query = ""
   if (req.body && req.body.query) {
     resource = drop_params(req.body.query)
+    query = req.body.query
   }
 
-  tracer.trace('graphql.query', {resource: resource}).then(span => {
-    /* span.setTag('type', 'web')
-    span.setTag('http.method', req.method)
-    span.setTag('http.url', req.url) */
-
+  tracer.trace("graphql.query", { resource }).then(span => {
+    span.setTag('query', query)
+    
     res.locals.span = span // eslint-disable-line no-param-reassign
 
     const finish = trace.bind(null, res, span)
