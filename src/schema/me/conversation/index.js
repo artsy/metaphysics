@@ -1,4 +1,4 @@
-import { isExisty } from "lib/helpers"
+import { isExisty, parseRelayOptions } from "lib/helpers"
 import date from "schema/fields/date"
 import initials from "schema/fields/initials"
 import { get, merge } from "lodash"
@@ -13,7 +13,6 @@ import {
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
-import { parseRelayOptions } from "lib/helpers"
 import { ArtworkType } from "schema/artwork"
 import { ShowType } from "schema/show"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
@@ -157,21 +156,21 @@ export const ConversationFields = {
     description: "The participant who initiated the conversation",
     type: new GraphQLNonNull(ConversationInitiatorType),
     resolve: conversation => ({
-        id: conversation.from_id,
-        type: conversation.from_type,
-        name: conversation.from_name,
-        email: conversation.from_email,
-      }),
+      id: conversation.from_id,
+      type: conversation.from_type,
+      name: conversation.from_name,
+      email: conversation.from_email,
+    }),
   },
   to: {
     description: "The participant(s) responding to the conversation",
     type: new GraphQLNonNull(ConversationResponderType),
     resolve: conversation => ({
-        id: conversation.to_id,
-        type: conversation.to_type,
-        name: conversation.to_name,
-        reply_to_impulse_ids: conversation.to,
-      }),
+      id: conversation.to_id,
+      type: conversation.to_type,
+      name: conversation.to_name,
+      reply_to_impulse_ids: conversation.to,
+    }),
   },
   buyer_outcome: {
     type: GraphQLString,
@@ -351,9 +350,9 @@ export const ConversationFields = {
         // resolvers (invoices).
         /* eslint-disable no-param-reassign */
         message_details = message_details.map(message => merge(message, {
-            conversation_from_address: from_email,
-            conversation_id: id,
-          }))
+          conversation_from_address: from_email,
+          conversation_id: id,
+        }))
         /* eslint-disable no-param-reassign */
         return connectionFromArraySlice(message_details, options, {
           arrayLength: total_count,

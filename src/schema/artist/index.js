@@ -2,7 +2,7 @@
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { assign, compact, defaults, first, reject, includes } from "lodash"
-import { exclude } from "lib/helpers"
+import { exclude, parseRelayOptions } from "lib/helpers"
 import cached from "schema/fields/cached"
 import initials from "schema/fields/initials"
 import { markdown, formatMarkdownValue } from "schema/fields/markdown"
@@ -13,10 +13,6 @@ import Artwork, { artworkConnection } from "schema/artwork"
 import PartnerArtist from "schema/partner_artist"
 import Meta from "./meta"
 import PartnerShow from "schema/partner_show"
-import {
-  PartnerArtistConnection,
-  partnersForArtist,
-} from "schema/partner_artist"
 import { GeneType } from "../gene"
 import Show from "schema/show"
 import Sale from "schema/sale/index"
@@ -43,8 +39,10 @@ import {
   GraphQLInt,
 } from "graphql"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import { parseRelayOptions } from "lib/helpers"
 import { totalViaLoader } from "lib/total"
+
+// avoid importing twice
+const { PartnerArtistConnection, partnersForArtist } = PartnerArtist
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.

@@ -1,15 +1,14 @@
 import { map, omit, keys, create, assign } from "lodash"
-import { isExisty } from "lib/helpers"
+import {
+  isExisty,
+  parseRelayOptions,
+  queriedForFieldsOtherThanBlacklisted
+} from "lib/helpers"
 import Artwork from "./artwork"
 import Artist from "./artist"
 import Tag from "./tag"
 import numeral from "./fields/numeral"
-import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
-import {
-  parseRelayOptions,
-  queriedForFieldsOtherThanBlacklisted,
-} from "lib/helpers"
 import { connectionFromArraySlice, toGlobalId } from "graphql-relay"
 import {
   ArtworksAggregationResultsType,
@@ -27,6 +26,8 @@ import {
 } from "graphql"
 
 import { NodeInterface } from "schema/object_identification"
+
+const { artworkConnection } = Artwork;
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",

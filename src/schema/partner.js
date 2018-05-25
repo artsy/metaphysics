@@ -8,9 +8,8 @@ import { GravityIDFields, NodeInterface } from "./object_identification"
 import Artwork from "./artwork"
 import numeral from "./fields/numeral"
 import ArtworkSorts from "./sorts/artwork_sorts"
-import { graphql } from "graphql"
-
 import {
+  graphql,
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
@@ -68,11 +67,11 @@ const PartnerType = new GraphQLObjectType({
           request,
           { rootValue: { partnerArtworksLoader } },
         ) => partnerArtworksLoader(
-            id,
-            assign({}, options, {
-              published: true,
-            }),
-          ).then(exclude(options.exclude, "id")),
+          id,
+          assign({}, options, {
+            published: true,
+          }),
+        ).then(exclude(options.exclude, "id")),
       },
       categories: {
         type: new GraphQLList(PartnerCategoryType),
@@ -107,13 +106,13 @@ const PartnerType = new GraphQLObjectType({
             partner_artists: numeral(({ partner_artists_count }) => partner_artists_count),
             eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
             published_for_sale_artworks: numeral(({ published_for_sale_artworks_count }) =>
-                published_for_sale_artworks_count),
+              published_for_sale_artworks_count),
             published_not_for_sale_artworks: numeral(({ published_not_for_sale_artworks_count }) =>
-                published_not_for_sale_artworks_count),
+              published_not_for_sale_artworks_count),
             shows: numeral(({ shows_count }) => shows_count),
             displayable_shows: numeral(({ displayable_shows_count }) => displayable_shows_count),
             current_displayable_shows: numeral(({ current_displayable_shows_count }) =>
-                current_displayable_shows_count),
+              current_displayable_shows_count),
             artist_documents: numeral(({ artist_documents_count }) => artist_documents_count),
             partner_show_documents: numeral(({ partner_show_documents_count }) => partner_show_documents_count),
           },
@@ -186,11 +185,11 @@ const PartnerType = new GraphQLObjectType({
         type: PartnerShows.type,
         args: omit(PartnerShows.args, "partner_id"),
         resolve: ({ _id }, options) => PartnerShows.resolve(
-            null,
-            assign({}, options, {
-              partner_id: _id,
-            }),
-          ),
+          null,
+          assign({}, options, {
+            partner_id: _id,
+          }),
+        ),
       },
       type: {
         type: GraphQLString,
