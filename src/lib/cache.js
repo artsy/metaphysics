@@ -65,14 +65,16 @@ export const client = isTest ? createMockClient() : createRedisClient()
 
 export default {
   get: key => new Promise((resolve, reject) => {
-      if (isNull(client)) return reject(new Error("Cache client is `null`"))
+    if (isNull(client)) {
+      return reject(new Error("Cache client is `null`"))
+    }
 
-      client.get(key, (err, data) => {
-        if (err) return reject(err)
-        if (data) return resolve(JSON.parse(data))
-        reject(new Error("cache#get did not return `data`"))
-      })
-    }),
+    return client.get(key, (err, data) => {
+      if (err) return reject(err)
+      if (data) return resolve(JSON.parse(data))
+      return reject(new Error("cache#get did not return `data`"))
+    })
+  }),
 
   set: (key, data) => {
     if (isNull(client)) return false
@@ -101,6 +103,6 @@ export default {
     new Promise((resolve, reject) =>
       client.del(key, (err, response) => {
         if (err) return reject(err)
-        resolve(response)
+        return resolve(response)
       })),
 }

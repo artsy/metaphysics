@@ -17,6 +17,8 @@ const moduleTitle = {
       if (fetchedGene) {
         return fetchedGene.name
       }
+
+      return undefined; // make undefined return explicit
     })
   },
   live_auctions: ({ rootValue: { salesLoader } }) => featuredAuction(salesLoader).then(auction => auction && auction.name),
@@ -33,5 +35,6 @@ export default {
   type: GraphQLString,
   resolve: ({ key, display, params }, options, request, { rootValue }) => {
     if (display) return moduleTitle[key]({ rootValue, params: params || {} })
+    return undefined; // make undefined return explicit
   },
 }

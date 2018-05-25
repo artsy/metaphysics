@@ -48,6 +48,7 @@ export const isExisty = (x) => {
 // Coerce a usable value or nothing at all
 export const existyValue = (x) => {
   if (isExisty(x)) return x
+  return undefined // make undefined return explicit
 }
 
 export const capitalizeFirstCharacter = x =>

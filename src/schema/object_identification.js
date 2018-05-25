@@ -90,8 +90,8 @@ function argumentsForChild(type, id) {
 function rootValueForChild(rootValue) {
   const selections = rootValue.fieldNodes[0].selectionSet.selections
   let fragment = _.find(selections, selection => (
-      selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"
-    ))
+    selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"
+  ))
   if (fragment && fragment.kind === "FragmentSpread") {
     fragment = rootValue.fragments[fragment.name.value]
   }
@@ -133,15 +133,17 @@ const NodeField = {
       }
       const { resolve, type } = exported
       return Promise.resolve(resolve(
-          null,
-          argumentsForChild(typeName, id),
-          request,
-          rootValueForChild(rootValue),
-        )).then(data =>
+        null,
+        argumentsForChild(typeName, id),
+        request,
+        rootValueForChild(rootValue),
+      )).then(data =>
         // Add the already known type so `NodeInterface` can pluck that out in
         // its `resolveType` implementation.
-         ({ __type: type, ...data }))
+        ({ __type: type, ...data }))
     }
+
+    return undefined; // make undefined return explicit
   },
 }
 

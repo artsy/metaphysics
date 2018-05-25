@@ -30,6 +30,8 @@ const kind = ({ artists, fair }) => {
   if (isExisty(fair)) return "fair"
   if (artists.length > 1) return "group"
   if (artists.length === 1) return "solo"
+
+  return undefined; // make undefined return explicit
 }
 
 const PartnerShowType = new GraphQLObjectType({
@@ -114,9 +116,9 @@ const PartnerShowType = new GraphQLObjectType({
               request,
               { rootValue: { partnerShowArtworksLoader } },
             ) => totalViaLoader(
-                partnerShowArtworksLoader,
-                { partner_id: partner.id, show_id: id },
-                options,
+              partnerShowArtworksLoader,
+              { partner_id: partner.id, show_id: id },
+              options,
               ),
           },
           eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
@@ -128,8 +130,8 @@ const PartnerShowType = new GraphQLObjectType({
       type: Image.type,
       resolve: (
         {
- id, partner, image_versions, image_url,
-},
+          id, partner, image_versions, image_url,
+        },
         options,
         request,
         { rootValue: { partnerShowArtworksLoader } },
@@ -256,8 +258,8 @@ const PartnerShowType = new GraphQLObjectType({
       type: Image.type,
       resolve: (
         {
- id, partner, image_versions, image_url,
-},
+          id, partner, image_versions, image_url,
+        },
         options,
         request,
         { rootValue: { partnerShowArtworksLoader } },
@@ -318,11 +320,11 @@ const PartnerShow = {
     },
   },
   resolve: (root, { id }, request, { rootValue: { showLoader } }) => showLoader(id).then((show) => {
-      if (!show.displayable) {
-        return new HTTPError("Show Not Found", 404)
-      }
-      return show
-    }),
+    if (!show.displayable) {
+      return new HTTPError("Show Not Found", 404)
+    }
+    return show
+  }),
 }
 
 export default PartnerShow

@@ -74,6 +74,8 @@ describe("Collections", () => {
               headers: { "x-total-count": 10 },
             })
           }
+
+          return undefined // make undefined return explicit
         },
       }
       const data = await runAuthenticatedQuery(query, rootValue)

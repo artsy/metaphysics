@@ -61,12 +61,14 @@ const User = {
     },
   },
   resolve: (root, option, request, { rootValue: { userLoader } }) => userLoader(option)
-      .then(result => result)
-      .catch((err) => {
-        if (err.statusCode === 404) {
-          return false
-        }
-      }),
+    .then(result => result)
+    .catch((err) => {
+      if (err.statusCode === 404) {
+        return false
+      }
+
+      return undefined;
+    }),
 }
 
 export default User

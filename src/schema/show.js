@@ -31,7 +31,7 @@ import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
 
 const kind = ({
- artists, fair, artists_without_artworks, group,
+  artists, fair, artists_without_artworks, group,
 }) => {
   if (isExisty(fair)) return "fair"
   if (
@@ -47,6 +47,8 @@ const kind = ({
   ) {
     return "solo"
   }
+
+  return undefined; // explicitly return undefined
 }
 
 const artworksArgs = {
@@ -139,9 +141,9 @@ export const ShowType = new GraphQLObjectType({
           ),
           partnerShowArtworksLoader(loaderOptions, gravityOptions),
         ]).then(([count, { body }]) => connectionFromArraySlice(body, options, {
-            arrayLength: count,
-            sliceStart: gravityOptions.offset,
-          }))
+          arrayLength: count,
+          sliceStart: gravityOptions.offset,
+        }))
       },
     },
     artists_without_artworks: {
@@ -161,8 +163,8 @@ export const ShowType = new GraphQLObjectType({
       type: Image.type,
       resolve: (
         {
- id, partner, image_versions, image_url,
-},
+          id, partner, image_versions, image_url,
+        },
         options,
         request,
         { rootValue: { partnerShowArtworksLoader } },
@@ -183,6 +185,8 @@ export const ShowType = new GraphQLObjectType({
             return artwork && Image.resolve(getDefault(artwork.images))
           })
         }
+
+        return undefined; // explicitly return undefined
       },
     },
     counts: {
@@ -203,9 +207,9 @@ export const ShowType = new GraphQLObjectType({
               request,
               { rootValue: { partnerShowArtworksLoader } },
             ) => totalViaLoader(
-                partnerShowArtworksLoader,
-                { partner_id: partner.id, show_id: id },
-                options,
+              partnerShowArtworksLoader,
+              { partner_id: partner.id, show_id: id },
+              options,
               ),
           },
           eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
@@ -319,8 +323,8 @@ export const ShowType = new GraphQLObjectType({
       type: Image.type,
       resolve: (
         {
- id, partner, image_versions, image_url,
-},
+          id, partner, image_versions, image_url,
+        },
         options,
         request,
         { rootValue: { partnerShowArtworksLoader } },
@@ -369,6 +373,8 @@ export const ShowType = new GraphQLObjectType({
         if (galaxy_partner_id) {
           return galaxyGalleriesLoader(galaxy_partner_id)
         }
+
+        return undefined; // explicitly return undefined
       },
     },
     press_release: markdown(),
@@ -404,13 +410,13 @@ const Show = {
     },
   },
   resolve: (root, { id }, request, { rootValue: { showLoader } }) => showLoader(id)
-      .then((show) => {
-        if (!show.displayable && !show.is_reference) {
-          return new HTTPError("Show Not Found", 404)
-        }
-        return show
-      })
-      .catch(() => null),
+    .then((show) => {
+      if (!show.displayable && !show.is_reference) {
+        return new HTTPError("Show Not Found", 404)
+      }
+      return show
+    })
+    .catch(() => null),
 }
 export default Show
 export const showConnection = connectionDefinitions({

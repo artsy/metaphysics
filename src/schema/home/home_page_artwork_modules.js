@@ -58,6 +58,8 @@ const reorderModules = (modules, preferredOrder) => {
         reordered.push(mod)
         return true
       }
+
+      return undefined; // make undefined return explicit
     })
   })
   return reordered.concat(unordered)
@@ -141,8 +143,8 @@ const HomePageArtworkModules = {
   resolve: (
     root,
     {
- max_rails, max_followed_gene_rails, order, exclude,
-},
+      max_rails, max_followed_gene_rails, order, exclude,
+    },
     request,
     {
       rootValue: {
@@ -182,41 +184,41 @@ const HomePageArtworkModules = {
 
           if (relatedArtistIndex > -1) {
             return relatedArtists(suggestedSimilarArtistsLoader).then((artistPairs) => {
-                // relatedArtist now returns 2 random artist pairs
-                // we will use one for the related_artist rail and one for
-                // the followed_artist rail
-                if (artistPairs && artistPairs.length) {
-                  const { artist, sim_artist } = artistPairs[0]
+              // relatedArtist now returns 2 random artist pairs
+              // we will use one for the related_artist rail and one for
+              // the followed_artist rail
+              if (artistPairs && artistPairs.length) {
+                const { artist, sim_artist } = artistPairs[0]
 
-                  const relatedArtistModuleParams = {
-                    followed_artist_id: sim_artist.id,
-                    related_artist_id: artist.id,
-                  }
-
-                  if (artistPairs[1]) {
-                    modules.splice(relatedArtistIndex, 0, {
-                      key: "followed_artist",
-                      display: true,
-                      params: {
-                        followed_artist_id: artistPairs[1].sim_artist.id,
-                      },
-                    })
-                    relatedArtistIndex++
-                  }
-
-                  return set(
-                    modules,
-                    `[${relatedArtistIndex}].params`,
-                    relatedArtistModuleParams,
-                  )
+                const relatedArtistModuleParams = {
+                  followed_artist_id: sim_artist.id,
+                  related_artist_id: artist.id,
                 }
-                // if we don't find an artist pair,
-                // remove the related artist rail
-                return without(
+
+                if (artistPairs[1]) {
+                  modules.splice(relatedArtistIndex, 0, {
+                    key: "followed_artist",
+                    display: true,
+                    params: {
+                      followed_artist_id: artistPairs[1].sim_artist.id,
+                    },
+                  })
+                  relatedArtistIndex++
+                }
+
+                return set(
                   modules,
-                  find(modules, { key: "related_artists" }),
+                  `[${relatedArtistIndex}].params`,
+                  relatedArtistModuleParams,
                 )
-              })
+              }
+              // if we don't find an artist pair,
+              // remove the related artist rail
+              return without(
+                modules,
+                find(modules, { key: "related_artists" }),
+              )
+            })
           }
           return modules
         })
