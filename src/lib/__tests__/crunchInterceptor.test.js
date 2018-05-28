@@ -28,7 +28,9 @@ describe("crunchInterceptor", () => {
       .set("Accept", "application/json")
       .expect(200)
       .then(res => {
-        expect(res.body.data).toMatchObject(crunch({ greeting: "Hello World" }))
+        expect(res.body).toMatchObject(
+          crunch({ data: { greeting: "Hello World" } })
+        )
       })
   })
 
@@ -39,7 +41,9 @@ describe("crunchInterceptor", () => {
       .set("X-Crunch", true)
       .expect(200)
       .then(res => {
-        expect(res.body.data).toMatchObject(crunch({ greeting: "Hello World" }))
+        expect(res.body).toMatchObject(
+          crunch({ data: { greeting: "Hello World" } })
+        )
       })
   })
 
