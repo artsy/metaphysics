@@ -32,6 +32,17 @@ describe("crunchInterceptor", () => {
       })
   })
 
+  it("should crunch the result when header is present", () => {
+    return request(app(crunchInterceptor))
+      .get("/?query={greeting}")
+      .set("Accept", "application/json")
+      .set("X-Crunch", true)
+      .expect(200)
+      .then(res => {
+        expect(res.body.data).toMatchObject(crunch({ greeting: "Hello World" }))
+      })
+  })
+
   it("should not try to crunch on an error", () => {
     const intercept = jest.fn()
     return request(app(invokeError(404), fakeCrunch(intercept)))
