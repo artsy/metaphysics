@@ -104,8 +104,13 @@ export default mutationWithClientMutationId({
       reserve,
       session_id,
       shipping_address: {
- name, street, city, region, postal_code, use_id,
-},
+        name,
+        street,
+        city,
+        region,
+        postal_code,
+        use_id,
+      },
       telephone,
     })
   },

@@ -28,8 +28,9 @@ describe("SaleArtwork type", () => {
   const execute = async (
     query,
     gravityResponse = saleArtwork,
-    rootValue = {},
-  ) => await runQuery(query, {
+    rootValue = {}
+  ) =>
+    await runQuery(query, {
       saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
       ...rootValue,
     })
@@ -108,9 +109,11 @@ describe("SaleArtwork type", () => {
         incrementsLoader: () => Promise.resolve(),
       }
 
-      await expect(execute(query, gravityResponse, rootValue)).rejects.toHaveProperty(
+      await expect(
+        execute(query, gravityResponse, rootValue)
+      ).rejects.toHaveProperty(
         "message",
-        "schema/sale_artwork - Missing increment strategy",
+        "schema/sale_artwork - Missing increment strategy"
       )
     })
 
@@ -129,11 +132,13 @@ describe("SaleArtwork type", () => {
       }
 
       const rootValue = {
-        saleLoader: () => Promise.resolve({
+        saleLoader: () =>
+          Promise.resolve({
             minimum_next_bid_cents: 2400000000,
             increment_strategy: "default",
           }),
-        incrementsLoader: sale => Promise.resolve([
+        incrementsLoader: sale =>
+          Promise.resolve([
             {
               key: sale.increment_strategy,
               increments: [
@@ -182,10 +187,12 @@ describe("SaleArtwork type", () => {
       `
 
       const rootValue = {
-        saleLoader: () => Promise.resolve({
+        saleLoader: () =>
+          Promise.resolve({
             increment_strategy: "default",
           }),
-        incrementsLoader: sale => Promise.resolve([
+        incrementsLoader: sale =>
+          Promise.resolve([
             {
               key: sale.increment_strategy,
               increments: [
@@ -242,10 +249,12 @@ describe("SaleArtwork type", () => {
       `
 
       const rootValue = {
-        saleLoader: () => Promise.resolve({
+        saleLoader: () =>
+          Promise.resolve({
             increment_strategy: "default",
           }),
-        incrementsLoader: sale => Promise.resolve([
+        incrementsLoader: sale =>
+          Promise.resolve([
             {
               key: sale.increment_strategy,
               increments: [

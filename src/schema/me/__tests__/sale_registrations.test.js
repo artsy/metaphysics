@@ -21,7 +21,8 @@ describe("Me", () => {
         .mockReturnValueOnce(Promise.resolve([{ id: "bidder-id" }]))
 
       const rootValue = {
-        salesLoader: sinon.stub().returns(Promise.resolve([
+        salesLoader: sinon.stub().returns(
+          Promise.resolve([
             {
               name: "Foo Sale",
               currency: "$",
@@ -32,16 +33,19 @@ describe("Me", () => {
               currency: "$",
               is_auction: true,
             },
-          ])),
+          ])
+        ),
         meBiddersLoader,
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(({ me: { sale_registrations } }) => {
+      return runAuthenticatedQuery(query, rootValue).then(
+        ({ me: { sale_registrations } }) => {
           expect(sale_registrations).toEqual([
             { is_registered: false, sale: { name: "Foo Sale" } },
             { is_registered: true, sale: { name: "Bar Sale" } },
           ])
-        })
+        }
+      )
     })
   })
 })

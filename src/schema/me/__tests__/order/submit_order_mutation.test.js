@@ -63,7 +63,7 @@ describe("Me", () => {
           submitOrderLoader: () => Promise.resolve(orderJSON),
         }
 
-        return runAuthenticatedQuery(mutation, rootValue).then((data) => {
+        return runAuthenticatedQuery(mutation, rootValue).then(data => {
           expect(data).toEqual(exampleOrderResult)
         })
       })
@@ -130,7 +130,7 @@ describe("Me", () => {
           submitOrderLoader: () => Promise.resolve(orderJSON),
         }
 
-        return runQuery(mutation, rootValue).then((data) => {
+        return runQuery(mutation, rootValue).then(data => {
           expect(data).toEqual(exampleOrderResult)
         })
       })
@@ -160,7 +160,7 @@ describe("Me", () => {
           submitOrderLoader: () => Promise.resolve(orderJSON),
         }
 
-        return runQuery(mutation, rootValue).catch((error) => {
+        return runQuery(mutation, rootValue).catch(error => {
           expect(error.message).toEqual("This action requires a session_id.")
         })
       })

@@ -9,45 +9,58 @@ describe("Me type", () => {
   beforeEach(() => {
     saleArtworkRootLoader = jest.fn()
     saleArtworkRootLoader
-      .mockReturnValueOnce(Promise.resolve({
+      .mockReturnValueOnce(
+        Promise.resolve({
           id: "foo",
           _id: 0,
           artwork: { title: "Andy Warhol Skull" },
           sale_id: "else-auction",
-        }))
-      .mockReturnValueOnce(Promise.resolve({
+        })
+      )
+      .mockReturnValueOnce(
+        Promise.resolve({
           id: "bar",
           _id: 1,
           artwork: { title: "Andy Warhol Skull" },
           highest_bid: { id: "hb2" },
           sale_id: "bar-auction",
-        }))
-      .mockReturnValueOnce(Promise.resolve({
+        })
+      )
+      .mockReturnValueOnce(
+        Promise.resolve({
           id: "baz",
           _id: 2,
           artwork: { title: "Andy Warhol Skull" },
           sale_id: "else-auction",
-        }))
+        })
+      )
 
     const saleLoader = jest.fn()
     saleLoader
-      .mockReturnValueOnce(Promise.resolve({
+      .mockReturnValueOnce(
+        Promise.resolve({
           id: "else-auction",
           auction_state: "open",
-        }))
-      .mockReturnValueOnce(Promise.resolve({
+        })
+      )
+      .mockReturnValueOnce(
+        Promise.resolve({
           id: "bar-auction",
           auction_state: "closed",
-        }))
-      .mockReturnValueOnce(Promise.resolve({
+        })
+      )
+      .mockReturnValueOnce(
+        Promise.resolve({
           id: "else-auction",
           auction_state: "open",
-        }))
+        })
+      )
 
     rootValue = {
       saleLoader,
       saleArtworkRootLoader,
-      meBidderPositionsLoader: sinon.stub().returns(Promise.resolve([
+      meBidderPositionsLoader: sinon.stub().returns(
+        Promise.resolve([
           {
             id: 0,
             max_bid_amount_cents: 1000000,
@@ -78,7 +91,8 @@ describe("Me type", () => {
             sale_artwork_id: 2,
             highest_bid: { id: "hb4" },
           },
-        ])),
+        ])
+      ),
     }
   })
 
@@ -92,7 +106,7 @@ describe("Me type", () => {
         }
       }
     `
-    return runAuthenticatedQuery(query, rootValue).then((data) => {
+    return runAuthenticatedQuery(query, rootValue).then(data => {
       expect(map(data.me.bidder_positions, "id").join("")).toEqual("01234")
     })
   })
@@ -107,7 +121,7 @@ describe("Me type", () => {
         }
       }
     `
-    return runAuthenticatedQuery(query, rootValue).then((data) => {
+    return runAuthenticatedQuery(query, rootValue).then(data => {
       expect(map(data.me.bidder_positions, "id").join("")).toEqual("14")
     })
   })
@@ -125,21 +139,25 @@ describe("Me type", () => {
     rootValue.saleArtworkRootLoader = jest
       .fn()
       .mockReturnValueOnce(Promise.resolve(new Error("Forbidden")))
-      .mockReturnValueOnce(Promise.resolve({
+      .mockReturnValueOnce(
+        Promise.resolve({
           id: "bar",
           _id: 1,
           artwork: { title: "Andy Warhol Skull" },
           highest_bid: { id: "hb2" },
           sale_id: "bar-auction",
-        }))
-      .mockReturnValueOnce(Promise.resolve({
+        })
+      )
+      .mockReturnValueOnce(
+        Promise.resolve({
           id: "baz",
           _id: 0,
           artwork: { title: "Andy Warhol Skull" },
           sale_id: "else-auction",
-        }))
+        })
+      )
 
-    return runAuthenticatedQuery(query, rootValue).then((data) => {
+    return runAuthenticatedQuery(query, rootValue).then(data => {
       expect(map(data.me.bidder_positions, "id").join("")).toEqual("1")
     })
   })
@@ -160,17 +178,19 @@ describe("Me type", () => {
       .fn()
       .mockReturnValueOnce(Promise.resolve({}))
       .mockReturnValueOnce(Promise.resolve({}))
-      .mockReturnValueOnce(Promise.resolve({
+      .mockReturnValueOnce(
+        Promise.resolve({
           id: "bar",
           _id: 1,
           artwork: { title: "Andy Warhol Skull" },
           highest_bid: { id: "hb2" },
           sale_id: "bar-auction",
-        }))
+        })
+      )
       .mockReturnValueOnce(Promise.resolve({}))
       .mockReturnValueOnce(Promise.resolve({}))
 
-    return runAuthenticatedQuery(query, rootValue).then((data) => {
+    return runAuthenticatedQuery(query, rootValue).then(data => {
       expect(data.me.bidder_positions[2].is_winning).toEqual(true)
     })
   })

@@ -60,7 +60,7 @@ export const join = (by, xs) => compact(xs).join(by)
 
 export const truncate = (string, length, append = "…") => {
   const x = `${string}`
-  const limit = Math.floor(length)
+  const limit = ~~length
   return x.length > limit ? x.slice(0, limit) + append : x
 }
 export const toQueryString = (options = {}) =>
@@ -76,7 +76,8 @@ export const stripTags = (str) => {
   return String(str).replace(/<\/?[^>]+>/g, "")
 }
 export const markdownToText = str => stripTags(formatMarkdownValue(str, "html"))
-export const parseFieldASTsIntoArray = fieldASTs => map(flatMap(fieldASTs, "selectionSet.selections"), "name.value")
+export const parseFieldASTsIntoArray = fieldASTs =>
+  map(flatMap(fieldASTs, "selectionSet.selections"), "name.value")
 export const queriedForFieldsOtherThanBlacklisted = (
   fieldASTs,
   blacklistedFields,
@@ -85,7 +86,8 @@ export const queriedForFieldsOtherThanBlacklisted = (
   const queriedFields = parseFieldASTsIntoArray(fieldASTs)
   return difference(queriedFields, blacklistedFields).length > 0
 }
-export const queryContainsField = (fieldASTs, soughtField) => parseFieldASTsIntoArray(fieldASTs).includes(soughtField)
+export const queryContainsField = (fieldASTs, soughtField) =>
+  parseFieldASTsIntoArray(fieldASTs).includes(soughtField)
 export const parseRelayOptions = (options) => {
   const { limit: size, offset } = getPagingParameters(options)
   const page = (size + offset) / size

@@ -60,15 +60,16 @@ const User = {
       description: "Email to search for user by",
     },
   },
-  resolve: (root, option, request, { rootValue: { userLoader } }) => userLoader(option)
-    .then(result => result)
-    .catch((err) => {
-      if (err.statusCode === 404) {
-        return false
-      }
+  resolve: (root, option, request, { rootValue: { userLoader } }) =>
+    userLoader(option)
+      .then(result => result)
+      .catch((err) => {
+        if (err.statusCode === 404) {
+          return false
+        }
 
-      return undefined;
-    }),
+        return undefined
+      }),
 }
 
 export default User

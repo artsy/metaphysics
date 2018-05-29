@@ -21,7 +21,8 @@ import config from "config"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
-export const isBiddable = (sale, { artwork: { sold } }) => !sold && sale.is_auction && sale.auction_state === "open"
+export const isBiddable = (sale, { artwork: { sold } }) =>
+  !sold && sale.is_auction && sale.auction_state === "open"
 
 const bid_increments_calculator = async ({
   sale_id,
@@ -88,12 +89,13 @@ const SaleArtworkType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { incrementsLoader, saleLoader } },
-      ) => bid_increments_calculator({
-        sale_id,
-        saleLoader,
-        incrementsLoader,
-        minimum_next_bid_cents,
-      }),
+      ) =>
+        bid_increments_calculator({
+          sale_id,
+          saleLoader,
+          incrementsLoader,
+          minimum_next_bid_cents,
+        }),
     },
     counts: {
       resolve: x => x,
@@ -113,8 +115,7 @@ const SaleArtworkType = new GraphQLObjectType({
       resolve: saleArtwork => ({
         ...GravityIDFields,
         cents:
-          saleArtwork.highest_bid_amount_cents ||
-          saleArtwork.opening_bid_cents,
+          saleArtwork.highest_bid_amount_cents || saleArtwork.opening_bid_cents,
         display:
           saleArtwork.display_highest_bid_amount_dollars ||
           saleArtwork.display_opening_bid_dollars,
@@ -126,12 +127,11 @@ const SaleArtworkType = new GraphQLObjectType({
         display_low_estimate_dollars,
         display_high_estimate_dollars,
         display_estimate_dollars,
-      }) => (
-          compact([
-            display_low_estimate_dollars,
-            display_high_estimate_dollars,
-          ]).join("–") || display_estimate_dollars
-        ),
+      }) =>
+        compact([
+          display_low_estimate_dollars,
+          display_high_estimate_dollars,
+        ]).join("–") || display_estimate_dollars,
     },
     estimate_cents: {
       type: GraphQLInt,
@@ -190,15 +190,17 @@ const SaleArtworkType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { incrementsLoader, saleLoader } },
-      ) => bid_increments_calculator({
-        sale_id,
-        saleLoader,
-        incrementsLoader,
-        minimum_next_bid_cents,
-      }).then(bid_increments => bid_increments.map(increment => ({
-        cents: increment,
-        display: formatMoney(increment / 100, { symbol, precision: 0 }),
-      }))),
+      ) =>
+        bid_increments_calculator({
+          sale_id,
+          saleLoader,
+          incrementsLoader,
+          minimum_next_bid_cents,
+        }).then(bid_increments =>
+          bid_increments.map(increment => ({
+            cents: increment,
+            display: formatMoney(increment / 100, { symbol, precision: 0 }),
+          }))),
     },
     is_bid_on: {
       type: GraphQLBoolean,
@@ -213,7 +215,7 @@ const SaleArtworkType = new GraphQLObjectType({
         request,
         { rootValue: { saleLoader } },
       ) => {
-        if (saleArtwork.sale) {
+        if (!!saleArtwork.sale) {
           return isBiddable(saleArtwork.sale, saleArtwork)
         }
         return saleLoader(saleArtwork.sale_id).then(sale =>
@@ -309,10 +311,7 @@ const SaleArtworkType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { saleLoader } },
-      ) => {
-        if (sale) return sale
-        return saleLoader(sale_id)
-      },
+      ) => !!sale ? sale : saleLoader(sale_id)
     },
     symbol: {
       type: GraphQLString,

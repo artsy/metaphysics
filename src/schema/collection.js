@@ -49,10 +49,12 @@ export const CollectionType = new GraphQLObjectType({
         )
         delete gravityOptions.page // this can't also be used with the offset in gravity
         return collectionArtworksLoader(id, gravityOptions)
-          .then(({ body, headers }) => connectionFromArraySlice(body, options, {
-            arrayLength: headers["x-total-count"],
-            sliceStart: gravityOptions.offset,
-          })).catch((e) => {
+          .then(({ body, headers }) =>
+            connectionFromArraySlice(body, options, {
+              arrayLength: headers["x-total-count"],
+              sliceStart: gravityOptions.offset,
+            }))
+          .catch((e) => {
             warn("Bypassing Gravity error: ", e)
             // For some users with no favourites, Gravity produces an error of "Collection Not Found".
             // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
@@ -96,7 +98,10 @@ export const collectionResolverFactory = collection_id => (
   // These are here so that the type system's `isTypeOf`
   // resolves correctly when we're skipping gravity data
   return {
-    id, name: null, private: null, default: null,
+    id,
+    name: null,
+    private: null,
+    default: null,
   }
 }
 

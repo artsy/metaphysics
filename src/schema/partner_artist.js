@@ -24,32 +24,32 @@ const counts = {
 }
 
 const fields = () => ({
-    ...IDFields,
-    artist: {
-      type: Artist.type,
-    },
-    biography: {
-      type: GraphQLString,
-    },
-    counts,
-    is_display_on_partner_profile: {
-      type: GraphQLBoolean,
-      resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
-    },
-    is_represented_by: {
-      type: GraphQLBoolean,
-      resolve: ({ represented_by }) => represented_by,
-    },
-    is_use_default_biography: {
-      type: GraphQLBoolean,
-    },
-    partner: {
-      type: Partner.type,
-    },
-    sortable_id: {
-      type: GraphQLString,
-    },
-  })
+  ...IDFields,
+  artist: {
+    type: Artist.type,
+  },
+  biography: {
+    type: GraphQLString,
+  },
+  counts,
+  is_display_on_partner_profile: {
+    type: GraphQLBoolean,
+    resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
+  },
+  is_represented_by: {
+    type: GraphQLBoolean,
+    resolve: ({ represented_by }) => represented_by,
+  },
+  is_use_default_biography: {
+    type: GraphQLBoolean,
+  },
+  partner: {
+    type: Partner.type,
+  },
+  sortable_id: {
+    type: GraphQLString,
+  },
+})
 
 export const PartnerArtistType = new GraphQLObjectType({
   name: "PartnerArtist",
@@ -107,7 +107,8 @@ export const partnersForArtist = (artist_id, options, loader) => {
     partner_category,
   }
 
-  return loader(gravityArgs).then(({ body, headers }) => connectionFromArraySlice(body, options, {
+  return loader(gravityArgs).then(({ body, headers }) =>
+    connectionFromArraySlice(body, options, {
       arrayLength: headers["x-total-count"],
       sliceStart: offset,
       resolveNode: node => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`

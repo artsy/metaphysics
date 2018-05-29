@@ -5,16 +5,16 @@ import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
 const ExternalPartnerType = new GraphQLObjectType({
   name: "ExternalPartner",
   fields: () => ({
-      ...IDFields,
-      city: {
-        type: GraphQLString,
-        resolve: ({ city }) => city,
-      },
-      name: {
-        type: GraphQLString,
-        resolve: ({ name }) => name.trim(),
-      },
-    }),
+    ...IDFields,
+    city: {
+      type: GraphQLString,
+      resolve: ({ city }) => city,
+    },
+    name: {
+      type: GraphQLString,
+      resolve: ({ name }) => name.trim(),
+    },
+  }),
 })
 
 const ExternalPartner = {
@@ -26,12 +26,8 @@ const ExternalPartner = {
       description: "The ID of the Partner",
     },
   },
-  resolve: (
-    root,
-    { id },
-    request,
-    { rootValue: { galaxyGalleriesLoader } },
-  ) => galaxyGalleriesLoader(id),
+  resolve: (root, { id }, request, { rootValue: { galaxyGalleriesLoader } }) =>
+    galaxyGalleriesLoader(id),
 }
 
 export default ExternalPartner

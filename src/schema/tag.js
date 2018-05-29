@@ -14,24 +14,24 @@ const TagType = new GraphQLObjectType({
   name: "Tag",
   interfaces: [NodeInterface],
   fields: () => ({
-      ...GravityIDFields,
-      cached,
-      description: {
-        type: GraphQLString,
-      },
-      name: {
-        type: GraphQLString,
-      },
-      href: {
-        type: GraphQLString,
-        resolve: ({ id }) => `tag/${id}`,
-      },
-      image: Image,
-      count: {
-        type: GraphQLInt,
-      },
-      filtered_artworks: filterArtworks("tag_id"),
-    }),
+    ...GravityIDFields,
+    cached,
+    description: {
+      type: GraphQLString,
+    },
+    name: {
+      type: GraphQLString,
+    },
+    href: {
+      type: GraphQLString,
+      resolve: ({ id }) => `tag/${id}`,
+    },
+    image: Image,
+    count: {
+      type: GraphQLInt,
+    },
+    filtered_artworks: filterArtworks("tag_id"),
+  }),
 })
 
 const Tag = {

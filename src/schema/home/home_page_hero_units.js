@@ -117,19 +117,19 @@ const HomePageHeroUnits = {
   args: {
     platform: {
       type: new GraphQLNonNull(new GraphQLEnumType({
-        name: "HomePageHeroUnitPlatform",
-        values: {
-          MOBILE: {
-            value: "mobile",
+          name: "HomePageHeroUnitPlatform",
+          values: {
+            MOBILE: {
+              value: "mobile",
+            },
+            DESKTOP: {
+              value: "desktop",
+            },
+            MARTSY: {
+              value: "martsy",
+            },
           },
-          DESKTOP: {
-            value: "desktop",
-          },
-          MARTSY: {
-            value: "martsy",
-          },
-        },
-      })),
+        })),
     },
   },
   resolve: (_, { platform }, request, { rootValue: { heroUnitsLoader } }) => {

@@ -10,12 +10,14 @@ describe("API loaders", () => {
 
   beforeEach(() => {
     api = jest.fn((path, accessToken, options) =>
-      Promise.resolve({ body: { path, accessToken, options } }))
+      Promise.resolve({ body: { path, accessToken, options } })
+    )
   })
 
   const sharedExamples = () => {
     describe("concerning path", () => {
-      it("generates path specific loaders", () => loader().then(({ path }) => {
+      it("generates path specific loaders", () =>
+        loader().then(({ path }) => {
           expect(path).toEqual("some/path?")
         }))
 
@@ -26,7 +28,8 @@ describe("API loaders", () => {
         })
       })
 
-      it("appends params to the path", () => loader({ some: "param" }).then(({ path }) => {
+      it("appends params to the path", () =>
+        loader({ some: "param" }).then(({ path }) => {
           expect(path).toEqual("some/path?some=param")
         }))
 
@@ -38,7 +41,8 @@ describe("API loaders", () => {
       })
     })
 
-    it("caches the response for the lifetime of the loader", () => Promise.all([loader(), loader()]).then((responses) => {
+    it("caches the response for the lifetime of the loader", () =>
+      Promise.all([loader(), loader()]).then(responses => {
         expect(responses.map(({ path }) => path)).toEqual([
           "some/path?",
           "some/path?",
@@ -50,7 +54,8 @@ describe("API loaders", () => {
       // Needs to be a new path so that it hasn’t been cached in memcache yet
       loader = apiLoader("some/post/path", {}, { method: "POST" })
       return loader().then(({ options }) =>
-        expect(options.method).toEqual("POST"))
+        expect(options.method).toEqual("POST")
+      )
     })
   }
 
@@ -65,22 +70,26 @@ describe("API loaders", () => {
 
     sharedExamples()
 
-    it("does not try to pass an access token", () => loader().then(({ accessToken }) => {
+    it("does not try to pass an access token", () =>
+      loader().then(({ accessToken }) => {
         expect(accessToken).toEqual(null)
       }))
 
-    it("caches the response in memcache", () => cache
+    it("caches the response in memcache", () =>
+      cache
         .get("some/unauthenticated/memcached/path?")
         .then(() => {
           throw new Error("Did not expect to be cached yet!")
         })
         .catch(() => {
           loader = apiLoader("some/unauthenticated/memcached/path")
-          return loader().then(() => cache
+          return loader().then(() =>
+            cache
               .get("some/unauthenticated/memcached/path?")
               .then(({ path }) => {
                 expect(path).toEqual("some/unauthenticated/memcached/path?")
-              }))
+              })
+          )
         }))
   })
 
@@ -97,20 +106,23 @@ describe("API loaders", () => {
 
     sharedExamples()
 
-    it("does pass an access token", () => loader().then(({ accessToken }) => {
+    it("does pass an access token", () =>
+      loader().then(({ accessToken }) => {
         expect(accessToken).toEqual("secret-token")
       }))
 
     it("does NOT cache the response in memcache", () => {
       loader = apiLoader("some/authenticated/memcached/path")
-      return loader().then(() => cache
+      return loader().then(() =>
+        cache
           .get("some/authenticated/memcached/path?")
           .then(() => {
             throw new Error("Did not expect response to be cached!")
           })
           .catch(() => {
             // swallow the error, because this is the expected code-path
-          }))
+          })
+      )
     })
   })
 })

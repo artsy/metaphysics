@@ -1,7 +1,7 @@
 // Please do not add schema imports here while stitching is an ENV flag
 //
 import { graphql } from "graphql"
-
+import schema from '../schema';
 /**
  * Performs a GraphQL query against our schema.
  *
@@ -19,7 +19,6 @@ export const runQuery = (
   query,
   rootValue = { accessToken: null, userID: null }
 ) => {
-  const schema = require("schema").default
   return graphql(schema, query, rootValue, {}).then(result => {
     if (result.errors) {
       const error = result.errors[0]

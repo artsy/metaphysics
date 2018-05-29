@@ -72,7 +72,7 @@ describe("Artwork type", () => {
       const noSales = Promise.resolve([])
       rootValue.relatedSalesLoader = sinon.stub().returns(noSales)
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -86,7 +86,7 @@ describe("Artwork type", () => {
       const sales = Promise.resolve([sale])
       rootValue.relatedSalesLoader = sinon.stub().returns(sales)
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -118,7 +118,7 @@ describe("Artwork type", () => {
           downloadable: false,
         },
       ]
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -142,7 +142,7 @@ describe("Artwork type", () => {
       const sales = Promise.resolve([sale])
       rootValue.relatedSalesLoader = sinon.stub().returns(sales)
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -156,7 +156,7 @@ describe("Artwork type", () => {
       const sales = Promise.resolve([sale])
       rootValue.relatedSalesLoader = sinon.stub().returns(sales)
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -181,7 +181,7 @@ describe("Artwork type", () => {
       artwork.inquireable = true
       artwork.price = "$420"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -196,7 +196,7 @@ describe("Artwork type", () => {
       artwork.price = "$420"
       artwork.edition_sets = [{}]
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -210,7 +210,7 @@ describe("Artwork type", () => {
       artwork.inquireable = true
       artwork.price = "$420 - $500"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -224,7 +224,7 @@ describe("Artwork type", () => {
       artwork.inquireable = false
       artwork.price = "$420"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -238,7 +238,7 @@ describe("Artwork type", () => {
       artwork.inquireable = true
       artwork.price = ""
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -253,7 +253,7 @@ describe("Artwork type", () => {
       artwork.price = "$420"
       artwork.forsale = false
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -278,7 +278,7 @@ describe("Artwork type", () => {
     it("returns the first default image", () => {
       artwork.images = artworkImages
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             image: {
@@ -323,7 +323,7 @@ describe("Artwork type", () => {
         { forsale: true },
       ]
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             edition_sets: [
@@ -369,7 +369,7 @@ describe("Artwork type", () => {
       ]
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve(sales))
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -382,7 +382,7 @@ describe("Artwork type", () => {
     it("is false if the artwork is not in any sales that are auctions", () => {
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]))
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -408,7 +408,7 @@ describe("Artwork type", () => {
       artwork.price = null
       artwork.availability = "on hold"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -423,7 +423,7 @@ describe("Artwork type", () => {
       artwork.price = "$420,000"
       artwork.availability = "on hold"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -436,7 +436,7 @@ describe("Artwork type", () => {
     it("returns 'Sold' if work is sold", () => {
       artwork.sale_message = "$420,000 - Sold"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -449,7 +449,7 @@ describe("Artwork type", () => {
     it("returns null if work is not for sale", () => {
       artwork.availability = "not for sale"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -463,7 +463,7 @@ describe("Artwork type", () => {
       artwork.sale_message = "Not for sale"
       artwork.availability = "on loan"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -478,7 +478,7 @@ describe("Artwork type", () => {
       artwork.availability = "on loan"
       artwork.availability_hidden = true
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -492,7 +492,7 @@ describe("Artwork type", () => {
       artwork.sale_message = "for sale"
       artwork.availability = "permanent collection"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -506,7 +506,7 @@ describe("Artwork type", () => {
       artwork.availability = "for sale"
       artwork.sale_message = "something from gravity"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -530,7 +530,7 @@ describe("Artwork type", () => {
     it("returns bid text for an auction partner type", () => {
       artwork.partner = { type: "Auction" }
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -544,7 +544,7 @@ describe("Artwork type", () => {
     it("returns similar work text for a sold work", () => {
       artwork.availability = "sold"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -557,7 +557,7 @@ describe("Artwork type", () => {
     it("returns similar work text for a on loan work", () => {
       artwork.availability = "on loan"
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -569,7 +569,7 @@ describe("Artwork type", () => {
     })
     it("returns purchase text for an on hold work", () => {
       artwork.availability = "on hold"
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -581,7 +581,7 @@ describe("Artwork type", () => {
     })
     it("returns nothing for a not for sale work", () => {
       artwork.availability = "not for sale"
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -609,7 +609,7 @@ describe("Artwork type", () => {
         Promise.resolve({ sale_id: saleId })
       const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
         query,
-        rootValue,
+        rootValue
       )
       expect(sale_id).toEqual(artwork.sale_ids[0])
     })
@@ -630,7 +630,7 @@ describe("Artwork type", () => {
         Promise.resolve({ sale_id: saleId })
       const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
         query,
-        rootValue,
+        rootValue
       )
       expect(sale_id).toEqual(artwork.sale_ids[1])
     })
@@ -648,7 +648,7 @@ describe("Artwork type", () => {
 
     it("is true if the artwork has any sales that are open auctions", () => {
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([{}]))
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -660,7 +660,7 @@ describe("Artwork type", () => {
 
     it("is false if the artwork is not in any sales that are auctions", () => {
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]))
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -683,12 +683,14 @@ describe("Artwork type", () => {
 
     it("is true if the artwork is acquireable and in an open auction", () => {
       artwork.acquireable = true
-      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([
+      rootValue.salesLoader = sinon.stub().returns(
+        Promise.resolve([
           {
             id: "sale-id",
           },
-        ]))
-      return runQuery(query, rootValue).then((data) => {
+        ])
+      )
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -700,12 +702,14 @@ describe("Artwork type", () => {
 
     it("is false if the artwork is not acquireable", () => {
       artwork.acquireable = false
-      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([
+      rootValue.salesLoader = sinon.stub().returns(
+        Promise.resolve([
           {
             id: "sale-id",
           },
-        ]))
-      return runQuery(query, rootValue).then((data) => {
+        ])
+      )
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -718,7 +722,7 @@ describe("Artwork type", () => {
     it("is false if the artwork is acquireable but not in any open sales", () => {
       artwork.acquireable = false
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve([]))
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -759,7 +763,7 @@ describe("Artwork type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data.artwork.banner).toEqual({
           __typename: "ArtworkContextAuction",
           name: "Y2K",
@@ -783,7 +787,7 @@ describe("Artwork type", () => {
 
       it("returns false if the artwork is not shareable", () => {
         artwork.can_share_image = false
-        return runQuery(query, rootValue).then((data) => {
+        return runQuery(query, rootValue).then(data => {
           expect(data.artwork.is_shareable).toBe(false)
         })
       })
@@ -803,7 +807,7 @@ describe("Artwork type", () => {
         it("is hangable if the artwork is 2d and has reasonable dimensions", () => {
           artwork.width = 100
           artwork.height = 100
-          return runQuery(query, rootValue).then((data) => {
+          return runQuery(query, rootValue).then(data => {
             expect(data.artwork.is_hangable).toBe(true)
           })
         })
@@ -814,7 +818,7 @@ describe("Artwork type", () => {
           artwork.category = "sculpture"
           artwork.width = 100
           artwork.height = 100
-          return runQuery(query, rootValue).then((data) => {
+          return runQuery(query, rootValue).then(data => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
@@ -823,7 +827,7 @@ describe("Artwork type", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.depth = 100
-          return runQuery(query, rootValue).then((data) => {
+          return runQuery(query, rootValue).then(data => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
@@ -832,14 +836,14 @@ describe("Artwork type", () => {
           artwork.width = "10000"
           artwork.height = "10000"
           artwork.metric = "cm"
-          return runQuery(query, rootValue).then((data) => {
+          return runQuery(query, rootValue).then(data => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
 
         it("is not hangable if there is no dimensions", () => {
           artwork.dimensions = {}
-          return runQuery(query, rootValue).then((data) => {
+          return runQuery(query, rootValue).then(data => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
@@ -878,7 +882,7 @@ describe("Artwork type", () => {
 
     it("returns true if artwork price is a range.", () => {
       artwork.price = "$200 - $300"
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -890,7 +894,7 @@ describe("Artwork type", () => {
 
     it("returns false if artwork price is not a range.", () => {
       artwork.price = "$1000"
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -903,7 +907,7 @@ describe("Artwork type", () => {
     it("returns false if artwork price is a range with multiple editions.", () => {
       artwork.price = "$200 - $300"
       artwork.edition_sets = [{}]
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -925,7 +929,7 @@ describe("Artwork type", () => {
 
     it("is Untitled when its title is null", () => {
       artwork.title = null
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             title: "Untitled",
@@ -936,7 +940,7 @@ describe("Artwork type", () => {
 
     it("is Untitled title when its title is empty", () => {
       artwork.title = ""
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             title: "Untitled",
@@ -957,7 +961,7 @@ describe("Artwork type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
@@ -978,7 +982,7 @@ describe("Artwork type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
@@ -999,7 +1003,7 @@ describe("Artwork type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
@@ -1020,7 +1024,7 @@ describe("Artwork type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
@@ -1049,7 +1053,7 @@ describe("Artwork type", () => {
     it("returns null appropriately and doesnt error", () => {
       artwork.partner = null
       artwork.title = "A Cat"
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
             partner: null,

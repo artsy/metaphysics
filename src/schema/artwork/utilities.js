@@ -2,15 +2,15 @@ import { parse } from "url"
 
 export const isDimensional = value => parseFloat(value) > 0
 
-export const isThreeDimensional = ({ depth, diameter }) => isDimensional(depth) || isDimensional(diameter)
+export const isThreeDimensional = ({ depth, diameter }) =>
+  isDimensional(depth) || isDimensional(diameter)
 
 export const isTwoDimensional = ({
  width, height, depth, diameter,
-}) => (
-    isDimensional(width) &&
-    isDimensional(height) &&
-    !isThreeDimensional({ depth, diameter })
-  )
+}) =>
+  isDimensional(width) &&
+  isDimensional(height) &&
+  !isThreeDimensional({ depth, diameter })
 
 export const isTooBig = ({ width, height, metric }) => {
   const LIMIT = { in: 600, cm: 1524 } // 50 feet

@@ -59,7 +59,8 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       description: "A globally unique ID.",
-      resolve: ({ key }) => toGlobalId("HomePageArtistModule", JSON.stringify({ key })),
+      resolve: ({ key }) =>
+        toGlobalId("HomePageArtistModule", JSON.stringify({ key })),
     },
     key: {
       description: "Module identifier.",
@@ -67,7 +68,8 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     },
     results: {
       type: new GraphQLList(Artist.type),
-      resolve: ({ key }, options, request, { rootValue }) => HomePageArtistModuleTypes[key].resolve({ rootValue }),
+      resolve: ({ key }, options, request, { rootValue }) =>
+        HomePageArtistModuleTypes[key].resolve({ rootValue }),
     },
   },
 })

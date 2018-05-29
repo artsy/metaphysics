@@ -9,7 +9,7 @@ describe("loaders should always export functions", () => {
       .filter(l => !l.startsWith("__"))
       .filter(l => !l.startsWith(skipPrefix))
 
-    loaders.forEach((path) => {
+    loaders.forEach(path => {
       const value = require(`../../../${loaderPath}/${path}`)
       expect([path, value.default]).toEqual([path, expect.any(Function)])
     })

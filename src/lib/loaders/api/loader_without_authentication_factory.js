@@ -36,12 +36,11 @@ export const apiLoaderWithoutAuthenticationFactory = (
   const loader = new DataLoader(
     keys =>
       Promise.all(keys.map((key) => {
-        const clock = timer(key)
-        clock.start()
+          const clock = timer(key)
+          clock.start()
 
-        return new Promise((resolve, reject) =>
-          cache.get(key)
-            .then(
+          return new Promise((resolve, reject) =>
+            cache.get(key).then(
               // Cache hit
               (data) => {
                 // Return cached data first
@@ -109,8 +108,8 @@ export const apiLoaderWithoutAuthenticationFactory = (
                     reject(err)
                   })
               },
-          ))
-      })),
+            ))
+        })),
     {
       batch: false,
       cache: true,

@@ -91,7 +91,11 @@ const HomePageArtworkModule = {
       case "generic_gene":
         return { key, display, params: find(genericGenes, ["id", id]) }
       case "genes":
-        return geneLoader(id).then(gene => ({ key, display, params: { id, gene } }))
+        return geneLoader(id).then(gene => ({
+          key,
+          display,
+          params: { id, gene },
+        }))
       case "followed_artist":
         return { key, display, params: { followed_artist_id } }
       case "related_artists":

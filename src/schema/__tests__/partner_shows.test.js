@@ -14,7 +14,8 @@ describe("PartnerShows type", () => {
       `
 
       const rootValue = {
-        showsLoader: sinon.stub().returns(Promise.resolve([
+        showsLoader: sinon.stub().returns(
+          Promise.resolve([
             {
               id: "new-museum-solo-show",
               partner: {
@@ -36,24 +37,31 @@ describe("PartnerShows type", () => {
               },
               display_on_partner_profile: true,
             },
-          ])),
+          ])
+        ),
         partnerShowLoader: jest
           .fn()
-          .mockReturnValueOnce(Promise.resolve({
+          .mockReturnValueOnce(
+            Promise.resolve({
               artists: [{}],
               fair: null,
-            }))
-          .mockReturnValueOnce(Promise.resolve({
+            })
+          )
+          .mockReturnValueOnce(
+            Promise.resolve({
               artists: [{}, {}],
               fair: null,
-            }))
-          .mockReturnValueOnce(Promise.resolve({
+            })
+          )
+          .mockReturnValueOnce(
+            Promise.resolve({
               artists: [{}],
               fair: { id: "existy" },
-            })),
+            })
+          ),
       }
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           partner_shows: [
             { id: "new-museum-solo-show", kind: "solo" },
@@ -68,13 +76,15 @@ describe("PartnerShows type", () => {
   it("returns a list of shows matching array of ids", async () => {
     const showsLoader = ({ id }) => {
       if (id) {
-        return Promise.resolve(id.map(_id => ({
+        return Promise.resolve(
+          id.map(_id => ({
             _id,
             partner: {
               id: "new-museum",
             },
             display_on_partner_profile: true,
-          })))
+          }))
+        )
       }
       throw new Error("Unexpected invocation")
     }

@@ -26,7 +26,8 @@ export default {
     {
       rootValue: { meBidderPositionsLoader, saleLoader, saleArtworkRootLoader },
     },
-  ) => meBidderPositionsLoader({
+  ) =>
+    meBidderPositionsLoader({
       artwork_id,
       sale_id,
       sort: "-created_at",
@@ -52,8 +53,10 @@ export default {
       return Promise.all(_.map(latestPositions, position =>
           saleArtworkRootLoader(position.sale_artwork_id)
             // For unpublished artworks
-            .catch(() => null))).then(saleArtworks => Promise.all(_.map(_.compact(saleArtworks), saleArtwork =>
-            saleLoader(saleArtwork.sale_id))).then(sales => _.filter(latestPositions, (position) => {
+            .catch(() => null))).then(saleArtworks =>
+        Promise.all(_.map(_.compact(saleArtworks), saleArtwork =>
+            saleLoader(saleArtwork.sale_id))).then(sales =>
+          _.filter(latestPositions, (position) => {
             const saleArtwork = _.find(saleArtworks, {
               _id: position.sale_artwork_id,
             })

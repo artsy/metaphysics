@@ -44,7 +44,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           has_location: true,
@@ -61,7 +61,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           has_location: true,
@@ -78,7 +78,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           has_location: true,
@@ -94,7 +94,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           has_location: false,
@@ -116,7 +116,7 @@ describe("Show type", () => {
       .then(() => {
         throw new Error("Did not expect query to not throw an error")
       })
-      .catch((error) => {
+      .catch(error => {
         expect(error.statusCode).toEqual(404)
       })
   })
@@ -130,7 +130,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             name: "Whitespace Abounds",
@@ -148,7 +148,7 @@ describe("Show type", () => {
         }
       `
       showData.name = null
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             name: null,
@@ -169,7 +169,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             city: "Quonochontaug",
@@ -187,7 +187,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             city: "Quonochontaug",
@@ -207,7 +207,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "fair",
@@ -225,7 +225,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "solo",
@@ -243,7 +243,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "group",
@@ -261,7 +261,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "solo",
@@ -279,7 +279,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "group",
@@ -298,7 +298,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             kind: "group",
@@ -318,7 +318,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             href: "/show/new-museum-1-2015-triennial-surround-audience",
@@ -334,7 +334,7 @@ describe("Show type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           show: {
             href: null,
@@ -358,7 +358,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           partner: {
@@ -383,7 +383,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           partner: null,
@@ -403,7 +403,7 @@ describe("Show type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           id: "new-museum-1-2015-triennial-surround-audience",
@@ -423,7 +423,7 @@ describe("Show type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           exhibition_period: "Feb 25 – May 24, 2015",
@@ -440,7 +440,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           status_update: "Closing tomorrow",
@@ -456,7 +456,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
@@ -477,7 +477,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           counts: {
@@ -497,7 +497,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           counts: {
@@ -520,7 +520,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         show: {
           counts: {

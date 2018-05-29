@@ -38,7 +38,8 @@ describe("RecentlyViewedArtworks", () => {
     `
 
     expect.assertions(1)
-    return runAuthenticatedQuery(query, rootValue).then(({ me: { recentlyViewedArtworks } }) => {
+    return runAuthenticatedQuery(query, rootValue).then(
+      ({ me: { recentlyViewedArtworks } }) => {
         expect(recentlyViewedArtworks).toEqual({
           edges: [
             {
@@ -52,7 +53,8 @@ describe("RecentlyViewedArtworks", () => {
             hasNextPage: true,
           },
         })
-      })
+      }
+    )
   })
 
   it("can return an empty connection", () => {
@@ -76,14 +78,16 @@ describe("RecentlyViewedArtworks", () => {
     rootValue.meLoader = () =>
       Promise.resolve({ recently_viewed_artwork_ids: [] })
     expect.assertions(1)
-    return runAuthenticatedQuery(query, rootValue).then(({ me: { recentlyViewedArtworks } }) => {
+    return runAuthenticatedQuery(query, rootValue).then(
+      ({ me: { recentlyViewedArtworks } }) => {
         expect(recentlyViewedArtworks).toEqual({
           edges: [],
           pageInfo: {
             hasNextPage: false,
           },
         })
-      })
+      }
+    )
   })
 
   it("records an artwork view", () => {
@@ -96,8 +100,10 @@ describe("RecentlyViewedArtworks", () => {
     `
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(({ recordArtworkView: { artwork_id } }) => {
+    return runAuthenticatedQuery(mutation, rootValue).then(
+      ({ recordArtworkView: { artwork_id } }) => {
         expect(artwork_id).toEqual("percy")
-      })
+      }
+    )
   })
 })

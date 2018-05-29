@@ -24,8 +24,7 @@ const HomePage = {
   description: "Home screen content",
   resolve: () =>
     // dummy response object, otherwise the nested fields won’t work
-     ({})
-  ,
+    ({}),
 }
 
 export default HomePage

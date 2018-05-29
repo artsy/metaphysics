@@ -34,7 +34,8 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     auction_lots: {
       type: GraphQLBoolean,
-      resolve: ({ display_auction_link, hide_auction_link }) => display_auction_link && !hide_auction_link,
+      resolve: ({ display_auction_link, hide_auction_link }) =>
+        display_auction_link && !hide_auction_link,
     },
     biography: {
       type: GraphQLBoolean,
@@ -52,7 +53,8 @@ const ArtistStatusesType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { relatedContemporaryArtistsLoader } },
-      ) => totalViaLoader(
+      ) =>
+        totalViaLoader(
           relatedContemporaryArtistsLoader,
           {},
           {

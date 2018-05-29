@@ -54,7 +54,8 @@ describe("Me", () => {
       }
 
       const rootValue = {
-        notificationsFeedLoader: sinon.stub().returns(Promise.resolve({
+        notificationsFeedLoader: sinon.stub().returns(
+          Promise.resolve({
             total: 2,
             feed: [
               {
@@ -66,15 +67,18 @@ describe("Me", () => {
                 id: "unique-id-yo",
               },
             ],
-          })),
+          })
+        ),
         artworksLoader: sinon
           .stub()
           .returns(Promise.resolve([artwork1, artwork2])),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(({ me: { notifications_connection } }) => {
+      return runAuthenticatedQuery(query, rootValue).then(
+        ({ me: { notifications_connection } }) => {
           expect(notifications_connection).toEqual(expectedConnectionData)
-        })
+        }
+      )
     })
   })
 })

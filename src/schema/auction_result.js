@@ -69,7 +69,11 @@ const AuctionResultType = new GraphQLObjectType({
           },
         },
       }),
-      resolve: ({ width_cm, height_cm, depth_cm }) => ({ width: width_cm, height: height_cm, depth: depth_cm }),
+      resolve: ({ width_cm, height_cm, depth_cm }) => ({
+        width: width_cm,
+        height: height_cm,
+        depth: depth_cm,
+      }),
     },
     organization: {
       type: GraphQLString,

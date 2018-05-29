@@ -43,8 +43,8 @@ export default mutationWithClientMutationId({
   },
   mutateAndGetPayload: (
     {
-      id, from, body_text, reply_to_message_id,
-    },
+ id, from, body_text, reply_to_message_id,
+},
     request,
     {
       rootValue: {
@@ -59,21 +59,22 @@ export default mutationWithClientMutationId({
       from,
       reply_to_message_id,
       body_text,
-    }).then(({ id: newMessageID }) => conversationLoader(id).then(updatedConversation => ({
-      conversation: updatedConversation,
-      // Because Impulse does not have the full new message object available immediately, we return an optimistic
-      // response so the mutation can return it too.
-      newMessagePayload: {
-        id: newMessageID,
-        from_email_address: from,
-        from_id: userID,
-        raw_text: body_text,
-        body: body_text,
-        created_at: new Date().toISOString(),
-        attachments: [],
-        // This addition is only for MP so it can determine if the message was from the current user.
-        conversation_from_address: updatedConversation.from_email,
-      },
-    })))
+    }).then(({ id: newMessageID }) =>
+      conversationLoader(id).then(updatedConversation => ({
+        conversation: updatedConversation,
+        // Because Impulse does not have the full new message object available immediately, we return an optimistic
+        // response so the mutation can return it too.
+        newMessagePayload: {
+          id: newMessageID,
+          from_email_address: from,
+          from_id: userID,
+          raw_text: body_text,
+          body: body_text,
+          created_at: new Date().toISOString(),
+          attachments: [],
+          // This addition is only for MP so it can determine if the message was from the current user.
+          conversation_from_address: updatedConversation.from_email,
+        },
+      })))
   },
 })

@@ -19,7 +19,9 @@ describe("Image", () => {
 
     it("works with just a url and resizes it to crop", () => {
       const bareImageUrl = normalize("https://xxx.cloudfront.net/xxx/cat.jpg")
-      expect(croppedImageUrl(bareImageUrl, { width: 500, height: 500 })).toEqual({
+      expect(
+        croppedImageUrl(bareImageUrl, { width: 500, height: 500 })
+      ).toEqual({
         width: 500,
         height: 500,
         url:

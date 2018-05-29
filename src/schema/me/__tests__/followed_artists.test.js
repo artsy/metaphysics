@@ -9,14 +9,16 @@ it("returns artists for a user", () => {
     "test",
     "fixtures",
     "gravity",
-    "follow_artists.json",
+    "follow_artists.json"
   )
   const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
 
   const followedArtistsLoader = sinon
     .stub()
     .withArgs("me/follow/artists", { size: 10, offset: 0, total_count: true })
-    .returns(Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } }))
+    .returns(
+      Promise.resolve({ body: artworks, headers: { "x-total-count": 10 } })
+    )
 
   const query = gql`
     {
@@ -34,7 +36,7 @@ it("returns artists for a user", () => {
       }
     }
   `
-  return runAuthenticatedQuery(query, { followedArtistsLoader }).then((data) => {
+  return runAuthenticatedQuery(query, { followedArtistsLoader }).then(data => {
     expect(data).toMatchSnapshot()
   })
 })

@@ -4,7 +4,7 @@ import {
   parseRelayOptions,
   queriedForFieldsOtherThanBlacklisted,
 } from "lib/helpers"
-import Artwork from "./artwork"
+import Artwork, { artworkConnection } from "./artwork"
 import Artist from "./artist"
 import Tag from "./tag"
 import numeral from "./fields/numeral"
@@ -26,8 +26,6 @@ import {
 } from "graphql"
 
 import { NodeInterface } from "schema/object_identification"
-
-const { artworkConnection } = Artwork;
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",

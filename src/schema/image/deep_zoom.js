@@ -51,11 +51,10 @@ const DeepZoomType = new GraphQLObjectType({
           },
           Url: {
             type: GraphQLString,
-            resolve: ({ tile_base_url }) => (
-                tile_base_url
-                  // Ensure trailing slash
-                  .replace(/\/?$/, "/")
-              ),
+            resolve: ({ tile_base_url }) =>
+              tile_base_url
+                // Ensure trailing slash
+                .replace(/\/?$/, "/"),
           },
           xmlns: {
             type: GraphQLString,

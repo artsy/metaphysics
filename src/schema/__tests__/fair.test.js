@@ -43,7 +43,7 @@ describe("Fair type", () => {
 
     rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -71,7 +71,7 @@ describe("Fair type", () => {
 
     rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -99,7 +99,7 @@ describe("Fair type", () => {
 
     rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",

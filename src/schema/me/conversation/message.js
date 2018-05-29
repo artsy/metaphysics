@@ -25,7 +25,8 @@ const MessageInitiatorType = new GraphQLObjectType({
   },
 })
 
-const isInvoiceMessage = metadata => !!metadata && isExisty(metadata.lewitt_invoice_id)
+const isInvoiceMessage = metadata =>
+  !!metadata && isExisty(metadata.lewitt_invoice_id)
 
 export const MessageType = new GraphQLObjectType({
   name: "Message",

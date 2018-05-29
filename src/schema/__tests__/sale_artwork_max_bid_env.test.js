@@ -32,8 +32,9 @@ describe("SaleArtwork type", () => {
   const execute = async (
     query,
     gravityResponse = saleArtwork,
-    rootValue = {},
-  ) => await runQuery(query, {
+    rootValue = {}
+  ) =>
+    await runQuery(query, {
       saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
       ...rootValue,
     })
@@ -50,10 +51,12 @@ describe("SaleArtwork type", () => {
         `
 
         const rootValue = {
-          saleLoader: () => Promise.resolve({
+          saleLoader: () =>
+            Promise.resolve({
               increment_strategy: "default",
             }),
-          incrementsLoader: sale => Promise.resolve([
+          incrementsLoader: sale =>
+            Promise.resolve([
               {
                 key: sale.increment_strategy,
                 increments: [

@@ -19,18 +19,22 @@ describe("Recording artwork views", () => {
 
   const typeDefs = fs.readFileSync(
     path.resolve(__dirname, "../../../data/gravity.graphql"),
-    "utf8",
+    "utf8"
   )
 
   const resolvers = {
     Mutation: {
-      recordArtworkView: () => ({ artwork_id: "artwork-id", clientMutationId: "2" }),
+      recordArtworkView: () => ({
+        artwork_id: "artwork-id",
+        clientMutationId: "2",
+      }),
     },
   }
 
   const gravitySchema = makeExecutableSchema({ typeDefs, resolvers })
 
-  it("records an artwork view", () => graphql(gravitySchema, mutation, null, null).then(({ data }) => {
+  it("records an artwork view", () =>
+    graphql(gravitySchema, mutation, null, null).then(({ data }) => {
       expect(data).toEqual({
         recordArtworkView: { artwork_id: "artwork-id", clientMutationId: "2" },
       })

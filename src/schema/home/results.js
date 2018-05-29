@@ -25,7 +25,7 @@ const moduleResults = {
         }).then(({ hits }) => slice(shuffle(hits), 0, RESULTS_SIZE))
       }
 
-      return undefined; // make undefined return explicit
+      return undefined // make undefined return explicit
     }),
   followed_artist: ({ rootValue: { filterArtworksLoader }, params }) =>
     filterArtworksLoader({
@@ -56,15 +56,11 @@ const moduleResults = {
         return geneArtworks(filterArtworksLoader, gene.id, RESULTS_SIZE)
       }
 
-      return undefined; // make undefined return explicit
+      return undefined // make undefined return explicit
     })
   },
   generic_gene: ({ rootValue: { filterArtworksLoader }, params }) =>
-    filterArtworksLoader(assign(
-{},
-      params,
-      { size: RESULTS_SIZE, for_sale: true },
-)).then(({ hits }) => hits),
+    filterArtworksLoader(assign({}, params, { size: RESULTS_SIZE, for_sale: true })).then(({ hits }) => hits),
   live_auctions: ({ rootValue: { salesLoader, saleArtworksLoader } }) =>
     featuredAuction(salesLoader).then((auction) => {
       if (auction) {
@@ -73,7 +69,7 @@ const moduleResults = {
         }).then(({ body }) => map(body, "artwork"))
       }
 
-      return undefined; // make undefined return explicit
+      return undefined // make undefined return explicit
     }),
   popular_artists: ({ rootValue: { filterArtworksLoader, deltaLoader } }) =>
     // TODO This appears to largely replicate Gravity’s /api/v1/artists/popular endpoint
@@ -95,26 +91,29 @@ const moduleResults = {
       for_sale: true,
       size: RESULTS_SIZE,
     }).then(({ hits }) => hits),
-  saved_works: ({ rootValue: { savedArtworksLoader } }) => savedArtworksLoader({
-    size: RESULTS_SIZE,
-    sort: "-position",
-  }),
+  saved_works: ({ rootValue: { savedArtworksLoader } }) =>
+    savedArtworksLoader({
+      size: RESULTS_SIZE,
+      sort: "-position",
+    }),
   similar_to_saved_works: ({
     rootValue: { savedArtworksLoader, similarArtworksLoader },
-  }) => savedArtworksLoader({
-    size: RESULTS_SIZE,
-    sort: "-position",
-  }).then(works =>
-    similarArtworksLoader({ artwork_id: map(works, "_id").slice(0, 7) })),
+  }) =>
+    savedArtworksLoader({
+      size: RESULTS_SIZE,
+      sort: "-position",
+    }).then(works =>
+      similarArtworksLoader({ artwork_id: map(works, "_id").slice(0, 7) })),
   similar_to_recently_viewed: ({
     rootValue: { meLoader, similarArtworksLoader },
-  }) => meLoader().then(({ recently_viewed_artwork_ids }) => {
-    if (recently_viewed_artwork_ids.length === 0) {
-      return []
-    }
-    const recentlyViewedIds = recently_viewed_artwork_ids.slice(0, 7)
-    return similarArtworksLoader({ artwork_id: recentlyViewedIds })
-  }),
+  }) =>
+    meLoader().then(({ recently_viewed_artwork_ids }) => {
+      if (recently_viewed_artwork_ids.length === 0) {
+        return []
+      }
+      const recentlyViewedIds = recently_viewed_artwork_ids.slice(0, 7)
+      return similarArtworksLoader({ artwork_id: recentlyViewedIds })
+    }),
   recently_viewed_works: ({ rootValue: { meLoader, artworksLoader } }) =>
     meLoader().then(({ recently_viewed_artwork_ids }) => {
       if (recently_viewed_artwork_ids.length === 0) {
@@ -132,6 +131,6 @@ export default {
       return moduleResults[key]({ rootValue, params: params || {} })
     }
 
-    return undefined; // make undefined return explicit
+    return undefined // make undefined return explicit
   },
 }

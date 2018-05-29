@@ -140,7 +140,8 @@ const isLastMessageToUser = ({ _embedded, from_email }) => {
   return lastMessagePrincipal === false || from_email !== lastMessageFromEmail
 }
 
-const lastMessageId = conversation => get(conversation, "_embedded.last_message.id")
+const lastMessageId = conversation =>
+  get(conversation, "_embedded.last_message.id")
 
 export const ConversationFields = {
   __id: GlobalIDField,
@@ -287,16 +288,18 @@ export const ConversationFields = {
   artworks: {
     type: new GraphQLList(ArtworkType),
     description: "Only the artworks discussed in the conversation.",
-    resolve: conversation => conversation.items
-      .filter(({ item_type }) => item_type === "Artwork"),
+    resolve: conversation =>
+      conversation.items.filter(({ item_type }) => item_type === "Artwork"),
   },
 
   items: {
     type: new GraphQLList(ConversationItem),
     description:
       "The artworks and/or partner shows discussed in the conversation.",
-    resolve: conversation => conversation.items.filter(({ properties, item_type }) =>
-      isExisty(properties) && (item_type === "Artwork" || item_type === "PartnerShow")),
+    resolve: conversation =>
+      conversation.items.filter(({ properties, item_type }) =>
+          isExisty(properties) &&
+          (item_type === "Artwork" || item_type === "PartnerShow")),
   },
 
   messages: {
@@ -332,10 +335,11 @@ export const ConversationFields = {
         // Also inject the conversation id, since we need it in some message
         // resolvers (invoices).
         /* eslint-disable no-param-reassign */
-        message_details = message_details.map(message => merge(message, {
-          conversation_from_address: from_email,
-          conversation_id: id,
-        }))
+        message_details = message_details.map(message =>
+          merge(message, {
+            conversation_from_address: from_email,
+            conversation_id: id,
+          }))
         /* eslint-disable no-param-reassign */
         return connectionFromArraySlice(message_details, options, {
           arrayLength: total_count,

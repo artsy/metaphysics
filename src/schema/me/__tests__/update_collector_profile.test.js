@@ -36,9 +36,11 @@ describe("UpdateCollectorProfile", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(({ updateCollectorProfile }) => {
+    return runAuthenticatedQuery(mutation, rootValue).then(
+      ({ updateCollectorProfile }) => {
         expect(updateCollectorProfile).toEqual(expectedProfileData)
-      })
+      }
+    )
   })
 
   it("throws error when data loader is missing", () => {
@@ -66,7 +68,7 @@ describe("UpdateCollectorProfile", () => {
       .then(() => {
         throw new Error("An error was not thrown but was expected.")
       })
-      .catch((error) => {
+      .catch(error => {
         expect(error.message).toEqual(errorResponse)
       })
   })

@@ -31,7 +31,7 @@ import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
 
 const kind = ({
-  artists, fair, artists_without_artworks, group,
+ artists, fair, artists_without_artworks, group,
 }) => {
   if (isExisty(fair)) return "fair"
   if (
@@ -48,7 +48,7 @@ const kind = ({
     return "solo"
   }
 
-  return undefined; // explicitly return undefined
+  return undefined // explicitly return undefined
 }
 
 const artworksArgs = {
@@ -140,10 +140,11 @@ export const ShowType = new GraphQLObjectType({
             Object.assign({}, gravityOptions, { size: 0 }),
           ),
           partnerShowArtworksLoader(loaderOptions, gravityOptions),
-        ]).then(([count, { body }]) => connectionFromArraySlice(body, options, {
-          arrayLength: count,
-          sliceStart: gravityOptions.offset,
-        }))
+        ]).then(([count, { body }]) =>
+          connectionFromArraySlice(body, options, {
+            arrayLength: count,
+            sliceStart: gravityOptions.offset,
+          }))
       },
     },
     artists_without_artworks: {
@@ -163,8 +164,8 @@ export const ShowType = new GraphQLObjectType({
       type: Image.type,
       resolve: (
         {
-          id, partner, image_versions, image_url,
-        },
+ id, partner, image_versions, image_url,
+},
         options,
         request,
         { rootValue: { partnerShowArtworksLoader } },
@@ -180,13 +181,17 @@ export const ShowType = new GraphQLObjectType({
               size: 1,
               published: true,
             },
-          ).then(({ body }) => {
-            const artwork = body[0]
-            return artwork && Image.resolve(getDefault(artwork.images))
-          }).catch((e) => { throw e })
+          )
+            .then(({ body }) => {
+              const artwork = body[0]
+              return artwork && Image.resolve(getDefault(artwork.images))
+            })
+            .catch((e) => {
+              throw e
+            })
         }
 
-        return undefined; // explicitly return undefined
+        return undefined // explicitly return undefined
       },
     },
     counts: {
@@ -206,10 +211,11 @@ export const ShowType = new GraphQLObjectType({
               options,
               request,
               { rootValue: { partnerShowArtworksLoader } },
-            ) => totalViaLoader(
-              partnerShowArtworksLoader,
-              { partner_id: partner.id, show_id: id },
-              options,
+            ) =>
+              totalViaLoader(
+                partnerShowArtworksLoader,
+                { partner_id: partner.id, show_id: id },
+                options,
               ),
           },
           eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
@@ -276,7 +282,8 @@ export const ShowType = new GraphQLObjectType({
     has_location: {
       type: GraphQLBoolean,
       description: "Flag showing if show has any location.",
-      resolve: ({ location, fair, partner_city }) => isExisty(location || fair || partner_city),
+      resolve: ({ location, fair, partner_city }) =>
+        isExisty(location || fair || partner_city),
     },
     is_active: {
       type: GraphQLBoolean,
@@ -323,8 +330,8 @@ export const ShowType = new GraphQLObjectType({
       type: Image.type,
       resolve: (
         {
-          id, partner, image_versions, image_url,
-        },
+ id, partner, image_versions, image_url,
+},
         options,
         request,
         { rootValue: { partnerShowArtworksLoader } },
@@ -340,7 +347,12 @@ export const ShowType = new GraphQLObjectType({
           {
             published: true,
           },
-        ).then(({ body }) => Image.resolve(getDefault(find(body, { can_share_image: true })))).catch((e) => { throw e })
+        )
+          .then(({ body }) =>
+            Image.resolve(getDefault(find(body, { can_share_image: true }))))
+          .catch((e) => {
+            throw e
+          })
       },
     },
     name: {
@@ -372,7 +384,7 @@ export const ShowType = new GraphQLObjectType({
           return galaxyGalleriesLoader(galaxy_partner_id)
         }
 
-        return undefined; // explicitly return undefined
+        return undefined // explicitly return undefined
       },
     },
     press_release: markdown(),
@@ -407,14 +419,15 @@ const Show = {
       description: "The slug or ID of the Show",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { showLoader } }) => showLoader(id)
-    .then((show) => {
-      if (!show.displayable && !show.is_reference) {
-        return new HTTPError("Show Not Found", 404)
-      }
-      return show
-    })
-    .catch(() => null),
+  resolve: (root, { id }, request, { rootValue: { showLoader } }) =>
+    showLoader(id)
+      .then((show) => {
+        if (!show.displayable && !show.is_reference) {
+          return new HTTPError("Show Not Found", 404)
+        }
+        return show
+      })
+      .catch(() => null),
 }
 export default Show
 export const showConnection = connectionDefinitions({

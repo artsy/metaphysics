@@ -17,7 +17,8 @@ const trackedEntityLoaderFactory = (
   entityKeyPath,
 ) => {
   const trackedEntityLoader = new DataLoader(
-    ids => dataLoader({ [paramKey]: ids }).then((body) => {
+    ids =>
+      dataLoader({ [paramKey]: ids }).then((body) => {
         const parsedResults = map(ids, (id) => {
           const match = find(body, [
             entityKeyPath ? `${entityKeyPath}.id` : "id",

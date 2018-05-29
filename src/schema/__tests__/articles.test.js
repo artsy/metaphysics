@@ -31,7 +31,7 @@ describe("Articles type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data.articles[0].id).toBe("foo-bar")
       expect(data.articles[0].title).toBe("My Awesome Article")
     })

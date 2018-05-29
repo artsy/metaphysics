@@ -25,11 +25,10 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
     },
     image: {
       type: Image.type,
-      resolve: ({ artworks }) => (
-          artworks.length > 0 &&
-          artworks[0].artists.length > 0 &&
-          Image.resolve(artworks[0].artists[0])
-        ),
+      resolve: ({ artworks }) =>
+        artworks.length > 0 &&
+        artworks[0].artists.length > 0 &&
+        Image.resolve(artworks[0].artists[0]),
     },
   }),
 })
@@ -60,7 +59,10 @@ const FollowedArtistsArtworksGroup = {
           sliceStart: gravityOptions.offset,
         })
 
-        const groupedByArtist = groupBy(connection.edges, item => item.node.artist.id)
+        const groupedByArtist = groupBy(
+          connection.edges,
+          item => item.node.artist.id,
+        )
 
         let newEdges = []
         let newEdge

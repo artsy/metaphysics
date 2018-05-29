@@ -23,7 +23,8 @@ describe("End sale mutation", () => {
     endSaleLoader: sinon.stub().returns(Promise.resolve(sale)),
   }
 
-  it("ends the sale", async () => runAuthenticatedQuery(query, rootValue).then((data) => {
+  it("ends the sale", async () =>
+    runAuthenticatedQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         endSale: {
           sale: {

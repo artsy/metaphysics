@@ -17,7 +17,8 @@ describe("Gene", () => {
             gene_id: "500-1000-ce",
             aggregations: ["total"],
           })
-          .returns(Promise.resolve({
+          .returns(
+            Promise.resolve({
               hits: [
                 {
                   id: "oseberg-norway-queens-ship",
@@ -26,7 +27,8 @@ describe("Gene", () => {
                 },
               ],
               aggregations: [],
-            })),
+            })
+          ),
       }
     })
 
@@ -43,9 +45,11 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(({ gene: { filtered_artworks: { hits } } }) => {
+      return runQuery(query, rootValue).then(
+        ({ gene: { filtered_artworks: { hits } } }) => {
           expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
-        })
+        }
+      )
     })
   })
 
@@ -54,7 +58,8 @@ describe("Gene", () => {
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
       rootValue = {
         geneLoader: sinon.stub().returns(Promise.resolve(gene)),
-        filterArtworksLoader: sinon.stub().returns(Promise.resolve({
+        filterArtworksLoader: sinon.stub().returns(
+          Promise.resolve({
             hits: Array(20),
             aggregations: {
               total: {
@@ -65,7 +70,8 @@ describe("Gene", () => {
                 photography: { name: "Photography", count: 4 },
               },
             },
-          })),
+          })
+        ),
       }
     })
 
@@ -82,7 +88,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -108,7 +114,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -142,7 +148,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -201,7 +207,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             artists_connection: {
@@ -227,7 +233,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             artists_connection: {
@@ -274,7 +280,8 @@ describe("Gene", () => {
         }
       `
 
-      rootValue.similarGenesLoader = sinon.stub().returns(Promise.resolve({
+      rootValue.similarGenesLoader = sinon.stub().returns(
+        Promise.resolve({
           body: [
             {
               id: "pop-art",
@@ -287,9 +294,10 @@ describe("Gene", () => {
           headers: {
             "x-total-count": 1,
           },
-        }))
+        })
+      )
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           gene: {
             similar: {
@@ -326,7 +334,8 @@ describe("Gene", () => {
             gene_id: "500-1000-ce",
             aggregations: ["total"],
           })
-          .returns(Promise.resolve({
+          .returns(
+            Promise.resolve({
               hits: [
                 {
                   id: "oseberg-norway-queens-ship",
@@ -335,7 +344,8 @@ describe("Gene", () => {
                 },
               ],
               aggregations: [],
-            })),
+            })
+          ),
         geneLoader: sinon.stub().returns(Promise.resolve(gene)),
       }
     })
@@ -354,9 +364,11 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(({ gene: { filtered_artworks: { hits } } }) => {
+      return runQuery(query, rootValue).then(
+        ({ gene: { filtered_artworks: { hits } } }) => {
           expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
-        })
+        }
+      )
     })
   })
 
@@ -366,20 +378,25 @@ describe("Gene", () => {
 
     beforeEach(() => {
       gravityLoader = jest.fn(() =>
-        Promise.resolve([{ gene: { id: "brooklyn-artists", name: "Brooklyn Artists" } }]))
+        Promise.resolve([
+          { gene: { id: "brooklyn-artists", name: "Brooklyn Artists" } },
+        ])
+      )
       followedGeneLoader = trackedEntityLoaderFactory(
         gravityLoader,
         "genes",
         "is_followed",
-        "gene",
+        "gene"
       )
     })
 
-    it("returns true if gene is returned", () => followedGeneLoader("brooklyn-artists").then((gene) => {
+    it("returns true if gene is returned", () =>
+      followedGeneLoader("brooklyn-artists").then(gene => {
         expect(gene.is_followed).toBe(true)
       }))
 
-    it("returns false if gene is not returned", () => followedGeneLoader("new-york-artists").then((gene) => {
+    it("returns false if gene is not returned", () =>
+      followedGeneLoader("new-york-artists").then(gene => {
         expect(gene.is_followed).toBe(false)
       }))
   })

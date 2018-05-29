@@ -79,7 +79,8 @@ const Me = new GraphQLObjectType({
         options,
         request,
         { rootValue: { meCreditCardsLoader } },
-      ) => meCreditCardsLoader({ qualified_for_bidding: true }).then(results => results.length > 0),
+      ) =>
+        meCreditCardsLoader({ qualified_for_bidding: true }).then(results => results.length > 0),
     },
     invoice: Invoice,
     lot_standing: LotStanding,

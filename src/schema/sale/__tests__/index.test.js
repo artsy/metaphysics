@@ -11,7 +11,8 @@ describe("Sale type", () => {
     increment_strategy: "default",
   }
 
-  const execute = async (query, gravityResponse = sale, rootValue = {}) => await runQuery(query, {
+  const execute = async (query, gravityResponse = sale, rootValue = {}) =>
+    await runQuery(query, {
       saleLoader: () => Promise.resolve(gravityResponse),
       ...rootValue,
     })
@@ -192,14 +193,16 @@ describe("Sale type", () => {
 
       const rootValue = {
         saleLoader: () => Promise.resolve(sale),
-        saleArtworksLoader: sinon.stub().returns(Promise.resolve({
+        saleArtworksLoader: sinon.stub().returns(
+          Promise.resolve({
             body: fill(Array(sale.eligible_sale_artworks_count), {
               id: "some-id",
             }),
-          })),
+          })
+        ),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then((data) => {
+      return runAuthenticatedQuery(query, rootValue).then(data => {
         expect(data).toMatchSnapshot()
       })
     })
@@ -235,7 +238,8 @@ describe("Sale type", () => {
         saleArtworksLoader: sinon
           .stub()
           .returns(Promise.resolve({ body: saleArtworks })),
-        incrementsLoader: () => Promise.resolve([
+        incrementsLoader: () =>
+          Promise.resolve([
             {
               key: "default",
               increments: [
@@ -254,7 +258,7 @@ describe("Sale type", () => {
           ]),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then((data) => {
+      return runAuthenticatedQuery(query, rootValue).then(data => {
         expect(data.sale.sale_artworks[0].bid_increments.slice(0, 5)).toEqual([
           400000,
           410000,
@@ -516,11 +520,16 @@ describe("Sale type", () => {
     `
 
     it("returns proper labels", async () => {
-      const results = await Promise.all(testData.map(async ([input]) => await execute(query, {
-            currency: "$",
-            is_auction: true,
-            ...input,
-          })))
+      const results = await Promise.all(
+        testData.map(
+          async ([input]) =>
+            await execute(query, {
+              currency: "$",
+              is_auction: true,
+              ...input,
+            })
+        )
+      )
 
       const labels = testData.map(test => test[1])
 

@@ -10,7 +10,7 @@ import numeral from "schema/fields/numeral"
 import Image from "schema/image"
 import Article from "schema/article"
 import Artwork, { artworkConnection } from "schema/artwork"
-import PartnerArtist from "schema/partner_artist"
+import PartnerArtist, { PartnerArtistConnection, partnersForArtist } from "schema/partner_artist"
 import Meta from "./meta"
 import PartnerShow from "schema/partner_show"
 import { GeneType } from "../gene"
@@ -41,9 +41,6 @@ import {
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { totalViaLoader } from "lib/total"
 
-// avoid importing twice
-const { PartnerArtistConnection, partnersForArtist } = PartnerArtist
-
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
 const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
@@ -68,15 +65,16 @@ const blacklistedPartnerTypes = [
   "Private Collector",
   "Auction",
 ]
-const showsWithBLacklistedPartnersRemoved = shows => reject(shows, (show) => {
-  if (show.partner) {
-    return includes(blacklistedPartnerTypes, show.partner.type)
-  }
-  if (show.galaxy_partner_id) {
-    return false
-  }
-  return true
-})
+const showsWithBLacklistedPartnersRemoved = shows =>
+  reject(shows, (show) => {
+    if (show.partner) {
+      return includes(blacklistedPartnerTypes, show.partner.type)
+    }
+    if (show.galaxy_partner_id) {
+      return false
+    }
+    return true
+  })
 
 // TODO Get rid of this when we remove the deprecated PartnerShow in favour of Show.
 const ShowField = {
@@ -108,15 +106,11 @@ const ShowField = {
     },
     sort: PartnerShowSorts,
   },
-  resolve: (
-    { id },
-    options,
-    request,
-    { rootValue: { relatedShowsLoader } },
-  ) => relatedShowsLoader(defaults(options, {
-    artist_id: id,
-    sort: "-end_at",
-  })).then(shows => showsWithBLacklistedPartnersRemoved(shows)),
+  resolve: ({ id }, options, request, { rootValue: { relatedShowsLoader } }) =>
+    relatedShowsLoader(defaults(options, {
+      artist_id: id,
+      sort: "-end_at",
+    })).then(shows => showsWithBLacklistedPartnersRemoved(shows)),
 }
 
 export const ArtistType = new GraphQLObjectType({
@@ -139,12 +133,7 @@ export const ArtistType = new GraphQLObjectType({
         },
       },
       type: new GraphQLList(Article.type),
-      resolve: (
-        { _id },
-        options,
-        request,
-        { rootValue: { articlesLoader } },
-      ) =>
+      resolve: ({ _id }, options, request, { rootValue: { articlesLoader } }) =>
         articlesLoader(defaults(options, {
           artist_id: _id,
           published: true,
@@ -225,7 +214,11 @@ export const ArtistType = new GraphQLObjectType({
         // Construct an object of all the params gravity will listen to
         const { sort, filter, published } = options
         const gravityArgs = {
-          size, offset, sort, filter, published,
+          size,
+          offset,
+          sort,
+          filter,
+          published,
         }
         return artistArtworksLoader(artist.id, gravityArgs).then(artworks =>
           connectionFromArraySlice(artworks, options, {
@@ -274,22 +267,18 @@ export const ArtistType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: ({
         nationality, years, hometown, location,
-      }) => compact([
-        nationality,
-        years,
-        hometown,
-        location ? `based in ${location}` : undefined,
-      ]).join(", "),
+      }) =>
+        compact([
+          nationality,
+          years,
+          hometown,
+          location ? `based in ${location}` : undefined,
+        ]).join(", "),
     },
     biography: {
       type: Article.type,
       description: "The Artist biography article written by Artsy",
-      resolve: (
-        { _id },
-        options,
-        request,
-        { rootValue: { articlesLoader } },
-      ) =>
+      resolve: ({ _id }, options, request, { rootValue: { articlesLoader } }) =>
         articlesLoader({
           published: true,
           biography_for_artist_id: _id,
@@ -416,12 +405,13 @@ export const ArtistType = new GraphQLObjectType({
               _options,
               _request,
               { rootValue: { relatedMainArtistsLoader } },
-            ) => totalViaLoader(
-              relatedMainArtistsLoader,
-              {},
-              {
-                artist: [id],
-              },
+            ) =>
+              totalViaLoader(
+                relatedMainArtistsLoader,
+                {},
+                {
+                  artist: [id],
+                },
               ),
           },
           articles: {
@@ -466,14 +456,15 @@ export const ArtistType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { relatedShowsLoader } },
-      ) => relatedShowsLoader({
-        artist_id: id,
-        sort: "-relevance,-start_at",
-        is_reference: true,
-        visible_to_public: false,
-        has_location: true,
-        size: options.size,
-      }).then(shows => showsWithBLacklistedPartnersRemoved(shows)),
+      ) =>
+        relatedShowsLoader({
+          artist_id: id,
+          sort: "-relevance,-start_at",
+          is_reference: true,
+          visible_to_public: false,
+          has_location: true,
+          size: options.size,
+        }).then(shows => showsWithBLacklistedPartnersRemoved(shows)),
     },
     formatted_artworks_count: {
       type: GraphQLString,
@@ -496,12 +487,12 @@ export const ArtistType = new GraphQLObjectType({
     },
     formatted_nationality_and_birthday: {
       type: GraphQLString,
-      description: "A string of the form \"Nationality, Birthday (or Birthday-Deathday)\"",
+      description:
+        "A string of the form \"Nationality, Birthday (or Birthday-Deathday)\"",
       resolve: ({ birthday, nationality, deathday }) => {
         let formatted_bday =
           !isNaN(birthday) && birthday ? `b. ${birthday}` : birthday
-        formatted_bday =
-          formatted_bday && formatted_bday.replace(/born/i, "b.")
+        formatted_bday = formatted_bday && formatted_bday.replace(/born/i, "b.")
 
         if (!isNaN(deathday) && deathday && formatted_bday) {
           formatted_bday = `${formatted_bday.replace(
@@ -536,7 +527,8 @@ export const ArtistType = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve: ({
         blurb, nationality, years, hometown, location,
-      }) => !!(blurb || nationality || years || hometown || location),
+      }) =>
+        !!(blurb || nationality || years || hometown || location),
     },
     hometown: {
       type: GraphQLString,

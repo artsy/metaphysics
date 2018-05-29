@@ -23,7 +23,7 @@ describe("Me", () => {
                 metadata: {
                   lewitt_invoice_id: "420i",
                 },
-                from: "\"Percy Z\" <percy@cat.com>",
+                from: '"Percy Z" <percy@cat.com>',
                 from_principal: true,
                 original_text: "I'm a cat oh yea!",
                 body: "I'm a cat",
@@ -59,9 +59,11 @@ describe("Me", () => {
           }
         `
 
-        return runAuthenticatedQuery(query, rootValue).then(({ me: conversation }) => {
+        return runAuthenticatedQuery(query, rootValue).then(
+          ({ me: conversation }) => {
             expect(conversation).toMatchSnapshot()
-          })
+          }
+        )
       })
 
       it("handles null message bodies", () => {
@@ -100,9 +102,11 @@ describe("Me", () => {
           conversationMessagesLoader: () => Promise.resolve(message),
         })
 
-        return runAuthenticatedQuery(query, customRootValue).then(({ me: { conversation } }) => {
+        return runAuthenticatedQuery(query, customRootValue).then(
+          ({ me: { conversation } }) => {
             expect(conversation).toMatchSnapshot()
-          })
+          }
+        )
       })
 
       it("returns proper is_from_user", () => {
@@ -133,9 +137,11 @@ describe("Me", () => {
           }
         `
 
-        return runAuthenticatedQuery(query, rootValue).then(({ me: conversation }) => {
+        return runAuthenticatedQuery(query, rootValue).then(
+          ({ me: conversation }) => {
             expect(conversation).toMatchSnapshot()
-          })
+          }
+        )
       })
     })
   })

@@ -6,7 +6,7 @@
     "jasmine": true,
     "es6": true
   },
-  "plugins": ["promise"],
+  "plugins": ["promise", "prettier"],
   "extends": "airbnb",
   "parser": "babel-eslint",
   "rules": {
@@ -29,7 +29,9 @@
     "no-mixed-operators": 0,
     "no-plusplus": 0,
     "no-restricted-globals": 0,
-    "no-prototype-builtins": 0
+    "no-prototype-builtins": 0,
+    "no-multi-str": 0,
+    "no-bitwise": 0
   },
   "globals": {
     "expect": false,

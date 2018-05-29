@@ -3,7 +3,8 @@ import gql from "test/gql"
 import { runQuery } from "test/utils"
 
 describe("Sale Artworks", () => {
-  const execute = async (gravityResponse, query, rootValue = {}) => await runQuery(query, {
+  const execute = async (gravityResponse, query, rootValue = {}) =>
+    await runQuery(query, {
       saleArtworksFilterLoader: () => Promise.resolve(gravityResponse),
       ...rootValue,
     })
@@ -41,7 +42,7 @@ describe("Sale Artworks", () => {
       query,
       {
         saleArtworksAllLoader: () => Promise.resolve(gravityResponse),
-      },
+      }
     )
     expect(total).toEqual(totalCount)
     expect(edges.length).toEqual(hits.length)
@@ -74,7 +75,7 @@ describe("Sale Artworks", () => {
     `
     const { sale_artworks: { counts: { total }, edges } } = await execute(
       gravityResponse,
-      query,
+      query
     )
     expect(total).toEqual(totalCount)
     expect(edges.length).toEqual(hits.length)
@@ -155,7 +156,7 @@ describe("Sale Artworks", () => {
     `
     const { sale_artworks: { pageInfo } } = await execute(
       gravityResponse,
-      query,
+      query
     )
     expect(pageInfo.hasNextPage).toEqual(false)
   })
@@ -181,7 +182,7 @@ describe("Sale Artworks", () => {
     `
     const { sale_artworks: { counts: { total } } } = await execute(
       gravityResponse,
-      query,
+      query
     )
     expect(total).toEqual(hits.length)
   })
@@ -237,11 +238,11 @@ describe("Sale Artworks", () => {
     `
     const { sale_artworks: { aggregations } } = await execute(
       gravityResponse,
-      query,
+      query
     )
 
     expect(aggregations.length).toBeGreaterThan(0)
-    aggregations.forEach((aggregation) => {
+    aggregations.forEach(aggregation => {
       expect(aggregation.counts.length).toBeGreaterThan(0)
     })
   })

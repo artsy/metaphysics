@@ -3,15 +3,16 @@ import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/
 describe("trackedEntityLoader", () => {
   it("also works with payloads that don’t need an entity key path", () => {
     const gravityLoader = jest.fn(() =>
-      Promise.resolve([{ id: "queens-ship" }]))
+      Promise.resolve([{ id: "queens-ship" }])
+    )
     const savedArtworksLoader = trackedEntityLoaderFactory(
       gravityLoader,
       "artworks",
-      "is_saved",
+      "is_saved"
     )
-    return savedArtworksLoader("queens-ship").then((queens_ship) => {
+    return savedArtworksLoader("queens-ship").then(queens_ship => {
       expect(queens_ship.is_saved).toEqual(true)
-      return savedArtworksLoader("kings-ship").then((kings_ship) => {
+      return savedArtworksLoader("kings-ship").then(kings_ship => {
         expect(kings_ship.is_saved).toEqual(false)
       })
     })
@@ -23,16 +24,18 @@ describe("trackedEntityLoader", () => {
 
     beforeEach(() => {
       gravityLoader = jest.fn(() =>
-        Promise.resolve([{ artist: { id: "cab", name: "Cab" } }]))
+        Promise.resolve([{ artist: { id: "cab", name: "Cab" } }])
+      )
       followedArtistLoader = trackedEntityLoaderFactory(
         gravityLoader,
         "artists",
         "is_followed",
-        "artist",
+        "artist"
       )
     })
 
-    it("passes the params to gravity and batches multiple requests", () => Promise.all([
+    it("passes the params to gravity and batches multiple requests", () =>
+      Promise.all([
         followedArtistLoader("cab"),
         followedArtistLoader("damon"),
       ]).then(() => {
@@ -41,11 +44,13 @@ describe("trackedEntityLoader", () => {
         })
       }))
 
-    it("marks is_followed as true if artist is returned", () => followedArtistLoader("cab").then((artist) => {
+    it("marks is_followed as true if artist is returned", () =>
+      followedArtistLoader("cab").then(artist => {
         expect(artist.is_followed).toBe(true)
       }))
 
-    it("marks is_followed as false if artist is not returned", () => followedArtistLoader("damon").then((artist) => {
+    it("marks is_followed as false if artist is not returned", () =>
+      followedArtistLoader("damon").then(artist => {
         expect(artist.is_followed).toBe(false)
       }))
   })

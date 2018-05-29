@@ -37,7 +37,7 @@ describe("stiched schema regressions", () => {
         salesLoader: async () => salesResponse,
         relatedFairsLoader: async () => ({}),
         relatedShowsLoader: async () => ({}),
-      },
+      }
     )
     expect(result).toEqual({
       artwork: {
@@ -65,7 +65,7 @@ describe("stiched schema regressions", () => {
       {
         artworkLoader: async () => ({ id: "banksy-di-faced-tenner-21" }),
         artistLoader: async () => ({ id: "banksy" }),
-      },
+      }
     )
     expect(result).toEqual({
       artwork: {

@@ -35,7 +35,8 @@ export default {
       offset,
       total_count: true,
     }
-    return followedArtistsLoader(gravityArgs).then(({ body, headers }) => connectionFromArraySlice(body, options, {
+    return followedArtistsLoader(gravityArgs).then(({ body, headers }) =>
+      connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
       }))

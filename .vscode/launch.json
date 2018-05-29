@@ -5,11 +5,16 @@
       "name": "Run Tests With Debugger (slower, use npm run watch for normal work)",
       "type": "node",
       "request": "launch",
-      "port": 5858,
+      "port": 9229,
       "address": "localhost",
       "stopOnEntry": false,
       "runtimeExecutable": null,
-      "runtimeArgs": ["--inspect-brk", "./node_modules/.bin/jest", "-i"],
+      "runtimeArgs": [
+        "--inspect-brk",
+        "./node_modules/.bin/jest",
+        "-i",
+        "/Users/mykola/Work/metaphysics/src/schema/home/__tests__/home_page_artwork_module.test.js"
+      ],
       "cwd": "${workspaceRoot}"
     }
   ]

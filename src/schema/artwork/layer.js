@@ -13,7 +13,8 @@ const ArtworkLayerType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { relatedLayerArtworksLoader } },
-      ) => relatedLayerArtworksLoader(
+      ) =>
+        relatedLayerArtworksLoader(
           { id, type },
           {
             artwork: [artwork_id],

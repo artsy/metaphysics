@@ -27,12 +27,11 @@ export default {
     options,
     request,
     { rootValue: { meBiddersLoader, salesLoader } },
-  ) => salesLoader(options)
-    .then(sales =>
+  ) =>
+    salesLoader(options).then(sales =>
       // TODO this can be cleaner
       Promise.all(sales.map(sale =>
-        meBiddersLoader({ sale_id: sale.id })
-          .then(bidders => ({
+          meBiddersLoader({ sale_id: sale.id }).then(bidders => ({
             sale,
             bidder: first(bidders),
             is_registered: bidders.length > 0,

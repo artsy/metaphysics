@@ -46,7 +46,7 @@ describe("Partner type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         partner: {
           name: "Catty Partner",
@@ -77,7 +77,7 @@ describe("Partner type", () => {
 
       const typeDefs = fs.readFileSync(
         path.resolve(__dirname, "../../data/lewitt.graphql"),
-        "utf8",
+        "utf8"
       )
 
       const resolvers = {
@@ -94,7 +94,8 @@ describe("Partner type", () => {
       rootValue.lewittSchema = lewittSchema
     })
 
-    it("returns true if payments_enabled and partner_product_merchant_account is configured in lewitt", () => runQuery(query, rootValue).then((data) => {
+    it("returns true if payments_enabled and partner_product_merchant_account is configured in lewitt", () =>
+      runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           partner: {
             acceptsCardPayments: true,
@@ -104,7 +105,7 @@ describe("Partner type", () => {
 
     it("returns false if payments_enabled set to false on partner", () => {
       partner.payments_enabled = false
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           partner: {
             acceptsCardPayments: false,
@@ -115,7 +116,7 @@ describe("Partner type", () => {
 
     it("returns false if partner_product_merchant_account is not configured in lewitt", () => {
       credit_card_enabled = false
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           partner: {
             acceptsCardPayments: false,
@@ -127,7 +128,7 @@ describe("Partner type", () => {
     it("returns false if partner_product_merchant_account call to lewitt returns errors", () => {
       const typeDefs = fs.readFileSync(
         path.resolve(__dirname, "../../data/lewitt.graphql"),
-        "utf8",
+        "utf8"
       )
 
       const resolvers = {
@@ -145,7 +146,7 @@ describe("Partner type", () => {
 
       rootValue.lewittSchema = lewittSchema
 
-      return runQuery(query, rootValue).then((data) => {
+      return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           partner: {
             acceptsCardPayments: false,

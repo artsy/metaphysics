@@ -26,39 +26,38 @@ export const apiLoaderWithAuthenticationFactory = (
   apiName,
   globalAPIOptions,
 ) => accessTokenLoader => (path, globalParams = {}, pathAPIOptions = {}) => {
-      const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
-      const loader = new DataLoader(
-        keys => accessTokenLoader().then(accessToken =>
-            Promise.all(keys.map((key) => {
-                const clock = timer(key)
-                clock.start()
-                return new Promise((resolve, reject) => {
-                  verbose(`Requested: ${key}`)
-                  api(key, accessToken, apiOptions)
-                    .then((response) => {
-                      if (apiOptions.headers) {
-                        resolve(pick(response, ["body", "headers"]))
-                      } else {
-                        resolve(response.body)
-                      }
-                      const time = clock.end()
-                      logger(
-                        globalAPIOptions.requestIDs.requestID,
-                        apiName,
-                        key,
-                        { time, cache: false },
-                      )
-                    })
-                    .catch((err) => {
-                      warn(path, err)
-                      reject(err)
-                    })
+  const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
+  const loader = new DataLoader(
+    keys =>
+      accessTokenLoader().then(accessToken =>
+        Promise.all(keys.map((key) => {
+            const clock = timer(key)
+            clock.start()
+            return new Promise((resolve, reject) => {
+              verbose(`Requested: ${key}`)
+              api(key, accessToken, apiOptions)
+                .then((response) => {
+                  if (apiOptions.headers) {
+                    resolve(pick(response, ["body", "headers"]))
+                  } else {
+                    resolve(response.body)
+                  }
+                  const time = clock.end()
+                  logger(globalAPIOptions.requestIDs.requestID, apiName, key, {
+                    time,
+                    cache: false,
+                  })
                 })
-              }))),
-        {
-          batch: true,
-          cache: true,
-        },
-      )
-      return loaderInterface(loader, path, globalParams)
-    }
+                .catch((err) => {
+                  warn(path, err)
+                  reject(err)
+                })
+            })
+          }))),
+    {
+      batch: true,
+      cache: true,
+    },
+  )
+  return loaderInterface(loader, path, globalParams)
+}

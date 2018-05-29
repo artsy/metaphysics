@@ -36,7 +36,7 @@ function wrapResolve(typeName, fieldName, resolver) {
         {
           childOf: parentSpan.context(),
         },
-    )
+      )
     span.addTags({
       resource: `${typeName}: ${fieldName}`,
       type: "web",

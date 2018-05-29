@@ -8,12 +8,16 @@ describe("Image", () => {
     }
 
     it("takes an image response with options and resizes it to crop", () => {
-      expect(versionedImageUrl(image, { version: "four_thirds" })).toBe("https://xxx.cloudfront.net/xxx/four_thirds.jpg")
+      expect(versionedImageUrl(image, { version: "four_thirds" })).toBe(
+        "https://xxx.cloudfront.net/xxx/four_thirds.jpg"
+      )
     })
 
     describe("without image_url", () => {
       it("returns undefined", () => {
-        expect(versionedImageUrl({}, { version: "four_thirds" })).toBe(undefined)
+        expect(versionedImageUrl({}, { version: "four_thirds" })).toBe(
+          undefined
+        )
       })
     })
   })

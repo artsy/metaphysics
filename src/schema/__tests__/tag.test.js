@@ -15,7 +15,8 @@ describe("Tag", () => {
             tag_id: "butt",
             aggregations: ["total"],
           })
-          .returns(Promise.resolve({
+          .returns(
+            Promise.resolve({
               hits: [
                 {
                   id: "oseberg-norway-queens-ship",
@@ -24,7 +25,8 @@ describe("Tag", () => {
                 },
               ],
               aggregations: [],
-            })),
+            })
+          ),
       }
       const query = `
         {
@@ -38,9 +40,11 @@ describe("Tag", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(({ tag: { filtered_artworks: { hits } } }) => {
+      return runQuery(query, rootValue).then(
+        ({ tag: { filtered_artworks: { hits } } }) => {
           expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
-        })
+        }
+      )
     })
   })
 })

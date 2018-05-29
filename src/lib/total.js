@@ -12,5 +12,6 @@ export const totalViaLoader = (loader, loaderOptions, apiOptions = {}) => {
   } else {
     fetch = loader(countOptions)
   }
-  return fetch.then(({ headers }) => parseInt(headers["x-total-count"] || 0, 10))
+  return fetch.then(({ headers }) =>
+    parseInt(headers["x-total-count"] || 0, 10))
 }

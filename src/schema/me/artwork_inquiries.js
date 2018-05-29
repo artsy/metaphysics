@@ -45,7 +45,8 @@ export default {
       inquireable_type: "artwork",
       total_count: true,
     }
-    return inquiryRequestsLoader(gravityArgs).then(({ body, headers }) => connectionFromArraySlice(body, options, {
+    return inquiryRequestsLoader(gravityArgs).then(({ body, headers }) =>
+      connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
       }))

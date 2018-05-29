@@ -136,12 +136,8 @@ export const SaleType = new GraphQLObjectType({
       type: new GraphQLList(BidIncrement),
       description:
         "A bid increment policy that explains minimum bids in ranges.",
-      resolve: (
-        sale,
-        options,
-        request,
-        { rootValue: { incrementsLoader } },
-      ) => incrementsLoader({ key: sale.increment_strategy }).then(increments => increments[0].increments),
+      resolve: (sale, options, request, { rootValue: { incrementsLoader } }) =>
+        incrementsLoader({ key: sale.increment_strategy }).then(increments => increments[0].increments),
     },
     buyers_premium: {
       type: new GraphQLList(BuyersPremium),
@@ -171,8 +167,8 @@ export const SaleType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: (sale) => {
         const {
-          live_start_at, registration_ends_at, start_at, end_at,
-        } = sale
+ live_start_at, registration_ends_at, start_at, end_at,
+} = sale
 
         // Closed
         if (end_at && end_at < moment()) {
@@ -202,13 +198,12 @@ export const SaleType = new GraphQLObjectType({
           const isInProgress = startAt < moment()
           const isUpcoming = startAt > moment() && startAt < range
           const isNearFuture = startAt > range
-          const dateLabel = saleDate => (
+          const dateLabel = saleDate =>
             `${moment(saleDate)
               .fromNow()
               .replace("in ", "")
               .replace("ago", "")
               .trim()} left` // e.g., X min left
-          )
 
           // Timed auction in progress
           if (isInProgress) {
@@ -226,7 +221,7 @@ export const SaleType = new GraphQLObjectType({
           return null
         }
 
-        return undefined; // make undefined an explicit return
+        return undefined // make undefined an explicit return
       },
     },
     eligible_sale_artworks_count: {
@@ -284,7 +279,7 @@ export const SaleType = new GraphQLObjectType({
           return `${PREDICTION_ENDPOINT}/${sale.id}`
         }
 
-        return undefined; // make undefined return explicit
+        return undefined // make undefined return explicit
       },
     },
     profile: {
@@ -373,12 +368,8 @@ export const SaleType = new GraphQLObjectType({
           type: new GraphQLNonNull(GraphQLString),
         },
       },
-      resolve: (
-        sale,
-        { id },
-        request,
-        { rootValue: { saleArtworkLoader } },
-      ) => saleArtworkLoader({ saleId: sale.id, saleArtworkId: id }),
+      resolve: (sale, { id }, request, { rootValue: { saleArtworkLoader } }) =>
+        saleArtworkLoader({ saleId: sale.id, saleArtworkId: id }),
     },
     symbol: {
       type: GraphQLString,

@@ -3,7 +3,7 @@ import { toGlobalId } from "graphql-relay"
 
 describe("Filter Artworks", () => {
   let rootValue = null
-  describe("Does not pass along the medium param if it is \"*\"", () => {
+  describe('Does not pass along the medium param if it is "*"', () => {
     beforeEach(() => {
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
 
@@ -15,7 +15,8 @@ describe("Filter Artworks", () => {
             aggregations: ["total"],
             for_sale: true,
           })
-          .returns(Promise.resolve({
+          .returns(
+            Promise.resolve({
               hits: [
                 {
                   id: "oseberg-norway-queens-ship",
@@ -24,7 +25,8 @@ describe("Filter Artworks", () => {
                 },
               ],
               aggregations: [],
-            })),
+            })
+          ),
 
         geneLoader: sinon.stub().returns(Promise.resolve(gene)),
       }
@@ -44,9 +46,11 @@ describe("Filter Artworks", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(({ gene: { filtered_artworks: { hits } } }) => {
+      return runQuery(query, rootValue).then(
+        ({ gene: { filtered_artworks: { hits } } }) => {
           expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
-        })
+        }
+      )
     })
 
     it("implements the NodeInterface", () => {
@@ -67,11 +71,13 @@ describe("Filter Artworks", () => {
       }
       const expectedId = toGlobalId(
         "FilterArtworks",
-        JSON.stringify(filterOptions),
+        JSON.stringify(filterOptions)
       )
-      return runQuery(query, rootValue).then(({ gene: { filtered_artworks: { __id } } }) => {
+      return runQuery(query, rootValue).then(
+        ({ gene: { filtered_artworks: { __id } } }) => {
           expect(__id).toEqual(expectedId)
-        })
+        }
+      )
     })
 
     it("fetches FilterArtworks using the node root field", () => {
@@ -82,7 +88,7 @@ describe("Filter Artworks", () => {
       }
       const generatedId = toGlobalId(
         "FilterArtworks",
-        JSON.stringify(filterOptions),
+        JSON.stringify(filterOptions)
       )
 
       const query = `

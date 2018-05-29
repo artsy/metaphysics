@@ -4,12 +4,14 @@ describe("all", () => {
   it("fans out all the requests", () => {
     const loader = jest
       .fn()
-      .mockReturnValueOnce(Promise.resolve({
+      .mockReturnValueOnce(
+        Promise.resolve({
           headers: { "x-total-count": 22 },
-        }))
+        })
+      )
       .mockReturnValue(Promise.resolve({}))
 
-    return allViaLoader(loader, {}, { size: 10 }).then((artworks) => {
+    return allViaLoader(loader, {}, { size: 10 }).then(artworks => {
       expect(artworks.length).toBe(3) // 3 pages of 10 each to get 22 works
 
       // Initial count fetch

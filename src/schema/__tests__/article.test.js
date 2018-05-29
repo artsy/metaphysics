@@ -46,7 +46,7 @@ describe("Article type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data.article.id).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
     })
@@ -66,7 +66,7 @@ describe("Article type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then((data) => {
+    return runQuery(query, rootValue).then(data => {
       expect(data.article.id).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
       expect(data.article.contributing_authors).toEqual([

@@ -29,7 +29,9 @@ const OrderedSetType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { setItemsLoader } },
-      ) => setItemsLoader(id).then(items => items.map((item) => {
+      ) =>
+        setItemsLoader(id).then(items =>
+          items.map((item) => {
             item.item_type = item_type // eslint-disable-line no-param-reassign
             return item
           })),

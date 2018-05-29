@@ -28,10 +28,10 @@ export default {
     options,
     request,
     {
-      rootValue: {
-        accessToken, meLoader, meBiddersLoader, saleLoader,
-      },
-    },
+ rootValue: {
+ accessToken, meLoader, meBiddersLoader, saleLoader,
+},
+},
   ) => {
     // Observer role for logged out users
     if (!accessToken) {
@@ -84,23 +84,23 @@ export default {
       // Operator role if logged in as an admin
     } else if (options.role === "OPERATOR") {
       return Promise.all([saleLoader(options.sale_id), meLoader()]).then(([sale, me]) => {
-        if (me.type !== "Admin") {
-          throw new Error("Unauthorized to be operator")
-        }
-        return jwt.encode(
-          {
-            aud: "auctions",
-            role: "operator",
-            userId: me._id,
-            saleId: sale._id,
-            bidderId: me.paddle_number,
-            iat: new Date().getTime(),
-          },
-          HMAC_SECRET,
-        )
-      })
+          if (me.type !== "Admin") {
+            throw new Error("Unauthorized to be operator")
+          }
+          return jwt.encode(
+            {
+              aud: "auctions",
+              role: "operator",
+              userId: me._id,
+              saleId: sale._id,
+              bidderId: me.paddle_number,
+              iat: new Date().getTime(),
+            },
+            HMAC_SECRET,
+          )
+        })
     }
 
-    return undefined; // make undefined return explicit
+    return undefined // make undefined return explicit
   },
 }

@@ -68,7 +68,7 @@ export default {
       return data
     } catch (error) {
       console.error("schema/sale_artworks Error:", error) // eslint-disable-line
-      return undefined; // make undefined return explicit
+      return undefined // make undefined return explicit
     }
   },
 }

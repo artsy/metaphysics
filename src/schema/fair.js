@@ -187,7 +187,8 @@ const FairType = new GraphQLObjectType({
         return Promise.all([
           totalViaLoader(fairBoothsLoader, id, gravityOptions),
           fairBoothsLoader(id, gravityOptions),
-        ]).then(([count, { body: { results } }]) => connectionFromArraySlice(results, options, {
+        ]).then(([count, { body: { results } }]) =>
+          connectionFromArraySlice(results, options, {
             arrayLength: count,
             sliceStart: gravityOptions.offset,
           }))
@@ -217,7 +218,8 @@ const Fair = {
       description: "The slug or ID of the Fair",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { fairLoader } }) => fairLoader(id),
+  resolve: (root, { id }, request, { rootValue: { fairLoader } }) =>
+    fairLoader(id),
 }
 
 export default Fair

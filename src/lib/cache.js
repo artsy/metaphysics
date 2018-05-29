@@ -22,7 +22,7 @@ function createMockClient() {
     store,
     get: (key, cb) => cb(null, store[key]),
     set: (key, data) => {
-      store[key] = data;
+      store[key] = data
       return true
     },
     del: key => delete store[key],
@@ -64,47 +64,49 @@ function createRedisClient() {
     client.auth(redisURL.auth.split(":")[1])
   }
   client.on("error", error)
-  VerboseEvents.forEach(event => client.on(event, () => verbose(`[Cache] ${event}`)))
+  VerboseEvents.forEach(event =>
+    client.on(event, () => verbose(`[Cache] ${event}`)))
   return client
 }
 
 export const client = isTest ? createMockClient() : createRedisClient()
 
 export default {
-  get: key => new Promise((resolve, reject) => {
-    if (isNull(client)) return reject(new Error("[Cache] `client` is `null`"))
+  get: key =>
+    new Promise((resolve, reject) => {
+      if (isNull(client)) return reject(new Error("[Cache] `client` is `null`"))
 
-    let timeoutId = setTimeout(() => {
-      timeoutId = null
-      const err = new Error(`[Cache#get] Timeout for key ${key}`)
-      error(err)
-      reject(err)
-    }, CACHE_RETRIEVAL_TIMEOUT_MS)
-
-    const start = Date.now()
-    return client.get(key, (err, data) => {
-      const time = Date.now() - start
-      if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
-        error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
-      }
-
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      } else {
-        // timed out and already rejected promise, no need to continue
-        return
-      }
-
-      if (err) {
+      let timeoutId = setTimeout(() => {
+        timeoutId = null
+        const err = new Error(`[Cache#get] Timeout for key ${key}`)
         error(err)
         reject(err)
-      } else if (data) {
-        resolve(JSON.parse(data))
-      } else {
-        reject(new Error("[Cache#get] Cache miss"))
-      }
-    })
-  }),
+      }, CACHE_RETRIEVAL_TIMEOUT_MS)
+
+      const start = Date.now()
+      return client.get(key, (err, data) => {
+        const time = Date.now() - start
+        if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
+          error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
+        }
+
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        } else {
+          // timed out and already rejected promise, no need to continue
+          return
+        }
+
+        if (err) {
+          error(err)
+          reject(err)
+        } else if (data) {
+          resolve(JSON.parse(data))
+        } else {
+          reject(new Error("[Cache#get] Cache miss"))
+        }
+      })
+    }),
 
   set: (key, data) => {
     if (isNull(client)) return false

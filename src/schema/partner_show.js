@@ -31,7 +31,7 @@ const kind = ({ artists, fair }) => {
   if (artists.length > 1) return "group"
   if (artists.length === 1) return "solo"
 
-  return undefined; // make undefined return explicit
+  return undefined // make undefined return explicit
 }
 
 const PartnerShowType = new GraphQLObjectType({
@@ -115,10 +115,11 @@ const PartnerShowType = new GraphQLObjectType({
               options,
               request,
               { rootValue: { partnerShowArtworksLoader } },
-            ) => totalViaLoader(
-              partnerShowArtworksLoader,
-              { partner_id: partner.id, show_id: id },
-              options,
+            ) =>
+              totalViaLoader(
+                partnerShowArtworksLoader,
+                { partner_id: partner.id, show_id: id },
+                options,
               ),
           },
           eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
@@ -130,8 +131,8 @@ const PartnerShowType = new GraphQLObjectType({
       type: Image.type,
       resolve: (
         {
-          id, partner, image_versions, image_url,
-        },
+ id, partner, image_versions, image_url,
+},
         options,
         request,
         { rootValue: { partnerShowArtworksLoader } },
@@ -215,7 +216,8 @@ const PartnerShowType = new GraphQLObjectType({
     has_location: {
       type: GraphQLBoolean,
       description: "Flag showing if show has any location.",
-      resolve: ({ location, fair, partner_city }) => isExisty(location || fair || partner_city),
+      resolve: ({ location, fair, partner_city }) =>
+        isExisty(location || fair || partner_city),
     },
     is_active: {
       type: GraphQLBoolean,
@@ -258,8 +260,8 @@ const PartnerShowType = new GraphQLObjectType({
       type: Image.type,
       resolve: (
         {
-          id, partner, image_versions, image_url,
-        },
+ id, partner, image_versions, image_url,
+},
         options,
         request,
         { rootValue: { partnerShowArtworksLoader } },
@@ -273,7 +275,12 @@ const PartnerShowType = new GraphQLObjectType({
           {
             published: true,
           },
-        ).then(({ body }) => Image.resolve(getDefault(find(body, { can_share_image: true })))).catch((e) => { throw e })
+        )
+          .then(({ body }) =>
+            Image.resolve(getDefault(find(body, { can_share_image: true }))))
+          .catch((e) => {
+            throw e
+          })
       },
     },
     name: {
@@ -317,12 +324,13 @@ const PartnerShow = {
       description: "The slug or ID of the PartnerShow",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { showLoader } }) => showLoader(id).then((show) => {
-    if (!show.displayable) {
-      return new HTTPError("Show Not Found", 404)
-    }
-    return show
-  }),
+  resolve: (root, { id }, request, { rootValue: { showLoader } }) =>
+    showLoader(id).then((show) => {
+      if (!show.displayable) {
+        return new HTTPError("Show Not Found", 404)
+      }
+      return show
+    }),
 }
 
 export default PartnerShow

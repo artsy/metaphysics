@@ -33,11 +33,13 @@ import AttributionClass from "schema/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "../../lib/attributionClasses.js"
 
-const is_inquireable = ({ inquireable, acquireable }) => inquireable && !acquireable
+const is_inquireable = ({ inquireable, acquireable }) =>
+  inquireable && !acquireable
 
 const has_price_range = price => new RegExp(/-/).test(price)
 
-const has_multiple_editions = edition_sets => edition_sets && edition_sets.length > 0
+const has_multiple_editions = edition_sets =>
+  edition_sets && edition_sets.length > 0
 
 // eslint-disable-next-line
 let Artwork
@@ -95,12 +97,7 @@ export const artworkFields = () => ({
         type: GraphQLInt,
       },
     },
-    resolve: (
-      { _id },
-      { size },
-      request,
-      { rootValue: { articlesLoader } },
-    ) =>
+    resolve: ({ _id }, { size }, request, { rootValue: { articlesLoader } }) =>
       articlesLoader({
         artwork_id: _id,
         published: true,
@@ -125,7 +122,7 @@ export const artworkFields = () => ({
         return attributionClasses[attribution_class]
       }
 
-      return undefined; // make undefined return explicit
+      return undefined // make undefined return explicit
     },
   },
   collecting_institution: {
@@ -135,7 +132,8 @@ export const artworkFields = () => ({
   },
   contact_label: {
     type: GraphQLString,
-    resolve: ({ partner }) => (partner.type === "Gallery" ? "Gallery" : "Seller"),
+    resolve: ({ partner }) =>
+      (partner.type === "Gallery" ? "Gallery" : "Seller"),
   },
   contact_message: {
     type: GraphQLString,
@@ -160,7 +158,7 @@ export const artworkFields = () => ({
         ].join(" ")
       }
 
-      return undefined; // make undefined return explicit
+      return undefined // make undefined return explicit
     },
   },
   context: Context,
@@ -201,7 +199,7 @@ export const artworkFields = () => ({
         return _.first(edition_sets).editions
       }
 
-      return undefined; // make undefined return explicit
+      return undefined // make undefined return explicit
     },
   },
   edition_sets: {
@@ -255,11 +253,8 @@ export const artworkFields = () => ({
   },
   image_title: {
     type: GraphQLString,
-    resolve: ({ artist, title, date }) => _.compact([
-      artist && artist.name,
-      title && `‘${title}’`,
-      date,
-    ]).join(", "),
+    resolve: ({ artist, title, date }) =>
+      _.compact([artist && artist.name, title && `‘${title}’`, date]).join(", "),
   },
   images: {
     type: new GraphQLList(Image.type),
@@ -319,7 +314,8 @@ export const artworkFields = () => ({
   },
   is_comparable_with_auction_results: {
     type: GraphQLBoolean,
-    resolve: ({ comparables_count, category }) => comparables_count > 0 && category !== "Architecture",
+    resolve: ({ comparables_count, category }) =>
+      comparables_count > 0 && category !== "Architecture",
   },
   is_contactable: {
     type: GraphQLBoolean,
@@ -330,19 +326,19 @@ export const artworkFields = () => ({
       options,
       request,
       { rootValue: { relatedSalesLoader } },
-    ) => relatedSalesLoader({
-      size: 1,
-      active: true,
-      artwork: [artwork.id],
-    })
-      .then(sales => (
-        artwork.forsale &&
-        !_.isEmpty(artwork.partner) &&
-        !artwork.acquireable &&
-        !artwork.partner.has_limited_fair_partnership &&
-        !sales.length
-      ))
-      .catch(() => false),
+    ) =>
+      relatedSalesLoader({
+        size: 1,
+        active: true,
+        artwork: [artwork.id],
+      })
+        .then(sales =>
+            artwork.forsale &&
+            !_.isEmpty(artwork.partner) &&
+            !artwork.acquireable &&
+            !artwork.partner.has_limited_fair_partnership &&
+            !sales.length)
+        .catch(() => false),
   },
   is_downloadable: {
     type: GraphQLBoolean,
@@ -364,16 +360,10 @@ export const artworkFields = () => ({
   },
   is_hangable: {
     type: GraphQLBoolean,
-    resolve: artwork => (
-      !_.includes(
-        artwork.category,
-        "sculpture",
-        "installation",
-        "design",
-      ) &&
+    resolve: artwork =>
+      !_.includes(artwork.category, "sculpture", "installation", "design") &&
       isTwoDimensional(artwork) &&
-      !isTooBig(artwork)
-    ),
+      !isTooBig(artwork),
   },
   is_inquireable: {
     type: GraphQLBoolean,
@@ -429,17 +419,16 @@ export const artworkFields = () => ({
   is_purchasable: {
     type: GraphQLBoolean,
     description: "True for inquireable artworks that have an exact price.",
-    resolve: artwork => (
+    resolve: artwork =>
       !has_multiple_editions(artwork.edition_sets) &&
       is_inquireable(artwork) &&
       isExisty(artwork.price) &&
       !has_price_range(artwork.price) &&
-      artwork.forsale
-    ),
+      artwork.forsale,
   },
   is_saved: {
     type: GraphQLBoolean,
-    resolve: ({ id }, { }, request, { rootValue: { savedArtworkLoader } }) => {
+    resolve: ({ id }, {}, request, { rootValue: { savedArtworkLoader } }) => {
       if (!savedArtworkLoader) return false
       return savedArtworkLoader(id).then(({ is_saved }) => is_saved)
     },
@@ -573,8 +562,8 @@ export const artworkFields = () => ({
   sale_message: {
     type: GraphQLString,
     resolve: ({
-      sale_message, availability, availability_hidden, price,
-    }) => {
+ sale_message, availability, availability_hidden, price,
+}) => {
       // Don't display anything if availability is hidden, or it is not for sale
       // or in a permanent collection (generally institutional).
       if (availability_hidden) {
@@ -655,8 +644,8 @@ export const artworkFields = () => ({
     resolve: (
       { id },
       {
-        size, active, sort, at_a_fair,
-      },
+ size, active, sort, at_a_fair,
+},
       request,
       { rootValue: { relatedShowsLoader } },
     ) =>
@@ -677,13 +666,14 @@ export const artworkFields = () => ({
   to_s: {
     type: GraphQLString,
     resolve: ({
-      artist, title, date, partner,
-    }) => _.compact([
-      artist && artist.name,
-      title && `‘${title}’`,
-      date,
-      partner && partner.name,
-    ]).join(", "),
+ artist, title, date, partner,
+}) =>
+      _.compact([
+        artist && artist.name,
+        title && `‘${title}’`,
+        date,
+        partner && partner.name,
+      ]).join(", "),
   },
   website: {
     type: GraphQLString,

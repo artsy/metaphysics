@@ -9,7 +9,8 @@ describe("Filter Sale Artworks", () => {
         .withArgs("filter/sale_artworks", {
           aggregations: ["total", "medium", "followed_artists", "artist"],
         })
-        .returns(Promise.resolve({
+        .returns(
+          Promise.resolve({
             aggregations: {
               followed_artists: {
                 value: 2,
@@ -42,7 +43,8 @@ describe("Filter Sale Artworks", () => {
                 },
               },
             },
-          })),
+          })
+        ),
     }
   })
 
@@ -68,7 +70,8 @@ describe("Filter Sale Artworks", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(({ filter_sale_artworks: { aggregations, counts } }) => {
+    return runQuery(query, rootValue).then(
+      ({ filter_sale_artworks: { aggregations, counts } }) => {
         expect(counts).toEqual({ followed_artists: 2, total: 400 })
         expect(aggregations).toEqual([
           {
@@ -99,6 +102,7 @@ describe("Filter Sale Artworks", () => {
             slice: "ARTIST",
           },
         ])
-      })
+      }
+    )
   })
 })

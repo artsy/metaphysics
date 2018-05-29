@@ -182,27 +182,25 @@ describe("HomePageArtworkModules", () => {
       }
     `
 
-    const expectedResults =
-      {
-        home_page: {
-          artwork_module: {
-            results: [
-              { id: "artwork-foo" },
-              { id: "artwork-bar" },
-            ],
-          },
+    const expectedResults = {
+      home_page: {
+        artwork_module: {
+          results: [{ id: "artwork-foo" }, { id: "artwork-bar" }],
         },
-      }
+      },
+    }
 
-    rootValue.meLoader = () => Promise.resolve({
-      recently_viewed_artwork_ids: ["artwork-foo", "artwork-bar"],
-    })
-    rootValue.similarArtworksLoader = () => Promise.resolve([
-      { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
-      { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
-    ])
+    rootValue.meLoader = () =>
+      Promise.resolve({
+        recently_viewed_artwork_ids: ["artwork-foo", "artwork-bar"],
+      })
+    rootValue.similarArtworksLoader = () =>
+      Promise.resolve([
+        { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
+        { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
+      ])
 
-    return runAuthenticatedQuery(query, rootValue).then((results) => {
+    return runAuthenticatedQuery(query, rootValue).then(results => {
       expect(results).toEqual(expectedResults)
     })
   })
@@ -220,28 +218,26 @@ describe("HomePageArtworkModules", () => {
       }
     `
 
-    const expectedResults =
-      {
-        home_page: {
-          artwork_module: {
-            results: [
-              { id: "artwork-foo" },
-              { id: "artwork-bar" },
-            ],
-          },
+    const expectedResults = {
+      home_page: {
+        artwork_module: {
+          results: [{ id: "artwork-foo" }, { id: "artwork-bar" }],
         },
-      }
+      },
+    }
 
-    rootValue.savedArtworksLoader = () => Promise.resolve([
-      { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
-      { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
-    ])
-    rootValue.similarArtworksLoader = () => Promise.resolve([
-      { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
-      { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
-    ])
+    rootValue.savedArtworksLoader = () =>
+      Promise.resolve([
+        { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
+        { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
+      ])
+    rootValue.similarArtworksLoader = () =>
+      Promise.resolve([
+        { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
+        { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
+      ])
 
-    return runAuthenticatedQuery(query, rootValue).then((results) => {
+    return runAuthenticatedQuery(query, rootValue).then(results => {
       expect(results).toEqual(expectedResults)
     })
   })
@@ -257,7 +253,8 @@ describe("HomePageArtworkModules", () => {
     }
     `
 
-    return runAuthenticatedQuery(query, rootValue).then(({ home_page: { artwork_modules } }) => {
+    return runAuthenticatedQuery(query, rootValue).then(
+      ({ home_page: { artwork_modules } }) => {
         // The order of rails not included in the preferred order list is left as-is from Gravity’s
         // modules endpoint response. Rails in the preferred order list that aren’t even included in
         // Gravity’s response do not lead to an error (the FOLLOWED_ARTISTS rail).
@@ -272,7 +269,8 @@ describe("HomePageArtworkModules", () => {
           "followed_artist",
           "related_artists",
         ])
-      })
+      }
+    )
   })
 
   it("excludes modules upon request", () => {

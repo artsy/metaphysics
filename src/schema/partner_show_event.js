@@ -6,7 +6,8 @@ const PartnerShowEventType = new GraphQLObjectType({
   fields: {
     event_type: {
       type: GraphQLString,
-      resolve: ({ event_type }) => (event_type === "Other" ? "Event" : event_type),
+      resolve: ({ event_type }) =>
+        (event_type === "Other" ? "Event" : event_type),
     },
     description: {
       type: GraphQLString,
