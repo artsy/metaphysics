@@ -1,16 +1,11 @@
 import config from "config"
-import { forIn, has } from "lodash"
-import { getNamedType, GraphQLObjectType } from "graphql"
-import * as introspectionQuery from "graphql/type/introspection"
 
 const { DD_TRACER_SERVICE_NAME, DD_TRACER_HOSTNAME } = config
 
-const tracer = require("dd-trace").init(
-  {
-    service: DD_TRACER_SERVICE_NAME,
-    hostname: DD_TRACER_HOSTNAME,
-  }
-)
+const tracer = require("dd-trace").init({
+  service: DD_TRACER_SERVICE_NAME,
+  hostname: DD_TRACER_HOSTNAME,
+})
 tracer.use("express", {
   service: DD_TRACER_SERVICE_NAME + ".request",
 })
@@ -29,42 +24,18 @@ function drop_params(query) {
   return query.replace(/(\()([^\)]*)(\))/g, parse_args)
 }
 
+export async function traceMiddleware(resolve, parent, args, ctx, info) {
+  const span = await tracer.trace("graphql.resolver", {
+    resource: info.parentType + ": " + info.fieldName,
+  })
+  const result = await resolve(parent, args, ctx, info)
+  span.finish()
+  return result
+}
+
 function trace(res, span) {
   span.setTag("http.status_code", res.statusCode)
   span.finish()
-}
-
-function wrapResolve(typeName, fieldName, resolver) {
-  return function wrappedResolver() {
-    return tracer.trace("graphql.resolver", {
-      resource: typeName + ": " + fieldName,
-    }).then(span => {
-      const result = resolver.apply(this, arguments)
-
-      if (result instanceof Promise) {
-        return result.finally(() => span.finish())
-      }
-
-      span.finish()
-      return result
-    })
-  }
-}
-
-export function makeSchemaTraceable(schema) {
-  // Walk the schema and for all object type fields with resolvers wrap them in our tracing resolver.
-  forIn(schema._typeMap, (type, typeName) => {
-    if (!introspectionQuery[type] && has(type, "_fields")) {
-      forIn(type._fields, (field, fieldName) => {
-        if (
-          field.resolve instanceof Function &&
-          getNamedType(field.type) instanceof GraphQLObjectType
-        ) {
-          field.resolve = wrapResolve(typeName, fieldName, field.resolve) // eslint-disable-line no-param-reassign
-        }
-      })
-    }
-  })
 }
 
 export function middleware(req, res, next) {
@@ -76,8 +47,8 @@ export function middleware(req, res, next) {
   }
 
   tracer.trace("graphql.query", { resource }).then(span => {
-    span.setTag('query', query)
-    
+    span.setTag("query", query)
+
     res.locals.span = span // eslint-disable-line no-param-reassign
 
     const finish = trace.bind(null, res, span)

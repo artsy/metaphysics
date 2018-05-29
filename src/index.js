@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
-import { middleware as requestTracer } from "./lib/tracer"
+import { middleware as requestTracer, traceMiddleware } from "./lib/tracer"
+import { applyMiddleware } from "graphql-middleware"
 
 import bodyParser from "body-parser"
 import config from "./config"
@@ -65,6 +66,13 @@ async function startApp() {
   config.GRAVITY_XAPP_TOKEN = xapp.token
 
   let schema = localSchema
+
+  if (enableQueryTracing) {
+    console.warn("[FEATURE] Enabling query tracing")
+    schema = applyMiddleware(localSchema, traceMiddleware)
+    app.use(requestTracer)
+  }
+
   const lewittSchema = await executableLewittSchema()
 
   if (enableSchemaStitching) {
@@ -74,12 +82,6 @@ async function startApp() {
     } catch (err) {
       console.log("Error merging schemas:", err)
     }
-  }
-
-  if (enableQueryTracing) {
-    console.warn("[FEATURE] Enabling query tracing")
-    // makeSchemaTraceable(schema)
-    app.use(requestTracer)
   }
 
   app.use(requestIDsAdder)
