@@ -75,7 +75,7 @@ export const MessageType = new GraphQLObjectType({
         const namePart = namePartRegex.exec(from)
         let name
         if (isExisty(namePart) && namePart.length > 0) {
-          name = namePart[0].replace(/^\"|\"$/g, "")
+          name = namePart[0].replace(/^"|"$/g, "")
         }
         return {
           email: from_email_address,
