@@ -62,8 +62,10 @@
     "express": "^4.13.3",
     "express-force-ssl": "^0.3.0",
     "express-graphql": "^0.6.1",
+    "express-interceptor": "^1.2.0",
     "graphiql": "^0.11.11",
     "graphql": "^0.13.2",
+    "graphql-crunch": "^1.1.2",
     "graphql-depth-limit": "^1.1.0",
     "graphql-relay": "^0.5.4",
     "graphql-tools": "^3.0.0",
@@ -119,6 +121,7 @@
     "lint-staged": "^3.4.0",
     "prettier": "^1.7",
     "sinon": "^1.17.2",
+    "supertest": "^3.1.0",
     "typescript": "^2.7.2",
     "typescript-babel-jest": "^1.0.5"
   },
