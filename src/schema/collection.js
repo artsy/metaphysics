@@ -1,7 +1,7 @@
 // @ts-check
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
-import { error } from "lib/loggers"
+import { warn } from "lib/loggers"
 import cached from "./fields/cached"
 import CollectionSorts from "./sorts/collection_sorts"
 import { artworkConnection } from "./artwork"
@@ -50,56 +50,57 @@ export const CollectionType = new GraphQLObjectType({
         delete gravityOptions.page // this can't also be used with the offset in gravity
         return collectionArtworksLoader(id, gravityOptions)
           .then(({ body, headers }) => connectionFromArraySlice(body, options, {
-              arrayLength: headers["x-total-count"],
-              sliceStart: gravityOptions.offset,
-            }))
-          .catch((e) => {
-            error("Bypassing Gravity error: ", e)
-            // For some users with no favourites, Gravity produces an error of "Collection Not Found".
-            // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
-            // and return an empty list instead.
-            return connectionFromArray([], options)
+            arrayLength: headers["x-total-count"],
+            sliceStart: gravityOptions.offset,
           })
+          })
+  .catch(e => {
+    warn("Bypassing Gravity error: ", e)
+    // For some users with no favourites, Gravity produces an error of "Collection Not Found".
+    // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
+    // and return an empty list instead.
+    return connectionFromArray([], options)
+  })
       },
     },
-    description: {
-      type: new GraphQLNonNull(GraphQLString),
+description: {
+  type: new GraphQLNonNull(GraphQLString),
     },
     default: {
-      type: new GraphQLNonNull(GraphQLBoolean),
+  type: new GraphQLNonNull(GraphQLBoolean),
     },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
+name: {
+  type: new GraphQLNonNull(GraphQLString),
     },
-    private: {
-      type: new GraphQLNonNull(GraphQLBoolean),
+private: {
+  type: new GraphQLNonNull(GraphQLBoolean),
     },
-    slug: {
-      type: new GraphQLNonNull(GraphQLString),
+slug: {
+  type: new GraphQLNonNull(GraphQLString),
     },
   },
 })
 
 // This resolver is re-used by `me { saved_artworks }`
 export const collectionResolverFactory = collection_id => (
-    _root,
-    options,
-    _request,
-    { fieldNodes, rootValue: { collectionLoader } },
-  ) => {
-    const id = collection_id || options.id
-    const blacklistedFields = ["artworks_connection", "id", "__id"]
+  _root,
+  options,
+  _request,
+  { fieldNodes, rootValue: { collectionLoader } },
+) => {
+  const id = collection_id || options.id
+  const blacklistedFields = ["artworks_connection", "id", "__id"]
 
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return collectionLoader(id)
-    }
-
-    // These are here so that the type system's `isTypeOf`
-    // resolves correctly when we're skipping gravity data
-    return {
- id, name: null, private: null, default: null,
-}
+  if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    return collectionLoader(id)
   }
+
+  // These are here so that the type system's `isTypeOf`
+  // resolves correctly when we're skipping gravity data
+  return {
+    id, name: null, private: null, default: null,
+  }
+}
 
 const Collection = {
   type: CollectionType,

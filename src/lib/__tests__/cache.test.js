@@ -6,8 +6,8 @@ describe("Cache", () => {
       beforeEach(() => cache.set("get_foo", { bar: "baz" }))
 
       it("parses the data and resolves the promise", () => cache.get("get_foo").then((data) => {
-          expect(data.bar).toBe("baz")
-        }))
+        expect(data.bar).toBe("baz")
+      }))
     })
 
     describe("#delete", () => {
@@ -15,8 +15,8 @@ describe("Cache", () => {
 
       it("deletes the data", () => {
         cache.delete("get_foo")
-        return cache.get("get_foo").catch((e) => {
-          expect(e.message).toEqual("cache#get did not return `data`")
+        return cache.get("get_foo").catch(e => {
+          expect(e.message).toEqual("[Cache#get] Cache miss")
         })
       })
     })

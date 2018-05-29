@@ -7,7 +7,7 @@ import { loaderInterface } from "./loader_interface"
 import cache from "lib/cache"
 import timer from "lib/timer"
 import { throttled } from "lib/throttle"
-import { verbose, error } from "lib/loggers"
+import { verbose, warn } from "lib/loggers"
 import logger from "lib/loaders/api/logger"
 
 // TODO Signatures for when we move to TypeScript (may not be 100% correct)
@@ -59,7 +59,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
                 })
 
                 // Then refresh cache
-                return throttled(
+                throttled(
                   key,
                   () => {
                     api(key, null, apiOptions)
@@ -70,16 +70,15 @@ export const apiLoaderWithoutAuthenticationFactory = (
                           cache.set(key, body)
                         }
                         verbose(`Refreshing: ${key}`)
-                        return undefined;
                       })
-                      .catch((err) => {
+                      .catch(err => {
                         if (err.statusCode === 404) {
                           // Unpublished
                           cache.delete(key)
                         }
                       })
                   },
-                  { requestThrottleMs: apiOptions.requestThrottleMs },
+                  { requestThrottleMs: apiOptions.requestThrottleMs }
                 )
               },
               // Cache miss
@@ -97,25 +96,28 @@ export const apiLoaderWithoutAuthenticationFactory = (
                       globalAPIOptions.requestIDs.requestID,
                       apiName,
                       key,
-                      { time, cache: false },
+                      { time, cache: false }
                     )
                     if (apiOptions.headers) {
-                      return cache.set(key, { body, headers })
+                      cache.set(key, { body, headers })
+                    } else {
+                      cache.set(key, body)
                     }
-                      return cache.set(key, body)
                   })
-                  .catch((err) => {
+                  .catch(err => {
+                    warn(key, err)
                     reject(err)
-                    error(key, err)
                   })
-              },
-          ).catch((e) => { throw e })
+              }
+            )
         })
-      })),
+      })
+      ),
     {
       batch: false,
       cache: true,
-    },
+    }
   )
   return loaderInterface(loader, path, globalParams)
+}
 }

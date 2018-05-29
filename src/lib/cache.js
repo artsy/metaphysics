@@ -4,7 +4,13 @@ import { error, verbose } from "./loggers"
 import redis from "redis"
 import url from "url"
 
-const { NODE_ENV, REDIS_URL, CACHE_LIFETIME_IN_SECONDS } = config
+const {
+  NODE_ENV,
+  REDIS_URL,
+  CACHE_LIFETIME_IN_SECONDS,
+  CACHE_QUERY_LOGGING_THRESHOLD_MS,
+  CACHE_RETRIEVAL_TIMEOUT_MS,
+} = config
 
 const isTest = NODE_ENV === "test"
 
@@ -38,13 +44,13 @@ function createRedisClient() {
         // End reconnecting on a specific error and flush all commands with a
         // individual error.
         if (options.error.code === "ECONNREFUSED") {
-          return new Error("The server refused the connection")
+          return new Error("[Cache] The server refused the connection")
         }
       }
       // End reconnecting after a specific timeout and flush all commands with a
       // individual error.
       if (options.total_retry_time > 1000 * 60 * 60) {
-        return new Error("Retry time exhausted")
+        return new Error("[Cache] Retry time exhausted")
       }
       // End reconnecting with built in error.
       if (options.attempt > 10) {
@@ -58,8 +64,8 @@ function createRedisClient() {
     client.auth(redisURL.auth.split(":")[1])
   }
   client.on("error", error)
-  VerboseEvents.forEach((event) => {
-    client.on(event, () => verbose(`Redis: ${event}`))
+  VerboseEvents.forEach(event => {
+    client.on(event, () => verbose(`[Cache] ${event}`))
   })
   return client
 }
@@ -67,15 +73,40 @@ function createRedisClient() {
 export const client = isTest ? createMockClient() : createRedisClient()
 
 export default {
-  get: key => new Promise((resolve, reject) => {
-    if (isNull(client)) {
-      return reject(new Error("Cache client is `null`"))
-    }
+  get: key => {
+    return new Promise((resolve, reject) => {
+      if (isNull(client)) return reject(new Error("[Cache] `client` is `null`"))
 
-    return client.get(key, (err, data) => {
-      if (err) return reject(err)
-      if (data) return resolve(JSON.parse(data))
-      return reject(new Error("cache#get did not return `data`"))
+      let timeoutId = setTimeout(() => {
+        timeoutId = null
+        const err = new Error(`[Cache#get] Timeout for key ${key}`)
+        error(err)
+        reject(err)
+      }, CACHE_RETRIEVAL_TIMEOUT_MS)
+
+      const start = Date.now()
+      client.get(key, (err, data) => {
+        const time = Date.now() - start
+        if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
+          error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
+        }
+
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        } else {
+          // timed out and already rejected promise, no need to continue
+          return
+        }
+
+        if (err) {
+          error(err)
+          reject(err)
+        } else if (data) {
+          resolve(JSON.parse(data))
+        } else {
+          reject(new Error("[Cache#get] Cache miss"))
+        }
+      })
     })
   }),
 
