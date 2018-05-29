@@ -16,7 +16,7 @@ function parse_args() {
 }
 
 function drop_params(query) {
-  return query.replace(/(\()([^\)]*)(\))/g, parse_args)
+  return query.replace(/(\()([^)]*)(\))/g, parse_args)
 }
 
 function trace(res, span) {
@@ -36,7 +36,7 @@ function wrapResolve(typeName, fieldName, resolver) {
         {
           childOf: parentSpan.context(),
         },
-      )
+    )
     span.addTags({
       resource: `${typeName}: ${fieldName}`,
       type: "web",
@@ -46,7 +46,7 @@ function wrapResolve(typeName, fieldName, resolver) {
     // Set the parent context to this span for any sub resolvers.
     rootValue.span = span // eslint-disable-line no-param-reassign
 
-    const result = resolver.apply(this, arguments)
+    const result = resolver.apply(this, arguments) // eslint-disable-line prefer-rest-params
 
     // Return parent context to our parent for any resolvers called after this one.
     rootValue.span = parentSpan // eslint-disable-line no-param-reassign

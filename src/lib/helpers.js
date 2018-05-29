@@ -60,7 +60,7 @@ export const join = (by, xs) => compact(xs).join(by)
 
 export const truncate = (string, length, append = "…") => {
   const x = `${string}`
-  const limit = ~~length
+  const limit = Math.floor(length)
   return x.length > limit ? x.slice(0, limit) + append : x
 }
 export const toQueryString = (options = {}) =>

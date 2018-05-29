@@ -2,9 +2,11 @@
 
 import { toKey } from "lib/helpers"
 
-const encodeStaticPath = (path, globalParams, params) => toKey(path, Object.assign({}, globalParams, params))
+const encodeStaticPath = (path, globalParams, params) =>
+  toKey(path, Object.assign({}, globalParams, params))
 
-const encodeDynamicPath = (pathGenerator, globalParams, id, params) => encodeStaticPath(pathGenerator(id), globalParams, params)
+const encodeDynamicPath = (pathGenerator, globalParams, id, params) =>
+  encodeStaticPath(pathGenerator(id), globalParams, params)
 
 /**
  * This implements the common interface for producing data loaders for each api/path, regardless of authentication.

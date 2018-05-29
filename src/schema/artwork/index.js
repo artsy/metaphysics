@@ -35,10 +35,11 @@ import attributionClasses from "../../lib/attributionClasses.js"
 
 const is_inquireable = ({ inquireable, acquireable }) => inquireable && !acquireable
 
-const has_price_range = price => new RegExp(/\-/).test(price)
+const has_price_range = price => new RegExp(/-/).test(price)
 
 const has_multiple_editions = edition_sets => edition_sets && edition_sets.length > 0
 
+// eslint-disable-next-line
 let Artwork
 
 export const artworkFields = () => ({
@@ -301,7 +302,7 @@ export const artworkFields = () => ({
     type: GraphQLBoolean,
     description: "When in an auction, can the work be bought immediately",
     resolve: (
-      { id, acquireable, sale_ids },
+      { acquireable, sale_ids },
       options,
       request,
       { rootValue: { salesLoader } },

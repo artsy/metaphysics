@@ -15,7 +15,10 @@ function createMockClient() {
   return {
     store,
     get: (key, cb) => cb(null, store[key]),
-    set: (key, data) => (store[key] = data),
+    set: (key, data) => {
+      store[key] = data;
+      return true
+    },
     del: key => delete store[key],
   }
 }
@@ -82,7 +85,10 @@ export default {
     const timestamp = new Date().getTime()
     /* eslint-disable no-param-reassign */
     if (isArray(data)) {
-      data.forEach(datum => (datum.cached = timestamp))
+      data.forEach((datum) => {
+        datum.cached = timestamp
+        return true
+      })
     } else {
       data.cached = timestamp
     }

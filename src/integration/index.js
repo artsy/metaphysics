@@ -93,7 +93,9 @@ describe("Integration specs", () => {
     it("is in sync with production", () => Promise.all([
       staging(query, { id: "cindy-sherman-untitled" }),
       production(query, { id: "cindy-sherman-untitled" }),
-    ]).then(([stagingResponse, productionResponse]) => deepEqual(stagingResponse, productionResponse).should.be.true())).catch((e) => { throw e })
+    ]).then(([stagingResponse, productionResponse]) =>
+      deepEqual(stagingResponse, productionResponse).should.be.true()))
+      .catch((e) => { throw e })
   })
 
   describe("/artists", () => {

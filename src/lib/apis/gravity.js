@@ -12,7 +12,7 @@ export default (path, accessToken, fetchOptions = {}) => {
   const headers = { "X-XAPP-TOKEN": config.GRAVITY_XAPP_TOKEN }
   let fetchParams = fetchOptions
 
-  const requestIDs = fetchOptions.requestIDs
+  const { requestIDs } = fetchOptions
   if (requestIDs) {
     fetchParams = omit(fetchOptions, "requestIDs")
     assign(headers, requestIDHeaders(requestIDs))

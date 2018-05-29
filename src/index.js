@@ -86,7 +86,7 @@ async function startApp() {
       const userAgent = req.headers["user-agent"]
 
       const { requestIDs, span } = res.locals
-      const requestID = requestIDs.requestID
+      const { requestID } = requestIDs
 
       if (enableRequestLogging) {
         fetchLoggerSetup(requestID)

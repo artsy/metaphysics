@@ -21,7 +21,14 @@
     "import/extensions": 0,
     "import/first": 0,
     "no-underscore-dangle": 0,
-    "import/no-named-as-default": 0
+    "import/no-named-as-default": 0,
+    "import/prefer-default-export": 0,
+    "import/no-named-as-default-member": 0,
+    "no-empty-pattern": 0,
+    "global-require": 0,
+    "no-mixed-operators": 0,
+    "no-plusplus": 0,
+    "no-restricted-globals": 0
   },
   "globals": {
     "expect": false,

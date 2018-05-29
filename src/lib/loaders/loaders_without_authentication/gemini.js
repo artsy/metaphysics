@@ -5,8 +5,9 @@ import { unescape } from "querystring"
 
 import { loaderOneOffFactory } from "../api/loader_one_off_factory"
 
+// TODO: Buffer Constructor deprecated, use static method.
 const toBase64 = string =>
-  new Buffer(unescape(encodeURIComponent(string)), "binary").toString("base64")
+  Buffer.from(unescape(encodeURIComponent(string)), "binary").toString("base64")
 
 export default () => ({
   // The outer function is so that we can pass params from the schema,

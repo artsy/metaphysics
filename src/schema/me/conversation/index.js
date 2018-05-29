@@ -287,33 +287,16 @@ export const ConversationFields = {
   artworks: {
     type: new GraphQLList(ArtworkType),
     description: "Only the artworks discussed in the conversation.",
-    resolve: (conversation) => {
-      const results = []
-      for (const item of conversation.items) {
-        if (item.item_type === "Artwork") {
-          results.push(item.properties)
-        }
-      }
-      return results
-    },
+    resolve: conversation => conversation.items
+      .filter(({ item_type }) => item_type === "Artwork"),
   },
 
   items: {
     type: new GraphQLList(ConversationItem),
     description:
       "The artworks and/or partner shows discussed in the conversation.",
-    resolve: (conversation) => {
-      const results = []
-      for (const item of conversation.items) {
-        if (
-          isExisty(item.properties) &&
-          (item.item_type === "Artwork" || item.item_type === "PartnerShow")
-        ) {
-          results.push(item)
-        }
-      }
-      return results
-    },
+    resolve: conversation => conversation.items.filter(({ properties, item_type }) =>
+      isExisty(properties) && (item_type === "Artwork" || item_type === "PartnerShow")),
   },
 
   messages: {

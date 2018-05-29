@@ -68,6 +68,7 @@ Object.defineProperty(SupportedTypes, "typeModules", {
     if (SupportedTypes._typeModules === undefined) {
       SupportedTypes._typeModules = SupportedTypes.types.reduce(
         (modules, type) => {
+          // eslint-disable-next-line
           modules[type] = require(SupportedTypes.typeMap[type]).default
           return modules
         },
@@ -88,7 +89,7 @@ function argumentsForChild(type, id) {
 }
 
 function rootValueForChild(rootValue) {
-  const selections = rootValue.fieldNodes[0].selectionSet.selections
+  const { selections } = rootValue.fieldNodes[0].selectionSet
   let fragment = _.find(selections, selection => (
     selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"
   ))

@@ -37,7 +37,7 @@ export default {
   },
   resolve: (
     obj,
-    { format, timezone, ignoreTimezone },
+    { format, timezone },
     request,
     { fieldName, rootValue: { defaultTimezone } },
   ) => {

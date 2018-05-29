@@ -263,10 +263,11 @@ export const ArtistType = new GraphQLObjectType({
           artist_id: _id,
           sort: options.sort,
         }
-        return auctionLotLoader(diffusionArgs).then(({ total_count, _embedded }) => connectionFromArraySlice(_embedded.items, options, {
-          arrayLength: total_count,
-          sliceStart: offset,
-        }))
+        return auctionLotLoader(diffusionArgs).then(({ total_count, _embedded }) =>
+          connectionFromArraySlice(_embedded.items, options, {
+            arrayLength: total_count,
+            sliceStart: offset,
+          }))
       },
     },
     bio: {

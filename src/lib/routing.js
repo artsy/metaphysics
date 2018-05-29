@@ -1,6 +1,7 @@
 import _ from "lodash"
 
 export default (type, id) => {
+  const namespace = _.snakeCase(type)
   switch (type) {
     case "PartnerShow":
       return {
@@ -14,8 +15,8 @@ export default (type, id) => {
         href: `/${id}`,
       }
 
+    // eslint-skip-next-line
     default:
-      const namespace = _.snakeCase(type)
       return {
         api: `${namespace}/${id}`,
         href: `/${namespace}/${id}`,

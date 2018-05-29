@@ -14,8 +14,8 @@ const biddingErrors = [
     id: "ERROR_BID_LOW",
     gravity_key: "Please enter a bid higher than",
     header: "Your bid wasn't high enough",
-    description_md: () => "Another bidder placed a higher max bid or the same max bid before you did.  \
- Bid again to take the lead.",
+    description_md: () => `Another bidder placed a higher max bid or the same max bid before you did.
+ Bid again to take the lead.`,
   },
   {
     id: "ERROR_SALE_CLOSED",
@@ -27,23 +27,23 @@ const biddingErrors = [
     id: "ERROR_LIVE_BIDDING_STARTED",
     gravity_key: "Live Bidding has Started",
     header: "Live bidding has started",
-    description_md: params => `Sorry, your bid wasn’t received before live bidding started.\
+    description_md: params => `Sorry, your bid wasn’t received before live bidding started.
  To continue bidding, please [join the live auction](${params.liveAuctionUrl}).`,
   },
   {
     id: "ERROR_BIDDER_NOT_QUALIFIED",
     gravity_key: "Bidder not qualified to bid on this auction.",
     header: "Bid not placed",
-    description_md: () => "Your bid can’t be placed at this time.\
- Please contact [support@artsy.net](mailto:support@artsy.net) for more information.",
+    description_md: () => `Your bid can’t be placed at this time.
+ Please contact [support@artsy.net](mailto:support@artsy.net) for more information.`,
 
   },
   {
     id: "ERROR_UNKNOWN",
     gravity_key: "unknown error",
     header: "Bid not placed",
-    description_md: () => "Your bid can’t be placed at this time.\
- Please contact [support@artsy.net](mailto:support@artsy.net) for more information.",
+    description_md: () => `Your bid can’t be placed at this time.
+ Please contact [support@artsy.net](mailto:support@artsy.net) for more information.`,
   },
 ]
 

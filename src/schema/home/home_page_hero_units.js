@@ -39,7 +39,8 @@ const HomePageHeroUnitType = new GraphQLObjectType({
           },
         },
       }),
-      resolve: ({ type, menu_color_class }) => `${type.toLowerCase()} ${menu_color_class.toLowerCase()}`,
+      resolve: ({ type, menu_color_class }) =>
+        `${type.toLowerCase()} ${menu_color_class.toLowerCase()}`,
     },
     heading: {
       type: GraphQLString,
@@ -50,7 +51,8 @@ const HomePageHeroUnitType = new GraphQLObjectType({
     },
     title: {
       type: GraphQLString,
-      resolve: ({ mobile_title, name, platform }) => (platform === "desktop" ? name : mobile_title),
+      resolve: ({ mobile_title, name, platform }) =>
+        (platform === "desktop" ? name : mobile_title),
     },
     title_image_url: {
       args: {
@@ -59,11 +61,13 @@ const HomePageHeroUnitType = new GraphQLObjectType({
         },
       },
       type: GraphQLString,
-      resolve: ({ title_image_url, title_image_retina_url, retina }) => (retina ? title_image_retina_url : title_image_url),
+      resolve: ({ title_image_url, title_image_retina_url, retina }) =>
+        (retina ? title_image_retina_url : title_image_url),
     },
     subtitle: {
       type: GraphQLString,
-      resolve: ({ mobile_description, description, platform }) => (platform === "desktop" ? description : mobile_description),
+      resolve: ({ mobile_description, description, platform }) =>
+        (platform === "desktop" ? description : mobile_description),
     },
     link_text: {
       type: GraphQLString,
@@ -113,25 +117,26 @@ const HomePageHeroUnits = {
   args: {
     platform: {
       type: new GraphQLNonNull(new GraphQLEnumType({
-          name: "HomePageHeroUnitPlatform",
-          values: {
-            MOBILE: {
-              value: "mobile",
-            },
-            DESKTOP: {
-              value: "desktop",
-            },
-            MARTSY: {
-              value: "martsy",
-            },
+        name: "HomePageHeroUnitPlatform",
+        values: {
+          MOBILE: {
+            value: "mobile",
           },
-        })),
+          DESKTOP: {
+            value: "desktop",
+          },
+          MARTSY: {
+            value: "martsy",
+          },
+        },
+      })),
     },
   },
   resolve: (_, { platform }, request, { rootValue: { heroUnitsLoader } }) => {
     const params = { enabled: true }
     params[platform] = true
-    return heroUnitsLoader(params).then(units => shuffle(units.map(unit => Object.assign({ platform }, unit))))
+    return heroUnitsLoader(params).then(units =>
+      shuffle(units.map(unit => Object.assign({ platform }, unit))))
   },
 }
 
