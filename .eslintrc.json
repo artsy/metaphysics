@@ -28,7 +28,8 @@
     "global-require": 0,
     "no-mixed-operators": 0,
     "no-plusplus": 0,
-    "no-restricted-globals": 0
+    "no-restricted-globals": 0,
+    "no-prototype-builtins": 0
   },
   "globals": {
     "expect": false,

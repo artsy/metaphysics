@@ -52,31 +52,29 @@ export const CollectionType = new GraphQLObjectType({
           .then(({ body, headers }) => connectionFromArraySlice(body, options, {
             arrayLength: headers["x-total-count"],
             sliceStart: gravityOptions.offset,
+          })).catch((e) => {
+            warn("Bypassing Gravity error: ", e)
+            // For some users with no favourites, Gravity produces an error of "Collection Not Found".
+            // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
+            // and return an empty list instead.
+            return connectionFromArray([], options)
           })
-          })
-  .catch(e => {
-    warn("Bypassing Gravity error: ", e)
-    // For some users with no favourites, Gravity produces an error of "Collection Not Found".
-    // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
-    // and return an empty list instead.
-    return connectionFromArray([], options)
-  })
       },
     },
-description: {
-  type: new GraphQLNonNull(GraphQLString),
+    description: {
+      type: new GraphQLNonNull(GraphQLString),
     },
     default: {
-  type: new GraphQLNonNull(GraphQLBoolean),
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
-name: {
-  type: new GraphQLNonNull(GraphQLString),
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
     },
-private: {
-  type: new GraphQLNonNull(GraphQLBoolean),
+    private: {
+      type: new GraphQLNonNull(GraphQLBoolean),
     },
-slug: {
-  type: new GraphQLNonNull(GraphQLString),
+    slug: {
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
 })

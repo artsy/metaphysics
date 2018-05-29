@@ -39,7 +39,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
         const clock = timer(key)
         clock.start()
 
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) =>
           cache.get(key)
             .then(
               // Cache hit
@@ -71,14 +71,14 @@ export const apiLoaderWithoutAuthenticationFactory = (
                         }
                         verbose(`Refreshing: ${key}`)
                       })
-                      .catch(err => {
+                      .catch((err) => {
                         if (err.statusCode === 404) {
                           // Unpublished
                           cache.delete(key)
                         }
                       })
                   },
-                  { requestThrottleMs: apiOptions.requestThrottleMs }
+                  { requestThrottleMs: apiOptions.requestThrottleMs },
                 )
               },
               // Cache miss
@@ -96,7 +96,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
                       globalAPIOptions.requestIDs.requestID,
                       apiName,
                       key,
-                      { time, cache: false }
+                      { time, cache: false },
                     )
                     if (apiOptions.headers) {
                       cache.set(key, { body, headers })
@@ -104,20 +104,17 @@ export const apiLoaderWithoutAuthenticationFactory = (
                       cache.set(key, body)
                     }
                   })
-                  .catch(err => {
+                  .catch((err) => {
                     warn(key, err)
                     reject(err)
                   })
-              }
-            )
-        })
-      })
-      ),
+              },
+          ))
+      })),
     {
       batch: false,
       cache: true,
-    }
+    },
   )
   return loaderInterface(loader, path, globalParams)
-}
 }
