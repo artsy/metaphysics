@@ -294,6 +294,8 @@ export const SaleType = new GraphQLObjectType({
           }
         },
       },
+      // Only fetches the partner info that's already included in the Sale object
+      // since we don't (at this time) need to load the full Partner object.
       partner: {
         type: Partner.type,
         resolve: ({ partner }) => partner,
