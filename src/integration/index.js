@@ -94,8 +94,8 @@ describe("Integration specs", () => {
       staging(query, { id: "cindy-sherman-untitled" }),
       production(query, { id: "cindy-sherman-untitled" }),
     ]).then(([stagingResponse, productionResponse]) => {
-      deepEqual(stagingResponse, productionResponse).should.be.true()
-    }))
+      return deepEqual(stagingResponse, productionResponse).should.be.true()
+    })).catch(e => { throw e })
   })
 
   describe("/artists", () => {
@@ -145,7 +145,7 @@ describe("Integration specs", () => {
 
     it("makes the query without error", () => staging(query).then(({ errors, data }) => {
       isUndefined(errors).should.be.true()
-      keys(data).should.eql(["featured_artists", "featured_genes"])
-    }))
+      return keys(data).should.eql(["featured_artists", "featured_genes"])
+    })).catch(e => { throw e })
   })
 })
