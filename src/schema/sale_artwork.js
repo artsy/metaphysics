@@ -45,6 +45,7 @@ const bid_increments_calculator = async ({
   const tiers = incrs[0].increments.slice()
   const increments = [minimum_next_bid_cents]
   const limit = BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT
+
   let current = 0 // Always start from zero, so that all prices are on-increment
   while (increments.length < 100 && current <= limit) {
     if (current > minimum_next_bid_cents) increments.push(current)
@@ -215,7 +216,7 @@ const SaleArtworkType = new GraphQLObjectType({
         request,
         { rootValue: { saleLoader } },
       ) => {
-        if (!!saleArtwork.sale) {
+        if (saleArtwork.sale) {
           return isBiddable(saleArtwork.sale, saleArtwork)
         }
         return saleLoader(saleArtwork.sale_id).then(sale =>
@@ -311,7 +312,7 @@ const SaleArtworkType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { saleLoader } },
-      ) => !!sale ? sale : saleLoader(sale_id)
+      ) => (sale || saleLoader(sale_id)),
     },
     symbol: {
       type: GraphQLString,

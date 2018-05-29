@@ -1,8 +1,7 @@
 // This is the key to this one file:
+process.env.BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT = "400000"
 
 import { runQuery } from "test/utils"
-
-process.env.BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT = "400000"
 
 describe("SaleArtwork type", () => {
   const saleArtwork = {
