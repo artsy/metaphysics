@@ -101,16 +101,15 @@ export const apiLoaderWithoutAuthenticationFactory = (
                     )
                     if (apiOptions.headers) {
                       return cache.set(key, { body, headers })
-                    } else {
-                      return cache.set(key, body)
                     }
+                      return cache.set(key, body)
                   })
                   .catch((err) => {
                     reject(err)
                     error(key, err)
                   })
               },
-          ).catch(e => { throw e })
+          ).catch((e) => { throw e })
         })
       })),
     {

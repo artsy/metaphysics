@@ -2,7 +2,7 @@ import { map, omit, keys, create, assign } from "lodash"
 import {
   isExisty,
   parseRelayOptions,
-  queriedForFieldsOtherThanBlacklisted
+  queriedForFieldsOtherThanBlacklisted,
 } from "lib/helpers"
 import Artwork from "./artwork"
 import Artist from "./artist"

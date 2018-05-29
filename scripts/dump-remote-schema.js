@@ -17,21 +17,17 @@ const httpConvectionLink = createHttpLink({
   uri: urljoin("https://convection-staging.artsy.net/api", "graphql"),
 })
 
-introspectSchema(httpConvectionLink).then((schema) => {
-  return fs.writeFileSync(
+introspectSchema(httpConvectionLink).then(schema => fs.writeFileSync(
     path.join(destination, "convection.graphql"),
     printSchema(schema, { commentDescriptions: true }),
-  )
-}).catch(e => { throw e })
+  )).catch((e) => { throw e })
 
 const httpLewittLink = createHttpLink({
   fetch,
   uri: urljoin("https://lewitt-api-staging.artsy.net", "graphql"),
 })
 
-introspectSchema(httpLewittLink).then((schema) => {
-  return fs.writeFileSync(
+introspectSchema(httpLewittLink).then(schema => fs.writeFileSync(
     path.join(destination, "lewitt.graphql"),
     printSchema(schema, { commentDescriptions: true }),
-  )
-}).catch(e => { throw e })
+  )).catch((e) => { throw e })

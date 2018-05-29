@@ -183,7 +183,7 @@ export const ShowType = new GraphQLObjectType({
           ).then(({ body }) => {
             const artwork = body[0]
             return artwork && Image.resolve(getDefault(artwork.images))
-          }).catch(e => { throw e })
+          }).catch((e) => { throw e })
         }
 
         return undefined; // explicitly return undefined
@@ -340,9 +340,7 @@ export const ShowType = new GraphQLObjectType({
           {
             published: true,
           },
-        ).then(({ body }) => {
-          return Image.resolve(getDefault(find(body, { can_share_image: true })))
-        }).catch(e => { throw e })
+        ).then(({ body }) => Image.resolve(getDefault(find(body, { can_share_image: true })))).catch((e) => { throw e })
       },
     },
     name: {
