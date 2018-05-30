@@ -55,7 +55,7 @@ describe("LotStanding type", () => {
     `
 
     return runAuthenticatedQuery(query, {
-      lotStandingLoader: () => Promise.resolve(lotStandings),
+      lotStandingLoader: () => {return Promise.resolve(lotStandings)},
     }).then(({ me }) => {
       expect(me).toEqual({
         lot_standing: {
@@ -101,7 +101,7 @@ describe("LotStanding type", () => {
     `
 
     return runAuthenticatedQuery(query, {
-      lotStandingLoader: () => Promise.resolve(lotStanding),
+      lotStandingLoader: () => {return Promise.resolve(lotStanding)},
     }).then(({ me }) => {
       expect(me).toEqual({
         lot_standing: {
@@ -152,7 +152,7 @@ describe("LotStanding type", () => {
     `
 
     return runAuthenticatedQuery(query, {
-      lotStandingLoader: () => Promise.resolve(lotStanding),
+      lotStandingLoader: () => {return Promise.resolve(lotStanding)},
     }).then(({ me }) => {
       expect(me).toEqual({
         lot_standing: {
@@ -200,8 +200,8 @@ describe("LotStanding type", () => {
     }
 
     return runAuthenticatedQuery(query, {
-      lotStandingLoader: () => Promise.resolve(lotStanding),
-      saleLoader: () => Promise.resolve(liveOpenSale),
+      lotStandingLoader: () => {return Promise.resolve(lotStanding)},
+      saleLoader: () => {return Promise.resolve(liveOpenSale)},
     }).then(({ me }) => {
       expect(me).toEqual({
         lot_standing: {
@@ -246,8 +246,8 @@ describe("LotStanding type", () => {
     }
 
     return runAuthenticatedQuery(query, {
-      lotStandingLoader: () => Promise.resolve(lotStanding),
-      saleLoader: () => Promise.resolve(notALiveOpenSale),
+      lotStandingLoader: () => {return Promise.resolve(lotStanding)},
+      saleLoader: () => {return Promise.resolve(notALiveOpenSale)},
     }).then(({ me }) => {
       expect(me).toEqual({
         lot_standing: {

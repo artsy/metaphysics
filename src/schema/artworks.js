@@ -10,7 +10,7 @@ const Artworks = {
     },
   },
   resolve: (root, options, request, { rootValue: { artworksLoader } }) =>
-    artworksLoader(options),
+    {return artworksLoader(options)},
 }
 
 export default Artworks

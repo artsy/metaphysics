@@ -27,7 +27,7 @@ describe("HomePageArtworkModule", () => {
         }
       `
       const data = await runQuery(query, {
-        artistLoader: id => Promise.resolve({ id }),
+        artistLoader: id => {return Promise.resolve({ id })},
       })
       expect(data.home_page.artwork_module.context).toEqual({
         artist: { id: "rob-pruitt" },
@@ -55,7 +55,7 @@ describe("HomePageArtworkModule", () => {
         }
       `
       const data = await runQuery(query, {
-        artistLoader: id => Promise.resolve({ id }),
+        artistLoader: id => {return Promise.resolve({ id })},
       })
       expect(data.home_page.artwork_module.context).toEqual({
         artist: { id: "banksy" },

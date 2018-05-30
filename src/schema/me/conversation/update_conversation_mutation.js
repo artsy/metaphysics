@@ -18,7 +18,7 @@ export default mutationWithClientMutationId({
   outputFields: {
     conversation: {
       type: Conversation.type,
-      resolve: conversation => conversation,
+      resolve: conversation => {return conversation},
     },
   },
   mutateAndGetPayload: (

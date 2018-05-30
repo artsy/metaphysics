@@ -3,8 +3,8 @@ import { runAuthenticatedQuery } from "test/utils"
 describe("Me", () => {
   describe("Conversation", () => {
     const rootValue = {
-      conversationLoader: () => {
-        return Promise.resolve({
+      conversationLoader: () =>
+        {return Promise.resolve({
           id: "420",
           initial_message:
             "Buncha secret stuff Message from Percy:\n\nLoved some of the works at your fair booth!",
@@ -43,8 +43,7 @@ describe("Me", () => {
               },
             },
           ],
-        })
-      },
+        })},
       conversationMessagesLoader: ({ sort } = { sort: "asc" }) => {
         let messages = [
           {
@@ -56,7 +55,7 @@ describe("Me", () => {
             metadata: {
               lewitt_invoice_id: "420i",
             },
-            from: `"Percy Z" <percy@cat.com>`,
+            from: '"Percy Z" <percy@cat.com>',
             from_principal: true,
             body: "I'm a cat",
           },
@@ -67,7 +66,7 @@ describe("Me", () => {
             from_id: null,
             attachments: [],
             metadata: {},
-            from: `"Bitty Z" <Bitty@cat.com>`,
+            from: '"Bitty Z" <Bitty@cat.com>',
             from_principal: false,
             body: "",
           },
@@ -78,7 +77,7 @@ describe("Me", () => {
             from_id: "user-42",
             attachments: [],
             metadata: {},
-            from: `"Matt Z" <matt@cat.com>`,
+            from: '"Matt Z" <matt@cat.com>',
             body: null,
           },
           {
@@ -108,14 +107,14 @@ describe("Me", () => {
         })
       },
       conversationInvoiceLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           payment_url: "https://www.adopt-cats.org/adopt-all-the-cats",
           state: "unpaid",
           symbol: "$",
           total_cents: 420000,
           lewitt_invoice_id: "420",
           id: "1",
-        }),
+        })},
     }
 
     it("returns a conversation", () => {
@@ -195,7 +194,7 @@ describe("Me", () => {
         }
 
         const customRootValue = Object.assign({}, rootValue, {
-          conversationMessagesLoader: () => Promise.resolve(message),
+          conversationMessagesLoader: () => {return Promise.resolve(message)},
         })
 
         return runAuthenticatedQuery(query, customRootValue).then(
@@ -228,24 +227,23 @@ describe("Me", () => {
         }
       `
 
-      it("returns the conversation items", () => {
-        return runAuthenticatedQuery(query, rootValue).then(
+      it("returns the conversation items", () =>
+        {return runAuthenticatedQuery(query, rootValue).then(
           ({ me: { conversation: { items } } }) => {
             expect(items.length).toEqual(2)
             expect(items).toMatchSnapshot()
           }
-        )
-      })
+        )})
 
       it("doesnt return invalid items", () => {
         const customRootValue = Object.assign({}, rootValue, {
           // Get a copy of the conversation payload, mutate it, and return that instead.
           conversationLoader: () =>
-            rootValue.conversationLoader().then(conversation => {
+            {return rootValue.conversationLoader().then(conversation => {
               const convo = conversation
               convo.items[0].properties = {}
               return convo
-            }),
+            })},
         })
 
         return runAuthenticatedQuery(query, customRootValue).then(
@@ -258,8 +256,7 @@ describe("Me", () => {
     })
 
     describe("messages", () => {
-      const getQuery = (sort = "ASC") => {
-        return `
+      const getQuery = (sort = "ASC") => {return `
           {
             me {
               conversation(id: "420") {
@@ -274,8 +271,7 @@ describe("Me", () => {
               }
             }
           }
-        `
-      }
+        `}
 
       it("returns messages in ascending order", () => {
         const query = getQuery()

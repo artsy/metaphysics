@@ -36,8 +36,6 @@ export default {
       artwork_id,
       live,
       sale_id,
-    }).then(lotStandings => {
-      return lotStandings
-    })
+    }).then(lotStandings => {return lotStandings})
   },
 }

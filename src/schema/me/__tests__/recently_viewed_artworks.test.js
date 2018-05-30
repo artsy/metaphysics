@@ -12,9 +12,9 @@ describe("RecentlyViewedArtworks", () => {
       { id: "matt", title: "Matt the Person" },
     ]
     rootValue = {
-      meLoader: () => Promise.resolve(me),
-      artworksLoader: () => Promise.resolve(artworks),
-      recordArtworkViewLoader: () => Promise.resolve(me),
+      meLoader: () => {return Promise.resolve(me)},
+      artworksLoader: () => {return Promise.resolve(artworks)},
+      recordArtworkViewLoader: () => {return Promise.resolve(me)},
     }
   })
 
@@ -76,7 +76,7 @@ describe("RecentlyViewedArtworks", () => {
       }
     `
     rootValue.meLoader = () =>
-      Promise.resolve({ recently_viewed_artwork_ids: [] })
+      {return Promise.resolve({ recently_viewed_artwork_ids: [] })}
     expect.assertions(1)
     return runAuthenticatedQuery(query, rootValue).then(
       ({ me: { recentlyViewedArtworks } }) => {

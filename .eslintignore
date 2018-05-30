@@ -1,2 +1,5 @@
 node_modules/*
 build/*
+flow-typed/npm/*
+src/test/*
+**/__tests__/**

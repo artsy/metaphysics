@@ -6,22 +6,22 @@ import { GraphQLUnionType } from "graphql"
 
 export const ArtworkContextFairType = create(Fair.type, {
   name: "ArtworkContextFair",
-  isTypeOf: ({ context_type }) => context_type === "Fair",
+  isTypeOf: ({ context_type }) => {return context_type === "Fair"},
 })
 
 export const ArtworkContextSaleType = create(Sale.type, {
   name: "ArtworkContextSale",
-  isTypeOf: ({ context_type }) => context_type === "Sale",
+  isTypeOf: ({ context_type }) => {return context_type === "Sale"},
 })
 
 export const ArtworkContextAuctionType = create(Sale.type, {
   name: "ArtworkContextAuction",
-  isTypeOf: ({ context_type }) => context_type === "Auction",
+  isTypeOf: ({ context_type }) => {return context_type === "Auction"},
 })
 
 export const ArtworkContextPartnerShowType = create(PartnerShow.type, {
   name: "ArtworkContextPartnerShow",
-  isTypeOf: ({ context_type }) => context_type === "PartnerShow",
+  isTypeOf: ({ context_type }) => {return context_type === "PartnerShow"},
 })
 
 export const ArtworkContextType = new GraphQLUnionType({

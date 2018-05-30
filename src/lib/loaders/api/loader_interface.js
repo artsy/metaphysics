@@ -2,13 +2,11 @@
 
 import { toKey } from "lib/helpers"
 
-const encodeStaticPath = (path, globalParams, params) => {
-  return toKey(path, Object.assign({}, globalParams, params))
-}
+const encodeStaticPath = (path, globalParams, params) =>
+  {return toKey(path, Object.assign({}, globalParams, params))}
 
-const encodeDynamicPath = (pathGenerator, globalParams, id, params) => {
-  return encodeStaticPath(pathGenerator(id), globalParams, params)
-}
+const encodeDynamicPath = (pathGenerator, globalParams, id, params) =>
+  {return encodeStaticPath(pathGenerator(id), globalParams, params)}
 
 /**
  * This implements the common interface for producing data loaders for each api/path, regardless of authentication.
@@ -27,11 +25,11 @@ const encodeDynamicPath = (pathGenerator, globalParams, id, params) => {
  * @param {string|function} pathOrGenerator a query path or function that generates one
  * @param {object} globalParams a dictionary of query params that are to be included in each request
  */
-export const loaderInterface = (loader, pathOrGenerator, globalParams) => (
+export const loaderInterface = (loader, pathOrGenerator, globalParams) => {return (
   ...idAndOrParams
 ) => {
   const keyGenerator =
     typeof pathOrGenerator === "function" ? encodeDynamicPath : encodeStaticPath
   const key = keyGenerator(pathOrGenerator, globalParams, ...idAndOrParams)
   return loader.load(key)
-}
+}}

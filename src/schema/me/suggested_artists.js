@@ -15,6 +15,6 @@ export default {
   ) => {
     if (!suggestedArtistsLoader) return null
     if (!options.artist_id) return null
-    return suggestedArtistsLoader(options).then(({ body }) => body)
+    return suggestedArtistsLoader(options).then(({ body }) => {return body})
   },
 }

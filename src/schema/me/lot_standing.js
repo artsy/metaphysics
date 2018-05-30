@@ -12,20 +12,20 @@ import {
 
 // is leading human bidder
 export const isLeadingBidder = lotStanding =>
-  isExisty(lotStanding.leading_position)
+  {return isExisty(lotStanding.leading_position)}
 
 export const isHighestBidder = lotStanding =>
-  isLeadingBidder(lotStanding) &&
-  lotStanding.sale_artwork.reserve_status !== "reserve_not_met"
+  {return isLeadingBidder(lotStanding) &&
+  lotStanding.sale_artwork.reserve_status !== "reserve_not_met"}
 
 export const LotStandingType = new GraphQLObjectType({
   name: "LotStanding",
-  fields: () => ({
+  fields: () => {return {
     active_bid: {
       type: BidderPosition.type,
       description: "Your bid if it is currently winning",
       resolve: lotStanding =>
-        isHighestBidder(lotStanding) ? lotStanding.leading_position : null,
+        {return isHighestBidder(lotStanding) ? lotStanding.leading_position : null},
     },
     bidder: {
       type: Bidder.type,
@@ -44,7 +44,7 @@ export const LotStandingType = new GraphQLObjectType({
       type: BidderPosition.type,
       description:
         "Your most recent bid—which is not necessarily winning (may be higher or lower)",
-      resolve: ({ max_position }) => max_position,
+      resolve: ({ max_position }) => {return max_position},
     },
     sale: {
       type: Sale.type,
@@ -56,7 +56,7 @@ export const LotStandingType = new GraphQLObjectType({
       ) => {
         if (bidder.sale && bidder.sale.id) {
           // don't error if the sale is unpublished
-          return saleLoader(bidder.sale.id).catch(() => null)
+          return saleLoader(bidder.sale.id).catch(() => {return null})
         }
         return null
       },
@@ -64,7 +64,7 @@ export const LotStandingType = new GraphQLObjectType({
     sale_artwork: {
       type: SaleArtwork.type,
     },
-  }),
+  }},
 })
 
 export default {
@@ -85,8 +85,8 @@ export default {
     { rootValue: { lotStandingLoader } }
   ) => {
     if (!lotStandingLoader) return null
-    return lotStandingLoader({ sale_id, artwork_id }).then(([lotStanding]) => {
-      return lotStanding
-    })
+    return lotStandingLoader({ sale_id, artwork_id }).then(
+      ([lotStanding]) => {return lotStanding}
+    )
   },
 }

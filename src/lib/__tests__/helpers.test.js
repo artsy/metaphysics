@@ -98,7 +98,7 @@ describe("isExisty", () => {
 })
 
 describe("stripTags", () => {
-  const html = `<a href="http://google.com">Cabbie</a>`
+  const html = '<a href="http://google.com">Cabbie</a>'
 
   it("strips html from a string", () => {
     expect(stripTags(html)).toEqual("Cabbie")

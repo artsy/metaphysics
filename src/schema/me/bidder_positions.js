@@ -26,8 +26,8 @@ export default {
     {
       rootValue: { meBidderPositionsLoader, saleLoader, saleArtworkRootLoader },
     }
-  ) => {
-    return meBidderPositionsLoader({
+  ) =>
+    {return meBidderPositionsLoader({
       artwork_id,
       sale_id,
       sort: "-created_at",
@@ -52,17 +52,17 @@ export default {
       //
       return Promise.all(
         _.map(latestPositions, position =>
-          saleArtworkRootLoader(position.sale_artwork_id)
+          {return saleArtworkRootLoader(position.sale_artwork_id)
             // For unpublished artworks
-            .catch(() => null)
+            .catch(() => {return null})}
         )
-      ).then(saleArtworks => {
-        return Promise.all(
+      ).then(saleArtworks =>
+        {return Promise.all(
           _.map(_.compact(saleArtworks), saleArtwork =>
-            saleLoader(saleArtwork.sale_id)
+            {return saleLoader(saleArtwork.sale_id)}
           )
-        ).then(sales => {
-          return _.filter(latestPositions, position => {
+        ).then(sales =>
+          {return _.filter(latestPositions, position => {
             const saleArtwork = _.find(saleArtworks, {
               _id: position.sale_artwork_id,
             })
@@ -70,9 +70,8 @@ export default {
             const sale = _.find(sales, { id: saleArtwork.sale_id })
             if (!sale) return false
             return sale.auction_state === "open"
-          })
-        })
-      })
-    })
-  },
+          })}
+        )}
+      )
+    })},
 }

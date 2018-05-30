@@ -31,8 +31,8 @@ describe("SaveArtworkMutation", () => {
       },
     }
 
-    const saveArtworkLoader = () => Promise.resolve(mutationResponse)
-    const artworkLoader = () => Promise.resolve(artwork)
+    const saveArtworkLoader = () => {return Promise.resolve(mutationResponse)}
+    const artworkLoader = () => {return Promise.resolve(artwork)}
 
     expect.assertions(1)
     return runAuthenticatedQuery(mutation, {
@@ -74,8 +74,8 @@ describe("SaveArtworkMutation", () => {
       },
     }
 
-    const deleteArtworkLoader = () => Promise.resolve(mutationResponse)
-    const artworkLoader = () => Promise.resolve(artwork)
+    const deleteArtworkLoader = () => {return Promise.resolve(mutationResponse)}
+    const artworkLoader = () => {return Promise.resolve(artwork)}
 
     expect.assertions(1)
     return runAuthenticatedQuery(mutation, {

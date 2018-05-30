@@ -22,10 +22,10 @@ export const AggregationCountType = new GraphQLObjectType({
 
 export default {
   type: AggregationCountType,
-  resolve: ({ name, count, sortable_id }, id) => ({
+  resolve: ({ name, count, sortable_id }, id) => {return {
     id,
     sortable_id,
     name,
     count,
-  }),
+  }},
 }

@@ -39,22 +39,20 @@ const HomePageHeroUnitType = new GraphQLObjectType({
           },
         },
       }),
-      resolve: ({ type, menu_color_class }) => {
-        return type.toLowerCase() + " " + menu_color_class.toLowerCase()
-      },
+      resolve: ({ type, menu_color_class }) =>
+        {return `${type.toLowerCase()} ${menu_color_class.toLowerCase()}`},
     },
     heading: {
       type: GraphQLString,
     },
     href: {
       type: GraphQLString,
-      resolve: ({ link }) => link,
+      resolve: ({ link }) => {return link},
     },
     title: {
       type: GraphQLString,
-      resolve: ({ mobile_title, name, platform }) => {
-        return platform === "desktop" ? name : mobile_title
-      },
+      resolve: ({ mobile_title, name, platform }) =>
+        {return platform === "desktop" ? name : mobile_title},
     },
     title_image_url: {
       args: {
@@ -63,15 +61,13 @@ const HomePageHeroUnitType = new GraphQLObjectType({
         },
       },
       type: GraphQLString,
-      resolve: ({ title_image_url, title_image_retina_url, retina }) => {
-        return retina ? title_image_retina_url : title_image_url
-      },
+      resolve: ({ title_image_url, title_image_retina_url, retina }) =>
+        {return retina ? title_image_retina_url : title_image_url},
     },
     subtitle: {
       type: GraphQLString,
-      resolve: ({ mobile_description, description, platform }) => {
-        return platform === "desktop" ? description : mobile_description
-      },
+      resolve: ({ mobile_description, description, platform }) =>
+        {return platform === "desktop" ? description : mobile_description},
     },
     link_text: {
       type: GraphQLString,
@@ -141,9 +137,9 @@ const HomePageHeroUnits = {
   resolve: (_, { platform }, request, { rootValue: { heroUnitsLoader } }) => {
     const params = { enabled: true }
     params[platform] = true
-    return heroUnitsLoader(params).then(units => {
-      return shuffle(units.map(unit => Object.assign({ platform }, unit)))
-    })
+    return heroUnitsLoader(params).then(units =>
+      {return shuffle(units.map(unit => {return Object.assign({ platform }, unit)}))}
+    )
   },
 }
 

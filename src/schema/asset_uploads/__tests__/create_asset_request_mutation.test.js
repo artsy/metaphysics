@@ -18,7 +18,7 @@ describe("addAssetToConsignmentSubmission", () => {
 
     const rootValue = {
       createNewGeminiAssetLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           policy_encoded: "12345==",
           policy_document: {
             expiration: "2017-09-28T03:08:11.000Z",
@@ -40,7 +40,7 @@ describe("addAssetToConsignmentSubmission", () => {
           signature: "12345=",
           credentials: "AKIA123456789",
           clientMutationId: "1231",
-        }),
+        })},
     }
 
     expect.assertions(1)

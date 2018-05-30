@@ -24,13 +24,11 @@ const FollowArtistsType = new GraphQLObjectType({
               options,
               request,
               { rootValue: { followedArtistsLoader } }
-            ) => {
-              return totalViaLoader(followedArtistsLoader)
-            },
+            ) => {return totalViaLoader(followedArtistsLoader)},
           },
         },
       }),
-      resolve: follows => follows,
+      resolve: follows => {return follows},
     },
   },
 })
@@ -53,6 +51,6 @@ export default {
     { rootValue: { followedArtistsLoader } }
   ) => {
     if (!followedArtistsLoader) return null
-    return followedArtistsLoader(options).then(({ body }) => body)
+    return followedArtistsLoader(options).then(({ body }) => {return body})
   },
 }

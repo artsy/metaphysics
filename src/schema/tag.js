@@ -13,27 +13,25 @@ import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 const TagType = new GraphQLObjectType({
   name: "Tag",
   interfaces: [NodeInterface],
-  fields: () => {
-    return {
-      ...GravityIDFields,
-      cached,
-      description: {
-        type: GraphQLString,
-      },
-      name: {
-        type: GraphQLString,
-      },
-      href: {
-        type: GraphQLString,
-        resolve: ({ id }) => `tag/${id}`,
-      },
-      image: Image,
-      count: {
-        type: GraphQLInt,
-      },
-      filtered_artworks: filterArtworks("tag_id"),
-    }
-  },
+  fields: () => {return {
+    ...GravityIDFields,
+    cached,
+    description: {
+      type: GraphQLString,
+    },
+    name: {
+      type: GraphQLString,
+    },
+    href: {
+      type: GraphQLString,
+      resolve: ({ id }) => {return `tag/${id}`},
+    },
+    image: Image,
+    count: {
+      type: GraphQLInt,
+    },
+    filtered_artworks: filterArtworks("tag_id"),
+  }},
 })
 
 const Tag = {
@@ -54,9 +52,7 @@ const Tag = {
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ["filtered_artworks", "id", "__id"]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return tagLoader(id).then(tag => {
-        return Object.assign(tag, { _type: "Tag" }, {})
-      })
+      return tagLoader(id).then(tag => {return Object.assign(tag, { _type: "Tag" }, {})})
     }
 
     // The family and browsable are here so that the type system's `isTypeOf`

@@ -4,18 +4,18 @@ import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
 export default (accessToken, userID, opts) => {
-  const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
+  const gravityAccessTokenLoader = () => {return Promise.resolve(accessToken)}
   const { gravityLoaderWithAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithAuthenticationFactory(
     gravityAccessTokenLoader
   )
 
   return {
-    collectionLoader: gravityLoader(id => `collection/${id}`, {
+    collectionLoader: gravityLoader(id => {return `collection/${id}`}, {
       user_id: userID,
     }),
     collectionArtworksLoader: gravityLoader(
-      id => `collection/${id}/artworks`,
+      id => {return `collection/${id}/artworks`},
       { user_id: userID },
       { headers: true }
     ),
@@ -79,7 +79,7 @@ export default (accessToken, userID, opts) => {
     meBiddersLoader: gravityLoader("me/bidders"),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBidderPositionLoader: gravityLoader(
-      ({ id }) => `me/bidder_position/${id}/`,
+      ({ id }) => {return `me/bidder_position/${id}/`},
       {},
       { headers: true }
     ),
@@ -99,12 +99,12 @@ export default (accessToken, userID, opts) => {
       "is_saved"
     ),
     saleArtworksLoader: gravityLoader(
-      id => `sale/${id}/sale_artworks`,
+      id => {return `sale/${id}/sale_artworks`},
       {},
       { headers: true }
     ),
     endSaleLoader: gravityLoader(
-      id => `sale/${id}/end_sale`,
+      id => {return `sale/${id}/end_sale`},
       {},
       { method: "PUT" }
     ),
@@ -136,12 +136,12 @@ export default (accessToken, userID, opts) => {
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
     updateOrderLoader: gravityLoader(
-      id => `me/order/${id}`,
+      id => {return `me/order/${id}`},
       {},
       { method: "PUT" }
     ),
     submitOrderLoader: gravityLoader(
-      id => `me/order/${id}/submit`,
+      id => {return `me/order/${id}/submit`},
       {},
       { method: "PUT" }
     ),
@@ -156,17 +156,17 @@ export default (accessToken, userID, opts) => {
       { method: "POST" }
     ),
     unfollowArtistLoader: gravityLoader(
-      id => `me/follow/artist/${id}`,
+      id => {return `me/follow/artist/${id}`},
       {},
       { method: "DELETE" }
     ),
     saveArtworkLoader: gravityLoader(
-      id => `collection/saved-artwork/artwork/${id}`,
+      id => {return `collection/saved-artwork/artwork/${id}`},
       {},
       { method: "POST" }
     ),
     deleteArtworkLoader: gravityLoader(
-      id => `collection/saved-artwork/artwork/${id}`,
+      id => {return `collection/saved-artwork/artwork/${id}`},
       {},
       { method: "DELETE" }
     ),

@@ -25,7 +25,7 @@ const ArtistMatch = {
     },
   },
   resolve: (_root, options, _request, { rootValue: { matchArtistsLoader } }) =>
-    matchArtistsLoader(options),
+    {return matchArtistsLoader(options)},
 }
 
 export default ArtistMatch

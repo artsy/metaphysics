@@ -77,13 +77,13 @@ describe("PartnerShows type", () => {
     const showsLoader = ({ id }) => {
       if (id) {
         return Promise.resolve(
-          id.map(_id => ({
+          id.map(_id => {return {
             _id,
             partner: {
               id: "new-museum",
             },
             display_on_partner_profile: true,
-          }))
+          }})
         )
       }
       throw new Error("Unexpected invocation")

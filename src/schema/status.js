@@ -12,25 +12,25 @@ const StatusType = new GraphQLObjectType({
           ping: {
             type: GraphQLBoolean,
             resolve: () =>
-              gravity("system/ping").then(
-                ({ body: { ping } }) => ping === "pong"
-              ),
+              {return gravity("system/ping").then(
+                ({ body: { ping } }) => {return ping === "pong"}
+              )},
           },
         },
       }),
-      resolve: () => ({}),
+      resolve: () => {return {}},
     },
     ping: {
       type: GraphQLBoolean,
       description: "Metaphysics ping",
-      resolve: () => true,
+      resolve: () => {return true},
     },
   },
 })
 
 const Status = {
   type: StatusType,
-  resolve: () => ({}),
+  resolve: () => {return {}},
 }
 
 export default Status

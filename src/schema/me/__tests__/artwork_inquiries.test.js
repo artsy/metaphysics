@@ -48,7 +48,7 @@ describe("Me", () => {
       }
 
       const inquiryRequestsLoader = () =>
-        Promise.resolve({
+        {return Promise.resolve({
           headers: { "x-total-count": 3 },
           body: [
             {
@@ -59,7 +59,7 @@ describe("Me", () => {
               inquireable: artwork2,
             },
           ],
-        })
+        })}
 
       return runAuthenticatedQuery(query, { inquiryRequestsLoader }).then(
         ({ me: { artwork_inquiries_connection } }) => {

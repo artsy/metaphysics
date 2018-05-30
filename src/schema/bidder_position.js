@@ -12,7 +12,7 @@ import {
 
 const BidderPositionType = new GraphQLObjectType({
   name: "BidderPosition",
-  fields: () => ({
+  fields: () => {return {
     ...IDFields,
     created_at: date,
     updated_at: date,
@@ -36,16 +36,16 @@ const BidderPositionType = new GraphQLObjectType({
           },
           is_cancelled: {
             type: GraphQLBoolean,
-            resolve: ({ cancelled }) => cancelled,
+            resolve: ({ cancelled }) => {return cancelled},
           },
-          amount: amount(({ amount_cents }) => amount_cents),
+          amount: amount(({ amount_cents }) => {return amount_cents}),
           cents: {
             type: GraphQLInt,
-            resolve: ({ amount_cents }) => amount_cents,
+            resolve: ({ amount_cents }) => {return amount_cents},
           },
           display: {
             type: GraphQLString,
-            resolve: ({ display_amount_dollars }) => display_amount_dollars,
+            resolve: ({ display_amount_dollars }) => {return display_amount_dollars},
           },
           amount_cents: {
             type: GraphQLInt,
@@ -60,15 +60,15 @@ const BidderPositionType = new GraphQLObjectType({
     },
     is_active: {
       type: GraphQLBoolean,
-      resolve: ({ active }) => active,
+      resolve: ({ active }) => {return active},
     },
     is_retracted: {
       type: GraphQLBoolean,
-      resolve: ({ retracted }) => retracted,
+      resolve: ({ retracted }) => {return retracted},
     },
     is_with_bid_max: {
       type: GraphQLBoolean,
-      resolve: ({ bid_max }) => bid_max,
+      resolve: ({ bid_max }) => {return bid_max},
     },
     is_winning: {
       type: GraphQLBoolean,
@@ -77,20 +77,19 @@ const BidderPositionType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { saleArtworkRootLoader } }
-      ) => {
-        return saleArtworkRootLoader(position.sale_artwork_id).then(
+      ) =>
+        {return saleArtworkRootLoader(position.sale_artwork_id).then(
           saleArtwork =>
-            get(saleArtwork, "highest_bid.id") ===
-            get(position, "highest_bid.id")
-        )
-      },
+            {return get(saleArtwork, "highest_bid.id") ===
+            get(position, "highest_bid.id")}
+        )},
     },
     max_bid: money({
       name: "BidderPositionMaxBid",
-      resolve: ({ display_max_bid_amount_dollars, max_bid_amount_cents }) => ({
+      resolve: ({ display_max_bid_amount_dollars, max_bid_amount_cents }) => {return {
         cents: max_bid_amount_cents,
         display: display_max_bid_amount_dollars,
-      }),
+      }},
     }),
     max_bid_amount_cents: {
       type: GraphQLInt,
@@ -103,23 +102,23 @@ const BidderPositionType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { saleArtworkRootLoader } }
-      ) => saleArtworkRootLoader(sale_artwork_id),
+      ) => {return saleArtworkRootLoader(sale_artwork_id)},
     },
     suggested_next_bid: money({
       name: "BidderPositionSuggestedNextBid",
       resolve: ({
         display_suggested_next_bid_dollars,
         suggested_next_bid_cents,
-      }) => ({
+      }) => {return {
         cents: suggested_next_bid_cents,
         display: display_suggested_next_bid_dollars,
-      }),
+      }},
     }),
     suggested_next_bid_cents: {
       type: GraphQLInt,
       deprecationReason: "Favor `suggested_next_bid`",
     },
-  }),
+  }},
 })
 
 const BidderPosition = {

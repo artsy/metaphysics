@@ -6,8 +6,7 @@ import { SaleType } from "schema/sale/index"
 
 export const endSaleMutation = mutationWithClientMutationId({
   name: "EndSale",
-  description:
-    "Mark sale as ended.",
+  description: "Mark sale as ended.",
   inputFields: {
     sale_id: {
       type: GraphQLString,
@@ -16,18 +15,13 @@ export const endSaleMutation = mutationWithClientMutationId({
   outputFields: {
     sale: {
       type: SaleType,
-      resolve: sale => sale,
+      resolve: sale => {return sale},
     },
   },
   mutateAndGetPayload: (
     { sale_id },
     _request,
-    {
-      rootValue: {
-        accessToken,
-        endSaleLoader,
-      },
-    }
+    { rootValue: { accessToken, endSaleLoader } }
   ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")

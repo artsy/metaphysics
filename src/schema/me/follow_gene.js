@@ -12,7 +12,7 @@ export default mutationWithClientMutationId({
     gene: {
       type: GeneType,
       resolve: ({ gene }, options, request, { rootValue: { geneLoader } }) =>
-        geneLoader(gene.id),
+        {return geneLoader(gene.id)},
     },
   },
   mutateAndGetPayload: (

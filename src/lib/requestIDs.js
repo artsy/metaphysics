@@ -13,7 +13,7 @@ export function middleware(req, res, next) {
   const requestID = req.headers["x-request-id"] || uuid()
 
   // Setup tracer related IDs
-  const span = res.locals.span
+  const { span } = res.locals
   const traceContext = span && span.context()
   const traceId = span ? traceContext.traceId : ""
   const parentSpanId = span ? traceContext.spanId : ""

@@ -36,9 +36,9 @@ const addFollowedGenes = (
     const size = max_followed_gene_rails < 0 ? 100 : max_followed_gene_rails
     return followedGenes(followedGenesLoader, size).then(results => {
       const blueprint = modules[followedGeneIndex]
-      const genes = map(results, ({ gene }) => {
-        return Object.assign({ params: { id: gene.id, gene } }, blueprint)
-      })
+      const genes = map(results, ({ gene }) =>
+        {return Object.assign({ params: { id: gene.id, gene } }, blueprint)}
+      )
       const copy = modules.slice(0)
       const args = [followedGeneIndex, 1].concat(genes)
       Array.prototype.splice.apply(copy, args)
@@ -60,6 +60,8 @@ const reorderModules = (modules, preferredOrder) => {
         reordered.push(mod)
         return true
       }
+
+      return undefined // make undefined return explicit
     })
   })
   return reordered.concat(unordered)
@@ -159,10 +161,10 @@ const HomePageArtworkModules = {
     if (accessToken) {
       return homepageModulesLoader().then(response => {
         const keysToDisplay = without(keys(response), ...exclude)
-        const modulesToDisplay = map(keysToDisplay, key => ({
+        const modulesToDisplay = map(keysToDisplay, key => {return {
           key,
           display: response[key],
-        }))
+        }})
         return addFollowedGenes(
           followedGenesLoader,
           modulesToDisplay,

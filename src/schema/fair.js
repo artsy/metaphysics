@@ -33,9 +33,7 @@ const FairOrganizerType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { profileLoader } }
-      ) => {
-        return profileLoader(profile_id).catch(() => null)
-      },
+      ) => {return profileLoader(profile_id).catch(() => {return null})},
     },
   },
 })
@@ -84,7 +82,7 @@ export const ShowsSort = new GraphQLEnumType({
 
 const FairType = new GraphQLObjectType({
   name: "Fair",
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     cached,
     banner_size: {
@@ -128,7 +126,7 @@ const FairType = new GraphQLObjectType({
     },
     is_published: {
       type: GraphQLBoolean,
-      resolve: ({ published }) => published,
+      resolve: ({ published }) => {return published},
     },
     location: {
       type: Location.type,
@@ -141,9 +139,7 @@ const FairType = new GraphQLObjectType({
         if (location) {
           return location
         } else if (published) {
-          return fairLoader(id, options).then(fair => {
-            return fair.location
-          })
+          return fairLoader(id, options).then(fair => {return fair.location})
         }
         return null
       },
@@ -163,7 +159,7 @@ const FairType = new GraphQLObjectType({
         return (
           profileLoader(id)
             // Some profiles are private and return 403
-            .catch(() => null)
+            .catch(() => {return null})
         )
       },
     },
@@ -191,12 +187,12 @@ const FairType = new GraphQLObjectType({
         return Promise.all([
           totalViaLoader(fairBoothsLoader, id, gravityOptions),
           fairBoothsLoader(id, gravityOptions),
-        ]).then(([count, { body: { results } }]) => {
-          return connectionFromArraySlice(results, options, {
+        ]).then(([count, { body: { results } }]) =>
+          {return connectionFromArraySlice(results, options, {
             arrayLength: count,
             sliceStart: gravityOptions.offset,
-          })
-        })
+          })}
+        )
       },
     },
     start_at: date,
@@ -211,7 +207,7 @@ const FairType = new GraphQLObjectType({
     tagline: {
       type: GraphQLString,
     },
-  }),
+  }},
 })
 
 const Fair = {
@@ -223,9 +219,8 @@ const Fair = {
       description: "The slug or ID of the Fair",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { fairLoader } }) => {
-    return fairLoader(id)
-  },
+  resolve: (root, { id }, request, { rootValue: { fairLoader } }) =>
+    {return fairLoader(id)},
 }
 
 export default Fair

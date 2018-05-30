@@ -37,14 +37,12 @@ export const S3PolicyDocumentType = new GraphQLObjectType({
     conditions: {
       description: "The details for the upload",
       type: new GraphQLNonNull(S3PolicyConditionsType),
-      resolve: ({ conditions }) => {
-        return {
-          bucket: conditions[0].bucket,
-          acl: conditions[2].acl,
-          success_action_status: conditions[3].success_action_status,
-          gemini_key: conditions[1][2],
-        }
-      },
+      resolve: ({ conditions }) => {return {
+        bucket: conditions[0].bucket,
+        acl: conditions[2].acl,
+        success_action_status: conditions[3].success_action_status,
+        gemini_key: conditions[1][2],
+      }},
     },
   },
 })
@@ -88,7 +86,7 @@ export default mutationWithClientMutationId({
   outputFields: {
     asset: {
       type: CredentialsType,
-      resolve: asset => asset,
+      resolve: asset => {return asset},
     },
   },
   mutateAndGetPayload: (

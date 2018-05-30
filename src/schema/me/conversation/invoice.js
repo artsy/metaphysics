@@ -43,7 +43,7 @@ export const InvoiceType = new GraphQLObjectType({
       description: "Current state of invoice.",
       type: InvoiceState,
     },
-    total: amount(({ total_cents }) => total_cents),
+    total: amount(({ total_cents }) => {return total_cents}),
   },
 })
 

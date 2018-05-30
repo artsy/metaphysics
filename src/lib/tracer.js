@@ -6,14 +6,15 @@ const tracer = require("dd-trace").init({
   service: DD_TRACER_SERVICE_NAME,
   hostname: DD_TRACER_HOSTNAME,
 })
+
 tracer.use("express", {
-  service: DD_TRACER_SERVICE_NAME + ".request",
+  service: `${DD_TRACER_SERVICE_NAME}.request`,
 })
 tracer.use("http", {
-  service: DD_TRACER_SERVICE_NAME + ".http-client",
+  service: `${DD_TRACER_SERVICE_NAME}.http-client`,
 })
 tracer.use("redis", {
-  service: DD_TRACER_SERVICE_NAME + ".redis",
+  service: `${DD_TRACER_SERVICE_NAME}.redis`,
 })
 
 function parse_args() {
@@ -21,12 +22,12 @@ function parse_args() {
 }
 
 function drop_params(query) {
-  return query.replace(/(\()([^\)]*)(\))/g, parse_args)
+  return query.replace(/(\()([^)]*)(\))/g, parse_args)
 }
 
 export async function traceMiddleware(resolve, parent, args, ctx, info) {
   const span = await tracer.trace("graphql.resolver", {
-    resource: info.parentType + ": " + info.fieldName,
+    resource: `${info.parentType}: ${info.fieldName}`,
   })
   const result = await resolve(parent, args, ctx, info)
   span.finish()
@@ -43,18 +44,23 @@ export function middleware(req, res, next) {
   let query = ""
   if (req.body && req.body.query) {
     resource = drop_params(req.body.query)
-    query = req.body.query
+    query = req.body.query // eslint-disable-line prefer-destructuring
   }
 
-  tracer.trace("graphql.query", { resource }).then(span => {
-    span.setTag("query", query)
+  tracer
+    .trace("graphql.query", { resource })
+    .then(span => {
+      span.setTag("query", query)
 
-    res.locals.span = span // eslint-disable-line no-param-reassign
+      res.locals.span = span // eslint-disable-line no-param-reassign
 
-    const finish = trace.bind(null, res, span)
-    res.on("finish", finish)
-    res.on("close", finish)
+      const finish = trace.bind(null, res, span)
+      res.on("finish", finish)
+      res.on("close", finish)
 
-    next()
-  })
+      return next()
+    })
+    .catch(e => {
+      throw e
+    })
 }

@@ -41,5 +41,5 @@ const ArtistMetaType = new GraphQLObjectType({
 
 export default {
   type: ArtistMetaType,
-  resolve: x => x,
+  resolve: x => {return x},
 }

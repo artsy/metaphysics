@@ -4,7 +4,7 @@ import { GraphQLObjectType, GraphQLString, GraphQLList } from "graphql"
 
 const ArtworkLayerType = new GraphQLObjectType({
   name: "ArtworkLayer",
-  fields: () => ({
+  fields: () => {return {
     ...IDFields,
     artworks: {
       type: new GraphQLList(Artwork.type),
@@ -13,21 +13,20 @@ const ArtworkLayerType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { relatedLayerArtworksLoader } }
-      ) => {
-        return relatedLayerArtworksLoader(
+      ) =>
+        {return relatedLayerArtworksLoader(
           { id, type },
           {
             artwork: [artwork_id],
           }
-        )
-      },
+        )},
     },
     description: {
       type: GraphQLString,
     },
     href: {
       type: GraphQLString,
-      resolve: ({ more_info_url }) => more_info_url,
+      resolve: ({ more_info_url }) => {return more_info_url},
     },
     name: {
       type: GraphQLString,
@@ -35,7 +34,7 @@ const ArtworkLayerType = new GraphQLObjectType({
     type: {
       type: GraphQLString,
     },
-  }),
+  }},
 })
 
 export default {

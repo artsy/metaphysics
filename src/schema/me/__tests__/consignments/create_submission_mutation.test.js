@@ -37,12 +37,12 @@ describe("UpdateSubmissionMutation", () => {
     `
     const rootValue = {
       submissionCreateLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           id: "106",
           artist_id: "andy-warhol",
           authenticity_certificate: true,
           dimensions_metric: "cm",
-        }),
+        })},
     }
 
     expect.assertions(1)

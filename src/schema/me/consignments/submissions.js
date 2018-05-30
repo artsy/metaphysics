@@ -21,11 +21,11 @@ export default {
     //       list size that's a little higher than average while there
     //       are still small amounts of data.
     if (!submissionsLoader) return null
-    return submissionsLoader(options).then(body => {
-      return connectionFromArraySlice(body, options, {
+    return submissionsLoader(options).then(body =>
+      {return connectionFromArraySlice(body, options, {
         arrayLength: body.length,
         sliceStart: 0,
-      })
-    })
+      })}
+    )
   },
 }

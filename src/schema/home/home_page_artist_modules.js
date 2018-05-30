@@ -8,20 +8,19 @@ import { GraphQLList } from "graphql"
 const HomePageArtistModules = {
   type: new GraphQLList(HomePageArtistModuleType),
   description: "Artist modules to show on the home screen",
-  resolve: (root, params, request, { rootValue }) => {
+  resolve: (root, params, request, { rootValue }) =>
     // First check each type if they can display…
-    return Promise.all(
-      map(HomePageArtistModuleTypes, ({ display }, key) => {
-        return display({ rootValue }).then(displayable => ({
+    {return Promise.all(
+      map(HomePageArtistModuleTypes, ({ display }, key) =>
+        {return display({ rootValue }).then(displayable => {return {
           key,
           displayable,
-        }))
-      })
-    ).then(results => {
+        }})}
+      )
+    ).then(results =>
       // …then reduce list to those that can be displayed.
-      return map(filter(results, "displayable"), ({ key }) => ({ key }))
-    })
-  },
+      {return map(filter(results, "displayable"), ({ key }) => {return { key }})}
+    )},
 }
 
 export default HomePageArtistModules

@@ -42,7 +42,7 @@ export default mutationWithClientMutationId({
   outputFields: {
     asset: {
       type: GeminiEntryType,
-      resolve: credentials => credentials,
+      resolve: credentials => {return credentials},
     },
   },
   mutateAndGetPayload: (

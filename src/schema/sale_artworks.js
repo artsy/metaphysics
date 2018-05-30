@@ -2,8 +2,8 @@ import SaleArtwork from "./sale_artwork"
 import { parseRelayOptions } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import { filterSaleArtworksArgs } from "schema/filter_sale_artworks"
 import {
+  filterSaleArtworksArgs,
   SaleArtworkAggregations,
   SaleArtworkCounts,
 } from "schema/filter_sale_artworks"
@@ -68,6 +68,7 @@ export default {
       return data
     } catch (error) {
       console.error("schema/sale_artworks Error:", error) // eslint-disable-line
+      return undefined // make undefined return explicit
     }
   },
 }

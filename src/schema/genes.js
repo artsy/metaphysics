@@ -26,13 +26,13 @@ const Genes = {
     if (options.slugs) {
       return Promise.all(
         options.slugs.map(slug =>
-          geneLoader(
+          {return geneLoader(
             slug,
             {},
             {
               requestThrottleMs: config.ARTICLE_REQUEST_THROTTLE_MS,
             }
-          )
+          )}
         )
       )
     }

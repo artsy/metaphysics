@@ -30,18 +30,20 @@ const kind = ({ artists, fair }) => {
   if (isExisty(fair)) return "fair"
   if (artists.length > 1) return "group"
   if (artists.length === 1) return "solo"
+
+  return undefined // make undefined return explicit
 }
 
 const PartnerShowType = new GraphQLObjectType({
   name: "PartnerShow",
   deprecationReason: "Prefer to use Show schema",
   interfaces: [NodeInterface],
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     cached,
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: ({ artists }) => artists,
+      resolve: ({ artists }) => {return artists},
     },
     artworks: {
       type: new GraphQLList(Artwork.type),
@@ -90,7 +92,7 @@ const PartnerShowType = new GraphQLObjectType({
           fetch = partnerShowArtworksLoader(
             { partner_id: show.partner.id, show_id: show.id },
             options
-          ).then(({ body }) => body)
+          ).then(({ body }) => {return body})
         }
 
         return fetch.then(exclude(options.exclude, "id"))
@@ -113,20 +115,19 @@ const PartnerShowType = new GraphQLObjectType({
               options,
               request,
               { rootValue: { partnerShowArtworksLoader } }
-            ) => {
-              return totalViaLoader(
+            ) =>
+              {return totalViaLoader(
                 partnerShowArtworksLoader,
                 { partner_id: partner.id, show_id: id },
                 options
-              )
-            },
+              )},
           },
           eligible_artworks: numeral(
-            ({ eligible_artworks_count }) => eligible_artworks_count
+            ({ eligible_artworks_count }) => {return eligible_artworks_count}
           ),
         },
       }),
-      resolve: partner_show => partner_show,
+      resolve: partner_show => {return partner_show},
     },
     cover_image: {
       type: Image.type,
@@ -175,22 +176,22 @@ const PartnerShowType = new GraphQLObjectType({
         // Gravity redirects from /api/v1/show/:id => /api/v1/partner/:partner_id/show/:show_id
         // this creates issues where events will remain cached. Fetch the non-redirected
         // route to circumvent this
-        partnerShowLoader({ partner_id: partner.id, show_id: id }).then(
-          ({ events }) => events
-        ),
+        {return partnerShowLoader({ partner_id: partner.id, show_id: id }).then(
+          ({ events }) => {return events}
+        )},
     },
     exhibition_period: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
-      resolve: ({ start_at, end_at }) => exhibitionPeriod(start_at, end_at),
+      resolve: ({ start_at, end_at }) => {return exhibitionPeriod(start_at, end_at)},
     },
     fair: {
       type: Fair.type,
-      resolve: ({ fair }) => fair,
+      resolve: ({ fair }) => {return fair},
     },
     href: {
       type: GraphQLString,
-      resolve: ({ id }) => `/show/${id}`,
+      resolve: ({ id }) => {return `/show/${id}`},
     },
     images: {
       type: new GraphQLList(Image.type),
@@ -212,16 +213,13 @@ const PartnerShowType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { partnerShowImagesLoader } }
-      ) => {
-        return partnerShowImagesLoader(id, options).then(Image.resolve)
-      },
+      ) => {return partnerShowImagesLoader(id, options).then(Image.resolve)},
     },
     has_location: {
       type: GraphQLBoolean,
       description: "Flag showing if show has any location.",
-      resolve: ({ location, fair, partner_city }) => {
-        return isExisty(location || fair || partner_city)
-      },
+      resolve: ({ location, fair, partner_city }) =>
+        {return isExisty(location || fair || partner_city)},
     },
     is_active: {
       type: GraphQLBoolean,
@@ -235,11 +233,11 @@ const PartnerShowType = new GraphQLObjectType({
     },
     is_displayable: {
       type: GraphQLBoolean,
-      resolve: ({ displayable }) => displayable,
+      resolve: ({ displayable }) => {return displayable},
     },
     is_fair_booth: {
       type: GraphQLBoolean,
-      resolve: ({ fair }) => isExisty(fair),
+      resolve: ({ fair }) => {return isExisty(fair)},
     },
     kind: {
       type: GraphQLString,
@@ -258,7 +256,7 @@ const PartnerShowType = new GraphQLObjectType({
     },
     location: {
       type: Location.type,
-      resolve: ({ location, fair_location }) => location || fair_location,
+      resolve: ({ location, fair_location }) => {return location || fair_location},
     },
     meta_image: {
       type: Image.type,
@@ -277,9 +275,13 @@ const PartnerShowType = new GraphQLObjectType({
           {
             published: true,
           }
-        ).then(({ body }) => {
-          Image.resolve(getDefault(find(body, { can_share_image: true })))
-        })
+        )
+          .then(({ body }) =>
+            {return Image.resolve(getDefault(find(body, { can_share_image: true })))}
+          )
+          .catch(e => {
+            throw e
+          })
       },
     },
     name: {
@@ -288,7 +290,7 @@ const PartnerShowType = new GraphQLObjectType({
     },
     partner: {
       type: Partner.type,
-      resolve: ({ partner }) => partner,
+      resolve: ({ partner }) => {return partner},
     },
     press_release: markdown(),
     start_at: date,
@@ -305,13 +307,13 @@ const PartnerShowType = new GraphQLObjectType({
         },
       },
       resolve: ({ start_at, end_at }, options) =>
-        exhibitionStatus(start_at, end_at, options.max_days),
+        {return exhibitionStatus(start_at, end_at, options.max_days)},
     },
     type: {
       type: GraphQLString,
-      resolve: ({ fair }) => (isExisty(fair) ? "Fair Booth" : "Show"),
+      resolve: ({ fair }) => {return (isExisty(fair) ? "Fair Booth" : "Show")},
     },
-  }),
+  }},
 })
 
 const PartnerShow = {
@@ -323,14 +325,13 @@ const PartnerShow = {
       description: "The slug or ID of the PartnerShow",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { showLoader } }) => {
-    return showLoader(id).then(show => {
+  resolve: (root, { id }, request, { rootValue: { showLoader } }) =>
+    {return showLoader(id).then(show => {
       if (!show.displayable) {
         return new HTTPError("Show Not Found", 404)
       }
       return show
-    })
-  },
+    })},
 }
 
 export default PartnerShow

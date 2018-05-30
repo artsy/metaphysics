@@ -18,19 +18,19 @@ const EditionSetType = new GraphQLObjectType({
     dimensions: Dimensions,
     edition_of: {
       type: GraphQLString,
-      resolve: ({ editions }) => editions,
+      resolve: ({ editions }) => {return editions},
     },
     is_acquireable: {
       type: GraphQLBoolean,
-      resolve: ({ acquireable }) => acquireable,
+      resolve: ({ acquireable }) => {return acquireable},
     },
     is_for_sale: {
       type: GraphQLBoolean,
-      resolve: ({ forsale }) => forsale,
+      resolve: ({ forsale }) => {return forsale},
     },
     is_sold: {
       type: GraphQLBoolean,
-      resolve: ({ sold }) => sold,
+      resolve: ({ sold }) => {return sold},
     },
     price: {
       type: GraphQLString,

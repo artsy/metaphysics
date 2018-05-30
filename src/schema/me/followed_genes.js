@@ -29,11 +29,11 @@ export default {
       total_count: true,
     }
 
-    return followedGenesLoader(gravityArgs).then(({ body, headers }) => {
-      return connectionFromArraySlice(body, options, {
+    return followedGenesLoader(gravityArgs).then(({ body, headers }) =>
+      {return connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
-      })
-    })
+      })}
+    )
   },
 }

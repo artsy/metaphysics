@@ -604,9 +604,9 @@ describe("Artwork type", () => {
         }
       `
       rootValue.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
-        saleId === artwork.sale_ids[0] &&
+        {return saleId === artwork.sale_ids[0] &&
         saleArtworkId === "richard-prince-untitled-portrait" &&
-        Promise.resolve({ sale_id: saleId })
+        Promise.resolve({ sale_id: saleId })}
       const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
         query,
         rootValue
@@ -625,9 +625,9 @@ describe("Artwork type", () => {
         }
       `
       rootValue.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
-        saleId === artwork.sale_ids[1] &&
+        {return saleId === artwork.sale_ids[1] &&
         saleArtworkId === "richard-prince-untitled-portrait" &&
-        Promise.resolve({ sale_id: saleId })
+        Promise.resolve({ sale_id: saleId })}
       const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
         query,
         rootValue
@@ -951,7 +951,7 @@ describe("Artwork type", () => {
   })
 
   describe("Attribution class", () => {
-    it(`returns proper attribution class name for unique artwork`, () => {
+    it("returns proper attribution class name for unique artwork", () => {
       const query = `
         {
           artwork(id: "richard-prince-untitled-portrait") {
@@ -972,7 +972,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it(`returns proper attribution class info for unique artwork`, () => {
+    it("returns proper attribution class info for unique artwork", () => {
       const query = `
         {
           artwork(id: "richard-prince-untitled-portrait") {
@@ -993,7 +993,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it(`returns proper attribution class short_description for unique artwork`, () => {
+    it("returns proper attribution class short_description for unique artwork", () => {
       const query = `
         {
           artwork(id: "richard-prince-untitled-portrait") {
@@ -1014,7 +1014,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it(`returns proper attribution class long_description for unique artwork`, () => {
+    it("returns proper attribution class long_description for unique artwork", () => {
       const query = `
         {
           artwork(id: "richard-prince-untitled-portrait") {

@@ -62,10 +62,10 @@ export const SaleArtworkAggregations = {
       "total",
       "followed_artists",
     ])
-    return map(whitelistedAggregations, (counts, slice) => ({
+    return map(whitelistedAggregations, (counts, slice) => {return {
       slice,
       counts,
-    }))
+    }})
   },
 }
 
@@ -73,25 +73,25 @@ export const SaleArtworkCounts = {
   type: new GraphQLObjectType({
     name: "FilterSaleArtworksCounts",
     fields: {
-      total: numeral(({ aggregations }) => aggregations.total.value),
+      total: numeral(({ aggregations }) => {return aggregations.total.value}),
       followed_artists: numeral(
-        ({ aggregations }) => aggregations.followed_artists.value
+        ({ aggregations }) => {return aggregations.followed_artists.value}
       ),
     },
   }),
-  resolve: artist => artist,
+  resolve: artist => {return artist},
 }
 
 export const FilterSaleArtworksType = new GraphQLObjectType({
   name: "FilterSaleArtworks",
-  fields: () => ({
+  fields: () => {return {
     aggregations: SaleArtworkAggregations,
     counts: SaleArtworkCounts,
     hits: {
       description: "Sale Artwork results.",
       type: new GraphQLList(SaleArtwork.type),
     },
-  }),
+  }},
 })
 
 const FilterSaleArtworks = {
@@ -104,9 +104,7 @@ const FilterSaleArtworks = {
     options,
     request,
     { rootValue: { saleArtworksFilterLoader } }
-  ) => {
-    return saleArtworksFilterLoader(options)
-  },
+  ) => {return saleArtworksFilterLoader(options)},
 }
 
 export default FilterSaleArtworks

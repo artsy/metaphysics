@@ -3,7 +3,7 @@ import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/
 describe("trackedEntityLoader", () => {
   it("also works with payloads that don’t need an entity key path", () => {
     const gravityLoader = jest.fn(() =>
-      Promise.resolve([{ id: "queens-ship" }])
+      {return Promise.resolve([{ id: "queens-ship" }])}
     )
     const savedArtworksLoader = trackedEntityLoaderFactory(
       gravityLoader,
@@ -24,7 +24,7 @@ describe("trackedEntityLoader", () => {
 
     beforeEach(() => {
       gravityLoader = jest.fn(() =>
-        Promise.resolve([{ artist: { id: "cab", name: "Cab" } }])
+        {return Promise.resolve([{ artist: { id: "cab", name: "Cab" } }])}
       )
       followedArtistLoader = trackedEntityLoaderFactory(
         gravityLoader,
@@ -34,27 +34,24 @@ describe("trackedEntityLoader", () => {
       )
     })
 
-    it("passes the params to gravity and batches multiple requests", () => {
-      return Promise.all([
+    it("passes the params to gravity and batches multiple requests", () =>
+      {return Promise.all([
         followedArtistLoader("cab"),
         followedArtistLoader("damon"),
       ]).then(() => {
         expect(gravityLoader.mock.calls[0][0]).toEqual({
           artists: ["cab", "damon"],
         })
-      })
-    })
+      })})
 
-    it("marks is_followed as true if artist is returned", () => {
-      return followedArtistLoader("cab").then(artist => {
+    it("marks is_followed as true if artist is returned", () =>
+      {return followedArtistLoader("cab").then(artist => {
         expect(artist.is_followed).toBe(true)
-      })
-    })
+      })})
 
-    it("marks is_followed as false if artist is not returned", () => {
-      return followedArtistLoader("damon").then(artist => {
+    it("marks is_followed as false if artist is not returned", () =>
+      {return followedArtistLoader("damon").then(artist => {
         expect(artist.is_followed).toBe(false)
-      })
-    })
+      })})
   })
 })

@@ -26,7 +26,7 @@ export const HomePageArtistModuleTypes = {
           exclude_followed_artists: true,
           exclude_artists_without_forsale_artworks: true,
         }
-      ).then(total => total > 0)
+      ).then(total => {return total > 0})
     },
     resolve: ({ rootValue: { suggestedSimilarArtistsLoader } }) => {
       if (!suggestedSimilarArtistsLoader) {
@@ -37,20 +37,20 @@ export const HomePageArtistModuleTypes = {
       return suggestedSimilarArtistsLoader({
         exclude_followed_artists: true,
         exclude_artists_without_forsale_artworks: true,
-      }).then(({ body }) => map(body, "artist"))
+      }).then(({ body }) => {return map(body, "artist")})
     },
   },
   TRENDING: {
     description: "The trending artists.",
-    display: () => Promise.resolve(true),
+    display: () => {return Promise.resolve(true)},
     resolve: ({ rootValue: { trendingArtistsLoader } }) =>
-      trendingArtistsLoader(),
+      {return trendingArtistsLoader()},
   },
   POPULAR: {
     description: "The most searched for artists.",
-    display: () => Promise.resolve(true),
+    display: () => {return Promise.resolve(true)},
     resolve: ({ rootValue: { popularArtistsLoader } }) =>
-      popularArtistsLoader(),
+      {return popularArtistsLoader()},
   },
 }
 
@@ -61,9 +61,8 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       description: "A globally unique ID.",
-      resolve: ({ key }) => {
-        return toGlobalId("HomePageArtistModule", JSON.stringify({ key }))
-      },
+      resolve: ({ key }) =>
+        {return toGlobalId("HomePageArtistModule", JSON.stringify({ key }))},
     },
     key: {
       description: "Module identifier.",
@@ -71,9 +70,8 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     },
     results: {
       type: new GraphQLList(Artist.type),
-      resolve: ({ key }, options, request, { rootValue }) => {
-        return HomePageArtistModuleTypes[key].resolve({ rootValue })
-      },
+      resolve: ({ key }, options, request, { rootValue }) =>
+        {return HomePageArtistModuleTypes[key].resolve({ rootValue })},
     },
   },
 })
@@ -91,7 +89,7 @@ const HomePageArtistModule = {
     },
   },
   resolve: (root, obj) =>
-    obj.key && HomePageArtistModuleTypes[obj.key] ? obj : null,
+    {return obj.key && HomePageArtistModuleTypes[obj.key] ? obj : null},
 }
 
 export default HomePageArtistModule

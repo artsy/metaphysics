@@ -29,7 +29,7 @@ const OrderedSets = {
     },
   },
   resolve: (root, options, request, { rootValue: { setsLoader } }) =>
-    setsLoader(options),
+    {return setsLoader(options)},
 }
 
 export default OrderedSets

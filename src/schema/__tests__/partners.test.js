@@ -6,11 +6,11 @@ describe("Partners", () => {
     const partnersLoader = ({ id }) => {
       if (id) {
         return Promise.resolve(
-          id.map(_id => ({
+          id.map(_id => {return {
             _id,
             has_full_profile: true,
             profile_banner_display: true,
-          }))
+          }})
         )
       }
       throw new Error("Unexpected invocation")

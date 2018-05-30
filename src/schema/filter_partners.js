@@ -15,7 +15,7 @@ const FilterPartners = {
     },
   }),
   resolve: (root, options, request, { rootValue: { partnersLoader } }) =>
-    partnersLoader(options),
+    {return partnersLoader(options)},
 }
 
 export default FilterPartners

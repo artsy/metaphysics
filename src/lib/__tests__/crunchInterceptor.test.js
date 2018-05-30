@@ -6,9 +6,9 @@ import { mockInterceptor } from "../../test/interceptor"
 import crunchInterceptor, { interceptorCallback } from "../crunchInterceptor"
 
 const fakeCrunch = intercept =>
-  mockInterceptor(interceptorCallback, {
+  {return mockInterceptor(interceptorCallback, {
     intercept,
-  })
+  })}
 
 describe("crunchInterceptor", () => {
   it("should pass the result through unchanged when no param is present", () => {

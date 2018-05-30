@@ -22,7 +22,7 @@ export const getDefault = images => {
 
 const ImageType = new GraphQLObjectType({
   name: "Image",
-  fields: () => ({
+  fields: () => {return {
     aspect_ratio: {
       type: GraphQLFloat,
     },
@@ -36,7 +36,7 @@ const ImageType = new GraphQLObjectType({
     },
     height: {
       type: GraphQLInt,
-      resolve: ({ original_height }) => original_height,
+      resolve: ({ original_height }) => {return original_height},
     },
     id: {
       description: "A type-specific ID.",
@@ -79,7 +79,7 @@ const ImageType = new GraphQLObjectType({
       description:
         "Value to use when `padding-bottom` for fluid image placeholders",
       resolve: ({ original_height, original_width }) =>
-        `${original_height / original_width * 100}%`,
+        {return `${original_height / original_width * 100}%`},
     },
     position: {
       type: GraphQLInt,
@@ -99,14 +99,14 @@ const ImageType = new GraphQLObjectType({
     },
     width: {
       type: GraphQLInt,
-      resolve: ({ original_width }) => original_width,
+      resolve: ({ original_width }) => {return original_width},
     },
     url: VersionedUrl,
     versions: {
       type: new GraphQLList(GraphQLString),
-      resolve: ({ image_versions }) => image_versions,
+      resolve: ({ image_versions }) => {return image_versions},
     },
-  }),
+  }},
 })
 
 export default {

@@ -4,12 +4,12 @@ import ArtworkLayer from "./layer"
 import { GraphQLList } from "graphql"
 
 export const artworkLayers = (id, loader) =>
-  loader({ artwork: [id] })
-    .then(layers => enhance(layers, { artwork_id: id }))
+  {return loader({ artwork: [id] })
+    .then(layers => {return enhance(layers, { artwork_id: id })})
     .then(layers =>
       // Move fair layer to the beginning
-      remove(layers, ({ type }) => type === "fair").concat(layers)
-    )
+      {return remove(layers, ({ type }) => {return type === "fair"}).concat(layers)}
+    )}
 
 export default {
   type: new GraphQLList(ArtworkLayer.type),

@@ -5,7 +5,7 @@ import { GraphQLString } from "graphql"
 
 const { pluralize, singularize } = inflect()
 
-export default fn => ({
+export default fn => {return {
   type: FormattedNumber,
   args: {
     format: {
@@ -26,14 +26,14 @@ export default fn => ({
 
     const count = value
 
-    if (!!format) {
+    if (format) {
       value = numeral(value).format(format)
     }
 
-    if (!!label) {
+    if (label) {
       value = `${value} ${count === 1 ? singularize(label) : pluralize(label)}`
     }
 
     return value
   },
-})
+}}

@@ -5,13 +5,13 @@ describe("Me", () => {
     describe("Message", () => {
       const rootValue = {
         conversationLoader: () =>
-          Promise.resolve({
+          {return Promise.resolve({
             id: "420",
             initial_message: "Loved some of the works at your fair booth!",
             from_email: "collector@example.com",
-          }),
+          })},
         conversationMessagesLoader: () =>
-          Promise.resolve({
+          {return Promise.resolve({
             total_count: 1,
             message_details: [
               {
@@ -23,13 +23,13 @@ describe("Me", () => {
                 metadata: {
                   lewitt_invoice_id: "420i",
                 },
-                from: `"Percy Z" <percy@cat.com>`,
+                from: '"Percy Z" <percy@cat.com>',
                 from_principal: true,
                 original_text: "I'm a cat oh yea!",
                 body: "I'm a cat",
               },
             ],
-          }),
+          })},
       }
 
       it("returns sanitized messages", () => {
@@ -99,7 +99,7 @@ describe("Me", () => {
         }
 
         const customRootValue = Object.assign({}, rootValue, {
-          conversationMessagesLoader: () => Promise.resolve(message),
+          conversationMessagesLoader: () => {return Promise.resolve(message)},
         })
 
         return runAuthenticatedQuery(query, customRootValue).then(

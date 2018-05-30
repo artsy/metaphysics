@@ -68,6 +68,7 @@ Object.defineProperty(SupportedTypes, "typeModules", {
     if (SupportedTypes._typeModules === undefined) {
       SupportedTypes._typeModules = SupportedTypes.types.reduce(
         (modules, type) => {
+          // eslint-disable-next-line
           modules[type] = require(SupportedTypes.typeMap[type]).default
           return modules
         },
@@ -88,12 +89,12 @@ function argumentsForChild(type, id) {
 }
 
 function rootValueForChild(rootValue) {
-  const selections = rootValue.fieldNodes[0].selectionSet.selections
-  let fragment = _.find(selections, selection => {
-    return (
-      selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"
-    )
-  })
+  const { selections } = rootValue.fieldNodes[0].selectionSet
+  let fragment = _.find(
+    selections,
+    selection =>
+      {return selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"}
+  )
   if (fragment && fragment.kind === "FragmentSpread") {
     fragment = rootValue.fragments[fragment.name.value]
   }
@@ -106,13 +107,13 @@ function rootValueForChild(rootValue) {
 export const NodeInterface = new GraphQLInterfaceType({
   name: "Node",
   description: "An object with a Globally Unique ID",
-  fields: () => ({
+  fields: () => {return {
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       description: "The ID of the object.",
     },
-  }),
-  resolveType: ({ __type }) => __type,
+  }},
+  resolveType: ({ __type }) => {return __type},
 })
 
 const NodeField = {
@@ -141,12 +142,14 @@ const NodeField = {
           request,
           rootValueForChild(rootValue)
         )
-      ).then(data => {
+      ).then(data =>
         // Add the already known type so `NodeInterface` can pluck that out in
         // its `resolveType` implementation.
-        return { __type: type, ...data }
-      })
+        {return { __type: type, ...data }}
+      )
     }
+
+    return undefined // make undefined return explicit
   },
 }
 
@@ -157,7 +160,7 @@ export const GlobalIDField = {
   // Ensure we never encode a null `id`, as it would silently work. Instead return `null`, so that
   // e.g. Relay will complain about the result not matching the type specified in the schema.
   resolve: (obj, args, request, info) =>
-    obj.id && toGlobalId(info.parentType.name, obj.id),
+    {return obj.id && toGlobalId(info.parentType.name, obj.id)},
 }
 
 export const IDFields = {

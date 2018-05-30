@@ -12,32 +12,32 @@ import {
 
 const ProfileType = new GraphQLObjectType({
   name: "Profile",
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     cached,
     bio: {
       type: GraphQLString,
     },
     counts: {
-      resolve: profile => profile,
+      resolve: profile => {return profile},
       type: new GraphQLObjectType({
         name: "ProfileCounts",
         fields: {
-          follows: numeral(({ follows_count }) => follows_count),
+          follows: numeral(({ follows_count }) => {return follows_count}),
         },
       }),
     },
     href: {
       type: GraphQLString,
-      resolve: ({ id }) => `/${id}`,
+      resolve: ({ id }) => {return `/${id}`},
     },
     icon: {
       type: Image.type,
-      resolve: ({ icon }) => Image.resolve(icon),
+      resolve: ({ icon }) => {return Image.resolve(icon)},
     },
     image: {
       type: Image.type,
-      resolve: ({ cover_image }) => Image.resolve(cover_image),
+      resolve: ({ cover_image }) => {return Image.resolve(cover_image)},
     },
     initials: initials("owner.name"),
     is_followed: {
@@ -49,22 +49,22 @@ const ProfileType = new GraphQLObjectType({
         { rootValue: { followedProfileLoader } }
       ) => {
         if (!followedProfileLoader) return false
-        return followedProfileLoader(id).then(({ is_followed }) => is_followed)
+        return followedProfileLoader(id).then(({ is_followed }) => {return is_followed})
       },
     },
     is_published: {
       type: GraphQLBoolean,
-      resolve: ({ published }) => published,
+      resolve: ({ published }) => {return published},
     },
     name: {
       type: GraphQLString,
-      resolve: ({ owner }) => owner.name,
+      resolve: ({ owner }) => {return owner.name},
     },
     is_publically_visible: {
       type: GraphQLBoolean,
-      resolve: profile => profile && profile.published && !profile.private,
+      resolve: profile => {return profile && profile.published && !profile.private},
     },
-  }),
+  }},
 })
 
 const Profile = {
@@ -77,7 +77,7 @@ const Profile = {
     },
   },
   resolve: (root, { id }, request, { rootValue: { profileLoader } }) =>
-    profileLoader(id),
+    {return profileLoader(id)},
 }
 
 export default Profile

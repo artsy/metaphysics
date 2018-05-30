@@ -3,12 +3,12 @@
 import fs from "fs"
 import dotenv from "dotenv"
 
+// Set up our globals
+import sinon from "sinon"
+
 if (fs.existsSync(".env.test")) {
   dotenv.config({ path: ".env.test" })
 }
-
-// Set up our globals
-import sinon from "sinon"
 global.sinon = sinon
 
 // prettier-ignore
@@ -20,8 +20,7 @@ global.sinon = sinon
  * So until this is built into Jest, then this will do for now
  */
 
-const expectPromiseRejectionToMatch = (promise, failureMessage) => {
-  return new Promise((resolve, reject) => {
+const expectPromiseRejectionToMatch = (promise, failureMessage) => {return new Promise((resolve, reject) => {
     promise
       .then(() => {
         const object = {
@@ -29,12 +28,11 @@ const expectPromiseRejectionToMatch = (promise, failureMessage) => {
         }
         reject(object)
       })
-      .catch(e => {
+      .catch((e) => {
         expect(e.message).toMatch(failureMessage)
         resolve({})
       })
-  })
-}
+  })}
 
 global.expectPromiseRejectionToMatch = expectPromiseRejectionToMatch
 

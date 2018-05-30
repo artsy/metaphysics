@@ -13,7 +13,7 @@ export const config = {
   outputFields: {
     consignment_submission: {
       type: SubmissionType,
-      resolve: response => response,
+      resolve: response => {return response},
     },
   },
   mutateAndGetPayload: (

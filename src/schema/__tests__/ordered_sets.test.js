@@ -37,8 +37,8 @@ describe("OrderedSets type", () => {
     ),
   }
 
-  it("fetches sets by key", () => {
-    return runQuery(query, rootValue).then(data => {
+  it("fetches sets by key", () =>
+    {return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         ordered_sets: [
           {
@@ -53,6 +53,5 @@ describe("OrderedSets type", () => {
           },
         ],
       })
-    })
-  })
+    })})
 })

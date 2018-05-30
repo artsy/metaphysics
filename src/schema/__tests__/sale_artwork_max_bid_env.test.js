@@ -1,5 +1,4 @@
 // This is the key to this one file:
-
 process.env.BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT = "400000"
 
 import { runQuery } from "test/utils"
@@ -33,12 +32,11 @@ describe("SaleArtwork type", () => {
     query,
     gravityResponse = saleArtwork,
     rootValue = {}
-  ) => {
-    return await runQuery(query, {
-      saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
+  ) =>
+    {return await runQuery(query, {
+      saleArtworkRootLoader: () => {return Promise.resolve(gravityResponse)},
       ...rootValue,
-    })
-  }
+    })}
 
   describe("bid_increments", () => {
     describe("with a max amount set", () => {
@@ -52,13 +50,12 @@ describe("SaleArtwork type", () => {
         `
 
         const rootValue = {
-          saleLoader: () => {
-            return Promise.resolve({
+          saleLoader: () =>
+            {return Promise.resolve({
               increment_strategy: "default",
-            })
-          },
-          incrementsLoader: sale => {
-            return Promise.resolve([
+            })},
+          incrementsLoader: sale =>
+            {return Promise.resolve([
               {
                 key: sale.increment_strategy,
                 increments: [
@@ -74,8 +71,7 @@ describe("SaleArtwork type", () => {
                   },
                 ],
               },
-            ])
-          },
+            ])},
         }
 
         const data = await execute(query, saleArtwork, rootValue)

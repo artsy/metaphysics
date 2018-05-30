@@ -3,11 +3,9 @@ import gql from "test/gql"
 
 describe("Users", () => {
   it("returns a list of users matching array of ids", async () => {
-    const usersLoader = (data) => {
+    const usersLoader = data => {
       if (data.id) {
-        return Promise.resolve(
-          data.id.map(id => ({ id }))
-        )
+        return Promise.resolve(data.id.map(id => {return { id }}))
       }
       throw new Error("Unexpected invocation")
     }

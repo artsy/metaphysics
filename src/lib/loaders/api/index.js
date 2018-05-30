@@ -12,7 +12,7 @@ import positron from "lib/apis/positron"
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
 
-export default opts => ({
+export default opts => {return {
   // Unauthenticated loaders
 
   /**
@@ -133,4 +133,4 @@ export default opts => ({
       userAgent: opts.userAgent,
     }
   ),
-})
+}}

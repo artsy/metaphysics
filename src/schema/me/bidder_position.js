@@ -4,9 +4,8 @@ import { BidderPositionResultType } from "../types/bidder_position_result"
 
 const ANY_RESERVE_MET_STATUSES = ["no_reserve", "reserve_met"]
 
-const anyReserveMet = (position) => {
-  return ANY_RESERVE_MET_STATUSES.indexOf(position.sale_artwork.reserve_status) > -1
-}
+const anyReserveMet = position =>
+  {return ANY_RESERVE_MET_STATUSES.indexOf(position.sale_artwork.reserve_status) > -1}
 
 export const BidderPosition = {
   type: BidderPositionResultType,
@@ -16,13 +15,8 @@ export const BidderPosition = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (
-    root,
-    { id },
-    request,
-    { rootValue: { meBidderPositionLoader } }
-  ) =>
-    meBidderPositionLoader({
+  resolve: (root, { id }, request, { rootValue: { meBidderPositionLoader } }) =>
+    {return meBidderPositionLoader({
       id,
     }).then(response => {
       const position = response.body
@@ -44,13 +38,15 @@ export const BidderPosition = {
       } else {
         status = "ERROR"
       }
-      const message = BiddingMessages.find(d => status.trim().startsWith(d.id)) ||
-        BiddingMessages[BiddingMessages.length - 1] // error
+
+      const search = d => {return status.trim().startsWith(d.id)}
+      const fallback = BiddingMessages[BiddingMessages.length - 1] // error
+      const message = BiddingMessages.find(search) || fallback
       return {
         status,
         message_header: message.header,
         message_description_md: message.description_md(),
         position,
       }
-    }),
+    })},
 }

@@ -1,7 +1,7 @@
 import { runQuery } from "test/utils"
-
-jest.mock("lib/apis/fetch", () => jest.fn())
 import fetch from "lib/apis/fetch"
+
+jest.mock("lib/apis/fetch", () => {return jest.fn()})
 
 describe("SuggestedGenes type", () => {
   const suggestedGenesData = {

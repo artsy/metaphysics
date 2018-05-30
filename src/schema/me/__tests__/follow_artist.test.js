@@ -14,7 +14,7 @@ describe("FollowArtist", () => {
     rootValue = {
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
       popularArtistsLoader: () =>
-        Promise.resolve([
+        {return Promise.resolve([
           {
             birthday: "1900",
             artworks_count: 100,
@@ -27,9 +27,9 @@ describe("FollowArtist", () => {
             id: "benjamin-schmitt",
             name: "Benjamin Schmit",
           },
-        ]),
-      followArtistLoader: () => Promise.resolve(artist),
-      unfollowArtistLoader: () => Promise.resolve(artist),
+        ])},
+      followArtistLoader: () => {return Promise.resolve(artist)},
+      unfollowArtistLoader: () => {return Promise.resolve(artist)},
     }
   })
 

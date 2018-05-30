@@ -3,24 +3,20 @@ import request from "request"
 import deepEqual from "deep-equal"
 import config from "config"
 
-const {
-  METAPHYSICS_STAGING_ENDPOINT,
-  METAPHYSICS_PRODUCTION_ENDPOINT,
-} = config
+const { METAPHYSICS_STAGING_ENDPOINT, METAPHYSICS_PRODUCTION_ENDPOINT } = config
 
-const get = (url, options) => {
-  return new Promise((resolve, reject) =>
-    request(url, options, (err, response) => {
+const get = (url, options) =>
+  {return new Promise((resolve, reject) =>
+    {return request(url, options, (err, response) => {
       if (err) return reject(err)
-      resolve(JSON.parse(response.body))
-    })
-  )
-}
+      return resolve(JSON.parse(response.body))
+    })}
+  )}
 
-const metaphysics = endpoint => (query, vars = {}) => {
+const metaphysics = endpoint => {return (query, vars = {}) => {
   const variables = JSON.stringify(vars)
   return get(endpoint, { method: "GET", qs: { query, variables } })
-}
+}}
 
 const staging = metaphysics(METAPHYSICS_STAGING_ENDPOINT)
 const production = metaphysics(METAPHYSICS_PRODUCTION_ENDPOINT)
@@ -93,13 +89,14 @@ describe("Integration specs", () => {
       }
     `
 
-    it("is in sync with production", () => {
-      return Promise.all([
+    it("is in sync with production", () =>
+      {return Promise.all([
         staging(query, { id: "cindy-sherman-untitled" }),
         production(query, { id: "cindy-sherman-untitled" }),
-      ]).then(([stagingResponse, productionResponse]) => {
-        deepEqual(stagingResponse, productionResponse).should.be.true()
-      })
+      ]).then(([stagingResponse, productionResponse]) =>
+        {return deepEqual(stagingResponse, productionResponse).should.be.true()}
+      )}).catch(e => {
+      throw e
     })
   })
 
@@ -148,11 +145,12 @@ describe("Integration specs", () => {
       }
     `
 
-    it("makes the query without error", () => {
-      return staging(query).then(({ errors, data }) => {
+    it("makes the query without error", () =>
+      {return staging(query).then(({ errors, data }) => {
         isUndefined(errors).should.be.true()
-        keys(data).should.eql(["featured_artists", "featured_genes"])
-      })
+        return keys(data).should.eql(["featured_artists", "featured_genes"])
+      })}).catch(e => {
+      throw e
     })
   })
 })

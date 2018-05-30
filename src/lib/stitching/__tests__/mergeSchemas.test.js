@@ -33,10 +33,10 @@ describe("stiched schema regressions", () => {
         }
       `,
       {
-        artworkLoader: async () => artworkResponse,
-        salesLoader: async () => salesResponse,
-        relatedFairsLoader: async () => ({}),
-        relatedShowsLoader: async () => ({}),
+        artworkLoader: async () => {return artworkResponse},
+        salesLoader: async () => {return salesResponse},
+        relatedFairsLoader: async () => {return {}},
+        relatedShowsLoader: async () => {return {}},
       }
     )
     expect(result).toEqual({
@@ -63,8 +63,8 @@ describe("stiched schema regressions", () => {
         }
       `,
       {
-        artworkLoader: async () => ({ id: "banksy-di-faced-tenner-21" }),
-        artistLoader: async () => ({ id: "banksy" }),
+        artworkLoader: async () => {return { id: "banksy-di-faced-tenner-21" }},
+        artistLoader: async () => {return { id: "banksy" }},
       }
     )
     expect(result).toEqual({

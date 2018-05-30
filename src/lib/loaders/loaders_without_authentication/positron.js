@@ -8,6 +8,6 @@ export default opts => {
 
   return {
     articlesLoader: positronLoader("articles"),
-    articleLoader: positronLoader(id => `articles/${id}`),
+    articleLoader: positronLoader(id => {return `articles/${id}`}),
   }
 }

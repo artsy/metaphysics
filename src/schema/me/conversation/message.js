@@ -25,9 +25,8 @@ const MessageInitiatorType = new GraphQLObjectType({
   },
 })
 
-const isInvoiceMessage = metadata => {
-  return !!metadata && isExisty(metadata.lewitt_invoice_id)
-}
+const isInvoiceMessage = metadata =>
+  {return !!metadata && isExisty(metadata.lewitt_invoice_id)}
 
 export const MessageType = new GraphQLObjectType({
   name: "Message",
@@ -45,7 +44,7 @@ export const MessageType = new GraphQLObjectType({
     impulse_id: {
       description: "Impulse message id.",
       type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ id }) => id,
+      resolve: ({ id }) => {return id},
     },
     is_from_user: {
       description: "True if message is from the user to the partner.",
@@ -61,9 +60,9 @@ export const MessageType = new GraphQLObjectType({
         req,
         { rootValue: { userID } }
       ) =>
-        from_principal ||
+        {return from_principal ||
         (userID && from_id === userID) ||
-        from_email_address === conversation_from_address,
+        from_email_address === conversation_from_address},
     },
     from_email_address: {
       type: GraphQLString,
@@ -77,7 +76,7 @@ export const MessageType = new GraphQLObjectType({
         const namePart = namePartRegex.exec(from)
         let name
         if (isExisty(namePart) && namePart.length > 0) {
-          name = namePart[0].replace(/^\"|\"$/g, "")
+          name = namePart[0].replace(/^"|"$/g, "")
         }
         return {
           email: from_email_address,
@@ -133,7 +132,7 @@ export const MessageType = new GraphQLObjectType({
     is_invoice: {
       description: "True if message is an invoice message",
       type: GraphQLBoolean,
-      resolve: ({ metadata }) => isInvoiceMessage(metadata),
+      resolve: ({ metadata }) => {return isInvoiceMessage(metadata)},
     },
     created_at: date,
   },

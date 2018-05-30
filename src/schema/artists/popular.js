@@ -9,12 +9,12 @@ import {
 
 const PopularArtistsType = new GraphQLObjectType({
   name: "PopularArtists",
-  fields: () => ({
+  fields: () => {return {
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: results => results,
+      resolve: results => {return results},
     },
-  }),
+  }},
 })
 
 const PopularArtists = {
@@ -40,7 +40,7 @@ const PopularArtists = {
     options,
     _request,
     { rootValue: { popularArtistsLoader } }
-  ) => popularArtistsLoader(options),
+  ) => {return popularArtistsLoader(options)},
 }
 
 export default PopularArtists

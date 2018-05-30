@@ -74,7 +74,7 @@ export default mutationWithClientMutationId({
   outputFields: {
     order: {
       type: OrderType,
-      resolve: order => order,
+      resolve: order => {return order},
     },
   },
   mutateAndGetPayload: (
@@ -101,7 +101,14 @@ export default mutationWithClientMutationId({
       notes,
       reserve,
       session_id,
-      shipping_address: { name, street, city, region, postal_code, use_id },
+      shipping_address: {
+        name,
+        street,
+        city,
+        region,
+        postal_code,
+        use_id,
+      },
       telephone,
     })
   },

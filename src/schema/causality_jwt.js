@@ -32,7 +32,7 @@ export default {
     // Observer role for logged out users
     if (!accessToken) {
       return saleLoader(options.sale_id).then(sale =>
-        jwt.encode(
+        {return jwt.encode(
           {
             aud: "auctions",
             role: "observer",
@@ -42,7 +42,7 @@ export default {
             iat: new Date().getTime(),
           },
           HMAC_SECRET
-        )
+        )}
       )
 
       // For logged in and...
@@ -99,5 +99,7 @@ export default {
         }
       )
     }
+
+    return undefined // make undefined return explicit
   },
 }

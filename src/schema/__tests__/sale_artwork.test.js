@@ -29,12 +29,11 @@ describe("SaleArtwork type", () => {
     query,
     gravityResponse = saleArtwork,
     rootValue = {}
-  ) => {
-    return await runQuery(query, {
-      saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
+  ) =>
+    {return await runQuery(query, {
+      saleArtworkRootLoader: () => {return Promise.resolve(gravityResponse)},
       ...rootValue,
-    })
-  }
+    })}
 
   it("formats money correctly", async () => {
     const query = `
@@ -106,8 +105,8 @@ describe("SaleArtwork type", () => {
       }
 
       const rootValue = {
-        saleLoader: () => Promise.resolve({ missing_increment_strategy: true }),
-        incrementsLoader: () => Promise.resolve(),
+        saleLoader: () => {return Promise.resolve({ missing_increment_strategy: true })},
+        incrementsLoader: () => {return Promise.resolve()},
       }
 
       await expect(
@@ -133,14 +132,13 @@ describe("SaleArtwork type", () => {
       }
 
       const rootValue = {
-        saleLoader: () => {
-          return Promise.resolve({
+        saleLoader: () =>
+          {return Promise.resolve({
             minimum_next_bid_cents: 2400000000,
             increment_strategy: "default",
-          })
-        },
-        incrementsLoader: sale => {
-          return Promise.resolve([
+          })},
+        incrementsLoader: sale =>
+          {return Promise.resolve([
             {
               key: sale.increment_strategy,
               increments: [
@@ -151,8 +149,7 @@ describe("SaleArtwork type", () => {
                 },
               ],
             },
-          ])
-        },
+          ])},
       }
 
       const data = await execute(query, gravityResponse, rootValue)
@@ -190,13 +187,12 @@ describe("SaleArtwork type", () => {
       `
 
       const rootValue = {
-        saleLoader: () => {
-          return Promise.resolve({
+        saleLoader: () =>
+          {return Promise.resolve({
             increment_strategy: "default",
-          })
-        },
-        incrementsLoader: sale => {
-          return Promise.resolve([
+          })},
+        incrementsLoader: sale =>
+          {return Promise.resolve([
             {
               key: sale.increment_strategy,
               increments: [
@@ -212,8 +208,7 @@ describe("SaleArtwork type", () => {
                 },
               ],
             },
-          ])
-        },
+          ])},
       }
 
       const data = await execute(query, saleArtwork, rootValue)
@@ -254,13 +249,12 @@ describe("SaleArtwork type", () => {
       `
 
       const rootValue = {
-        saleLoader: () => {
-          return Promise.resolve({
+        saleLoader: () =>
+          {return Promise.resolve({
             increment_strategy: "default",
-          })
-        },
-        incrementsLoader: sale => {
-          return Promise.resolve([
+          })},
+        incrementsLoader: sale =>
+          {return Promise.resolve([
             {
               key: sale.increment_strategy,
               increments: [
@@ -276,8 +270,7 @@ describe("SaleArtwork type", () => {
                 },
               ],
             },
-          ])
-        },
+          ])},
       }
 
       const data = await execute(query, saleArtwork, rootValue)

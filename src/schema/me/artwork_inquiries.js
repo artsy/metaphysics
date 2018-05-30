@@ -13,10 +13,10 @@ import {
 export const ArtworkInquiryType = new GraphQLObjectType({
   name: "ArtworkInquiry",
   description: "An inquiry on an Artwork",
-  fields: () => ({
+  fields: () => {return {
     artwork: {
       type: new GraphQLNonNull(Artwork.type),
-      resolve: ({ inquireable }) => inquireable,
+      resolve: ({ inquireable }) => {return inquireable},
     },
     id: {
       type: GraphQLID,
@@ -24,7 +24,7 @@ export const ArtworkInquiryType = new GraphQLObjectType({
     impulse_conversation_id: {
       type: GraphQLString,
     },
-  }),
+  }},
 })
 
 export default {
@@ -45,11 +45,11 @@ export default {
       inquireable_type: "artwork",
       total_count: true,
     }
-    return inquiryRequestsLoader(gravityArgs).then(({ body, headers }) => {
-      return connectionFromArraySlice(body, options, {
+    return inquiryRequestsLoader(gravityArgs).then(({ body, headers }) =>
+      {return connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
-      })
-    })
+      })}
+    )
   },
 }

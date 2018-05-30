@@ -22,7 +22,7 @@ const PartnerCategories = {
     options,
     request,
     { rootValue: { partnerCategoriesLoader } }
-  ) => partnerCategoriesLoader(options),
+  ) => {return partnerCategoriesLoader(options)},
 }
 
 export default PartnerCategories

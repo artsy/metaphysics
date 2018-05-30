@@ -39,13 +39,13 @@ const Artists = {
     if (options.slugs) {
       return Promise.all(
         options.slugs.map(slug =>
-          artistLoader(
+          {return artistLoader(
             slug,
             {},
             {
               requestThrottleMs: config.ARTICLE_REQUEST_THROTTLE_MS,
             }
-          )
+          )}
         )
       )
     }

@@ -3,7 +3,7 @@ import { toGlobalId } from "graphql-relay"
 
 describe("Filter Artworks", () => {
   let rootValue = null
-  describe(`Does not pass along the medium param if it is "*"`, () => {
+  describe('Does not pass along the medium param if it is "*"', () => {
     beforeEach(() => {
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
 

@@ -39,7 +39,7 @@ export const fetchLoggerSetup = requestID => {
 }
 
 // Called at the end of a request, returns the results and resets
-export const fetchLoggerRequestDone = requestID => () => {
+export const fetchLoggerRequestDone = requestID => {return () => {
   const requestCopy = requests[requestID]
   delete requests[requestID]
 
@@ -47,6 +47,6 @@ export const fetchLoggerRequestDone = requestID => () => {
     requests: requestCopy,
     requestID,
   }
-}
+}}
 
 export default logger

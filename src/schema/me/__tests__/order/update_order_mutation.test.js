@@ -68,7 +68,7 @@ describe("Me", () => {
       `
       it("updates the order", () => {
         const rootValue = {
-          updateOrderLoader: () => Promise.resolve(orderJSON),
+          updateOrderLoader: () => {return Promise.resolve(orderJSON)},
         }
 
         return runAuthenticatedQuery(mutation, rootValue).then(data => {
@@ -143,7 +143,7 @@ describe("Me", () => {
         `
 
         const rootValue = {
-          updateOrderLoader: () => Promise.resolve(orderJSON),
+          updateOrderLoader: () => {return Promise.resolve(orderJSON)},
         }
 
         return runQuery(mutation, rootValue).then(data => {
@@ -181,7 +181,7 @@ describe("Me", () => {
         `
 
         const rootValue = {
-          updateOrderLoader: () => Promise.resolve(orderJSON),
+          updateOrderLoader: () => {return Promise.resolve(orderJSON)},
         }
 
         return runQuery(mutation, rootValue).catch(error => {

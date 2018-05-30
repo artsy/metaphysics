@@ -44,8 +44,8 @@ const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
 const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
-const logQueryDetailsThreshold =
-  LOG_QUERY_DETAILS_THRESHOLD && parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10) // null by default
+const VALUE = parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10) // null by default
+const logQueryDetailsThreshold = LOG_QUERY_DETAILS_THRESHOLD && VALUE
 
 function logQueryDetailsIfEnabled() {
   if (Number.isInteger(logQueryDetailsThreshold)) {
@@ -57,7 +57,7 @@ function logQueryDetailsIfEnabled() {
     return logQueryDetails(logQueryDetailsThreshold)
   }
   // no-op
-  return (req, res, next) => next()
+  return (req, res, next) => {return next()}
 }
 
 const app = express()
@@ -112,7 +112,7 @@ async function startApp() {
       const userAgent = req.headers["user-agent"]
 
       const { requestIDs, span } = res.locals
-      const requestID = requestIDs.requestID
+      const { requestID } = requestIDs
 
       if (enableRequestLogging) {
         fetchLoggerSetup(requestID)

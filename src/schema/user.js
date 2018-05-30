@@ -10,7 +10,7 @@ import { LocationType } from "schema/location"
 
 export const UserType = new GraphQLObjectType({
   name: "User",
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     cached,
     id: {
@@ -48,7 +48,7 @@ export const UserType = new GraphQLObjectType({
         return false
       },
     },
-  }),
+  }},
 })
 
 const User = {
@@ -60,17 +60,16 @@ const User = {
       description: "Email to search for user by",
     },
   },
-  resolve: (root, option, request, { rootValue: { userLoader } }) => {
-    return userLoader(option)
-      .then(result => {
-        return result
-      })
+  resolve: (root, option, request, { rootValue: { userLoader } }) =>
+    {return userLoader(option)
+      .then(result => {return result})
       .catch(err => {
         if (err.statusCode === 404) {
           return false
         }
-      })
-  },
+
+        return undefined
+      })},
 }
 
 export default User

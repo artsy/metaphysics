@@ -16,11 +16,11 @@ import { GlobalIDField, NodeInterface } from "schema/object_identification"
 const NotificationsFeedItemType = new GraphQLObjectType({
   name: "NotificationsFeedItem",
   interfaces: [NodeInterface],
-  fields: () => ({
+  fields: () => {return {
     __id: GlobalIDField,
     artists: {
       type: GraphQLString,
-      resolve: ({ actors }) => actors,
+      resolve: ({ actors }) => {return actors},
     },
     artworks: {
       type: new GraphQLList(Artwork.type),
@@ -30,9 +30,7 @@ const NotificationsFeedItemType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { artworksLoader } }
-      ) => {
-        return artworksLoader({ ids: object_ids })
-      },
+      ) => {return artworksLoader({ ids: object_ids })},
     },
     date,
     message: {
@@ -54,9 +52,9 @@ const NotificationsFeedItemType = new GraphQLObjectType({
     image: {
       type: Image.type,
       resolve: ({ object }) =>
-        object.artists.length > 0 && Image.resolve(object.artists[0]),
+        {return object.artists.length > 0 && Image.resolve(object.artists[0])},
     },
-  }),
+  }},
 })
 
 const Notifications = {
@@ -76,10 +74,10 @@ const Notifications = {
     const gravityOptions = parseRelayOptions(options)
     return notificationsFeedLoader(omit(gravityOptions, "offset")).then(
       ({ feed, total }) =>
-        connectionFromArraySlice(feed, options, {
+        {return connectionFromArraySlice(feed, options, {
           arrayLength: total,
           sliceStart: gravityOptions.offset,
-        })
+        })}
     )
   },
 }

@@ -13,12 +13,11 @@ export const allViaLoader = (loader, loaderOptions, apiOptions = {}) => {
       const count = parseInt(headers["x-total-count"] || 0, 10)
       const pages = Math.ceil(count / (apiOptions.size || 25))
       return Promise.all(
-        times(pages, i => {
-          return loader(
-            loaderOptions,
-            assign({}, apiOptions, { page: i + 1 })
-          ).then(({ body }) => body)
-        })
+        times(pages, i =>
+          {return loader(loaderOptions, assign({}, apiOptions, { page: i + 1 })).then(
+            ({ body }) => {return body}
+          )}
+        )
       )
     })
     .then(flatten)

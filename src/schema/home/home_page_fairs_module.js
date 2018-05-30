@@ -24,10 +24,10 @@ export const HomePageFairsModuleType = new GraphQLObjectType({
             }
             return fairsLoader(newOptions).then(closedFairs => {
               const allFairs = runningFairs.concat(closedFairs)
-              return allFairs.filter(fair => fair.mobile_image)
+              return allFairs.filter(fair => {return fair.mobile_image})
             })
           }
-          return runningFairs.filter(fair => fair.mobile_image)
+          return runningFairs.filter(fair => {return fair.mobile_image})
         })
       },
     },
@@ -36,7 +36,7 @@ export const HomePageFairsModuleType = new GraphQLObjectType({
 
 const HomePageFairsModule = {
   type: HomePageFairsModuleType,
-  resolve: (root, obj) => obj,
+  resolve: (root, obj) => {return obj},
 }
 
 export default HomePageFairsModule

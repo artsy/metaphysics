@@ -23,11 +23,11 @@ describe("addAssetToConsignmentSubmission", () => {
 
     const rootValue = {
       assetCreateLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           id: "106",
           gemini_token: "12345",
           submission_id: "123",
-        }),
+        })},
     }
 
     expect.assertions(1)

@@ -10,7 +10,7 @@ import {
 
 const OrderedSetType = new GraphQLObjectType({
   name: "OrderedSet",
-  fields: () => ({
+  fields: () => {return {
     ...IDFields,
     cached,
     description: {
@@ -29,19 +29,18 @@ const OrderedSetType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { setItemsLoader } }
-      ) => {
-        return setItemsLoader(id).then(items => {
-          return items.map(item => {
+      ) =>
+        {return setItemsLoader(id).then(items =>
+          {return items.map(item => {
             item.item_type = item_type // eslint-disable-line no-param-reassign
             return item
-          })
-        })
-      },
+          })}
+        )},
     },
     name: {
       type: GraphQLString,
     },
-  }),
+  }},
 })
 
 const OrderedSet = {
@@ -54,7 +53,7 @@ const OrderedSet = {
     },
   },
   resolve: (root, { id }, request, { rootValue: { setLoader } }) =>
-    setLoader(id),
+    {return setLoader(id)},
 }
 
 export default OrderedSet

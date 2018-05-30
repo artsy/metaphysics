@@ -82,9 +82,7 @@ describe("Partner type", () => {
 
       const resolvers = {
         RootQuery: {
-          partner_product_merchant_account: () => {
-            return { credit_card_enabled }
-          },
+          partner_product_merchant_account: () => {return { credit_card_enabled }},
         },
       }
 
@@ -96,15 +94,14 @@ describe("Partner type", () => {
       rootValue.lewittSchema = lewittSchema
     })
 
-    it("returns true if payments_enabled and partner_product_merchant_account is configured in lewitt", () => {
-      return runQuery(query, rootValue).then(data => {
+    it("returns true if payments_enabled and partner_product_merchant_account is configured in lewitt", () =>
+      {return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           partner: {
             acceptsCardPayments: true,
           },
         })
-      })
-    })
+      })})
 
     it("returns false if payments_enabled set to false on partner", () => {
       partner.payments_enabled = false

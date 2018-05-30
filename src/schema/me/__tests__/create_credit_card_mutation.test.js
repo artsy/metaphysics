@@ -24,11 +24,11 @@ describe("Credit card mutation", () => {
   `
 
   const rootValue = {
-    createCreditCardLoader: () => Promise.resolve(creditCard),
+    createCreditCardLoader: () => {return Promise.resolve(creditCard)},
   }
 
-  it("creates a credit card", async () => {
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+  it("creates a credit card", async () =>
+    {return runAuthenticatedQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         createCreditCard: {
           credit_card: {
@@ -39,6 +39,5 @@ describe("Credit card mutation", () => {
           },
         },
       })
-    })
-  })
+    })})
 })

@@ -12,7 +12,7 @@ export const config = {
   outputFields: {
     consignment_submission: {
       type: SubmissionType,
-      resolve: submission => submission,
+      resolve: submission => {return submission},
     },
   },
   mutateAndGetPayload: (
