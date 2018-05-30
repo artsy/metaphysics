@@ -61,7 +61,7 @@ function bootApp() {
       .end()
   })
 
-  app.all("/graphql", (_req, res) => res.redirect("/"))
+  app.all("/graphql", (_req, res) => {return res.redirect("/")})
 
   if (isDevelopment) {
     const { createReloadable } = require("@artsy/express-reloadable")
@@ -72,6 +72,6 @@ function bootApp() {
   }
 
   app.listen(port, () =>
-    info(`[Metaphysics] Listening on http://localhost:${port}`)
+    {return info(`[Metaphysics] Listening on http://localhost:${port}`)}
   )
 }

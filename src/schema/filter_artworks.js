@@ -29,12 +29,12 @@ import { NodeInterface } from "schema/object_identification"
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",
-  isTypeOf: ({ context_type }) => context_type === "Tag",
+  isTypeOf: ({ context_type }) => {return context_type === "Tag"},
 })
 
 const ArtworkFilterGeneType = create(Tag.type, {
   name: "ArtworkFilterGene",
-  isTypeOf: ({ context_type }) => context_type === "Gene",
+  isTypeOf: ({ context_type }) => {return context_type === "Gene"},
 })
 
 export const ArtworkFilterFacetType = new GraphQLUnionType({
@@ -50,10 +50,10 @@ export const ArtworkFilterAggregations = {
       "total",
       "followed_artists",
     ])
-    return map(whitelistedAggregations, (counts, slice) => ({
+    return map(whitelistedAggregations, (counts, slice) => {return {
       slice,
       counts,
-    }))
+    }})
   },
 }
 
@@ -61,24 +61,24 @@ export const FilterArtworksCounts = {
   type: new GraphQLObjectType({
     name: "FilterArtworksCounts",
     fields: {
-      total: numeral(({ aggregations }) => aggregations.total.value),
+      total: numeral(({ aggregations }) => {return aggregations.total.value}),
       followed_artists: numeral(
-        ({ aggregations }) => aggregations.followed_artists.value
+        ({ aggregations }) => {return aggregations.followed_artists.value}
       ),
     },
   }),
-  resolve: data => data,
+  resolve: data => {return data},
 }
 
 export const FilterArtworksType = new GraphQLObjectType({
   name: "FilterArtworks",
   interfaces: [NodeInterface],
-  fields: () => ({
+  fields: () => {return {
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       description: "The ID of the object.",
       resolve: ({ options }) =>
-        toGlobalId("FilterArtworks", JSON.stringify(options)),
+        {return toGlobalId("FilterArtworks", JSON.stringify(options))},
     },
     aggregations: ArtworkFilterAggregations,
     artworks_connection: {
@@ -114,7 +114,7 @@ export const FilterArtworksType = new GraphQLObjectType({
     counts: FilterArtworksCounts,
     followed_artists_total: {
       type: GraphQLInt,
-      resolve: ({ aggregations }) => aggregations.followed_artists.value,
+      resolve: ({ aggregations }) => {return aggregations.followed_artists.value},
       deprecationReason: "Favor `favor counts.followed_artists`",
     },
     hits: {
@@ -141,7 +141,7 @@ export const FilterArtworksType = new GraphQLObjectType({
     },
     total: {
       type: GraphQLInt,
-      resolve: ({ aggregations }) => aggregations.total.value,
+      resolve: ({ aggregations }) => {return aggregations.total.value},
       deprecationReason: "Favor `counts.total`",
     },
     facet: {
@@ -155,18 +155,18 @@ export const FilterArtworksType = new GraphQLObjectType({
         const { tag_id, gene_id } = options
         if (tag_id) {
           return tagLoader(tag_id).then(tag =>
-            assign({ context_type: "Tag" }, tag)
+            {return assign({ context_type: "Tag" }, tag)}
           )
         }
         if (gene_id) {
           return geneLoader(gene_id).then(gene =>
-            assign({ context_type: "Gene" }, gene)
+            {return assign({ context_type: "Gene" }, gene)}
           )
         }
         return null
       },
     },
-  }),
+  }},
 })
 
 export const filterArtworksArgs = {
@@ -288,7 +288,7 @@ function filterArtworks(primaryKey) {
       const blacklistedFields = ["artworks_connection", "__id"]
       if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
         return filterArtworksLoader(gravityOptions).then(response =>
-          assign({}, response, { options: gravityOptions })
+          {return assign({}, response, { options: gravityOptions })}
         )
       }
       return { hits: null, aggregations: null, options: gravityOptions }

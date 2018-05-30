@@ -5,7 +5,7 @@ import { BidderPositionResultType } from "../types/bidder_position_result"
 const ANY_RESERVE_MET_STATUSES = ["no_reserve", "reserve_met"]
 
 const anyReserveMet = position =>
-  ANY_RESERVE_MET_STATUSES.indexOf(position.sale_artwork.reserve_status) > -1
+  {return ANY_RESERVE_MET_STATUSES.indexOf(position.sale_artwork.reserve_status) > -1}
 
 export const BidderPosition = {
   type: BidderPositionResultType,
@@ -16,7 +16,7 @@ export const BidderPosition = {
     },
   },
   resolve: (root, { id }, request, { rootValue: { meBidderPositionLoader } }) =>
-    meBidderPositionLoader({
+    {return meBidderPositionLoader({
       id,
     }).then(response => {
       const position = response.body
@@ -39,7 +39,7 @@ export const BidderPosition = {
         status = "ERROR"
       }
 
-      const search = d => status.trim().startsWith(d.id)
+      const search = d => {return status.trim().startsWith(d.id)}
       const fallback = BiddingMessages[BiddingMessages.length - 1] // error
       const message = BiddingMessages.find(search) || fallback
       return {
@@ -48,5 +48,5 @@ export const BidderPosition = {
         message_description_md: message.description_md(),
         position,
       }
-    }),
+    })},
 }

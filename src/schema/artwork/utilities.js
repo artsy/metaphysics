@@ -1,14 +1,14 @@
 import { parse } from "url"
 
-export const isDimensional = value => parseFloat(value) > 0
+export const isDimensional = value => {return parseFloat(value) > 0}
 
 export const isThreeDimensional = ({ depth, diameter }) =>
-  isDimensional(depth) || isDimensional(diameter)
+  {return isDimensional(depth) || isDimensional(diameter)}
 
 export const isTwoDimensional = ({ width, height, depth, diameter }) =>
-  isDimensional(width) &&
+  {return isDimensional(width) &&
   isDimensional(height) &&
-  !isThreeDimensional({ depth, diameter })
+  !isThreeDimensional({ depth, diameter })}
 
 export const isTooBig = ({ width, height, metric }) => {
   const LIMIT = { in: 600, cm: 1524 } // 50 feet
@@ -16,7 +16,7 @@ export const isTooBig = ({ width, height, metric }) => {
 }
 
 export const isEmbeddedVideo = ({ website, category }) =>
-  website && website.match("vimeo|youtu") && category && category.match("Video")
+  {return website && website.match("vimeo|youtu") && category && category.match("Video")}
 
 export const embed = (website, { width, height, autoplay }) => {
   if (!website) return null

@@ -40,19 +40,19 @@ const HomePageHeroUnitType = new GraphQLObjectType({
         },
       }),
       resolve: ({ type, menu_color_class }) =>
-        `${type.toLowerCase()} ${menu_color_class.toLowerCase()}`,
+        {return `${type.toLowerCase()} ${menu_color_class.toLowerCase()}`},
     },
     heading: {
       type: GraphQLString,
     },
     href: {
       type: GraphQLString,
-      resolve: ({ link }) => link,
+      resolve: ({ link }) => {return link},
     },
     title: {
       type: GraphQLString,
       resolve: ({ mobile_title, name, platform }) =>
-        platform === "desktop" ? name : mobile_title,
+        {return platform === "desktop" ? name : mobile_title},
     },
     title_image_url: {
       args: {
@@ -62,12 +62,12 @@ const HomePageHeroUnitType = new GraphQLObjectType({
       },
       type: GraphQLString,
       resolve: ({ title_image_url, title_image_retina_url, retina }) =>
-        retina ? title_image_retina_url : title_image_url,
+        {return retina ? title_image_retina_url : title_image_url},
     },
     subtitle: {
       type: GraphQLString,
       resolve: ({ mobile_description, description, platform }) =>
-        platform === "desktop" ? description : mobile_description,
+        {return platform === "desktop" ? description : mobile_description},
     },
     link_text: {
       type: GraphQLString,
@@ -138,7 +138,7 @@ const HomePageHeroUnits = {
     const params = { enabled: true }
     params[platform] = true
     return heroUnitsLoader(params).then(units =>
-      shuffle(units.map(unit => Object.assign({ platform }, unit)))
+      {return shuffle(units.map(unit => {return Object.assign({ platform }, unit)}))}
     )
   },
 }

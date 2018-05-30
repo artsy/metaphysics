@@ -26,7 +26,8 @@
     "no-restricted-globals": 0,
     "no-prototype-builtins": 0,
     "no-multi-str": 0,
-    "no-bitwise": 0
+    "no-bitwise": 0,
+    "arrow-body-style": ["error", "always"]
   },
   "globals": {
     "expect": false,

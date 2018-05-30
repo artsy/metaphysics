@@ -7,8 +7,8 @@ const FormattedNumber = new GraphQLScalarType({
   description:
     "The `FormattedNumber` type represents a number that can optionally be returned" +
     "as a formatted String. It does not try to coerce the type.",
-  serialize: x => x,
-  parseValue: x => x,
+  serialize: x => {return x},
+  parseValue: x => {return x},
   parseLiteral: ast => {
     if (ast.kind !== Kind.STRING || ast.kind !== Kind.INT) {
       const error = `Query error: Can only parse strings and ints, got a: ${

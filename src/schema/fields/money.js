@@ -7,7 +7,7 @@ import {
   GraphQLFloat,
 } from "graphql"
 
-export const amount = resolve => ({
+export const amount = resolve => {return {
   type: GraphQLString,
   description: "A formatted price with various currency formatting options.",
   args: {
@@ -44,14 +44,14 @@ export const amount = resolve => ({
       })
     )
   },
-})
+}}
 
-const money = ({ name, resolve }) => ({
-  resolve: x => x,
+const money = ({ name, resolve }) => {return {
+  resolve: x => {return x},
   type: new GraphQLObjectType({
     name,
     fields: {
-      amount: amount(obj => resolve(obj).cents),
+      amount: amount(obj => {return resolve(obj).cents}),
       cents: {
         type: GraphQLFloat,
         description: "An amount of money expressed in cents.",
@@ -72,6 +72,6 @@ const money = ({ name, resolve }) => ({
       },
     },
   }),
-})
+}}
 
 export default money

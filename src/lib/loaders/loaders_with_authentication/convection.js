@@ -6,7 +6,7 @@ const { CONVECTION_APP_ID } = config
 
 export default (accessToken, opts) => {
   let convectionTokenLoader
-  const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
+  const gravityAccessTokenLoader = () => {return Promise.resolve(accessToken)}
 
   const {
     gravityLoaderWithAuthenticationFactory,
@@ -14,7 +14,7 @@ export default (accessToken, opts) => {
   } = factories(opts)
 
   const convectionAccessTokenLoader = () =>
-    convectionTokenLoader().then(data => data.token)
+    {return convectionTokenLoader().then(data => {return data.token})}
 
   const gravityLoader = gravityLoaderWithAuthenticationFactory(
     gravityAccessTokenLoader
@@ -40,7 +40,7 @@ export default (accessToken, opts) => {
       { method: "POST" }
     ),
     submissionUpdateLoader: convectionLoader(
-      id => `submissions/${id}`,
+      id => {return `submissions/${id}`},
       {},
       { method: "PUT" }
     ),

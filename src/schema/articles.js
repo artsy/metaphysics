@@ -19,7 +19,7 @@ const Articles = {
     sort: ArticleSorts,
   },
   resolve: (root, options, request, { rootValue: { articlesLoader } }) =>
-    articlesLoader(options).then(articles => articles.results),
+    {return articlesLoader(options).then(articles => {return articles.results})},
 }
 
 export default Articles

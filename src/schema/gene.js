@@ -39,7 +39,7 @@ const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 export const GeneType = new GraphQLObjectType({
   name: "Gene",
   interfaces: [NodeInterface],
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     cached,
     artists: {
@@ -50,9 +50,9 @@ export const GeneType = new GraphQLObjectType({
         request,
         { rootValue: { geneArtistsLoader } }
       ) =>
-        geneArtistsLoader(id, {
+        {return geneArtistsLoader(id, {
           exclude_artists_without_artworks: true,
-        }),
+        })},
     },
     artists_connection: {
       type: artistConnection,
@@ -68,10 +68,10 @@ export const GeneType = new GraphQLObjectType({
           exclude_artists_without_artworks: true,
         })
         return geneArtistsLoader(id, gravityOptions).then(response =>
-          connectionFromArraySlice(response, options, {
+          {return connectionFromArraySlice(response, options, {
             arrayLength: counts.artists,
             sliceStart: gravityOptions.offset,
-          })
+          })}
         )
       },
     },
@@ -109,13 +109,13 @@ export const GeneType = new GraphQLObjectType({
          */
         return filterArtworksLoader(gravityOptions).then(
           ({ aggregations, hits }) =>
-            Object.assign(
+            {return Object.assign(
               { aggregations }, // Add data to connection so the `aggregations` connection field can resolve it
               connectionFromArraySlice(hits, options, {
                 arrayLength: aggregations.total.value,
                 sliceStart: gravityOptions.offset,
               })
-            )
+            )}
         )
       },
     },
@@ -128,18 +128,18 @@ export const GeneType = new GraphQLObjectType({
     filtered_artworks: filterArtworks("gene_id"),
     href: {
       type: GraphQLString,
-      resolve: ({ id }) => `gene/${id}`,
+      resolve: ({ id }) => {return `gene/${id}`},
     },
     image: Image,
     is_published: {
       type: GraphQLBoolean,
-      resolve: ({ published }) => published,
+      resolve: ({ published }) => {return published},
     },
     is_followed: {
       type: GraphQLBoolean,
       resolve: ({ id }, {}, request, { rootValue: { followedGeneLoader } }) => {
         if (!followedGeneLoader) return false
-        return followedGeneLoader(id).then(({ is_followed }) => is_followed)
+        return followedGeneLoader(id).then(({ is_followed }) => {return is_followed})
       },
     },
     mode: {
@@ -203,16 +203,16 @@ export const GeneType = new GraphQLObjectType({
         request,
         { rootValue: { trendingArtistsLoader } }
       ) =>
-        trendingArtistsLoader({
+        {return trendingArtistsLoader({
           gene: id,
         }).then(artists => {
           if (_.has(options, "sample")) {
             return _.take(_.shuffle(artists), options.sample)
           }
           return artists
-        }),
+        })},
     },
-  }),
+  }},
 })
 
 const Gene = {

@@ -10,7 +10,7 @@ export function initials(string = "", length = 3) {
     .toUpperCase()
 }
 
-export default attr => ({
+export default attr => {return {
   type: GraphQLString,
   args: {
     length: {
@@ -18,5 +18,5 @@ export default attr => ({
       defaultValue: 3,
     },
   },
-  resolve: (obj, { length }) => initials(get(obj, attr), length),
-})
+  resolve: (obj, { length }) => {return initials(get(obj, attr), length)},
+}}

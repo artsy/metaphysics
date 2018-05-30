@@ -9,7 +9,7 @@ import { GravityIDFields } from "schema/object_identification"
 
 export const CreditCardType = new GraphQLObjectType({
   name: "CreditCard",
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     brand: {
       type: GraphQLString,
@@ -31,7 +31,7 @@ export const CreditCardType = new GraphQLObjectType({
       type: GraphQLInt,
       description: "Credit card's expiration year",
     },
-  }),
+  }},
 })
 
 export default mutationWithClientMutationId({
@@ -45,7 +45,7 @@ export default mutationWithClientMutationId({
   outputFields: {
     credit_card: {
       type: CreditCardType,
-      resolve: credit_card => credit_card,
+      resolve: credit_card => {return credit_card},
     },
   },
   mutateAndGetPayload: (

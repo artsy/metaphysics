@@ -14,9 +14,9 @@ export const allViaLoader = (loader, loaderOptions, apiOptions = {}) => {
       const pages = Math.ceil(count / (apiOptions.size || 25))
       return Promise.all(
         times(pages, i =>
-          loader(loaderOptions, assign({}, apiOptions, { page: i + 1 })).then(
-            ({ body }) => body
-          )
+          {return loader(loaderOptions, assign({}, apiOptions, { page: i + 1 })).then(
+            ({ body }) => {return body}
+          )}
         )
       )
     })

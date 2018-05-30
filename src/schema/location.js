@@ -11,7 +11,7 @@ import {
 
 export const LocationType = new GraphQLObjectType({
   name: "Location",
-  fields: () => ({
+  fields: () => {return {
     ...IDFields,
     cached,
     address: {
@@ -22,7 +22,7 @@ export const LocationType = new GraphQLObjectType({
     },
     city: {
       type: GraphQLString,
-      resolve: ({ city }) => existyValue(city),
+      resolve: ({ city }) => {return existyValue(city)},
     },
     country: {
       type: GraphQLString,
@@ -42,14 +42,14 @@ export const LocationType = new GraphQLObjectType({
     },
     day_schedules: {
       type: new GraphQLList(DayScheduleType),
-      resolve: ({ day_schedules }) => day_schedules,
+      resolve: ({ day_schedules }) => {return day_schedules},
     },
     display: {
       type: GraphQLString,
     },
     phone: {
       type: GraphQLString,
-      resolve: ({ phone }) => existyValue(phone),
+      resolve: ({ phone }) => {return existyValue(phone)},
     },
     postal_code: {
       type: GraphQLString,
@@ -57,7 +57,7 @@ export const LocationType = new GraphQLObjectType({
     state: {
       type: GraphQLString,
     },
-  }),
+  }},
 })
 
 const Location = {

@@ -28,14 +28,14 @@ const ArtistHighlightsType = new GraphQLObjectType({
         options,
         _request,
         { rootValue: { partnerArtistsLoader } }
-      ) => partnersForArtist(artist_id, options, partnerArtistsLoader),
+      ) => {return partnersForArtist(artist_id, options, partnerArtistsLoader)},
     },
   },
 })
 
 const ArtistHighlights = {
   type: ArtistHighlightsType,
-  resolve: artist => artist,
+  resolve: artist => {return artist},
 }
 
 export default ArtistHighlights

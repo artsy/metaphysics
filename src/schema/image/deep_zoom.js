@@ -17,48 +17,48 @@ const DeepZoomType = new GraphQLObjectType({
   name: "DeepZoom",
   fields: {
     Image: {
-      resolve: image => image,
+      resolve: image => {return image},
       type: new GraphQLObjectType({
         name: "DeepZoomImage",
         fields: {
           Format: {
             type: GraphQLString,
-            resolve: ({ tile_format }) => tile_format,
+            resolve: ({ tile_format }) => {return tile_format},
           },
           Overlap: {
             type: GraphQLInt,
-            resolve: ({ tile_overlap }) => tile_overlap,
+            resolve: ({ tile_overlap }) => {return tile_overlap},
           },
           Size: {
-            resolve: image => image,
+            resolve: image => {return image},
             type: new GraphQLObjectType({
               name: "DeepZoomImageSize",
               fields: {
                 Width: {
                   type: GraphQLInt,
-                  resolve: ({ max_tiled_width }) => max_tiled_width,
+                  resolve: ({ max_tiled_width }) => {return max_tiled_width},
                 },
                 Height: {
                   type: GraphQLInt,
-                  resolve: ({ max_tiled_height }) => max_tiled_height,
+                  resolve: ({ max_tiled_height }) => {return max_tiled_height},
                 },
               },
             }),
           },
           TileSize: {
             type: GraphQLInt,
-            resolve: ({ tile_size }) => tile_size,
+            resolve: ({ tile_size }) => {return tile_size},
           },
           Url: {
             type: GraphQLString,
             resolve: ({ tile_base_url }) =>
-              tile_base_url
+              {return tile_base_url
                 // Ensure trailing slash
-                .replace(/\/?$/, "/"),
+                .replace(/\/?$/, "/")},
           },
           xmlns: {
             type: GraphQLString,
-            resolve: () => "http://schemas.microsoft.com/deepzoom/2008",
+            resolve: () => {return "http://schemas.microsoft.com/deepzoom/2008"},
           },
         },
       }),
@@ -68,5 +68,5 @@ const DeepZoomType = new GraphQLObjectType({
 
 export default {
   type: DeepZoomType,
-  resolve: image => (isZoomable(image) ? image : null),
+  resolve: image => {return (isZoomable(image) ? image : null)},
 }

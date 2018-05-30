@@ -30,10 +30,10 @@ export default {
     }
 
     return followedGenesLoader(gravityArgs).then(({ body, headers }) =>
-      connectionFromArraySlice(body, options, {
+      {return connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
-      })
+      })}
     )
   },
 }

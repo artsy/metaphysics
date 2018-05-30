@@ -93,7 +93,7 @@ function rootValueForChild(rootValue) {
   let fragment = _.find(
     selections,
     selection =>
-      selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"
+      {return selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"}
   )
   if (fragment && fragment.kind === "FragmentSpread") {
     fragment = rootValue.fragments[fragment.name.value]
@@ -107,13 +107,13 @@ function rootValueForChild(rootValue) {
 export const NodeInterface = new GraphQLInterfaceType({
   name: "Node",
   description: "An object with a Globally Unique ID",
-  fields: () => ({
+  fields: () => {return {
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       description: "The ID of the object.",
     },
-  }),
-  resolveType: ({ __type }) => __type,
+  }},
+  resolveType: ({ __type }) => {return __type},
 })
 
 const NodeField = {
@@ -145,7 +145,7 @@ const NodeField = {
       ).then(data =>
         // Add the already known type so `NodeInterface` can pluck that out in
         // its `resolveType` implementation.
-        ({ __type: type, ...data })
+        {return { __type: type, ...data }}
       )
     }
 
@@ -160,7 +160,7 @@ export const GlobalIDField = {
   // Ensure we never encode a null `id`, as it would silently work. Instead return `null`, so that
   // e.g. Relay will complain about the result not matching the type specified in the schema.
   resolve: (obj, args, request, info) =>
-    obj.id && toGlobalId(info.parentType.name, obj.id),
+    {return obj.id && toGlobalId(info.parentType.name, obj.id)},
 }
 
 export const IDFields = {

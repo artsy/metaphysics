@@ -23,14 +23,14 @@ export const SaleArtworksAggregation = new GraphQLEnumType({
 })
 
 const sorts = {
-  default: counts => orderBy(counts, ["count"], ["desc"]),
-  artist: counts => orderBy(counts, ["sortable_id", "count"], ["asc", "desc"]),
+  default: counts => {return orderBy(counts, ["count"], ["desc"])},
+  artist: counts => {return orderBy(counts, ["sortable_id", "count"], ["asc", "desc"])},
 }
 
 export const SaleArtworksAggregationResultsType = new GraphQLObjectType({
   name: "SaleArtworksAggregationResults",
   description: "The results for one of the requested aggregations",
-  fields: () => ({
+  fields: () => {return {
     counts: {
       type: new GraphQLList(AggregationCount.type),
       resolve: ({ counts, slice }) => {
@@ -43,5 +43,5 @@ export const SaleArtworksAggregationResultsType = new GraphQLObjectType({
     slice: {
       type: SaleArtworksAggregation,
     },
-  }),
+  }},
 })

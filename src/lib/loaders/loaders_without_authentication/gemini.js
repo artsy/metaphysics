@@ -7,18 +7,18 @@ import { loaderOneOffFactory } from "../api/loader_one_off_factory"
 
 // TODO: Buffer Constructor deprecated, use static method.
 const toBase64 = string =>
-  Buffer.from(unescape(encodeURIComponent(string)), "binary").toString("base64")
+  {return Buffer.from(unescape(encodeURIComponent(string)), "binary").toString("base64")}
 
-export default () => ({
+export default () => {return {
   // The outer function is so that we can pass params from the schema,
   // into the gemini api.
   createNewGeminiAssetLoader: ({ name, acl }) =>
-    loaderOneOffFactory(gemini, "gemini", `uploads/new.json?acl=${acl}`, {
+    {return loaderOneOffFactory(gemini, "gemini", `uploads/new.json?acl=${acl}`, {
       acl,
       headers: {
         Authorization: `Basic ${toBase64(`${name}:`)}`,
       },
-    }),
+    })},
 
   createNewGeminiEntryAssetLoader: ({
     template_key,
@@ -26,7 +26,7 @@ export default () => ({
     source_bucket,
     metadata,
   }) =>
-    loaderOneOffFactory(gemini, "gemini", "entries.json", {
+    {return loaderOneOffFactory(gemini, "gemini", "entries.json", {
       method: "POST",
       form: {
         entry: {
@@ -39,5 +39,5 @@ export default () => ({
       headers: {
         Authorization: `Basic ${toBase64(`${template_key}:`)}`,
       },
-    }),
-})
+    })},
+}}

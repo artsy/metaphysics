@@ -20,12 +20,12 @@ function createMockClient() {
   const store = {}
   return {
     store,
-    get: (key, cb) => cb(null, store[key]),
+    get: (key, cb) => {return cb(null, store[key])},
     set: (key, data) => {
       store[key] = data
       return true
     },
-    del: key => delete store[key],
+    del: key => {return delete store[key]},
   }
 }
 
@@ -65,7 +65,7 @@ function createRedisClient() {
   }
   client.on("error", error)
   VerboseEvents.forEach(event =>
-    client.on(event, () => verbose(`[Cache] ${event}`))
+    {return client.on(event, () => {return verbose(`[Cache] ${event}`)})}
   )
   return client
 }
@@ -74,7 +74,7 @@ export const client = isTest ? createMockClient() : createRedisClient()
 
 export default {
   get: key =>
-    new Promise((resolve, reject) => {
+    {return new Promise((resolve, reject) => {
       if (isNull(client)) return reject(new Error("[Cache] `client` is `null`"))
 
       let timeoutId = setTimeout(() => {
@@ -107,7 +107,7 @@ export default {
           reject(new Error("[Cache#get] Cache miss"))
         }
       })
-    }),
+    })},
 
   set: (key, data) => {
     if (isNull(client)) return false
@@ -136,10 +136,10 @@ export default {
   },
 
   delete: key =>
-    new Promise((resolve, reject) =>
-      client.del(key, (err, response) => {
+    {return new Promise((resolve, reject) =>
+      {return client.del(key, (err, response) => {
         if (err) return reject(err)
         return resolve(response)
-      })
-    ),
+      })}
+    )},
 }

@@ -5,7 +5,7 @@ import { GraphQLString, GraphQLObjectType, GraphQLBoolean } from "graphql"
 
 const BidderType = new GraphQLObjectType({
   name: "Bidder",
-  fields: () => ({
+  fields: () => {return {
     ...IDFields,
     created_at: date,
     pin: {
@@ -17,7 +17,7 @@ const BidderType = new GraphQLObjectType({
     sale: {
       type: Sale.type,
     },
-  }),
+  }},
 })
 
 export default {

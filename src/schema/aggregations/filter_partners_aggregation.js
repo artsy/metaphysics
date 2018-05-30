@@ -28,34 +28,34 @@ export const PartnersAggregation = new GraphQLEnumType({
 export const PartnersAggregationResultsType = new GraphQLObjectType({
   name: "PartnersAggregationResults",
   description: "The results for one of the requested aggregations",
-  fields: () => ({
+  fields: () => {return {
     counts: {
       type: new GraphQLList(AggregationCount.type),
-      resolve: ({ counts }) => map(counts, AggregationCount.resolve),
+      resolve: ({ counts }) => {return map(counts, AggregationCount.resolve)},
     },
     slice: {
       type: PartnersAggregation,
     },
-  }),
+  }},
 })
 
 export const FilterPartnersType = new GraphQLObjectType({
   name: "FilterPartners",
-  fields: () => ({
+  fields: () => {return {
     aggregations: {
       type: new GraphQLList(PartnersAggregationResultsType),
       resolve: ({ aggregations }) =>
-        map(omit(aggregations, ["total"]), (counts, slice) => ({
+        {return map(omit(aggregations, ["total"]), (counts, slice) => {return {
           slice,
           counts,
-        })),
+        }})},
     },
     hits: {
       type: new GraphQLList(Partner.type),
     },
     total: {
       type: GraphQLInt,
-      resolve: ({ aggregations }) => aggregations.total.value,
+      resolve: ({ aggregations }) => {return aggregations.total.value},
     },
-  }),
+  }},
 })

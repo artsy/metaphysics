@@ -24,7 +24,7 @@ export default mutationWithClientMutationId({
   outputFields: {
     asset: {
       type: AssetType,
-      resolve: asset => asset,
+      resolve: asset => {return asset},
     },
   },
   mutateAndGetPayload: (

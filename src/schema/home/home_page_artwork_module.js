@@ -19,7 +19,7 @@ let possibleArgs
 export const HomePageArtworkModuleType = new GraphQLObjectType({
   name: "HomePageArtworkModule",
   interfaces: [NodeInterface],
-  fields: () => ({
+  fields: () => {return {
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       description: "A globally unique ID.",
@@ -40,7 +40,7 @@ export const HomePageArtworkModuleType = new GraphQLObjectType({
     },
     is_displayable: {
       type: GraphQLBoolean,
-      resolve: ({ display }) => display,
+      resolve: ({ display }) => {return display},
     },
     key: {
       type: GraphQLString,
@@ -48,7 +48,7 @@ export const HomePageArtworkModuleType = new GraphQLObjectType({
     params: Params,
     results: Results,
     title: Title,
-  }),
+  }},
 })
 
 const HomePageArtworkModule = {
@@ -89,11 +89,11 @@ const HomePageArtworkModule = {
       case "generic_gene":
         return { key, display, params: find(genericGenes, ["id", id]) }
       case "genes":
-        return geneLoader(id).then(gene => ({
+        return geneLoader(id).then(gene => {return {
           key,
           display,
           params: { id, gene },
-        }))
+        }})
       case "followed_artist":
         return { key, display, params: { followed_artist_id } }
       case "related_artists":

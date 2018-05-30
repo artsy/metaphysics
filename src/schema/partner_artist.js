@@ -16,18 +16,18 @@ const counts = {
     name: "PartnerArtistCounts",
     fields: {
       artworks: numeral(
-        ({ published_artworks_count }) => published_artworks_count
+        ({ published_artworks_count }) => {return published_artworks_count}
       ),
       for_sale_artworks: numeral(
         ({ published_for_sale_artworks_count }) =>
-          published_for_sale_artworks_count
+          {return published_for_sale_artworks_count}
       ),
     },
   }),
-  resolve: partner_artist => partner_artist,
+  resolve: partner_artist => {return partner_artist},
 }
 
-const fields = () => ({
+const fields = () => {return {
   ...IDFields,
   artist: {
     type: Artist.type,
@@ -38,11 +38,11 @@ const fields = () => ({
   counts,
   is_display_on_partner_profile: {
     type: GraphQLBoolean,
-    resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
+    resolve: ({ display_on_partner_profile }) => {return display_on_partner_profile},
   },
   is_represented_by: {
     type: GraphQLBoolean,
-    resolve: ({ represented_by }) => represented_by,
+    resolve: ({ represented_by }) => {return represented_by},
   },
   is_use_default_biography: {
     type: GraphQLBoolean,
@@ -53,7 +53,7 @@ const fields = () => ({
   sortable_id: {
     type: GraphQLString,
   },
-})
+}}
 
 export const PartnerArtistType = new GraphQLObjectType({
   name: "PartnerArtist",
@@ -78,7 +78,7 @@ const PartnerArtist = {
     { partner_id, artist_id },
     request,
     { rootValue: { partnerArtistLoader } }
-  ) => partnerArtistLoader({ artist_id, partner_id }),
+  ) => {return partnerArtistLoader({ artist_id, partner_id })},
 }
 
 export default PartnerArtist
@@ -112,10 +112,10 @@ export const partnersForArtist = (artist_id, options, loader) => {
   }
 
   return loader(gravityArgs).then(({ body, headers }) =>
-    connectionFromArraySlice(body, options, {
+    {return connectionFromArraySlice(body, options, {
       arrayLength: headers["x-total-count"],
       sliceStart: offset,
-      resolveNode: node => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`
-    })
+      resolveNode: node => {return node.partner}, // Can also be a promise: `partnerLoader(node.partner.id)`
+    })}
   )
 }

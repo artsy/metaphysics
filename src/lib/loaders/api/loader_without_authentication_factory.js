@@ -31,16 +31,16 @@ export const apiLoaderWithoutAuthenticationFactory = (
   api,
   apiName,
   globalAPIOptions = {}
-) => (path, globalParams = {}, pathAPIOptions = {}) => {
+) => {return (path, globalParams = {}, pathAPIOptions = {}) => {
   const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
   const loader = new DataLoader(
     keys =>
-      Promise.all(
+      {return Promise.all(
         keys.map(key => {
           const clock = timer(key)
           clock.start()
           return new Promise((resolve, reject) =>
-            cache.get(key).then(
+            {return cache.get(key).then(
               // Cache hit
               data => {
                 // Return cached data first
@@ -109,14 +109,14 @@ export const apiLoaderWithoutAuthenticationFactory = (
                     reject(err)
                   })
               }
-            )
+            )}
           )
         })
-      ),
+      )},
     {
       batch: false,
       cache: true,
     }
   )
   return loaderInterface(loader, path, globalParams)
-}
+}}

@@ -26,5 +26,5 @@ const HomePageModuleParams = new GraphQLObjectType({
 
 export default {
   type: HomePageModuleParams,
-  resolve: ({ params }) => params,
+  resolve: ({ params }) => {return params},
 }

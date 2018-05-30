@@ -22,10 +22,10 @@ export default {
     //       are still small amounts of data.
     if (!submissionsLoader) return null
     return submissionsLoader(options).then(body =>
-      connectionFromArraySlice(body, options, {
+      {return connectionFromArraySlice(body, options, {
         arrayLength: body.length,
         sliceStart: 0,
-      })
+      })}
     )
   },
 }

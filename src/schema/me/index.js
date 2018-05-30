@@ -70,7 +70,7 @@ const Me = new GraphQLObjectType({
           bundledArtworksByArtist: FollowedArtistsArtworkGroups,
         },
       }),
-      resolve: () => ({}),
+      resolve: () => {return {}},
     },
     has_qualified_credit_cards: {
       type: GraphQLBoolean,
@@ -80,9 +80,9 @@ const Me = new GraphQLObjectType({
         request,
         { rootValue: { meCreditCardsLoader } }
       ) =>
-        meCreditCardsLoader({ qualified_for_bidding: true }).then(
-          results => results.length > 0
-        ),
+        {return meCreditCardsLoader({ qualified_for_bidding: true }).then(
+          results => {return results.length > 0}
+        )},
     },
     invoice: Invoice,
     lot_standing: LotStanding,
@@ -97,7 +97,7 @@ const Me = new GraphQLObjectType({
     },
     recentlyViewedArtworkIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
-      resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
+      resolve: ({ recently_viewed_artwork_ids }) => {return recently_viewed_artwork_ids},
     },
     recentlyViewedArtworks: RecentlyViewedArtworks,
     sale_registrations: SaleRegistrations,
@@ -143,7 +143,7 @@ export default {
       "saved_artworks",
     ]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return meLoader().catch(() => null)
+      return meLoader().catch(() => {return null})
     }
     // The email and is_collector are here so that the type system's `isTypeOf`
     // resolves correctly when we're skipping gravity data

@@ -22,7 +22,7 @@ import config from "config"
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
 export const isBiddable = (sale, { artwork: { sold } }) =>
-  !sold && sale.is_auction && sale.auction_state === "open"
+  {return !sold && sale.is_auction && sale.auction_state === "open"}
 
 const bid_increments_calculator = async ({
   sale_id,
@@ -73,12 +73,12 @@ const BidIncrementsFormatted = new GraphQLObjectType({
 
 const SaleArtworkType = new GraphQLObjectType({
   name: "SaleArtwork",
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     cached,
     artwork: {
       type: Artwork.type,
-      resolve: ({ artwork }) => artwork,
+      resolve: ({ artwork }) => {return artwork},
     },
     bidder_positions_count: {
       type: GraphQLInt,
@@ -93,20 +93,20 @@ const SaleArtworkType = new GraphQLObjectType({
         request,
         { rootValue: { incrementsLoader, saleLoader } }
       ) =>
-        bid_increments_calculator({
+        {return bid_increments_calculator({
           sale_id,
           saleLoader,
           incrementsLoader,
           minimum_next_bid_cents,
-        }),
+        })},
     },
     counts: {
-      resolve: x => x,
+      resolve: x => {return x},
       type: new GraphQLObjectType({
         name: "SaleArtworkCounts",
         fields: {
           bidder_positions: numeral(
-            ({ bidder_positions_count }) => bidder_positions_count
+            ({ bidder_positions_count }) => {return bidder_positions_count}
           ),
         },
       }),
@@ -117,14 +117,14 @@ const SaleArtworkType = new GraphQLObjectType({
     },
     current_bid: money({
       name: "SaleArtworkCurrentBid",
-      resolve: saleArtwork => ({
+      resolve: saleArtwork => {return {
         ...GravityIDFields,
         cents:
           saleArtwork.highest_bid_amount_cents || saleArtwork.opening_bid_cents,
         display:
           saleArtwork.display_highest_bid_amount_dollars ||
           saleArtwork.display_opening_bid_dollars,
-      }),
+      }},
     }),
     estimate: {
       type: GraphQLString,
@@ -133,10 +133,10 @@ const SaleArtworkType = new GraphQLObjectType({
         display_high_estimate_dollars,
         display_estimate_dollars,
       }) =>
-        compact([
+        {return compact([
           display_low_estimate_dollars,
           display_high_estimate_dollars,
-        ]).join("–") || display_estimate_dollars,
+        ]).join("–") || display_estimate_dollars},
     },
     estimate_cents: {
       type: GraphQLInt,
@@ -144,10 +144,10 @@ const SaleArtworkType = new GraphQLObjectType({
     },
     high_estimate: money({
       name: "SaleArtworkHighEstimate",
-      resolve: ({ display_high_estimate_dollars, high_estimate_cents }) => ({
+      resolve: ({ display_high_estimate_dollars, high_estimate_cents }) => {return {
         cents: high_estimate_cents,
         display: display_high_estimate_dollars,
-      }),
+      }},
     }),
     high_estimate_cents: {
       type: GraphQLFloat,
@@ -163,16 +163,16 @@ const SaleArtworkType = new GraphQLObjectType({
           created_at: date,
           is_cancelled: {
             type: GraphQLBoolean,
-            resolve: ({ cancelled }) => cancelled,
+            resolve: ({ cancelled }) => {return cancelled},
           },
-          amount: amount(({ amount_cents }) => amount_cents),
+          amount: amount(({ amount_cents }) => {return amount_cents}),
           cents: {
             type: GraphQLInt,
-            resolve: ({ amount_cents }) => amount_cents,
+            resolve: ({ amount_cents }) => {return amount_cents},
           },
           display: {
             type: GraphQLString,
-            resolve: ({ display_amount_dollars }) => display_amount_dollars,
+            resolve: ({ display_amount_dollars }) => {return display_amount_dollars},
           },
           amount_cents: {
             type: GraphQLFloat,
@@ -181,12 +181,12 @@ const SaleArtworkType = new GraphQLObjectType({
         },
       }),
       resolve: ({ symbol, highest_bid }) =>
-        assign(
+        {return assign(
           {
             symbol,
           },
           highest_bid
-        ),
+        )},
     },
     increments: {
       type: new GraphQLList(BidIncrementsFormatted),
@@ -196,21 +196,21 @@ const SaleArtworkType = new GraphQLObjectType({
         request,
         { rootValue: { incrementsLoader, saleLoader } }
       ) =>
-        bid_increments_calculator({
+        {return bid_increments_calculator({
           sale_id,
           saleLoader,
           incrementsLoader,
           minimum_next_bid_cents,
         }).then(bid_increments =>
-          bid_increments.map(increment => ({
+          {return bid_increments.map(increment => {return {
             cents: increment,
             display: formatMoney(increment / 100, { symbol, precision: 0 }),
-          }))
-        ),
+          }})}
+        )},
     },
     is_bid_on: {
       type: GraphQLBoolean,
-      resolve: ({ bidder_positions_count }) => bidder_positions_count !== 0,
+      resolve: ({ bidder_positions_count }) => {return bidder_positions_count !== 0},
     },
     is_biddable: {
       type: GraphQLBoolean,
@@ -225,13 +225,13 @@ const SaleArtworkType = new GraphQLObjectType({
           return isBiddable(saleArtwork.sale, saleArtwork)
         }
         return saleLoader(saleArtwork.sale_id).then(sale =>
-          isBiddable(sale, saleArtwork)
+          {return isBiddable(sale, saleArtwork)}
         )
       },
     },
     is_with_reserve: {
       type: GraphQLBoolean,
-      resolve: ({ reserve_status }) => reserve_status !== "no_reserve",
+      resolve: ({ reserve_status }) => {return reserve_status !== "no_reserve"},
     },
     lot_label: {
       type: GraphQLString,
@@ -242,10 +242,10 @@ const SaleArtworkType = new GraphQLObjectType({
     },
     low_estimate: money({
       name: "SaleArtworkLowEstimate",
-      resolve: ({ display_low_estimate_dollars, low_estimate_cents }) => ({
+      resolve: ({ display_low_estimate_dollars, low_estimate_cents }) => {return {
         cents: low_estimate_cents,
         display: display_low_estimate_dollars,
-      }),
+      }},
     }),
     low_estimate_cents: {
       type: GraphQLFloat,
@@ -256,10 +256,10 @@ const SaleArtworkType = new GraphQLObjectType({
       resolve: ({
         display_minimum_next_bid_dollars,
         minimum_next_bid_cents,
-      }) => ({
+      }) => {return {
         cents: minimum_next_bid_cents,
         display: display_minimum_next_bid_dollars,
-      }),
+      }},
     }),
     minimum_next_bid_cents: {
       type: GraphQLFloat,
@@ -267,10 +267,10 @@ const SaleArtworkType = new GraphQLObjectType({
     },
     opening_bid: money({
       name: "SaleArtworkOpeningBid",
-      resolve: ({ display_opening_bid_dollars, opening_bid_cents }) => ({
+      resolve: ({ display_opening_bid_dollars, opening_bid_cents }) => {return {
         cents: opening_bid_cents,
         display: display_opening_bid_dollars,
-      }),
+      }},
     }),
     opening_bid_cents: {
       type: GraphQLFloat,
@@ -281,10 +281,10 @@ const SaleArtworkType = new GraphQLObjectType({
     },
     reserve: money({
       name: "SaleArtworkReserve",
-      resolve: ({ display_reserve_dollars, reserve_cents }) => ({
+      resolve: ({ display_reserve_dollars, reserve_cents }) => {return {
         cents: reserve_cents,
         display: display_reserve_dollars,
-      }),
+      }},
     }),
     reserve_message: {
       type: GraphQLString,
@@ -318,13 +318,13 @@ const SaleArtworkType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { saleLoader } }
-      ) => sale || saleLoader(sale_id),
+      ) => {return sale || saleLoader(sale_id)},
     },
     symbol: {
       type: GraphQLString,
       description: 'Currency symbol (e.g. "$")',
     },
-  }),
+  }},
 })
 
 const SaleArtwork = {

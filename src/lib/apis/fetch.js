@@ -6,7 +6,7 @@ import config from "config"
 import HTTPError from "lib/http_error"
 
 export default (url, options = {}) =>
-  new Promise((resolve, reject) => {
+  {return new Promise((resolve, reject) => {
     const opts = clone(
       defaults(options, {
         method: "GET",
@@ -48,4 +48,4 @@ export default (url, options = {}) =>
         return reject(error)
       }
     })
-  })
+  })}

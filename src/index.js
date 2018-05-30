@@ -57,7 +57,7 @@ function logQueryDetailsIfEnabled() {
     return logQueryDetails(logQueryDetailsThreshold)
   }
   // no-op
-  return (req, res, next) => next()
+  return (req, res, next) => {return next()}
 }
 
 const app = express()

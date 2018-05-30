@@ -7,11 +7,11 @@ import geminiLoaders from "./gemini"
 import gravityLoaders from "./gravity"
 import positronLoaders from "./positron"
 
-export default opts => ({
+export default opts => {return {
   ...deltaLoaders(opts),
   ...diffusionLoaders(opts),
   ...galaxyLoaders(opts),
   ...geminiLoaders(),
   ...gravityLoaders(opts),
   ...positronLoaders(opts),
-})
+}}

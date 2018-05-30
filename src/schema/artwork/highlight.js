@@ -5,12 +5,12 @@ import { GraphQLUnionType } from "graphql"
 
 export const HighlightedShowType = create(Show.type, {
   name: "HighlightedShow",
-  isTypeOf: ({ highlight_type }) => highlight_type === "Show",
+  isTypeOf: ({ highlight_type }) => {return highlight_type === "Show"},
 })
 
 export const HighlightedArticleType = create(Article.type, {
   name: "HighlightedArticle",
-  isTypeOf: ({ highlight_type }) => highlight_type === "Article",
+  isTypeOf: ({ highlight_type }) => {return highlight_type === "Article"},
 })
 
 export const HighlightType = new GraphQLUnionType({

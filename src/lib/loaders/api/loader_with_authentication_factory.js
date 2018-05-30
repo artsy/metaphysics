@@ -25,12 +25,12 @@ export const apiLoaderWithAuthenticationFactory = (
   api,
   apiName,
   globalAPIOptions
-) => accessTokenLoader => (path, globalParams = {}, pathAPIOptions = {}) => {
+) => {return accessTokenLoader => {return (path, globalParams = {}, pathAPIOptions = {}) => {
   const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
   const loader = new DataLoader(
     keys =>
-      accessTokenLoader().then(accessToken =>
-        Promise.all(
+      {return accessTokenLoader().then(accessToken =>
+        {return Promise.all(
           keys.map(key => {
             const clock = timer(key)
             clock.start()
@@ -60,12 +60,12 @@ export const apiLoaderWithAuthenticationFactory = (
                 })
             })
           })
-        )
-      ),
+        )}
+      )},
     {
       batch: true,
       cache: true,
     }
   )
   return loaderInterface(loader, path, globalParams)
-}
+}}}

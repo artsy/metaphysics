@@ -12,7 +12,7 @@ export default {
     connectionFields: {
       totalUnreadCount: {
         type: GraphQLInt,
-        resolve: ({ total_unread_count }) => total_unread_count,
+        resolve: ({ total_unread_count }) => {return total_unread_count},
       },
     },
   }).connectionType,
@@ -24,13 +24,13 @@ export default {
     const expand = ["total_unread_count"]
     return conversationsLoader({ page, size, expand }).then(
       ({ total_count, total_unread_count, conversations }) =>
-        assign(
+        {return assign(
           { total_unread_count },
           connectionFromArraySlice(conversations, options, {
             arrayLength: total_count,
             sliceStart: offset,
           })
-        )
+        )}
     )
   },
 }

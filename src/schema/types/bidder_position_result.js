@@ -3,7 +3,7 @@ import BidderPosition from "schema/bidder_position"
 
 export const BidderPositionResultType = new GraphQLObjectType({
   name: "BidderPositionResult",
-  fields: () => ({
+  fields: () => {return {
     status: {
       type: new GraphQLNonNull(GraphQLString),
     },
@@ -16,5 +16,5 @@ export const BidderPositionResultType = new GraphQLObjectType({
     position: {
       type: BidderPosition.type,
     },
-  }),
+  }},
 })

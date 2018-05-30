@@ -74,7 +74,7 @@ export default mutationWithClientMutationId({
   outputFields: {
     order: {
       type: OrderType,
-      resolve: order => order,
+      resolve: order => {return order},
     },
   },
   mutateAndGetPayload: (

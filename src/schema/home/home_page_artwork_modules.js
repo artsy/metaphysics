@@ -37,7 +37,7 @@ const addFollowedGenes = (
     return followedGenes(followedGenesLoader, size).then(results => {
       const blueprint = modules[followedGeneIndex]
       const genes = map(results, ({ gene }) =>
-        Object.assign({ params: { id: gene.id, gene } }, blueprint)
+        {return Object.assign({ params: { id: gene.id, gene } }, blueprint)}
       )
       const copy = modules.slice(0)
       const args = [followedGeneIndex, 1].concat(genes)
@@ -161,10 +161,10 @@ const HomePageArtworkModules = {
     if (accessToken) {
       return homepageModulesLoader().then(response => {
         const keysToDisplay = without(keys(response), ...exclude)
-        const modulesToDisplay = map(keysToDisplay, key => ({
+        const modulesToDisplay = map(keysToDisplay, key => {return {
           key,
           display: response[key],
-        }))
+        }})
         return addFollowedGenes(
           followedGenesLoader,
           modulesToDisplay,

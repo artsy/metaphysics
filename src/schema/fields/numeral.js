@@ -5,7 +5,7 @@ import { GraphQLString } from "graphql"
 
 const { pluralize, singularize } = inflect()
 
-export default fn => ({
+export default fn => {return {
   type: FormattedNumber,
   args: {
     format: {
@@ -36,4 +36,4 @@ export default fn => ({
 
     return value
   },
-})
+}}

@@ -82,7 +82,7 @@ export default mutationWithClientMutationId({
   outputFields: {
     user: {
       type: UserType,
-      resolve: user => user,
+      resolve: user => {return user},
     },
   },
   mutateAndGetPayload: (user, _request, { rootValue: { updateMeLoader } }) => {

@@ -50,10 +50,10 @@ export const CollectionType = new GraphQLObjectType({
         delete gravityOptions.page // this can't also be used with the offset in gravity
         return collectionArtworksLoader(id, gravityOptions)
           .then(({ body, headers }) =>
-            connectionFromArraySlice(body, options, {
+            {return connectionFromArraySlice(body, options, {
               arrayLength: headers["x-total-count"],
               sliceStart: gravityOptions.offset,
-            })
+            })}
           )
           .catch(e => {
             warn("Bypassing Gravity error: ", e)
@@ -83,7 +83,7 @@ export const CollectionType = new GraphQLObjectType({
 })
 
 // This resolver is re-used by `me { saved_artworks }`
-export const collectionResolverFactory = collection_id => (
+export const collectionResolverFactory = collection_id => {return (
   _root,
   options,
   _request,
@@ -104,7 +104,7 @@ export const collectionResolverFactory = collection_id => (
     private: null,
     default: null,
   }
-}
+}}
 
 const Collection = {
   type: CollectionType,

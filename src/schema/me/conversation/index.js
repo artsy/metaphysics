@@ -113,10 +113,10 @@ const ConversationItem = new GraphQLObjectType({
   fields: {
     item: {
       type: ConversationItemType,
-      resolve: ({ item_type, properties }) => ({
+      resolve: ({ item_type, properties }) => {return {
         __typename: item_type,
         ...properties,
-      }),
+      }},
     },
     title: {
       type: GraphQLString,
@@ -141,7 +141,7 @@ const isLastMessageToUser = ({ _embedded, from_email }) => {
 }
 
 const lastMessageId = conversation =>
-  get(conversation, "_embedded.last_message.id")
+  {return get(conversation, "_embedded.last_message.id")}
 
 export const ConversationFields = {
   __id: GlobalIDField,
@@ -156,22 +156,22 @@ export const ConversationFields = {
   from: {
     description: "The participant who initiated the conversation",
     type: new GraphQLNonNull(ConversationInitiatorType),
-    resolve: conversation => ({
+    resolve: conversation => {return {
       id: conversation.from_id,
       type: conversation.from_type,
       name: conversation.from_name,
       email: conversation.from_email,
-    }),
+    }},
   },
   to: {
     description: "The participant(s) responding to the conversation",
     type: new GraphQLNonNull(ConversationResponderType),
-    resolve: conversation => ({
+    resolve: conversation => {return {
       id: conversation.to_id,
       type: conversation.to_type,
       name: conversation.to_name,
       reply_to_impulse_ids: conversation.to,
-    }),
+    }},
   },
   buyer_outcome: {
     type: GraphQLString,
@@ -194,14 +194,14 @@ export const ConversationFields = {
   last_message: {
     type: GraphQLString,
     description: "This is a snippet of text from the last message.",
-    resolve: () => null,
+    resolve: () => {return null},
   },
   last_message_at: date,
 
   last_message_id: {
     type: GraphQLString,
     description: "Impulse id of the last message.",
-    resolve: conversation => lastMessageId(conversation),
+    resolve: conversation => {return lastMessageId(conversation)},
   },
 
   // TODO: Currently if the user is not the sender of a message, we assume they are a recipient.
@@ -209,7 +209,7 @@ export const ConversationFields = {
   is_last_message_to_user: {
     type: GraphQLBoolean,
     description: "True if user/conversation initiator is a recipient.",
-    resolve: conversation => isLastMessageToUser(conversation),
+    resolve: conversation => {return isLastMessageToUser(conversation)},
   },
 
   // If the user is a recipient of the last message, return their timestamped
@@ -241,7 +241,7 @@ export const ConversationFields = {
           return null
         }
         const relevantDelivery = message_details[0].deliveries.find(
-          d => d.email === conversation.from_email
+          d => {return d.email === conversation.from_email}
         )
         if (!relevantDelivery) {
           return null
@@ -279,7 +279,7 @@ export const ConversationFields = {
           return null
         }
         const relevantDelivery = message_details[0].deliveries.find(
-          d => d.email === conversation.from_email
+          d => {return d.email === conversation.from_email}
         )
         if (!relevantDelivery) {
           return null
@@ -293,7 +293,7 @@ export const ConversationFields = {
     type: new GraphQLList(ArtworkType),
     description: "Only the artworks discussed in the conversation.",
     resolve: conversation =>
-      conversation.items.filter(({ item_type }) => item_type === "Artwork"),
+      {return conversation.items.filter(({ item_type }) => {return item_type === "Artwork"})},
   },
 
   items: {
@@ -301,11 +301,11 @@ export const ConversationFields = {
     description:
       "The artworks and/or partner shows discussed in the conversation.",
     resolve: conversation =>
-      conversation.items.filter(
+      {return conversation.items.filter(
         ({ properties, item_type }) =>
-          isExisty(properties) &&
-          (item_type === "Artwork" || item_type === "PartnerShow")
-      ),
+          {return isExisty(properties) &&
+          (item_type === "Artwork" || item_type === "PartnerShow")}
+      )},
   },
 
   messages: {
@@ -342,10 +342,10 @@ export const ConversationFields = {
         // resolvers (invoices).
         /* eslint-disable no-param-reassign */
         message_details = message_details.map(message =>
-          merge(message, {
+          {return merge(message, {
             conversation_from_address: from_email,
             conversation_id: id,
-          })
+          })}
         )
         /* eslint-disable no-param-reassign */
         return connectionFromArraySlice(message_details, options, {

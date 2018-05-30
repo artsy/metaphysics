@@ -24,7 +24,7 @@ export default mutationWithClientMutationId({
         _,
         _request,
         { rootValue: { artworkLoader } }
-      ) => artworkLoader(artwork_id),
+      ) => {return artworkLoader(artwork_id)},
     },
   },
   mutateAndGetPayload: (
@@ -44,6 +44,6 @@ export default mutationWithClientMutationId({
     }
 
     const loader = remove ? deleteArtworkLoader : saveArtworkLoader
-    return loader(artwork_id, { user_id: userID }).then(() => ({ artwork_id }))
+    return loader(artwork_id, { user_id: userID }).then(() => {return { artwork_id }})
   },
 })

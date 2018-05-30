@@ -33,7 +33,7 @@ const FairOrganizerType = new GraphQLObjectType({
         options,
         request,
         { rootValue: { profileLoader } }
-      ) => profileLoader(profile_id).catch(() => null),
+      ) => {return profileLoader(profile_id).catch(() => {return null})},
     },
   },
 })
@@ -82,7 +82,7 @@ export const ShowsSort = new GraphQLEnumType({
 
 const FairType = new GraphQLObjectType({
   name: "Fair",
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     cached,
     banner_size: {
@@ -126,7 +126,7 @@ const FairType = new GraphQLObjectType({
     },
     is_published: {
       type: GraphQLBoolean,
-      resolve: ({ published }) => published,
+      resolve: ({ published }) => {return published},
     },
     location: {
       type: Location.type,
@@ -139,7 +139,7 @@ const FairType = new GraphQLObjectType({
         if (location) {
           return location
         } else if (published) {
-          return fairLoader(id, options).then(fair => fair.location)
+          return fairLoader(id, options).then(fair => {return fair.location})
         }
         return null
       },
@@ -159,7 +159,7 @@ const FairType = new GraphQLObjectType({
         return (
           profileLoader(id)
             // Some profiles are private and return 403
-            .catch(() => null)
+            .catch(() => {return null})
         )
       },
     },
@@ -188,10 +188,10 @@ const FairType = new GraphQLObjectType({
           totalViaLoader(fairBoothsLoader, id, gravityOptions),
           fairBoothsLoader(id, gravityOptions),
         ]).then(([count, { body: { results } }]) =>
-          connectionFromArraySlice(results, options, {
+          {return connectionFromArraySlice(results, options, {
             arrayLength: count,
             sliceStart: gravityOptions.offset,
-          })
+          })}
         )
       },
     },
@@ -207,7 +207,7 @@ const FairType = new GraphQLObjectType({
     tagline: {
       type: GraphQLString,
     },
-  }),
+  }},
 })
 
 const Fair = {
@@ -220,7 +220,7 @@ const Fair = {
     },
   },
   resolve: (root, { id }, request, { rootValue: { fairLoader } }) =>
-    fairLoader(id),
+    {return fairLoader(id)},
 }
 
 export default Fair

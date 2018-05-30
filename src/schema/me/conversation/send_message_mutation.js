@@ -28,17 +28,17 @@ export default mutationWithClientMutationId({
   outputFields: {
     conversation: {
       type: ConversationType,
-      resolve: ({ conversation }) => conversation,
+      resolve: ({ conversation }) => {return conversation},
     },
     messageEdge: {
       type: MessageEdge,
-      resolve: ({ newMessagePayload }) => ({
+      resolve: ({ newMessagePayload }) => {return {
         cursor: cursorForObjectInConnection(
           [newMessagePayload],
           newMessagePayload
         ),
         node: newMessagePayload,
-      }),
+      }},
     },
   },
   mutateAndGetPayload: (
@@ -58,7 +58,7 @@ export default mutationWithClientMutationId({
       reply_to_message_id,
       body_text,
     }).then(({ id: newMessageID }) =>
-      conversationLoader(id).then(updatedConversation => ({
+      {return conversationLoader(id).then(updatedConversation => {return {
         conversation: updatedConversation,
         // Because Impulse does not have the full new message object available immediately, we return an optimistic
         // response so the mutation can return it too.
@@ -73,7 +73,7 @@ export default mutationWithClientMutationId({
           // This addition is only for MP so it can determine if the message was from the current user.
           conversation_from_address: updatedConversation.from_email,
         },
-      }))
+      }})}
     )
   },
 })

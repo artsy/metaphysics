@@ -2,7 +2,7 @@ const fs = require("fs")
 
 const babelRC = fs.readFileSync("./.babelrc")
 
-module.exports = wallaby => ({
+module.exports = wallaby => {return {
   files: [
     ".env.test",
     "config.js",
@@ -27,4 +27,4 @@ module.exports = wallaby => ({
   },
 
   testFramework: "jest",
-})
+}}

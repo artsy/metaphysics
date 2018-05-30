@@ -12,7 +12,7 @@ import {
 import blacklist from "lib/artist_blacklist"
 
 export const featuredFair = fairsLoader =>
-  fairsLoader({
+  {return fairsLoader({
     size: 5,
     active: true,
     has_homepage_section: true,
@@ -20,25 +20,25 @@ export const featuredFair = fairsLoader =>
     if (fairs.length) {
       return first(
         sortBy(fairs, ({ banner_size }) =>
-          ["x-large", "large", "medium", "small", "x-small"].indexOf(
+          {return ["x-large", "large", "medium", "small", "x-small"].indexOf(
             banner_size
-          )
+          )}
         )
       )
     }
 
     return undefined // make undefined return explicit
-  })
+  })}
 
 export const activeSaleArtworks = lotStandingLoader =>
-  lotStandingLoader({
+  {return lotStandingLoader({
     live: true,
   })
-    .then(results => results.map(result => result.sale_artwork))
-    .then(sale_artworks => map(sale_artworks, "artwork"))
+    .then(results => {return results.map(result => {return result.sale_artwork})})
+    .then(sale_artworks => {return map(sale_artworks, "artwork")})}
 
 export const featuredAuction = salesLoader =>
-  salesLoader({
+  {return salesLoader({
     live: true,
     size: 1,
     sort: "timely_at,name",
@@ -48,47 +48,47 @@ export const featuredAuction = salesLoader =>
     }
 
     return undefined // make undefined return explicit
-  })
+  })}
 
 export const followedGenes = (followedGenesLoader, size) =>
-  followedGenesLoader({ size }).then(({ body }) => body)
+  {return followedGenesLoader({ size }).then(({ body }) => {return body})}
 
 export const featuredGene = followedGenesLoader =>
-  followedGenes(followedGenesLoader, 1).then(follows => {
+  {return followedGenes(followedGenesLoader, 1).then(follows => {
     if (follows.length) {
       return first(follows).gene
     }
 
     return undefined // make undefined return explicit
-  })
+  })}
 
 export const geneArtworks = (filterArtworksLoader, id, size) =>
-  filterArtworksLoader({
+  {return filterArtworksLoader({
     gene_id: id,
     for_sale: true,
     size: 60,
-  }).then(({ hits }) => slice(shuffle(hits), 0, size))
+  }).then(({ hits }) => {return slice(shuffle(hits), 0, size)})}
 
 export const relatedArtists = suggestedSimilarArtistsLoader =>
-  suggestedSimilarArtistsLoader({
+  {return suggestedSimilarArtistsLoader({
     exclude_artists_without_forsale_artworks: true,
     exclude_followed_artists: true,
     size: 20,
   }).then(({ body }) => {
     const filteredResults = filter(
       body,
-      result => result.sim_artist.forsale_artworks_count > 0
+      result => {return result.sim_artist.forsale_artworks_count > 0}
     )
     return sampleSize(filteredResults, 2)
-  })
+  })}
 
 export const popularArtists = deltaLoader =>
-  deltaLoader({
+  {return deltaLoader({
     method: "fetch",
     n: 9,
     name: "artist_follow_2t",
   }).then(trending => {
     const clonedTrending = clone(trending)
-    forEach(blacklist, id => delete clonedTrending[id])
+    forEach(blacklist, id => {return delete clonedTrending[id]})
     return clonedTrending
-  })
+  })}

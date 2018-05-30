@@ -27,7 +27,7 @@ export const BidderPositionMutation = mutationWithClientMutationId({
   outputFields: {
     result: {
       type: BidderPositionResultType,
-      resolve: result => result,
+      resolve: result => {return result},
     },
   },
   mutateAndGetPayload: (
@@ -43,7 +43,7 @@ export const BidderPositionMutation = mutationWithClientMutationId({
       artwork_id,
       max_bid_amount_cents,
     })
-      .then(p => ({ status: "SUCCESS", position: p }))
+      .then(p => {return { status: "SUCCESS", position: p }})
       .catch(e => {
         const errorSplit = e.message.split(" - ")
         const errorObject =
@@ -52,7 +52,7 @@ export const BidderPositionMutation = mutationWithClientMutationId({
           const errorMessage = errorObject.message || errorObject.error
           const message =
             BiddingMessages.find(d =>
-              errorMessage.trim().startsWith(d.gravity_key)
+              {return errorMessage.trim().startsWith(d.gravity_key)}
             ) || BiddingMessages[BiddingMessages.length - 1]
           const liveAuctionUrl = `${PREDICTION_ENDPOINT}/${sale_id}`
           return {

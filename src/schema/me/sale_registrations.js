@@ -6,7 +6,7 @@ import { GraphQLList, GraphQLBoolean, GraphQLObjectType } from "graphql"
 
 export const SaleRegistrationType = new GraphQLObjectType({
   name: "SaleRegistration",
-  fields: () => ({
+  fields: () => {return {
     bidder: {
       type: Bidder.type,
     },
@@ -16,7 +16,7 @@ export const SaleRegistrationType = new GraphQLObjectType({
     sale: {
       type: Sale.type,
     },
-  }),
+  }},
 })
 
 export default {
@@ -28,16 +28,16 @@ export default {
     request,
     { rootValue: { meBiddersLoader, salesLoader } }
   ) =>
-    salesLoader(options).then(sales =>
+    {return salesLoader(options).then(sales =>
       // TODO this can be cleaner
-      Promise.all(
+      {return Promise.all(
         sales.map(sale =>
-          meBiddersLoader({ sale_id: sale.id }).then(bidders => ({
+          {return meBiddersLoader({ sale_id: sale.id }).then(bidders => {return {
             sale,
             bidder: first(bidders),
             is_registered: bidders.length > 0,
-          }))
+          }})}
         )
-      )
-    ),
+      )}
+    )},
 }

@@ -14,23 +14,23 @@ import {
 const ArticleType = new GraphQLObjectType({
   name: "Article",
   interfaces: [NodeInterface],
-  fields: () => ({
+  fields: () => {return {
     ...IDFields,
     cached,
     author: {
       type: AuthorType,
-      resolve: ({ author }) => author,
+      resolve: ({ author }) => {return author},
     },
     channel_id: {
       type: GraphQLString,
     },
     contributing_authors: {
       type: new GraphQLList(AuthorType),
-      resolve: ({ contributing_authors }) => contributing_authors,
+      resolve: ({ contributing_authors }) => {return contributing_authors},
     },
     href: {
       type: GraphQLString,
-      resolve: ({ slug }) => `/article/${slug}`,
+      resolve: ({ slug }) => {return `/article/${slug}`},
     },
     published_at: date,
     slug: {
@@ -44,7 +44,7 @@ const ArticleType = new GraphQLObjectType({
     },
     thumbnail_image: {
       type: Image.type,
-      resolve: ({ thumbnail_image }) => Image.resolve(thumbnail_image),
+      resolve: ({ thumbnail_image }) => {return Image.resolve(thumbnail_image)},
     },
     tier: {
       type: GraphQLInt,
@@ -53,7 +53,7 @@ const ArticleType = new GraphQLObjectType({
       type: GraphQLString,
     },
     updated_at: date,
-  }),
+  }},
 })
 
 const Article = {
@@ -66,7 +66,7 @@ const Article = {
     },
   },
   resolve: (root, { id }, request, { rootValue: { articleLoader } }) =>
-    articleLoader(id),
+    {return articleLoader(id)},
 }
 
 export default Article

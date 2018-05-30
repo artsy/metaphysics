@@ -5,9 +5,9 @@ const { IMPULSE_APPLICATION_ID } = config
 
 export default (accessToken, userID, opts) => {
   let impulseTokenLoader
-  const gravityAccessTokenLoader = () => Promise.resolve(accessToken)
+  const gravityAccessTokenLoader = () => {return Promise.resolve(accessToken)}
   const impulseAccessTokenLoader = () =>
-    impulseTokenLoader().then(data => data.token)
+    {return impulseTokenLoader().then(data => {return data.token})}
 
   const {
     gravityLoaderWithAuthenticationFactory,
@@ -33,16 +33,16 @@ export default (accessToken, userID, opts) => {
       from_type: "User",
       has_message: true,
     }),
-    conversationLoader: impulseLoader(id => `conversations/${id}`),
+    conversationLoader: impulseLoader(id => {return `conversations/${id}`}),
     conversationUpdateLoader: impulseLoader(
-      id => `conversations/${id}`,
+      id => {return `conversations/${id}`},
       {},
       { method: "PUT" }
     ),
     conversationMessagesLoader: impulseLoader("message_details"),
     conversationInvoiceLoader: impulseLoader("invoice_detail"),
     conversationCreateMessageLoader: impulseLoader(
-      id => `conversations/${id}/messages`,
+      id => {return `conversations/${id}/messages`},
       {
         reply_all: true,
         from_id: userID,

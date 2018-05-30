@@ -23,7 +23,7 @@ export default mutationWithClientMutationId({
         options,
         request,
         { rootValue: { artistLoader } }
-      ) => artistLoader(artist_id),
+      ) => {return artistLoader(artist_id)},
     },
     popular_artists: PopularArtists,
   },
@@ -43,6 +43,6 @@ export default mutationWithClientMutationId({
       performAction = followArtistLoader({ artist_id })
     }
 
-    return performAction.then(() => ({ artist_id }))
+    return performAction.then(() => {return { artist_id }})
   },
 })

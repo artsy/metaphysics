@@ -13,7 +13,7 @@ import { GravityIDFields } from "schema/object_identification"
 
 export const OrderLineItemType = new GraphQLObjectType({
   name: "OrderLineItem",
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     quantity: {
       type: GraphQLInt,
@@ -26,17 +26,17 @@ export const OrderLineItemType = new GraphQLObjectType({
     edition_set: {
       type: EditionSet.type,
       description: "Edition set on the artwork",
-      resolve: ({ edition_set }) => edition_set,
+      resolve: ({ edition_set }) => {return edition_set},
     },
     partner: {
       type: Partner.type,
       description: "Partner being ordered from",
-      resolve: ({ partner }) => partner,
+      resolve: ({ partner }) => {return partner},
     },
     partner_location: {
       type: Location.type,
       description: "Location of the partner",
-      resolve: ({ partner_location }) => partner_location,
+      resolve: ({ partner_location }) => {return partner_location},
     },
     shipping_note: {
       type: GraphQLString,
@@ -46,12 +46,12 @@ export const OrderLineItemType = new GraphQLObjectType({
       type: GraphQLString,
       description: "Sale conditions (set by partner)",
     },
-  }),
+  }},
 })
 
 export const OrderAddressType = new GraphQLObjectType({
   name: "OrderAddress",
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     name: {
       type: GraphQLString,
@@ -78,12 +78,12 @@ export const OrderAddressType = new GraphQLObjectType({
       description:
         "Country code associated with the address (standard 3-letter code)",
     },
-  }),
+  }},
 })
 
 export const OrderType = new GraphQLObjectType({
   name: "Order",
-  fields: () => ({
+  fields: () => {return {
     ...GravityIDFields,
     line_items: {
       type: new GraphQLList(OrderLineItemType),
@@ -91,10 +91,10 @@ export const OrderType = new GraphQLObjectType({
     },
     item_total: money({
       name: "OrderItemTotal",
-      resolve: ({ item_total, item_total_cents }) => ({
+      resolve: ({ item_total, item_total_cents }) => {return {
         cents: item_total_cents,
         display: item_total,
-      }),
+      }},
     }),
     email: {
       type: GraphQLString,
@@ -108,5 +108,5 @@ export const OrderType = new GraphQLObjectType({
       type: OrderAddressType,
       description: "Shipping address associated with the order",
     },
-  }),
+  }},
 })

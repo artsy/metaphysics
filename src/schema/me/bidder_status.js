@@ -18,11 +18,11 @@ export default {
     request,
     { rootValue: { lotStandingLoader } }
   ) =>
-    lotStandingLoader({
+    {return lotStandingLoader({
       sale_id,
       artwork_id,
     }).then(lotStanding => {
       if (lotStanding.length === 0) return null
       return lotStanding[0]
-    }),
+    })},
 }

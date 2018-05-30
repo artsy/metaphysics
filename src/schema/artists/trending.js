@@ -12,7 +12,7 @@ import {
 
 const TrendingArtistsType = new GraphQLObjectType({
   name: "TrendingArtists",
-  fields: () => ({
+  fields: () => {return {
     artists: {
       type: new GraphQLList(Artist.type),
       resolve: (
@@ -22,10 +22,10 @@ const TrendingArtistsType = new GraphQLObjectType({
         { rootValue: { artistLoader } }
       ) => {
         const ids = without(keys(deltaResponse), "cached", "context_type")
-        return Promise.all(ids.map(id => artistLoader(id)))
+        return Promise.all(ids.map(id => {return artistLoader(id)}))
       },
     },
-  }),
+  }},
 })
 
 const TrendingMetricsType = new GraphQLEnumType({
@@ -90,11 +90,11 @@ const TrendingArtists = {
     _request,
     { rootValue: { deltaLoader } }
   ) =>
-    deltaLoader({
+    {return deltaLoader({
       method,
       n: size,
       name: name + (double_time_period ? "_2t" : ""),
-    }),
+    })},
 }
 
 export default TrendingArtists

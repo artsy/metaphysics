@@ -6,4 +6,4 @@ import config from "config"
 
 const { POSITRON_API_BASE } = config
 
-export default path => fetch(urljoin(POSITRON_API_BASE, path))
+export default path => {return fetch(urljoin(POSITRON_API_BASE, path))}

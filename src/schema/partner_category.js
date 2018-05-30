@@ -7,7 +7,7 @@ import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
 
 const PartnerCategoryType = new GraphQLObjectType({
   name: "PartnerCategory",
-  fields: () => ({
+  fields: () => {return {
     ...IDFields,
     cached,
     category_type: CategoryType,
@@ -18,13 +18,13 @@ const PartnerCategoryType = new GraphQLObjectType({
       type: Partners.type,
       args: Partners.args,
       resolve: ({ id }, options, request, { rootValue: { partnersLoader } }) =>
-        partnersLoader(
+        {return partnersLoader(
           _.defaults(options, {
             partner_categories: [id],
           })
-        ),
+        )},
     },
-  }),
+  }},
 })
 
 const PartnerCategory = {
@@ -37,7 +37,7 @@ const PartnerCategory = {
     },
   },
   resolve: (root, { id }, request, { rootValue: { partnerCategoryLoader } }) =>
-    partnerCategoryLoader(id),
+    {return partnerCategoryLoader(id)},
 }
 
 export default PartnerCategory

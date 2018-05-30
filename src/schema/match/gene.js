@@ -25,7 +25,7 @@ const GeneMatch = {
     },
   },
   resolve: (_root, options, _request, { rootValue: { matchGeneLoader } }) =>
-    matchGeneLoader(options),
+    {return matchGeneLoader(options)},
 }
 
 export default GeneMatch
