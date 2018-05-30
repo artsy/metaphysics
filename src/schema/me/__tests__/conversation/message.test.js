@@ -59,11 +59,9 @@ describe("Me", () => {
           }
         `
 
-        return runAuthenticatedQuery(query, rootValue).then(
-          ({ me: conversation }) => {
-            expect(conversation).toMatchSnapshot()
-          }
-        )
+        return runAuthenticatedQuery(query, rootValue).then(({ me: conversation }) => {
+          expect(conversation).toMatchSnapshot()
+        })
       })
 
       it("handles null message bodies", () => {
@@ -102,11 +100,9 @@ describe("Me", () => {
           conversationMessagesLoader: () => Promise.resolve(message),
         })
 
-        return runAuthenticatedQuery(query, customRootValue).then(
-          ({ me: { conversation } }) => {
-            expect(conversation).toMatchSnapshot()
-          }
-        )
+        return runAuthenticatedQuery(query, customRootValue).then(({ me: { conversation } }) => {
+          expect(conversation).toMatchSnapshot()
+        })
       })
 
       it("returns proper is_from_user", () => {
@@ -137,11 +133,9 @@ describe("Me", () => {
           }
         `
 
-        return runAuthenticatedQuery(query, rootValue).then(
-          ({ me: conversation }) => {
-            expect(conversation).toMatchSnapshot()
-          }
-        )
+        return runAuthenticatedQuery(query, rootValue).then(({ me: conversation }) => {
+          expect(conversation).toMatchSnapshot()
+        })
       })
     })
   })

@@ -3,20 +3,13 @@ import BidderPosition from "schema/bidder_position"
 import Bidder from "schema/bidder"
 import Sale from "schema/sale"
 import SaleArtwork from "schema/sale_artwork"
-import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLBoolean,
-} from "graphql"
+import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLBoolean } from "graphql"
 
 // is leading human bidder
-export const isLeadingBidder = lotStanding =>
-  isExisty(lotStanding.leading_position)
+export const isLeadingBidder = lotStanding => isExisty(lotStanding.leading_position)
 
 export const isHighestBidder = lotStanding =>
-  isLeadingBidder(lotStanding) &&
-  lotStanding.sale_artwork.reserve_status !== "reserve_not_met"
+  isLeadingBidder(lotStanding) && lotStanding.sale_artwork.reserve_status !== "reserve_not_met"
 
 export const LotStandingType = new GraphQLObjectType({
   name: "LotStanding",
@@ -24,8 +17,7 @@ export const LotStandingType = new GraphQLObjectType({
     active_bid: {
       type: BidderPosition.type,
       description: "Your bid if it is currently winning",
-      resolve: lotStanding =>
-        (isHighestBidder(lotStanding) ? lotStanding.leading_position : null),
+      resolve: lotStanding => (isHighestBidder(lotStanding) ? lotStanding.leading_position : null),
     },
     bidder: {
       type: Bidder.type,
@@ -42,18 +34,12 @@ export const LotStandingType = new GraphQLObjectType({
     },
     most_recent_bid: {
       type: BidderPosition.type,
-      description:
-        "Your most recent bid—which is not necessarily winning (may be higher or lower)",
+      description: "Your most recent bid—which is not necessarily winning (may be higher or lower)",
       resolve: ({ max_position }) => max_position,
     },
     sale: {
       type: Sale.type,
-      resolve: (
-        { bidder },
-        options,
-        request,
-        { rootValue: { saleLoader } },
-      ) => {
+      resolve: ({ bidder }, options, request, { rootValue: { saleLoader } }) => {
         if (bidder.sale && bidder.sale.id) {
           // don't error if the sale is unpublished
           return saleLoader(bidder.sale.id).catch(() => null)
@@ -78,12 +64,7 @@ export default {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (
-    root,
-    { sale_id, artwork_id },
-    request,
-    { rootValue: { lotStandingLoader } },
-  ) => {
+  resolve: (root, { sale_id, artwork_id }, request, { rootValue: { lotStandingLoader } }) => {
     if (!lotStandingLoader) return null
     return lotStandingLoader({ sale_id, artwork_id }).then(([lotStanding]) => lotStanding)
   },

@@ -23,15 +23,13 @@ export default {
     root,
     { current, artwork_id, sale_id },
     request,
-    {
-      rootValue: { meBidderPositionsLoader, saleLoader, saleArtworkRootLoader },
-    },
+    { rootValue: { meBidderPositionsLoader, saleLoader, saleArtworkRootLoader } }
   ) =>
     meBidderPositionsLoader({
       artwork_id,
       sale_id,
       sort: "-created_at",
-    }).then((positions) => {
+    }).then(positions => {
       if (!current || artwork_id) return positions
       // When asking for "my current bids" we need to...
       //
@@ -50,13 +48,15 @@ export default {
       // fetching all of that related data to be able to do:
       // `bidder_position.sale_artwork.sale.auction_state != open`
       //
-      return Promise.all(_.map(latestPositions, position =>
+      return Promise.all(
+        _.map(latestPositions, position =>
           saleArtworkRootLoader(position.sale_artwork_id)
             // For unpublished artworks
-            .catch(() => null))).then(saleArtworks =>
-        Promise.all(_.map(_.compact(saleArtworks), saleArtwork =>
-            saleLoader(saleArtwork.sale_id))).then(sales =>
-          _.filter(latestPositions, (position) => {
+            .catch(() => null)
+        )
+      ).then(saleArtworks =>
+        Promise.all(_.map(_.compact(saleArtworks), saleArtwork => saleLoader(saleArtwork.sale_id))).then(sales =>
+          _.filter(latestPositions, position => {
             const saleArtwork = _.find(saleArtworks, {
               _id: position.sale_artwork_id,
             })
@@ -64,6 +64,8 @@ export default {
             const sale = _.find(sales, { id: saleArtwork.sale_id })
             if (!sale) return false
             return sale.auction_state === "open"
-          })))
+          })
+        )
+      )
     }),
 }

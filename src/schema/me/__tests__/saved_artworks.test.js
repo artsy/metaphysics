@@ -6,13 +6,7 @@ import { runAuthenticatedQuery } from "test/utils"
 describe("me { saved_artwork", () => {
   describe("Handles getting collection metadata", () => {
     xit("returns artworks for a collection", async () => {
-      const artworksPath = resolve(
-        "src",
-        "test",
-        "fixtures",
-        "gravity",
-        "artworks_array.json"
-      )
+      const artworksPath = resolve("src", "test", "fixtures", "gravity", "artworks_array.json")
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
 
       const query = gql`

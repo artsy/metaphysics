@@ -8,17 +8,12 @@ const ArtworkLayerType = new GraphQLObjectType({
     ...IDFields,
     artworks: {
       type: new GraphQLList(Artwork.type),
-      resolve: (
-        { id, type, artwork_id },
-        options,
-        request,
-        { rootValue: { relatedLayerArtworksLoader } },
-      ) =>
+      resolve: ({ id, type, artwork_id }, options, request, { rootValue: { relatedLayerArtworksLoader } }) =>
         relatedLayerArtworksLoader(
           { id, type },
           {
             artwork: [artwork_id],
-          },
+          }
         ),
     },
     description: {

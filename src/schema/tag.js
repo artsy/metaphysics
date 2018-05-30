@@ -1,12 +1,7 @@
 import cached from "./fields/cached"
 import Image from "./image"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLNonNull,
-} from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull } from "graphql"
 import filterArtworks from "./filter_artworks"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 
@@ -42,12 +37,7 @@ const Tag = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (
-    root,
-    { id },
-    request,
-    { fieldNodes, rootValue: { tagLoader } },
-  ) => {
+  resolve: (root, { id }, request, { fieldNodes, rootValue: { tagLoader } }) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ["filtered_artworks", "id", "__id"]

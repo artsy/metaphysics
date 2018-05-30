@@ -3,12 +3,7 @@
 import Artwork from "schema/artwork/index"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import {
-  GraphQLObjectType,
-  GraphQLID,
-  GraphQLNonNull,
-  GraphQLString,
-} from "graphql"
+import { GraphQLObjectType, GraphQLID, GraphQLNonNull, GraphQLString } from "graphql"
 
 export const ArtworkInquiryType = new GraphQLObjectType({
   name: "ArtworkInquiry",
@@ -31,12 +26,7 @@ export default {
   type: connectionDefinitions({ nodeType: ArtworkInquiryType }).connectionType,
   args: pageable({}),
   description: "A list of the current user’s inquiry requests",
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { accessToken, inquiryRequestsLoader } },
-  ) => {
+  resolve: (_root, options, _request, { rootValue: { accessToken, inquiryRequestsLoader } }) => {
     if (!accessToken) return null
     const { limit: size, offset } = getPagingParameters(options)
     const gravityArgs = {
@@ -49,6 +39,7 @@ export default {
       connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
-      }))
+      })
+    )
   },
 }

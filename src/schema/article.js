@@ -3,13 +3,7 @@ import AuthorType from "./author"
 import Image from "./image"
 import date from "./fields/date"
 import { IDFields, NodeInterface } from "./object_identification"
-import {
-  GraphQLInt,
-  GraphQLList,
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-} from "graphql"
+import { GraphQLInt, GraphQLList, GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
 
 const ArticleType = new GraphQLObjectType({
   name: "Article",
@@ -65,8 +59,7 @@ const Article = {
       description: "The ID of the Article",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { articleLoader } }) =>
-    articleLoader(id),
+  resolve: (root, { id }, request, { rootValue: { articleLoader } }) => articleLoader(id),
 }
 
 export default Article

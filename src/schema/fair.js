@@ -10,14 +10,7 @@ import Image from "./image"
 import { showConnection } from "./show"
 import Location from "./location"
 import { GravityIDFields } from "./object_identification"
-import {
-  GraphQLObjectType,
-  GraphQLID,
-  GraphQLString,
-  GraphQLBoolean,
-  GraphQLNonNull,
-  GraphQLEnumType,
-} from "graphql"
+import { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLBoolean, GraphQLNonNull, GraphQLEnumType } from "graphql"
 import { totalViaLoader } from "lib/total"
 
 const FairOrganizerType = new GraphQLObjectType({
@@ -28,12 +21,8 @@ const FairOrganizerType = new GraphQLObjectType({
     },
     profile: {
       type: Profile.type,
-      resolve: (
-        { profile_id },
-        options,
-        request,
-        { rootValue: { profileLoader } },
-      ) => profileLoader(profile_id).catch(() => null),
+      resolve: ({ profile_id }, options, request, { rootValue: { profileLoader } }) =>
+        profileLoader(profile_id).catch(() => null),
     },
   },
 })
@@ -130,12 +119,7 @@ const FairType = new GraphQLObjectType({
     },
     location: {
       type: Location.type,
-      resolve: (
-        { id, location, published },
-        options,
-        request,
-        { rootValue: { fairLoader } },
-      ) => {
+      resolve: ({ id, location, published }, options, request, { rootValue: { fairLoader } }) => {
         if (location) {
           return location
         } else if (published) {
@@ -149,12 +133,7 @@ const FairType = new GraphQLObjectType({
     },
     profile: {
       type: Profile.type,
-      resolve: (
-        { default_profile_id, organizer },
-        options,
-        request,
-        { rootValue: { profileLoader } },
-      ) => {
+      resolve: ({ default_profile_id, organizer }, options, request, { rootValue: { profileLoader } }) => {
         const id = default_profile_id || (organizer && organizer.profile_id)
         return (
           profileLoader(id)
@@ -176,12 +155,7 @@ const FairType = new GraphQLObjectType({
           defaultValue: "-featured",
         },
       }),
-      resolve: (
-        { id },
-        options,
-        request,
-        { rootValue: { fairBoothsLoader } },
-      ) => {
+      resolve: ({ id }, options, request, { rootValue: { fairBoothsLoader } }) => {
         const gravityOptions = omit(parseRelayOptions(options), ["page"])
 
         return Promise.all([
@@ -191,7 +165,8 @@ const FairType = new GraphQLObjectType({
           connectionFromArraySlice(results, options, {
             arrayLength: count,
             sliceStart: gravityOptions.offset,
-          }))
+          })
+        )
       },
     },
     start_at: date,
@@ -218,8 +193,7 @@ const Fair = {
       description: "The slug or ID of the Fair",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { fairLoader } }) =>
-    fairLoader(id),
+  resolve: (root, { id }, request, { rootValue: { fairLoader } }) => fairLoader(id),
 }
 
 export default Fair

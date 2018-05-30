@@ -1,9 +1,4 @@
-import {
-  GraphQLBoolean,
-  GraphQLInputObjectType,
-  GraphQLNonNull,
-  GraphQLString,
-} from "graphql"
+import { GraphQLBoolean, GraphQLInputObjectType, GraphQLNonNull, GraphQLString } from "graphql"
 import { OrderType } from "schema/me/order"
 import { mutationWithClientMutationId } from "graphql-relay"
 
@@ -84,13 +79,11 @@ export default mutationWithClientMutationId({
       notes,
       reserve,
       session_id,
-      shipping_address: {
- name, street, city, region, postal_code, use_id,
-},
+      shipping_address: { name, street, city, region, postal_code, use_id },
       telephone,
     },
     request,
-    { rootValue: { accessToken, updateOrderLoader } },
+    { rootValue: { accessToken, updateOrderLoader } }
   ) => {
     if (!accessToken) {
       if (!session_id) {

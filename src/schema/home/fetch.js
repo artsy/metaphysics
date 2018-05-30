@@ -1,14 +1,4 @@
-import {
-  clone,
-  first,
-  forEach,
-  map,
-  sampleSize,
-  shuffle,
-  slice,
-  filter,
-  sortBy,
-} from "lodash"
+import { clone, first, forEach, map, sampleSize, shuffle, slice, filter, sortBy } from "lodash"
 import blacklist from "lib/artist_blacklist"
 
 export const featuredFair = fairsLoader =>
@@ -16,10 +6,11 @@ export const featuredFair = fairsLoader =>
     size: 5,
     active: true,
     has_homepage_section: true,
-  }).then((fairs) => {
+  }).then(fairs => {
     if (fairs.length) {
-      return first(sortBy(fairs, ({ banner_size }) =>
-          ["x-large", "large", "medium", "small", "x-small"].indexOf(banner_size)))
+      return first(
+        sortBy(fairs, ({ banner_size }) => ["x-large", "large", "medium", "small", "x-small"].indexOf(banner_size))
+      )
     }
 
     return undefined // make undefined return explicit
@@ -37,7 +28,7 @@ export const featuredAuction = salesLoader =>
     live: true,
     size: 1,
     sort: "timely_at,name",
-  }).then((sales) => {
+  }).then(sales => {
     if (sales.length) {
       return first(sales)
     }
@@ -45,11 +36,10 @@ export const featuredAuction = salesLoader =>
     return undefined // make undefined return explicit
   })
 
-export const followedGenes = (followedGenesLoader, size) =>
-  followedGenesLoader({ size }).then(({ body }) => body)
+export const followedGenes = (followedGenesLoader, size) => followedGenesLoader({ size }).then(({ body }) => body)
 
 export const featuredGene = followedGenesLoader =>
-  followedGenes(followedGenesLoader, 1).then((follows) => {
+  followedGenes(followedGenesLoader, 1).then(follows => {
     if (follows.length) {
       return first(follows).gene
     }
@@ -70,10 +60,7 @@ export const relatedArtists = suggestedSimilarArtistsLoader =>
     exclude_followed_artists: true,
     size: 20,
   }).then(({ body }) => {
-    const filteredResults = filter(
-      body,
-      result => result.sim_artist.forsale_artworks_count > 0,
-    )
+    const filteredResults = filter(body, result => result.sim_artist.forsale_artworks_count > 0)
     return sampleSize(filteredResults, 2)
   })
 
@@ -82,7 +69,7 @@ export const popularArtists = deltaLoader =>
     method: "fetch",
     n: 9,
     name: "artist_follow_2t",
-  }).then((trending) => {
+  }).then(trending => {
     const clonedTrending = clone(trending)
     forEach(blacklist, id => delete clonedTrending[id])
     return clonedTrending

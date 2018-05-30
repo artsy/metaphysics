@@ -28,11 +28,7 @@ describe("SaleArtwork type", () => {
     symbol: "€",
   }
 
-  const execute = async (
-    query,
-    gravityResponse = saleArtwork,
-    rootValue = {}
-  ) =>
+  const execute = async (query, gravityResponse = saleArtwork, rootValue = {}) =>
     await runQuery(query, {
       saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
       ...rootValue,

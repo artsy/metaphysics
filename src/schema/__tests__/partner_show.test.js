@@ -182,9 +182,7 @@ describe("PartnerShow type", () => {
     })
   })
   it("includes the total number of artworks", () => {
-    rootValue.partnerShowArtworksLoader = sinon
-      .stub()
-      .returns(Promise.resolve({ headers: { "x-total-count": 42 } }))
+    rootValue.partnerShowArtworksLoader = sinon.stub().returns(Promise.resolve({ headers: { "x-total-count": 42 } }))
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -225,9 +223,7 @@ describe("PartnerShow type", () => {
     })
   })
   it("includes the number of artworks by a specific artist", () => {
-    rootValue.partnerShowArtworksLoader = sinon
-      .stub()
-      .returns(Promise.resolve({ headers: { "x-total-count": 2 } }))
+    rootValue.partnerShowArtworksLoader = sinon.stub().returns(Promise.resolve({ headers: { "x-total-count": 2 } }))
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -248,9 +244,7 @@ describe("PartnerShow type", () => {
     })
   })
   it("does not return errors when there is no cover image", () => {
-    rootValue.partnerShowArtworksLoader = sinon
-      .stub()
-      .returns(Promise.resolve({ body: [] }))
+    rootValue.partnerShowArtworksLoader = sinon.stub().returns(Promise.resolve({ body: [] }))
     const query = `
       {
         partner_show(id: "new-museum-1-2015-triennial-surround-audience") {

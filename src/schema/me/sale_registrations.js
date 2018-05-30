@@ -22,18 +22,17 @@ export const SaleRegistrationType = new GraphQLObjectType({
 export default {
   type: new GraphQLList(SaleRegistrationType),
   args: Sales.args,
-  resolve: (
-    root,
-    options,
-    request,
-    { rootValue: { meBiddersLoader, salesLoader } },
-  ) =>
+  resolve: (root, options, request, { rootValue: { meBiddersLoader, salesLoader } }) =>
     salesLoader(options).then(sales =>
       // TODO this can be cleaner
-      Promise.all(sales.map(sale =>
+      Promise.all(
+        sales.map(sale =>
           meBiddersLoader({ sale_id: sale.id }).then(bidders => ({
             sale,
             bidder: first(bidders),
             is_registered: bidders.length > 0,
-          }))))),
+          }))
+        )
+      )
+    ),
 }

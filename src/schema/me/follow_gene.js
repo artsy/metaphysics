@@ -11,15 +11,10 @@ export default mutationWithClientMutationId({
   outputFields: {
     gene: {
       type: GeneType,
-      resolve: ({ gene }, options, request, { rootValue: { geneLoader } }) =>
-        geneLoader(gene.id),
+      resolve: ({ gene }, options, request, { rootValue: { geneLoader } }) => geneLoader(gene.id),
     },
   },
-  mutateAndGetPayload: (
-    options,
-    request,
-    { rootValue: { followGeneLoader } },
-  ) => {
+  mutateAndGetPayload: (options, request, { rootValue: { followGeneLoader } }) => {
     if (!followGeneLoader) {
       throw new Error("Missing Follow Gene Loader. Check your access token.")
     }

@@ -25,6 +25,7 @@ export default {
       connectionFromArraySlice(body, options, {
         arrayLength: body.length,
         sliceStart: 0,
-      }))
+      })
+    )
   },
 }

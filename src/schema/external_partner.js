@@ -26,8 +26,7 @@ const ExternalPartner = {
       description: "The ID of the Partner",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { galaxyGalleriesLoader } }) =>
-    galaxyGalleriesLoader(id),
+  resolve: (root, { id }, request, { rootValue: { galaxyGalleriesLoader } }) => galaxyGalleriesLoader(id),
 }
 
 export default ExternalPartner

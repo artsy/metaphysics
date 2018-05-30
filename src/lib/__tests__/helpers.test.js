@@ -1,16 +1,10 @@
 import { exclude, toKey, isExisty, stripTags } from "lib/helpers"
 
 describe("exclude", () => {
-  const xs = [
-    { id: "foo", name: "Foo" },
-    { id: "bar", name: "Bar" },
-    { id: "baz", name: "Baz" },
-  ]
+  const xs = [{ id: "foo", name: "Foo" }, { id: "bar", name: "Bar" }, { id: "baz", name: "Baz" }]
 
   it("excludes objects given a list of values and which property to match against", () => {
-    expect(exclude(["foo", "baz"], "id")(xs)).toEqual([
-      { id: "bar", name: "Bar" },
-    ])
+    expect(exclude(["foo", "baz"], "id")(xs)).toEqual([{ id: "bar", name: "Bar" }])
   })
 
   it("simply returns the list if invoked without arguments", () => {

@@ -135,11 +135,11 @@ const Viewer = {
 const stitchedMutations = enableSchemaStitching
   ? {}
   : {
-    createConsignmentSubmission: CreateSubmissionMutation,
-    updateConsignmentSubmission: UpdateSubmissionMutation,
-    addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
-    recordArtworkView: recordArtworkViewMutation,
-  }
+      createConsignmentSubmission: CreateSubmissionMutation,
+      updateConsignmentSubmission: UpdateSubmissionMutation,
+      addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
+      recordArtworkView: recordArtworkViewMutation,
+    }
 
 const schema = new GraphQLSchema({
   allowedLegacyNames: ["__id"],

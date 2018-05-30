@@ -30,21 +30,19 @@ const Artists = {
     },
     sort: ArtistSorts,
   },
-  resolve: (
-    root,
-    options,
-    _request,
-    { rootValue: { artistLoader, artistsLoader } },
-  ) => {
+  resolve: (root, options, _request, { rootValue: { artistLoader, artistsLoader } }) => {
     if (options.slugs) {
-      return Promise.all(options.slugs.map(slug =>
+      return Promise.all(
+        options.slugs.map(slug =>
           artistLoader(
             slug,
             {},
             {
               requestThrottleMs: config.ARTICLE_REQUEST_THROTTLE_MS,
-            },
-          )))
+            }
+          )
+        )
+      )
     }
 
     return artistsLoader(options)

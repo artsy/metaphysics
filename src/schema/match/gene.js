@@ -24,8 +24,7 @@ const GeneMatch = {
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (_root, options, _request, { rootValue: { matchGeneLoader } }) =>
-    matchGeneLoader(options),
+  resolve: (_root, options, _request, { rootValue: { matchGeneLoader } }) => matchGeneLoader(options),
 }
 
 export default GeneMatch

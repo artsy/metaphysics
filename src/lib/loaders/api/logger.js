@@ -34,7 +34,7 @@ const logger = (requestID, host, key, metadata) => {
 }
 
 // This will only be triggered in non-production environments
-export const fetchLoggerSetup = (requestID) => {
+export const fetchLoggerSetup = requestID => {
   requests[requestID] = {}
 }
 

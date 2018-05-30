@@ -69,16 +69,12 @@ describe("Me", () => {
             ],
           })
         ),
-        artworksLoader: sinon
-          .stub()
-          .returns(Promise.resolve([artwork1, artwork2])),
+        artworksLoader: sinon.stub().returns(Promise.resolve([artwork1, artwork2])),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(
-        ({ me: { notifications_connection } }) => {
-          expect(notifications_connection).toEqual(expectedConnectionData)
-        }
-      )
+      return runAuthenticatedQuery(query, rootValue).then(({ me: { notifications_connection } }) => {
+        expect(notifications_connection).toEqual(expectedConnectionData)
+      })
     })
   })
 })

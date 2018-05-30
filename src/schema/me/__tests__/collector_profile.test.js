@@ -34,16 +34,12 @@ describe("Me", () => {
       }
 
       const rootValue = {
-        collectorProfileLoader: sinon
-          .stub()
-          .returns(Promise.resolve(collectorProfile)),
+        collectorProfileLoader: sinon.stub().returns(Promise.resolve(collectorProfile)),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(
-        ({ me: { collector_profile } }) => {
-          expect(collector_profile).toEqual(expectedProfileData)
-        }
-      )
+      return runAuthenticatedQuery(query, rootValue).then(({ me: { collector_profile } }) => {
+        expect(collector_profile).toEqual(expectedProfileData)
+      })
     })
   })
 })

@@ -1,8 +1,5 @@
 import { GraphQLString, GraphQLNonNull } from "graphql"
-import {
-  mutationWithClientMutationId,
-  cursorForObjectInConnection,
-} from "graphql-relay"
+import { mutationWithClientMutationId, cursorForObjectInConnection } from "graphql-relay"
 import { ConversationType, MessageEdge } from "./index"
 
 export default mutationWithClientMutationId({
@@ -33,26 +30,15 @@ export default mutationWithClientMutationId({
     messageEdge: {
       type: MessageEdge,
       resolve: ({ newMessagePayload }) => ({
-        cursor: cursorForObjectInConnection(
-          [newMessagePayload],
-          newMessagePayload,
-        ),
+        cursor: cursorForObjectInConnection([newMessagePayload], newMessagePayload),
         node: newMessagePayload,
       }),
     },
   },
   mutateAndGetPayload: (
-    {
- id, from, body_text, reply_to_message_id,
-},
+    { id, from, body_text, reply_to_message_id },
     request,
-    {
-      rootValue: {
-        conversationLoader,
-        conversationCreateMessageLoader,
-        userID,
-      },
-    },
+    { rootValue: { conversationLoader, conversationCreateMessageLoader, userID } }
   ) => {
     if (!conversationCreateMessageLoader) return null
     return conversationCreateMessageLoader(id, {
@@ -75,6 +61,7 @@ export default mutationWithClientMutationId({
           // This addition is only for MP so it can determine if the message was from the current user.
           conversation_from_address: updatedConversation.from_email,
         },
-      })))
+      }))
+    )
   },
 })

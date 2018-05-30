@@ -51,41 +51,31 @@ describe("HomePageArtistModule", () => {
 
   describe("when signed-in", () => {
     it("returns trending artists", () =>
-      runAuthenticatedQuery(query("TRENDING"), rootValue).then(
-        ({ home_page }) => {
-          expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
-        }
-      ))
+      runAuthenticatedQuery(query("TRENDING"), rootValue).then(({ home_page }) => {
+        expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
+      }))
 
     it("returns trending artists", () =>
-      runAuthenticatedQuery(query("TRENDING"), rootValue).then(
-        ({ home_page }) => {
-          expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
-        }
-      ))
+      runAuthenticatedQuery(query("TRENDING"), rootValue).then(({ home_page }) => {
+        expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
+      }))
 
     it("returns suggestions", () =>
-      runAuthenticatedQuery(query("SUGGESTED"), rootValue).then(
-        ({ home_page }) => {
-          expect(home_page.artist_module.results).toEqual([{ id: "suggested" }])
-        }
-      ))
+      runAuthenticatedQuery(query("SUGGESTED"), rootValue).then(({ home_page }) => {
+        expect(home_page.artist_module.results).toEqual([{ id: "suggested" }])
+      }))
   })
 
   describe("when signed-out", () => {
     it("returns trending artists", () =>
-      runAuthenticatedQuery(query("TRENDING"), rootValue).then(
-        ({ home_page }) => {
-          expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
-        }
-      ))
+      runAuthenticatedQuery(query("TRENDING"), rootValue).then(({ home_page }) => {
+        expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
+      }))
 
     it("returns trending artists", () =>
-      runAuthenticatedQuery(query("TRENDING"), rootValue).then(
-        ({ home_page }) => {
-          expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
-        }
-      ))
+      runAuthenticatedQuery(query("TRENDING"), rootValue).then(({ home_page }) => {
+        expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
+      }))
 
     it("does not return any suggestions", () =>
       graphql(schema, query("SUGGESTED")).then(response => {

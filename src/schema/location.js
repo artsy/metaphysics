@@ -2,12 +2,7 @@ import { existyValue } from "lib/helpers"
 import cached from "./fields/cached"
 import DayScheduleType from "./day_schedule"
 import { IDFields } from "./object_identification"
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLFloat,
-  GraphQLList,
-} from "graphql"
+import { GraphQLString, GraphQLObjectType, GraphQLFloat, GraphQLList } from "graphql"
 
 export const LocationType = new GraphQLObjectType({
   name: "Location",

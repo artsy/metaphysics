@@ -22,8 +22,7 @@ describe("HomePageArtistModules", () => {
 
   beforeEach(() => {
     rootValue = {
-      suggestedSimilarArtistsLoader: () =>
-        Promise.resolve(artistResultsWithData),
+      suggestedSimilarArtistsLoader: () => Promise.resolve(artistResultsWithData),
       trendingArtistsLoader: () => Promise.resolve(artistResultsWithData),
       popularArtistsLoader: () => Promise.resolve(artistResultsWithData),
     }
@@ -48,8 +47,7 @@ describe("HomePageArtistModules", () => {
         }))
 
       it("only shows the trending and popular artists modules if there are no suggestions", () => {
-        rootValue.suggestedSimilarArtistsLoader = () =>
-          Promise.resolve(artistResultsWithoutData)
+        rootValue.suggestedSimilarArtistsLoader = () => Promise.resolve(artistResultsWithoutData)
         return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, "key")
           expect(keys).toEqual(["TRENDING", "POPULAR"])

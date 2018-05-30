@@ -36,11 +36,9 @@ describe("UpdateCollectorProfile", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
-      ({ updateCollectorProfile }) => {
-        expect(updateCollectorProfile).toEqual(expectedProfileData)
-      }
-    )
+    return runAuthenticatedQuery(mutation, rootValue).then(({ updateCollectorProfile }) => {
+      expect(updateCollectorProfile).toEqual(expectedProfileData)
+    })
   })
 
   it("throws error when data loader is missing", () => {
@@ -60,8 +58,7 @@ describe("UpdateCollectorProfile", () => {
 
     const rootValue = {}
 
-    const errorResponse =
-      "Missing Update Collector Profile Loader. Check your access token."
+    const errorResponse = "Missing Update Collector Profile Loader. Check your access token."
 
     expect.assertions(1)
     return runAuthenticatedQuery(mutation, rootValue)

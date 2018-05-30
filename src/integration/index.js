@@ -10,7 +10,8 @@ const get = (url, options) =>
     request(url, options, (err, response) => {
       if (err) return reject(err)
       return resolve(JSON.parse(response.body))
-    }))
+    })
+  )
 
 const metaphysics = endpoint => (query, vars = {}) => {
   const variables = JSON.stringify(vars)
@@ -93,7 +94,8 @@ describe("Integration specs", () => {
         staging(query, { id: "cindy-sherman-untitled" }),
         production(query, { id: "cindy-sherman-untitled" }),
       ]).then(([stagingResponse, productionResponse]) =>
-        deepEqual(stagingResponse, productionResponse).should.be.true())).catch((e) => {
+        deepEqual(stagingResponse, productionResponse).should.be.true()
+      )).catch(e => {
       throw e
     })
   })
@@ -147,7 +149,7 @@ describe("Integration specs", () => {
       staging(query).then(({ errors, data }) => {
         isUndefined(errors).should.be.true()
         return keys(data).should.eql(["featured_artists", "featured_genes"])
-      })).catch((e) => {
+      })).catch(e => {
       throw e
     })
   })

@@ -5,17 +5,9 @@ import { warn } from "lib/loggers"
 import cached from "./fields/cached"
 import CollectionSorts from "./sorts/collection_sorts"
 import { artworkConnection } from "./artwork"
-import {
-  queriedForFieldsOtherThanBlacklisted,
-  parseRelayOptions,
-} from "lib/helpers"
+import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLBoolean,
-} from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean } from "graphql"
 
 // Note to developers working on collections, the staging server does not get a copy
 // of all artwork saves, so you will need to add some each week in order to have data
@@ -37,24 +29,17 @@ export const CollectionType = new GraphQLObjectType({
         },
         sort: CollectionSorts,
       },
-      resolve: (
-        { id },
-        options,
-        _request,
-        { rootValue: { collectionArtworksLoader } },
-      ) => {
-        const gravityOptions = Object.assign(
-          { total_count: true },
-          parseRelayOptions(options),
-        )
+      resolve: ({ id }, options, _request, { rootValue: { collectionArtworksLoader } }) => {
+        const gravityOptions = Object.assign({ total_count: true }, parseRelayOptions(options))
         delete gravityOptions.page // this can't also be used with the offset in gravity
         return collectionArtworksLoader(id, gravityOptions)
           .then(({ body, headers }) =>
             connectionFromArraySlice(body, options, {
               arrayLength: headers["x-total-count"],
               sliceStart: gravityOptions.offset,
-            }))
-          .catch((e) => {
+            })
+          )
+          .catch(e => {
             warn("Bypassing Gravity error: ", e)
             // For some users with no favourites, Gravity produces an error of "Collection Not Found".
             // This can cause the Gravity endpoint to produce a 404, so we will intercept the error
@@ -86,7 +71,7 @@ export const collectionResolverFactory = collection_id => (
   _root,
   options,
   _request,
-  { fieldNodes, rootValue: { collectionLoader } },
+  { fieldNodes, rootValue: { collectionLoader } }
 ) => {
   const id = collection_id || options.id
   const blacklistedFields = ["artworks_connection", "id", "__id"]

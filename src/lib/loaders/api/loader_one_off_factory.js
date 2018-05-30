@@ -14,9 +14,6 @@ import { loaderInterface } from "./loader_interface"
  */
 
 export const loaderOneOffFactory = (api, _apiName, path, options) => {
-  const loader = new DataLoader(
-    () => Promise.resolve([api(path, options).then(r => r.body)]),
-    { cache: false },
-  )
+  const loader = new DataLoader(() => Promise.resolve([api(path, options).then(r => r.body)]), { cache: false })
   return loaderInterface(loader, path, options)(options)
 }

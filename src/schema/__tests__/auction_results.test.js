@@ -41,9 +41,7 @@ describe("Artist type", () => {
         .stub()
         .withArgs(artist.id)
         .returns(Promise.resolve(artist)),
-      auctionLotLoader: sinon
-        .stub()
-        .returns(Promise.resolve(auctionResultResponse)),
+      auctionLotLoader: sinon.stub().returns(Promise.resolve(auctionResultResponse)),
     }
   })
 

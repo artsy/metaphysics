@@ -33,6 +33,7 @@ export default {
       connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
-      }))
+      })
+    )
   },
 }

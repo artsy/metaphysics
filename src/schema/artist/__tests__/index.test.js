@@ -9,8 +9,7 @@ describe("Artist type", () => {
       artistLoader: () => artist,
       articlesLoader: () => Promise.resolve({ count: 22 }),
       artistGenesLoader: () => Promise.resolve([{ name: "Foo Bar" }]),
-      relatedMainArtistsLoader: () =>
-        Promise.resolve({ headers: { "x-total-count": 42 } }),
+      relatedMainArtistsLoader: () => Promise.resolve({ headers: { "x-total-count": 42 } }),
     }
 
     artist = {
@@ -132,10 +131,7 @@ describe("Artist type", () => {
     return runQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         artist: {
-          collections: [
-            "Catty Art Collections",
-            "Matt's Personal Art Collection",
-          ],
+          collections: ["Catty Art Collections", "Matt's Personal Art Collection"],
         },
       })
     })
@@ -450,9 +446,7 @@ describe("Artist type", () => {
       })
       describe("without a featured partner bio", () => {
         it("returns the artsy blurb if there is no featured partner bio", () => {
-          rootValue.partnerArtistsForArtistLoader = sinon
-            .stub()
-            .returns(Promise.resolve([]))
+          rootValue.partnerArtistsForArtistLoader = sinon.stub().returns(Promise.resolve([]))
           artist.blurb = "artsy blurb"
           const query = `
             {
@@ -578,14 +572,7 @@ describe("Artist type", () => {
       rootValue.relatedShowsLoader = sinon
         .stub()
         .withArgs(artist.id)
-        .returns(
-          Promise.resolve([
-            privateShow,
-            publicShow,
-            partnerlessShow,
-            galaxyShow,
-          ])
-        )
+        .returns(Promise.resolve([privateShow, publicShow, partnerlessShow, galaxyShow]))
     })
     it("excludes shows from private partners for related shows", () => {
       const query = `

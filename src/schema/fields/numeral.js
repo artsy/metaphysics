@@ -10,8 +10,7 @@ export default fn => ({
   args: {
     format: {
       type: GraphQLString,
-      description:
-        "Returns a `String` when format is specified. e.g.`'0,0.0000''`",
+      description: "Returns a `String` when format is specified. e.g.`'0,0.0000''`",
     },
     label: {
       type: GraphQLString,

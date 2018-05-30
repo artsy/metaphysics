@@ -18,19 +18,14 @@ export default mutationWithClientMutationId({
   outputFields: {
     artist: {
       type: ArtistType,
-      resolve: (
-        { artist_id },
-        options,
-        request,
-        { rootValue: { artistLoader } },
-      ) => artistLoader(artist_id),
+      resolve: ({ artist_id }, options, request, { rootValue: { artistLoader } }) => artistLoader(artist_id),
     },
     popular_artists: PopularArtists,
   },
   mutateAndGetPayload: (
     { artist_id, unfollow },
     request,
-    { rootValue: { accessToken, followArtistLoader, unfollowArtistLoader } },
+    { rootValue: { accessToken, followArtistLoader, unfollowArtistLoader } }
   ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")

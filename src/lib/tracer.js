@@ -49,7 +49,7 @@ export function middleware(req, res, next) {
 
   tracer
     .trace("graphql.query", { resource })
-    .then((span) => {
+    .then(span => {
       span.setTag("query", query)
 
       res.locals.span = span // eslint-disable-line no-param-reassign
@@ -60,7 +60,7 @@ export function middleware(req, res, next) {
 
       return next()
     })
-    .catch((e) => {
+    .catch(e => {
       throw e
     })
 }

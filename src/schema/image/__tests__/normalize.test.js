@@ -26,30 +26,21 @@ describe("setVersion", () => {
   }
 
   it("works with JPGs", () => {
-    expect(setVersion(image, ["large"])).toBe(
-      "https://xxx.cloudfront.net/xxx/large.jpg"
-    )
+    expect(setVersion(image, ["large"])).toBe("https://xxx.cloudfront.net/xxx/large.jpg")
   })
 
   it("works with PNGs", () => {
-    expect(setVersion(image, ["icon"])).toBe(
+    expect(setVersion(image, ["icon"])).toBe("https://xxx.cloudfront.net/xxx/icon.png")
+  })
+
+  it("supports a prioritized list of versions", () => {
+    expect(setVersion(image, ["version_that_will_fall_thru_because_it_doesnt_exist", "icon"])).toBe(
       "https://xxx.cloudfront.net/xxx/icon.png"
     )
   })
 
-  it("supports a prioritized list of versions", () => {
-    expect(
-      setVersion(image, [
-        "version_that_will_fall_thru_because_it_doesnt_exist",
-        "icon",
-      ])
-    ).toBe("https://xxx.cloudfront.net/xxx/icon.png")
-  })
-
   it("falls back to any existy version", () => {
-    expect(setVersion(image, ["garbage"])).toBe(
-      "https://xxx.cloudfront.net/xxx/large.jpg"
-    )
+    expect(setVersion(image, ["garbage"])).toBe("https://xxx.cloudfront.net/xxx/large.jpg")
   })
 })
 
@@ -69,12 +60,10 @@ describe("image response normalization", () => {
       {
         original_height: 1919,
         original_width: 1352,
-        image_url:
-          "https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/:version.jpg",
+        image_url: "https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/:version.jpg",
         image_versions: ["tall"],
         image_urls: {
-          tall:
-            "https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/tall.jpg",
+          tall: "https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/tall.jpg",
         },
       },
     ]
@@ -83,12 +72,10 @@ describe("image response normalization", () => {
       {
         original_height: 1919,
         original_width: 1352,
-        url:
-          "https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/:version.jpg",
+        url: "https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/:version.jpg",
         versions: ["tall"],
         urls: {
-          tall:
-            "https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/tall.jpg",
+          tall: "https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/tall.jpg",
         },
       },
     ]
@@ -108,26 +95,20 @@ describe("image response normalization", () => {
 
     it("normalizes the keys", () => {
       const normalized = normalize(first(weirdResponse))
-      expect(normalized.image_url).toBe(
-        "https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/:version.jpg"
-      )
+      expect(normalized.image_url).toBe("https://d32dm0rphc51dk.cloudfront.net/psvdGBpjBmA07RrOo6bEKw/:version.jpg")
       expect(normalized.image_versions).toEqual(["tall"])
     })
 
     it("normalizes bare URLs", () => {
       const normalized = normalize("https://xxx.cloudfront.net/xxx/cat.jpg")
-      expect(normalized.image_url).toBe(
-        "https://xxx.cloudfront.net/xxx/cat.jpg"
-      )
+      expect(normalized.image_url).toBe("https://xxx.cloudfront.net/xxx/cat.jpg")
     })
 
     it("doesn't blow up on images without a ':version' substring", () => {
       const normalized = normalize({
         image_url: "https://xxx.cloudfront.net/xxx/cat.jpg",
       })
-      expect(normalized.image_url).toBe(
-        "https://xxx.cloudfront.net/xxx/cat.jpg"
-      )
+      expect(normalized.image_url).toBe("https://xxx.cloudfront.net/xxx/cat.jpg")
     })
 
     it("removes bad responses from mixed response", () => {

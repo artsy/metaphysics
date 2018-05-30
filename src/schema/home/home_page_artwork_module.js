@@ -6,13 +6,7 @@ import Context from "./context"
 import Params from "./params"
 import { NodeInterface } from "schema/object_identification"
 import { toGlobalId } from "graphql-relay"
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLBoolean,
-  GraphQLID,
-  GraphQLNonNull,
-} from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLID, GraphQLNonNull } from "graphql"
 
 let possibleArgs
 
@@ -35,8 +29,7 @@ export const HomePageArtworkModuleType = new GraphQLObjectType({
     context: Context,
     display: {
       type: GraphQLString,
-      deprecationReason:
-        "Favor `is_`-prefixed Booleans (*and* this should be a Boolean)",
+      deprecationReason: "Favor `is_`-prefixed Booleans (*and* this should be a Boolean)",
     },
     is_displayable: {
       type: GraphQLBoolean,
@@ -77,14 +70,7 @@ const HomePageArtworkModule = {
       description: "ID of related artist to target for related artist rails",
     },
   },
-  resolve: (
-    root,
-    {
- key, id, followed_artist_id, related_artist_id,
-},
-    request,
-    { rootValue: { geneLoader } },
-  ) => {
+  resolve: (root, { key, id, followed_artist_id, related_artist_id }, request, { rootValue: { geneLoader } }) => {
     // TODO Really not entirely sure what this `display` param is about.
     const display = true
     switch (key) {

@@ -6,8 +6,7 @@ import { unescape } from "querystring"
 import { loaderOneOffFactory } from "../api/loader_one_off_factory"
 
 // TODO: Buffer Constructor deprecated, use static method.
-const toBase64 = string =>
-  Buffer.from(unescape(encodeURIComponent(string)), "binary").toString("base64")
+const toBase64 = string => Buffer.from(unescape(encodeURIComponent(string)), "binary").toString("base64")
 
 export default () => ({
   // The outer function is so that we can pass params from the schema,
@@ -20,12 +19,7 @@ export default () => ({
       },
     }),
 
-  createNewGeminiEntryAssetLoader: ({
-    template_key,
-    source_key,
-    source_bucket,
-    metadata,
-  }) =>
+  createNewGeminiEntryAssetLoader: ({ template_key, source_key, source_bucket, metadata }) =>
     loaderOneOffFactory(gemini, "gemini", "entries.json", {
       method: "POST",
       form: {

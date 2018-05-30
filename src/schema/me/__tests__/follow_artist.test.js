@@ -50,17 +50,15 @@ describe("FollowArtist", () => {
     `
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
-      ({ followArtist }) => {
-        expect(followArtist).toEqual({
-          artist: {
-            name: "Damon Zucconi",
-          },
-          popular_artists: {
-            artists: [{ name: "Antonio Carreno" }, { name: "Benjamin Schmit" }],
-          },
-        })
-      }
-    )
+    return runAuthenticatedQuery(mutation, rootValue).then(({ followArtist }) => {
+      expect(followArtist).toEqual({
+        artist: {
+          name: "Damon Zucconi",
+        },
+        popular_artists: {
+          artists: [{ name: "Antonio Carreno" }, { name: "Benjamin Schmit" }],
+        },
+      })
+    })
   })
 })

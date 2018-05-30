@@ -3,8 +3,7 @@ import { GraphQLString } from "graphql"
 
 const moduleTitle = {
   active_bids: () => "Your active bids",
-  current_fairs: ({ rootValue: { fairsLoader } }) =>
-    featuredFair(fairsLoader).then(fair => fair && fair.name),
+  current_fairs: ({ rootValue: { fairsLoader } }) => featuredFair(fairsLoader).then(fair => fair && fair.name),
   followed_artist: ({ rootValue: { artistLoader }, params }) =>
     artistLoader(params.followed_artist_id).then(artist => artist && artist.name),
   followed_artists: () => "Works by artists you follow",
@@ -15,7 +14,7 @@ const moduleTitle = {
       return gene.name
     }
     // Backward compatibility for Force.
-    return featuredGene(followedGenesLoader).then((fetchedGene) => {
+    return featuredGene(followedGenesLoader).then(fetchedGene => {
       if (fetchedGene) {
         return fetchedGene.name
       }

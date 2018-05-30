@@ -15,9 +15,7 @@ describe("Articles type", () => {
     }
 
     rootValue = {
-      articlesLoader: sinon
-        .stub()
-        .returns(Promise.resolve({ results: [article] })),
+      articlesLoader: sinon.stub().returns(Promise.resolve({ results: [article] })),
     }
   })
 

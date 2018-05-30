@@ -17,10 +17,7 @@ import morgan from "artsy-morgan"
 import raven from "raven"
 import xapp from "artsy-xapp"
 import crunchInterceptor from "./lib/crunchInterceptor"
-import {
-  fetchLoggerSetup,
-  fetchLoggerRequestDone,
-} from "lib/loaders/api/logger"
+import { fetchLoggerSetup, fetchLoggerRequestDone } from "lib/loaders/api/logger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
 import { mergeSchemas } from "./lib/stitching/mergeSchemas"
@@ -44,14 +41,12 @@ const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
 const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
-const logQueryDetailsThreshold =
-  LOG_QUERY_DETAILS_THRESHOLD && parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10) // null by default
+const VALUE = parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10) // null by default
+const logQueryDetailsThreshold = LOG_QUERY_DETAILS_THRESHOLD && VALUE
 
 function logQueryDetailsIfEnabled() {
   if (Number.isInteger(logQueryDetailsThreshold)) {
-    console.warn(`[FEATURE] Enabling logging of queries running past the ${
-        logQueryDetailsThreshold
-      } sec threshold.`)
+    console.warn(`[FEATURE] Enabling logging of queries running past the ${logQueryDetailsThreshold} sec threshold.`)
     return logQueryDetails(logQueryDetailsThreshold)
   }
   // no-op
@@ -151,11 +146,9 @@ async function startApp() {
           isProduction,
         }),
         validationRules: [depthLimit(queryLimit)],
-        extensions: enableRequestLogging
-          ? fetchLoggerRequestDone(requestID)
-          : undefined,
+        extensions: enableRequestLogging ? fetchLoggerRequestDone(requestID) : undefined,
       }
-    }),
+    })
   )
 
   if (enableSentry) {

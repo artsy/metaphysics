@@ -1,14 +1,7 @@
 import { map, omit } from "lodash"
 import SaleArtwork from "./sale_artwork"
 import numeral from "./fields/numeral"
-import {
-  GraphQLList,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLBoolean,
-  GraphQLInt,
-  GraphQLID,
-} from "graphql"
+import { GraphQLList, GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLInt, GraphQLID } from "graphql"
 import {
   SaleArtworksAggregationResultsType,
   SaleArtworksAggregation,
@@ -58,10 +51,7 @@ export const SaleArtworkAggregations = {
   description: "Returns aggregation counts for the given filter query.",
   type: new GraphQLList(SaleArtworksAggregationResultsType),
   resolve: ({ aggregations }) => {
-    const whitelistedAggregations = omit(aggregations, [
-      "total",
-      "followed_artists",
-    ])
+    const whitelistedAggregations = omit(aggregations, ["total", "followed_artists"])
     return map(whitelistedAggregations, (counts, slice) => ({
       slice,
       counts,
@@ -97,12 +87,7 @@ const FilterSaleArtworks = {
   description: "Sale Artworks Elastic Search results",
   deprecationReason: "This type has been superceded by `sale_artworks`",
   args: filterSaleArtworksArgs,
-  resolve: (
-    root,
-    options,
-    request,
-    { rootValue: { saleArtworksFilterLoader } },
-  ) => saleArtworksFilterLoader(options),
+  resolve: (root, options, request, { rootValue: { saleArtworksFilterLoader } }) => saleArtworksFilterLoader(options),
 }
 
 export default FilterSaleArtworks

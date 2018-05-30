@@ -3,12 +3,7 @@ import initials from "./fields/initials"
 import numeral from "./fields/numeral"
 import Image from "./image"
 import { GravityIDFields } from "./object_identification"
-import {
-  GraphQLString,
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLBoolean,
-} from "graphql"
+import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
 
 const ProfileType = new GraphQLObjectType({
   name: "Profile",
@@ -42,12 +37,7 @@ const ProfileType = new GraphQLObjectType({
     initials: initials("owner.name"),
     is_followed: {
       type: GraphQLBoolean,
-      resolve: (
-        { id },
-        {},
-        request,
-        { rootValue: { followedProfileLoader } },
-      ) => {
+      resolve: ({ id }, {}, request, { rootValue: { followedProfileLoader } }) => {
         if (!followedProfileLoader) return false
         return followedProfileLoader(id).then(({ is_followed }) => is_followed)
       },
@@ -76,8 +66,7 @@ const Profile = {
       description: "The slug or ID of the Profile",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { profileLoader } }) =>
-    profileLoader(id),
+  resolve: (root, { id }, request, { rootValue: { profileLoader } }) => profileLoader(id),
 }
 
 export default Profile

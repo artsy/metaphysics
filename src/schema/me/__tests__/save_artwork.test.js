@@ -46,9 +46,7 @@ describe("SaveArtworkMutation", () => {
   it("removes an artwork", () => {
     const mutation = gql`
       mutation {
-        saveArtwork(
-          input: { artwork_id: "damon-zucconi-slow-verb", remove: true }
-        ) {
+        saveArtwork(input: { artwork_id: "damon-zucconi-slow-verb", remove: true }) {
           artwork {
             date
             title

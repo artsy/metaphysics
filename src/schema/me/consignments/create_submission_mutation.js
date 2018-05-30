@@ -16,11 +16,7 @@ export const config = {
       resolve: response => response,
     },
   },
-  mutateAndGetPayload: (
-    request,
-    _response,
-    { rootValue: { submissionCreateLoader } },
-  ) => {
+  mutateAndGetPayload: (request, _response, { rootValue: { submissionCreateLoader } }) => {
     if (!submissionCreateLoader) return null
     return submissionCreateLoader(request)
   },

@@ -22,12 +22,7 @@ export default {
   type: connectionDefinitions({ nodeType: FollowArtistType }).connectionType,
   args: pageable({}),
   description: "A list of the current user’s inquiry requests",
-  resolve: (
-    root,
-    options,
-    request,
-    { rootValue: { followedArtistsLoader } },
-  ) => {
+  resolve: (root, options, request, { rootValue: { followedArtistsLoader } }) => {
     if (!followedArtistsLoader) return null
     const { limit: size, offset } = getPagingParameters(options)
     const gravityArgs = {
@@ -39,6 +34,7 @@ export default {
       connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
-      }))
+      })
+    )
   },
 }

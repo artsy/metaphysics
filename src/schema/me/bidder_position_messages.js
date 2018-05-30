@@ -4,7 +4,8 @@ export const BiddingMessages = [
     id: "OUTBID",
     gravity_key: "Please enter a bid higher than",
     header: "Your bid wasn't high enough",
-    description_md: () => "Another bidder placed a higher max bid or the same max bid before you did.  \
+    description_md: () =>
+      "Another bidder placed a higher max bid or the same max bid before you did.  \
  Bid again to take the lead.",
   },
   {
@@ -31,15 +32,16 @@ export const BiddingMessages = [
     id: "BIDDER_NOT_QUALIFIED",
     gravity_key: "Bidder not qualified to bid on this auction.",
     header: "Bid not placed",
-    description_md: () => "Your bid can’t be placed at this time.\
+    description_md: () =>
+      "Your bid can’t be placed at this time.\
  Please contact [support@artsy.net](mailto:support@artsy.net) for more information.",
-
   },
   {
     id: "ERROR",
     gravity_key: "unknown error",
     header: "Bid not placed",
-    description_md: () => "Your bid can’t be placed at this time.\
+    description_md: () =>
+      "Your bid can’t be placed at this time.\
  Please contact [support@artsy.net](mailto:support@artsy.net) for more information.",
   },
 ]

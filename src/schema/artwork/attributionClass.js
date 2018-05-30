@@ -13,8 +13,7 @@ const AttributionClass = new GraphQLObjectType({
     },
     info: {
       type: GraphQLString,
-      description:
-        "Descriptive phrase used as companion for attribution class name display",
+      description: "Descriptive phrase used as companion for attribution class name display",
     },
     short_description: {
       type: GraphQLString,
@@ -22,8 +21,7 @@ const AttributionClass = new GraphQLObjectType({
     },
     long_description: {
       type: GraphQLString,
-      description:
-        "Long descriptive phrase used as companion for short_description",
+      description: "Long descriptive phrase used as companion for short_description",
     },
   },
 })

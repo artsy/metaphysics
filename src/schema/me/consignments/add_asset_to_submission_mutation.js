@@ -27,11 +27,7 @@ export default mutationWithClientMutationId({
       resolve: asset => asset,
     },
   },
-  mutateAndGetPayload: (
-    assets,
-    _request,
-    { rootValue: { assetCreateLoader } },
-  ) => {
+  mutateAndGetPayload: (assets, _request, { rootValue: { assetCreateLoader } }) => {
     if (!assetCreateLoader) return null
     return assetCreateLoader(assets)
   },

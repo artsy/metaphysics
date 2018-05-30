@@ -34,7 +34,7 @@ function createRedisClient() {
   const client = redis.createClient({
     host: redisURL.hostname,
     port: redisURL.port,
-    retryStrategy: (options) => {
+    retryStrategy: options => {
       if (options.error) {
         // Errors that lead to the connection being dropped are not emitted to
         // the error event handler, so send it there ourselves so we can handle
@@ -64,8 +64,7 @@ function createRedisClient() {
     client.auth(redisURL.auth.split(":")[1])
   }
   client.on("error", error)
-  VerboseEvents.forEach(event =>
-    client.on(event, () => verbose(`[Cache] ${event}`)))
+  VerboseEvents.forEach(event => client.on(event, () => verbose(`[Cache] ${event}`)))
   return client
 }
 
@@ -114,7 +113,7 @@ export default {
     const timestamp = new Date().getTime()
     /* eslint-disable no-param-reassign */
     if (isArray(data)) {
-      data.forEach((datum) => {
+      data.forEach(datum => {
         datum.cached = timestamp
         return true
       })
@@ -123,15 +122,9 @@ export default {
     }
     /* eslint-enable no-param-reassign */
 
-    return client.set(
-      key,
-      JSON.stringify(data),
-      "EX",
-      CACHE_LIFETIME_IN_SECONDS,
-      (err) => {
-        if (err) error(err)
-      },
-    )
+    return client.set(key, JSON.stringify(data), "EX", CACHE_LIFETIME_IN_SECONDS, err => {
+      if (err) error(err)
+    })
   },
 
   delete: key =>
@@ -139,5 +132,6 @@ export default {
       client.del(key, (err, response) => {
         if (err) return reject(err)
         return resolve(response)
-      })),
+      })
+    ),
 }

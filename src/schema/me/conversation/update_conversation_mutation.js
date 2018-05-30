@@ -24,7 +24,7 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: (
     { conversationId, fromLastViewedMessageId },
     request,
-    { rootValue: { conversationUpdateLoader } },
+    { rootValue: { conversationUpdateLoader } }
   ) => {
     if (!conversationUpdateLoader) return null
     return conversationUpdateLoader(conversationId, {

@@ -45,11 +45,9 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
-        ({ gene: { filtered_artworks: { hits } } }) => {
-          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
-        }
-      )
+      return runQuery(query, rootValue).then(({ gene: { filtered_artworks: { hits } } }) => {
+        expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+      })
     })
   })
 
@@ -364,11 +362,9 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
-        ({ gene: { filtered_artworks: { hits } } }) => {
-          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
-        }
-      )
+      return runQuery(query, rootValue).then(({ gene: { filtered_artworks: { hits } } }) => {
+        expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+      })
     })
   })
 
@@ -377,17 +373,8 @@ describe("Gene", () => {
     let followedGeneLoader
 
     beforeEach(() => {
-      gravityLoader = jest.fn(() =>
-        Promise.resolve([
-          { gene: { id: "brooklyn-artists", name: "Brooklyn Artists" } },
-        ])
-      )
-      followedGeneLoader = trackedEntityLoaderFactory(
-        gravityLoader,
-        "genes",
-        "is_followed",
-        "gene"
-      )
+      gravityLoader = jest.fn(() => Promise.resolve([{ gene: { id: "brooklyn-artists", name: "Brooklyn Artists" } }]))
+      followedGeneLoader = trackedEntityLoaderFactory(gravityLoader, "genes", "is_followed", "gene")
     })
 
     it("returns true if gene is returned", () =>

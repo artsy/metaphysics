@@ -1,13 +1,7 @@
 import _ from "lodash"
 import proxy from "./proxies"
 import { setVersion } from "./normalize"
-import {
-  GraphQLObjectType,
-  GraphQLInt,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLList,
-} from "graphql"
+import { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLNonNull, GraphQLList } from "graphql"
 
 export const croppedImageUrl = (image, options) => {
   const opts = _.defaults(options, {

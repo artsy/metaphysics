@@ -17,12 +17,7 @@ describe("UpdateSubmissionMutation", () => {
     const mutation = gql`
       mutation {
         updateConsignmentSubmission(
-          input: {
-            id: "108"
-            artist_id: "andy-warhol"
-            depth: "123"
-            clientMutationId: "123123"
-          }
+          input: { id: "108", artist_id: "andy-warhol", depth: "123", clientMutationId: "123123" }
         ) {
           clientMutationId
           consignment_submission {

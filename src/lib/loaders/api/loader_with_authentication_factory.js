@@ -21,43 +21,46 @@ import logger from "lib/loaders/api/logger"
  * @param {string} apiName a function that performs an API request
  * @param {any} globalAPIOptions options that need to be passed to any API loader created with this factory
  */
-export const apiLoaderWithAuthenticationFactory = (
-  api,
-  apiName,
-  globalAPIOptions,
-) => accessTokenLoader => (path, globalParams = {}, pathAPIOptions = {}) => {
+export const apiLoaderWithAuthenticationFactory = (api, apiName, globalAPIOptions) => accessTokenLoader => (
+  path,
+  globalParams = {},
+  pathAPIOptions = {}
+) => {
   const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
   const loader = new DataLoader(
     keys =>
       accessTokenLoader().then(accessToken =>
-        Promise.all(keys.map((key) => {
+        Promise.all(
+          keys.map(key => {
             const clock = timer(key)
             clock.start()
             return new Promise((resolve, reject) => {
               verbose(`Requested: ${key}`)
               api(key, accessToken, apiOptions)
-                .then((response) => {
+                .then(response => {
                   if (apiOptions.headers) {
                     resolve(pick(response, ["body", "headers"]))
                   } else {
                     resolve(response.body)
                   }
                   const time = clock.end()
-                  logger(globalAPIOptions.requestIDs.requestID, apiName, key, {
+                  return logger(globalAPIOptions.requestIDs.requestID, apiName, key, {
                     time,
                     cache: false,
                   })
                 })
-                .catch((err) => {
+                .catch(err => {
                   warn(path, err)
                   reject(err)
                 })
             })
-          }))),
+          })
+        )
+      ),
     {
       batch: true,
       cache: true,
-    },
+    }
   )
   return loaderInterface(loader, path, globalParams)
 }

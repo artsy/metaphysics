@@ -16,12 +16,7 @@ export function exhibitionPeriod(startAt, endAt) {
   if (endMoment.year() !== thisMoment.year()) {
     endFormat = endFormat.concat(", YYYY")
   }
-  if (
-    !(
-      startMoment.year() === endMoment.year() &&
-      startMoment.month() === endMoment.month()
-    )
-  ) {
+  if (!(startMoment.year() === endMoment.year() && startMoment.month() === endMoment.month())) {
     endFormat = "MMM ".concat(endFormat)
   }
 

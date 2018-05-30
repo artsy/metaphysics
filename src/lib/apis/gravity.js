@@ -20,8 +20,5 @@ export default (path, accessToken, fetchOptions = {}) => {
 
   if (accessToken) assign(headers, { "X-ACCESS-TOKEN": accessToken })
 
-  return fetch(
-    urljoin(GRAVITY_API_BASE, path),
-    assign({}, fetchParams, { headers }),
-  )
+  return fetch(urljoin(GRAVITY_API_BASE, path), assign({}, fetchParams, { headers }))
 }

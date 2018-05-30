@@ -18,11 +18,7 @@ const ArtistCarouselType = new GraphQLObjectType({
 const ArtistCarousel = {
   type: ArtistCarouselType,
   resolve: ({ id }, _options, _request, resolver) => {
-    const {
-      artistArtworksLoader,
-      partnerShowImagesLoader,
-      relatedShowsLoader,
-    } = resolver.rootValue
+    const { artistArtworksLoader, partnerShowImagesLoader, relatedShowsLoader } = resolver.rootValue
 
     return Promise.all([
       relatedShowsLoader({
@@ -40,20 +36,19 @@ const ArtistCarousel = {
     ])
       .then(([shows, artworks]) => {
         const elligibleShows = shows.filter(show => show.images_count > 0)
-        return Promise.all(elligibleShows.map(show =>
-            partnerShowImagesLoader(show.id, { size: 1 })))
+        return Promise.all(elligibleShows.map(show => partnerShowImagesLoader(show.id, { size: 1 })))
           .then(showImages =>
             _.zip(elligibleShows, showImages).map(([show, images]) =>
-              _.assign(
-                { href: `/show/${show.id}`, title: show.name },
-                _.first(images),
-              )))
+              _.assign({ href: `/show/${show.id}`, title: show.name }, _.first(images))
+            )
+          )
           .then(showsWithImages =>
-            showsWithImages.concat(artworks.map(artwork =>
-                _.assign(
-                  { href: `/artwork/${artwork.id}`, title: artwork.title },
-                  _.first(artwork.images),
-                ))))
+            showsWithImages.concat(
+              artworks.map(artwork =>
+                _.assign({ href: `/artwork/${artwork.id}`, title: artwork.title }, _.first(artwork.images))
+              )
+            )
+          )
       })
       .catch(error)
   },

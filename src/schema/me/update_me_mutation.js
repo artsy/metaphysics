@@ -1,9 +1,4 @@
-import {
-  GraphQLString,
-  GraphQLFloat,
-  GraphQLInt,
-  GraphQLInputObjectType,
-} from "graphql"
+import { GraphQLString, GraphQLFloat, GraphQLInt, GraphQLInputObjectType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 import { UserType } from "../user"

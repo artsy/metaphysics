@@ -26,12 +26,7 @@ export const ArtworkContextPartnerShowType = create(PartnerShow.type, {
 
 export const ArtworkContextType = new GraphQLUnionType({
   name: "ArtworkContext",
-  types: [
-    ArtworkContextAuctionType,
-    ArtworkContextFairType,
-    ArtworkContextPartnerShowType,
-    ArtworkContextSaleType,
-  ],
+  types: [ArtworkContextAuctionType, ArtworkContextFairType, ArtworkContextPartnerShowType, ArtworkContextSaleType],
 })
 
 const choose = flow(compact, first)
@@ -43,24 +38,21 @@ export default {
     { id, sale_ids },
     options,
     request,
-    { rootValue: { salesLoader, relatedFairsLoader, relatedShowsLoader } },
+    { rootValue: { salesLoader, relatedFairsLoader, relatedShowsLoader } }
   ) => {
     let sale_promise = Promise.resolve(null)
     if (sale_ids && sale_ids.length > 0) {
       sale_promise = salesLoader({ id: sale_ids })
         .then(first)
-        .then((sale) => {
+        .then(sale => {
           if (!sale) return null
-          return assign(
-            { context_type: sale.is_auction ? "Auction" : "Sale" },
-            sale,
-          )
+          return assign({ context_type: sale.is_auction ? "Auction" : "Sale" }, sale)
         })
     }
 
     const fair_promise = relatedFairsLoader({ artwork: [id], size: 1 })
       .then(first)
-      .then((fair) => {
+      .then(fair => {
         if (!fair || (fair && !fair.has_full_feature)) return null
         return assign({ context_type: "Fair" }, fair)
       })
@@ -72,7 +64,7 @@ export default {
       at_a_fair: false,
     })
       .then(first)
-      .then((show) => {
+      .then(show => {
         if (!show) return null
         return assign({ context_type: "PartnerShow" }, show)
       })

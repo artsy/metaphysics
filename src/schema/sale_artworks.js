@@ -2,11 +2,7 @@ import SaleArtwork from "./sale_artwork"
 import { parseRelayOptions } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import {
-  filterSaleArtworksArgs,
-  SaleArtworkAggregations,
-  SaleArtworkCounts,
-} from "schema/filter_sale_artworks"
+import { filterSaleArtworksArgs, SaleArtworkAggregations, SaleArtworkCounts } from "schema/filter_sale_artworks"
 
 const DEFAULTS = {
   aggregations: ["total"],
@@ -26,12 +22,7 @@ export default {
   args: pageable(filterSaleArtworksArgs),
   description: "Sale Artworks search results",
   type: SaleArtworksType,
-  resolve: async (
-    _root,
-    options,
-    _request,
-    { rootValue: { saleArtworksFilterLoader, saleArtworksAllLoader } },
-  ) => {
+  resolve: async (_root, options, _request, { rootValue: { saleArtworksFilterLoader, saleArtworksAllLoader } }) => {
     const relayOptions = { ...DEFAULTS, ...options }
     const params = parseRelayOptions(relayOptions)
     let response

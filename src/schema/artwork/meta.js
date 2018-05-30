@@ -4,14 +4,11 @@ import { getDefault } from "schema/image"
 import { setVersion } from "schema/image/normalize"
 import { GraphQLInt, GraphQLString, GraphQLObjectType } from "graphql"
 
-const titleWithDate = ({ title, date }) =>
-  join(" ", [title, date ? `(${date})` : undefined])
+const titleWithDate = ({ title, date }) => join(" ", [title, date ? `(${date})` : undefined])
 
-export const artistNames = artwork =>
-  artwork.cultural_maker || map(artwork.artists, "name").join(", ")
+export const artistNames = artwork => artwork.cultural_maker || map(artwork.artists, "name").join(", ")
 
-const forSaleIndication = artwork =>
-  (artwork.forsale ? "Available for Sale" : undefined)
+const forSaleIndication = artwork => (artwork.forsale ? "Available for Sale" : undefined)
 
 const dimensions = artwork => artwork.dimensions[artwork.metric]
 
@@ -41,23 +38,17 @@ const ArtworkMetaType = new GraphQLObjectType({
             artwork.medium,
             dimensions(artwork),
           ]),
-          limit,
+          limit
         ),
     },
     image: {
       type: GraphQLString,
-      resolve: ({ images }) =>
-        setVersion(getDefault(images), ["large", "medium", "tall"]),
+      resolve: ({ images }) => setVersion(getDefault(images), ["large", "medium", "tall"]),
     },
     title: {
       type: GraphQLString,
       resolve: artwork =>
-        join(" | ", [
-          artistNames(artwork),
-          titleWithDate(artwork),
-          forSaleIndication(artwork),
-          "Artsy",
-        ]),
+        join(" | ", [artistNames(artwork), titleWithDate(artwork), forSaleIndication(artwork), "Artsy"]),
     },
   },
 })

@@ -1,13 +1,7 @@
 import _ from "lodash"
 import proxy from "./proxies"
 import { setVersion } from "./normalize"
-import {
-  GraphQLObjectType,
-  GraphQLFloat,
-  GraphQLInt,
-  GraphQLString,
-  GraphQLList,
-} from "graphql"
+import { GraphQLObjectType, GraphQLFloat, GraphQLInt, GraphQLString, GraphQLList } from "graphql"
 
 export const resizedImageUrl = (image, options) => {
   const opts = _.defaults(options, {
@@ -15,9 +9,7 @@ export const resizedImageUrl = (image, options) => {
   })
 
   const desired = _.pick(opts, "width", "height")
-  const factor =
-    _.min(_.map(desired, (value, attr) => value / image[`original_${attr}`])) ||
-    Infinity
+  const factor = _.min(_.map(desired, (value, attr) => value / image[`original_${attr}`])) || Infinity
 
   let width = null
   let height = null

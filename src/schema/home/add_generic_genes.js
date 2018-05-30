@@ -69,7 +69,7 @@ export const params = [
   },
 ]
 
-export default (modules) => {
+export default modules => {
   const clonedParams = clone(params)
   return concat(
     modules,
@@ -82,6 +82,6 @@ export default (modules) => {
         display: true,
         params: moduleParams,
       }
-    }),
+    })
   )
 }

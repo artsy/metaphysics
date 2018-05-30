@@ -7,10 +7,7 @@ describe("RecentlyViewedArtworks", () => {
     const me = {
       recently_viewed_artwork_ids: ["percy", "matt"],
     }
-    const artworks = [
-      { id: "percy", title: "Percy the Cat" },
-      { id: "matt", title: "Matt the Person" },
-    ]
+    const artworks = [{ id: "percy", title: "Percy the Cat" }, { id: "matt", title: "Matt the Person" }]
     rootValue = {
       meLoader: () => Promise.resolve(me),
       artworksLoader: () => Promise.resolve(artworks),
@@ -38,23 +35,21 @@ describe("RecentlyViewedArtworks", () => {
     `
 
     expect.assertions(1)
-    return runAuthenticatedQuery(query, rootValue).then(
-      ({ me: { recentlyViewedArtworks } }) => {
-        expect(recentlyViewedArtworks).toEqual({
-          edges: [
-            {
-              node: {
-                id: "percy",
-                title: "Percy the Cat",
-              },
+    return runAuthenticatedQuery(query, rootValue).then(({ me: { recentlyViewedArtworks } }) => {
+      expect(recentlyViewedArtworks).toEqual({
+        edges: [
+          {
+            node: {
+              id: "percy",
+              title: "Percy the Cat",
             },
-          ],
-          pageInfo: {
-            hasNextPage: true,
           },
-        })
-      }
-    )
+        ],
+        pageInfo: {
+          hasNextPage: true,
+        },
+      })
+    })
   })
 
   it("can return an empty connection", () => {
@@ -75,19 +70,16 @@ describe("RecentlyViewedArtworks", () => {
         }
       }
     `
-    rootValue.meLoader = () =>
-      Promise.resolve({ recently_viewed_artwork_ids: [] })
+    rootValue.meLoader = () => Promise.resolve({ recently_viewed_artwork_ids: [] })
     expect.assertions(1)
-    return runAuthenticatedQuery(query, rootValue).then(
-      ({ me: { recentlyViewedArtworks } }) => {
-        expect(recentlyViewedArtworks).toEqual({
-          edges: [],
-          pageInfo: {
-            hasNextPage: false,
-          },
-        })
-      }
-    )
+    return runAuthenticatedQuery(query, rootValue).then(({ me: { recentlyViewedArtworks } }) => {
+      expect(recentlyViewedArtworks).toEqual({
+        edges: [],
+        pageInfo: {
+          hasNextPage: false,
+        },
+      })
+    })
   })
 
   it("records an artwork view", () => {
@@ -100,10 +92,8 @@ describe("RecentlyViewedArtworks", () => {
     `
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
-      ({ recordArtworkView: { artwork_id } }) => {
-        expect(artwork_id).toEqual("percy")
-      }
-    )
+    return runAuthenticatedQuery(mutation, rootValue).then(({ recordArtworkView: { artwork_id } }) => {
+      expect(artwork_id).toEqual("percy")
+    })
   })
 })

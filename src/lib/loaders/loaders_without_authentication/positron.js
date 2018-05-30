@@ -2,7 +2,7 @@
 
 import factories from "../api"
 
-export default (opts) => {
+export default opts => {
   const { positronLoaderWithoutAuthenticationFactory } = factories(opts)
   const positronLoader = positronLoaderWithoutAuthenticationFactory
 

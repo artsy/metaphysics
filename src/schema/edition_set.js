@@ -4,12 +4,7 @@ import Dimensions from "./dimensions"
 import { GraphQLString, GraphQLBoolean, GraphQLObjectType } from "graphql"
 import { capitalizeFirstCharacter } from "lib/helpers"
 
-const EditionSetAvailabilities = [
-  "sold",
-  "on hold",
-  "on loan",
-  "permanent collection",
-]
+const EditionSetAvailabilities = ["sold", "on hold", "on loan", "permanent collection"]
 
 const EditionSetType = new GraphQLObjectType({
   name: "EditionSet",
@@ -42,9 +37,7 @@ const EditionSetType = new GraphQLObjectType({
     },
     sale_message: {
       type: GraphQLString,
-      resolve: ({
- availability, availability_hidden, price, forsale,
-}) => {
+      resolve: ({ availability, availability_hidden, price, forsale }) => {
         // Don't display anything if availability is hidden.
         if (availability_hidden) {
           return null

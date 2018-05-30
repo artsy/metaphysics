@@ -1,9 +1,4 @@
-import {
-  GraphQLInt,
-  GraphQLList,
-  GraphQLObjectType,
-  GraphQLString,
-} from "graphql"
+import { GraphQLInt, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
 import Artwork from "schema/artwork"
 import EditionSet from "schema/edition_set"
 import Location from "schema/location"
@@ -75,8 +70,7 @@ export const OrderAddressType = new GraphQLObjectType({
     },
     country: {
       type: GraphQLString,
-      description:
-        "Country code associated with the address (standard 3-letter code)",
+      description: "Country code associated with the address (standard 3-letter code)",
     },
   }),
 })

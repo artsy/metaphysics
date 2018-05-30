@@ -5,24 +5,10 @@ import cached from "./fields/cached"
 import Artwork from "./artwork"
 import Artist, { artistConnection } from "./artist"
 import Image from "./image"
-import filterArtworks, {
-  ArtworkFilterAggregations,
-  filterArtworksArgs,
-  FilterArtworksCounts,
-} from "./filter_artworks"
-import {
-  queriedForFieldsOtherThanBlacklisted,
-  parseRelayOptions,
-} from "lib/helpers"
+import filterArtworks, { ArtworkFilterAggregations, filterArtworksArgs, FilterArtworksCounts } from "./filter_artworks"
+import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLNonNull,
-  GraphQLList,
-  GraphQLInt,
-  GraphQLBoolean,
-} from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -44,12 +30,7 @@ export const GeneType = new GraphQLObjectType({
     cached,
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: (
-        { id },
-        options,
-        request,
-        { rootValue: { geneArtistsLoader } },
-      ) =>
+      resolve: ({ id }, options, request, { rootValue: { geneArtistsLoader } }) =>
         geneArtistsLoader(id, {
           exclude_artists_without_artworks: true,
         }),
@@ -57,12 +38,7 @@ export const GeneType = new GraphQLObjectType({
     artists_connection: {
       type: artistConnection,
       args: pageable(),
-      resolve: (
-        { id, counts },
-        options,
-        request,
-        { rootValue: { geneArtistsLoader } },
-      ) => {
+      resolve: ({ id, counts }, options, request, { rootValue: { geneArtistsLoader } }) => {
         const parsedOptions = _.omit(parseRelayOptions(options), "page")
         const gravityOptions = _.extend(parsedOptions, {
           exclude_artists_without_artworks: true,
@@ -71,7 +47,8 @@ export const GeneType = new GraphQLObjectType({
           connectionFromArraySlice(response, options, {
             arrayLength: counts.artists,
             sliceStart: gravityOptions.offset,
-          }))
+          })
+        )
       },
     },
     artworks_connection: {
@@ -84,12 +61,7 @@ export const GeneType = new GraphQLObjectType({
         },
       }).connectionType,
       args: pageable(filterArtworksArgs),
-      resolve: (
-        { id },
-        options,
-        request,
-        { rootValue: { filterArtworksLoader } },
-      ) => {
+      resolve: ({ id }, options, request, { rootValue: { filterArtworksLoader } }) => {
         const gravityOptions = parseRelayOptions(options)
         // Do some massaging of the options for ElasticSearch
         gravityOptions.aggregations = options.aggregations || []
@@ -107,13 +79,14 @@ export const GeneType = new GraphQLObjectType({
          *        Here’s an example of such a setup https://gist.github.com/alloy/69bb274039ecd552de76c3f1739c519e
          */
         return filterArtworksLoader(gravityOptions).then(({ aggregations, hits }) =>
-            Object.assign(
-              { aggregations }, // Add data to connection so the `aggregations` connection field can resolve it
-              connectionFromArraySlice(hits, options, {
-                arrayLength: aggregations.total.value,
-                sliceStart: gravityOptions.offset,
-              }),
-            ))
+          Object.assign(
+            { aggregations }, // Add data to connection so the `aggregations` connection field can resolve it
+            connectionFromArraySlice(hits, options, {
+              arrayLength: aggregations.total.value,
+              sliceStart: gravityOptions.offset,
+            })
+          )
+        )
       },
     },
     description: {
@@ -142,8 +115,7 @@ export const GeneType = new GraphQLObjectType({
     mode: {
       type: GraphQLString,
       resolve: ({ type }) => {
-        const isSubjectMatter =
-          type && type.name && type.name.match(SUBJECT_MATTER_REGEX)
+        const isSubjectMatter = type && type.name && type.name.match(SUBJECT_MATTER_REGEX)
         return isSubjectMatter ? "artworks" : "artist"
       },
     },
@@ -155,17 +127,11 @@ export const GeneType = new GraphQLObjectType({
       args: pageable({
         exclude_gene_ids: {
           type: new GraphQLList(GraphQLString),
-          description:
-            "Array of gene ids (not slugs) to exclude, may result in all genes being excluded.",
+          description: "Array of gene ids (not slugs) to exclude, may result in all genes being excluded.",
         },
       }),
       description: "A list of genes similar to the specified gene",
-      resolve: (
-        gene,
-        options,
-        request,
-        { rootValue: { similarGenesLoader } },
-      ) => {
+      resolve: (gene, options, request, { rootValue: { similarGenesLoader } }) => {
         const { limit: size, offset } = getPagingParameters(options)
         const gravityArgs = {
           size,
@@ -175,14 +141,14 @@ export const GeneType = new GraphQLObjectType({
         }
 
         return similarGenesLoader(gene.id, gravityArgs).then(({ body, headers }) => {
-            const genes = body
-            const totalCount = headers["x-total-count"]
+          const genes = body
+          const totalCount = headers["x-total-count"]
 
-            return connectionFromArraySlice(genes, options, {
-              arrayLength: totalCount,
-              sliceStart: offset,
-            })
+          return connectionFromArraySlice(genes, options, {
+            arrayLength: totalCount,
+            sliceStart: offset,
           })
+        })
       },
     },
     trending_artists: {
@@ -192,15 +158,10 @@ export const GeneType = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: (
-        { id },
-        options,
-        request,
-        { rootValue: { trendingArtistsLoader } },
-      ) =>
+      resolve: ({ id }, options, request, { rootValue: { trendingArtistsLoader } }) =>
         trendingArtistsLoader({
           gene: id,
-        }).then((artists) => {
+        }).then(artists => {
           if (_.has(options, "sample")) {
             return _.take(_.shuffle(artists), options.sample)
           }
@@ -218,12 +179,7 @@ const Gene = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (
-    _root,
-    { id },
-    _request,
-    { fieldNodes, rootValue: { geneLoader } },
-  ) => {
+  resolve: (_root, { id }, _request, { fieldNodes, rootValue: { geneLoader } }) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ["filtered_artworks", "id", "__id"]
