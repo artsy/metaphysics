@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 
-import { middleware as requestTracer, traceMiddleware } from "./lib/tracer"
-import { applyMiddleware } from "graphql-middleware"
+import { middleware as requestTracer, traceMiddleware as graphqlTraceMiddleware } from "./lib/tracer"
+import { graphqlTimeoutMiddleware } from "./lib/graphQLTimeoutMiddleware"
+import { applyMiddleware as applyGraphQLMiddleware } from "graphql-middleware"
 
 import bodyParser from "body-parser"
 import config from "./config"
@@ -36,6 +37,7 @@ const {
   LOG_QUERY_DETAILS_THRESHOLD,
   NODE_ENV,
   QUERY_DEPTH_LIMIT,
+  RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
 } = config
 const isProduction = NODE_ENV === "production"
@@ -51,7 +53,7 @@ function logQueryDetailsIfEnabled() {
   if (Number.isInteger(logQueryDetailsThreshold)) {
     console.warn(
       `[FEATURE] Enabling logging of queries running past the ${
-        logQueryDetailsThreshold
+      logQueryDetailsThreshold
       } sec threshold.`
     )
     return logQueryDetails(logQueryDetailsThreshold)
@@ -69,7 +71,7 @@ async function startApp() {
 
   if (enableQueryTracing) {
     console.warn("[FEATURE] Enabling query tracing")
-    schema = applyMiddleware(localSchema, traceMiddleware)
+    schema = applyGraphQLMiddleware(schema, graphqlTraceMiddleware)
     app.use(requestTracer)
   }
 
@@ -83,6 +85,8 @@ async function startApp() {
       console.log("Error merging schemas:", err)
     }
   }
+
+  schema = applyGraphQLMiddleware(schema, graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS))
 
   app.use(requestIDsAdder)
 
