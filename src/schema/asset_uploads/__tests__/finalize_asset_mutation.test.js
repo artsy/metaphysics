@@ -22,11 +22,11 @@ describe("CreateGeminiEntryForAsset", () => {
 
     const rootValue = {
       createNewGeminiEntryAssetLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           token: "zVHJce-Fey3OIsazH8WDTg",
           image_urls: {},
           clientMutationId: "1231",
-        }),
+        })},
     }
 
     expect.assertions(1)

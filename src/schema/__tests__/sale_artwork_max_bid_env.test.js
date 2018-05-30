@@ -33,10 +33,10 @@ describe("SaleArtwork type", () => {
     gravityResponse = saleArtwork,
     rootValue = {}
   ) =>
-    await runQuery(query, {
-      saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
+    {return await runQuery(query, {
+      saleArtworkRootLoader: () => {return Promise.resolve(gravityResponse)},
       ...rootValue,
-    })
+    })}
 
   describe("bid_increments", () => {
     describe("with a max amount set", () => {
@@ -51,11 +51,11 @@ describe("SaleArtwork type", () => {
 
         const rootValue = {
           saleLoader: () =>
-            Promise.resolve({
+            {return Promise.resolve({
               increment_strategy: "default",
-            }),
+            })},
           incrementsLoader: sale =>
-            Promise.resolve([
+            {return Promise.resolve([
               {
                 key: sale.increment_strategy,
                 increments: [
@@ -71,7 +71,7 @@ describe("SaleArtwork type", () => {
                   },
                 ],
               },
-            ]),
+            ])},
         }
 
         const data = await execute(query, saleArtwork, rootValue)

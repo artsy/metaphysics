@@ -3,16 +3,16 @@ import cache, { client } from "lib/cache"
 describe("Cache", () => {
   describe("when successfully connected to the cache", () => {
     describe("#get", () => {
-      beforeEach(() => cache.set("get_foo", { bar: "baz" }))
+      beforeEach(() => {return cache.set("get_foo", { bar: "baz" })})
 
       it("parses the data and resolves the promise", () =>
-        cache.get("get_foo").then(data => {
+        {return cache.get("get_foo").then(data => {
           expect(data.bar).toBe("baz")
-        }))
+        })})
     })
 
     describe("#delete", () => {
-      beforeEach(() => cache.set("get_foo", { bar: "baz" }))
+      beforeEach(() => {return cache.set("get_foo", { bar: "baz" })})
 
       it("deletes the data", () => {
         cache.delete("get_foo")

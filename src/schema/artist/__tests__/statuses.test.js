@@ -18,7 +18,7 @@ describe("Artist Statuses", () => {
     rootValue = {
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
       relatedMainArtistsLoader: () =>
-        Promise.resolve({ headers: { "x-total-count": 3 } }),
+        {return Promise.resolve({ headers: { "x-total-count": 3 } })},
     }
   })
 

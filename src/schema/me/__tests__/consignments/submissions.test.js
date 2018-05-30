@@ -25,20 +25,20 @@ describe("submissions", () => {
 
     const rootValue = {
       submissionsLoader: () =>
-        Promise.resolve([
+        {return Promise.resolve([
           {
             id: "106",
             authenticity_certificate: true,
             artist_id: "123",
             title: "The best photo yet",
           },
-        ]),
+        ])},
       artistLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           name: "Larissa Croft",
           birthday: "April 2011",
           artworks_count: 1,
-        }),
+        })},
     }
 
     expect.assertions(1)

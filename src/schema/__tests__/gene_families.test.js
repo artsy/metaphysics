@@ -13,7 +13,7 @@ describe("GeneFamilies", () => {
   ]
 
   it("returns a list of gene families", () => {
-    const geneFamiliesLoader = () => Promise.resolve(api_data)
+    const geneFamiliesLoader = () => {return Promise.resolve(api_data)}
     const query = `
       {
         gene_families {

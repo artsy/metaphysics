@@ -49,7 +49,7 @@ describe("Me", () => {
       }
 
       return runAuthenticatedQuery(query, {
-        followedArtistsArtworksLoader: () => Promise.resolve(artworkResponse),
+        followedArtistsArtworksLoader: () => {return Promise.resolve(artworkResponse)},
       }).then(({ me: { followsAndSaves: { bundledArtworksByArtist } } }) => {
         expect(bundledArtworksByArtist).toEqual(expectedConnectionData)
       })

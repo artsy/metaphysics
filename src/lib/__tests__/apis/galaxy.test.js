@@ -2,7 +2,7 @@ import fetch from "../../apis/fetch"
 
 import galaxy from "lib/apis/galaxy"
 
-jest.mock("../../apis/fetch", () => jest.fn(() => Promise.resolve({})))
+jest.mock("../../apis/fetch", () => {return jest.fn(() => {return Promise.resolve({})})})
 
 describe("APIs", () => {
   describe("galaxy", () => {

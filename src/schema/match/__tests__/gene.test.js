@@ -35,7 +35,7 @@ describe("MatchGene", () => {
       },
     ]
 
-    const matchGeneLoader = () => Promise.resolve(response)
+    const matchGeneLoader = () => {return Promise.resolve(response)}
 
     return runQuery(query, { matchGeneLoader }).then(data => {
       expect(data).toEqual({

@@ -3,11 +3,11 @@ import express from "express"
 import bodyParser from "body-parser"
 import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools"
 
-export const invokeError = status => (req, res, next) => {
+export const invokeError = status => {return (req, res, next) => {
   const err = new Error()
   err.status = status
   next(err)
-}
+}}
 
 const exampleSchema = `
   type Query {
@@ -36,4 +36,4 @@ export const gqlServer = ({
   return app
 }
 
-export const app = (...middleware) => gqlServer({ middleware })
+export const app = (...middleware) => {return gqlServer({ middleware })}

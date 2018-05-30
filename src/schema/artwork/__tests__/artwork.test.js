@@ -604,9 +604,9 @@ describe("Artwork type", () => {
         }
       `
       rootValue.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
-        saleId === artwork.sale_ids[0] &&
+        {return saleId === artwork.sale_ids[0] &&
         saleArtworkId === "richard-prince-untitled-portrait" &&
-        Promise.resolve({ sale_id: saleId })
+        Promise.resolve({ sale_id: saleId })}
       const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
         query,
         rootValue
@@ -625,9 +625,9 @@ describe("Artwork type", () => {
         }
       `
       rootValue.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
-        saleId === artwork.sale_ids[1] &&
+        {return saleId === artwork.sale_ids[1] &&
         saleArtworkId === "richard-prince-untitled-portrait" &&
-        Promise.resolve({ sale_id: saleId })
+        Promise.resolve({ sale_id: saleId })}
       const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
         query,
         rootValue

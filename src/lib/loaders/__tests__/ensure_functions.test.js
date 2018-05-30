@@ -6,8 +6,8 @@ describe("loaders should always export functions", () => {
     const loaderPaths = readDirRecursive(loaderPath)
     const skipPrefix = "api/"
     const loaders = loaderPaths
-      .filter(l => !l.startsWith("__"))
-      .filter(l => !l.startsWith(skipPrefix))
+      .filter(l => {return !l.startsWith("__")})
+      .filter(l => {return !l.startsWith(skipPrefix)})
 
     loaders.forEach(path => {
       const value = require(`../../../${loaderPath}/${path}`)

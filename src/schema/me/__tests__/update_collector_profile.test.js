@@ -18,13 +18,13 @@ describe("UpdateCollectorProfile", () => {
 
     const rootValue = {
       updateCollectorProfileLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           id: "3",
           name: "Percy",
           email: "percy@cat.com",
           self_reported_purchases: "treats",
           intents: ["buy art & design"],
-        }),
+        })},
     }
 
     const expectedProfileData = {

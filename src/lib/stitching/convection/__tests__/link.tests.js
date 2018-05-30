@@ -1,7 +1,7 @@
 import { createConvectionLink } from "../link"
 
 const runLinkChain = (link, op, complete) =>
-  link.request(op).subscribe({ complete })
+  {return link.request(op).subscribe({ complete })}
 
 // FIXME: This seems to be hitting the actual network and thus fails without it.
 describe("convection link", () => {
@@ -26,7 +26,7 @@ describe("convection link", () => {
 
     const op = {
       setContext: jest.fn(),
-      getContext: () => defaultContext,
+      getContext: () => {return defaultContext},
     }
     // As the link is an observable chain, we need to wrap it in a promise so that Jest can wait for it to resolve
     return new Promise(resolve => {
@@ -62,7 +62,7 @@ describe("convection link", () => {
               },
               dataLoaders: {
                 convectionTokenLoader: () =>
-                  Promise.resolve({ token: "token_123" }),
+                  {return Promise.resolve({ token: "token_123" })},
               },
             },
           },
@@ -71,7 +71,7 @@ describe("convection link", () => {
 
       const op = {
         setContext: jest.fn(),
-        getContext: () => defaultContext,
+        getContext: () => {return defaultContext},
       }
       // As the link is an observable chain, we need to wrap it in a promise so that Jest can wait for it to resolve
       return new Promise(resolve => {

@@ -4,7 +4,7 @@ describe("Me", () => {
   describe("SuggestedArtists", () => {
     const rootValue = {
       suggestedArtistsLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           body: [
             {
               id: "andy-warhol",
@@ -12,7 +12,7 @@ describe("Me", () => {
               artworks_count: 50,
             },
           ],
-        }),
+        })},
     }
 
     it("returns sanitized messages", () => {

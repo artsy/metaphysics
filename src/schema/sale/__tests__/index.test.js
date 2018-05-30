@@ -12,10 +12,10 @@ describe("Sale type", () => {
   }
 
   const execute = async (query, gravityResponse = sale, rootValue = {}) =>
-    await runQuery(query, {
-      saleLoader: () => Promise.resolve(gravityResponse),
+    {return await runQuery(query, {
+      saleLoader: () => {return Promise.resolve(gravityResponse)},
       ...rootValue,
-    })
+    })}
 
   describe("auction state", () => {
     const query = `
@@ -192,7 +192,7 @@ describe("Sale type", () => {
       sale.eligible_sale_artworks_count = 20
 
       const rootValue = {
-        saleLoader: () => Promise.resolve(sale),
+        saleLoader: () => {return Promise.resolve(sale)},
         saleArtworksLoader: sinon.stub().returns(
           Promise.resolve({
             body: fill(Array(sale.eligible_sale_artworks_count), {
@@ -234,12 +234,12 @@ describe("Sale type", () => {
       `
 
       const rootValue = {
-        saleLoader: () => Promise.resolve(sale),
+        saleLoader: () => {return Promise.resolve(sale)},
         saleArtworksLoader: sinon
           .stub()
           .returns(Promise.resolve({ body: saleArtworks })),
         incrementsLoader: () =>
-          Promise.resolve([
+          {return Promise.resolve([
             {
               key: "default",
               increments: [
@@ -255,7 +255,7 @@ describe("Sale type", () => {
                 },
               ],
             },
-          ]),
+          ])},
       }
 
       return runAuthenticatedQuery(query, rootValue).then(data => {
@@ -523,15 +523,15 @@ describe("Sale type", () => {
       const results = await Promise.all(
         testData.map(
           async ([input]) =>
-            await execute(query, {
+            {return await execute(query, {
               currency: "$",
               is_auction: true,
               ...input,
-            })
+            })}
         )
       )
 
-      const labels = testData.map(test => test[1])
+      const labels = testData.map(test => {return test[1]})
 
       results.forEach(({ sale: { display_timely_at } }, index) => {
         expect(display_timely_at).toEqual(labels[index])

@@ -32,7 +32,7 @@ describe("me/index", () => {
       ]
 
       return runAuthenticatedQuery(creditCardQuery, {
-        meCreditCardsLoader: () => Promise.resolve(creditCardsResponse),
+        meCreditCardsLoader: () => {return Promise.resolve(creditCardsResponse)},
       }).then(data => {
         expect(data).toEqual({ me: { has_qualified_credit_cards: true } })
       })
@@ -42,7 +42,7 @@ describe("me/index", () => {
       const creditCardsResponse = []
 
       return runAuthenticatedQuery(creditCardQuery, {
-        meCreditCardsLoader: () => Promise.resolve(creditCardsResponse),
+        meCreditCardsLoader: () => {return Promise.resolve(creditCardsResponse)},
       }).then(data => {
         expect(data).toEqual({
           me: {

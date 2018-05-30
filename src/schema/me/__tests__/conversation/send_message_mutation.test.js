@@ -32,18 +32,18 @@ describe("SendConversationMessageMutation", () => {
 
     const rootValue = {
       conversationLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           id: "420",
           initial_message: "10/10 would buy",
           from_email: "gallery@example.com",
           to: ["1234567"],
           to_name: "Some Gallery",
-        }),
+        })},
       conversationCreateMessageLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           id: "222",
           radiation_message_id: "333",
-        }),
+        })},
     }
 
     expect.assertions(1)

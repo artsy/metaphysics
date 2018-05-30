@@ -6,11 +6,11 @@ describe("Artist type", () => {
 
   beforeEach(() => {
     rootValue = {
-      artistLoader: () => artist,
-      articlesLoader: () => Promise.resolve({ count: 22 }),
-      artistGenesLoader: () => Promise.resolve([{ name: "Foo Bar" }]),
+      artistLoader: () => {return artist},
+      articlesLoader: () => {return Promise.resolve({ count: 22 })},
+      artistGenesLoader: () => {return Promise.resolve([{ name: "Foo Bar" }])},
       relatedMainArtistsLoader: () =>
-        Promise.resolve({ headers: { "x-total-count": 42 } }),
+        {return Promise.resolve({ headers: { "x-total-count": 42 } })},
     }
 
     artist = {
@@ -26,15 +26,15 @@ describe("Artist type", () => {
   })
 
   it("returns null for an empty ID string", () =>
-    runQuery('{ artist(id: "") { id } }', rootValue).then(data => {
+    {return runQuery('{ artist(id: "") { id } }', rootValue).then(data => {
       expect(data.artist).toBe(null)
-    }))
+    })})
 
   it("fetches an artist by ID", () =>
-    runQuery('{ artist(id: "foo-bar") { id, name } }', rootValue).then(data => {
+    {return runQuery('{ artist(id: "foo-bar") { id, name } }', rootValue).then(data => {
       expect(data.artist.id).toBe("foo-bar")
       expect(data.artist.name).toBe("Foo Bar")
-    }))
+    })})
 
   it("returns the total number of partner shows for an artist", () => {
     const query = `

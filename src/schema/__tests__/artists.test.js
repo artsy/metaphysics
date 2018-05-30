@@ -31,7 +31,7 @@ describe("Artists", () => {
   it("returns a list of artists matching array of ids", async () => {
     const artistsLoader = ({ ids }) => {
       if (ids) {
-        return Promise.resolve(ids.map(_id => ({ _id })))
+        return Promise.resolve(ids.map(_id => {return { _id }}))
       }
       throw new Error("Unexpected invocation")
     }
@@ -59,7 +59,7 @@ describe("Artists", () => {
             name: "Pablo Picasso",
           },
         ]
-        return Promise.resolve(find(artists, item => item.id === slug))
+        return Promise.resolve(find(artists, item => {return item.id === slug}))
       }
       throw new Error("Unexpected invocation")
     }

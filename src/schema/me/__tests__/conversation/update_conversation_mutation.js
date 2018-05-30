@@ -14,10 +14,10 @@ describe("UpdateConversationMutation", () => {
 
     const rootValue = {
       conversationUpdateLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           initial_message: "Howdy",
           from_email: "percy@cat.com",
-        }),
+        })},
     }
 
     expect.assertions(1)

@@ -30,7 +30,7 @@ describe("UpdateMeMutation", () => {
 
     const rootValue = {
       updateMeLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           id: "106",
           name: "andy-warhol",
           phone: "1234890",
@@ -38,7 +38,7 @@ describe("UpdateMeMutation", () => {
             address: "123 my street",
           },
           price_range: "-1:1000000000000",
-        }),
+        })},
     }
 
     expect.assertions(1)

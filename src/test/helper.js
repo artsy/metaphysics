@@ -20,7 +20,7 @@ global.sinon = sinon
  * So until this is built into Jest, then this will do for now
  */
 
-const expectPromiseRejectionToMatch = (promise, failureMessage) => new Promise((resolve, reject) => {
+const expectPromiseRejectionToMatch = (promise, failureMessage) => {return new Promise((resolve, reject) => {
     promise
       .then(() => {
         const object = {
@@ -32,7 +32,7 @@ const expectPromiseRejectionToMatch = (promise, failureMessage) => new Promise((
         expect(e.message).toMatch(failureMessage)
         resolve({})
       })
-  })
+  })}
 
 global.expectPromiseRejectionToMatch = expectPromiseRejectionToMatch
 

@@ -24,7 +24,7 @@ describe("End sale mutation", () => {
   }
 
   it("ends the sale", async () =>
-    runAuthenticatedQuery(query, rootValue).then(data => {
+    {return runAuthenticatedQuery(query, rootValue).then(data => {
       expect(data).toEqual({
         endSale: {
           sale: {
@@ -32,5 +32,5 @@ describe("End sale mutation", () => {
           },
         },
       })
-    }))
+    })})
 })

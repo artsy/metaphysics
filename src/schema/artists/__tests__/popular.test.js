@@ -15,10 +15,10 @@ describe("Popular Artists", () => {
 
     const rootValue = {
       popularArtistsLoader: () =>
-        Promise.resolve([
+        {return Promise.resolve([
           { birthday: "1900", artworks_count: 100, id: "ortina" },
           { birthday: "1900", artworks_count: 100, id: "xtina" },
-        ]),
+        ])},
     }
 
     expect.assertions(1)

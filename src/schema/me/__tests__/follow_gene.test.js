@@ -15,7 +15,7 @@ describe("FollowGene", () => {
 
     const rootValue = {
       followGeneLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           gene: {
             family: {},
             id: "pop-art",
@@ -24,16 +24,16 @@ describe("FollowGene", () => {
             image_urls: {},
             display_name: null,
           },
-        }),
+        })},
       geneLoader: () =>
-        Promise.resolve({
+        {return Promise.resolve({
           family: {
             id: "styles-and-movements",
           },
           id: "pop-art",
           name: "Pop Art",
           browseable: true,
-        }),
+        })},
     }
 
     const expectedGeneData = {

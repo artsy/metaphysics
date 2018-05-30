@@ -24,19 +24,19 @@ describe("Recording artwork views", () => {
 
   const resolvers = {
     Mutation: {
-      recordArtworkView: () => ({
+      recordArtworkView: () => {return {
         artwork_id: "artwork-id",
         clientMutationId: "2",
-      }),
+      }},
     },
   }
 
   const gravitySchema = makeExecutableSchema({ typeDefs, resolvers })
 
   it("records an artwork view", () =>
-    graphql(gravitySchema, mutation, null, null).then(({ data }) => {
+    {return graphql(gravitySchema, mutation, null, null).then(({ data }) => {
       expect(data).toEqual({
         recordArtworkView: { artwork_id: "artwork-id", clientMutationId: "2" },
       })
-    }))
+    })})
 })

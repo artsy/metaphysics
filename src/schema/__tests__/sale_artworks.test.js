@@ -4,10 +4,10 @@ import { runQuery } from "test/utils"
 
 describe("Sale Artworks", () => {
   const execute = async (gravityResponse, query, rootValue = {}) =>
-    await runQuery(query, {
-      saleArtworksFilterLoader: () => Promise.resolve(gravityResponse),
+    {return await runQuery(query, {
+      saleArtworksFilterLoader: () => {return Promise.resolve(gravityResponse)},
       ...rootValue,
-    })
+    })}
 
   it("pulls from /sale_artworks if `live_sale, include_lots_by_followed_artists, is_auction to true` ", async () => {
     const hits = _.fill(Array(10), { id: "foo" })
@@ -41,7 +41,7 @@ describe("Sale Artworks", () => {
       gravityResponse,
       query,
       {
-        saleArtworksAllLoader: () => Promise.resolve(gravityResponse),
+        saleArtworksAllLoader: () => {return Promise.resolve(gravityResponse)},
       }
     )
     expect(total).toEqual(totalCount)

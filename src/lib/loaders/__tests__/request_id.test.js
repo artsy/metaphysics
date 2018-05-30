@@ -3,7 +3,7 @@ import createLoaders from "../../../lib/loaders"
 import gql from "test/gql"
 import gravity from "../../apis/gravity"
 
-jest.mock("../../apis/gravity", () => jest.fn(() => Promise.resolve({})))
+jest.mock("../../apis/gravity", () => {return jest.fn(() => {return Promise.resolve({})})})
 
 describe("requestID (with the real data loaders)", () => {
   it("resolves to add the initial request ID to a gravity header", async () => {

@@ -378,9 +378,9 @@ describe("Gene", () => {
 
     beforeEach(() => {
       gravityLoader = jest.fn(() =>
-        Promise.resolve([
+        {return Promise.resolve([
           { gene: { id: "brooklyn-artists", name: "Brooklyn Artists" } },
-        ])
+        ])}
       )
       followedGeneLoader = trackedEntityLoaderFactory(
         gravityLoader,
@@ -391,13 +391,13 @@ describe("Gene", () => {
     })
 
     it("returns true if gene is returned", () =>
-      followedGeneLoader("brooklyn-artists").then(gene => {
+      {return followedGeneLoader("brooklyn-artists").then(gene => {
         expect(gene.is_followed).toBe(true)
-      }))
+      })})
 
     it("returns false if gene is not returned", () =>
-      followedGeneLoader("new-york-artists").then(gene => {
+      {return followedGeneLoader("new-york-artists").then(gene => {
         expect(gene.is_followed).toBe(false)
-      }))
+      })})
   })
 })

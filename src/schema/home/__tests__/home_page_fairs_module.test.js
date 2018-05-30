@@ -52,7 +52,7 @@ describe("HomePageFairsModule", () => {
 
     return runQuery(query, {
       fairsLoader: options =>
-        Promise.resolve(options.active ? runningFairs : pastFairs),
+        {return Promise.resolve(options.active ? runningFairs : pastFairs)},
     }).then(fairsModule => {
       expect(fairsModule).toMatchSnapshot()
     })
@@ -96,7 +96,7 @@ describe("HomePageFairsModule", () => {
 
     return runQuery(query, {
       fairsLoader: options =>
-        Promise.resolve(options.active ? runningFairs : pastFairs),
+        {return Promise.resolve(options.active ? runningFairs : pastFairs)},
     }).then(fairsModule => {
       expect(fairsModule).toMatchSnapshot()
     })
@@ -142,7 +142,7 @@ describe("HomePageFairsModule", () => {
 
     return runQuery(query, {
       fairsLoader: options =>
-        Promise.resolve(options.active ? aFair : pastFairs),
+        {return Promise.resolve(options.active ? aFair : pastFairs)},
     }).then(fairsModule => {
       expect(fairsModule).toMatchSnapshot()
     })

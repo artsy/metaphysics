@@ -28,7 +28,7 @@ describe("Collections", () => {
       `
       const rootValue = {
         collectionLoader: id =>
-          id === "saved-artwork" && Promise.resolve(gravityData),
+          {return id === "saved-artwork" && Promise.resolve(gravityData)},
       }
       const data = await runAuthenticatedQuery(query, rootValue)
       expect(data).toMatchSnapshot()
@@ -99,7 +99,7 @@ describe("Collections", () => {
       `
       const rootValue = {
         collectionArtworksLoader: () =>
-          Promise.reject(new Error("Collection Not Found")),
+          {return Promise.reject(new Error("Collection Not Found"))},
       }
       const {
         collection: { artworks_connection: { edges } },
