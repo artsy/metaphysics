@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import { middleware as requestTracer, traceMiddleware as graphqlTraceMiddleware } from "./lib/tracer"
-import { graphqlTimeoutMiddleware } from "./lib/graphQLTimeoutMiddleware"
+import { graphqlTimeoutMiddleware } from "./lib/graphqlTimeoutMiddleware"
 import { applyMiddleware as applyGraphQLMiddleware } from "graphql-middleware"
 
 import bodyParser from "body-parser"
