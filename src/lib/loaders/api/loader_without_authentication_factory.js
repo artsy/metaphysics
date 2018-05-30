@@ -27,11 +27,11 @@ import logger from "lib/loaders/api/logger"
  * @param {string} apiName The API service name
  * @param {any} globalAPIOptions options that need to be passed to any API loader created with this factory
  */
-export const apiLoaderWithoutAuthenticationFactory = (api, apiName, globalAPIOptions = {}) => (
-  path,
-  globalParams = {},
-  pathAPIOptions = {}
-) => {
+export const apiLoaderWithoutAuthenticationFactory = (
+  api,
+  apiName,
+  globalAPIOptions = {}
+) => (path, globalParams = {}, pathAPIOptions = {}) => {
   const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
   const loader = new DataLoader(
     keys =>
@@ -93,12 +93,16 @@ export const apiLoaderWithoutAuthenticationFactory = (api, apiName, globalAPIOpt
                     }
                     verbose(`Requested (Uncached): ${key}`)
                     const time = clock.end()
-                    logger(globalAPIOptions.requestIDs.requestID, apiName, key, { time, cache: false })
+                    logger(
+                      globalAPIOptions.requestIDs.requestID,
+                      apiName,
+                      key,
+                      { time, cache: false }
+                    )
                     if (apiOptions.headers) {
                       return cache.set(key, { body, headers })
-                    } 
-                      return cache.set(key, body)
-                    
+                    }
+                    return cache.set(key, body)
                   })
                   .catch(err => {
                     warn(key, err)

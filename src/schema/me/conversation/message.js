@@ -1,5 +1,11 @@
 import date from "schema/fields/date"
-import { GraphQLBoolean, GraphQLList, GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+} from "graphql"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 import { AttachmentType } from "./attachment"
 import { DeliveryType } from "./delivery"
@@ -19,7 +25,8 @@ const MessageInitiatorType = new GraphQLObjectType({
   },
 })
 
-const isInvoiceMessage = metadata => !!metadata && isExisty(metadata.lewitt_invoice_id)
+const isInvoiceMessage = metadata =>
+  !!metadata && isExisty(metadata.lewitt_invoice_id)
 
 export const MessageType = new GraphQLObjectType({
   name: "Message",
@@ -43,11 +50,19 @@ export const MessageType = new GraphQLObjectType({
       description: "True if message is from the user to the partner.",
       type: GraphQLBoolean,
       resolve: (
-        { from_id, from_email_address, conversation_from_address, from_principal },
+        {
+          from_id,
+          from_email_address,
+          conversation_from_address,
+          from_principal,
+        },
         options,
         req,
         { rootValue: { userID } }
-      ) => from_principal || (userID && from_id === userID) || from_email_address === conversation_from_address,
+      ) =>
+        from_principal ||
+        (userID && from_id === userID) ||
+        from_email_address === conversation_from_address,
     },
     from_email_address: {
       type: GraphQLString,
@@ -77,7 +92,8 @@ export const MessageType = new GraphQLObjectType({
     },
 
     body: {
-      description: "Unaltered text if possible, otherwise `body`: a parsed/sanitized version from Sendgrid.",
+      description:
+        "Unaltered text if possible, otherwise `body`: a parsed/sanitized version from Sendgrid.",
       type: GraphQLString,
       resolve: ({ body, original_text }) => {
         if (original_text) {
@@ -97,7 +113,12 @@ export const MessageType = new GraphQLObjectType({
 
     invoice: {
       type: InvoiceType,
-      resolve: ({ metadata, conversation_id }, options, request, { rootValue: { conversationInvoiceLoader } }) => {
+      resolve: (
+        { metadata, conversation_id },
+        options,
+        request,
+        { rootValue: { conversationInvoiceLoader } }
+      ) => {
         if (!isInvoiceMessage(metadata)) {
           return null
         }

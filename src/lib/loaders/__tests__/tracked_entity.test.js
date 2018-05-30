@@ -2,8 +2,14 @@ import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/
 
 describe("trackedEntityLoader", () => {
   it("also works with payloads that don’t need an entity key path", () => {
-    const gravityLoader = jest.fn(() => Promise.resolve([{ id: "queens-ship" }]))
-    const savedArtworksLoader = trackedEntityLoaderFactory(gravityLoader, "artworks", "is_saved")
+    const gravityLoader = jest.fn(() =>
+      Promise.resolve([{ id: "queens-ship" }])
+    )
+    const savedArtworksLoader = trackedEntityLoaderFactory(
+      gravityLoader,
+      "artworks",
+      "is_saved"
+    )
     return savedArtworksLoader("queens-ship").then(queens_ship => {
       expect(queens_ship.is_saved).toEqual(true)
       return savedArtworksLoader("kings-ship").then(kings_ship => {
@@ -17,12 +23,22 @@ describe("trackedEntityLoader", () => {
     let followedArtistLoader
 
     beforeEach(() => {
-      gravityLoader = jest.fn(() => Promise.resolve([{ artist: { id: "cab", name: "Cab" } }]))
-      followedArtistLoader = trackedEntityLoaderFactory(gravityLoader, "artists", "is_followed", "artist")
+      gravityLoader = jest.fn(() =>
+        Promise.resolve([{ artist: { id: "cab", name: "Cab" } }])
+      )
+      followedArtistLoader = trackedEntityLoaderFactory(
+        gravityLoader,
+        "artists",
+        "is_followed",
+        "artist"
+      )
     })
 
     it("passes the params to gravity and batches multiple requests", () =>
-      Promise.all([followedArtistLoader("cab"), followedArtistLoader("damon")]).then(() => {
+      Promise.all([
+        followedArtistLoader("cab"),
+        followedArtistLoader("damon"),
+      ]).then(() => {
         expect(gravityLoader.mock.calls[0][0]).toEqual({
           artists: ["cab", "damon"],
         })

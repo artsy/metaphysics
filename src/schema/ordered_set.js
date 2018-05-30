@@ -1,7 +1,12 @@
 import cached from "./fields/cached"
 import ItemType from "./item"
 import { IDFields } from "./object_identification"
-import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLList } from "graphql"
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLList,
+} from "graphql"
 
 const OrderedSetType = new GraphQLObjectType({
   name: "OrderedSet",
@@ -19,7 +24,12 @@ const OrderedSetType = new GraphQLObjectType({
     },
     items: {
       type: new GraphQLList(ItemType),
-      resolve: ({ id, item_type }, options, request, { rootValue: { setItemsLoader } }) =>
+      resolve: (
+        { id, item_type },
+        options,
+        request,
+        { rootValue: { setItemsLoader } }
+      ) =>
         setItemsLoader(id).then(items =>
           items.map(item => {
             item.item_type = item_type // eslint-disable-line no-param-reassign
@@ -42,7 +52,8 @@ const OrderedSet = {
       description: "The ID of the OrderedSet",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { setLoader } }) => setLoader(id),
+  resolve: (root, { id }, request, { rootValue: { setLoader } }) =>
+    setLoader(id),
 }
 
 export default OrderedSet

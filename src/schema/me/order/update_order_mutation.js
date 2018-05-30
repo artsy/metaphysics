@@ -1,4 +1,9 @@
-import { GraphQLBoolean, GraphQLInputObjectType, GraphQLNonNull, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLInputObjectType,
+  GraphQLNonNull,
+  GraphQLString,
+} from "graphql"
 import { OrderType } from "schema/me/order"
 import { mutationWithClientMutationId } from "graphql-relay"
 

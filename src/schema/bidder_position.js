@@ -3,7 +3,12 @@ import date from "./fields/date"
 import money, { amount } from "./fields/money"
 import SaleArtwork from "./sale_artwork"
 import { IDFields } from "./object_identification"
-import { GraphQLInt, GraphQLBoolean, GraphQLString, GraphQLObjectType } from "graphql"
+import {
+  GraphQLInt,
+  GraphQLBoolean,
+  GraphQLString,
+  GraphQLObjectType,
+} from "graphql"
 
 const BidderPositionType = new GraphQLObjectType({
   name: "BidderPosition",
@@ -67,9 +72,16 @@ const BidderPositionType = new GraphQLObjectType({
     },
     is_winning: {
       type: GraphQLBoolean,
-      resolve: (position, options, request, { rootValue: { saleArtworkRootLoader } }) =>
+      resolve: (
+        position,
+        options,
+        request,
+        { rootValue: { saleArtworkRootLoader } }
+      ) =>
         saleArtworkRootLoader(position.sale_artwork_id).then(
-          saleArtwork => get(saleArtwork, "highest_bid.id") === get(position, "highest_bid.id")
+          saleArtwork =>
+            get(saleArtwork, "highest_bid.id") ===
+            get(position, "highest_bid.id")
         ),
     },
     max_bid: money({
@@ -85,12 +97,19 @@ const BidderPositionType = new GraphQLObjectType({
     },
     sale_artwork: {
       type: SaleArtwork.type,
-      resolve: ({ sale_artwork_id }, options, request, { rootValue: { saleArtworkRootLoader } }) =>
-        saleArtworkRootLoader(sale_artwork_id),
+      resolve: (
+        { sale_artwork_id },
+        options,
+        request,
+        { rootValue: { saleArtworkRootLoader } }
+      ) => saleArtworkRootLoader(sale_artwork_id),
     },
     suggested_next_bid: money({
       name: "BidderPositionSuggestedNextBid",
-      resolve: ({ display_suggested_next_bid_dollars, suggested_next_bid_cents }) => ({
+      resolve: ({
+        display_suggested_next_bid_dollars,
+        suggested_next_bid_cents,
+      }) => ({
         cents: suggested_next_bid_cents,
         display: display_suggested_next_bid_dollars,
       }),

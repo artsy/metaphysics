@@ -1,6 +1,11 @@
 import date from "schema/fields/date"
 import { IDFields } from "schema/object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLList } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLList,
+} from "graphql"
 
 export const CollectorProfileFields = {
   ...IDFields,
@@ -33,7 +38,12 @@ export const CollectorProfileType = new GraphQLObjectType({
 export default {
   type: CollectorProfileType,
   description: "A collector profile.",
-  resolve: (root, option, request, { rootValue: { accessToken, collectorProfileLoader } }) => {
+  resolve: (
+    root,
+    option,
+    request,
+    { rootValue: { accessToken, collectorProfileLoader } }
+  ) => {
     if (!accessToken) return null
     return collectorProfileLoader()
   },

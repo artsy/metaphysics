@@ -363,7 +363,10 @@ describe("Artwork type", () => {
     `
 
     it("is true if the artwork has any sales that are auctions", () => {
-      const sales = [assign({}, sale, { is_auction: false }), assign({}, sale, { is_auction: true })]
+      const sales = [
+        assign({}, sale, { is_auction: false }),
+        assign({}, sale, { is_auction: true }),
+      ]
       rootValue.salesLoader = sinon.stub().returns(Promise.resolve(sales))
 
       return runQuery(query, rootValue).then(data => {
@@ -531,7 +534,8 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
-            contact_message: "Hello, I am interested in placing a bid on this work. Please send me more information.", // eslint-disable-line max-len
+            contact_message:
+              "Hello, I am interested in placing a bid on this work. Please send me more information.", // eslint-disable-line max-len
           },
         })
       })
@@ -603,7 +607,10 @@ describe("Artwork type", () => {
         saleId === artwork.sale_ids[0] &&
         saleArtworkId === "richard-prince-untitled-portrait" &&
         Promise.resolve({ sale_id: saleId })
-      const { artwork: { sale_artwork: { sale_id } } } = await runQuery(query, rootValue)
+      const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
+        query,
+        rootValue
+      )
       expect(sale_id).toEqual(artwork.sale_ids[0])
     })
 
@@ -621,7 +628,10 @@ describe("Artwork type", () => {
         saleId === artwork.sale_ids[1] &&
         saleArtworkId === "richard-prince-untitled-portrait" &&
         Promise.resolve({ sale_id: saleId })
-      const { artwork: { sale_artwork: { sale_id } } } = await runQuery(query, rootValue)
+      const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
+        query,
+        rootValue
+      )
       expect(sale_id).toEqual(artwork.sale_ids[1])
     })
   })
@@ -730,7 +740,9 @@ describe("Artwork type", () => {
         name: "Y2K",
         end_at: moment.utc("1999-12-31").format(),
       })
-      rootValue.salesLoader = sinon.stub().returns(Promise.resolve([relatedSale]))
+      rootValue.salesLoader = sinon
+        .stub()
+        .returns(Promise.resolve([relatedSale]))
       rootValue.relatedFairsLoader = sinon.stub().returns(Promise.resolve([]))
       rootValue.relatedShowsLoader = sinon.stub().returns(Promise.resolve([]))
       const query = `

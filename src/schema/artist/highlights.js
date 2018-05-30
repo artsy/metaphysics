@@ -1,4 +1,9 @@
-import { GraphQLBoolean, GraphQLObjectType, GraphQLList, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLObjectType,
+  GraphQLList,
+  GraphQLString,
+} from "graphql"
 import { PartnerArtistConnection, partnersForArtist } from "../partner_artist"
 import { pageable } from "relay-cursor-paging"
 
@@ -18,8 +23,12 @@ const ArtistHighlightsType = new GraphQLObjectType({
           type: GraphQLBoolean,
         },
       }),
-      resolve: ({ id: artist_id }, options, _request, { rootValue: { partnerArtistsLoader } }) =>
-        partnersForArtist(artist_id, options, partnerArtistsLoader),
+      resolve: (
+        { id: artist_id },
+        options,
+        _request,
+        { rootValue: { partnerArtistsLoader } }
+      ) => partnersForArtist(artist_id, options, partnerArtistsLoader),
     },
   },
 })

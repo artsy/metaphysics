@@ -1,6 +1,9 @@
 import GeneFamily from "./gene_family"
 import { pageable } from "relay-cursor-paging"
-import { connectionDefinitions, connectionFromPromisedArray } from "graphql-relay"
+import {
+  connectionDefinitions,
+  connectionFromPromisedArray,
+} from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
 
 const { connectionType: GeneFamilyConnection } = connectionDefinitions({
@@ -15,7 +18,10 @@ const GeneFamilies = {
     const gravityOptions = Object.assign({}, parseRelayOptions(options), {
       sort: "position",
     })
-    return connectionFromPromisedArray(rootValue.geneFamiliesLoader(gravityOptions), gravityOptions)
+    return connectionFromPromisedArray(
+      rootValue.geneFamiliesLoader(gravityOptions),
+      gravityOptions
+    )
   },
 }
 

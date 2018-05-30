@@ -1,6 +1,13 @@
 import cached from "schema/fields/cached"
 import { GravityIDFields } from "schema/object_identification"
-import { GraphQLEnumType, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLBoolean } from "graphql"
+import {
+  GraphQLEnumType,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLBoolean,
+} from "graphql"
 import { shuffle } from "lodash"
 
 const HomePageHeroUnitType = new GraphQLObjectType({
@@ -32,7 +39,8 @@ const HomePageHeroUnitType = new GraphQLObjectType({
           },
         },
       }),
-      resolve: ({ type, menu_color_class }) => `${type.toLowerCase()} ${menu_color_class.toLowerCase()}`,
+      resolve: ({ type, menu_color_class }) =>
+        `${type.toLowerCase()} ${menu_color_class.toLowerCase()}`,
     },
     heading: {
       type: GraphQLString,
@@ -43,7 +51,8 @@ const HomePageHeroUnitType = new GraphQLObjectType({
     },
     title: {
       type: GraphQLString,
-      resolve: ({ mobile_title, name, platform }) => (platform === "desktop" ? name : mobile_title),
+      resolve: ({ mobile_title, name, platform }) =>
+        platform === "desktop" ? name : mobile_title,
     },
     title_image_url: {
       args: {
@@ -68,7 +77,8 @@ const HomePageHeroUnitType = new GraphQLObjectType({
     },
     background_image_url: {
       type: GraphQLString,
-      description: "The image to show, on desktop this defaults to the wide version.",
+      description:
+        "The image to show, on desktop this defaults to the wide version.",
       args: {
         version: {
           type: new GraphQLEnumType({
@@ -84,11 +94,18 @@ const HomePageHeroUnitType = new GraphQLObjectType({
           }),
         },
       },
-      resolve: ({ platform, background_image_url, background_image_mobile_url }, { version }) => {
+      resolve: (
+        { platform, background_image_url, background_image_mobile_url },
+        { version }
+      ) => {
         if (version) {
-          return version === "wide" ? background_image_url : background_image_mobile_url
+          return version === "wide"
+            ? background_image_url
+            : background_image_mobile_url
         }
-        return platform === "desktop" ? background_image_url : background_image_mobile_url
+        return platform === "desktop"
+          ? background_image_url
+          : background_image_mobile_url
       },
     },
   },
@@ -120,7 +137,9 @@ const HomePageHeroUnits = {
   resolve: (_, { platform }, request, { rootValue: { heroUnitsLoader } }) => {
     const params = { enabled: true }
     params[platform] = true
-    return heroUnitsLoader(params).then(units => shuffle(units.map(unit => Object.assign({ platform }, unit))))
+    return heroUnitsLoader(params).then(units =>
+      shuffle(units.map(unit => Object.assign({ platform }, unit)))
+    )
   },
 }
 

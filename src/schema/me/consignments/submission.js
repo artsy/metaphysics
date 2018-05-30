@@ -181,7 +181,12 @@ export const SubmissionType = new GraphQLObjectType({
     },
     artist: {
       type: Artist.type,
-      resolve: ({ artist_id }, _args, _request, { rootValue: { artistLoader } }) => {
+      resolve: (
+        { artist_id },
+        _args,
+        _request,
+        { rootValue: { artistLoader } }
+      ) => {
         if (!artist_id) return null
         return artistLoader(artist_id).catch(() => null)
       },

@@ -8,14 +8,19 @@ import path from "path"
 describe("Recording artwork views", () => {
   const mutation = gql`
     mutation {
-      recordArtworkView(input: { artwork_id: "artwork-id", clientMutationId: "2" }) {
+      recordArtworkView(
+        input: { artwork_id: "artwork-id", clientMutationId: "2" }
+      ) {
         clientMutationId
         artwork_id
       }
     }
   `
 
-  const typeDefs = fs.readFileSync(path.resolve(__dirname, "../../../data/gravity.graphql"), "utf8")
+  const typeDefs = fs.readFileSync(
+    path.resolve(__dirname, "../../../data/gravity.graphql"),
+    "utf8"
+  )
 
   const resolvers = {
     Mutation: {

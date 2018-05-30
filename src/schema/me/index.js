@@ -1,4 +1,10 @@
-import { GraphQLBoolean, GraphQLNonNull, GraphQLList, GraphQLString, GraphQLObjectType } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLString,
+  GraphQLObjectType,
+} from "graphql"
 
 import { IDFields, NodeInterface } from "schema/object_identification"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
@@ -32,7 +38,9 @@ import config from "config"
 const { ENABLE_SCHEMA_STITCHING } = config
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 
-const mySubmissions = enableSchemaStitching ? {} : { consignment_submissions: Submissions }
+const mySubmissions = enableSchemaStitching
+  ? {}
+  : { consignment_submissions: Submissions }
 
 const Me = new GraphQLObjectType({
   name: "Me",
@@ -66,8 +74,15 @@ const Me = new GraphQLObjectType({
     },
     has_qualified_credit_cards: {
       type: GraphQLBoolean,
-      resolve: (root, options, request, { rootValue: { meCreditCardsLoader } }) =>
-        meCreditCardsLoader({ qualified_for_bidding: true }).then(results => results.length > 0),
+      resolve: (
+        root,
+        options,
+        request,
+        { rootValue: { meCreditCardsLoader } }
+      ) =>
+        meCreditCardsLoader({ qualified_for_bidding: true }).then(
+          results => results.length > 0
+        ),
     },
     invoice: Invoice,
     lot_standing: LotStanding,
@@ -96,7 +111,12 @@ const Me = new GraphQLObjectType({
 
 export default {
   type: Me,
-  resolve: (root, options, request, { rootValue: { accessToken, userID, meLoader }, fieldNodes }) => {
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { accessToken, userID, meLoader }, fieldNodes }
+  ) => {
     if (!accessToken) return null
     const blacklistedFields = [
       "id",

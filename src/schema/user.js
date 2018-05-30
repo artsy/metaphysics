@@ -1,4 +1,9 @@
-import { GraphQLString, GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
+import {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLBoolean,
+} from "graphql"
 import cached from "./fields/cached"
 import { GravityIDFields } from "./object_identification"
 import { LocationType } from "schema/location"
@@ -33,7 +38,8 @@ export const UserType = new GraphQLObjectType({
       type: GraphQLString,
     },
     userAlreadyExists: {
-      description: "Check whether a user exists by email address before creating an account.",
+      description:
+        "Check whether a user exists by email address before creating an account.",
       type: GraphQLBoolean,
       resolve: ({ id }) => {
         if (id) {

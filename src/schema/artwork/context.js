@@ -26,7 +26,12 @@ export const ArtworkContextPartnerShowType = create(PartnerShow.type, {
 
 export const ArtworkContextType = new GraphQLUnionType({
   name: "ArtworkContext",
-  types: [ArtworkContextAuctionType, ArtworkContextFairType, ArtworkContextPartnerShowType, ArtworkContextSaleType],
+  types: [
+    ArtworkContextAuctionType,
+    ArtworkContextFairType,
+    ArtworkContextPartnerShowType,
+    ArtworkContextSaleType,
+  ],
 })
 
 const choose = flow(compact, first)
@@ -46,7 +51,10 @@ export default {
         .then(first)
         .then(sale => {
           if (!sale) return null
-          return assign({ context_type: sale.is_auction ? "Auction" : "Sale" }, sale)
+          return assign(
+            { context_type: sale.is_auction ? "Auction" : "Sale" },
+            sale
+          )
         })
     }
 

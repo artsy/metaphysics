@@ -27,7 +27,12 @@
 import { basename } from "path"
 import _ from "lodash"
 import { fromGlobalId, toGlobalId } from "graphql-relay"
-import { GraphQLNonNull, GraphQLString, GraphQLID, GraphQLInterfaceType } from "graphql"
+import {
+  GraphQLNonNull,
+  GraphQLString,
+  GraphQLID,
+  GraphQLInterfaceType,
+} from "graphql"
 
 /* eslint-disable no-param-reassign */
 const SupportedTypes = {
@@ -61,11 +66,14 @@ SupportedTypes.types = _.keys(SupportedTypes.typeMap)
 Object.defineProperty(SupportedTypes, "typeModules", {
   get: () => {
     if (SupportedTypes._typeModules === undefined) {
-      SupportedTypes._typeModules = SupportedTypes.types.reduce((modules, type) => {
-        // eslint-disable-next-line
-        modules[type] = require(SupportedTypes.typeMap[type]).default
-        return modules
-      }, {})
+      SupportedTypes._typeModules = SupportedTypes.types.reduce(
+        (modules, type) => {
+          // eslint-disable-next-line
+          modules[type] = require(SupportedTypes.typeMap[type]).default
+          return modules
+        },
+        {}
+      )
     }
     return SupportedTypes._typeModules
   },
@@ -75,14 +83,17 @@ Object.defineProperty(SupportedTypes, "typeModules", {
 const isSupportedType = _.includes.bind(null, SupportedTypes.types)
 
 function argumentsForChild(type, id) {
-  return type === "FilterArtworks" || type.startsWith("HomePage") ? JSON.parse(id) : { id }
+  return type === "FilterArtworks" || type.startsWith("HomePage")
+    ? JSON.parse(id)
+    : { id }
 }
 
 function rootValueForChild(rootValue) {
   const { selections } = rootValue.fieldNodes[0].selectionSet
   let fragment = _.find(
     selections,
-    selection => selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"
+    selection =>
+      selection.kind === "InlineFragment" || selection.kind === "FragmentSpread"
   )
   if (fragment && fragment.kind === "FragmentSpread") {
     fragment = rootValue.fragments[fragment.name.value]
@@ -125,7 +136,12 @@ const NodeField = {
       }
       const { resolve, type } = exported
       return Promise.resolve(
-        resolve(null, argumentsForChild(typeName, id), request, rootValueForChild(rootValue))
+        resolve(
+          null,
+          argumentsForChild(typeName, id),
+          request,
+          rootValueForChild(rootValue)
+        )
       ).then(data =>
         // Add the already known type so `NodeInterface` can pluck that out in
         // its `resolveType` implementation.
@@ -143,7 +159,8 @@ export const GlobalIDField = {
   type: new GraphQLNonNull(GraphQLID),
   // Ensure we never encode a null `id`, as it would silently work. Instead return `null`, so that
   // e.g. Relay will complain about the result not matching the type specified in the schema.
-  resolve: (obj, args, request, info) => obj.id && toGlobalId(info.parentType.name, obj.id),
+  resolve: (obj, args, request, info) =>
+    obj.id && toGlobalId(info.parentType.name, obj.id),
 }
 
 export const IDFields = {

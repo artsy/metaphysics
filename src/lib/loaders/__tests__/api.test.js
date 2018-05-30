@@ -9,7 +9,9 @@ describe("API loaders", () => {
   let loader = null
 
   beforeEach(() => {
-    api = jest.fn((path, accessToken, options) => Promise.resolve({ body: { path, accessToken, options } }))
+    api = jest.fn((path, accessToken, options) =>
+      Promise.resolve({ body: { path, accessToken, options } })
+    )
   })
 
   const sharedExamples = () => {
@@ -41,14 +43,19 @@ describe("API loaders", () => {
 
     it("caches the response for the lifetime of the loader", () =>
       Promise.all([loader(), loader()]).then(responses => {
-        expect(responses.map(({ path }) => path)).toEqual(["some/path?", "some/path?"])
+        expect(responses.map(({ path }) => path)).toEqual([
+          "some/path?",
+          "some/path?",
+        ])
         expect(api.mock.calls.length).toEqual(1)
       }))
 
     it("passes options for the api function on", () => {
       // Needs to be a new path so that it hasn’t been cached in memcache yet
       loader = apiLoader("some/post/path", {}, { method: "POST" })
-      return loader().then(({ options }) => expect(options.method).toEqual("POST"))
+      return loader().then(({ options }) =>
+        expect(options.method).toEqual("POST")
+      )
     })
   }
 
@@ -77,9 +84,11 @@ describe("API loaders", () => {
         .catch(() => {
           loader = apiLoader("some/unauthenticated/memcached/path")
           return loader().then(() =>
-            cache.get("some/unauthenticated/memcached/path?").then(({ path }) => {
-              expect(path).toEqual("some/unauthenticated/memcached/path?")
-            })
+            cache
+              .get("some/unauthenticated/memcached/path?")
+              .then(({ path }) => {
+                expect(path).toEqual("some/unauthenticated/memcached/path?")
+              })
           )
         }))
   })

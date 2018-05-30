@@ -32,10 +32,14 @@ describe("Bidder position mutation", () => {
   describe("success", () => {
     it("creates a bidder position", async () => {
       const rootValue = {
-        createBidderPositionLoader: sinon.stub().returns(Promise.resolve(createBidderPosition)),
+        createBidderPositionLoader: sinon
+          .stub()
+          .returns(Promise.resolve(createBidderPosition)),
       }
       const data = await runAuthenticatedQuery(query, rootValue)
-      expect(data.createBidderPosition.result.position.suggested_next_bid_cents).toEqual(110000)
+      expect(
+        data.createBidderPosition.result.position.suggested_next_bid_cents
+      ).toEqual(110000)
       expect(data.createBidderPosition.result.message_header).toBeNull()
       expect(data.createBidderPosition.result.message_description_md).toBeNull()
     })
@@ -50,11 +54,15 @@ describe("Bidder position mutation", () => {
         message: errorMEssageTemplate + errorObjectString,
       }
       const rootValue = {
-        createBidderPositionLoader: sinon.stub().returns(Promise.reject(errorMessage)),
+        createBidderPositionLoader: sinon
+          .stub()
+          .returns(Promise.reject(errorMessage)),
       }
       const data = await runAuthenticatedQuery(query, rootValue)
       expect(data.createBidderPosition.result.position).toBeNull()
-      expect(data.createBidderPosition.result.message_header).toEqual("Your bid wasn't high enough")
+      expect(data.createBidderPosition.result.message_header).toEqual(
+        "Your bid wasn't high enough"
+      )
       expect(data.createBidderPosition.result.message_description_md).toEqual(
         "Another bidder placed a\
  higher max bid or the same max bid before you did.  \
@@ -68,11 +76,15 @@ describe("Bidder position mutation", () => {
         message: errorMEssageTemplate + errorObjectString,
       }
       const rootValue = {
-        createBidderPositionLoader: sinon.stub().returns(Promise.reject(errorMessage)),
+        createBidderPositionLoader: sinon
+          .stub()
+          .returns(Promise.reject(errorMessage)),
       }
       const data = await runAuthenticatedQuery(query, rootValue)
       expect(data.createBidderPosition.result.position).toBeNull()
-      expect(data.createBidderPosition.result.message_header).toEqual("Lot closed")
+      expect(data.createBidderPosition.result.message_header).toEqual(
+        "Lot closed"
+      )
       expect(data.createBidderPosition.result.message_description_md).toEqual(
         "Sorry, your bid wasn’t received before the lot closed."
       )
@@ -84,30 +96,41 @@ describe("Bidder position mutation", () => {
       message: errorMEssageTemplate + errorObjectString,
     }
     const rootValue = {
-      createBidderPositionLoader: sinon.stub().returns(Promise.reject(errorMessage)),
+      createBidderPositionLoader: sinon
+        .stub()
+        .returns(Promise.reject(errorMessage)),
     }
     const data = await runAuthenticatedQuery(query, rootValue)
     const { PREDICTION_ENDPOINT } = config
     expect(data.createBidderPosition.result.position).toBeNull()
-    expect(data.createBidderPosition.result.message_header).toEqual("Live bidding has started")
+    expect(data.createBidderPosition.result.message_header).toEqual(
+      "Live bidding has started"
+    )
     expect(data.createBidderPosition.result.message_description_md)
       .toEqual(`Sorry, your bid wasn’t received before live bidding started.\
  To continue bidding, please\
- [join the live auction](${PREDICTION_ENDPOINT}/sixteen-year-of-resistance-benefit-auction-2032).`)
+ [join the live auction](${
+   PREDICTION_ENDPOINT
+ }/sixteen-year-of-resistance-benefit-auction-2032).`)
   })
 })
 
 it("creates correct message when bidder is not qualifdied", async () => {
-  const errorObjectString = '{"type": "param_error", "message":"Bidder not qualified to bid on this auction."}'
+  const errorObjectString =
+    '{"type": "param_error", "message":"Bidder not qualified to bid on this auction."}'
   const errorMessage = {
     message: errorMEssageTemplate + errorObjectString,
   }
   const rootValue = {
-    createBidderPositionLoader: sinon.stub().returns(Promise.reject(errorMessage)),
+    createBidderPositionLoader: sinon
+      .stub()
+      .returns(Promise.reject(errorMessage)),
   }
   const data = await runAuthenticatedQuery(query, rootValue)
   expect(data.createBidderPosition.result.position).toBeNull()
-  expect(data.createBidderPosition.result.message_header).toEqual("Bid not placed")
+  expect(data.createBidderPosition.result.message_header).toEqual(
+    "Bid not placed"
+  )
   expect(data.createBidderPosition.result.message_description_md).toEqual(
     "Your bid can’t be placed at this time.\
  Please contact [support@artsy.net](mailto:support@artsy.net) for more information."

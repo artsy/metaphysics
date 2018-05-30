@@ -1,7 +1,13 @@
 import { clone } from "lodash"
 import Partner from "./partner"
 import PartnerTypeType from "./input_fields/partner_type_type"
-import { GraphQLString, GraphQLList, GraphQLBoolean, GraphQLInt, GraphQLEnumType } from "graphql"
+import {
+  GraphQLString,
+  GraphQLList,
+  GraphQLBoolean,
+  GraphQLInt,
+  GraphQLEnumType,
+} from "graphql"
 
 const Partners = {
   type: new GraphQLList(Partner.type),

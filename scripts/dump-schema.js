@@ -14,8 +14,21 @@ if (destination === undefined || !fs.existsSync(destination)) {
 
 // Save JSON of full schema introspection for Babel Relay Plugin to use
 graphql(schema, introspectionQuery)
-  .then(result => fs.writeFileSync(path.join(destination, "schema.json"), JSON.stringify(result, null, 2)))
-  .catch(error => console.error("ERROR introspecting schema: ", JSON.stringify(error, null, 2)))
+  .then(result =>
+    fs.writeFileSync(
+      path.join(destination, "schema.json"),
+      JSON.stringify(result, null, 2)
+    )
+  )
+  .catch(error =>
+    console.error(
+      "ERROR introspecting schema: ",
+      JSON.stringify(error, null, 2)
+    )
+  )
 
 // Save user readable type system shorthand of schema
-fs.writeFileSync(path.join(destination, "schema.graphql"), printSchema(schema, { commentDescriptions: true }))
+fs.writeFileSync(
+  path.join(destination, "schema.graphql"),
+  printSchema(schema, { commentDescriptions: true })
+)

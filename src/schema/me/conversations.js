@@ -22,14 +22,15 @@ export default {
     if (!conversationsLoader) return null
     const { page, size, offset } = parseRelayOptions(options)
     const expand = ["total_unread_count"]
-    return conversationsLoader({ page, size, expand }).then(({ total_count, total_unread_count, conversations }) =>
-      assign(
-        { total_unread_count },
-        connectionFromArraySlice(conversations, options, {
-          arrayLength: total_count,
-          sliceStart: offset,
-        })
-      )
+    return conversationsLoader({ page, size, expand }).then(
+      ({ total_count, total_unread_count, conversations }) =>
+        assign(
+          { total_unread_count },
+          connectionFromArraySlice(conversations, options, {
+            arrayLength: total_count,
+            sliceStart: offset,
+          })
+        )
     )
   },
 }

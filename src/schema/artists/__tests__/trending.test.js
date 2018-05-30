@@ -21,7 +21,8 @@ describe("Trending Artists", () => {
           cached: null,
           context_type: null,
         }),
-      artistLoader: id => Promise.resolve({ id, birthday: "1900", artworks_count: 100 }),
+      artistLoader: id =>
+        Promise.resolve({ id, birthday: "1900", artworks_count: 100 }),
     }
 
     const { trending_artists: { artists } } = await runQuery(query, rootValue)

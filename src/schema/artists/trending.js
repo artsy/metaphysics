@@ -15,7 +15,12 @@ const TrendingArtistsType = new GraphQLObjectType({
   fields: () => ({
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: (deltaResponse, _args, _request, { rootValue: { artistLoader } }) => {
+      resolve: (
+        deltaResponse,
+        _args,
+        _request,
+        { rootValue: { artistLoader } }
+      ) => {
         const ids = without(keys(deltaResponse), "cached", "context_type")
         return Promise.all(ids.map(id => artistLoader(id)))
       },
@@ -28,7 +33,8 @@ const TrendingMetricsType = new GraphQLEnumType({
   values: {
     ARTIST_AUCTION_LOT: {
       value: "artist_auction_lot",
-      description: "Cumulative price achieved at auction. Base time period: 12 weeks",
+      description:
+        "Cumulative price achieved at auction. Base time period: 12 weeks",
     },
     ARTIST_FAIR: {
       value: "artist_fair",
@@ -59,7 +65,8 @@ const TrendingArtists = {
   args: {
     double_time_period: {
       type: GraphQLBoolean,
-      description: "Fetch the top artists for each metric within double the base time period",
+      description:
+        "Fetch the top artists for each metric within double the base time period",
       defaultValue: false,
     },
     method: {
@@ -77,7 +84,12 @@ const TrendingArtists = {
       defaultValue: 40,
     },
   },
-  resolve: (root, { method, name, size, double_time_period }, _request, { rootValue: { deltaLoader } }) =>
+  resolve: (
+    root,
+    { method, name, size, double_time_period },
+    _request,
+    { rootValue: { deltaLoader } }
+  ) =>
     deltaLoader({
       method,
       n: size,

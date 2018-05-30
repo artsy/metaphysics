@@ -5,9 +5,17 @@ import { warn } from "lib/loggers"
 import cached from "./fields/cached"
 import CollectionSorts from "./sorts/collection_sorts"
 import { artworkConnection } from "./artwork"
-import { queriedForFieldsOtherThanBlacklisted, parseRelayOptions } from "lib/helpers"
+import {
+  queriedForFieldsOtherThanBlacklisted,
+  parseRelayOptions,
+} from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLBoolean } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLBoolean,
+} from "graphql"
 
 // Note to developers working on collections, the staging server does not get a copy
 // of all artwork saves, so you will need to add some each week in order to have data
@@ -29,8 +37,16 @@ export const CollectionType = new GraphQLObjectType({
         },
         sort: CollectionSorts,
       },
-      resolve: ({ id }, options, _request, { rootValue: { collectionArtworksLoader } }) => {
-        const gravityOptions = Object.assign({ total_count: true }, parseRelayOptions(options))
+      resolve: (
+        { id },
+        options,
+        _request,
+        { rootValue: { collectionArtworksLoader } }
+      ) => {
+        const gravityOptions = Object.assign(
+          { total_count: true },
+          parseRelayOptions(options)
+        )
         delete gravityOptions.page // this can't also be used with the offset in gravity
         return collectionArtworksLoader(id, gravityOptions)
           .then(({ body, headers }) =>

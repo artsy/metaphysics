@@ -61,7 +61,12 @@ const PartnerType = new GraphQLObjectType({
             type: new GraphQLList(GraphQLString),
           },
         },
-        resolve: ({ id }, options, request, { rootValue: { partnerArtworksLoader } }) =>
+        resolve: (
+          { id },
+          options,
+          request,
+          { rootValue: { partnerArtworksLoader } }
+        ) =>
           partnerArtworksLoader(
             id,
             assign({}, options, {
@@ -78,12 +83,14 @@ const PartnerType = new GraphQLObjectType({
       },
       contact_message: {
         type: GraphQLString,
-        deprecationReason: "Prefer artwork contact_message to handle availability-based prompts.",
+        deprecationReason:
+          "Prefer artwork contact_message to handle availability-based prompts.",
         resolve: ({ type }) => {
           if (type === "Auction") {
-            return ["Hello, I am interested in placing a bid on this work.", "Please send me more information."].join(
-              " "
-            )
+            return [
+              "Hello, I am interested in placing a bid on this work.",
+              "Please send me more information.",
+            ].join(" ")
           }
           return [
             "Hi, I’m interested in purchasing this work.",
@@ -97,21 +104,34 @@ const PartnerType = new GraphQLObjectType({
           fields: {
             artworks: numeral(({ artworks_count }) => artworks_count),
             artists: numeral(({ artists_count }) => artists_count),
-            partner_artists: numeral(({ partner_artists_count }) => partner_artists_count),
-            eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
+            partner_artists: numeral(
+              ({ partner_artists_count }) => partner_artists_count
+            ),
+            eligible_artworks: numeral(
+              ({ eligible_artworks_count }) => eligible_artworks_count
+            ),
             published_for_sale_artworks: numeral(
-              ({ published_for_sale_artworks_count }) => published_for_sale_artworks_count
+              ({ published_for_sale_artworks_count }) =>
+                published_for_sale_artworks_count
             ),
             published_not_for_sale_artworks: numeral(
-              ({ published_not_for_sale_artworks_count }) => published_not_for_sale_artworks_count
+              ({ published_not_for_sale_artworks_count }) =>
+                published_not_for_sale_artworks_count
             ),
             shows: numeral(({ shows_count }) => shows_count),
-            displayable_shows: numeral(({ displayable_shows_count }) => displayable_shows_count),
-            current_displayable_shows: numeral(
-              ({ current_displayable_shows_count }) => current_displayable_shows_count
+            displayable_shows: numeral(
+              ({ displayable_shows_count }) => displayable_shows_count
             ),
-            artist_documents: numeral(({ artist_documents_count }) => artist_documents_count),
-            partner_show_documents: numeral(({ partner_show_documents_count }) => partner_show_documents_count),
+            current_displayable_shows: numeral(
+              ({ current_displayable_shows_count }) =>
+                current_displayable_shows_count
+            ),
+            artist_documents: numeral(
+              ({ artist_documents_count }) => artist_documents_count
+            ),
+            partner_show_documents: numeral(
+              ({ partner_show_documents_count }) => partner_show_documents_count
+            ),
           },
         }),
         resolve: artist => artist,
@@ -126,7 +146,9 @@ const PartnerType = new GraphQLObjectType({
       href: {
         type: GraphQLString,
         resolve: ({ type, default_profile_id }) =>
-          type === "Auction" ? `/auction/${default_profile_id}` : `/${default_profile_id}`,
+          type === "Auction"
+            ? `/auction/${default_profile_id}`
+            : `/${default_profile_id}`,
       },
       initials: initials("name"),
       is_default_profile_public: {
@@ -135,7 +157,8 @@ const PartnerType = new GraphQLObjectType({
       },
       is_limited_fair_partner: {
         type: GraphQLBoolean,
-        deprecationReason: "This field no longer exists, this is for backwards compatibility",
+        deprecationReason:
+          "This field no longer exists, this is for backwards compatibility",
         resolve: () => false,
       },
       is_linkable: {
@@ -155,8 +178,12 @@ const PartnerType = new GraphQLObjectType({
             defaultValue: 25,
           },
         },
-        resolve: ({ id }, options, request, { rootValue: { partnerLocationsLoader } }) =>
-          partnerLocationsLoader(id, options),
+        resolve: (
+          { id },
+          options,
+          request,
+          { rootValue: { partnerLocationsLoader } }
+        ) => partnerLocationsLoader(id, options),
       },
       name: {
         type: GraphQLString,
@@ -164,8 +191,12 @@ const PartnerType = new GraphQLObjectType({
       },
       profile: {
         type: Profile.type,
-        resolve: ({ default_profile_id }, options, request, { rootValue: { profileLoader } }) =>
-          profileLoader(default_profile_id).catch(() => null),
+        resolve: (
+          { default_profile_id },
+          options,
+          request,
+          { rootValue: { profileLoader } }
+        ) => profileLoader(default_profile_id).catch(() => null),
       },
       shows: {
         type: PartnerShows.type,
@@ -192,7 +223,12 @@ const PartnerType = new GraphQLObjectType({
       },
       acceptsCardPayments: {
         type: GraphQLBoolean,
-        resolve: (partner, _args, _request, { rootValue: { lewittSchema } }) => {
+        resolve: (
+          partner,
+          _args,
+          _request,
+          { rootValue: { lewittSchema } }
+        ) => {
           const { _id, payments_enabled } = partner
           if (!payments_enabled) {
             return false
@@ -229,7 +265,8 @@ const Partner = {
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (root, { id }, _request, { rootValue: { partnerLoader } }) => partnerLoader(id),
+  resolve: (root, { id }, _request, { rootValue: { partnerLoader } }) =>
+    partnerLoader(id),
 }
 
 export default Partner

@@ -64,7 +64,9 @@ function createRedisClient() {
     client.auth(redisURL.auth.split(":")[1])
   }
   client.on("error", error)
-  VerboseEvents.forEach(event => client.on(event, () => verbose(`[Cache] ${event}`)))
+  VerboseEvents.forEach(event =>
+    client.on(event, () => verbose(`[Cache] ${event}`))
+  )
   return client
 }
 
@@ -122,9 +124,15 @@ export default {
     }
     /* eslint-enable no-param-reassign */
 
-    return client.set(key, JSON.stringify(data), "EX", CACHE_LIFETIME_IN_SECONDS, err => {
-      if (err) error(err)
-    })
+    return client.set(
+      key,
+      JSON.stringify(data),
+      "EX",
+      CACHE_LIFETIME_IN_SECONDS,
+      err => {
+        if (err) error(err)
+      }
+    )
   },
 
   delete: key =>

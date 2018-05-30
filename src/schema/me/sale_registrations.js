@@ -22,7 +22,12 @@ export const SaleRegistrationType = new GraphQLObjectType({
 export default {
   type: new GraphQLList(SaleRegistrationType),
   args: Sales.args,
-  resolve: (root, options, request, { rootValue: { meBiddersLoader, salesLoader } }) =>
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { meBiddersLoader, salesLoader } }
+  ) =>
     salesLoader(options).then(sales =>
       // TODO this can be cleaner
       Promise.all(

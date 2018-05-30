@@ -23,7 +23,9 @@ export default {
     root,
     { current, artwork_id, sale_id },
     request,
-    { rootValue: { meBidderPositionsLoader, saleLoader, saleArtworkRootLoader } }
+    {
+      rootValue: { meBidderPositionsLoader, saleLoader, saleArtworkRootLoader },
+    }
   ) =>
     meBidderPositionsLoader({
       artwork_id,
@@ -55,7 +57,11 @@ export default {
             .catch(() => null)
         )
       ).then(saleArtworks =>
-        Promise.all(_.map(_.compact(saleArtworks), saleArtwork => saleLoader(saleArtwork.sale_id))).then(sales =>
+        Promise.all(
+          _.map(_.compact(saleArtworks), saleArtwork =>
+            saleLoader(saleArtwork.sale_id)
+          )
+        ).then(sales =>
           _.filter(latestPositions, position => {
             const saleArtwork = _.find(saleArtworks, {
               _id: position.sale_artwork_id,

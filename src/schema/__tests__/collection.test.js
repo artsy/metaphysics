@@ -27,7 +27,8 @@ describe("Collections", () => {
         }
       `
       const rootValue = {
-        collectionLoader: id => id === "saved-artwork" && Promise.resolve(gravityData),
+        collectionLoader: id =>
+          id === "saved-artwork" && Promise.resolve(gravityData),
       }
       const data = await runAuthenticatedQuery(query, rootValue)
       expect(data).toMatchSnapshot()
@@ -48,7 +49,13 @@ describe("Collections", () => {
           }
         }
       `
-      const artworksPath = resolve("src", "test", "fixtures", "gravity", "artworks_array.json")
+      const artworksPath = resolve(
+        "src",
+        "test",
+        "fixtures",
+        "gravity",
+        "artworks_array.json"
+      )
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
       const rootValue = {
         collectionArtworksLoader: (id, params) => {
@@ -91,9 +98,12 @@ describe("Collections", () => {
         }
       `
       const rootValue = {
-        collectionArtworksLoader: () => Promise.reject(new Error("Collection Not Found")),
+        collectionArtworksLoader: () =>
+          Promise.reject(new Error("Collection Not Found")),
       }
-      const { collection: { artworks_connection: { edges } } } = await runAuthenticatedQuery(query, rootValue)
+      const {
+        collection: { artworks_connection: { edges } },
+      } = await runAuthenticatedQuery(query, rootValue)
       expect(edges).toEqual([])
     })
   })

@@ -17,7 +17,12 @@ const Genes = {
       `,
     },
   },
-  resolve: (root, options, request, { rootValue: { geneLoader, genesLoader } }) => {
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { geneLoader, genesLoader } }
+  ) => {
     if (options.slugs) {
       return Promise.all(
         options.slugs.map(slug =>

@@ -1,4 +1,11 @@
-import { activeSaleArtworks, featuredAuction, featuredFair, featuredGene, geneArtworks, popularArtists } from "./fetch"
+import {
+  activeSaleArtworks,
+  featuredAuction,
+  featuredFair,
+  featuredGene,
+  geneArtworks,
+  popularArtists,
+} from "./fetch"
 import { map, assign, keys, without, shuffle, slice } from "lodash"
 import Artwork from "schema/artwork/index"
 import { GraphQLList } from "graphql"
@@ -6,7 +13,8 @@ import { GraphQLList } from "graphql"
 const RESULTS_SIZE = 20
 
 const moduleResults = {
-  active_bids: ({ rootValue: { lotStandingLoader } }) => activeSaleArtworks(lotStandingLoader),
+  active_bids: ({ rootValue: { lotStandingLoader } }) =>
+    activeSaleArtworks(lotStandingLoader),
   current_fairs: ({ rootValue: { fairsLoader, filterArtworksLoader } }) =>
     featuredFair(fairsLoader).then(fair => {
       if (fair) {
@@ -35,7 +43,10 @@ const moduleResults = {
       for_sale: true,
       size: 60,
     }).then(({ body }) => slice(shuffle(body), 0, RESULTS_SIZE)),
-  genes: ({ rootValue: { filterArtworksLoader, followedGenesLoader }, params: { id } }) => {
+  genes: ({
+    rootValue: { filterArtworksLoader, followedGenesLoader },
+    params: { id },
+  }) => {
     if (id) {
       return geneArtworks(filterArtworksLoader, id, RESULTS_SIZE)
     }
@@ -49,7 +60,9 @@ const moduleResults = {
     })
   },
   generic_gene: ({ rootValue: { filterArtworksLoader }, params }) =>
-    filterArtworksLoader(assign({}, params, { size: RESULTS_SIZE, for_sale: true })).then(({ hits }) => hits),
+    filterArtworksLoader(
+      assign({}, params, { size: RESULTS_SIZE, for_sale: true })
+    ).then(({ hits }) => hits),
   live_auctions: ({ rootValue: { salesLoader, saleArtworksLoader } }) =>
     featuredAuction(salesLoader).then(auction => {
       if (auction) {
@@ -85,12 +98,18 @@ const moduleResults = {
       size: RESULTS_SIZE,
       sort: "-position",
     }),
-  similar_to_saved_works: ({ rootValue: { savedArtworksLoader, similarArtworksLoader } }) =>
+  similar_to_saved_works: ({
+    rootValue: { savedArtworksLoader, similarArtworksLoader },
+  }) =>
     savedArtworksLoader({
       size: RESULTS_SIZE,
       sort: "-position",
-    }).then(works => similarArtworksLoader({ artwork_id: map(works, "_id").slice(0, 7) })),
-  similar_to_recently_viewed: ({ rootValue: { meLoader, similarArtworksLoader } }) =>
+    }).then(works =>
+      similarArtworksLoader({ artwork_id: map(works, "_id").slice(0, 7) })
+    ),
+  similar_to_recently_viewed: ({
+    rootValue: { meLoader, similarArtworksLoader },
+  }) =>
     meLoader().then(({ recently_viewed_artwork_ids }) => {
       if (recently_viewed_artwork_ids.length === 0) {
         return []

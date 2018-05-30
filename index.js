@@ -8,7 +8,14 @@ import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
 import config from "config"
 
-const { ENABLE_ASYNC_STACK_TRACES, GRAVITY_API_URL, GRAVITY_ID, GRAVITY_SECRET, NODE_ENV, PORT } = config
+const {
+  ENABLE_ASYNC_STACK_TRACES,
+  GRAVITY_API_URL,
+  GRAVITY_ID,
+  GRAVITY_SECRET,
+  NODE_ENV,
+  PORT,
+} = config
 
 global.Promise = Bluebird
 
@@ -64,5 +71,7 @@ function bootApp() {
     app.use(require("./src").default)
   }
 
-  app.listen(port, () => info(`[Metaphysics] Listening on http://localhost:${port}`))
+  app.listen(port, () =>
+    info(`[Metaphysics] Listening on http://localhost:${port}`)
+  )
 }

@@ -9,7 +9,8 @@ const Artworks = {
       type: new GraphQLList(GraphQLString),
     },
   },
-  resolve: (root, options, request, { rootValue: { artworksLoader } }) => artworksLoader(options),
+  resolve: (root, options, request, { rootValue: { artworksLoader } }) =>
+    artworksLoader(options),
 }
 
 export default Artworks

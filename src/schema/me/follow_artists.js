@@ -19,8 +19,12 @@ const FollowArtistsType = new GraphQLObjectType({
         fields: {
           artists: {
             type: GraphQLInt,
-            resolve: (data, options, request, { rootValue: { followedArtistsLoader } }) =>
-              totalViaLoader(followedArtistsLoader),
+            resolve: (
+              data,
+              options,
+              request,
+              { rootValue: { followedArtistsLoader } }
+            ) => totalViaLoader(followedArtistsLoader),
           },
         },
       }),
@@ -40,7 +44,12 @@ export default {
       type: GraphQLInt,
     },
   },
-  resolve: (root, options, request, { rootValue: { followedArtistsLoader } }) => {
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { followedArtistsLoader } }
+  ) => {
     if (!followedArtistsLoader) return null
     return followedArtistsLoader(options).then(({ body }) => body)
   },

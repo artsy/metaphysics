@@ -3,7 +3,12 @@ import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import date from "schema/fields/date"
 import Artwork from "schema/artwork"
 import Image from "schema/image"
-import { GraphQLEnumType, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLEnumType,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { omit } from "lodash"
 import { parseRelayOptions } from "lib/helpers"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
@@ -20,8 +25,12 @@ const NotificationsFeedItemType = new GraphQLObjectType({
     artworks: {
       type: new GraphQLList(Artwork.type),
       description: "List of artworks in this notification bundle",
-      resolve: ({ object_ids }, options, request, { rootValue: { artworksLoader } }) =>
-        artworksLoader({ ids: object_ids }),
+      resolve: (
+        { object_ids },
+        options,
+        request,
+        { rootValue: { artworksLoader } }
+      ) => artworksLoader({ ids: object_ids }),
     },
     date,
     message: {
@@ -42,24 +51,33 @@ const NotificationsFeedItemType = new GraphQLObjectType({
     },
     image: {
       type: Image.type,
-      resolve: ({ object }) => object.artists.length > 0 && Image.resolve(object.artists[0]),
+      resolve: ({ object }) =>
+        object.artists.length > 0 && Image.resolve(object.artists[0]),
     },
   }),
 })
 
 const Notifications = {
-  type: connectionDefinitions({ nodeType: NotificationsFeedItemType }).connectionType,
-  description: "A list of feed items, indicating published artworks (grouped by date and artists).",
+  type: connectionDefinitions({ nodeType: NotificationsFeedItemType })
+    .connectionType,
+  description:
+    "A list of feed items, indicating published artworks (grouped by date and artists).",
   args: pageable({}),
   deprecationReason: "Prefer to use followed_artists_artwork_groups.",
-  resolve: (root, options, request, { rootValue: { accessToken, notificationsFeedLoader } }) => {
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { accessToken, notificationsFeedLoader } }
+  ) => {
     if (!accessToken) return null
     const gravityOptions = parseRelayOptions(options)
-    return notificationsFeedLoader(omit(gravityOptions, "offset")).then(({ feed, total }) =>
-      connectionFromArraySlice(feed, options, {
-        arrayLength: total,
-        sliceStart: gravityOptions.offset,
-      })
+    return notificationsFeedLoader(omit(gravityOptions, "offset")).then(
+      ({ feed, total }) =>
+        connectionFromArraySlice(feed, options, {
+          arrayLength: total,
+          sliceStart: gravityOptions.offset,
+        })
     )
   },
 }

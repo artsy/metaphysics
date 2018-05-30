@@ -15,7 +15,14 @@ import Location from "./location"
 import Image, { getDefault } from "./image"
 import PartnerShowEventType from "./partner_show_event"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+} from "graphql"
 import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
 
@@ -47,7 +54,8 @@ const PartnerShowType = new GraphQLObjectType({
         },
         exclude: {
           type: new GraphQLList(GraphQLString),
-          description: "List of artwork IDs to exclude from the response (irrespective of size)",
+          description:
+            "List of artwork IDs to exclude from the response (irrespective of size)",
         },
         for_sale: {
           type: GraphQLBoolean,
@@ -67,14 +75,24 @@ const PartnerShowType = new GraphQLObjectType({
           defaultValue: 25,
         },
       },
-      resolve: (show, options, request, { rootValue: { partnerShowArtworksLoader } }) => {
+      resolve: (
+        show,
+        options,
+        request,
+        { rootValue: { partnerShowArtworksLoader } }
+      ) => {
         let fetch = null
         if (options.all) {
-          fetch = allViaLoader(partnerShowArtworksLoader, { partner_id: show.partner.id, show_id: show.id }, options)
-        } else {
-          fetch = partnerShowArtworksLoader({ partner_id: show.partner.id, show_id: show.id }, options).then(
-            ({ body }) => body
+          fetch = allViaLoader(
+            partnerShowArtworksLoader,
+            { partner_id: show.partner.id, show_id: show.id },
+            options
           )
+        } else {
+          fetch = partnerShowArtworksLoader(
+            { partner_id: show.partner.id, show_id: show.id },
+            options
+          ).then(({ body }) => body)
         }
 
         return fetch.then(exclude(options.exclude, "id"))
@@ -92,10 +110,21 @@ const PartnerShowType = new GraphQLObjectType({
                 description: "The slug or ID of an artist in the show.",
               },
             },
-            resolve: ({ id, partner }, options, request, { rootValue: { partnerShowArtworksLoader } }) =>
-              totalViaLoader(partnerShowArtworksLoader, { partner_id: partner.id, show_id: id }, options),
+            resolve: (
+              { id, partner },
+              options,
+              request,
+              { rootValue: { partnerShowArtworksLoader } }
+            ) =>
+              totalViaLoader(
+                partnerShowArtworksLoader,
+                { partner_id: partner.id, show_id: id },
+                options
+              ),
           },
-          eligible_artworks: numeral(({ eligible_artworks_count }) => eligible_artworks_count),
+          eligible_artworks: numeral(
+            ({ eligible_artworks_count }) => eligible_artworks_count
+          ),
         },
       }),
       resolve: partner_show => partner_show,
@@ -138,11 +167,18 @@ const PartnerShowType = new GraphQLObjectType({
     end_at: date,
     events: {
       type: new GraphQLList(PartnerShowEventType),
-      resolve: ({ partner, id }, options, request, { rootValue: { partnerShowLoader } }) =>
+      resolve: (
+        { partner, id },
+        options,
+        request,
+        { rootValue: { partnerShowLoader } }
+      ) =>
         // Gravity redirects from /api/v1/show/:id => /api/v1/partner/:partner_id/show/:show_id
         // this creates issues where events will remain cached. Fetch the non-redirected
         // route to circumvent this
-        partnerShowLoader({ partner_id: partner.id, show_id: id }).then(({ events }) => events),
+        partnerShowLoader({ partner_id: partner.id, show_id: id }).then(
+          ({ events }) => events
+        ),
     },
     exhibition_period: {
       type: GraphQLString,
@@ -172,17 +208,23 @@ const PartnerShowType = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: ({ id }, options, request, { rootValue: { partnerShowImagesLoader } }) =>
-        partnerShowImagesLoader(id, options).then(Image.resolve),
+      resolve: (
+        { id },
+        options,
+        request,
+        { rootValue: { partnerShowImagesLoader } }
+      ) => partnerShowImagesLoader(id, options).then(Image.resolve),
     },
     has_location: {
       type: GraphQLBoolean,
       description: "Flag showing if show has any location.",
-      resolve: ({ location, fair, partner_city }) => isExisty(location || fair || partner_city),
+      resolve: ({ location, fair, partner_city }) =>
+        isExisty(location || fair || partner_city),
     },
     is_active: {
       type: GraphQLBoolean,
-      description: "Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.",
+      description:
+        "Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.",
       resolve: ({ start_at, end_at }) => {
         const start = moment.utc(start_at).subtract(7, "days")
         const end = moment.utc(end_at).add(7, "days")
@@ -199,7 +241,12 @@ const PartnerShowType = new GraphQLObjectType({
     },
     kind: {
       type: GraphQLString,
-      resolve: (show, options, request, { rootValue: { partnerShowLoader } }) => {
+      resolve: (
+        show,
+        options,
+        request,
+        { rootValue: { partnerShowLoader } }
+      ) => {
         if (show.artists) return kind(show)
         return partnerShowLoader({
           partner_id: show.partner.id,
@@ -229,7 +276,9 @@ const PartnerShowType = new GraphQLObjectType({
             published: true,
           }
         )
-          .then(({ body }) => Image.resolve(getDefault(find(body, { can_share_image: true }))))
+          .then(({ body }) =>
+            Image.resolve(getDefault(find(body, { can_share_image: true })))
+          )
           .catch(e => {
             throw e
           })
@@ -257,7 +306,8 @@ const PartnerShowType = new GraphQLObjectType({
           description: "Before this many days no update will be generated",
         },
       },
-      resolve: ({ start_at, end_at }, options) => exhibitionStatus(start_at, end_at, options.max_days),
+      resolve: ({ start_at, end_at }, options) =>
+        exhibitionStatus(start_at, end_at, options.max_days),
     },
     type: {
       type: GraphQLString,

@@ -1,4 +1,9 @@
-import { GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GravityIDFields } from "schema/object_identification"
 
@@ -43,7 +48,11 @@ export default mutationWithClientMutationId({
       resolve: credit_card => credit_card,
     },
   },
-  mutateAndGetPayload: ({ token }, request, { rootValue: { accessToken, createCreditCardLoader } }) => {
+  mutateAndGetPayload: (
+    { token },
+    request,
+    { rootValue: { accessToken, createCreditCardLoader } }
+  ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }

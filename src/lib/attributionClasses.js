@@ -21,7 +21,8 @@ export default {
     name: "Made-to-order",
     info: "A made-to-order piece",
     short_description: "This is a made-to-order piece",
-    long_description: "A piece that is made-to-order, taking into account the collector’s preferences.",
+    long_description:
+      "A piece that is made-to-order, taking into account the collector’s preferences.",
   },
   reproduction: {
     id: "reproduction",

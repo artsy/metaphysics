@@ -17,7 +17,10 @@ import morgan from "artsy-morgan"
 import raven from "raven"
 import xapp from "artsy-xapp"
 import crunchInterceptor from "./lib/crunchInterceptor"
-import { fetchLoggerSetup, fetchLoggerRequestDone } from "lib/loaders/api/logger"
+import {
+  fetchLoggerSetup,
+  fetchLoggerRequestDone,
+} from "lib/loaders/api/logger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
 import { mergeSchemas } from "./lib/stitching/mergeSchemas"
@@ -46,7 +49,11 @@ const logQueryDetailsThreshold = LOG_QUERY_DETAILS_THRESHOLD && VALUE
 
 function logQueryDetailsIfEnabled() {
   if (Number.isInteger(logQueryDetailsThreshold)) {
-    console.warn(`[FEATURE] Enabling logging of queries running past the ${logQueryDetailsThreshold} sec threshold.`)
+    console.warn(
+      `[FEATURE] Enabling logging of queries running past the ${
+        logQueryDetailsThreshold
+      } sec threshold.`
+    )
     return logQueryDetails(logQueryDetailsThreshold)
   }
   // no-op
@@ -146,7 +153,9 @@ async function startApp() {
           isProduction,
         }),
         validationRules: [depthLimit(queryLimit)],
-        extensions: enableRequestLogging ? fetchLoggerRequestDone(requestID) : undefined,
+        extensions: enableRequestLogging
+          ? fetchLoggerRequestDone(requestID)
+          : undefined,
       }
     })
   )

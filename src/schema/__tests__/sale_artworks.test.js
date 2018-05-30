@@ -20,7 +20,11 @@ describe("Sale Artworks", () => {
     }
     const query = gql`
       {
-        sale_artworks(live_sale: true, include_artworks_by_followed_artists: true, is_auction: true) {
+        sale_artworks(
+          live_sale: true
+          include_artworks_by_followed_artists: true
+          is_auction: true
+        ) {
           counts {
             total
           }
@@ -33,9 +37,13 @@ describe("Sale Artworks", () => {
       }
     `
 
-    const { sale_artworks: { counts: { total }, edges } } = await execute(gravityResponse, query, {
-      saleArtworksAllLoader: () => Promise.resolve(gravityResponse),
-    })
+    const { sale_artworks: { counts: { total }, edges } } = await execute(
+      gravityResponse,
+      query,
+      {
+        saleArtworksAllLoader: () => Promise.resolve(gravityResponse),
+      }
+    )
     expect(total).toEqual(totalCount)
     expect(edges.length).toEqual(hits.length)
   })
@@ -65,7 +73,10 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { counts: { total }, edges } } = await execute(gravityResponse, query)
+    const { sale_artworks: { counts: { total }, edges } } = await execute(
+      gravityResponse,
+      query
+    )
     expect(total).toEqual(totalCount)
     expect(edges.length).toEqual(hits.length)
   })
@@ -123,10 +134,12 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { edges, pageInfo: { startCursor, endCursor, hasNextPage } } } = await execute(
-      gravityResponse,
-      query
-    )
+    const {
+      sale_artworks: {
+        edges,
+        pageInfo: { startCursor, endCursor, hasNextPage },
+      },
+    } = await execute(gravityResponse, query)
     const [first, last] = [_.first(edges), _.last(edges)]
     expect(first.cursor).toEqual(startCursor)
     expect(last.cursor).toEqual(endCursor)
@@ -141,7 +154,10 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { pageInfo } } = await execute(gravityResponse, query)
+    const { sale_artworks: { pageInfo } } = await execute(
+      gravityResponse,
+      query
+    )
     expect(pageInfo.hasNextPage).toEqual(false)
   })
 
@@ -164,7 +180,10 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { counts: { total } } } = await execute(gravityResponse, query)
+    const { sale_artworks: { counts: { total } } } = await execute(
+      gravityResponse,
+      query
+    )
     expect(total).toEqual(hits.length)
   })
 
@@ -217,7 +236,10 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { aggregations } } = await execute(gravityResponse, query)
+    const { sale_artworks: { aggregations } } = await execute(
+      gravityResponse,
+      query
+    )
 
     expect(aggregations.length).toBeGreaterThan(0)
     aggregations.forEach(aggregation => {

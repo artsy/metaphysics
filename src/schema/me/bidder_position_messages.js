@@ -12,21 +12,25 @@ export const BiddingMessages = [
     id: "RESERVE_NOT_MET",
     gravity_key: "Please enter a bid higher than",
     header: "Your bid wasn't high enough",
-    description_md: () => "Your bid didn’t meet the reserve price for this work.  \
+    description_md: () =>
+      "Your bid didn’t meet the reserve price for this work.  \
  Bid again to take the lead.",
   },
   {
     id: "SALE_CLOSED",
     gravity_key: "Sale Closed to Bids",
     header: "Lot closed",
-    description_md: () => "Sorry, your bid wasn’t received before the lot closed.",
+    description_md: () =>
+      "Sorry, your bid wasn’t received before the lot closed.",
   },
   {
     id: "LIVE_BIDDING_STARTED",
     gravity_key: "Live Bidding has Started",
     header: "Live bidding has started",
     description_md: params => `Sorry, your bid wasn’t received before live bidding started.\
- To continue bidding, please [join the live auction](${params.liveAuctionUrl}).`,
+ To continue bidding, please [join the live auction](${
+   params.liveAuctionUrl
+ }).`,
   },
   {
     id: "BIDDER_NOT_QUALIFIED",

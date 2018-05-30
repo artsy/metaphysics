@@ -1,5 +1,10 @@
 import { create, assign } from "lodash"
-import { featuredAuction, featuredFair, featuredGene, popularArtists } from "./fetch"
+import {
+  featuredAuction,
+  featuredFair,
+  featuredGene,
+  popularArtists,
+} from "./fetch"
 import Fair from "schema/fair"
 import Sale from "schema/sale/index"
 import Gene from "schema/gene"
@@ -28,10 +33,13 @@ export const HomePageModuleContextTrendingType = create(Trending.type, {
   isTypeOf: ({ context_type }) => context_type === "Trending",
 })
 
-export const HomePageModuleContextFollowArtistsType = create(FollowArtists.type, {
-  name: "HomePageModuleContextFollowArtists",
-  isTypeOf: ({ context_type }) => context_type === "FollowArtists",
-})
+export const HomePageModuleContextFollowArtistsType = create(
+  FollowArtists.type,
+  {
+    name: "HomePageModuleContextFollowArtists",
+    isTypeOf: ({ context_type }) => context_type === "FollowArtists",
+  }
+)
 
 export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
   name: "HomePageModuleContextRelatedArtist",
@@ -58,10 +66,14 @@ export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType({
 
 export const moduleContext = {
   popular_artists: ({ rootValue: { deltaLoader } }) =>
-    popularArtists(deltaLoader).then(trending => assign({}, trending, { context_type: "Trending" })),
+    popularArtists(deltaLoader).then(trending =>
+      assign({}, trending, { context_type: "Trending" })
+    ),
   active_bids: () => null,
   followed_artists: ({ rootValue: { followedArtistsLoader } }) =>
-    followedArtistsLoader({ size: 9, page: 1 }).then(({ body }) => assign({}, body, { context_type: "FollowArtists" })),
+    followedArtistsLoader({ size: 9, page: 1 }).then(({ body }) =>
+      assign({}, body, { context_type: "FollowArtists" })
+    ),
   followed_galleries: () => null,
   saved_works: () => null,
   recently_viewed_works: () => null,
@@ -69,9 +81,13 @@ export const moduleContext = {
   similar_to_saved_works: () => null,
   recommended_works: () => null,
   live_auctions: ({ rootValue: { salesLoader } }) =>
-    featuredAuction(salesLoader).then(sale => assign({}, sale, { context_type: "Sale" })),
+    featuredAuction(salesLoader).then(sale =>
+      assign({}, sale, { context_type: "Sale" })
+    ),
   current_fairs: ({ rootValue: { fairsLoader } }) =>
-    featuredFair(fairsLoader).then(fair => assign({}, fair, { context_type: "Fair" })),
+    featuredFair(fairsLoader).then(fair =>
+      assign({}, fair, { context_type: "Fair" })
+    ),
   followed_artist: ({ rootValue: { artistLoader }, params }) =>
     artistLoader(params.followed_artist_id).then(artist =>
       assign(
@@ -83,26 +99,32 @@ export const moduleContext = {
       )
     ),
   related_artists: ({ rootValue: { artistLoader }, params }) =>
-    Promise.all([artistLoader(params.related_artist_id), artistLoader(params.followed_artist_id)]).then(
-      ([related_artist, follow_artist]) =>
-        assign(
-          {},
-          {
-            context_type: "RelatedArtist",
-            based_on: follow_artist,
-            artist: related_artist,
-          }
-        )
+    Promise.all([
+      artistLoader(params.related_artist_id),
+      artistLoader(params.followed_artist_id),
+    ]).then(([related_artist, follow_artist]) =>
+      assign(
+        {},
+        {
+          context_type: "RelatedArtist",
+          based_on: follow_artist,
+          artist: related_artist,
+        }
+      )
     ),
   genes: ({ rootValue: { followedGenesLoader }, params: { gene } }) => {
     if (gene) {
       return assign({}, gene, { context_type: "Gene" })
     }
     // Backward compatibility for Force.
-    return featuredGene(followedGenesLoader).then(fetchedGene => assign({}, fetchedGene, { context_type: "Gene" }))
+    return featuredGene(followedGenesLoader).then(fetchedGene =>
+      assign({}, fetchedGene, { context_type: "Gene" })
+    )
   },
   generic_gene: ({ rootValue: { geneLoader }, params: { gene_id } }) =>
-    geneLoader(gene_id).then(gene => assign({}, gene, { context_type: "Gene" })),
+    geneLoader(gene_id).then(gene =>
+      assign({}, gene, { context_type: "Gene" })
+    ),
 }
 
 export default {

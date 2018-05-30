@@ -30,7 +30,12 @@ const Artists = {
     },
     sort: ArtistSorts,
   },
-  resolve: (root, options, _request, { rootValue: { artistLoader, artistsLoader } }) => {
+  resolve: (
+    root,
+    options,
+    _request,
+    { rootValue: { artistLoader, artistsLoader } }
+  ) => {
     if (options.slugs) {
       return Promise.all(
         options.slugs.map(slug =>

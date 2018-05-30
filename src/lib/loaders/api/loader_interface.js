@@ -2,7 +2,8 @@
 
 import { toKey } from "lib/helpers"
 
-const encodeStaticPath = (path, globalParams, params) => toKey(path, Object.assign({}, globalParams, params))
+const encodeStaticPath = (path, globalParams, params) =>
+  toKey(path, Object.assign({}, globalParams, params))
 
 const encodeDynamicPath = (pathGenerator, globalParams, id, params) =>
   encodeStaticPath(pathGenerator(id), globalParams, params)
@@ -24,8 +25,11 @@ const encodeDynamicPath = (pathGenerator, globalParams, id, params) =>
  * @param {string|function} pathOrGenerator a query path or function that generates one
  * @param {object} globalParams a dictionary of query params that are to be included in each request
  */
-export const loaderInterface = (loader, pathOrGenerator, globalParams) => (...idAndOrParams) => {
-  const keyGenerator = typeof pathOrGenerator === "function" ? encodeDynamicPath : encodeStaticPath
+export const loaderInterface = (loader, pathOrGenerator, globalParams) => (
+  ...idAndOrParams
+) => {
+  const keyGenerator =
+    typeof pathOrGenerator === "function" ? encodeDynamicPath : encodeStaticPath
   const key = keyGenerator(pathOrGenerator, globalParams, ...idAndOrParams)
   return loader.load(key)
 }

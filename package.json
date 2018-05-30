@@ -155,8 +155,7 @@
     "semi": false,
     "singleQuote": false,
     "trailingComma": "es5",
-    "bracketSpacing": true,
-    "printWidth": 120
+    "bracketSpacing": true
   },
   "lint-staged": {
     "*.json, *.md": [

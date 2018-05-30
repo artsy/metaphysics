@@ -11,11 +11,6 @@
   "parser": "babel-eslint",
   "rules": {
     "camelcase": 0,
-    "max-len": [2, 120],
-    "quotes": [2, "double"],
-    "semi": [0],
-    "no-extra-semi": 0,
-    "indent": 0,
     "promise/catch-or-return": 2,
     "import/first": 0,
     "import/extensions": 0,

@@ -75,7 +75,10 @@ describe("Partner type", () => {
     beforeEach(() => {
       partner.payments_enabled = true
 
-      const typeDefs = fs.readFileSync(path.resolve(__dirname, "../../data/lewitt.graphql"), "utf8")
+      const typeDefs = fs.readFileSync(
+        path.resolve(__dirname, "../../data/lewitt.graphql"),
+        "utf8"
+      )
 
       const resolvers = {
         RootQuery: {
@@ -123,7 +126,10 @@ describe("Partner type", () => {
     })
 
     it("returns false if partner_product_merchant_account call to lewitt returns errors", () => {
-      const typeDefs = fs.readFileSync(path.resolve(__dirname, "../../data/lewitt.graphql"), "utf8")
+      const typeDefs = fs.readFileSync(
+        path.resolve(__dirname, "../../data/lewitt.graphql"),
+        "utf8"
+      )
 
       const resolvers = {
         RootQuery: {

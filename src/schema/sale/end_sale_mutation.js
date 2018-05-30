@@ -18,7 +18,11 @@ export const endSaleMutation = mutationWithClientMutationId({
       resolve: sale => sale,
     },
   },
-  mutateAndGetPayload: ({ sale_id }, _request, { rootValue: { accessToken, endSaleLoader } }) => {
+  mutateAndGetPayload: (
+    { sale_id },
+    _request,
+    { rootValue: { accessToken, endSaleLoader } }
+  ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }

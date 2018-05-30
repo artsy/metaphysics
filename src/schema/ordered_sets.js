@@ -1,5 +1,11 @@
 import OrderedSet from "./ordered_set"
-import { GraphQLString, GraphQLNonNull, GraphQLList, GraphQLBoolean, GraphQLInt } from "graphql"
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLBoolean,
+  GraphQLInt,
+} from "graphql"
 
 const OrderedSets = {
   type: new GraphQLList(OrderedSet.type),
@@ -22,7 +28,8 @@ const OrderedSets = {
       defaultValue: 10,
     },
   },
-  resolve: (root, options, request, { rootValue: { setsLoader } }) => setsLoader(options),
+  resolve: (root, options, request, { rootValue: { setsLoader } }) =>
+    setsLoader(options),
 }
 
 export default OrderedSets

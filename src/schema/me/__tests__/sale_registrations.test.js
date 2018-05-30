@@ -38,12 +38,14 @@ describe("Me", () => {
         meBiddersLoader,
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(({ me: { sale_registrations } }) => {
-        expect(sale_registrations).toEqual([
-          { is_registered: false, sale: { name: "Foo Sale" } },
-          { is_registered: true, sale: { name: "Bar Sale" } },
-        ])
-      })
+      return runAuthenticatedQuery(query, rootValue).then(
+        ({ me: { sale_registrations } }) => {
+          expect(sale_registrations).toEqual([
+            { is_registered: false, sale: { name: "Foo Sale" } },
+            { is_registered: true, sale: { name: "Bar Sale" } },
+          ])
+        }
+      )
     })
   })
 })

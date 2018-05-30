@@ -10,12 +10,20 @@ import { map, find, extend } from "lodash"
  * @param {string} trackingKey the key that’s to be used for this entity, e.g. `is_followed` or `is_saved`.
  * @param {string} [entityKeyPath] an optional path to a nested entity
  */
-const trackedEntityLoaderFactory = (dataLoader, paramKey, trackingKey, entityKeyPath) => {
+const trackedEntityLoaderFactory = (
+  dataLoader,
+  paramKey,
+  trackingKey,
+  entityKeyPath
+) => {
   const trackedEntityLoader = new DataLoader(
     ids =>
       dataLoader({ [paramKey]: ids }).then(body => {
         const parsedResults = map(ids, id => {
-          const match = find(body, [entityKeyPath ? `${entityKeyPath}.id` : "id", id])
+          const match = find(body, [
+            entityKeyPath ? `${entityKeyPath}.id` : "id",
+            id,
+          ])
           if (match) {
             return extend(entityKeyPath ? match[entityKeyPath] : match, {
               [trackingKey]: true,

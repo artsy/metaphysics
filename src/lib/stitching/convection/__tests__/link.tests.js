@@ -1,6 +1,7 @@
 import { createConvectionLink } from "../link"
 
-const runLinkChain = (link, op, complete) => link.request(op).subscribe({ complete })
+const runLinkChain = (link, op, complete) =>
+  link.request(op).subscribe({ complete })
 
 // FIXME: This seems to be hitting the actual network and thus fails without it.
 describe("convection link", () => {
@@ -60,7 +61,8 @@ describe("convection link", () => {
                 parentSpanId: "span123",
               },
               dataLoaders: {
-                convectionTokenLoader: () => Promise.resolve({ token: "token_123" }),
+                convectionTokenLoader: () =>
+                  Promise.resolve({ token: "token_123" }),
               },
             },
           },

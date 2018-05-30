@@ -18,7 +18,12 @@ export default mutationWithClientMutationId({
   outputFields: {
     artist: {
       type: ArtistType,
-      resolve: ({ artist_id }, options, request, { rootValue: { artistLoader } }) => artistLoader(artist_id),
+      resolve: (
+        { artist_id },
+        options,
+        request,
+        { rootValue: { artistLoader } }
+      ) => artistLoader(artist_id),
     },
     popular_artists: PopularArtists,
   },

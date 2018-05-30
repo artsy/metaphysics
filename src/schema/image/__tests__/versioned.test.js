@@ -15,7 +15,9 @@ describe("Image", () => {
 
     describe("without image_url", () => {
       it("returns undefined", () => {
-        expect(versionedImageUrl({}, { version: "four_thirds" })).toBe(undefined)
+        expect(versionedImageUrl({}, { version: "four_thirds" })).toBe(
+          undefined
+        )
       })
     })
   })

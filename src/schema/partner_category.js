@@ -36,7 +36,8 @@ const PartnerCategory = {
       description: "The slug or ID of the PartnerCategory",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { partnerCategoryLoader } }) => partnerCategoryLoader(id),
+  resolve: (root, { id }, request, { rootValue: { partnerCategoryLoader } }) =>
+    partnerCategoryLoader(id),
 }
 
 export default PartnerCategory

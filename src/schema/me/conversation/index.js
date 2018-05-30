@@ -47,7 +47,8 @@ export const BuyerOutcomeTypes = new GraphQLEnumType({
 
 export const ConversationInitiatorType = new GraphQLObjectType({
   name: "ConversationInitiator",
-  description: "The participant who started the conversation, currently always a User",
+  description:
+    "The participant who started the conversation, currently always a User",
   fields: {
     id: {
       description: "Impulse id.",
@@ -69,7 +70,8 @@ export const ConversationInitiatorType = new GraphQLObjectType({
 
 export const ConversationResponderType = new GraphQLObjectType({
   name: "ConversationResponder",
-  description: "The participant responding to the conversation, currently always a Partner",
+  description:
+    "The participant responding to the conversation, currently always a Partner",
   fields: {
     id: {
       description: "Impulse id.",
@@ -84,7 +86,8 @@ export const ConversationResponderType = new GraphQLObjectType({
     },
     reply_to_impulse_ids: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
-      description: "An array of Impulse IDs that correspond to all email addresses that messages should be sent to",
+      description:
+        "An array of Impulse IDs that correspond to all email addresses that messages should be sent to",
     },
     initials: initials("name"),
   },
@@ -124,7 +127,10 @@ const ConversationItem = new GraphQLObjectType({
   },
 })
 
-export const { connectionType: MessageConnection, edgeType: MessageEdge } = connectionDefinitions({
+export const {
+  connectionType: MessageConnection,
+  edgeType: MessageEdge,
+} = connectionDefinitions({
   nodeType: MessageType,
 })
 
@@ -134,7 +140,8 @@ const isLastMessageToUser = ({ _embedded, from_email }) => {
   return lastMessagePrincipal === false || from_email !== lastMessageFromEmail
 }
 
-const lastMessageId = conversation => get(conversation, "_embedded.last_message.id")
+const lastMessageId = conversation =>
+  get(conversation, "_embedded.last_message.id")
 
 export const ConversationFields = {
   __id: GlobalIDField,
@@ -210,12 +217,21 @@ export const ConversationFields = {
   last_message_open: {
     deprecationReason: "Prefer to use `unread`",
     type: GraphQLString,
-    description: "Timestamp if the user opened the last message, null in all other cases",
-    resolve: (conversation, options, request, { rootValue: { conversationMessagesLoader } }) => {
+    description:
+      "Timestamp if the user opened the last message, null in all other cases",
+    resolve: (
+      conversation,
+      options,
+      request,
+      { rootValue: { conversationMessagesLoader } }
+    ) => {
       if (!isLastMessageToUser(conversation)) {
         return null
       }
-      const radiationMessageId = get(conversation, "_embedded.last_message.radiation_message_id")
+      const radiationMessageId = get(
+        conversation,
+        "_embedded.last_message.radiation_message_id"
+      )
       return conversationMessagesLoader({
         conversation_id: conversation.id,
         radiation_message_id: radiationMessageId,
@@ -224,7 +240,9 @@ export const ConversationFields = {
         if (message_details.length === 0) {
           return null
         }
-        const relevantDelivery = message_details[0].deliveries.find(d => d.email === conversation.from_email)
+        const relevantDelivery = message_details[0].deliveries.find(
+          d => d.email === conversation.from_email
+        )
         if (!relevantDelivery) {
           return null
         }
@@ -237,12 +255,21 @@ export const ConversationFields = {
   // This can be used to mark the message as read, or log other events.
   last_message_delivery_id: {
     type: GraphQLString,
-    description: "Delivery id if the user is a recipient of the last message, null otherwise.",
-    resolve: (conversation, options, request, { rootValue: { conversationMessagesLoader } }) => {
+    description:
+      "Delivery id if the user is a recipient of the last message, null otherwise.",
+    resolve: (
+      conversation,
+      options,
+      request,
+      { rootValue: { conversationMessagesLoader } }
+    ) => {
       if (!isLastMessageToUser(conversation)) {
         return null
       }
-      const radiationMessageId = get(conversation, "_embedded.last_message.radiation_message_id")
+      const radiationMessageId = get(
+        conversation,
+        "_embedded.last_message.radiation_message_id"
+      )
       return conversationMessagesLoader({
         conversation_id: conversation.id,
         radiation_message_id: radiationMessageId,
@@ -251,7 +278,9 @@ export const ConversationFields = {
         if (message_details.length === 0) {
           return null
         }
-        const relevantDelivery = message_details[0].deliveries.find(d => d.email === conversation.from_email)
+        const relevantDelivery = message_details[0].deliveries.find(
+          d => d.email === conversation.from_email
+        )
         if (!relevantDelivery) {
           return null
         }
@@ -263,15 +292,19 @@ export const ConversationFields = {
   artworks: {
     type: new GraphQLList(ArtworkType),
     description: "Only the artworks discussed in the conversation.",
-    resolve: conversation => conversation.items.filter(({ item_type }) => item_type === "Artwork"),
+    resolve: conversation =>
+      conversation.items.filter(({ item_type }) => item_type === "Artwork"),
   },
 
   items: {
     type: new GraphQLList(ConversationItem),
-    description: "The artworks and/or partner shows discussed in the conversation.",
+    description:
+      "The artworks and/or partner shows discussed in the conversation.",
     resolve: conversation =>
       conversation.items.filter(
-        ({ properties, item_type }) => isExisty(properties) && (item_type === "Artwork" || item_type === "PartnerShow")
+        ({ properties, item_type }) =>
+          isExisty(properties) &&
+          (item_type === "Artwork" || item_type === "PartnerShow")
       ),
   },
 
@@ -289,7 +322,12 @@ export const ConversationFields = {
         }),
       },
     }),
-    resolve: ({ id, from_email }, options, req, { rootValue: { conversationMessagesLoader } }) => {
+    resolve: (
+      { id, from_email },
+      options,
+      req,
+      { rootValue: { conversationMessagesLoader } }
+    ) => {
       const { page, size, offset } = parseRelayOptions(options)
       return conversationMessagesLoader({
         page,
@@ -325,7 +363,9 @@ export const ConversationFields = {
       const memoizedLastMessageId = lastMessageId(conversation)
       const { from_last_viewed_message_id } = conversation
       return (
-        !!from_last_viewed_message_id && !!memoizedLastMessageId && from_last_viewed_message_id < memoizedLastMessageId
+        !!from_last_viewed_message_id &&
+        !!memoizedLastMessageId &&
+        from_last_viewed_message_id < memoizedLastMessageId
       )
     },
   },

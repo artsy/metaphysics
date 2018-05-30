@@ -18,54 +18,74 @@ export default opts => ({
   /**
    * The Delta loaders produced by this factory _will_ cache all responses to memcache.
    */
-  deltaLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(delta, "delta", {
-    requestIDs: opts.requestIDs,
-    userAgent: opts.userAgent,
-    span: opts.span,
-  }),
+  deltaLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    delta,
+    "delta",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+      span: opts.span,
+    }
+  ),
 
   /**
    * The Diffusion loaders produced by this factory _will_ cache all responses to memcache.
    */
-  diffusionLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(diffusion, "diffusion", {
-    requestIDs: opts.requestIDs,
-    userAgent: opts.userAgent,
-    requestThrottleMs: config.DIFFUSION_REQUEST_THROTTLE_MS,
-    span: opts.span,
-  }),
+  diffusionLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    diffusion,
+    "diffusion",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+      requestThrottleMs: config.DIFFUSION_REQUEST_THROTTLE_MS,
+      span: opts.span,
+    }
+  ),
 
   /**
    * The Galaxy loaders produced by this factory _will_ cache all responses to memcache.
    *
    * Do **not** use it for authenticated requests!
    */
-  galaxyLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(galaxy, "galaxy", {
-    requestIDs: opts.requestIDs,
-    userAgent: opts.userAgent,
-    span: opts.span,
-  }),
+  galaxyLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    galaxy,
+    "galaxy",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+      span: opts.span,
+    }
+  ),
 
   /**
    * The Gravity loaders produced by this factory _will_ cache all responses to memcache.
    *
    * Do **not** use it for authenticated requests!
    */
-  gravityLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(gravity, "gravity", {
-    requestIDs: opts.requestIDs,
-    userAgent: opts.userAgent,
-    span: opts.span,
-  }),
+  gravityLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    gravity,
+    "gravity",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+      span: opts.span,
+    }
+  ),
 
   /**
    * The Positron loaders produced by this factory _will_ cache all responses to memcache.
    *
    * Do **not** use it for authenticated requests!
    */
-  positronLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(positron, "positron", {
-    requestIDs: opts.requestIDs,
-    userAgent: opts.userAgent,
-    span: opts.span,
-  }),
+  positronLoaderWithoutAuthenticationFactory: apiLoaderWithoutAuthenticationFactory(
+    positron,
+    "positron",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+      span: opts.span,
+    }
+  ),
 
   // Authenticated loaders
 
@@ -75,10 +95,14 @@ export default opts => ({
    *
    * Use this for authenticated requests.
    */
-  convectionLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(convection, "convection", {
-    requestIDs: opts.requestIDs,
-    userAgent: opts.userAgent,
-  }),
+  convectionLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+    convection,
+    "convection",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
+  ),
 
   /**
    * The Gravity loaders produced by this factory _will_ cache responses for the duration of query execution but do
@@ -86,10 +110,14 @@ export default opts => ({
    *
    * Use this for authenticated requests.
    */
-  gravityLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(gravity, "gravity", {
-    requestIDs: opts.requestIDs,
-    userAgent: opts.userAgent,
-  }),
+  gravityLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+    gravity,
+    "gravity",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
+  ),
 
   /**
    * The Impulse loaders produced by this factory _will_ cache responses for the duration of query execution but do
@@ -97,8 +125,12 @@ export default opts => ({
    *
    * Use this for authenticated requests.
    */
-  impulseLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(impulse, "impulse", {
-    requestIDs: opts.requestIDs,
-    userAgent: opts.userAgent,
-  }),
+  impulseLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+    impulse,
+    "impulse",
+    {
+      requestIDs: opts.requestIDs,
+      userAgent: opts.userAgent,
+    }
+  ),
 })

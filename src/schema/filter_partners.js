@@ -1,6 +1,9 @@
 import _ from "lodash"
 import Partners from "./partners"
-import { FilterPartnersType, PartnersAggregation } from "./aggregations/filter_partners_aggregation"
+import {
+  FilterPartnersType,
+  PartnersAggregation,
+} from "./aggregations/filter_partners_aggregation"
 import { GraphQLList, GraphQLNonNull } from "graphql"
 
 const FilterPartners = {
@@ -11,7 +14,8 @@ const FilterPartners = {
       type: new GraphQLNonNull(new GraphQLList(PartnersAggregation)),
     },
   }),
-  resolve: (root, options, request, { rootValue: { partnersLoader } }) => partnersLoader(options),
+  resolve: (root, options, request, { rootValue: { partnersLoader } }) =>
+    partnersLoader(options),
 }
 
 export default FilterPartners

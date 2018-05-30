@@ -17,7 +17,12 @@ const PartnerCategories = {
       type: GraphQLInt,
     },
   },
-  resolve: (root, options, request, { rootValue: { partnerCategoriesLoader } }) => partnerCategoriesLoader(options),
+  resolve: (
+    root,
+    options,
+    request,
+    { rootValue: { partnerCategoriesLoader } }
+  ) => partnerCategoriesLoader(options),
 }
 
 export default PartnerCategories

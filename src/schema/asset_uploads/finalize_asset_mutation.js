@@ -35,7 +35,8 @@ export default mutationWithClientMutationId({
     },
     metadata: {
       type: new GraphQLNonNull(GraphQLJSON),
-      description: "Additional JSON data to pass through gemini, should deiinitely contain an `id` and a `_type`",
+      description:
+        "Additional JSON data to pass through gemini, should deiinitely contain an `id` and a `_type`",
     },
   },
   outputFields: {

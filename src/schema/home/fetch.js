@@ -1,4 +1,14 @@
-import { clone, first, forEach, map, sampleSize, shuffle, slice, filter, sortBy } from "lodash"
+import {
+  clone,
+  first,
+  forEach,
+  map,
+  sampleSize,
+  shuffle,
+  slice,
+  filter,
+  sortBy,
+} from "lodash"
 import blacklist from "lib/artist_blacklist"
 
 export const featuredFair = fairsLoader =>
@@ -9,7 +19,11 @@ export const featuredFair = fairsLoader =>
   }).then(fairs => {
     if (fairs.length) {
       return first(
-        sortBy(fairs, ({ banner_size }) => ["x-large", "large", "medium", "small", "x-small"].indexOf(banner_size))
+        sortBy(fairs, ({ banner_size }) =>
+          ["x-large", "large", "medium", "small", "x-small"].indexOf(
+            banner_size
+          )
+        )
       )
     }
 
@@ -36,7 +50,8 @@ export const featuredAuction = salesLoader =>
     return undefined // make undefined return explicit
   })
 
-export const followedGenes = (followedGenesLoader, size) => followedGenesLoader({ size }).then(({ body }) => body)
+export const followedGenes = (followedGenesLoader, size) =>
+  followedGenesLoader({ size }).then(({ body }) => body)
 
 export const featuredGene = followedGenesLoader =>
   followedGenes(followedGenesLoader, 1).then(follows => {
@@ -60,7 +75,10 @@ export const relatedArtists = suggestedSimilarArtistsLoader =>
     exclude_followed_artists: true,
     size: 20,
   }).then(({ body }) => {
-    const filteredResults = filter(body, result => result.sim_artist.forsale_artworks_count > 0)
+    const filteredResults = filter(
+      body,
+      result => result.sim_artist.forsale_artworks_count > 0
+    )
     return sampleSize(filteredResults, 2)
   })
 

@@ -4,7 +4,8 @@ import { BidderPositionResultType } from "../types/bidder_position_result"
 
 const ANY_RESERVE_MET_STATUSES = ["no_reserve", "reserve_met"]
 
-const anyReserveMet = position => ANY_RESERVE_MET_STATUSES.indexOf(position.sale_artwork.reserve_status) > -1
+const anyReserveMet = position =>
+  ANY_RESERVE_MET_STATUSES.indexOf(position.sale_artwork.reserve_status) > -1
 
 export const BidderPosition = {
   type: BidderPositionResultType,

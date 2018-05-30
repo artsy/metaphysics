@@ -14,7 +14,11 @@ const exampleSchema = `
     greeting: String
   }`
 
-export const gqlServer = ({ schema = exampleSchema, mocks = {}, middleware = [] }) => {
+export const gqlServer = ({
+  schema = exampleSchema,
+  mocks = {},
+  middleware = [],
+}) => {
   const app = express()
   const execSchema = makeExecutableSchema({
     typeDefs: schema,
