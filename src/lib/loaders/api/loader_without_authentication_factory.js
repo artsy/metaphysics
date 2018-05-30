@@ -30,90 +30,91 @@ import logger from "lib/loaders/api/logger"
 export const apiLoaderWithoutAuthenticationFactory = (
   api,
   apiName,
-  globalAPIOptions = {},
-) => (path, globalParams = {}, pathAPIOptions = {}) => {
-  const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
-  const loader = new DataLoader(
-    keys =>
-      Promise.all(keys.map((key) => {
-          const clock = timer(key)
-          clock.start()
+  globalAPIOptions = {}
+) => {
+  return (path, globalParams = {}, pathAPIOptions = {}) => {
+    const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
+    const loader = new DataLoader(
+      keys =>
+        Promise.all(
+          keys.map(key => {
+            const clock = timer(key)
+            clock.start()
+            return new Promise((resolve, reject) => {
+              cache.get(key).then(
+                // Cache hit
+                data => {
+                  // Return cached data first
+                  if (apiOptions.headers) {
+                    resolve(pick(data, ["body", "headers"]))
+                  } else {
+                    resolve(data)
+                  }
+                  verbose(`Cached: ${key}`)
 
-          return new Promise((resolve, reject) =>
-            cache.get(key).then(
-              // Cache hit
-              (data) => {
-                // Return cached data first
-                if (apiOptions.headers) {
-                  resolve(pick(data, ["body", "headers"]))
-                } else {
-                  resolve(data)
-                }
-                verbose(`Cached: ${key}`)
-
-                const time = clock.end()
-                logger(globalAPIOptions.requestIDs.requestID, apiName, key, {
-                  time,
-                  cache: true,
-                })
-
-                // Then refresh cache
-                throttled(
-                  key,
-                  () => {
-                    api(key, null, apiOptions)
-                      .then(({ body, headers }) => {
-                        if (apiOptions.headers) {
-                          cache.set(key, { body, headers })
-                        } else {
-                          cache.set(key, body)
-                        }
-                        verbose(`Refreshing: ${key}`)
-                      })
-                      .catch((err) => {
-                        if (err.statusCode === 404) {
-                          // Unpublished
-                          cache.delete(key)
-                        }
-                      })
-                  },
-                  { requestThrottleMs: apiOptions.requestThrottleMs },
-                )
-              },
-              // Cache miss
-              () => {
-                api(key, null, apiOptions)
-                  .then(({ body, headers }) => {
-                    if (apiOptions.headers) {
-                      resolve({ body, headers })
-                    } else {
-                      resolve(body)
-                    }
-                    verbose(`Requested (Uncached): ${key}`)
-                    const time = clock.end()
-                    logger(
-                      globalAPIOptions.requestIDs.requestID,
-                      apiName,
-                      key,
-                      { time, cache: false },
-                    )
-                    if (apiOptions.headers) {
-                      cache.set(key, { body, headers })
-                    } else {
-                      cache.set(key, body)
-                    }
+                  const time = clock.end()
+                  logger(globalAPIOptions.requestIDs.requestID, apiName, key, {
+                    time,
+                    cache: true,
                   })
-                  .catch((err) => {
-                    warn(key, err)
-                    reject(err)
-                  })
-              },
-            ))
-        })),
-    {
-      batch: false,
-      cache: true,
-    },
-  )
-  return loaderInterface(loader, path, globalParams)
-}
+
+                  // Then refresh cache
+                  throttled(
+                    key,
+                    () => {
+                      api(key, null, apiOptions)
+                        .then(({ body, headers }) => {
+                          if (apiOptions.headers) {
+                            cache.set(key, { body, headers })
+                          } else {
+                            cache.set(key, body)
+                          }
+                          verbose(`Refreshing: ${key}`)
+                        })
+                        .catch((err) => {
+                          if (err.statusCode === 404) {
+                            // Unpublished
+                            cache.delete(key)
+                          }
+                        })
+                    },
+                    { requestThrottleMs: apiOptions.requestThrottleMs },
+                  )
+                },
+                // Cache miss
+                () => {
+                  api(key, null, apiOptions)
+                    .then(({ body, headers }) => {
+                      if (apiOptions.headers) {
+                        resolve({ body, headers })
+                      } else {
+                        resolve(body)
+                      }
+                      verbose(`Requested (Uncached): ${key}`)
+                      const time = clock.end()
+                      logger(
+                        globalAPIOptions.requestIDs.requestID,
+                        apiName,
+                        key,
+                        { time, cache: false },
+                      )
+                      if (apiOptions.headers) {
+                        cache.set(key, { body, headers })
+                      } else {
+                        cache.set(key, body)
+                      }
+                    })
+                    .catch((err) => {
+                      warn(key, err)
+                      reject(err)
+                    })
+                },
+              ))
+          })),
+      {
+        batch: false,
+        cache: true,
+      },
+    )
+    return loaderInterface(loader, path, globalParams)
+  }
