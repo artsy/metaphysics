@@ -17,7 +17,8 @@ describe("crunchInterceptor", () => {
       .get("/?query={greeting}")
       .set("Accept", "application/json")
       .expect(200)
-      .then(() => {
+      .then(res => {
+        expect(res.headers).not.toHaveProperty("X-Crunch")
         expect(intercept).not.toHaveBeenCalled()
       })
   })
@@ -27,8 +28,25 @@ describe("crunchInterceptor", () => {
       .get("/?query={greeting}&crunch")
       .set("Accept", "application/json")
       .expect(200)
+      .expect("X-Crunch", "true")
       .then(res => {
-        expect(res.body.data).toMatchObject(crunch({ greeting: "Hello World" }))
+        expect(res.body).toMatchObject(
+          crunch({ data: { greeting: "Hello World" } })
+        )
+      })
+  })
+
+  it("should crunch the result when header is present", () => {
+    return request(app(crunchInterceptor))
+      .get("/?query={greeting}")
+      .set("Accept", "application/json")
+      .set("X-Crunch", true)
+      .expect(200)
+      .expect("X-Crunch", "true")
+      .then(res => {
+        expect(res.body).toMatchObject(
+          crunch({ data: { greeting: "Hello World" } })
+        )
       })
   })
 
@@ -38,7 +56,8 @@ describe("crunchInterceptor", () => {
       .get("/?query={greeting}&crunch")
       .set("Accept", "application/json")
       .expect(404)
-      .then(() => {
+      .then(res => {
+        expect(res.headers).not.toHaveProperty("X-Crunch")
         expect(intercept).not.toHaveBeenCalled()
       })
   })
