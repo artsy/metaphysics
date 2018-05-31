@@ -45,8 +45,8 @@ const has_editions = edition_sets => {
   return edition_sets && edition_sets.length > 0
 }
 
-const has_single_edition = edition_sets => {
-  return edition_sets && edition_sets.length === 1
+const has_multiple_editions = edition_sets => {
+  return edition_sets && edition_sets.length > 1
 }
 
 let Artwork
@@ -454,8 +454,7 @@ export const artworkFields = () => {
     is_price_range: {
       type: GraphQLBoolean,
       resolve: ({ price, edition_sets }) =>
-        has_price_range(price) &&
-        (has_single_edition(edition_sets) || !has_editions(edition_sets)), // eslint-disable-line max-len
+        has_price_range(price) && !has_multiple_editions(edition_sets),
     },
     is_purchasable: {
       type: GraphQLBoolean,
