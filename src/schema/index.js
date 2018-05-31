@@ -58,6 +58,7 @@ import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutat
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
 import { recordArtworkViewMutation } from "./me/recently_viewed_artworks"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
+import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
 import UpdateOrderMutation from "./me/order/update_order_mutation"
 import SubmitOrderMutation from "./me/order/submit_order_mutation"
@@ -146,6 +147,7 @@ const schema = new GraphQLSchema({
   mutation: new GraphQLObjectType({
     name: "Mutation",
     fields: {
+      createBidder: createBidderMutation,
       createBidderPosition: BidderPositionMutation,
       createCreditCard: createCreditCardMutation,
       followArtist: FollowArtist,
