@@ -76,6 +76,8 @@ npm run dev
 
 ### Setting up your local GraphiQL
 
+We recommend the [graphiql.app](https://github.com/skevy/graphiql-app) client for testing queries locally. 
+
 You will need to set up headers with both:
 
 * `x-access-token` - Get your client ID and secret, use this command to generate
