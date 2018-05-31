@@ -40,6 +40,7 @@ export default function graphqlErrorHandler(
     return {
       message: error.message,
       locations: error.locations,
+      path: isProduction ? null : error.path,
       stack: isProduction ? null : error.stack,
     }
   }
