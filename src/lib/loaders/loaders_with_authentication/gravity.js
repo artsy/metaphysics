@@ -20,6 +20,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     collectorProfileLoader: gravityLoader("me/collector_profile"),
+    createBidderLoader: gravityLoader("bidder", {}, { method: "POST" }),
     createCreditCardLoader: gravityLoader(
       "me/credit_cards",
       {},
