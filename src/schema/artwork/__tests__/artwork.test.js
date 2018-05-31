@@ -904,7 +904,20 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns false if artwork price is a range with single edition.", () => {
+    it("returns false if artwork price with single edition is not a range.", () => {
+      artwork.price = "$200"
+      artwork.edition_sets = [{}]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_price_range: false,
+          },
+        })
+      })
+    })
+
+    it("returns true if artwork price with single edition is a range.", () => {
       artwork.price = "$200 - $300"
       artwork.edition_sets = [{}]
       return runQuery(query, rootValue).then(data => {
@@ -917,7 +930,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns false if artwork price is a range with multiple editions.", () => {
+    it("returns false if artwork price with multiple editions is a range.", () => {
       artwork.price = "$200 - $300"
       artwork.edition_sets = [{}, {}]
       return runQuery(query, rootValue).then(data => {
