@@ -26,6 +26,7 @@ function drop_params(query) {
 
 export async function traceMiddleware(resolve, parent, args, ctx, info) {
   const span = await tracer.trace("graphql.resolver", {
+    service: DD_TRACER_SERVICE_NAME + ".graphql-resolver",
     resource: info.parentType + ": " + info.fieldName,
   })
   const result = await resolve(parent, args, ctx, info)
@@ -46,15 +47,20 @@ export function middleware(req, res, next) {
     query = req.body.query
   }
 
-  tracer.trace("graphql.query", { resource }).then(span => {
-    span.setTag("query", query)
+  tracer
+    .trace("graphql.query", {
+      resource,
+      service: DD_TRACER_SERVICE_NAME + ".graphql-query",
+    })
+    .then(span => {
+      span.setTag("query", query)
 
-    res.locals.span = span // eslint-disable-line no-param-reassign
+      res.locals.span = span // eslint-disable-line no-param-reassign
 
-    const finish = trace.bind(null, res, span)
-    res.on("finish", finish)
-    res.on("close", finish)
+      const finish = trace.bind(null, res, span)
+      res.on("finish", finish)
+      res.on("close", finish)
 
-    next()
-  })
+      next()
+    })
 }
