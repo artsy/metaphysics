@@ -904,9 +904,22 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns false if artwork price is a range with multiple editions.", () => {
+    it("returns false if artwork price is a range with single edition.", () => {
       artwork.price = "$200 - $300"
       artwork.edition_sets = [{}]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_price_range: true,
+          },
+        })
+      })
+    })
+
+    it("returns false if artwork price is a range with multiple editions.", () => {
+      artwork.price = "$200 - $300"
+      artwork.edition_sets = [{}, {}]
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
