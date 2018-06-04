@@ -1,13 +1,8 @@
 import jwt from "jwt-simple"
 import { GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
 import config from "config"
-import { includes } from "lodash"
 
 const { HMAC_SECRET } = config
-
-const isExternalOperatorAuthorized = (sale, mePartners) => {
-  return includes(mePartners.map(p => p._id), sale.partner._id)
-}
 
 export default {
   type: GraphQLString,
@@ -90,7 +85,7 @@ export default {
           HMAC_SECRET
         )
       })
-    // Operator role if logged in as an admin or if user has access to partner
+      // Operator role if logged in as an admin or if user has access to partner
     } else if (options.role === "OPERATOR") {
       return Promise.all([saleLoader(options.sale_id), meLoader()]).then(
         ([sale, me]) => {
@@ -110,7 +105,7 @@ export default {
           return mePartnersLoader({ "partner_ids[]": sale.partner._id }).then(
             mePartners => {
               // Check if current user has access to partner running the sale
-              if (!isExternalOperatorAuthorized(sale, mePartners)) {
+              if (mePartners.length === 0) {
                 throw new Error("Unauthorized to be operator")
               }
               return jwt.encode(
