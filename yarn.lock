@@ -835,17 +835,13 @@
   dependencies:
     "@types/graphql" "*"
 
-"@types/graphql@*":
+"@types/graphql@*", "@types/graphql@0.12.6", "@types/graphql@^0.13.1":
   version "0.13.1"
   resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.13.1.tgz#7d39750355c9ecb921816d6f76c080405b5f6bea"
 
-"@types/graphql@0.12.6":
-  version "0.12.6"
-  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.12.6.tgz#3d619198585fcabe5f4e1adfb5cf5f3388c66c13"
-
-"@types/graphql@^0.8.2":
-  version "0.8.6"
-  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.8.6.tgz#b34fb880493ba835b0c067024ee70130d6f9bb68"
+"@types/invariant@^2.2.29":
+  version "2.2.29"
+  resolved "https://registry.yarnpkg.com/@types/invariant/-/invariant-2.2.29.tgz#aa845204cd0a289f65d47e0de63a6a815e30cc66"
 
 "@types/jest@^22.2.3":
   version "22.2.3"
@@ -2088,7 +2084,7 @@ date-fns@^1.27.2:
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
 
-dd-trace@^0.2.1:
+dd-trace@^0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-0.2.1.tgz#418a3055fec7731b29f36e1e8b8884bad0f86e71"
   dependencies:
@@ -3124,7 +3120,7 @@ graphql-language-service-utils@0.0.17:
     graphql "^0.10.1"
     graphql-language-service-types "0.0.21"
 
-graphql-middleware@^1.2.6:
+graphql-middleware@^1.2.5:
   version "1.2.6"
   resolved "https://registry.yarnpkg.com/graphql-middleware/-/graphql-middleware-1.2.6.tgz#11392687aaa2ef7cc90d46b8ac883d60b526b56d"
   dependencies:
