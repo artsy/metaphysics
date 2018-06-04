@@ -154,7 +154,7 @@ describe("graphQLTimeoutMiddleware", () => {
       expect(response.data).toEqual({ artwork: null })
       expect(response.errors!.length).toEqual(1)
       expect(response.errors![0].message).toMatch(
-        /GraphQL Error: Query\.artwork has timed out after waiting for \d+ms/
+        /Query\.artwork has timed out after waiting for \d+ms/
       )
     })
 
@@ -183,7 +183,7 @@ describe("graphQLTimeoutMiddleware", () => {
       })
       expect(response.errors!.length).toEqual(2)
       expect(response.errors![0].message).toMatch(
-        /GraphQL Error: Artist\.name has timed out after waiting for \d+ms/
+        /Artist\.name has timed out after waiting for \d+ms/
       )
     })
 

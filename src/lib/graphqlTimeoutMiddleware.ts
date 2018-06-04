@@ -2,6 +2,13 @@ import { IMiddleware } from "graphql-middleware"
 import { GraphQLResolveInfo, GraphQLField } from "graphql"
 import invariant from "invariant"
 
+export class GraphQLTimeoutError extends Error {
+  constructor(message) {
+    super(message)
+    Error.captureStackTrace(this, this.constructor)
+  }
+}
+
 export function fieldFromResolveInfo(resolveInfo: GraphQLResolveInfo) {
   return resolveInfo.parentType.getFields()[resolveInfo.fieldName]
 }
@@ -40,7 +47,7 @@ export const graphqlTimeoutMiddleware = (defaultTimeoutInMS: number) => {
       new Promise((_resolve, reject) => {
         timeoutID = setTimeout(() => {
           const field = `${info.parentType}.${info.fieldName}`;
-          reject(new Error(`GraphQL Error: ${field} has timed out after waiting for ${timeoutInMS}ms`))
+          reject(new GraphQLTimeoutError(`GraphQL Timeout Error: ${field} has timed out after waiting for ${timeoutInMS}ms`))
         }, timeoutInMS)
       }),
       new Promise(async (resolve, reject) => {
