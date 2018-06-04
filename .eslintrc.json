@@ -19,13 +19,11 @@
     "comma-dangle": 0,
     "function-paren-newline": 0,
     "object-curly-newline": 0,
-    
     "arrow-body-style": 0,
     "arrow-parens": 0,
     "no-confusing-arrow": 0,
     "consistent-return": 0,
     "no-return-assign": 0,
-
     "import/newline-after-import": 0,
     "import/prefer-default-export": 0,
     "import/first": 0,
@@ -37,7 +35,6 @@
     "import/no-dynamic-require": 0,
     "import/no-mutable-exports": 0,
     "global-require": 0,
-    
     "no-underscore-dangle": 0,
     "no-return-await": 0,
     "no-empty-pattern": 0,
@@ -54,7 +51,6 @@
     "no-prototype-builtins": 0,
     "no-restricted-globals": 0,
     "no-multi-str": 0,
-
     "prefer-template": 0,
     "prefer-promise-reject-errors": 0,
     "prefer-destructuring": 0,
