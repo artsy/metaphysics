@@ -130,6 +130,16 @@ describe("graphQLTimeoutMiddleware", () => {
       })
     })
 
+    it("rejects if execution of the resolver failed", async () => {
+      resolvers = {
+        Query: {
+          artwork: () => Promise.reject(new Error("oh noes")),
+        },
+      }
+      const response = await query()
+      expect(response.errors![0].message).toEqual("oh noes")
+    })
+
     it("returns `null` if execution of resolver with specific timeout takes longer than the set timeout", async () => {
       resolvers = {
         Query: {
@@ -144,7 +154,7 @@ describe("graphQLTimeoutMiddleware", () => {
       expect(response.data).toEqual({ artwork: null })
       expect(response.errors!.length).toEqual(1)
       expect(response.errors![0].message).toMatch(
-        /GraphQL Error: Query\.artwork has timed out after waiting for \d+ms/
+        /Query\.artwork has timed out after waiting for \d+ms/
       )
     })
 
@@ -173,11 +183,11 @@ describe("graphQLTimeoutMiddleware", () => {
       })
       expect(response.errors!.length).toEqual(2)
       expect(response.errors![0].message).toMatch(
-        /GraphQL Error: Artist\.name has timed out after waiting for \d+ms/
+        /Artist\.name has timed out after waiting for \d+ms/
       )
     })
 
-    it("once a resolver timeout has passed, no nested resolvers will be invoked", async () => {
+    it("will not invoke nested resolvers once a resolver timeout has passed", async () => {
       const nestedResolver = jest.fn()
       resolvers = {
         Query: {
@@ -195,6 +205,36 @@ describe("graphQLTimeoutMiddleware", () => {
       await query()
       await delay(artworkTimeout + 4)
       expect(nestedResolver).not.toBeCalled()
+    })
+
+    describe("concerning clearing timeouts", () => {
+      beforeAll(() => {
+        jest.useFakeTimers()
+      })
+
+      afterAll(() => {
+        jest.useRealTimers()
+      })
+
+      it("clears the timeout when a resolver succeeds", async () => {
+        resolvers = {
+          Query: {
+            artwork: () => responseData,
+          },
+        }
+        await query()
+        expect(clearTimeout).toBeCalled()
+      })
+
+      it("clears the timeout when a resolver fails", async () => {
+        resolvers = {
+          Query: {
+            artwork: () => Promise.reject(new Error("oh noes")),
+          },
+        }
+        await query()
+        expect(clearTimeout).toBeCalled()
+      })
     })
   })
 })

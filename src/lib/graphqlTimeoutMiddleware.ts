@@ -2,6 +2,13 @@ import { IMiddleware } from "graphql-middleware"
 import { GraphQLResolveInfo, GraphQLField } from "graphql"
 import invariant from "invariant"
 
+export class GraphQLTimeoutError extends Error {
+  constructor(message) {
+    super(message)
+    Error.captureStackTrace(this, this.constructor)
+  }
+}
+
 export function fieldFromResolveInfo(resolveInfo: GraphQLResolveInfo) {
   return resolveInfo.parentType.getFields()[resolveInfo.fieldName]
 }
@@ -35,14 +42,26 @@ export const graphqlTimeoutMiddleware = (defaultTimeoutInMS: number) => {
     // TODO: Maybe cache if it turns out to take significant time.
     //       Should probably be cached on the schema instance.
     const timeoutInMS = timeoutForField(fieldFromResolveInfo(info)) || defaultTimeoutInMS
+    let timeoutID
     return Promise.race([
       new Promise((_resolve, reject) => {
-        setTimeout(() => {
+        timeoutID = setTimeout(() => {
           const field = `${info.parentType}.${info.fieldName}`;
-          reject(new Error(`GraphQL Error: ${field} has timed out after waiting for ${timeoutInMS}ms`))
+          reject(new GraphQLTimeoutError(`GraphQL Timeout Error: ${field} has timed out after waiting for ${timeoutInMS}ms`))
         }, timeoutInMS)
       }),
-      new Promise(resolve => resolve(middlewareResolver(parent, args, context, info))),
+      new Promise(async (resolve, reject) => {
+        try {
+          const result = await middlewareResolver(parent, args, context, info)
+          resolve(result)
+        }
+        catch (error) {
+          reject(error)
+        }
+        finally {
+          clearTimeout(timeoutID)
+        }
+      })
     ])
   }
   return middleware
