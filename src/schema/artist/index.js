@@ -33,6 +33,7 @@ import {
 } from "schema/auction_result"
 import ArtistArtworksFilters from "./artwork_filters"
 import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
+import filterArtworks from "schema/filter_artworks"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import {
   GraphQLObjectType,
@@ -502,6 +503,7 @@ export const ArtistType = new GraphQLObjectType({
           }).then(shows => showsWithBLacklistedPartnersRemoved(shows))
         },
       },
+      filtered_artworks: filterArtworks("artist_id"),
       formatted_artworks_count: {
         type: GraphQLString,
         description:
@@ -586,7 +588,7 @@ export const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: (
           { id },
-          { },
+          {},
           request,
           { rootValue: { followedArtistLoader } }
         ) => {

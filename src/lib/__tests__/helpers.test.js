@@ -1,4 +1,4 @@
-import { exclude, toKey, isExisty, stripTags } from "lib/helpers"
+import { exclude, toKey, isExisty, removeNulls, stripTags } from "lib/helpers"
 
 describe("exclude", () => {
   const xs = [
@@ -106,5 +106,20 @@ describe("stripTags", () => {
 
   it("returns an empty string if no string is provided", () => {
     expect(stripTags()).toEqual("")
+  })
+})
+
+describe("removeNulls", () => {
+  const objWithNulls = {
+    a: "percy",
+    b: null,
+    c: undefined,
+  }
+
+  it("removes null and undefined properties from an object", () => {
+    removeNulls(objWithNulls)
+    expect(objWithNulls).toHaveProperty("a", "percy")
+    expect(objWithNulls).not.toHaveProperty("b")
+    expect(objWithNulls).not.toHaveProperty("c")
   })
 })

@@ -9,6 +9,7 @@ import { pageable } from "relay-cursor-paging"
 import {
   parseRelayOptions,
   queriedForFieldsOtherThanBlacklisted,
+  removeNulls,
 } from "lib/helpers"
 import { connectionFromArraySlice, toGlobalId } from "graphql-relay"
 import {
@@ -285,6 +286,8 @@ function filterArtworks(primaryKey) {
       if (gravityOptions.medium === "*" || !gravityOptions.medium) {
         delete gravityOptions.medium
       }
+
+      removeNulls(gravityOptions)
 
       const blacklistedFields = ["artworks_connection", "__id"]
       if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {

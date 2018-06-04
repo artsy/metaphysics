@@ -737,4 +737,45 @@ describe("Artist type", () => {
       })
     })
   })
+
+  describe("filtered artworks", () => {
+    it("returns filtered artworks", () => {
+      rootValue.filterArtworksLoader = sinon
+        .stub()
+        .withArgs("filter/artworks", {
+          artist_id: "percy",
+          aggregations: ["total"],
+        })
+        .returns(
+          Promise.resolve({
+            hits: [
+              {
+                id: "im-a-cat",
+                title: "I'm a cat",
+                artists: ["percy"],
+              },
+            ],
+            aggregations: [],
+          })
+        )
+
+      const query = `
+        {
+          artist(id: "percy") {
+            filtered_artworks(aggregations:[TOTAL]){
+              hits {
+                id
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, rootValue).then(
+        ({ artist: { filtered_artworks: { hits } } }) => {
+          expect(hits).toEqual([{ id: "im-a-cat" }])
+        }
+      )
+    })
+  })
 })
