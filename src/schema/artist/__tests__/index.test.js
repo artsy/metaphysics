@@ -740,29 +740,24 @@ describe("Artist type", () => {
 
   describe("filtered artworks", () => {
     it("returns filtered artworks", () => {
-      rootValue.filterArtworksLoader = sinon
-        .stub()
-        .withArgs("filter/artworks", {
-          artist_id: "percy",
-          aggregations: ["total"],
+      const filterArtworksLoader = jest.fn().mockReturnValueOnce(
+        Promise.resolve({
+          hits: [
+            {
+              id: "im-a-cat",
+              title: "I'm a cat",
+              artists: ["percy"],
+            },
+          ],
+          aggregations: [],
         })
-        .returns(
-          Promise.resolve({
-            hits: [
-              {
-                id: "im-a-cat",
-                title: "I'm a cat",
-                artists: ["percy"],
-              },
-            ],
-            aggregations: [],
-          })
-        )
+      )
+      rootValue.filterArtworksLoader = filterArtworksLoader
 
       const query = `
         {
           artist(id: "percy") {
-            filtered_artworks(aggregations:[TOTAL]){
+            filtered_artworks(aggregations:[TOTAL], partner_id: null){
               hits {
                 id
               }
@@ -773,6 +768,9 @@ describe("Artist type", () => {
 
       return runQuery(query, rootValue).then(
         ({ artist: { filtered_artworks: { hits } } }) => {
+          expect(filterArtworksLoader.mock.calls[0][0]).not.toHaveProperty(
+            "partner_id"
+          )
           expect(hits).toEqual([{ id: "im-a-cat" }])
         }
       )
