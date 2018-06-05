@@ -542,6 +542,20 @@ describe("Artwork type", () => {
       })
     })
 
+    it("returns null if work is marked with availability_hidden", () => {
+      artwork.availability = "sold"
+      artwork.availability_hidden = true
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            contact_message: null,
+          },
+        })
+      })
+    })
+
     it("returns similar work text for a sold work", () => {
       artwork.availability = "sold"
 
