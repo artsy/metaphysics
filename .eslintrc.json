@@ -6,7 +6,8 @@
     "jasmine": true,
     "es6": true
   },
-  "extends": "react-app",
+  "plugins": ["promise"],
+  "extends": ["react-app", "plugin:promise/recommended"],
   "parser": "babel-eslint",
   "rules": {
     "import/first": 0,
