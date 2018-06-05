@@ -41,8 +41,12 @@ const has_price_range = price => {
   return new RegExp(/\-/).test(price)
 }
 
-const has_multiple_editions = edition_sets => {
+const has_editions = edition_sets => {
   return edition_sets && edition_sets.length > 0
+}
+
+const has_multiple_editions = edition_sets => {
+  return edition_sets && edition_sets.length > 1
 }
 
 let Artwork
@@ -148,12 +152,15 @@ export const artworkFields = () => {
     contact_message: {
       type: GraphQLString,
       description: "Pre-filled inquiry text",
-      resolve: ({ partner, availability }) => {
+      resolve: ({ partner, availability_hidden, availability }) => {
         if (partner && partner.type === "Auction") {
           return [
             "Hello, I am interested in placing a bid on this work.",
             "Please send me more information.",
           ].join(" ")
+        }
+        if (availability_hidden) {
+          return null
         }
         if (availability === "sold" || availability === "on loan") {
           return [
@@ -450,14 +457,14 @@ export const artworkFields = () => {
     is_price_range: {
       type: GraphQLBoolean,
       resolve: ({ price, edition_sets }) =>
-        has_price_range(price) && !has_multiple_editions(edition_sets), // eslint-disable-line max-len
+        has_price_range(price) && !has_multiple_editions(edition_sets),
     },
     is_purchasable: {
       type: GraphQLBoolean,
       description: "True for inquireable artworks that have an exact price.",
       resolve: artwork => {
         return (
-          !has_multiple_editions(artwork.edition_sets) &&
+          !has_editions(artwork.edition_sets) &&
           is_inquireable(artwork) &&
           isExisty(artwork.price) &&
           !has_price_range(artwork.price) &&
