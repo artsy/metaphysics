@@ -9,7 +9,9 @@
   "extends": "react-app",
   "parser": "babel-eslint",
   "rules": {
-    
+    "import/first": 0,
+    "no-useless-escape": 0,
+    "no-empty-pattern": 0
   },  
   "globals": {
     "expect": false,
