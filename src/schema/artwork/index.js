@@ -152,12 +152,15 @@ export const artworkFields = () => {
     contact_message: {
       type: GraphQLString,
       description: "Pre-filled inquiry text",
-      resolve: ({ partner, availability }) => {
+      resolve: ({ partner, availability_hidden, availability }) => {
         if (partner && partner.type === "Auction") {
           return [
             "Hello, I am interested in placing a bid on this work.",
             "Please send me more information.",
           ].join(" ")
+        }
+        if (availability_hidden) {
+          return null
         }
         if (availability === "sold" || availability === "on loan") {
           return [
