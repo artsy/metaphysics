@@ -41,7 +41,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
             const clock = timer(key)
             clock.start()
             return new Promise((resolve, reject) => {
-              cache.get(key).then(
+              return cache.get(key).then(
                 // Cache hit
                 data => {
                   // Return cached data first
