@@ -61,6 +61,7 @@ export function middleware(req, res, next) {
       res.on("finish", finish)
       res.on("close", finish)
 
-      next()
+      // eslint-disable-next-line promise/no-callback-in-promise
+      return next()
     })
 }
