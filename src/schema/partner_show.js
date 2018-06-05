@@ -278,7 +278,9 @@ const PartnerShowType = new GraphQLObjectType({
             published: true,
           }
         ).then(({ body }) => {
-          Image.resolve(getDefault(find(body, { can_share_image: true })))
+          return Image.resolve(
+            getDefault(find(body, { can_share_image: true }))
+          )
         })
       },
     },

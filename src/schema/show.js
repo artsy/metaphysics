@@ -177,6 +177,9 @@ export const ShowType = new GraphQLObjectType({
               published: true,
             }
           ).then(({ body }) => {
+            if (!body) {
+              return undefined
+            }
             const artwork = body[0]
             return artwork && Image.resolve(getDefault(artwork.images))
           })
@@ -345,7 +348,9 @@ export const ShowType = new GraphQLObjectType({
             published: true,
           }
         ).then(({ body }) => {
-          Image.resolve(getDefault(find(body, { can_share_image: true })))
+          return Image.resolve(
+            getDefault(find(body, { can_share_image: true }))
+          )
         })
       },
     },

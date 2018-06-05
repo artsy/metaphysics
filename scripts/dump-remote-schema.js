@@ -19,7 +19,7 @@ const httpConvectionLink = createHttpLink({
 
 introspectSchema(httpConvectionLink)
   .then(schema => {
-    fs.writeFileSync(
+    return fs.writeFileSync(
       path.join(destination, "convection.graphql"),
       printSchema(schema, { commentDescriptions: true })
     )
@@ -33,7 +33,7 @@ const httpLewittLink = createHttpLink({
 
 introspectSchema(httpLewittLink)
   .then(schema => {
-    fs.writeFileSync(
+    return fs.writeFileSync(
       path.join(destination, "lewitt.graphql"),
       printSchema(schema, { commentDescriptions: true })
     )
