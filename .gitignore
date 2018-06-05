@@ -8,3 +8,4 @@ npm-debug.log
 .vscode/.browse.VC.db
 flow-typed
 package-lock.json
+yarn-error.log
