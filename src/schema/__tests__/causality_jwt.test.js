@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import jwt from "jwt-simple"
 import { omit } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "test/utils"

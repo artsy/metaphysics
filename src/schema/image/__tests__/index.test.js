@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { assign } from "lodash"
 import { getDefault } from "schema/image"
 

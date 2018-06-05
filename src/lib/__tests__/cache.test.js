@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import cache, { client } from "lib/cache"
 
 describe("Cache", () => {

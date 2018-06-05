@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 
 describe("MatchGene", () => {

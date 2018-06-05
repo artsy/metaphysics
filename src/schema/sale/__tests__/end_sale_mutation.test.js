@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("End sale mutation", () => {
@@ -20,9 +21,7 @@ describe("End sale mutation", () => {
   `
 
   const rootValue = {
-    endSaleLoader: sinon.stub().returns(
-      Promise.resolve(sale)
-    ),
+    endSaleLoader: sinon.stub().returns(Promise.resolve(sale)),
   }
 
   it("ends the sale", async () => {

@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { runAuthenticatedQuery, runQuery } from "test/utils"
 import exampleOrderResult from "test/fixtures/results/update_order_mutation"
 import orderJSON from "test/fixtures/gravity/order.json"
