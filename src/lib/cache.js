@@ -1,3 +1,4 @@
+import util from 'util'
 import { isNull, isArray } from "lodash"
 import config from "config"
 import { error, verbose } from "./loggers"
@@ -86,6 +87,16 @@ export default {
         const time = Date.now() - start
         if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
           error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
+
+          const clientInfo = {
+            ready: client.ready,
+            connected: client.connected,
+            shouldBuffer: client.shouldBuffer,
+            commandQueueLength: client.commandQueueLength,
+            offlineQueueLength: client.offlineQueueLength,
+            pipelineQueueLength: client.pipeline_queue.length
+          }
+          error(`Redis Client Info: ${util.inspect(clientInfo)}`)
         }
 
         if (timeoutId) {
