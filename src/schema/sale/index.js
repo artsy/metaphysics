@@ -1,6 +1,7 @@
 import Artwork from "schema/artwork"
 import Image from "schema/image/index"
 import Profile from "schema/profile"
+import Partner from "schema/partner"
 import SaleArtwork from "schema/sale_artwork"
 import cached from "schema/fields/cached"
 import date from "schema/fields/date"
@@ -292,6 +293,12 @@ export const SaleType = new GraphQLObjectType({
             return PREDICTION_ENDPOINT + "/" + sale.id
           }
         },
+      },
+      // Only fetches the partner info that's already included in the Sale object
+      // since we don't (at this time) need to load the full Partner object.
+      partner: {
+        type: Partner.type,
+        resolve: ({ partner }) => partner,
       },
       profile: {
         type: Profile.type,
