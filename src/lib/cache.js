@@ -112,13 +112,13 @@ export default {
           error(err)
           reject(err)
         } else if (data) {
-          resolve(
-            JSON.parse(
-              zlib.inflateSync(
-                new Buffer(data, 'base64')
-              ).toString()
-            )
-          )
+            zlib.inflate(new Buffer(data, 'base64'), (er, inflatedData) => {
+              if (er) {
+                reject(er)
+              } else {
+                resolve(JSON.parse(inflatedData.toString()))
+              }
+            })
         } else {
           reject(new Error("[Cache#get] Cache miss"))
         }
@@ -136,6 +136,7 @@ export default {
     } else {
       data.cached = timestamp
     }
+
     const payload = zlib.deflateSync(
                       JSON.stringify(data)
                     ).toString('base64')
