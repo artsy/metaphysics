@@ -97,6 +97,7 @@ export default {
             pipelineQueueLength: client.pipeline_queue.length
           }
           error(`Redis Client Info: ${util.inspect(clientInfo)}`)
+          error(`Redis Client commandQueue: ${util.inspect(client.command_queue.toArray())}`)
         }
 
         if (timeoutId) {
