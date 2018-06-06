@@ -1,3 +1,4 @@
+import zlib from 'zlib'
 import cache, { client } from "lib/cache"
 
 describe("Cache", () => {
@@ -29,7 +30,11 @@ describe("Cache", () => {
           cache.set("set_foo", { bar: "baz" })
 
           client.get("set_foo", (err, data) => {
-            const parsed = JSON.parse(data)
+            const parsed = JSON.parse(
+              zlib.inflateSync(
+                new Buffer(data, 'base64')
+              ).toString()
+            )
 
             expect(parsed.bar).toBe("baz")
             expect(typeof parsed.cached).toBe("number")
@@ -43,7 +48,11 @@ describe("Cache", () => {
         cache.set("set_bar", [{ baz: "qux" }])
 
         client.get("set_bar", (err, data) => {
-          const parsed = JSON.parse(data)
+          const parsed = JSON.parse(
+            zlib.inflateSync(
+              new Buffer(data, 'base64')
+            ).toString()
+          )
 
           expect(parsed.length).toBe(1)
           expect(parsed[0].baz).toBe("qux")

@@ -1,4 +1,5 @@
 import util from 'util'
+import zlib from 'zlib'
 import { isNull, isArray } from "lodash"
 import config from "config"
 import { error, verbose } from "./loggers"
@@ -111,7 +112,13 @@ export default {
           error(err)
           reject(err)
         } else if (data) {
-          resolve(JSON.parse(data))
+          resolve(
+            JSON.parse(
+              zlib.inflateSync(
+                new Buffer(data, 'base64')
+              ).toString()
+            )
+          )
         } else {
           reject(new Error("[Cache#get] Cache miss"))
         }
@@ -129,11 +136,14 @@ export default {
     } else {
       data.cached = timestamp
     }
+    const payload = zlib.deflateSync(
+                      JSON.stringify(data)
+                    ).toString('base64')
     /* eslint-enable no-param-reassign */
 
     return client.set(
       key,
-      JSON.stringify(data),
+      payload,
       "EX",
       CACHE_LIFETIME_IN_SECONDS,
       err => {
