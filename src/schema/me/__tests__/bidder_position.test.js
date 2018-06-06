@@ -1,8 +1,10 @@
+/* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("BidderPosition", () => {
   const rootValue = {
-    meBidderPositionLoader: jest.fn()
+    meBidderPositionLoader: jest
+      .fn()
       .mockReturnValueOnce(
         Promise.resolve({
           body: {
@@ -12,8 +14,8 @@ describe("BidderPosition", () => {
               reserve_status: "no_reserve",
             },
           },
-        }),
-    )
+        })
+      )
       .mockReturnValueOnce(
         Promise.resolve({
           body: {
@@ -23,8 +25,8 @@ describe("BidderPosition", () => {
               reserve_status: "no_reserve",
             },
           },
-        }),
-    )
+        })
+      )
       .mockReturnValueOnce(
         Promise.resolve({
           body: {
@@ -34,8 +36,8 @@ describe("BidderPosition", () => {
               reserve_status: "reserve_not_met",
             },
           },
-        }),
-    )
+        })
+      )
       .mockReturnValueOnce(
         Promise.resolve({
           body: {
@@ -45,8 +47,8 @@ describe("BidderPosition", () => {
               reserve_status: "reserve_met",
             },
           },
-        }),
-    ),
+        })
+      ),
   }
   const query = `
       {

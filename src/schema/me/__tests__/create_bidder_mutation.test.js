@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { runAuthenticatedQuery, runQuery } from "test/utils"
 
 describe("Bidder mutation", () => {

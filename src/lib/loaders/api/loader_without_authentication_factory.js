@@ -41,7 +41,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
             const clock = timer(key)
             clock.start()
             return new Promise((resolve, reject) => {
-              cache.get(key).then(
+              return cache.get(key).then(
                 // Cache hit
                 data => {
                   // Return cached data first
@@ -59,17 +59,18 @@ export const apiLoaderWithoutAuthenticationFactory = (
                   })
 
                   // Then refresh cache
-                  throttled(
+                  return throttled(
                     key,
                     () => {
                       api(key, null, apiOptions)
                         .then(({ body, headers }) => {
-                          if (apiOptions.headers) {
-                            cache.set(key, { body, headers })
-                          } else {
-                            cache.set(key, body)
-                          }
                           verbose(`Refreshing: ${key}`)
+
+                          if (apiOptions.headers) {
+                            return cache.set(key, { body, headers })
+                          } else {
+                            return cache.set(key, body)
+                          }
                         })
                         .catch(err => {
                           if (err.statusCode === 404) {
@@ -99,9 +100,9 @@ export const apiLoaderWithoutAuthenticationFactory = (
                         { time, cache: false }
                       )
                       if (apiOptions.headers) {
-                        cache.set(key, { body, headers })
+                        return cache.set(key, { body, headers })
                       } else {
-                        cache.set(key, body)
+                        return cache.set(key, body)
                       }
                     })
                     .catch(err => {

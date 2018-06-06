@@ -47,7 +47,7 @@ export function middleware(req, res, next) {
     query = req.body.query
   }
 
-  tracer
+  return tracer
     .trace("graphql.query", {
       resource,
       service: DD_TRACER_SERVICE_NAME + ".graphql-query",
@@ -61,6 +61,7 @@ export function middleware(req, res, next) {
       res.on("finish", finish)
       res.on("close", finish)
 
-      next()
+      // eslint-disable-next-line promise/no-callback-in-promise
+      return next()
     })
 }

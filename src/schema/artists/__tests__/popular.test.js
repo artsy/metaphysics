@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import gql from "test/gql"
 import { runQuery } from "test/utils"
 

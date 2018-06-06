@@ -170,7 +170,7 @@ export const ShowType = new GraphQLObjectType({
         }
 
         if (partner) {
-          partnerShowArtworksLoader(
+          return partnerShowArtworksLoader(
             { partner_id: partner.id, show_id: id },
             {
               size: 1,
@@ -181,6 +181,8 @@ export const ShowType = new GraphQLObjectType({
             return artwork && Image.resolve(getDefault(artwork.images))
           })
         }
+
+        return null
       },
     },
     counts: {
@@ -343,7 +345,9 @@ export const ShowType = new GraphQLObjectType({
             published: true,
           }
         ).then(({ body }) => {
-          Image.resolve(getDefault(find(body, { can_share_image: true })))
+          return Image.resolve(
+            getDefault(find(body, { can_share_image: true }))
+          )
         })
       },
     },

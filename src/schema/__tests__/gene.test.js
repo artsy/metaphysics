@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
@@ -378,7 +379,9 @@ describe("Gene", () => {
 
     beforeEach(() => {
       gravityLoader = jest.fn(() =>
-        Promise.resolve([{ gene: { id: "brooklyn-artists", name: "Brooklyn Artists" } }])
+        Promise.resolve([
+          { gene: { id: "brooklyn-artists", name: "Brooklyn Artists" } },
+        ])
       )
       followedGeneLoader = trackedEntityLoaderFactory(
         gravityLoader,
