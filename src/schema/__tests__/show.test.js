@@ -534,7 +534,7 @@ describe("Show type", () => {
   it("does not return errors when there is no cover image", () => {
     rootValue.partnerShowArtworksLoader = sinon
       .stub()
-      .returns(Promise.resolve([]))
+      .returns(Promise.resolve({ body: [] }))
     const query = `
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {

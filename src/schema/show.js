@@ -177,9 +177,6 @@ export const ShowType = new GraphQLObjectType({
               published: true,
             }
           ).then(({ body }) => {
-            if (!body) {
-              return undefined
-            }
             const artwork = body[0]
             return artwork && Image.resolve(getDefault(artwork.images))
           })
