@@ -46,7 +46,7 @@ export const apiLoaderWithAuthenticationFactory = (
                         resolve(response.body)
                       }
                       const time = clock.end()
-                      logger(
+                      return logger(
                         globalAPIOptions.requestIDs.requestID,
                         apiName,
                         key,

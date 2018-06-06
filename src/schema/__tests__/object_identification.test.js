@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import _ from "lodash"
 import { toGlobalId } from "graphql-relay"
 import { runQuery, runAuthenticatedQuery } from "test/utils"

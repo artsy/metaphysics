@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import request from "supertest"
 import { crunch } from "graphql-crunch"
 import { app, invokeError } from "../../test/gql-server"
