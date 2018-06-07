@@ -111,7 +111,7 @@ export default {
               return jwt.encode(
                 {
                   aud: "auctions",
-                  role: "external_operator",
+                  role: "externalOperator",
                   userId: me._id,
                   saleId: sale._id,
                   bidderId: me.paddle_number,
