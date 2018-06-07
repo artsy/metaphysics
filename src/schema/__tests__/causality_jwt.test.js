@@ -145,7 +145,7 @@ describe("CausalityJWT", () => {
     return runAuthenticatedQuery(query, rootValue).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
-        role: "external_operator",
+        role: "externalOperator",
         userId: "craig",
         saleId: "foo",
         bidderId: "123",
