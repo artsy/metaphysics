@@ -750,7 +750,7 @@ describe("Artist type", () => {
               artists: ["percy"],
             },
           ],
-          aggregations: [],
+          aggregations: { total: { value: 75 } },
         })
       )
       rootValue.filterArtworksLoader = filterArtworksLoader
@@ -759,8 +759,18 @@ describe("Artist type", () => {
         {
           artist(id: "percy") {
             filtered_artworks(aggregations:[TOTAL], partner_id: null){
-              hits {
-                id
+              artworks: artworks_connection(first: 10) {
+                pageCursors {
+                  first {
+                    page
+                  }
+                  around {
+                    page
+                  }
+                  last {
+                    page
+                  }
+                }
               }
             }
           }
@@ -768,11 +778,18 @@ describe("Artist type", () => {
       `
 
       return runQuery(query, rootValue).then(
-        ({ artist: { filtered_artworks: { hits } } }) => {
+        ({ artist: { filtered_artworks: { artworks: { pageCursors } } } }) => {
           expect(filterArtworksLoader.mock.calls[0][0]).not.toHaveProperty(
             "partner_id"
           )
-          expect(hits).toEqual([{ id: "im-a-cat" }])
+          // Check expected page cursors exist in response.
+          const { first, around, last } = pageCursors
+          expect(first).toEqual(null)
+          expect(last.page).toEqual(8)
+          let index
+          for (index = 0; index < 4; index++) {
+            expect(around[index].page).toBe(index + 1)
+          }
         }
       )
     })
