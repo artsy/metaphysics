@@ -55,7 +55,7 @@ spec:
     apiVersion: extensions/v1beta1
     kind: Deployment
     name: metaphysics-web
-  minReplicas: 6
+  minReplicas: 10
   maxReplicas: 10
   targetCPUUtilizationPercentage: 100
 
