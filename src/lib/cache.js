@@ -18,6 +18,18 @@ const isTest = NODE_ENV === "test"
 
 const VerboseEvents = ["connect", "ready", "reconnecting", "end", "warning"]
 
+const deflateP = (dataz) => {
+  return new Promise((resolve, reject) =>
+    zlib.deflate(JSON.stringify(dataz), (er, deflatedData) => {
+      if (er) {
+        error(er)
+      } else {
+        resolve(deflatedData)
+      }
+    })
+  )
+}
+
 function createMockClient() {
   const store = {}
   return {
@@ -136,21 +148,21 @@ export default {
     } else {
       data.cached = timestamp
     }
-
-    const payload = zlib.deflateSync(
-                      JSON.stringify(data)
-                    ).toString('base64')
     /* eslint-enable no-param-reassign */
 
-    return client.set(
-      key,
-      payload,
-      "EX",
-      CACHE_LIFETIME_IN_SECONDS,
-      err => {
-        if (err) error(err)
-      }
-    )
+    return deflateP(data).then(deflatedData => {
+      const payload = deflatedData.toString('base64')
+      verbose(`CACHE SET: ${key}: ${payload}`)
+      return client.set(
+        key,
+        payload,
+        "EX",
+        CACHE_LIFETIME_IN_SECONDS,
+        err => {
+          if (err) error(err)
+        }
+      )
+    })
   },
 
   delete: key =>
