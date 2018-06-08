@@ -7,7 +7,5 @@ export const Order = {
   description: "Returns a single Order",
   args: { id: { type: new GraphQLNonNull(GraphQLString) } },
   resolve: (root, { id }, request, { rootValue: { orderLoader } }) =>
-    orderLoader({
-      id,
-    }).then(response => response.body),
+    orderLoader(id).then(response => response.body),
 }

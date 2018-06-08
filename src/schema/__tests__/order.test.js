@@ -71,7 +71,7 @@ describe("Order type", () => {
     `
 
     const rootValue = {
-      orderLoader: sinon.stub().returns(
+      orderLoader: jest.fn().mockReturnValueOnce(
         Promise.resolve({
           body: exampleOrder,
         })
@@ -79,6 +79,7 @@ describe("Order type", () => {
     }
 
     return runQuery(query, rootValue).then(data => {
+      expect(rootValue.orderLoader).toBeCalledWith("52dd3c2e4b8480091700027f")
       expect(data.order).toEqual(exampleOrder)
     })
   })
