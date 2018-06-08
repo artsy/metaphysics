@@ -100,3 +100,28 @@ export const parseRelayOptions = options => {
 export const removeNulls = object => {
   Object.keys(object).forEach(key => object[key] == null && delete object[key]) // eslint-disable-line eqeqeq, no-param-reassign, max-len
 }
+// Validates Relay cursor or page/size pagination
+export const validatePagingParams = args => {
+  const { page, size, first, last } = args
+  if ((page && !size) || (size && !page)) {
+    throw new Error("Must specify both a page and size param.")
+  }
+  if (page && size && (first || last)) {
+    throw new Error(
+      "Must specify either page/size or cursor args, but not both."
+    )
+  }
+}
+// Returns `pagingOptions` and `offset`.
+// `pagingOptions` are valid for Gravity API V1.
+// `offset` can be used for connection slicing.
+export const parsePagingParams = args => {
+  const { page, size } = args
+  const pagingOptions = page && size ? { page, size } : parseRelayOptions(args)
+  const offset = page && size ? (page - 1) * size : pagingOptions.offset
+
+  return { pagingOptions, offset }
+}
+export const totalPages = (total, size) => {
+  return Math.ceil(total / size)
+}

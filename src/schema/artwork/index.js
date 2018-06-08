@@ -756,4 +756,10 @@ export default Artwork
 
 export const artworkConnection = connectionDefinitions({
   nodeType: Artwork.type,
+  connectionFields: {
+    totalPages: {
+      type: GraphQLInt,
+      resolve: ({ totalPages }) => totalPages,
+    },
+  },
 }).connectionType

@@ -1,4 +1,12 @@
-import { exclude, toKey, isExisty, removeNulls, stripTags } from "lib/helpers"
+import {
+  exclude,
+  toKey,
+  isExisty,
+  removeNulls,
+  stripTags,
+  totalPages,
+  validatePagingParams,
+} from "lib/helpers"
 
 describe("exclude", () => {
   const xs = [
@@ -121,5 +129,32 @@ describe("removeNulls", () => {
     expect(objWithNulls).toHaveProperty("a", "percy")
     expect(objWithNulls).not.toHaveProperty("b")
     expect(objWithNulls).not.toHaveProperty("c")
+  })
+})
+
+describe("totalPages", () => {
+  it("removes total pages for a given total + size", () => {
+    expect(totalPages(74, 10)).toEqual(8)
+  })
+})
+
+describe("validatePagingParams", () => {
+  it("raises an error when exactly one of page and size are passed in", () => {
+    try {
+      validatePagingParams({ page: 1 })
+      throw new Error("Expected to raise error, but didnt")
+    } catch (error) {
+      expect(error.message).toEqual("Must specify both a page and size param.")
+    }
+  })
+  it("raises an error when page/size and cursor args are passed in", () => {
+    try {
+      validatePagingParams({ page: 1, size: 10, first: 10 })
+      throw new Error("Expected to raise error, but didnt")
+    } catch (error) {
+      expect(error.message).toEqual(
+        "Must specify either page/size or cursor args, but not both."
+      )
+    }
   })
 })

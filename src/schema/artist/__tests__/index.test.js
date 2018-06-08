@@ -750,7 +750,7 @@ describe("Artist type", () => {
               artists: ["percy"],
             },
           ],
-          aggregations: [],
+          aggregations: { total: { value: 74 } },
         })
       )
       rootValue.filterArtworksLoader = filterArtworksLoader
@@ -759,8 +759,13 @@ describe("Artist type", () => {
         {
           artist(id: "percy") {
             filtered_artworks(aggregations:[TOTAL], partner_id: null){
-              hits {
-                id
+              artworks: artworks_connection(page: 1, size: 10) {
+                totalPages
+                edges {
+                  node {
+                    id
+                  }
+                }
               }
             }
           }
@@ -768,11 +773,14 @@ describe("Artist type", () => {
       `
 
       return runQuery(query, rootValue).then(
-        ({ artist: { filtered_artworks: { hits } } }) => {
+        ({
+          artist: { filtered_artworks: { artworks: { totalPages, edges } } },
+        }) => {
           expect(filterArtworksLoader.mock.calls[0][0]).not.toHaveProperty(
             "partner_id"
           )
-          expect(hits).toEqual([{ id: "im-a-cat" }])
+          expect(edges).toEqual([{ node: { id: "im-a-cat" } }])
+          expect(totalPages).toEqual(8)
         }
       )
     })

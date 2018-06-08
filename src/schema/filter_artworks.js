@@ -10,6 +10,9 @@ import {
   parseRelayOptions,
   queriedForFieldsOtherThanBlacklisted,
   removeNulls,
+  parsePagingParams,
+  validatePagingParams,
+  totalPages,
 } from "lib/helpers"
 import { connectionFromArraySlice, toGlobalId } from "graphql-relay"
 import {
@@ -88,6 +91,12 @@ export const FilterArtworksType = new GraphQLObjectType({
       deprecationReason:
         "Favour artwork connections that take filter arguments.",
       args: pageable({
+        page: {
+          type: GraphQLInt,
+        },
+        size: {
+          type: GraphQLInt,
+        },
         sort: {
           type: GraphQLString,
         },
@@ -98,18 +107,27 @@ export const FilterArtworksType = new GraphQLObjectType({
         request,
         { rootValue: { filterArtworksLoader } }
       ) => {
-        const relayOptions = parseRelayOptions(args)
+        validatePagingParams(args)
+        const { pagingOptions, offset } = parsePagingParams(args)
+
         return filterArtworksLoader(
-          assign(gravityOptions, relayOptions, {})
+          assign(gravityOptions, pagingOptions, {})
         ).then(({ aggregations, hits }) => {
           if (!aggregations || !aggregations.total) {
             throw new Error("This query must contain the total aggregation")
           }
 
-          return connectionFromArraySlice(hits, args, {
-            arrayLength: aggregations.total.value,
-            sliceStart: relayOptions.offset,
-          })
+          // We copy `size` into `first` when used for windowed pagination.
+          // This is to allow proper calculation of `hasNextPage`.
+          const { size } = pagingOptions
+          const total = aggregations.total.value
+          return assign(
+            { totalPages: totalPages(total, size) },
+            connectionFromArraySlice(hits, assign({ first: size }, args), {
+              arrayLength: total,
+              sliceStart: offset,
+            })
+          )
         })
       },
     },
