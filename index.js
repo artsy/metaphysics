@@ -8,6 +8,7 @@ import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
 import config from "config"
+import { client } from "lib/cache"
 
 const {
   ENABLE_ASYNC_STACK_TRACES,
@@ -42,6 +43,14 @@ if (enableMetrics) {
     res.send(expressMetrics.metrics.getAll())
   })
 }
+
+app.get('/health', (req, res) => {
+  if (client.ping()) {
+    res.status(200).end()
+  } else {
+    res.status(503).end()
+  }
+})
 
 xapp.on("error", err => {
   error(err)
