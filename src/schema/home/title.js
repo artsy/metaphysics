@@ -7,7 +7,9 @@ const moduleTitle = {
     return featuredFair(fairsLoader).then(fair => fair && fair.name)
   },
   followed_artist: ({ rootValue: { artistLoader }, params }) => {
-    return artistLoader(params.followed_artist_id).then(artist => artist && artist.name)
+    return artistLoader(params.followed_artist_id).then(
+      artist => artist && artist.name
+    )
   },
   followed_artists: () => "Works by artists you follow",
   followed_galleries: () => "Works from galleries you follow",
@@ -21,6 +23,8 @@ const moduleTitle = {
       if (fetchedGene) {
         return fetchedGene.name
       }
+
+      return undefined
     })
   },
   live_auctions: ({ rootValue: { salesLoader } }) => {
@@ -29,7 +33,9 @@ const moduleTitle = {
   popular_artists: () => "Works by popular artists",
   recommended_works: () => "Recommended works for you",
   related_artists: ({ rootValue: { artistLoader }, params }) => {
-    return artistLoader(params.related_artist_id).then(artist => artist && artist.name)
+    return artistLoader(params.related_artist_id).then(
+      artist => artist && artist.name
+    )
   },
   saved_works: () => "Recently saved",
   similar_to_saved_works: () => "Similar to works you’ve saved",

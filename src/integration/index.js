@@ -1,12 +1,10 @@
+/* eslint-disable promise/always-return */
 import { keys, isUndefined } from "lodash"
 import request from "request"
 import deepEqual from "deep-equal"
 import config from "config"
 
-const {
-  METAPHYSICS_STAGING_ENDPOINT,
-  METAPHYSICS_PRODUCTION_ENDPOINT,
-} = config
+const { METAPHYSICS_STAGING_ENDPOINT, METAPHYSICS_PRODUCTION_ENDPOINT } = config
 
 const get = (url, options) => {
   return new Promise((resolve, reject) =>

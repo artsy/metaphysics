@@ -25,6 +25,8 @@ const moduleResults = {
         }).then(({ hits }) => {
           return slice(shuffle(hits), 0, RESULTS_SIZE)
         })
+      } else {
+        return undefined
       }
     })
   },
@@ -61,6 +63,8 @@ const moduleResults = {
       if (gene) {
         return geneArtworks(filterArtworksLoader, gene.id, RESULTS_SIZE)
       }
+
+      return undefined
     })
   },
   generic_gene: ({ rootValue: { filterArtworksLoader }, params }) => {
@@ -77,6 +81,8 @@ const moduleResults = {
           return map(body, "artwork")
         })
       }
+
+      return undefined
     })
   },
   popular_artists: ({ rootValue: { filterArtworksLoader, deltaLoader } }) => {
@@ -115,9 +121,9 @@ const moduleResults = {
       size: RESULTS_SIZE,
       sort: "-position",
     }).then(works => {
-      return similarArtworksLoader(
-        { artwork_id: map(works, "_id").slice(0, 7) }
-      )
+      return similarArtworksLoader({
+        artwork_id: map(works, "_id").slice(0, 7),
+      })
     })
   },
   similar_to_recently_viewed: ({

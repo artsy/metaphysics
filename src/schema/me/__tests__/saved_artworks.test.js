@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import gql from "test/gql"
 import { resolve } from "path"
 import { readFileSync } from "fs"

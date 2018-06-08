@@ -89,6 +89,7 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
+    mePartnersLoader: gravityLoader("me/partners"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     popularArtistsLoader: gravityLoader("artists/popular"),
     savedArtworkLoader: trackedEntityLoaderFactory(

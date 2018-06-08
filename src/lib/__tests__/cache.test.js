@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import zlib from 'zlib'
 import cache, { client } from "lib/cache"
 

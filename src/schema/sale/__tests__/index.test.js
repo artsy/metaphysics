@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import moment from "moment"
 import { fill } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "test/utils"

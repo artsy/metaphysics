@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { resolve } from "path"
 import { readFileSync } from "fs"
 import { runAuthenticatedQuery } from "test/utils"

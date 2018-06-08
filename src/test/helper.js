@@ -27,11 +27,11 @@ const expectPromiseRejectionToMatch = (promise, failureMessage) => {
         const object = {
           message: "Expected this promise to fail",
         }
-        reject(object)
+        return reject(object)
       })
       .catch(e => {
         expect(e.message).toMatch(failureMessage)
-        resolve({})
+        return resolve({})
       })
   })
 }

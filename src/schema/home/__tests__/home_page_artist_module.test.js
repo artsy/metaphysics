@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { graphql } from "graphql"
 import schema from "schema"
 import { runAuthenticatedQuery } from "test/utils"

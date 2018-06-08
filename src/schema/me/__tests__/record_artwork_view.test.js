@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { graphql } from "graphql"
 import gql from "test/gql"
 
