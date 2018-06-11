@@ -162,6 +162,8 @@ export default {
           if (err) error(err)
         }
       )
+    }).catch(err => {
+      error(err)
     })
   },
 
