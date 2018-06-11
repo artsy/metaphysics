@@ -3,6 +3,7 @@ import Bluebird from "bluebird"
 import xapp from "artsy-xapp"
 import compression from "compression"
 import express from "express"
+import expressMetrics from "express-node-metrics"
 import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
@@ -10,6 +11,7 @@ import config from "config"
 
 const {
   ENABLE_ASYNC_STACK_TRACES,
+  ENABLE_EXPRESS_METRICS,
   GRAVITY_API_URL,
   GRAVITY_ID,
   GRAVITY_SECRET,
@@ -23,6 +25,7 @@ const port = PORT
 const isDevelopment = NODE_ENV === "development"
 const isProduction = NODE_ENV === "production"
 const enableAsyncStackTraces = ENABLE_ASYNC_STACK_TRACES === "true"
+const enableMetrics = ENABLE_EXPRESS_METRICS === "true"
 
 if (enableAsyncStackTraces) {
   console.warn("[FEATURE] Enabling long async stack traces") // eslint-disable-line
@@ -32,6 +35,13 @@ if (enableAsyncStackTraces) {
 const app = express()
 
 app.use(compression())
+
+if (enableMetrics) {
+  app.use(expressMetrics.middleware)
+  app.get('/metrics', (req, res) => {
+    res.send(expressMetrics.metrics.getAll())
+  })
+}
 
 xapp.on("error", err => {
   error(err)
