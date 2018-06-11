@@ -137,6 +137,7 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
+    orderLoader: gravityLoader(id => `order/${id}`, {}, { headers: true }),
     updateOrderLoader: gravityLoader(
       id => `me/order/${id}`,
       {},

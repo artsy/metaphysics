@@ -6,7 +6,7 @@ metadata:
 spec:
   strategy:
     rollingUpdate:
-      maxSurge: 1
+      maxSurge: 2
       maxUnavailable: 0
     type: RollingUpdate
   template:
@@ -55,8 +55,8 @@ spec:
     apiVersion: extensions/v1beta1
     kind: Deployment
     name: metaphysics-web
-  minReplicas: 3
-  maxReplicas: 6
+  minReplicas: 10
+  maxReplicas: 10
   targetCPUUtilizationPercentage: 100
 
 ---
