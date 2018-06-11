@@ -109,8 +109,7 @@ export default {
             offlineQueueLength: client.offlineQueueLength,
             pipelineQueueLength: client.pipeline_queue.length
           }
-          error(`Redis Client Info: ${util.inspect(clientInfo)}`)
-          error(`Redis Client commandQueue: ${util.inspect(client.command_queue.toArray())}`)
+          verbose(`Redis Client Info: ${util.inspect(clientInfo)}`)
         }
 
         if (timeoutId) {

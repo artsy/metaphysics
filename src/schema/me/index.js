@@ -72,6 +72,19 @@ const Me = new GraphQLObjectType({
       }),
       resolve: () => ({}),
     },
+    has_credit_cards: {
+      type: GraphQLBoolean,
+      resolve: (
+        root,
+        options,
+        request,
+        { rootValue: { meCreditCardsLoader } }
+      ) => {
+        return meCreditCardsLoader().then(results => {
+          return results.length > 0
+        })
+      },
+    },
     has_qualified_credit_cards: {
       type: GraphQLBoolean,
       resolve: (
@@ -127,6 +140,7 @@ export default {
       "follow_artists",
       "followed_artists_connection",
       "followed_genes",
+      "has_credit_cards",
       "has_qualified_credit_cards",
       "suggested_artists",
       "bidders",
