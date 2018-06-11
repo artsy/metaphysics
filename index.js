@@ -37,9 +37,8 @@ const app = express()
 app.use(compression())
 
 if (enableMetrics) {
-  app.use(expressMetrics.middleware)
   app.get('/metrics', (req, res) => {
-    res.send(expressMetrics.metrics.getAll())
+    res.send(expressMetrics.metrics.processMetrics())
   })
 }
 
