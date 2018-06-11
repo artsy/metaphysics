@@ -36,13 +36,6 @@ const app = express()
 
 app.use(compression())
 
-if (enableMetrics) {
-  app.use(expressMetrics.middleware)
-  app.get('/metrics', (req, res) => {
-    res.send(expressMetrics.metrics.getAll())
-  })
-}
-
 xapp.on("error", err => {
   error(err)
   process.exit(1)
@@ -70,6 +63,12 @@ function bootApp() {
       .set({ "Content-Type": "image/x-icon" })
       .end()
   })
+
+  if (enableMetrics) {
+    app.get('/metrics', (req, res) => {
+      res.send(expressMetrics.metrics.processMetrics())
+    })
+  }
 
   app.all("/graphql", (_req, res) => res.redirect("/"))
 
