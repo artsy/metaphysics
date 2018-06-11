@@ -44,14 +44,6 @@ if (enableMetrics) {
   })
 }
 
-app.get('/health', (req, res) => {
-  if (client.ping()) {
-    res.status(200).end()
-  } else {
-    res.status(503).end()
-  }
-})
-
 xapp.on("error", err => {
   error(err)
   process.exit(1)
@@ -78,6 +70,14 @@ function bootApp() {
       .status(200)
       .set({ "Content-Type": "image/x-icon" })
       .end()
+  })
+
+  app.get('/health', (req, res) => {
+    if (client.ping()) {
+      res.status(200).end()
+    } else {
+      res.status(503).end()
+    }
   })
 
   app.all("/graphql", (_req, res) => res.redirect("/"))
