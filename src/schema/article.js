@@ -1,4 +1,5 @@
 import cached from "./fields/cached"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
 import AuthorType from "./author"
 import Image from "./image"
 import date from "./fields/date"
@@ -70,3 +71,5 @@ const Article = {
 }
 
 export default Article
+
+export const articleConnection = connectionWithCursorInfo(ArticleType)
