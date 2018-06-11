@@ -7,6 +7,7 @@ import {
   GraphQLList,
 } from "graphql"
 import { toGlobalId } from "graphql-relay"
+import { warn } from "lib/loggers"
 
 const PREFIX = "arrayconnection"
 
@@ -70,7 +71,18 @@ export function createPageCursors(
   totalRecords,
   max = 5
 ) {
+  // If max is even, bump it up by 1, and log out a warning.
+  if (max % 2 === 0) {
+    warn(`Max of ${max} passed to page cursors, using ${max + 1}`)
+    max = max + 1
+  }
+
   const totalPages = Math.ceil(totalRecords / size)
+
+  // Degenerate case of no records found.
+  if (totalPages === 0) {
+    return { around: [pageToCursor(1, 1, size)] }
+  }
 
   if (totalPages <= max) {
     // Collection is short, and `around` includes page 1 and the last page.

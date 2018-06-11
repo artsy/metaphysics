@@ -91,4 +91,21 @@ describe("createPageCursors", () => {
 
     checkCursorArray(around, size)
   })
+
+  it("creates the proper structure for an empty collection", () => {
+    const size = 10
+    const pageCursors = createPageCursors({ page: 7, size }, 0)
+
+    // There shouldn't be a `first` or `last` as it is contained in `around`.
+    expect(pageCursors).not.toHaveProperty("last")
+    expect(pageCursors).not.toHaveProperty("first")
+
+    const { around } = pageCursors
+    expect(around.length).toBe(1)
+
+    // We are on the first page.
+    expect(around[0].page).toBe(1)
+    expect(around[0].isCurrent).toBe(true)
+    expect(offsetFromCursor(around[0])).toBe("-1")
+  })
 })
