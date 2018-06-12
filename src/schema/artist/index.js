@@ -32,8 +32,9 @@ import {
   AuctionResultSorts,
 } from "schema/auction_result"
 import ArtistArtworksFilters from "./artwork_filters"
-import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
 import filterArtworks from "schema/filter_artworks"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
+import { RelatedArtists } from "./related"
 import { createPageCursors } from "schema/fields/pagination"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import {
@@ -44,7 +45,7 @@ import {
   GraphQLList,
   GraphQLInt,
 } from "graphql"
-import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 import { parseRelayOptions } from "lib/helpers"
 import { totalViaLoader } from "lib/total"
 
@@ -664,44 +665,7 @@ export const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         deprecationReason: "Favor `is_`-prefixed boolean attributes",
       },
-      related: {
-        type: new GraphQLObjectType({
-          name: "RelatedArtists",
-          fields: {
-            suggested: {
-              type: artistConnection, // eslint-disable-line no-use-before-define
-              args: pageable(SuggestedArtistsArgs),
-              description:
-                "A list of the current user’s suggested artists, based on a single artist",
-              resolve: (
-                { id },
-                options,
-                request,
-                { rootValue: { suggestedArtistsLoader } }
-              ) => {
-                if (!suggestedArtistsLoader) return null
-                const { offset } = getPagingParameters(options)
-                const gravityOptions = assign(
-                  { artist_id: id, total_count: true },
-                  options,
-                  {}
-                )
-                return suggestedArtistsLoader(gravityOptions).then(
-                  ({ body, headers }) => {
-                    const suggestedArtists = body
-                    const totalCount = headers["x-total-count"]
-                    return connectionFromArraySlice(suggestedArtists, options, {
-                      arrayLength: totalCount,
-                      sliceStart: offset,
-                    })
-                  }
-                )
-              },
-            },
-          },
-        }),
-        resolve: artist => artist,
-      },
+      related: RelatedArtists,
       sales: {
         type: new GraphQLList(Sale.type),
         args: {
@@ -758,6 +722,4 @@ const Artist = {
 }
 export default Artist
 
-export const artistConnection = connectionDefinitions({
-  nodeType: Artist.type,
-}).connectionType
+export const artistConnection = connectionWithCursorInfo(ArtistType)
