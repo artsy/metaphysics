@@ -149,4 +149,8 @@ export default {
         resolve(response)
       })
     ),
+
+  isAvailable: () => {
+    return client.ping()
+  }
 }

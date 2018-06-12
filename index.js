@@ -8,7 +8,7 @@ import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
 import config from "config"
-import { client } from "lib/cache"
+import cache from "lib/cache"
 
 const {
   ENABLE_ASYNC_STACK_TRACES,
@@ -73,7 +73,7 @@ function bootApp() {
   })
 
   app.get('/health', (req, res) => {
-    if (client.ping()) {
+    if (cache.isAvailable()) {
       res.status(200).end()
     } else {
       res.status(503).end()
