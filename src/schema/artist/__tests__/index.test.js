@@ -791,4 +791,63 @@ describe("Artist type", () => {
       )
     })
   })
+
+  describe("articlesConnection", () => {
+    it("returns connection of articles augmented by cursor info", () => {
+      const articlesLoader = jest.fn().mockReturnValueOnce(
+        Promise.resolve({
+          results: [
+            {
+              id: "foo-bar",
+              slug: "foo-bar",
+              title: "My Awesome Article",
+            },
+          ],
+          count: 35,
+        })
+      )
+      rootValue.articlesLoader = articlesLoader
+
+      const query = `
+        {
+          artist(id: "percy") {
+            articlesConnection(first: 10) {
+              pageCursors {
+                first {
+                  page
+                }
+                around {
+                  page
+                }
+                last {
+                  page
+                }
+              }
+              edges {
+                node {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, rootValue).then(
+        ({ artist: { articlesConnection: { pageCursors, edges } } }) => {
+          // Check expected page cursors exist in response.
+          const { first, around, last } = pageCursors
+          expect(first).toEqual(null)
+          expect(last).toEqual(null)
+          expect(around.length).toEqual(4)
+          let index
+          for (index = 0; index < 4; index++) {
+            expect(around[index].page).toBe(index + 1)
+          }
+          // Check article data included in edges.
+          expect(edges[0].node.title).toEqual("My Awesome Article")
+        }
+      )
+    })
+  })
 })
