@@ -11,7 +11,7 @@
       "artwork": {
         "artist": {
           "_id": "artistid",
-          "id": "hubert-farnsworth-good-news",
+          "id": "hubert-farnsworth",
           "sortable_id": "hubert-farnsworth",
           "name": "Hubert Farnsworth",
           "years": "",
@@ -148,8 +148,8 @@
         ],
         "_id": "artworkid1",
         "id": "hubert-farnsworth-good-news",
-        "title": "Good News",
-        "display": "Good News (2017)",
+        "title": "Smell-O-Scope",
+        "display": "Smell-O-Scope (2017)",
         "manufacturer": "",
         "category": "Sculpture",
         "medium": "Electroluminescent wire on vintage purse",
@@ -182,6 +182,17 @@
         "sale_ids": ["sale1"],
         "attribution_class": null
       },
+      "edition_set": {
+        "id": "editionset1",
+        "forsale": true,
+        "sold": false,
+        "price": "$2,000",
+        "acquireable": true,
+        "dimensions": {
+          "in": "12 × 14 × 3 in",
+          "cm": "30.5 × 35.6 × 7.6 cm"
+        }
+      },
       "price_cents": 200000,
       "tax_cents": 0,
       "subtotal_cents": 200000,
@@ -193,12 +204,10 @@
       "sale_conditions_url": null
     }
   ],
+  "item_total_cents": 200000,
   "tax_total_cents": 0,
   "total_cents": 200000,
-  "item_total":  {
-    "amount": "$2,000",
-     "display": "$2,000.00"
-  },
+  "item_total": "$2,000.00",
   "tax_total": "$0.00",
   "total": "$2,000.00",
   "shipping_address": {

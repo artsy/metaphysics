@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery, runQuery } from "test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
-import orderJSON from "test/fixtures/gravity/order2.json"
+import orderJSON from "test/fixtures/gravity/sample_order.json"
 
 describe("ConfirmOrderMutation", () => {
   describe("authenticated", () => {
@@ -32,6 +32,10 @@ describe("ConfirmOrderMutation", () => {
               }
               shipping_note
               sale_conditions_url
+            }
+            item_total {
+              amount
+              display
             }
             shipping_address {
               name
