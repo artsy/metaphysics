@@ -143,6 +143,16 @@ export default (accessToken, userID, opts) => {
       { state: "cp_confirmed" },
       { method: "PUT" }
     ),
+    finalizeOrderLoader: gravityLoader(
+      id => `order/${id}`,
+      { state: "cp_finalized" },
+      { method: "PUT" }
+    ),
+    rejectOrderLoader: gravityLoader(
+      id => `order/${id}`,
+      { state: "cp_rejected" },
+      { method: "PUT" }
+    ),
     updateOrderLoader: gravityLoader(
       id => `me/order/${id}`,
       {},
