@@ -14,7 +14,7 @@ describe("Artist type", () => {
     }
 
     const auctionResultResponse = {
-      total_count: 1,
+      total_count: 35,
       _embedded: {
         items: [
           {
@@ -106,5 +106,48 @@ describe("Artist type", () => {
         },
       })
     })
+  })
+
+  it("returns cursor info", () => {
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResults(recordsTrusted: true, first: 10) {
+            pageCursors {
+              first {
+                page
+              }
+              around {
+                page
+              }
+              last {
+                page
+              }
+            }
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(
+      ({ artist: { auctionResults: { pageCursors, edges } } }) => {
+        // Check expected page cursors exist in response.
+        const { first, around, last } = pageCursors
+        expect(first).toEqual(null)
+        expect(last).toEqual(null)
+        expect(around.length).toEqual(4)
+        let index
+        for (index = 0; index < 4; index++) {
+          expect(around[index].page).toBe(index + 1)
+        }
+        // Check auction result included in edges.
+        expect(edges[0].node.id).toEqual("1")
+      }
+    )
   })
 })

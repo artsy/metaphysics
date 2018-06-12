@@ -1,7 +1,6 @@
 import _ from "lodash"
 import { isTwoDimensional, isTooBig, isEmbeddedVideo, embed } from "./utilities"
 import { enhance, existyValue, isExisty } from "lib/helpers"
-import { connectionDefinitions } from "graphql-relay"
 import cached from "schema/fields/cached"
 import { markdown } from "schema/fields/markdown"
 import Article from "schema/article"
@@ -10,7 +9,7 @@ import Image, { getDefault } from "schema/image"
 import Fair from "schema/fair"
 import Sale from "schema/sale"
 import SaleArtwork from "schema/sale_artwork"
-import { PageCursorsType } from "schema/fields/pagination"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
 import PartnerShow from "schema/partner_show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import Partner from "schema/partner"
@@ -755,12 +754,4 @@ Artwork = {
 
 export default Artwork
 
-export const artworkConnection = connectionDefinitions({
-  nodeType: Artwork.type,
-  connectionFields: {
-    pageCursors: {
-      type: PageCursorsType,
-      resolve: ({ pageCursors }) => pageCursors,
-    },
-  },
-}).connectionType
+export const artworkConnection = connectionWithCursorInfo(ArtworkType)

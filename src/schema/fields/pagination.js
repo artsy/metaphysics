@@ -6,7 +6,7 @@ import {
   GraphQLNonNull,
   GraphQLList,
 } from "graphql"
-import { toGlobalId } from "graphql-relay"
+import { connectionDefinitions, toGlobalId } from "graphql-relay"
 import { warn } from "lib/loggers"
 
 const PREFIX = "arrayconnection"
@@ -120,4 +120,16 @@ export function createPageCursors(
       last: pageToCursor(totalPages, currentPage, size),
     }
   }
+}
+
+export function connectionWithCursorInfo(type) {
+  return connectionDefinitions({
+    nodeType: type,
+    connectionFields: {
+      pageCursors: {
+        type: PageCursorsType,
+        resolve: ({ pageCursors }) => pageCursors,
+      },
+    },
+  }).connectionType
 }

@@ -9,8 +9,8 @@ import {
   GraphQLObjectType,
   GraphQLEnumType,
 } from "graphql"
-import { connectionDefinitions } from "graphql-relay"
 import { indexOf } from "lodash"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
 import Image from "schema/image"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
@@ -163,6 +163,6 @@ const AuctionResultType = new GraphQLObjectType({
   }),
 })
 
-export const auctionResultConnection = connectionDefinitions({
-  nodeType: AuctionResultType,
-}).connectionType
+export const auctionResultConnection = connectionWithCursorInfo(
+  AuctionResultType
+)
