@@ -10,6 +10,7 @@ import Image, { getDefault } from "schema/image"
 import Fair from "schema/fair"
 import Sale from "schema/sale"
 import SaleArtwork from "schema/sale_artwork"
+import { PageCursorsType } from "schema/fields/pagination"
 import PartnerShow from "schema/partner_show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import Partner from "schema/partner"
@@ -756,4 +757,10 @@ export default Artwork
 
 export const artworkConnection = connectionDefinitions({
   nodeType: Artwork.type,
+  connectionFields: {
+    pageCursors: {
+      type: PageCursorsType,
+      resolve: ({ pageCursors }) => pageCursors,
+    },
+  },
 }).connectionType
