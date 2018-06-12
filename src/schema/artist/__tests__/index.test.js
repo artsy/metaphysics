@@ -584,12 +584,9 @@ describe("Artist type", () => {
         .stub()
         .withArgs(artist.id)
         .returns(
-          Promise.resolve([
-            privateShow,
-            publicShow,
-            partnerlessShow,
-            galaxyShow,
-          ])
+          Promise.resolve({
+            body: [privateShow, publicShow, partnerlessShow, galaxyShow],
+          })
         )
     })
     it("excludes shows from private partners for related shows", () => {

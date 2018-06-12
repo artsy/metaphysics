@@ -247,7 +247,7 @@ export const artworkFields = () => {
             published: true,
             limit: 1,
           }).then(({ results }) => results),
-        ]).then(([shows, articles]) => {
+        ]).then(([{ body: shows }, articles]) => {
           const highlightedShows = enhance(shows, { highlight_type: "Show" })
           const highlightedArticles = enhance(articles, {
             highlight_type: "Article",
@@ -439,7 +439,7 @@ export const artworkFields = () => {
         { rootValue: { relatedShowsLoader } }
       ) =>
         relatedShowsLoader({ active: true, size: 1, artwork: [id] }).then(
-          shows => shows.length > 0
+          ({ body: shows }) => shows.length > 0
         ),
     },
     is_not_for_sale: {
@@ -671,7 +671,9 @@ export const artworkFields = () => {
           active,
           sort,
           at_a_fair,
-        }).then(_.first),
+        })
+          .then(({ body }) => body)
+          .then(_.first),
     },
     shows: {
       type: new GraphQLList(PartnerShow.type),
@@ -701,7 +703,7 @@ export const artworkFields = () => {
           size,
           sort,
           at_a_fair,
-        }),
+        }).then(({ body }) => body),
     },
     signature: markdown(({ signature }) =>
       signature.replace(/^signature:\s+/i, "")
