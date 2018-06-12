@@ -1,6 +1,6 @@
 import moment from "moment"
 import { pageable } from "relay-cursor-paging"
-import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 import { isExisty, exclude, existyValue, parseRelayOptions } from "lib/helpers"
 import { find } from "lodash"
 import HTTPError from "lib/http_error"
@@ -17,6 +17,7 @@ import Artwork, { artworkConnection } from "./artwork"
 import Location from "./location"
 import Image, { getDefault } from "./image"
 import PartnerShowEventType from "./partner_show_event"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -425,6 +426,4 @@ const Show = {
   },
 }
 export default Show
-export const showConnection = connectionDefinitions({
-  nodeType: Show.type,
-}).connectionType
+export const showConnection = connectionWithCursorInfo(ShowType)
