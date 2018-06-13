@@ -66,11 +66,11 @@ function bootApp() {
   })
 
   app.get('/health', (req, res) => {
-    if (cache.isAvailable()) {
-      res.status(200).end()
-    } else {
-      res.status(503).end()
-    }
+    cache.isAvailable().then((stats) => {
+      return res.status(200).end()
+    }).catch((err) => {
+      return res.status(503).end()
+    })
   })
 
   if (enableMetrics) {

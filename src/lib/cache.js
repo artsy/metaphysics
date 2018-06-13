@@ -1,14 +1,13 @@
-import util from 'util'
 import zlib from 'zlib'
 import { isNull, isArray } from "lodash"
 import config from "config"
 import { error, verbose } from "./loggers"
-import redis from "redis"
-import url from "url"
+import Memcached from "memcached"
 
 const {
   NODE_ENV,
-  REDIS_URL,
+  MEMCACHED_URL,
+  MEMCACHED_MAX_POOL,
   CACHE_LIFETIME_IN_SECONDS,
   CACHE_QUERY_LOGGING_THRESHOLD_MS,
   CACHE_RETRIEVAL_TIMEOUT_MS,
@@ -16,7 +15,7 @@ const {
 
 const isTest = NODE_ENV === "test"
 
-const VerboseEvents = ["connect", "ready", "reconnecting", "end", "warning"]
+const VerboseEvents = ["issue", "failure", "reconnecting", "reconnect", "remove"]
 
 const deflateP = (dataz) => {
   return new Promise((resolve, reject) =>
@@ -40,48 +39,17 @@ function createMockClient() {
   }
 }
 
-function createRedisClient() {
-  const redisURL = url.parse(REDIS_URL)
-  const client = redis.createClient({
-    host: redisURL.hostname,
-    port: redisURL.port,
-    retryStrategy: options => {
-      if (options.error) {
-        // Errors that lead to the connection being dropped are not emitted to
-        // the error event handler, so send it there ourselves so we can handle
-        // it in one place.
-        // See https://github.com/NodeRedis/node_redis/issues/1202#issuecomment-363116620
-        client.emit("error", error)
-        // End reconnecting on a specific error and flush all commands with a
-        // individual error.
-        if (options.error.code === "ECONNREFUSED") {
-          return new Error("[Cache] The server refused the connection")
-        }
-      }
-      // End reconnecting after a specific timeout and flush all commands with a
-      // individual error.
-      if (options.total_retry_time > 1000 * 60 * 60) {
-        return new Error("[Cache] Retry time exhausted")
-      }
-      // End reconnecting with built in error.
-      if (options.attempt > 10) {
-        return undefined
-      }
-      // Reconnect after:
-      return Math.min(options.attempt * 100, 3000)
-    },
+function createMemcachedClient() {
+  const client = new Memcached(MEMCACHED_URL, {
+    poolSize: MEMCACHED_MAX_POOL
   })
-  if (redisURL.auth) {
-    client.auth(redisURL.auth.split(":")[1])
-  }
-  client.on("error", error)
   VerboseEvents.forEach(event => {
     client.on(event, () => verbose(`[Cache] ${event}`))
   })
   return client
 }
 
-export const client = isTest ? createMockClient() : createRedisClient()
+export const client = isTest ? createMockClient() : createMemcachedClient()
 
 export default {
   get: key => {
@@ -100,16 +68,6 @@ export default {
         const time = Date.now() - start
         if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
           error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
-
-          const clientInfo = {
-            ready: client.ready,
-            connected: client.connected,
-            shouldBuffer: client.shouldBuffer,
-            commandQueueLength: client.commandQueueLength,
-            offlineQueueLength: client.offlineQueueLength,
-            pipelineQueueLength: client.pipeline_queue.length
-          }
-          verbose(`Redis Client Info: ${util.inspect(clientInfo)}`)
         }
 
         if (timeoutId) {
@@ -155,7 +113,6 @@ export default {
       return client.set(
         key,
         payload,
-        "EX",
         CACHE_LIFETIME_IN_SECONDS,
         err => {
           if (err) error(err)
@@ -168,13 +125,23 @@ export default {
 
   delete: key =>
     new Promise((resolve, reject) =>
-      client.del(key, (err, response) => {
+      client.del(key, (err) => {
         if (err) return reject(err)
-        resolve(response)
       })
     ),
 
   isAvailable: () => {
-    return client.ping()
+    return new Promise((resolve, reject) => {
+      client.stats((err, resp) => {
+        if (err) {
+          error(err)
+          reject(err)
+        } else {
+          if (resp){
+            resolve(resp)
+          }
+        }
+      })
+    })
   }
 }
