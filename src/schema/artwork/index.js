@@ -1,7 +1,6 @@
 import _ from "lodash"
 import { isTwoDimensional, isTooBig, isEmbeddedVideo, embed } from "./utilities"
 import { enhance, existyValue, isExisty } from "lib/helpers"
-import { connectionDefinitions } from "graphql-relay"
 import cached from "schema/fields/cached"
 import { markdown } from "schema/fields/markdown"
 import Article from "schema/article"
@@ -10,6 +9,7 @@ import Image, { getDefault } from "schema/image"
 import Fair from "schema/fair"
 import Sale from "schema/sale"
 import SaleArtwork from "schema/sale_artwork"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
 import PartnerShow from "schema/partner_show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import Partner from "schema/partner"
@@ -247,7 +247,7 @@ export const artworkFields = () => {
             published: true,
             limit: 1,
           }).then(({ results }) => results),
-        ]).then(([shows, articles]) => {
+        ]).then(([{ body: shows }, articles]) => {
           const highlightedShows = enhance(shows, { highlight_type: "Show" })
           const highlightedArticles = enhance(articles, {
             highlight_type: "Article",
@@ -439,7 +439,7 @@ export const artworkFields = () => {
         { rootValue: { relatedShowsLoader } }
       ) =>
         relatedShowsLoader({ active: true, size: 1, artwork: [id] }).then(
-          shows => shows.length > 0
+          ({ body: shows }) => shows.length > 0
         ),
     },
     is_not_for_sale: {
@@ -671,7 +671,9 @@ export const artworkFields = () => {
           active,
           sort,
           at_a_fair,
-        }).then(_.first),
+        })
+          .then(({ body }) => body)
+          .then(_.first),
     },
     shows: {
       type: new GraphQLList(PartnerShow.type),
@@ -701,7 +703,7 @@ export const artworkFields = () => {
           size,
           sort,
           at_a_fair,
-        }),
+        }).then(({ body }) => body),
     },
     signature: markdown(({ signature }) =>
       signature.replace(/^signature:\s+/i, "")
@@ -754,6 +756,4 @@ Artwork = {
 
 export default Artwork
 
-export const artworkConnection = connectionDefinitions({
-  nodeType: Artwork.type,
-}).connectionType
+export const artworkConnection = connectionWithCursorInfo(ArtworkType)

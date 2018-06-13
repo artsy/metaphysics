@@ -4,6 +4,7 @@ import Artwork from "./artwork"
 import Artist from "./artist"
 import Tag from "./tag"
 import numeral from "./fields/numeral"
+import { createPageCursors } from "./fields/pagination"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
 import {
@@ -99,6 +100,7 @@ export const FilterArtworksType = new GraphQLObjectType({
         { rootValue: { filterArtworksLoader } }
       ) => {
         const relayOptions = parseRelayOptions(args)
+
         return filterArtworksLoader(
           assign(gravityOptions, relayOptions, {})
         ).then(({ aggregations, hits }) => {
@@ -106,10 +108,18 @@ export const FilterArtworksType = new GraphQLObjectType({
             throw new Error("This query must contain the total aggregation")
           }
 
-          return connectionFromArraySlice(hits, args, {
-            arrayLength: aggregations.total.value,
-            sliceStart: relayOptions.offset,
-          })
+          return assign(
+            {
+              pageCursors: createPageCursors(
+                relayOptions,
+                aggregations.total.value
+              ),
+            },
+            connectionFromArraySlice(hits, args, {
+              arrayLength: aggregations.total.value,
+              sliceStart: relayOptions.offset,
+            })
+          )
         })
       },
     },

@@ -74,7 +74,7 @@ export default opts => {
       { headers: true }
     ),
     relatedSalesLoader: gravityLoader("related/sales"),
-    relatedShowsLoader: gravityLoader("related/shows"),
+    relatedShowsLoader: gravityLoader("related/shows", {}, { headers: true }),
     saleLoader: gravityLoader(id => `sale/${id}`),
     salesLoader: gravityLoader("sales"),
     saleArtworkLoader: gravityLoader(

@@ -584,12 +584,9 @@ describe("Artist type", () => {
         .stub()
         .withArgs(artist.id)
         .returns(
-          Promise.resolve([
-            privateShow,
-            publicShow,
-            partnerlessShow,
-            galaxyShow,
-          ])
+          Promise.resolve({
+            body: [privateShow, publicShow, partnerlessShow, galaxyShow],
+          })
         )
     })
     it("excludes shows from private partners for related shows", () => {
@@ -750,7 +747,7 @@ describe("Artist type", () => {
               artists: ["percy"],
             },
           ],
-          aggregations: [],
+          aggregations: { total: { value: 75 } },
         })
       )
       rootValue.filterArtworksLoader = filterArtworksLoader
@@ -759,8 +756,18 @@ describe("Artist type", () => {
         {
           artist(id: "percy") {
             filtered_artworks(aggregations:[TOTAL], partner_id: null){
-              hits {
-                id
+              artworks: artworks_connection(first: 10) {
+                pageCursors {
+                  first {
+                    page
+                  }
+                  around {
+                    page
+                  }
+                  last {
+                    page
+                  }
+                }
               }
             }
           }
@@ -768,11 +775,135 @@ describe("Artist type", () => {
       `
 
       return runQuery(query, rootValue).then(
-        ({ artist: { filtered_artworks: { hits } } }) => {
+        ({ artist: { filtered_artworks: { artworks: { pageCursors } } } }) => {
           expect(filterArtworksLoader.mock.calls[0][0]).not.toHaveProperty(
             "partner_id"
           )
-          expect(hits).toEqual([{ id: "im-a-cat" }])
+          // Check expected page cursors exist in response.
+          const { first, around, last } = pageCursors
+          expect(first).toEqual(null)
+          expect(last.page).toEqual(8)
+          let index
+          for (index = 0; index < 4; index++) {
+            expect(around[index].page).toBe(index + 1)
+          }
+        }
+      )
+    })
+  })
+
+  describe("articlesConnection", () => {
+    it("returns connection of articles augmented by cursor info", () => {
+      const articlesLoader = jest.fn().mockReturnValueOnce(
+        Promise.resolve({
+          results: [
+            {
+              id: "foo-bar",
+              slug: "foo-bar",
+              title: "My Awesome Article",
+            },
+          ],
+          count: 35,
+        })
+      )
+      rootValue.articlesLoader = articlesLoader
+
+      const query = `
+        {
+          artist(id: "percy") {
+            articlesConnection(first: 10) {
+              pageCursors {
+                first {
+                  page
+                }
+                around {
+                  page
+                }
+                last {
+                  page
+                }
+              }
+              edges {
+                node {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, rootValue).then(
+        ({ artist: { articlesConnection: { pageCursors, edges } } }) => {
+          // Check expected page cursors exist in response.
+          const { first, around, last } = pageCursors
+          expect(first).toEqual(null)
+          expect(last).toEqual(null)
+          expect(around.length).toEqual(4)
+          let index
+          for (index = 0; index < 4; index++) {
+            expect(around[index].page).toBe(index + 1)
+          }
+          // Check article data included in edges.
+          expect(edges[0].node.title).toEqual("My Awesome Article")
+        }
+      )
+    })
+  })
+
+  describe("showsConnection", () => {
+    it("returns connection of shows augmented by cursor info", () => {
+      const relatedShowsLoader = jest.fn().mockReturnValueOnce(
+        Promise.resolve({
+          body: [
+            {
+              id: "foo-bar",
+              name: "Catty Art Show",
+            },
+          ],
+          headers: { "x-total-count": 35 },
+        })
+      )
+      rootValue.relatedShowsLoader = relatedShowsLoader
+
+      const query = `
+        {
+          artist(id: "percy") {
+            showsConnection(first: 10) {
+              pageCursors {
+                first {
+                  page
+                }
+                around {
+                  page
+                }
+                last {
+                  page
+                }
+              }
+              edges {
+                node {
+                  name
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, rootValue).then(
+        ({ artist: { showsConnection: { pageCursors, edges } } }) => {
+          // Check expected page cursors exist in response.
+          const { first, around, last } = pageCursors
+          expect(first).toEqual(null)
+          expect(last).toEqual(null)
+          expect(around.length).toEqual(4)
+          let index
+          for (index = 0; index < 4; index++) {
+            expect(around[index].page).toBe(index + 1)
+          }
+          // Check article data included in edges.
+          expect(edges[0].node.name).toEqual("Catty Art Show")
         }
       )
     })
