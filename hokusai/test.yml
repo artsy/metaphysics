@@ -10,7 +10,7 @@ services:
     - MEMCACHED_URL=metaphysics-memcached:11211
     env_file: ../.env.test
     depends_on:
-    - metaphysics-redis
+    - metaphysics-memcached
   metaphysics-memcached:
     image: memcached
     ports:

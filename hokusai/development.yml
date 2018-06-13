@@ -11,7 +11,7 @@ services:
     ports:
     - 5001:5001
     depends_on:
-    - metaphysics-redis
+    - metaphysics-memcached
   metaphysics-memcached:
     image: memcached
     ports:
