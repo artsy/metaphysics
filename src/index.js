@@ -167,6 +167,7 @@ async function startApp() {
   if (enableSentry) {
     app.use(raven.errorHandler())
   }
+
 }
 
 startApp()
