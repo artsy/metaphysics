@@ -35,9 +35,8 @@ spec:
             cpu: "1"
             memory: "768Mi"
         readinessProbe:
-          httpGet:
+          tcpSocket:
             port: 3000
-            path: /health
           initialDelaySeconds: 5
           periodSeconds: 5
       affinity:
