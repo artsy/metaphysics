@@ -137,9 +137,7 @@ export default {
           error(err)
           reject(err)
         } else {
-          if (resp){
-            resolve(resp)
-          }
+          resolve(resp)
         }
       })
     })
