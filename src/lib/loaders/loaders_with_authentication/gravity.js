@@ -140,17 +140,17 @@ export default (accessToken, userID, opts) => {
     orderLoader: gravityLoader(id => `order/${id}`, {}, { headers: true }),
     confirmOrderLoader: gravityLoader(
       id => `order/${id}`,
-      { state: "cp_confirmed" },
+      { state: "confirmed" },
       { method: "PUT" }
     ),
     finalizeOrderLoader: gravityLoader(
       id => `order/${id}`,
-      { state: "cp_finalized" },
+      { state: "finalized" },
       { method: "PUT" }
     ),
     rejectOrderLoader: gravityLoader(
       id => `order/${id}`,
-      { state: "cp_rejected" },
+      { state: "rejected" },
       { method: "PUT" }
     ),
     updateOrderLoader: gravityLoader(
