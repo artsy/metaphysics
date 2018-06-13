@@ -489,7 +489,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns null if work is part of permanent collection", () => {
+    it("returns Permanent Collection if work is part of permanent collection", () => {
       artwork.sale_message = "for sale"
       artwork.availability = "permanent collection"
 
@@ -497,7 +497,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
-            sale_message: null,
+            sale_message: "Permanent collection",
           },
         })
       })
