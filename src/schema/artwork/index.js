@@ -612,16 +612,20 @@ export const artworkFields = () => {
     sale_message: {
       type: GraphQLString,
       resolve: ({ sale_message, availability, availability_hidden, price }) => {
-        // Don't display anything if availability is hidden, or it is not for sale
-        // or in a permanent collection (generally institutional).
-        if (availability_hidden) {
+        // Don't display anything if availability is hidden, or artwork is not for sale.
+        if (availability_hidden || availability === "not for sale") {
           return null
         }
-        if (
-          availability === "not for sale" ||
-          availability === "permanent collection"
-        ) {
-          return null
+
+        // If permanent collection, on loan or sold, just return those, do not include price.
+        if (availability === "permanent collection") {
+          return "Permanent collection"
+        }
+        if (availability === "on loan") {
+          return "On loan"
+        }
+        if (sale_message && sale_message.indexOf("Sold") > -1) {
+          return "Sold"
         }
 
         // If on hold, prepend the price (if there is one).
@@ -632,13 +636,6 @@ export const artworkFields = () => {
           return "On hold"
         }
 
-        // If on loan or sold, just return those, do not include price.
-        if (availability === "on loan") {
-          return "On loan"
-        }
-        if (sale_message && sale_message.indexOf("Sold") > -1) {
-          return "Sold"
-        }
         return sale_message
       },
     },
