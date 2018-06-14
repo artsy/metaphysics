@@ -50,11 +50,12 @@ function createMemcachedClient() {
   return client
 }
 
-export const client = isTest ? createMockClient() : createMemcachedClient()
+export const readClient = isTest ? createMockClient() : createMemcachedClient()
+export const writeClient = isTest ? readClient : createMemcachedClient()
 
 function _get(key) {
   return new Promise((resolve, reject) => {
-    if (isNull(client)) return reject(new Error("[Cache] `client` is `null`"))
+    if (isNull(readClient)) return reject(new Error("[Cache] `readClient` is `null`"))
 
     let timeoutId = setTimeout(() => {
       timeoutId = null
@@ -64,7 +65,7 @@ function _get(key) {
     }, CACHE_RETRIEVAL_TIMEOUT_MS)
 
     const start = Date.now()
-    client.get(key, (err, data) => {
+    readClient.get(key, (err, data) => {
       const time = Date.now() - start
       if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
         error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
@@ -96,7 +97,7 @@ function _get(key) {
 }
 
 function _set(key, data) {
-  if (isNull(client)) return false
+  if (isNull(writeClient)) return false
 
   const timestamp = new Date().getTime()
   /* eslint-disable no-param-reassign */
@@ -111,7 +112,7 @@ function _set(key, data) {
     const payload = deflatedData.toString('base64')
     verbose(`CACHE SET: ${key}: ${payload}`)
 
-    return client.set(
+    return writeClient.set(
       key,
       payload,
       CACHE_LIFETIME_IN_SECONDS,
@@ -126,7 +127,7 @@ function _set(key, data) {
 
 const _delete = (key) =>
   new Promise((resolve, reject) =>
-    client.del(key, (err) => {
+    writeClient.del(key, (err) => {
       if (err) return reject(err)
     })
   )
@@ -167,7 +168,7 @@ export default {
 
   isAvailable: () => {
     return new Promise((resolve, reject) => {
-      client.stats((err, resp) => {
+      readClient.stats((err, resp) => {
         if (err) {
           error(err)
           reject(err)
