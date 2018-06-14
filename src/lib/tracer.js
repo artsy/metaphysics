@@ -12,9 +12,6 @@ tracer.use("express", {
 tracer.use("http", {
   service: DD_TRACER_SERVICE_NAME + ".http-client",
 })
-tracer.use("redis", {
-  service: DD_TRACER_SERVICE_NAME + ".redis",
-})
 
 function parse_args() {
   return "( ... )"
