@@ -145,19 +145,22 @@ function finishSpan(span, promise) {
 
 export default {
   get: key => {
-    return cacheTracer("get").then(span => {
+    return cacheTracer().then(span => {
+      span.setTag("resource.name", "get")
       return finishSpan(span, _get(key))
     })
   },
 
   set: (key, data) => {
-    return cacheTracer("set").then(span => {
+    return cacheTracer().then(span => {
+      span.setTag("resource.name", "set")
       return finishSpan(span, _set(key, data))
     })
   },
 
   delete: key => {
-    return cacheTracer("delete").then(span => {
+    return cacheTracer().then(span => {
+      span.setTag("resource.name", "delete")
       return finishSpan(span, _delete(key))
     })
   },
