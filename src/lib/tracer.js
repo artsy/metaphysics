@@ -13,6 +13,12 @@ tracer.use("http", {
   service: DD_TRACER_SERVICE_NAME + ".http-client",
 })
 
+export function cacheTracer(resource) {
+  return tracer.trace("cache." + resource, {
+    service: DD_TRACER_SERVICE_NAME + ".memcached"
+  })
+}
+
 function parse_args() {
   return "( ... )"
 }

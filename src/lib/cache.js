@@ -3,6 +3,7 @@ import { isNull, isArray } from "lodash"
 import config from "config"
 import { error, verbose } from "./loggers"
 import Memcached from "memcached"
+import { cacheTracer } from "./tracer"
 
 const {
   NODE_ENV,
@@ -51,84 +52,115 @@ function createMemcachedClient() {
 
 export const client = isTest ? createMockClient() : createMemcachedClient()
 
-export default {
-  get: key => {
-    return new Promise((resolve, reject) => {
-      if (isNull(client)) return reject(new Error("[Cache] `client` is `null`"))
+function _get(key) {
+  return new Promise((resolve, reject) => {
+    if (isNull(client)) return reject(new Error("[Cache] `client` is `null`"))
 
-      let timeoutId = setTimeout(() => {
-        timeoutId = null
-        const err = new Error(`[Cache#get] Timeout for key ${key}`)
+    let timeoutId = setTimeout(() => {
+      timeoutId = null
+      const err = new Error(`[Cache#get] Timeout for key ${key}`)
+      error(err)
+      reject(err)
+    }, CACHE_RETRIEVAL_TIMEOUT_MS)
+
+    const start = Date.now()
+    client.get(key, (err, data) => {
+      const time = Date.now() - start
+      if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
+        error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
+      }
+
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      } else {
+        // timed out and already rejected promise, no need to continue
+        return
+      }
+
+      if (err) {
         error(err)
         reject(err)
-      }, CACHE_RETRIEVAL_TIMEOUT_MS)
+      } else if (data) {
+        zlib.inflate(new Buffer(data, 'base64'), (er, inflatedData) => {
+          if (er) {
+            reject(er)
+          } else {
+            resolve(JSON.parse(inflatedData.toString()))
+          }
+        })
+      } else {
+        reject(new Error("[Cache#get] Cache miss"))
+      }
+    })
+  })
+}
 
-      const start = Date.now()
-      client.get(key, (err, data) => {
-        const time = Date.now() - start
-        if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
-          error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
-        }
+function _set(key, data) {
+  if (isNull(client)) return false
 
-        if (timeoutId) {
-          clearTimeout(timeoutId)
-        } else {
-          // timed out and already rejected promise, no need to continue
-          return
-        }
+  const timestamp = new Date().getTime()
+  /* eslint-disable no-param-reassign */
+  if (isArray(data)) {
+    data.forEach(datum => (datum.cached = timestamp))
+  } else {
+    data.cached = timestamp
+  }
+  /* eslint-enable no-param-reassign */
 
-        if (err) {
-          error(err)
-          reject(err)
-        } else if (data) {
-            zlib.inflate(new Buffer(data, 'base64'), (er, inflatedData) => {
-              if (er) {
-                reject(er)
-              } else {
-                resolve(JSON.parse(inflatedData.toString()))
-              }
-            })
-        } else {
-          reject(new Error("[Cache#get] Cache miss"))
-        }
-      })
+  return deflateP(data).then(deflatedData => {
+    const payload = deflatedData.toString('base64')
+    verbose(`CACHE SET: ${key}: ${payload}`)
+
+    return client.set(
+      key,
+      payload,
+      CACHE_LIFETIME_IN_SECONDS,
+      err => {
+        if (err) error(err)
+      }
+    )
+  }).catch(err => {
+    error(err)
+  })
+}
+
+const _delete = (key) =>
+  new Promise((resolve, reject) =>
+    client.del(key, (err) => {
+      if (err) return reject(err)
+    })
+  )
+
+
+function finishSpan(span, promise) {
+  return promise.then(
+    result => {
+      span.finish()
+      return result
+    }, err => {
+      span.finish()
+      throw err
+    })
+}
+
+export default {
+  get: key => {
+    return cacheTracer("get").then(span => {
+      return finishSpan(span, _get(key))
     })
   },
 
   set: (key, data) => {
-    if (isNull(client)) return false
-
-    const timestamp = new Date().getTime()
-    /* eslint-disable no-param-reassign */
-    if (isArray(data)) {
-      data.forEach(datum => (datum.cached = timestamp))
-    } else {
-      data.cached = timestamp
-    }
-    /* eslint-enable no-param-reassign */
-
-    return deflateP(data).then(deflatedData => {
-      const payload = deflatedData.toString('base64')
-      verbose(`CACHE SET: ${key}: ${payload}`)
-      return client.set(
-        key,
-        payload,
-        CACHE_LIFETIME_IN_SECONDS,
-        err => {
-          if (err) error(err)
-        }
-      )
-    }).catch(err => {
-      error(err)
+    return cacheTracer("set").then(span => {
+      return finishSpan(span, _set(key, data))
     })
   },
 
-  delete: key =>
-    new Promise((resolve, reject) =>
-      client.del(key, (err) => {
-        if (err) return reject(err)
-      })
-    ),
+  delete: key => {
+    return cacheTracer("delete").then(span => {
+      return finishSpan(span, _delete(key))
+    })
+  },
 
   isAvailable: () => {
     return new Promise((resolve, reject) => {
