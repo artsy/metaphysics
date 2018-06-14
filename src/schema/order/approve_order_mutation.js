@@ -3,8 +3,8 @@ import { OrderType } from "schema/me/order"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 export default mutationWithClientMutationId({
-  name: "ConfirmOrderMutation",
-  description: "Confirms an order",
+  name: "ApproveOrderMutation",
+  description: "Approves an order",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
@@ -22,11 +22,11 @@ export default mutationWithClientMutationId({
   mutateAndGetPayload: (
     { id },
     request,
-    { rootValue: { accessToken, confirmOrderLoader } }
+    { rootValue: { accessToken, approveOrderLoader } }
   ) => {
     if (!accessToken) {
       return new Error("This action requires a session_id.")
     }
-    return confirmOrderLoader(id).then(() => ({ id }))
+    return approveOrderLoader(id).then(() => ({ id }))
   },
 })

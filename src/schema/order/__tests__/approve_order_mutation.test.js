@@ -3,11 +3,11 @@ import { runAuthenticatedQuery, runQuery } from "test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import orderJSON from "test/fixtures/gravity/sample_order.json"
 
-describe("ConfirmOrderMutation", () => {
+describe("ApproveOrderMutation", () => {
   describe("authenticated", () => {
     const mutation = `
       mutation {
-        confirmOrder(input: {
+        approveOrder(input: {
           id: "fooid123"
         }) {
           order {
@@ -48,15 +48,15 @@ describe("ConfirmOrderMutation", () => {
         }
       }
     `
-    it("confirms the order", () => {
+    it("approves the order", () => {
       const rootValue = {
         orderLoader: () => Promise.resolve({ body: orderJSON }),
-        confirmOrderLoader: () => Promise.resolve({ id: "fooid12" }),
+        approveOrderLoader: () => Promise.resolve({ id: "fooid12" }),
       }
 
       return runAuthenticatedQuery(mutation, rootValue).then(data => {
         expect(data).toEqual({
-          confirmOrder: {
+          approveOrder: {
             order: sampleOrder,
           },
         })
