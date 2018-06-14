@@ -4,7 +4,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 
 export default mutationWithClientMutationId({
   name: "RejectOrderMutation",
-  description: "Conforms an order",
+  description: "Rejects an order",
   inputFields: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
