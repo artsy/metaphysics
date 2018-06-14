@@ -10,7 +10,6 @@ describe("RejectOrderMutation", () => {
         rejectOrder(input: {
           id: "fooid123"
         }) {
-          clientMutationId
           order {
             id
             telephone
@@ -50,12 +49,13 @@ describe("RejectOrderMutation", () => {
       }
     `
     it("rejects the order", () => {
-      const rootValue = { rejectOrderLoader: () => Promise.resolve(orderJSON) }
-
+      const rootValue = {
+        orderLoader: () => Promise.resolve({ body: orderJSON }),
+        rejectOrderLoader: () => Promise.resolve("fooid123"),
+      }
       return runAuthenticatedQuery(mutation, rootValue).then(data => {
         expect(data).toEqual({
           rejectOrder: {
-            clientMutationId: null,
             order: sampleOrder,
           },
         })

@@ -10,7 +10,6 @@ describe("FinalizeOrderMutation", () => {
         finalizeOrder(input: {
           id: "fooid123"
         }) {
-          clientMutationId
           order {
             id
             telephone
@@ -51,13 +50,13 @@ describe("FinalizeOrderMutation", () => {
     `
     it("finalizes the order", () => {
       const rootValue = {
-        finalizeOrderLoader: () => Promise.resolve(orderJSON),
+        orderLoader: () => Promise.resolve({ body: orderJSON }),
+        finalizeOrderLoader: () => Promise.resolve("fooid123"),
       }
 
       return runAuthenticatedQuery(mutation, rootValue).then(data => {
         expect(data).toEqual({
           finalizeOrder: {
-            clientMutationId: null,
             order: sampleOrder,
           },
         })

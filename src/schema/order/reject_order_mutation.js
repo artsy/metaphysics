@@ -14,7 +14,9 @@ export default mutationWithClientMutationId({
   outputFields: {
     order: {
       type: OrderType,
-      resolve: order => order,
+      resolve: ({ id }, _, _request, { rootValue: { orderLoader } }) => {
+        return orderLoader(id).then(order => order.body)
+      },
     },
   },
   mutateAndGetPayload: (
@@ -25,7 +27,6 @@ export default mutationWithClientMutationId({
     if (!accessToken) {
       return new Error("This action requires a session_id.")
     }
-
-    return rejectOrderLoader(id)
+    return rejectOrderLoader(id).then(() => ({ id }))
   },
 })

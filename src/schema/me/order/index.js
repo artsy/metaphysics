@@ -96,6 +96,10 @@ export const OrderType = new GraphQLObjectType({
         display: item_total,
       }),
     }),
+    state: {
+      type: GraphQLString,
+      description: "Order State",
+    },
     email: {
       type: GraphQLString,
       description: "Email associated with the order",
