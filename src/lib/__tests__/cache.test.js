@@ -1,6 +1,18 @@
 /* eslint-disable promise/always-return */
 import zlib from 'zlib'
-import cache, { client } from "lib/cache"
+import cache, { client, cacheCompressionEnabled } from "lib/cache"
+
+function parseCacheResponse(data) {
+  if (cacheCompressionEnabled) {
+    return JSON.parse(
+      zlib.inflateSync(
+        new Buffer(data, 'base64')
+      ).toString()
+    )
+  } else {
+    return JSON.parse(data)
+  }
+}
 
 describe("Cache", () => {
   describe("when successfully connected to the cache", () => {
@@ -31,11 +43,7 @@ describe("Cache", () => {
           await cache.set("set_foo", { bar: "baz" })
 
           client.get("set_foo", (err, data) => {
-            const parsed = JSON.parse(
-              zlib.inflateSync(
-                new Buffer(data, 'base64')
-              ).toString()
-            )
+            const parsed = parseCacheResponse(data)
 
             expect(parsed.bar).toBe("baz")
             expect(typeof parsed.cached).toBe("number")
@@ -49,11 +57,7 @@ describe("Cache", () => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
         client.get("set_bar", (err, data) => {
-          const parsed = JSON.parse(
-            zlib.inflateSync(
-              new Buffer(data, 'base64')
-            ).toString()
-          )
+          const parsed = parseCacheResponse(data)
 
           expect(parsed.length).toBe(1)
           expect(parsed[0].baz).toBe("qux")

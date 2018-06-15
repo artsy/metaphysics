@@ -1,3 +1,4 @@
+import util from 'util'
 import zlib from 'zlib'
 import { isNull, isArray } from "lodash"
 import config from "config"
@@ -9,6 +10,7 @@ const {
   NODE_ENV,
   MEMCACHED_URL,
   MEMCACHED_MAX_POOL,
+  CACHE_COMPRESSION_ENABLED,
   CACHE_LIFETIME_IN_SECONDS,
   CACHE_QUERY_LOGGING_THRESHOLD_MS,
   CACHE_RETRIEVAL_TIMEOUT_MS,
@@ -17,6 +19,8 @@ const {
 const isTest = NODE_ENV === "test"
 
 const VerboseEvents = ["issue", "failure", "reconnecting", "reconnect", "remove"]
+
+export const cacheCompressionEnabled = CACHE_COMPRESSION_ENABLED === "true"
 
 const deflateP = (dataz) => {
   return new Promise((resolve, reject) =>
@@ -81,13 +85,17 @@ function _get(key) {
         error(err)
         reject(err)
       } else if (data) {
-        zlib.inflate(new Buffer(data, 'base64'), (er, inflatedData) => {
-          if (er) {
-            reject(er)
-          } else {
-            resolve(JSON.parse(inflatedData.toString()))
-          }
-        })
+        if (cacheCompressionEnabled) {
+          zlib.inflate(new Buffer(data, 'base64'), (er, inflatedData) => {
+            if (er) {
+              reject(er)
+            } else {
+              resolve(JSON.parse(inflatedData.toString()))
+            }
+          })
+        } else {
+          resolve(JSON.parse(data.toString()))
+        }
       } else {
         reject(new Error("[Cache#get] Cache miss"))
       }
@@ -107,21 +115,40 @@ function _set(key, data) {
   }
   /* eslint-enable no-param-reassign */
 
-  return deflateP(data).then(deflatedData => {
-    const payload = deflatedData.toString('base64')
-    verbose(`CACHE SET: ${key}: ${payload}`)
+  if (cacheCompressionEnabled) {
+    return deflateP(data).then(deflatedData => {
+      const payload = deflatedData.toString('base64')
+      verbose(`CACHE SET: ${key}: ${payload}`)
 
-    return client.set(
-      key,
-      payload,
-      CACHE_LIFETIME_IN_SECONDS,
-      err => {
-        if (err) error(err)
-      }
-    )
-  }).catch(err => {
-    error(err)
-  })
+      return client.set(
+        key,
+        payload,
+        CACHE_LIFETIME_IN_SECONDS,
+        err => {
+          if (err) error(err)
+        }
+      )
+    }).catch(err => {
+      error(err)
+    })
+  } else {
+    return new Promise((resolve, reject) => {
+      const payload = JSON.stringify(data)
+      verbose(`CACHE SET: ${key}: ${payload}`)
+      resolve(
+        client.set(
+          key,
+          payload,
+          CACHE_LIFETIME_IN_SECONDS,
+          err => {
+            if (err) error(err)
+          }
+        )
+      )
+    }).catch(err => {
+      error(err)
+    })
+  }
 }
 
 const _delete = (key) =>
