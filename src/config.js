@@ -56,6 +56,8 @@ const {
   RESIZING_SERVICE,
   RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
+  STATSD_HOST,
+  STATSD_PORT,
 } = process.env
 
 const mustHave = {
@@ -143,4 +145,6 @@ export default {
   RESIZING_SERVICE,
   RESOLVER_TIMEOUT_MS: Number(RESOLVER_TIMEOUT_MS) || 5000,
   SENTRY_PRIVATE_DSN,
+  STATSD_HOST: "localhost",
+  STATSD_PORT: Number(STATSD_PORT) || 8125,
 }

@@ -5,6 +5,7 @@ import config from "config"
 import { error, verbose } from "./loggers"
 import Memcached from "memcached"
 import { cacheTracer } from "./tracer"
+import { statsClient } from "./stats"
 
 const {
   NODE_ENV,
@@ -63,6 +64,7 @@ function _get(key) {
     let timeoutId = setTimeout(() => {
       timeoutId = null
       const err = new Error(`[Cache#get] Timeout for key ${key}`)
+      statsClient.increment('cache.timeout')
       error(err)
       reject(err)
     }, CACHE_RETRIEVAL_TIMEOUT_MS)
@@ -72,6 +74,7 @@ function _get(key) {
       const time = Date.now() - start
       if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
         error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
+        statsClient.timing('cache.slow_read', time)
       }
 
       if (timeoutId) {
