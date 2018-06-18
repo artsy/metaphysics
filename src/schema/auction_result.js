@@ -21,8 +21,14 @@ export const AuctionResultSorts = {
   type: new GraphQLEnumType({
     name: "AuctionResultSorts",
     values: {
+      DATE_DESC: {
+        value: "-sale_date",
+      },
       PRICE_AND_DATE_DESC: {
         value: "-price_realized_cents_usd,-sale_date",
+      },
+      ESTIMATE_AND_DATE_DESC: {
+        value: "-high_estimate_cents_usd,-sale_date",
       },
     },
   }),
@@ -172,11 +178,11 @@ const AuctionResultType = new GraphQLObjectType({
         name: "AuctionResultPriceRealized",
         fields: {
           cents: {
-            type: GraphQLInt,
+            type: GraphQLFloat,
             resolve: ({ price_realized_cents }) => price_realized_cents,
           },
           cents_usd: {
-            type: GraphQLInt,
+            type: GraphQLFloat,
             resolve: ({ price_realized_cents_usd }) => price_realized_cents_usd,
           },
           display: {
