@@ -1,5 +1,7 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import {
+  runQuery
+} from "test/utils"
 
 describe("Artist type", () => {
   let artist = null
@@ -16,24 +18,22 @@ describe("Artist type", () => {
     const auctionResultResponse = {
       total_count: 35,
       _embedded: {
-        items: [
-          {
-            dimension_text: "20 x 20",
-            organization: "Christie's",
-            category_text: "an old guitar",
-            sale_date: "yesterday",
-            id: "1",
-            images: [
-              {
-                thumbnail: "https://path.to.thumbnail.jpg",
-                larger: "https://path.to.larger.jpg",
-              },
-            ],
-            currency: "JPY",
-            price_realized_cents: 420000,
-            price_realized_cents_usd: 100000,
-          },
-        ],
+        items: [{
+          dimension_text: "20 x 20",
+          organization: "Christie's",
+          category_text: "an old guitar",
+          sale_date: "yesterday",
+          id: "1",
+          images: [{
+            thumbnail: "https://path.to.thumbnail.jpg",
+            larger: "https://path.to.larger.jpg",
+          }, ],
+          currency: "JPY",
+          price_realized_cents: 420000,
+          price_realized_cents_usd: 100000,
+          low_estimate_cents: 200000,
+          high_estimate_cents: 500000,
+        }, ],
       },
     }
 
@@ -70,6 +70,9 @@ describe("Artist type", () => {
                   cents
                   cents_usd
                 }
+                estimate {
+                  display
+                }
               }
             }
           }
@@ -81,27 +84,28 @@ describe("Artist type", () => {
       expect(data).toEqual({
         artist: {
           auctionResults: {
-            edges: [
-              {
-                node: {
-                  category_text: "an old guitar",
-                  images: {
-                    thumbnail: {
-                      image_url: "https://path.to.thumbnail.jpg",
-                    },
-                    larger: {
-                      image_url: "https://path.to.larger.jpg",
-                    },
+            edges: [{
+              node: {
+                category_text: "an old guitar",
+                images: {
+                  thumbnail: {
+                    image_url: "https://path.to.thumbnail.jpg",
                   },
-                  currency: "JPY",
-                  price_realized: {
-                    cents: 420000,
-                    cents_usd: 100000,
-                    display: "JPY ¥420k",
+                  larger: {
+                    image_url: "https://path.to.larger.jpg",
                   },
                 },
+                currency: "JPY",
+                price_realized: {
+                  cents: 420000,
+                  cents_usd: 100000,
+                  display: "JPY ¥420k",
+                },
+                estimate: {
+                  display: "JPY ¥200,000 - 500,000"
+                }
               },
-            ],
+            }, ],
           },
         },
       })
@@ -135,9 +139,20 @@ describe("Artist type", () => {
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { auctionResults: { pageCursors, edges } } }) => {
+      ({
+        artist: {
+          auctionResults: {
+            pageCursors,
+            edges
+          }
+        }
+      }) => {
         // Check expected page cursors exist in response.
-        const { first, around, last } = pageCursors
+        const {
+          first,
+          around,
+          last
+        } = pageCursors
         expect(first).toEqual(null)
         expect(last).toEqual(null)
         expect(around.length).toEqual(4)
@@ -147,6 +162,37 @@ describe("Artist type", () => {
         }
         // Check auction result included in edges.
         expect(edges[0].node.id).toEqual("1")
+      }
+    )
+  })
+
+  it("returns correct page info", () => {
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResults(recordsTrusted: true, first: 10, after: "YXJyYXljb25uZWN0aW9uOjk=") {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(
+      ({
+        artist: {
+          auctionResults: {
+            pageInfo: {
+              hasNextPage,
+              hasPreviousPage
+            }
+          }
+        }
+      }) => {
+        expect(hasNextPage).toBe(true)
+        expect(hasPreviousPage).toBe(true)
       }
     )
   })

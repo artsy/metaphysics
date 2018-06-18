@@ -1,15 +1,33 @@
-// @ts-check
-
-import { pageable, getPagingParameters } from "relay-cursor-paging"
-import { assign, compact, defaults, first, omit, includes } from "lodash"
-import { exclude } from "lib/helpers"
+import {
+  pageable,
+  getPagingParameters
+} from "relay-cursor-paging"
+import {
+  assign,
+  compact,
+  defaults,
+  first,
+  omit,
+  includes,
+  merge
+} from "lodash"
+import {
+  exclude
+} from "lib/helpers"
 import cached from "schema/fields/cached"
 import initials from "schema/fields/initials"
-import { markdown, formatMarkdownValue } from "schema/fields/markdown"
+import {
+  markdown,
+  formatMarkdownValue
+} from "schema/fields/markdown"
 import numeral from "schema/fields/numeral"
 import Image from "schema/image"
-import Article, { articleConnection } from "schema/article"
-import Artwork, { artworkConnection } from "schema/artwork"
+import Article, {
+  articleConnection
+} from "schema/article"
+import Artwork, {
+  artworkConnection
+} from "schema/artwork"
 import PartnerArtist from "schema/partner_artist"
 import Meta from "./meta"
 import PartnerShow from "schema/partner_show"
@@ -17,8 +35,12 @@ import {
   PartnerArtistConnection,
   partnersForArtist,
 } from "schema/partner_artist"
-import { GeneType } from "../gene"
-import Show, { showConnection } from "schema/show"
+import {
+  GeneType
+} from "../gene"
+import Show, {
+  showConnection
+} from "schema/show"
 import Sale from "schema/sale/index"
 import ArtworkSorts from "schema/sorts/artwork_sorts"
 import ArticleSorts from "schema/sorts/article_sorts"
@@ -32,15 +54,24 @@ import {
 } from "schema/auction_result"
 import ArtistArtworksFilters from "./artwork_filters"
 import filterArtworks from "schema/filter_artworks"
-import { connectionWithCursorInfo } from "schema/fields/pagination"
-import { RelatedArtists } from "./related"
-import { createPageCursors } from "schema/fields/pagination"
+import {
+  connectionWithCursorInfo
+} from "schema/fields/pagination"
+import {
+  RelatedArtists
+} from "./related"
+import {
+  createPageCursors
+} from "schema/fields/pagination"
 import {
   ShowField,
   showsWithBLacklistedPartnersRemoved,
   ShowsConnectionField,
 } from "./shows"
-import { GravityIDFields, NodeInterface } from "schema/object_identification"
+import {
+  GravityIDFields,
+  NodeInterface
+} from "schema/object_identification"
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -49,9 +80,15 @@ import {
   GraphQLList,
   GraphQLInt,
 } from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
-import { parseRelayOptions } from "lib/helpers"
-import { totalViaLoader } from "lib/total"
+import {
+  connectionFromArraySlice
+} from "graphql-relay"
+import {
+  parseRelayOptions
+} from "lib/helpers"
+import {
+  totalViaLoader
+} from "lib/total"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -77,7 +114,9 @@ export const ArtistType = new GraphQLObjectType({
     return {
       ...GravityIDFields,
       cached,
-      alternate_names: { type: new GraphQLList(GraphQLString) },
+      alternate_names: {
+        type: new GraphQLList(GraphQLString)
+      },
       articlesConnection: {
         args: pageable({
           sort: ArticleSorts,
@@ -89,11 +128,15 @@ export const ArtistType = new GraphQLObjectType({
           },
         }),
         type: articleConnection,
-        resolve: (
-          { _id },
+        resolve: ({
+            _id
+          },
           args,
-          _request,
-          { rootValue: { articlesLoader } }
+          _request, {
+            rootValue: {
+              articlesLoader
+            }
+          }
         ) => {
           const relayOptions = parseRelayOptions(args)
           const gravityArgs = omit(args, ["first", "after", "last", "before"])
@@ -103,9 +146,13 @@ export const ArtistType = new GraphQLObjectType({
               published: true,
               count: true,
             })
-          ).then(({ results, count }) => {
-            return assign(
-              { pageCursors: createPageCursors(relayOptions, count) },
+          ).then(({
+            results,
+            count
+          }) => {
+            return assign({
+                pageCursors: createPageCursors(relayOptions, count)
+              },
               connectionFromArraySlice(results, args, {
                 arrayLength: count,
                 sliceStart: relayOptions.offset,
@@ -117,22 +164,32 @@ export const ArtistType = new GraphQLObjectType({
       articles: {
         args: {
           sort: ArticleSorts,
-          limit: { type: GraphQLInt },
-          in_editorial_feed: { type: GraphQLBoolean },
+          limit: {
+            type: GraphQLInt
+          },
+          in_editorial_feed: {
+            type: GraphQLBoolean
+          },
         },
         type: new GraphQLList(Article.type),
-        resolve: (
-          { _id },
-          options,
-          request,
-          { rootValue: { articlesLoader } }
-        ) =>
+        resolve: ({
+              _id
+            },
+            options,
+            request, {
+              rootValue: {
+                articlesLoader
+              }
+            }
+          ) =>
           articlesLoader(
             defaults(options, {
               artist_id: _id,
               published: true,
             })
-          ).then(({ results }) => results),
+          ).then(({
+            results
+          }) => results),
       },
       artists: {
         type: new GraphQLList(Artist.type),
@@ -146,17 +203,23 @@ export const ArtistType = new GraphQLObjectType({
             defaultValue: true,
           },
         },
-        resolve: (
-          { id },
-          options,
-          request,
-          { rootValue: { relatedMainArtistsLoader } }
-        ) =>
+        resolve: ({
+              id
+            },
+            options,
+            request, {
+              rootValue: {
+                relatedMainArtistsLoader
+              }
+            }
+          ) =>
           relatedMainArtistsLoader(
             defaults(options, {
               artist: [id],
             })
-          ).then(({ body }) => body),
+          ).then(({
+            body
+          }) => body),
       },
       artworks: {
         type: new GraphQLList(Artwork.type),
@@ -165,18 +228,31 @@ export const ArtistType = new GraphQLObjectType({
             type: GraphQLInt,
             description: "The number of Artworks to return",
           },
-          page: { type: GraphQLInt },
+          page: {
+            type: GraphQLInt
+          },
           sort: ArtworkSorts,
-          published: { type: GraphQLBoolean, defaultValue: true },
-          filter: { type: new GraphQLList(ArtistArtworksFilters) },
-          exclude: { type: new GraphQLList(GraphQLString) },
+          published: {
+            type: GraphQLBoolean,
+            defaultValue: true
+          },
+          filter: {
+            type: new GraphQLList(ArtistArtworksFilters)
+          },
+          exclude: {
+            type: new GraphQLList(GraphQLString)
+          },
         },
-        resolve: (
-          { id },
-          options,
-          request,
-          { rootValue: { artistArtworksLoader } }
-        ) =>
+        resolve: ({
+              id
+            },
+            options,
+            request, {
+              rootValue: {
+                artistArtworksLoader
+              }
+            }
+          ) =>
           artistArtworksLoader(id, options).then(
             exclude(options.exclude, "id")
           ),
@@ -196,14 +272,30 @@ export const ArtistType = new GraphQLObjectType({
         resolve: (
           artist,
           options,
-          request,
-          { rootValue: { artistArtworksLoader } }
+          request, {
+            rootValue: {
+              artistArtworksLoader
+            }
+          }
         ) => {
           // Convert `after` cursors to page params
-          const { limit: size, offset } = getPagingParameters(options)
+          const {
+            limit: size,
+            offset
+          } = getPagingParameters(options)
           // Construct an object of all the params gravity will listen to
-          const { sort, filter, published } = options
-          const gravityArgs = { size, offset, sort, filter, published }
+          const {
+            sort,
+            filter,
+            published
+          } = options
+          const gravityArgs = {
+            size,
+            offset,
+            sort,
+            filter,
+            published
+          }
           return artistArtworksLoader(artist.id, gravityArgs).then(artworks =>
             connectionFromArraySlice(artworks, options, {
               arrayLength: artistArtworkArrayLength(artist, filter),
@@ -219,22 +311,29 @@ export const ArtistType = new GraphQLObjectType({
           recordsTrusted: {
             type: GraphQLBoolean,
             defaultValue: false,
-            description:
-              "When true, will only return records for whitelisted artists.",
+            description: "When true, will only return records for whitelisted artists.",
           },
         }),
-        resolve: (
-          { _id },
+        resolve: ({
+            _id
+          },
           options,
-          _request,
-          { rootValue: { auctionLotLoader } }
+          _request, {
+            rootValue: {
+              auctionLotLoader
+            }
+          }
         ) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
             return null
           }
 
           // Convert `after` cursors to page params
-          const { page, size, offset } = parseRelayOptions(options)
+          const {
+            page,
+            size,
+            offset
+          } = parseRelayOptions(options)
           const diffusionArgs = {
             page,
             size,
@@ -242,23 +341,38 @@ export const ArtistType = new GraphQLObjectType({
             sort: options.sort,
           }
           return auctionLotLoader(diffusionArgs).then(
-            ({ total_count, _embedded }) => {
-              return assign(
-                {
-                  pageCursors: createPageCursors({ page, size }, total_count),
+            ({
+              total_count,
+              _embedded
+            }) => {
+              const totalPages = Math.ceil(total_count / size)
+              return merge({
+                  pageCursors: createPageCursors({
+                    page,
+                    size
+                  }, total_count),
                 },
                 connectionFromArraySlice(_embedded.items, options, {
                   arrayLength: total_count,
                   sliceStart: offset,
-                })
+                }), {
+                  pageInfo: {
+                    hasPreviousPage: page > 1,
+                    hasNextPage: page < totalPages
+                  }
+                }
               )
-            }
-          )
+            })
         },
       },
       bio: {
         type: GraphQLString,
-        resolve: ({ nationality, years, hometown, location }) => {
+        resolve: ({
+          nationality,
+          years,
+          hometown,
+          location
+        }) => {
           return compact([
             nationality,
             years,
@@ -270,12 +384,16 @@ export const ArtistType = new GraphQLObjectType({
       biography: {
         type: Article.type,
         description: "The Artist biography article written by Artsy",
-        resolve: (
-          { _id },
-          options,
-          request,
-          { rootValue: { articlesLoader } }
-        ) =>
+        resolve: ({
+              _id
+            },
+            options,
+            request, {
+              rootValue: {
+                articlesLoader
+              }
+            }
+          ) =>
           articlesLoader({
             published: true,
             biography_for_artist_id: _id,
@@ -283,8 +401,7 @@ export const ArtistType = new GraphQLObjectType({
           }).then(articles => first(articles.results)),
       },
       biography_blurb: {
-        args: assign(
-          {
+        args: assign({
             partner_bio: {
               type: GraphQLBoolean,
               description: "If true, will return featured bio over Artsy one.",
@@ -298,50 +415,75 @@ export const ArtistType = new GraphQLObjectType({
           fields: {
             credit: {
               type: GraphQLString,
-              resolve: ({ credit }) => credit,
+              resolve: ({
+                credit
+              }) => credit,
             },
             text: {
               type: GraphQLString,
-              resolve: ({ text }) => text,
+              resolve: ({
+                text
+              }) => text,
             },
             partner_id: {
               type: GraphQLString,
-              resolve: ({ partner_id }) => partner_id,
-              description:
-                "The partner id of the partner who submitted the featured bio.",
+              resolve: ({
+                partner_id
+              }) => partner_id,
+              description: "The partner id of the partner who submitted the featured bio.",
             },
           },
         }),
-        resolve: (
-          { blurb, id },
-          { format, partner_bio },
-          request,
-          { rootValue: { partnerArtistsForArtistLoader } }
+        resolve: ({
+            blurb,
+            id
+          }, {
+            format,
+            partner_bio
+          },
+          request, {
+            rootValue: {
+              partnerArtistsForArtistLoader
+            }
+          }
         ) => {
           if (!partner_bio && blurb && blurb.length) {
-            return { text: formatMarkdownValue(blurb, format) }
+            return {
+              text: formatMarkdownValue(blurb, format)
+            }
           }
           return partnerArtistsForArtistLoader(id, {
             size: 1,
             featured: true,
           }).then(partner_artists => {
             if (partner_artists && partner_artists.length) {
-              const { biography, partner } = first(partner_artists)
+              const {
+                biography,
+                partner
+              } = first(partner_artists)
               return {
                 text: formatMarkdownValue(biography, format),
                 credit: `Submitted by ${partner.name}`,
                 partner_id: partner.id,
               }
             }
-            return { text: formatMarkdownValue(blurb, format) }
+            return {
+              text: formatMarkdownValue(blurb, format)
+            }
           })
         },
       },
-      birthday: { type: GraphQLString },
+      birthday: {
+        type: GraphQLString
+      },
       blurb: {
         args: markdown().args,
         type: GraphQLString,
-        resolve: ({ blurb }, { format }) => {
+        resolve: ({
+          blurb
+        }, {
+          format
+        }) => {
           if (blurb.length) {
             return formatMarkdownValue(blurb, format)
           }
@@ -350,7 +492,9 @@ export const ArtistType = new GraphQLObjectType({
       carousel: ArtistCarousel,
       collections: {
         type: new GraphQLList(GraphQLString),
-        resolve: ({ collections }) => {
+        resolve: ({
+          collections
+        }) => {
           if (!collections) {
             return null
           }
@@ -369,17 +513,23 @@ export const ArtistType = new GraphQLObjectType({
             defaultValue: true,
           },
         },
-        resolve: (
-          { id },
-          options,
-          request,
-          { rootValue: { relatedContemporaryArtistsLoader } }
-        ) =>
+        resolve: ({
+              id
+            },
+            options,
+            request, {
+              rootValue: {
+                relatedContemporaryArtistsLoader
+              }
+            }
+          ) =>
           relatedContemporaryArtistsLoader(
             defaults(options, {
               artist: [id],
             })
-          ).then(({ body }) => body),
+          ).then(({
+            body
+          }) => body),
       },
       consignable: {
         type: GraphQLBoolean,
@@ -390,27 +540,37 @@ export const ArtistType = new GraphQLObjectType({
           name: "ArtistCounts",
           fields: {
             artworks: numeral(
-              ({ published_artworks_count }) => published_artworks_count
+              ({
+                published_artworks_count
+              }) => published_artworks_count
             ),
-            follows: numeral(({ follow_count }) => follow_count),
+            follows: numeral(({
+              follow_count
+            }) => follow_count),
             for_sale_artworks: numeral(
-              ({ forsale_artworks_count }) => forsale_artworks_count
+              ({
+                forsale_artworks_count
+              }) => forsale_artworks_count
             ),
             partner_shows: numeral(
-              ({ partner_shows_count }) => partner_shows_count
+              ({
+                partner_shows_count
+              }) => partner_shows_count
             ),
             related_artists: {
               type: GraphQLInt,
-              resolve: (
-                { id },
+              resolve: ({
+                  id
+                },
                 _options,
-                _request,
-                { rootValue: { relatedMainArtistsLoader } }
+                _request, {
+                  rootValue: {
+                    relatedMainArtistsLoader
+                  }
+                }
               ) => {
                 return totalViaLoader(
-                  relatedMainArtistsLoader,
-                  {},
-                  {
+                  relatedMainArtistsLoader, {}, {
                     artist: [id],
                   }
                 )
@@ -418,24 +578,32 @@ export const ArtistType = new GraphQLObjectType({
             },
             articles: {
               type: GraphQLInt,
-              resolve: (
-                { _id },
-                _options,
-                _request,
-                { rootValue: { articlesLoader } }
-              ) =>
+              resolve: ({
+                    _id
+                  },
+                  _options,
+                  _request, {
+                    rootValue: {
+                      articlesLoader
+                    }
+                  }
+                ) =>
                 articlesLoader({
                   artist_id: _id,
                   published: true,
                   limit: 0,
                   count: true,
-                }).then(({ count }) => count),
+                }).then(({
+                  count
+                }) => count),
             },
           },
         }),
         resolve: artist => artist,
       },
-      deathday: { type: GraphQLString },
+      deathday: {
+        type: GraphQLString
+      },
       display_auction_link: {
         type: GraphQLBoolean,
         deprecationReason: "Favor `is_`-prefixed boolean attributes",
@@ -449,13 +617,16 @@ export const ArtistType = new GraphQLObjectType({
           },
         },
         type: new GraphQLList(Show.type),
-        description:
-          "Custom-sorted list of shows for an artist, in order of significance.",
-        resolve: (
-          { id },
+        description: "Custom-sorted list of shows for an artist, in order of significance.",
+        resolve: ({
+            id
+          },
           options,
-          request,
-          { rootValue: { relatedShowsLoader } }
+          request, {
+            rootValue: {
+              relatedShowsLoader
+            }
+          }
         ) => {
           return relatedShowsLoader({
             artist_id: id,
@@ -464,7 +635,9 @@ export const ArtistType = new GraphQLObjectType({
             visible_to_public: false,
             has_location: true,
             size: options.size,
-          }).then(({ body: shows }) =>
+          }).then(({
+              body: shows
+            }) =>
             showsWithBLacklistedPartnersRemoved(shows)
           )
         },
@@ -472,29 +645,34 @@ export const ArtistType = new GraphQLObjectType({
       filtered_artworks: filterArtworks("artist_id"),
       formatted_artworks_count: {
         type: GraphQLString,
-        description:
-          "A string showing the total number of works and those for sale",
-        resolve: ({ published_artworks_count, forsale_artworks_count }) => {
+        description: "A string showing the total number of works and those for sale",
+        resolve: ({
+          published_artworks_count,
+          forsale_artworks_count
+        }) => {
           let totalWorks = null
           if (published_artworks_count) {
             totalWorks =
               published_artworks_count +
               (published_artworks_count > 1 ? " works" : " work")
           }
-          const forSaleWorks = forsale_artworks_count
-            ? forsale_artworks_count + " for sale"
-            : null
-          return forSaleWorks && totalWorks
-            ? totalWorks + ", " + forSaleWorks
-            : totalWorks
+          const forSaleWorks = forsale_artworks_count ?
+            forsale_artworks_count + " for sale" :
+            null
+          return forSaleWorks && totalWorks ?
+            totalWorks + ", " + forSaleWorks :
+            totalWorks
         },
       },
       formatted_nationality_and_birthday: {
         type: GraphQLString,
         description: `A string of the form "Nationality, Birthday (or Birthday-Deathday)"`,
-        resolve: ({ birthday, nationality, deathday }) => {
-          let formatted_bday =
-            !isNaN(birthday) && birthday ? "b. " + birthday : birthday
+        resolve: ({
+          birthday,
+          nationality,
+          deathday
+        }) => {
+          let formatted_bday = !isNaN(birthday) && birthday ? "b. " + birthday : birthday
           formatted_bday =
             formatted_bday && formatted_bday.replace(/born/i, "b.")
 
@@ -513,57 +691,93 @@ export const ArtistType = new GraphQLObjectType({
       genes: {
         description: `A list of genes associated with an artist`,
         type: new GraphQLList(GeneType),
-        resolve: (
-          { id },
+        resolve: ({
+            id
+          },
           options,
-          request,
-          { rootValue: { artistGenesLoader } }
+          request, {
+            rootValue: {
+              artistGenesLoader
+            }
+          }
         ) => {
-          return artistGenesLoader({ id }).then(genes => genes)
+          return artistGenesLoader({
+            id
+          }).then(genes => genes)
         },
       },
-      gender: { type: GraphQLString },
-      href: { type: GraphQLString, resolve: artist => `/artist/${artist.id}` },
+      gender: {
+        type: GraphQLString
+      },
+      href: {
+        type: GraphQLString,
+        resolve: artist => `/artist/${artist.id}`
+      },
       has_metadata: {
         type: GraphQLBoolean,
-        resolve: ({ blurb, nationality, years, hometown, location }) => {
+        resolve: ({
+          blurb,
+          nationality,
+          years,
+          hometown,
+          location
+        }) => {
           return !!(blurb || nationality || years || hometown || location)
         },
       },
-      hometown: { type: GraphQLString },
+      hometown: {
+        type: GraphQLString
+      },
       image: Image,
       initials: initials("name"),
       is_consignable: {
         type: GraphQLBoolean,
-        resolve: ({ consignable }) => consignable,
+        resolve: ({
+          consignable
+        }) => consignable,
       },
       is_display_auction_link: {
         type: GraphQLBoolean,
-        description:
-          "Only specific Artists should show a link to auction results.",
-        resolve: ({ display_auction_link }) => display_auction_link,
+        description: "Only specific Artists should show a link to auction results.",
+        resolve: ({
+          display_auction_link
+        }) => display_auction_link,
       },
       is_followed: {
         type: GraphQLBoolean,
-        resolve: (
-          { id },
-          {},
-          request,
-          { rootValue: { followedArtistLoader } }
+        resolve: ({
+            id
+          }, {},
+          request, {
+            rootValue: {
+              followedArtistLoader
+            }
+          }
         ) => {
           if (!followedArtistLoader) return false
-          return followedArtistLoader(id).then(({ is_followed }) => is_followed)
+          return followedArtistLoader(id).then(({
+            is_followed
+          }) => is_followed)
         },
       },
-      is_public: { type: GraphQLBoolean, resolve: artist => artist.public },
+      is_public: {
+        type: GraphQLBoolean,
+        resolve: artist => artist.public
+      },
       is_shareable: {
         type: GraphQLBoolean,
         resolve: artist => artist.published_artworks_count > 0,
       },
-      location: { type: GraphQLString },
+      location: {
+        type: GraphQLString
+      },
       meta: Meta,
-      nationality: { type: GraphQLString },
-      name: { type: GraphQLString },
+      nationality: {
+        type: GraphQLString
+      },
+      name: {
+        type: GraphQLString
+      },
       partners: {
         type: PartnerArtistConnection,
         args: pageable({
@@ -574,11 +788,15 @@ export const ArtistType = new GraphQLObjectType({
             type: new GraphQLList(GraphQLString),
           },
         }),
-        resolve: (
-          { id: artist_id },
+        resolve: ({
+            id: artist_id
+          },
           options,
-          _request,
-          { rootValue: { partnerArtistsLoader } }
+          _request, {
+            rootValue: {
+              partnerArtistsLoader
+            }
+          }
         ) => {
           return partnersForArtist(artist_id, options, partnerArtistsLoader)
         },
@@ -591,11 +809,15 @@ export const ArtistType = new GraphQLObjectType({
             description: "The number of PartnerArtists to return",
           },
         },
-        resolve: (
-          { id },
+        resolve: ({
+            id
+          },
           options,
-          request,
-          { rootValue: { partnerArtistsForArtistLoader } }
+          request, {
+            rootValue: {
+              partnerArtistsForArtistLoader
+            }
+          }
         ) => partnerArtistsForArtistLoader(id, options),
       },
       partner_shows: {
@@ -611,20 +833,28 @@ export const ArtistType = new GraphQLObjectType({
       sales: {
         type: new GraphQLList(Sale.type),
         args: {
-          live: { type: GraphQLBoolean },
-          is_auction: { type: GraphQLBoolean },
+          live: {
+            type: GraphQLBoolean
+          },
+          is_auction: {
+            type: GraphQLBoolean
+          },
           size: {
             type: GraphQLInt,
             description: "The number of Sales to return",
           },
           sort: SaleSorts,
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { relatedSalesLoader } }
-        ) =>
+        resolve: ({
+              id
+            },
+            options,
+            _request, {
+              rootValue: {
+                relatedSalesLoader
+              }
+            }
+          ) =>
           relatedSalesLoader(
             defaults(options, {
               artist_id: id,
@@ -632,16 +862,23 @@ export const ArtistType = new GraphQLObjectType({
             })
           ),
       },
-      shows: { type: new GraphQLList(Show.type), ...ShowField },
-      showsConnection: { type: showConnection, ...ShowsConnectionField },
+      shows: {
+        type: new GraphQLList(Show.type),
+        ...ShowField
+      },
+      showsConnection: {
+        type: showConnection,
+        ...ShowsConnectionField
+      },
       sortable_id: {
         type: GraphQLString,
-        description:
-          "Use this attribute to sort by when sorting a collection of Artists",
+        description: "Use this attribute to sort by when sorting a collection of Artists",
       },
       statuses: ArtistStatuses,
       highlights: ArtistHighlights,
-      years: { type: GraphQLString },
+      years: {
+        type: GraphQLString
+      },
     }
   },
 })
@@ -655,11 +892,15 @@ const Artist = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, _request, resolver) => {
+  resolve: (_root, {
+    id
+  }, _request, resolver) => {
     if (id.length === 0) {
       return null
     }
-    const { artistLoader } = resolver.rootValue
+    const {
+      artistLoader
+    } = resolver.rootValue
     return artistLoader(id)
   },
 }
