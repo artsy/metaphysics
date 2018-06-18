@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import zlib from 'zlib'
-import cache, { writeClient } from "lib/cache"
+import cache, { client } from "lib/cache"
 
 describe("Cache", () => {
   describe("when successfully connected to the cache", () => {
@@ -30,7 +30,7 @@ describe("Cache", () => {
         it("sets the cache and includes a timestamp", async (done) => {
           await cache.set("set_foo", { bar: "baz" })
 
-          writeClient.get("set_foo", (err, data) => {
+          client.get("set_foo", (err, data) => {
             const parsed = JSON.parse(
               zlib.inflateSync(
                 new Buffer(data, 'base64')
@@ -48,7 +48,7 @@ describe("Cache", () => {
       it("with an Array it sets the cache and includes a timestamp", async (done) => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
-        writeClient.get("set_bar", (err, data) => {
+        client.get("set_bar", (err, data) => {
           const parsed = JSON.parse(
             zlib.inflateSync(
               new Buffer(data, 'base64')
