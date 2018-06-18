@@ -6,7 +6,6 @@ import { pick } from "lodash"
 import { loaderInterface } from "./loader_interface"
 import cache from "lib/cache"
 import timer from "lib/timer"
-import { throttled } from "lib/throttle"
 import { verbose, warn } from "lib/loggers"
 import logger from "lib/loaders/api/logger"
 
@@ -57,30 +56,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
                     time,
                     cache: true,
                   })
-
-                  // Then refresh cache
-                  return throttled(
-                    key,
-                    () => {
-                      api(key, null, apiOptions)
-                        .then(({ body, headers }) => {
-                          verbose(`Refreshing: ${key}`)
-
-                          if (apiOptions.headers) {
-                            return cache.set(key, { body, headers })
-                          } else {
-                            return cache.set(key, body)
-                          }
-                        })
-                        .catch(err => {
-                          if (err.statusCode === 404) {
-                            // Unpublished
-                            cache.delete(key)
-                          }
-                        })
-                    },
-                    { requestThrottleMs: apiOptions.requestThrottleMs }
-                  )
+                  return data
                 },
                 // Cache miss
                 () => {
