@@ -1,4 +1,5 @@
 import os from 'os'
+import _ from "lodash"
 import StatsD from "hot-shots"
 import config from "config"
 import { error } from "./loggers"
@@ -12,6 +13,7 @@ const {
 
 const isTest = NODE_ENV === "test"
 const enableMetrics = ENABLE_METRICS === "true"
+const appMetricsDisable = ["http", "http-outbound", "mongo", "socketio", "mqlight", "postgresql", "mqtt", "mysql", "redis", "riak", "memcached", "oracledb", "oracle", "strong-oracle"]
 
 export const statsClient = new StatsD({
   host: STATSD_HOST,
@@ -29,6 +31,9 @@ if (enableMetrics && !isTest) {
     mqtt: 'off'
   })
   const monitoring = appmetrics.monitor()
+  _.forEach(appMetricsDisable, (val, idx) => {
+    appmetrics.disable(val)
+  })
 
   monitoring.on('eventloop', (eventloopMetrics) => {
     statsClient.timing('eventloop.latency.min', eventloopMetrics.latency.min)
