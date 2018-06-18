@@ -46,11 +46,11 @@ if (enableMetrics && !isTest) {
   })
 
   monitoring.on("loop", loopMetrics => {
-    statsClient.histogram("loop.count_per_five_seconds", loopMetrics.count)
-    statsClient.histogram("loop.minimum_loop_duration", loopMetrics.minimum)
-    statsClient.histogram("loop.maximum_loop_duration", loopMetrics.maximum)
-    statsClient.histogram("loop.cpu_usage_in_userland", loopMetrics.cpu_user)
-    statsClient.histogram("loop.cpu_usage_in_system", loopMetrics.cpu_system)
+    statsClient.timing("loop.count_per_five_seconds", loopMetrics.count)
+    statsClient.timing("loop.minimum_loop_duration", loopMetrics.minimum)
+    statsClient.timing("loop.maximum_loop_duration", loopMetrics.maximum)
+    statsClient.timing("loop.cpu_usage_in_userland", loopMetrics.cpu_user)
+    statsClient.timing("loop.cpu_usage_in_system", loopMetrics.cpu_system)
   })
 
   monitoring.on("eventloop", eventloopMetrics => {
