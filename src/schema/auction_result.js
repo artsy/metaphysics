@@ -1,9 +1,6 @@
 import date from "./fields/date"
 import numeral from "numeral"
-import {
-  IDFields,
-  NodeInterface
-} from "./object_identification"
+import { IDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLFloat,
   GraphQLInt,
@@ -12,12 +9,8 @@ import {
   GraphQLObjectType,
   GraphQLEnumType,
 } from "graphql"
-import {
-  indexOf
-} from "lodash"
-import {
-  connectionWithCursorInfo
-} from "schema/fields/pagination"
+import { indexOf } from "lodash"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
 import Image from "schema/image"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
@@ -75,15 +68,11 @@ const AuctionResultType = new GraphQLObjectType({
           },
         },
       }),
-      resolve: ({
-        width_cm,
-        height_cm,
-        depth_cm
-      }) => {
+      resolve: ({ width_cm, height_cm, depth_cm }) => {
         return {
           width: width_cm,
           height: height_cm,
-          depth: depth_cm
+          depth: depth_cm,
         }
       },
     },
@@ -118,9 +107,7 @@ const AuctionResultType = new GraphQLObjectType({
           },
         },
       }),
-      resolve: ({
-        images
-      }) => {
+      resolve: ({ images }) => {
         if (images.length < 1) {
           return null
         }
@@ -136,27 +123,20 @@ const AuctionResultType = new GraphQLObjectType({
         fields: {
           low: {
             type: GraphQLFloat,
-            resolve: ({
-              low_estimate_cents
-            }) => low_estimate_cents,
+            resolve: ({ low_estimate_cents }) => low_estimate_cents,
           },
           high: {
             type: GraphQLFloat,
-            resolve: ({
-              high_estimate_cents
-            }) => high_estimate_cents,
+            resolve: ({ high_estimate_cents }) => high_estimate_cents,
           },
           display: {
             type: GraphQLString,
             resolve: ({
               currency,
               low_estimate_cents,
-              high_estimate_cents
+              high_estimate_cents,
             }) => {
-              const {
-                symbol,
-                subunit_to_unit
-              } = currencyCodes[
+              const { symbol, subunit_to_unit } = currencyCodes[
                 currency.toLowerCase()
               ]
               let display
@@ -169,7 +149,9 @@ const AuctionResultType = new GraphQLObjectType({
                 display = display ? display + " " + symbol : symbol
               }
               if (!low_estimate_cents || !high_estimate_cents) {
-                amount = Math.round((low_estimate_cents || high_estimate_cents) / subunit_to_unit)
+                amount = Math.round(
+                  (low_estimate_cents || high_estimate_cents) / subunit_to_unit
+                )
                 display += numeral(amount).format("")
               } else {
                 amount = Math.round(low_estimate_cents / subunit_to_unit)
@@ -179,9 +161,9 @@ const AuctionResultType = new GraphQLObjectType({
               }
 
               return display
-            }
-          }
-        }
+            },
+          },
+        },
       }),
       resolve: lot => lot,
     },
@@ -191,15 +173,11 @@ const AuctionResultType = new GraphQLObjectType({
         fields: {
           cents: {
             type: GraphQLInt,
-            resolve: ({
-              price_realized_cents
-            }) => price_realized_cents,
+            resolve: ({ price_realized_cents }) => price_realized_cents,
           },
           cents_usd: {
             type: GraphQLInt,
-            resolve: ({
-              price_realized_cents_usd
-            }) => price_realized_cents_usd,
+            resolve: ({ price_realized_cents_usd }) => price_realized_cents_usd,
           },
           display: {
             type: GraphQLString,
@@ -210,16 +188,8 @@ const AuctionResultType = new GraphQLObjectType({
                 defaultValue: "",
               },
             },
-            resolve: ({
-              currency,
-              price_realized_cents
-            }, {
-              format
-            }) => {
-              const {
-                symbol,
-                subunit_to_unit
-              } = currencyCodes[
+            resolve: ({ currency, price_realized_cents }, { format }) => {
+              const { symbol, subunit_to_unit } = currencyCodes[
                 currency.toLowerCase()
               ]
               let display
