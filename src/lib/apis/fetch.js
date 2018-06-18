@@ -4,6 +4,7 @@ import { assign, clone, get, defaults, compact } from "lodash"
 import request from "request"
 import config from "config"
 import HTTPError from "lib/http_error"
+import yj from 'yieldable-json'
 
 export default (url, options = {}) => {
   return new Promise((resolve, reject) => {
@@ -36,16 +37,23 @@ export default (url, options = {}) => {
         return reject(new HTTPError(message, response.statusCode))
       }
 
-      try {
-        const shouldParse = typeof response.body === "string"
-        const parsed = shouldParse ? JSON.parse(response.body) : response.body
-
-        resolve({
-          body: parsed,
-          headers: response.headers,
+      const shouldParse = typeof response.body === "string"
+      if (shouldParse) {
+        yj.parseAsync(response.body, (error, parsed) => {
+          if (error) {
+            reject(error)
+          } else {
+            resolve({
+              body: parsed,
+              headers: response.headers
+            })
+          }
         })
-      } catch (error) {
-        reject(error)
+      } else {
+        resolve({
+          body: response.body,
+          headers: response.headers
+        })
       }
     })
   })

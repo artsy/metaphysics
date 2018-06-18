@@ -5,6 +5,7 @@ import { error, verbose } from "./loggers"
 import Memcached from "memcached"
 import { cacheTracer } from "./tracer"
 import { statsClient } from "./stats"
+import yj from 'yieldable-json'
 
 const {
   NODE_ENV,
@@ -21,12 +22,14 @@ const VerboseEvents = ["issue", "failure", "reconnecting", "reconnect", "remove"
 
 const deflateP = (dataz) => {
   return new Promise((resolve, reject) =>
-    zlib.deflate(JSON.stringify(dataz), (er, deflatedData) => {
-      if (er) {
-        error(er)
-      } else {
-        resolve(deflatedData)
-      }
+    yj.stringifyAsync(dataz, (err, data) => {
+      zlib.deflate(JSON.stringify(dataz), (er, deflatedData) => {
+        if (er) {
+          error(er)
+        } else {
+          resolve(deflatedData)
+        }
+      })
     })
   )
 }
@@ -88,7 +91,13 @@ function _get(key) {
           if (er) {
             reject(er)
           } else {
-            resolve(JSON.parse(inflatedData.toString()))
+            yj.parseAsync(inflatedData.toString(), (err, parsedData) => {
+              if (err) {
+                reject(err)
+              } else {
+                resolve(parsedData)
+              }
+            })
           }
         })
       } else {
