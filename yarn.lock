@@ -5962,6 +5962,10 @@ sax@^1.2.4:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
 
+seedrandom@^2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/seedrandom/-/seedrandom-2.4.3.tgz#2438504dad33917314bff18ac4d794f16d6aaecc"
+
 semver-diff@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/semver-diff/-/semver-diff-2.1.0.tgz#4bbb8437c8d37e4b0cf1a68fd726ec6d645d6d36"
@@ -6934,6 +6938,12 @@ yargs@~3.10.0:
     cliui "^2.1.0"
     decamelize "^1.0.0"
     window-size "0.1.0"
+
+yieldable-json@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/yieldable-json/-/yieldable-json-1.0.1.tgz#001eaf5f32244ed79f1b213838b97adcd1fdf1cc"
+  dependencies:
+    seedrandom "^2.4.3"
 
 zen-observable-ts@^0.8.6:
   version "0.8.8"
