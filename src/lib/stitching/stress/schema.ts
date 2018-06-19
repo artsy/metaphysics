@@ -3,6 +3,7 @@ import {
   makeRemoteExecutableSchema,
   transformSchema,
   RenameTypes,
+  RenameRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
@@ -20,13 +21,6 @@ export const executableStressSchema = async () => {
     new RenameTypes(name => {
       return `Ecommerce${name}`
     }),
-    // new TransformRootFields((operation, name, field) => {
-    //   console.log(operation, name)
-    //   if (operation == "Query") {
-    //     return { name: `ecommerce_${name}`, field }
-    //   } else {
-    //     return { name, field }
-    //   }
-    // }),
+    new RenameRootFields((_operation, name) => `ecommerce_${name}`),
   ])
 }

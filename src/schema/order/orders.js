@@ -1,7 +1,7 @@
 import { graphql, GraphQLNonNull, GraphQLString } from "graphql"
 import { OrderType } from "schema/order/index"
 export const Order = {
-  name: "Order",
+  name: "Orders",
   type: OrderType,
   description: "Returns a single Order",
   args: { id: { type: new GraphQLNonNull(GraphQLString) } },
@@ -14,25 +14,11 @@ export const Order = {
           currencyCode
           state
           partnerId
-          userId
-          lineItems{
-            edges{
-              node{
-                id
-                priceCents
-                artworkId
-                editionSetId
-              }
-            }
-          }
         }
       }
     `
     return graphql(stressSchema, query, null, context, {
       id: _args.id,
-    }).then(a => {
-      console.log(a)
-      return a.data.ecommerce_order
-    })
+    }).then(a => a.data.ecommerce_order)
   },
 }
