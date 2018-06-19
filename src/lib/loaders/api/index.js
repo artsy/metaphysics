@@ -8,6 +8,7 @@ import galaxy from "lib/apis/galaxy"
 import gravity from "lib/apis/gravity"
 import impulse from "lib/apis/impulse"
 import positron from "lib/apis/positron"
+import stress from "lib/apis/stress"
 
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
@@ -133,4 +134,19 @@ export default opts => ({
       userAgent: opts.userAgent,
     }
   ),
+
+  // /**
+  //  * The Stress loaders produced by this factory _will_ cache responses for the duration of query execution but do
+  //  * **not** cache to memcache.
+  //  *
+  //  * Use this for authenticated requests.
+  //  */
+  // stressLoaderWithAuthenticationFactory: apiLoaderWithAuthenticationFactory(
+  //   stress,
+  //   "stress",
+  //   {
+  //     requestIDs: opts.requestIDs,
+  //     userAgent: opts.userAgent,
+  //   }
+  // ),
 })

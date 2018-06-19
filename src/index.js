@@ -1,6 +1,9 @@
 /* eslint-disable no-console */
 
-import { middleware as requestTracer, traceMiddleware as graphqlTraceMiddleware } from "./lib/tracer"
+import {
+  middleware as requestTracer,
+  traceMiddleware as graphqlTraceMiddleware,
+} from "./lib/tracer"
 import { graphqlTimeoutMiddleware } from "./lib/graphqlTimeoutMiddleware"
 import { applyMiddleware as applyGraphQLMiddleware } from "graphql-middleware"
 
@@ -26,6 +29,7 @@ import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
 import { mergeSchemas } from "./lib/stitching/mergeSchemas"
 import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
+import { executableStressSchema } from "./lib/stitching/stress/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
@@ -53,7 +57,7 @@ function logQueryDetailsIfEnabled() {
   if (Number.isInteger(logQueryDetailsThreshold)) {
     console.warn(
       `[FEATURE] Enabling logging of queries running past the ${
-      logQueryDetailsThreshold
+        logQueryDetailsThreshold
       } sec threshold.`
     )
     return logQueryDetails(logQueryDetailsThreshold)
@@ -76,6 +80,7 @@ async function startApp() {
   }
 
   const lewittSchema = await executableLewittSchema()
+  const stressSchema = await executableStressSchema()
 
   if (enableSchemaStitching) {
     try {
@@ -86,7 +91,10 @@ async function startApp() {
     }
   }
 
-  schema = applyGraphQLMiddleware(schema, graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS))
+  schema = applyGraphQLMiddleware(
+    schema
+    //graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS)
+  )
 
   app.use(requestIDsAdder)
 
@@ -146,6 +154,7 @@ async function startApp() {
           defaultTimezone,
           span,
           lewittSchema,
+          stressSchema,
           ...createLoaders(accessToken, userID, {
             requestIDs,
             userAgent,
@@ -167,7 +176,6 @@ async function startApp() {
   if (enableSentry) {
     app.use(raven.errorHandler())
   }
-
 }
 
 startApp()

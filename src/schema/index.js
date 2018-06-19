@@ -16,7 +16,7 @@ import Genes from "./genes"
 import GeneFamilies from "./gene_families"
 import GeneFamily from "./gene_family"
 import HomePage from "./home"
-import { Order } from "./order"
+import { Order } from "./order/order"
 import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
 import Profile from "./profile"
@@ -61,8 +61,8 @@ import { recordArtworkViewMutation } from "./me/recently_viewed_artworks"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
-import UpdateOrderMutation from "./me/order/update_order_mutation"
-import SubmitOrderMutation from "./me/order/submit_order_mutation"
+// import UpdateOrderMutation from "./me/order/update_order_mutation"
+// import SubmitOrderMutation from "./me/order/submit_order_mutation"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
 
 import CausalityJWT from "./causality_jwt"
@@ -157,8 +157,8 @@ const schema = new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
-      updateOrder: UpdateOrderMutation,
-      submitOrder: SubmitOrderMutation,
+      // updateOrder: UpdateOrderMutation,
+      // submitOrder: SubmitOrderMutation,
       sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtworkMutation,
       endSale: endSaleMutation,

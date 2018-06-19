@@ -3,6 +3,7 @@ import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
 import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitching"
 import { executableLewittSchema } from "lib/stitching/lewitt/schema"
+import { executableStressSchema } from "lib/stitching/stress/schema"
 
 import localSchema from "../../schema"
 
@@ -15,6 +16,7 @@ export const mergeSchemas = async () => {
 
   const gravitySchema = await executableGravitySchema()
   const lewittSchema = await executableLewittSchema()
+  const stressSchema = await executableStressSchema()
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon
@@ -24,6 +26,7 @@ export const mergeSchemas = async () => {
       localSchema,
       convectionSchema,
       lewittSchema,
+      stressSchema,
       convectionStitching.extensionSchema,
     ],
     resolvers: {
