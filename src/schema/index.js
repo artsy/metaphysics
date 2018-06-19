@@ -62,6 +62,9 @@ import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
 import UpdateOrderMutation from "./me/order/update_order_mutation"
+import ApproveOrderMutation from "./order/approve_order_mutation"
+import FinalizeOrderMutation from "./order/finalize_order_mutation"
+import RejectOrderMutation from "./order/reject_order_mutation"
 import SubmitOrderMutation from "./me/order/submit_order_mutation"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
 
@@ -157,8 +160,11 @@ const schema = new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
-      updateOrder: UpdateOrderMutation,
+      approveOrder: ApproveOrderMutation,
+      finalizeOrder: FinalizeOrderMutation,
+      rejectOrder: RejectOrderMutation,
       submitOrder: SubmitOrderMutation,
+      updateOrder: UpdateOrderMutation,
       sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtworkMutation,
       endSale: endSaleMutation,

@@ -138,6 +138,21 @@ export default (accessToken, userID, opts) => {
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
     orderLoader: gravityLoader(id => `order/${id}`, {}, { headers: true }),
+    approveOrderLoader: gravityLoader(
+      id => `order/${id}`,
+      { state: "approved" },
+      { method: "PUT" }
+    ),
+    finalizeOrderLoader: gravityLoader(
+      id => `order/${id}`,
+      { state: "finalized" },
+      { method: "PUT" }
+    ),
+    rejectOrderLoader: gravityLoader(
+      id => `order/${id}`,
+      { state: "rejected" },
+      { method: "PUT" }
+    ),
     updateOrderLoader: gravityLoader(
       id => `me/order/${id}`,
       {},
