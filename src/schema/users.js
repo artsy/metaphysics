@@ -1,5 +1,5 @@
 import { clone } from "lodash"
-import UserType from "./user"
+import { UserType } from "./user"
 import { GraphQLList, GraphQLString } from "graphql"
 
 const Users = {

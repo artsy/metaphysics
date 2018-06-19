@@ -38,7 +38,7 @@ const ArtistCarousel = {
         published: true,
       }),
     ])
-      .then(([shows, artworks]) => {
+      .then(([{ body: shows }, artworks]) => {
         const elligibleShows = shows.filter(show => show.images_count > 0)
         return Promise.all(
           elligibleShows.map(show =>

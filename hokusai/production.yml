@@ -6,7 +6,7 @@ metadata:
 spec:
   strategy:
     rollingUpdate:
-      maxSurge: 1
+      maxSurge: 2
       maxUnavailable: 0
     type: RollingUpdate
   template:
@@ -29,9 +29,20 @@ spec:
         - containerPort: 3000
         resources:
           requests:
-            cpu: "0.7"
+            cpu: "0.5"
+            memory: "512Mi"
           limits:
+            cpu: "1"
             memory: "768Mi"
+        readinessProbe:
+          httpGet:
+            port: 3000
+            path: /health
+            httpHeaders:
+            - name: X-FORWARDED-PROTO
+              value: https
+          initialDelaySeconds: 5
+          periodSeconds: 5
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -53,9 +64,9 @@ spec:
     apiVersion: extensions/v1beta1
     kind: Deployment
     name: metaphysics-web
-  minReplicas: 2
-  maxReplicas: 5
-  targetCPUUtilizationPercentage: 80
+  minReplicas: 10
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 100
 
 ---
 apiVersion: v1

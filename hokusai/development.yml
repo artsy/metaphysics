@@ -6,13 +6,13 @@ services:
       file: common.yml
       service: metaphysics
     environment:
-    - REDIS_URL=redis://metaphysics-redis:6379
+    - MEMCACHED_URL=metaphysics-memcached:11211
     env_file: ../.env
     ports:
     - 5001:5001
     depends_on:
-    - metaphysics-redis
-  metaphysics-redis:
-    image: redis
+    - metaphysics-memcached
+  metaphysics-memcached:
+    image: memcached
     ports:
-    - 6379:6379
+    - 11211:11211

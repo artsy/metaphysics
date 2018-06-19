@@ -26,6 +26,8 @@ export const featuredFair = fairsLoader => {
         )
       )
     }
+
+    return undefined
   })
 }
 
@@ -48,6 +50,8 @@ export const featuredAuction = salesLoader => {
     if (sales.length) {
       return first(sales)
     }
+
+    return undefined
   })
 }
 
@@ -60,6 +64,8 @@ export const featuredGene = followedGenesLoader => {
     if (follows.length) {
       return first(follows).gene
     }
+
+    return undefined
   })
 }
 

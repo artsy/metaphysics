@@ -71,6 +71,7 @@ export default {
       active: false,
       at_a_fair: false,
     })
+      .then(({ body }) => body)
       .then(first)
       .then(show => {
         if (!show) return null

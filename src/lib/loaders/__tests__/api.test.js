@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
 
@@ -80,6 +81,7 @@ describe("API loaders", () => {
     })
 
     it("caches the response in memcache", () => {
+      const spy = jest.spyOn(cache, 'set');
       return cache
         .get("some/unauthenticated/memcached/path?")
         .then(() => {
@@ -88,11 +90,7 @@ describe("API loaders", () => {
         .catch(() => {
           loader = apiLoader("some/unauthenticated/memcached/path")
           return loader().then(() => {
-            return cache
-              .get("some/unauthenticated/memcached/path?")
-              .then(({ path }) => {
-                expect(path).toEqual("some/unauthenticated/memcached/path?")
-              })
+            expect(spy).toHaveBeenCalled()
           })
         })
     })

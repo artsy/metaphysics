@@ -1,89 +1,30 @@
 import gravity from "lib/apis/gravity"
 
+jest.mock("../../apis/fetch", () => jest.fn(() => Promise.resolve({})))
+import fetch from "../../apis/fetch"
+
+import config from "config"
+config.GRAVITY_XAPP_TOKEN = "secret"
+
 describe("APIs", () => {
   describe("gravity", () => {
-    const fetch = gravity.__get__("fetch")
+    it("makes a correct request to Gravity", async () => {
+      await gravity("foo/bar", null, { userAgent: "catty browser" })
 
-    beforeAll(() =>
-      gravity.__Rewire__("config", { GRAVITY_XAPP_TOKEN: "secret" })
-    )
+      const url = "https://api.artsy.test/api/v1/foo/bar"
+      const requestConfig = {
+        headers: { "X-XAPP-TOKEN": "secret" },
+        userAgent: "catty browser",
+      }
 
-    afterAll(() => gravity.__ResetDependency__("config"))
-
-    afterEach(() => {
-      fetch.__ResetDependency__("request")
+      expect(fetch).toBeCalledWith(url, requestConfig)
     })
 
-    it("makes a correct request to Gravity", () => {
-      const request = sinon.stub().yields(null, { statusCode: 200, body: {} })
-      fetch.__Rewire__("request", request)
+    it("resolves when there is a successful JSON response", async () => {
+      fetch.mockReturnValueOnce(Promise.resolve({ foo: "bar" }))
 
-      return gravity("foo/bar", null, { userAgent: "catty browser" }).then(
-        () => {
-          expect(request.args[0][0]).toBe(
-            "https://api.artsy.test/api/v1/foo/bar"
-          )
-          expect(request.args[0][1]).toEqual({
-            headers: {
-              "X-XAPP-TOKEN": "secret",
-              "User-Agent": "catty browser; Metaphysics",
-            },
-            method: "GET",
-            timeout: 5000,
-          })
-        }
-      )
-    })
-
-    it("resolves when there is a successful JSON response", () => {
-      const request = sinon
-        .stub()
-        .yields(null, { statusCode: 200, body: { foo: "bar" } })
-      fetch.__Rewire__("request", request)
-
-      return gravity("foo/bar").then(({ body: { foo } }) => {
-        expect(foo).toBe("bar")
-      })
-    })
-
-    it("tries to parse the response when there is a String and resolves with it", () => {
-      const request = sinon.stub().yields(null, {
-        statusCode: 200,
-        body: JSON.stringify({ foo: "bar" }),
-      })
-      fetch.__Rewire__("request", request)
-
-      return gravity("foo/bar").then(({ body: { foo } }) => {
-        expect(foo).toBe("bar")
-      })
-    })
-
-    it("rejects request errors", () => {
-      const request = sinon.stub().yields(new Error("bad"))
-      fetch.__Rewire__("request", request)
-
-      return expectPromiseRejectionToMatch(gravity("foo/bar"), /bad/)
-    })
-
-    it("rejects API errors", () => {
-      const request = sinon
-        .stub()
-        .yields(null, { statusCode: 401, body: "Unauthorized" })
-      fetch.__Rewire__("request", request)
-
-      return expectPromiseRejectionToMatch(gravity("foo/bar"), /Unauthorized/)
-    })
-
-    it("rejects parse errors", () => {
-      const request = sinon
-        .stub()
-        .yields(null, { statusCode: 200, body: "not json" })
-      fetch.__Rewire__("request", request)
-
-      return expectPromiseRejectionToMatch(
-        gravity("foo/bar"),
-        /Unexpected token/
-      )
+      const response = await gravity("foo/bar")
+      expect(response.foo).toBe("bar")
     })
   })
 })

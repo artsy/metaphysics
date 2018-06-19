@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { allViaLoader } from "lib/all"
 
 describe("all", () => {

@@ -20,7 +20,20 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     collectorProfileLoader: gravityLoader("me/collector_profile"),
+    createBidderLoader: gravityLoader("bidder", {}, { method: "POST" }),
+    createCreditCardLoader: gravityLoader(
+      "me/credit_cards",
+      {},
+      { method: "POST" }
+    ),
+    meCreditCardsLoader: gravityLoader("me/credit_cards", {}),
     followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
+    followedGeneLoader: trackedEntityLoaderFactory(
+      gravityLoader("me/follow/genes"),
+      "genes",
+      "is_followed",
+      "gene"
+    ),
     followedArtistLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/artists"),
       "artists",
@@ -66,6 +79,17 @@ export default (accessToken, userID, opts) => {
     meLoader: gravityLoader("me"),
     meBiddersLoader: gravityLoader("me/bidders"),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
+    meBidderPositionLoader: gravityLoader(
+      ({ id }) => `me/bidder_position/${id}/`,
+      {},
+      { headers: true }
+    ),
+    createBidderPositionLoader: gravityLoader(
+      "me/bidder_position",
+      {},
+      { method: "POST" }
+    ),
+    mePartnersLoader: gravityLoader("me/partners"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
     popularArtistsLoader: gravityLoader("artists/popular"),
     savedArtworkLoader: trackedEntityLoaderFactory(
@@ -84,9 +108,7 @@ export default (accessToken, userID, opts) => {
     endSaleLoader: gravityLoader(
       id => `sale/${id}/end_sale`,
       {},
-      {
-        method: "PUT",
-      }
+      { method: "PUT" }
     ),
     savedArtworksLoader: gravityLoader("collection/saved-artwork/artworks", {
       user_id: userID,
@@ -115,6 +137,22 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
+    orderLoader: gravityLoader(id => `order/${id}`, {}, { headers: true }),
+    updateOrderLoader: gravityLoader(
+      id => `me/order/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    submitOrderLoader: gravityLoader(
+      id => `me/order/${id}/submit`,
+      {},
+      { method: "PUT" }
+    ),
+    recordArtworkViewLoader: gravityLoader(
+      "me/recently_viewed_artworks",
+      {},
+      { method: "POST" }
+    ),
     followArtistLoader: gravityLoader(
       "me/follow/artist",
       {},

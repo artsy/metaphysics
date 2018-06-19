@@ -1,6 +1,6 @@
 import moment from "moment"
 import { pageable } from "relay-cursor-paging"
-import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 import { isExisty, exclude, existyValue, parseRelayOptions } from "lib/helpers"
 import { find } from "lodash"
 import HTTPError from "lib/http_error"
@@ -17,6 +17,7 @@ import Artwork, { artworkConnection } from "./artwork"
 import Location from "./location"
 import Image, { getDefault } from "./image"
 import PartnerShowEventType from "./partner_show_event"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -170,7 +171,7 @@ export const ShowType = new GraphQLObjectType({
         }
 
         if (partner) {
-          partnerShowArtworksLoader(
+          return partnerShowArtworksLoader(
             { partner_id: partner.id, show_id: id },
             {
               size: 1,
@@ -181,6 +182,8 @@ export const ShowType = new GraphQLObjectType({
             return artwork && Image.resolve(getDefault(artwork.images))
           })
         }
+
+        return null
       },
     },
     counts: {
@@ -343,7 +346,9 @@ export const ShowType = new GraphQLObjectType({
             published: true,
           }
         ).then(({ body }) => {
-          Image.resolve(getDefault(find(body, { can_share_image: true })))
+          return Image.resolve(
+            getDefault(find(body, { can_share_image: true }))
+          )
         })
       },
     },
@@ -421,6 +426,4 @@ const Show = {
   },
 }
 export default Show
-export const showConnection = connectionDefinitions({
-  nodeType: Show.type,
-}).connectionType
+export const showConnection = connectionWithCursorInfo(ShowType)

@@ -1,12 +1,19 @@
-import schema from "schema"
+/* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 
 describe("Artist type", () => {
-  const Artist = schema.__get__("Artist")
   let artist = null
-  let rootValue = null
+  let rootValue
 
   beforeEach(() => {
+    rootValue = {
+      artistLoader: () => artist,
+      articlesLoader: () => Promise.resolve({ count: 22 }),
+      artistGenesLoader: () => Promise.resolve([{ name: "Foo Bar" }]),
+      relatedMainArtistsLoader: () =>
+        Promise.resolve({ headers: { "x-total-count": 42 } }),
+    }
+
     artist = {
       id: "foo-bar",
       name: "Foo Bar",
@@ -17,22 +24,6 @@ describe("Artist type", () => {
       partner_shows_count: 42,
       collections: "Catty Art Collections\nMatt's Personal Art Collection",
     }
-
-    rootValue = {
-      artistLoader: sinon
-        .stub()
-        .withArgs(artist.id)
-        .returns(Promise.resolve(artist)),
-      articlesLoader: sinon.stub().returns(Promise.resolve({ count: 22 })),
-    }
-
-    const totalViaLoader = sinon.stub()
-    totalViaLoader.onCall(0).returns(Promise.resolve(42))
-    Artist.__Rewire__("totalViaLoader", totalViaLoader)
-  })
-
-  afterEach(() => {
-    Artist.__ResetDependency__("totalViaLoader")
   })
 
   it("returns null for an empty ID string", () => {
@@ -593,12 +584,9 @@ describe("Artist type", () => {
         .stub()
         .withArgs(artist.id)
         .returns(
-          Promise.resolve([
-            privateShow,
-            publicShow,
-            partnerlessShow,
-            galaxyShow,
-          ])
+          Promise.resolve({
+            body: [privateShow, publicShow, partnerlessShow, galaxyShow],
+          })
         )
     })
     it("excludes shows from private partners for related shows", () => {
@@ -724,6 +712,200 @@ describe("Artist type", () => {
           },
         })
       })
+    })
+  })
+
+  describe("genes", () => {
+    it("returns an array of assosciated genes", () => {
+      const query = `
+        {
+          artist(id: "foo-bar") {
+            genes {
+              name
+            }
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artist: {
+            genes: [{ name: "Foo Bar" }],
+          },
+        })
+      })
+    })
+  })
+
+  describe("filtered artworks", () => {
+    it("returns filtered artworks", () => {
+      const filterArtworksLoader = jest.fn().mockReturnValueOnce(
+        Promise.resolve({
+          hits: [
+            {
+              id: "im-a-cat",
+              title: "I'm a cat",
+              artists: ["percy"],
+            },
+          ],
+          aggregations: { total: { value: 75 } },
+        })
+      )
+      rootValue.filterArtworksLoader = filterArtworksLoader
+
+      const query = `
+        {
+          artist(id: "percy") {
+            filtered_artworks(aggregations:[TOTAL], partner_id: null){
+              artworks: artworks_connection(first: 10) {
+                pageCursors {
+                  first {
+                    page
+                  }
+                  around {
+                    page
+                  }
+                  last {
+                    page
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, rootValue).then(
+        ({ artist: { filtered_artworks: { artworks: { pageCursors } } } }) => {
+          expect(filterArtworksLoader.mock.calls[0][0]).not.toHaveProperty(
+            "partner_id"
+          )
+          // Check expected page cursors exist in response.
+          const { first, around, last } = pageCursors
+          expect(first).toEqual(null)
+          expect(last.page).toEqual(8)
+          let index
+          for (index = 0; index < 4; index++) {
+            expect(around[index].page).toBe(index + 1)
+          }
+        }
+      )
+    })
+  })
+
+  describe("articlesConnection", () => {
+    it("returns connection of articles augmented by cursor info", () => {
+      const articlesLoader = jest.fn().mockReturnValueOnce(
+        Promise.resolve({
+          results: [
+            {
+              id: "foo-bar",
+              slug: "foo-bar",
+              title: "My Awesome Article",
+            },
+          ],
+          count: 35,
+        })
+      )
+      rootValue.articlesLoader = articlesLoader
+
+      const query = `
+        {
+          artist(id: "percy") {
+            articlesConnection(first: 10) {
+              pageCursors {
+                first {
+                  page
+                }
+                around {
+                  page
+                }
+                last {
+                  page
+                }
+              }
+              edges {
+                node {
+                  title
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, rootValue).then(
+        ({ artist: { articlesConnection: { pageCursors, edges } } }) => {
+          // Check expected page cursors exist in response.
+          const { first, around, last } = pageCursors
+          expect(first).toEqual(null)
+          expect(last).toEqual(null)
+          expect(around.length).toEqual(4)
+          let index
+          for (index = 0; index < 4; index++) {
+            expect(around[index].page).toBe(index + 1)
+          }
+          // Check article data included in edges.
+          expect(edges[0].node.title).toEqual("My Awesome Article")
+        }
+      )
+    })
+  })
+
+  describe("showsConnection", () => {
+    it("returns connection of shows augmented by cursor info", () => {
+      const relatedShowsLoader = jest.fn().mockReturnValueOnce(
+        Promise.resolve({
+          body: [
+            {
+              id: "foo-bar",
+              name: "Catty Art Show",
+            },
+          ],
+          headers: { "x-total-count": 35 },
+        })
+      )
+      rootValue.relatedShowsLoader = relatedShowsLoader
+
+      const query = `
+        {
+          artist(id: "percy") {
+            showsConnection(first: 10) {
+              pageCursors {
+                first {
+                  page
+                }
+                around {
+                  page
+                }
+                last {
+                  page
+                }
+              }
+              edges {
+                node {
+                  name
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, rootValue).then(
+        ({ artist: { showsConnection: { pageCursors, edges } } }) => {
+          // Check expected page cursors exist in response.
+          const { first, around, last } = pageCursors
+          expect(first).toEqual(null)
+          expect(last).toEqual(null)
+          expect(around.length).toEqual(4)
+          let index
+          for (index = 0; index < 4; index++) {
+            expect(around[index].page).toBe(index + 1)
+          }
+          // Check article data included in edges.
+          expect(edges[0].node.name).toEqual("Catty Art Show")
+        }
+      )
     })
   })
 })

@@ -6,17 +6,15 @@
     "jasmine": true,
     "es6": true
   },
-  "extends": "airbnb",
+  "plugins": ["promise"],
+  "extends": ["react-app", "plugin:promise/recommended"],
   "parser": "babel-eslint",
   "rules": {
-    "camelcase": 0,
-    "max-len": [2, 120],
-    "quotes": [2, "double"],
-    "semi": [0],
-    "no-extra-semi": 0,
-    "indent": 0
-  },
-  "ignore": ["/flow-typed/npm/*"],
+    "import/first": 0,
+    "no-useless-escape": 0,
+    "no-empty-pattern": 0,
+    "promise/no-nesting": 0
+  },  
   "globals": {
     "expect": false,
     "schema": false,

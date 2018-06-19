@@ -1,4 +1,6 @@
+/* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
+import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
 describe("Gene", () => {
   let rootValue
@@ -368,6 +370,37 @@ describe("Gene", () => {
           expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
         }
       )
+    })
+  })
+
+  describe("is_followed", () => {
+    let gravityLoader
+    let followedGeneLoader
+
+    beforeEach(() => {
+      gravityLoader = jest.fn(() =>
+        Promise.resolve([
+          { gene: { id: "brooklyn-artists", name: "Brooklyn Artists" } },
+        ])
+      )
+      followedGeneLoader = trackedEntityLoaderFactory(
+        gravityLoader,
+        "genes",
+        "is_followed",
+        "gene"
+      )
+    })
+
+    it("returns true if gene is returned", () => {
+      return followedGeneLoader("brooklyn-artists").then(gene => {
+        expect(gene.is_followed).toBe(true)
+      })
+    })
+
+    it("returns false if gene is not returned", () => {
+      return followedGeneLoader("new-york-artists").then(gene => {
+        expect(gene.is_followed).toBe(false)
+      })
     })
   })
 })

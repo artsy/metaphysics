@@ -1,9 +1,6 @@
-import schema from "schema"
 import { runQuery } from "test/utils"
 
 describe("SaleArtwork type", () => {
-  const SaleArtwork = schema.__get__("SaleArtwork")
-
   const saleArtwork = {
     id: "ed-ruscha-pearl-dust-combination-from-insects-portfolio",
     sale_id: "los-angeles-modern-auctions-march-2015",
@@ -244,71 +241,56 @@ describe("SaleArtwork type", () => {
       ])
     })
 
-    describe("with a max amount set", () => {
-      beforeEach(() => {
-        SaleArtwork.__Rewire__(
-          "BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT",
-          "400000"
-        )
-      })
-
-      afterEach(() => {
-        SaleArtwork.__ResetDependency__(
-          "BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT"
-        )
-      })
-
-      it("does not return increments above the max allowed", async () => {
-        const query = `
-          {
-            sale_artwork(id: "54c7ed2a7261692bfa910200") {
-              bid_increments
+    it("formats bid increments", async () => {
+      const query = `
+        {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            increments {
+              cents
+              display
             }
           }
-        `
-
-        const rootValue = {
-          saleLoader: () => {
-            return Promise.resolve({
-              increment_strategy: "default",
-            })
-          },
-          incrementsLoader: sale => {
-            return Promise.resolve([
-              {
-                key: sale.increment_strategy,
-                increments: [
-                  {
-                    from: 0,
-                    to: 399999,
-                    amount: 5000,
-                  },
-                  {
-                    from: 400000,
-                    to: 1000000,
-                    amount: 10000,
-                  },
-                ],
-              },
-            ])
-          },
         }
+      `
 
-        const data = await execute(query, saleArtwork, rootValue)
-        expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
-          351000,
-          355000,
-          360000,
-          365000,
-          370000,
-          375000,
-          380000,
-          385000,
-          390000,
-          395000,
-          400000,
-        ])
-      })
+      const rootValue = {
+        saleLoader: () => {
+          return Promise.resolve({
+            increment_strategy: "default",
+          })
+        },
+        incrementsLoader: sale => {
+          return Promise.resolve([
+            {
+              key: sale.increment_strategy,
+              increments: [
+                {
+                  from: 0,
+                  to: 399999,
+                  amount: 5000,
+                },
+                {
+                  from: 400000,
+                  to: 1000000,
+                  amount: 10000,
+                },
+              ],
+            },
+          ])
+        },
+      }
+
+      const data = await execute(query, saleArtwork, rootValue)
+      expect(data.sale_artwork.increments.slice(0, 2)).toEqual([
+        {
+          cents: 351000,
+          display: "€3,510",
+        },
+        {
+          cents: 355000,
+          display: "€3,550",
+        },
+      ])
     })
   })
 })

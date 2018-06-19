@@ -29,9 +29,20 @@ spec:
         - containerPort: 3000
         resources:
           requests:
-            cpu: "0.5"
-          limits:
+            cpu: "0.2"
             memory: "512Mi"
+          limits:
+            cpu: "0.5"
+            memory: "768Mi"
+        readinessProbe:
+          httpGet:
+            port: 3000
+            path: /health
+            httpHeaders:
+            - name: X-FORWARDED-PROTO
+              value: https
+          initialDelaySeconds: 5
+          periodSeconds: 5
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -53,9 +64,9 @@ spec:
     apiVersion: extensions/v1beta1
     kind: Deployment
     name: metaphysics-web
-  minReplicas: 1
-  maxReplicas: 3
-  targetCPUUtilizationPercentage: 80
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 95
 
 ---
 apiVersion: v1

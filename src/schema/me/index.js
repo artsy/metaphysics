@@ -1,4 +1,10 @@
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLString,
+  GraphQLObjectType,
+} from "graphql"
 
 import { IDFields, NodeInterface } from "schema/object_identification"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
@@ -10,6 +16,7 @@ import ArtworkInquiries from "./artwork_inquiries"
 import BidderPositions from "./bidder_positions"
 import Bidders from "./bidders"
 import BidderStatus from "./bidder_status"
+import { BidderPosition } from "./bidder_position"
 import CollectorProfile from "./collector_profile"
 import Conversation from "./conversation"
 import Conversations from "./conversations"
@@ -21,6 +28,7 @@ import Invoice from "./conversation/invoice"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import Notifications from "./notifications"
+import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import SaleRegistrations from "./sale_registrations"
 import SavedArtworks from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
@@ -44,6 +52,7 @@ const Me = new GraphQLObjectType({
     bidders: Bidders,
     bidder_status: BidderStatus,
     bidder_positions: BidderPositions,
+    bidder_position: BidderPosition,
     collector_profile: CollectorProfile,
     conversation: Conversation,
     conversations: Conversations,
@@ -63,6 +72,34 @@ const Me = new GraphQLObjectType({
       }),
       resolve: () => ({}),
     },
+    has_credit_cards: {
+      type: GraphQLBoolean,
+      resolve: (
+        root,
+        options,
+        request,
+        { rootValue: { meCreditCardsLoader } }
+      ) => {
+        return meCreditCardsLoader().then(results => {
+          return results.length > 0
+        })
+      },
+    },
+    has_qualified_credit_cards: {
+      type: GraphQLBoolean,
+      resolve: (
+        root,
+        options,
+        request,
+        { rootValue: { meCreditCardsLoader } }
+      ) => {
+        return meCreditCardsLoader({ qualified_for_bidding: true }).then(
+          results => {
+            return results.length > 0
+          }
+        )
+      },
+    },
     invoice: Invoice,
     lot_standing: LotStanding,
     lot_standings: LotStandings,
@@ -74,6 +111,11 @@ const Me = new GraphQLObjectType({
     paddle_number: {
       type: GraphQLString,
     },
+    recentlyViewedArtworkIds: {
+      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+      resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
+    },
+    recentlyViewedArtworks: RecentlyViewedArtworks,
     sale_registrations: SaleRegistrations,
     saved_artworks: SavedArtworks,
     suggested_artists: SuggestedArtists,
@@ -98,9 +140,12 @@ export default {
       "follow_artists",
       "followed_artists_connection",
       "followed_genes",
+      "has_credit_cards",
+      "has_qualified_credit_cards",
       "suggested_artists",
       "bidders",
       "bidder_positions",
+      "bidder_position",
       "bidder_status",
       "lot_standing",
       "lot_standings",

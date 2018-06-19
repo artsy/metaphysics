@@ -3,7 +3,7 @@ import date from "../../fields/date"
 
 export const DeliveryType = new GraphQLObjectType({
   name: "Delivery",
-  desciption: "Fields of a delivery (currently from Radiation)",
+  description: "Fields of a delivery (currently from Radiation)",
   fields: {
     id: {
       description: "Delivery id.",

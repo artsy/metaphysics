@@ -27,7 +27,15 @@ export default {
     root,
     options,
     request,
-    { rootValue: { accessToken, meLoader, meBiddersLoader, saleLoader } }
+    {
+      rootValue: {
+        accessToken,
+        meLoader,
+        meBiddersLoader,
+        mePartnersLoader,
+        saleLoader,
+      },
+    }
   ) => {
     // Observer role for logged out users
     if (!accessToken) {
@@ -77,24 +85,41 @@ export default {
           HMAC_SECRET
         )
       })
-
-      // Operator role if logged in as an admin
+      // Operator role if logged in as an admin or if user has access to partner
     } else if (options.role === "OPERATOR") {
       return Promise.all([saleLoader(options.sale_id), meLoader()]).then(
         ([sale, me]) => {
-          if (me.type !== "Admin") {
-            throw new Error("Unauthorized to be operator")
+          if (me.type === "Admin") {
+            return jwt.encode(
+              {
+                aud: "auctions",
+                role: "operator",
+                userId: me._id,
+                saleId: sale._id,
+                bidderId: me.paddle_number,
+                iat: new Date().getTime(),
+              },
+              HMAC_SECRET
+            )
           }
-          return jwt.encode(
-            {
-              aud: "auctions",
-              role: "operator",
-              userId: me._id,
-              saleId: sale._id,
-              bidderId: me.paddle_number,
-              iat: new Date().getTime(),
-            },
-            HMAC_SECRET
+          return mePartnersLoader({ "partner_ids[]": sale.partner._id }).then(
+            mePartners => {
+              // Check if current user has access to partner running the sale
+              if (mePartners.length === 0) {
+                throw new Error("Unauthorized to be operator")
+              }
+              return jwt.encode(
+                {
+                  aud: "auctions",
+                  role: "externalOperator",
+                  userId: me._id,
+                  saleId: sale._id,
+                  bidderId: me.paddle_number,
+                  iat: new Date().getTime(),
+                },
+                HMAC_SECRET
+              )
+            }
           )
         }
       )

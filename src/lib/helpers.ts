@@ -93,3 +93,6 @@ export const parseRelayOptions = options => {
   const gravityArgs = omit(options, ["first", "after", "last", "before"])
   return Object.assign({}, { page, size, offset }, gravityArgs)
 }
+export const removeNulls = object => {
+  Object.keys(object).forEach(key => object[key] == null && delete object[key]) // eslint-disable-line eqeqeq, no-param-reassign, max-len
+}

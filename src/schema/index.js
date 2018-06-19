@@ -12,9 +12,11 @@ import ExternalPartner from "./external_partner"
 import Fair from "./fair"
 import Fairs from "./fairs"
 import Gene from "./gene"
+import Genes from "./genes"
 import GeneFamilies from "./gene_families"
 import GeneFamily from "./gene_family"
 import HomePage from "./home"
+import { Order } from "./order"
 import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
 import Profile from "./profile"
@@ -40,6 +42,7 @@ import SuggestedGenes from "./suggested_genes"
 import Tag from "./tag"
 import TrendingArtists from "./artists/trending"
 import Users from "./users"
+import User from "./user"
 import MatchArtist from "./match/artist"
 import MatchGene from "./match/gene"
 import Me from "./me"
@@ -54,7 +57,13 @@ import SaveArtworkMutation from "./me/save_artwork_mutation"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
+import { recordArtworkViewMutation } from "./me/recently_viewed_artworks"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
+import createBidderMutation from "./me/create_bidder_mutation"
+import createCreditCardMutation from "./me/create_credit_card_mutation"
+import UpdateOrderMutation from "./me/order/update_order_mutation"
+import SubmitOrderMutation from "./me/order/submit_order_mutation"
+import { BidderPositionMutation } from "./me/bidder_position_mutation"
 
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
@@ -81,6 +90,7 @@ const rootFields = {
   filter_artworks: filterArtworks(),
   filter_sale_artworks: FilterSaleArtworks,
   gene: Gene,
+  genes: Genes,
   suggested_genes: SuggestedGenes,
   gene_families: GeneFamilies,
   gene_family: GeneFamily,
@@ -89,6 +99,7 @@ const rootFields = {
   match_gene: MatchGene,
   me: Me,
   node: ObjectIdentification.NodeField,
+  order: Order,
   ordered_set: OrderedSet,
   ordered_sets: OrderedSets,
   partner: Partner,
@@ -107,6 +118,7 @@ const rootFields = {
   status: Status,
   tag: Tag,
   trending_artists: TrendingArtists,
+  user: User,
   users: Users,
   popular_artists: PopularArtists,
 }
@@ -123,30 +135,36 @@ const Viewer = {
   resolve: x => x,
 }
 
-const convectionMutations = enableSchemaStitching
+const stitchedMutations = enableSchemaStitching
   ? {}
   : {
-    createConsignmentSubmission: CreateSubmissionMutation,
-    updateConsignmentSubmission: UpdateSubmissionMutation,
-    addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
-  }
+      createConsignmentSubmission: CreateSubmissionMutation,
+      updateConsignmentSubmission: UpdateSubmissionMutation,
+      addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
+      recordArtworkView: recordArtworkViewMutation,
+    }
 
 const schema = new GraphQLSchema({
   allowedLegacyNames: ["__id"],
   mutation: new GraphQLObjectType({
     name: "Mutation",
     fields: {
+      createBidder: createBidderMutation,
+      createBidderPosition: BidderPositionMutation,
+      createCreditCard: createCreditCardMutation,
       followArtist: FollowArtist,
       followGene: FollowGene,
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
+      updateOrder: UpdateOrderMutation,
+      submitOrder: SubmitOrderMutation,
       sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtworkMutation,
       endSale: endSaleMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
       createGeminiEntryForAsset: CreateGeminiEntryForAsset,
-      ...convectionMutations,
+      ...stitchedMutations,
     },
   }),
   query: new GraphQLObjectType({

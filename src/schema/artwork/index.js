@@ -1,7 +1,6 @@
 import _ from "lodash"
 import { isTwoDimensional, isTooBig, isEmbeddedVideo, embed } from "./utilities"
 import { enhance, existyValue, isExisty } from "lib/helpers"
-import { connectionDefinitions } from "graphql-relay"
 import cached from "schema/fields/cached"
 import { markdown } from "schema/fields/markdown"
 import Article from "schema/article"
@@ -10,6 +9,7 @@ import Image, { getDefault } from "schema/image"
 import Fair from "schema/fair"
 import Sale from "schema/sale"
 import SaleArtwork from "schema/sale_artwork"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
 import PartnerShow from "schema/partner_show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import Partner from "schema/partner"
@@ -41,8 +41,12 @@ const has_price_range = price => {
   return new RegExp(/\-/).test(price)
 }
 
-const has_multiple_editions = edition_sets => {
+const has_editions = edition_sets => {
   return edition_sets && edition_sets.length > 0
+}
+
+const has_multiple_editions = edition_sets => {
+  return edition_sets && edition_sets.length > 1
 }
 
 let Artwork
@@ -148,12 +152,15 @@ export const artworkFields = () => {
     contact_message: {
       type: GraphQLString,
       description: "Pre-filled inquiry text",
-      resolve: ({ partner, availability }) => {
+      resolve: ({ partner, availability_hidden, availability }) => {
         if (partner && partner.type === "Auction") {
           return [
             "Hello, I am interested in placing a bid on this work.",
             "Please send me more information.",
           ].join(" ")
+        }
+        if (availability_hidden) {
+          return null
         }
         if (availability === "sold" || availability === "on loan") {
           return [
@@ -240,7 +247,7 @@ export const artworkFields = () => {
             published: true,
             limit: 1,
           }).then(({ results }) => results),
-        ]).then(([shows, articles]) => {
+        ]).then(([{ body: shows }, articles]) => {
           const highlightedShows = enhance(shows, { highlight_type: "Show" })
           const highlightedArticles = enhance(articles, {
             highlight_type: "Article",
@@ -432,7 +439,7 @@ export const artworkFields = () => {
         { rootValue: { relatedShowsLoader } }
       ) =>
         relatedShowsLoader({ active: true, size: 1, artwork: [id] }).then(
-          shows => shows.length > 0
+          ({ body: shows }) => shows.length > 0
         ),
     },
     is_not_for_sale: {
@@ -450,14 +457,14 @@ export const artworkFields = () => {
     is_price_range: {
       type: GraphQLBoolean,
       resolve: ({ price, edition_sets }) =>
-        has_price_range(price) && !has_multiple_editions(edition_sets), // eslint-disable-line max-len
+        has_price_range(price) && !has_multiple_editions(edition_sets),
     },
     is_purchasable: {
       type: GraphQLBoolean,
       description: "True for inquireable artworks that have an exact price.",
       resolve: artwork => {
         return (
-          !has_multiple_editions(artwork.edition_sets) &&
+          !has_editions(artwork.edition_sets) &&
           is_inquireable(artwork) &&
           isExisty(artwork.price) &&
           !has_price_range(artwork.price) &&
@@ -577,17 +584,25 @@ export const artworkFields = () => {
     },
     sale_artwork: {
       type: SaleArtwork.type,
+      args: {
+        sale_id: {
+          type: GraphQLString,
+          defaultValue: null,
+        },
+      },
       resolve: (
         { id, sale_ids },
-        _args,
+        { sale_id },
         _request,
         { rootValue: { saleArtworkLoader } }
       ) => {
+        // Note that we don't even try to call the saleArtworkLoader unless there's
+        // at least one element in sale_ids.
         if (sale_ids && sale_ids.length > 0) {
-          const sale_id = _.first(sale_ids)
+          const loader_sale_id = sale_id || _.first(sale_ids)
           // don't error if the sale/artwork is unpublished
           return saleArtworkLoader({
-            saleId: sale_id,
+            saleId: loader_sale_id,
             saleArtworkId: id,
           }).catch(() => null)
         }
@@ -597,16 +612,20 @@ export const artworkFields = () => {
     sale_message: {
       type: GraphQLString,
       resolve: ({ sale_message, availability, availability_hidden, price }) => {
-        // Don't display anything if availability is hidden, or it is not for sale
-        // or in a permanent collection (generally institutional).
-        if (availability_hidden) {
+        // Don't display anything if availability is hidden, or artwork is not for sale.
+        if (availability_hidden || availability === "not for sale") {
           return null
         }
-        if (
-          availability === "not for sale" ||
-          availability === "permanent collection"
-        ) {
-          return null
+
+        // If permanent collection, on loan or sold, just return those, do not include price.
+        if (availability === "permanent collection") {
+          return "Permanent collection"
+        }
+        if (availability === "on loan") {
+          return "On loan"
+        }
+        if (sale_message && sale_message.indexOf("Sold") > -1) {
+          return "Sold"
         }
 
         // If on hold, prepend the price (if there is one).
@@ -617,13 +636,6 @@ export const artworkFields = () => {
           return "On hold"
         }
 
-        // If on loan or sold, just return those, do not include price.
-        if (availability === "on loan") {
-          return "On loan"
-        }
-        if (sale_message && sale_message.indexOf("Sold") > -1) {
-          return "Sold"
-        }
         return sale_message
       },
     },
@@ -656,7 +668,9 @@ export const artworkFields = () => {
           active,
           sort,
           at_a_fair,
-        }).then(_.first),
+        })
+          .then(({ body }) => body)
+          .then(_.first),
     },
     shows: {
       type: new GraphQLList(PartnerShow.type),
@@ -686,7 +700,7 @@ export const artworkFields = () => {
           size,
           sort,
           at_a_fair,
-        }),
+        }).then(({ body }) => body),
     },
     signature: markdown(({ signature }) =>
       signature.replace(/^signature:\s+/i, "")
@@ -739,6 +753,4 @@ Artwork = {
 
 export default Artwork
 
-export const artworkConnection = connectionDefinitions({
-  nodeType: Artwork.type,
-}).connectionType
+export const artworkConnection = connectionWithCursorInfo(ArtworkType)

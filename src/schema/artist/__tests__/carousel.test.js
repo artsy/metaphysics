@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 
 describe("ArtistCarousel type", () => {
@@ -26,7 +27,7 @@ describe("ArtistCarousel type", () => {
           solo_show: true,
           top_tier: true,
         })
-        .returns(Promise.resolve([]))
+        .returns(Promise.resolve({ body: [] }))
 
       rootValue.artistArtworksLoader = sinon
         .stub()

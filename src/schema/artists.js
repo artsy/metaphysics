@@ -1,6 +1,7 @@
 import Artist from "./artist"
 import ArtistSorts from "./sorts/artist_sorts"
 import { GraphQLList, GraphQLInt, GraphQLString } from "graphql"
+import config from "config"
 
 const Artists = {
   type: new GraphQLList(Artist.type),
@@ -13,6 +14,13 @@ const Artists = {
         Accepts list of ids.
       `,
     },
+    slugs: {
+      type: new GraphQLList(GraphQLString),
+      description: `
+        Only return artists matching specified slugs.
+        Accepts list of slugs. (e.g. 'andy-warhol', 'banksy')
+      `,
+    },
     page: {
       type: GraphQLInt,
       defaultValue: 1,
@@ -22,8 +30,28 @@ const Artists = {
     },
     sort: ArtistSorts,
   },
-  resolve: (root, options, _request, { rootValue: { artistsLoader } }) =>
-    artistsLoader(options),
+  resolve: (
+    root,
+    options,
+    _request,
+    { rootValue: { artistLoader, artistsLoader } }
+  ) => {
+    if (options.slugs) {
+      return Promise.all(
+        options.slugs.map(slug =>
+          artistLoader(
+            slug,
+            {},
+            {
+              requestThrottleMs: config.ARTICLE_REQUEST_THROTTLE_MS,
+            }
+          )
+        )
+      )
+    }
+
+    return artistsLoader(options)
+  },
 }
 
 export default Artists

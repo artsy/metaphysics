@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
 describe("trackedEntityLoader", () => {

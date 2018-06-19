@@ -7,6 +7,7 @@ import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
 import config from "config"
+import cache from "lib/cache"
 
 const {
   ENABLE_ASYNC_STACK_TRACES,
@@ -59,6 +60,14 @@ function bootApp() {
       .status(200)
       .set({ "Content-Type": "image/x-icon" })
       .end()
+  })
+
+  app.get('/health', (req, res) => {
+    cache.isAvailable().then((stats) => {
+      return res.status(200).end()
+    }).catch((err) => {
+      return res.status(503).end()
+    })
   })
 
   app.all("/graphql", (_req, res) => res.redirect("/"))

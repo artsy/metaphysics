@@ -4,7 +4,7 @@ import { GeneType } from "../gene"
 
 export default mutationWithClientMutationId({
   name: "FollowGene",
-  decription: "Follow (or unfollow) an gene",
+  description: "Follow (or unfollow) an gene",
   inputFields: {
     gene_id: { type: GraphQLString },
   },

@@ -2,7 +2,7 @@ import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 
 export const AttachmentType = new GraphQLObjectType({
   name: "Attachment",
-  desciption: "Fields of an attachment (currently from Radiation)",
+  description: "Fields of an attachment (currently from Radiation)",
   fields: {
     id: {
       description: "Attachment id.",

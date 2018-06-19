@@ -8,6 +8,7 @@ export default opts => {
   return {
     artworksLoader: gravityLoader("artworks"),
     artistArtworksLoader: gravityLoader(id => `artist/${id}/artworks`),
+    artistGenesLoader: gravityLoader(({ id }) => `artist/${id}/genome/genes`),
     artistLoader: gravityLoader(id => `artist/${id}`),
     artistsLoader: gravityLoader("artists"),
     artworkLoader: gravityLoader(id => `artwork/${id}`),
@@ -19,6 +20,7 @@ export default opts => {
     ),
     fairsLoader: gravityLoader("fairs"),
     filterArtworksLoader: gravityLoader("filter/artworks"),
+    genesLoader: gravityLoader("genes"),
     geneArtistsLoader: gravityLoader(id => `gene/${id}/artists`),
     geneFamiliesLoader: gravityLoader("gene_families"),
     geneLoader: gravityLoader(id => `gene/${id}`),
@@ -72,7 +74,7 @@ export default opts => {
       { headers: true }
     ),
     relatedSalesLoader: gravityLoader("related/sales"),
-    relatedShowsLoader: gravityLoader("related/shows"),
+    relatedShowsLoader: gravityLoader("related/shows", {}, { headers: true }),
     saleLoader: gravityLoader(id => `sale/${id}`),
     salesLoader: gravityLoader("sales"),
     saleArtworkLoader: gravityLoader(
@@ -91,6 +93,7 @@ export default opts => {
     setsLoader: gravityLoader("sets"),
     showLoader: gravityLoader(id => `show/${id}`),
     showsLoader: gravityLoader("shows"),
+    similarArtworksLoader: gravityLoader("related/artworks"),
     similarGenesLoader: gravityLoader(
       id => `gene/${id}/similar`,
       {},
@@ -98,5 +101,16 @@ export default opts => {
     ),
     tagLoader: gravityLoader(id => `tag/${id}`),
     trendingArtistsLoader: gravityLoader("artists/trending"),
+    updateOrderLoader: gravityLoader(
+      id => `me/order/${id}`,
+      {},
+      { method: "PUT" }
+    ),
+    userLoader: gravityLoader("user", {}, { method: "GET" }),
+    submitOrderLoader: gravityLoader(
+      id => `me/order/${id}/submit`,
+      {},
+      { method: "PUT" }
+    ),
   }
 }

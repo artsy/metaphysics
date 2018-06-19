@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("SendConversationMessageMutation", () => {

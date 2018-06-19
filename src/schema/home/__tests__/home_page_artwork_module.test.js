@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 import gql from "test/gql"
 
@@ -77,7 +78,7 @@ describe("HomePageArtworkModule", () => {
       `
       return runQuery(query).then(({ home_page }) => {
         expect(home_page.artwork_module.title).toEqual(
-          "Works by Popular Artists"
+          "Works by popular artists"
         )
       })
     })

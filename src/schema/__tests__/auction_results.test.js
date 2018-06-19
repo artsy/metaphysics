@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 
 describe("Artist type", () => {
@@ -13,7 +14,7 @@ describe("Artist type", () => {
     }
 
     const auctionResultResponse = {
-      total_count: 1,
+      total_count: 35,
       _embedded: {
         items: [
           {
@@ -31,6 +32,8 @@ describe("Artist type", () => {
             currency: "JPY",
             price_realized_cents: 420000,
             price_realized_cents_usd: 100000,
+            low_estimate_cents: 200000,
+            high_estimate_cents: 500000,
           },
         ],
       },
@@ -69,6 +72,9 @@ describe("Artist type", () => {
                   cents
                   cents_usd
                 }
+                estimate {
+                  display
+                }
               }
             }
           }
@@ -98,6 +104,9 @@ describe("Artist type", () => {
                     cents_usd: 100000,
                     display: "JPY ¥420k",
                   },
+                  estimate: {
+                    display: "JPY ¥200,000 - 500,000",
+                  },
                 },
               },
             ],
@@ -105,5 +114,74 @@ describe("Artist type", () => {
         },
       })
     })
+  })
+
+  it("returns cursor info", () => {
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResults(recordsTrusted: true, first: 10) {
+            pageCursors {
+              first {
+                page
+              }
+              around {
+                page
+              }
+              last {
+                page
+              }
+            }
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(
+      ({ artist: { auctionResults: { pageCursors, edges } } }) => {
+        // Check expected page cursors exist in response.
+        const { first, around, last } = pageCursors
+        expect(first).toEqual(null)
+        expect(last).toEqual(null)
+        expect(around.length).toEqual(4)
+        let index
+        for (index = 0; index < 4; index++) {
+          expect(around[index].page).toBe(index + 1)
+        }
+        // Check auction result included in edges.
+        expect(edges[0].node.id).toEqual("1")
+      }
+    )
+  })
+
+  it("returns correct page info", () => {
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResults(recordsTrusted: true, first: 10, after: "YXJyYXljb25uZWN0aW9uOjk=") {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(
+      ({
+        artist: {
+          auctionResults: { pageInfo: { hasNextPage, hasPreviousPage } },
+        },
+      }) => {
+        expect(hasNextPage).toBe(true)
+        expect(hasPreviousPage).toBe(true)
+      }
+    )
   })
 })

@@ -6,7 +6,7 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
-import UserType from "../user"
+import { UserType } from "../user"
 
 export const EditableLocationFields = new GraphQLInputObjectType({
   name: "EditableLocation",

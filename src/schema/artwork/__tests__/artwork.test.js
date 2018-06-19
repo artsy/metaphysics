@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import { assign } from "lodash"
 import moment from "moment"
 
@@ -488,7 +489,7 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns null if work is part of permanent collection", () => {
+    it("returns Permanent Collection if work is part of permanent collection", () => {
       artwork.sale_message = "for sale"
       artwork.availability = "permanent collection"
 
@@ -496,7 +497,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
-            sale_message: null,
+            sale_message: "Permanent collection",
           },
         })
       })
@@ -536,6 +537,20 @@ describe("Artwork type", () => {
             id: "richard-prince-untitled-portrait",
             contact_message:
               "Hello, I am interested in placing a bid on this work. Please send me more information.", // eslint-disable-line max-len
+          },
+        })
+      })
+    })
+
+    it("returns null if work is marked with availability_hidden", () => {
+      artwork.availability = "sold"
+      artwork.availability_hidden = true
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            contact_message: null,
           },
         })
       })
@@ -612,6 +627,27 @@ describe("Artwork type", () => {
         rootValue
       )
       expect(sale_id).toEqual(artwork.sale_ids[0])
+    })
+
+    it("returns the specified sale artwork", async () => {
+      const query = gql`
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            sale_artwork(sale_id: "sale-id-auction") {
+              sale_id
+            }
+          }
+        }
+      `
+      rootValue.saleArtworkLoader = ({ saleId, saleArtworkId }) =>
+        saleId === artwork.sale_ids[1] &&
+        saleArtworkId === "richard-prince-untitled-portrait" &&
+        Promise.resolve({ sale_id: saleId })
+      const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
+        query,
+        rootValue
+      )
+      expect(sale_id).toEqual(artwork.sale_ids[1])
     })
   })
 
@@ -883,9 +919,35 @@ describe("Artwork type", () => {
       })
     })
 
-    it("returns false if artwork price is a range with multiple editions.", () => {
+    it("returns false if artwork price with single edition is not a range.", () => {
+      artwork.price = "$200"
+      artwork.edition_sets = [{}]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_price_range: false,
+          },
+        })
+      })
+    })
+
+    it("returns true if artwork price with single edition is a range.", () => {
       artwork.price = "$200 - $300"
       artwork.edition_sets = [{}]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_price_range: true,
+          },
+        })
+      })
+    })
+
+    it("returns false if artwork price with multiple editions is a range.", () => {
+      artwork.price = "$200 - $300"
+      artwork.edition_sets = [{}, {}]
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
@@ -965,7 +1027,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
-              info: "One of a kind piece.",
+              info: "One of a kind piece",
             },
           },
         })
@@ -986,7 +1048,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
-              short_description: "This is a unique work.",
+              short_description: "This is a unique work",
             },
           },
         })

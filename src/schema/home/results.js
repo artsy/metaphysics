@@ -25,6 +25,8 @@ const moduleResults = {
         }).then(({ hits }) => {
           return slice(shuffle(hits), 0, RESULTS_SIZE)
         })
+      } else {
+        return undefined
       }
     })
   },
@@ -61,6 +63,8 @@ const moduleResults = {
       if (gene) {
         return geneArtworks(filterArtworksLoader, gene.id, RESULTS_SIZE)
       }
+
+      return undefined
     })
   },
   generic_gene: ({ rootValue: { filterArtworksLoader }, params }) => {
@@ -77,6 +81,8 @@ const moduleResults = {
           return map(body, "artwork")
         })
       }
+
+      return undefined
     })
   },
   popular_artists: ({ rootValue: { filterArtworksLoader, deltaLoader } }) => {
@@ -106,6 +112,38 @@ const moduleResults = {
     return savedArtworksLoader({
       size: RESULTS_SIZE,
       sort: "-position",
+    })
+  },
+  similar_to_saved_works: ({
+    rootValue: { savedArtworksLoader, similarArtworksLoader },
+  }) => {
+    return savedArtworksLoader({
+      size: RESULTS_SIZE,
+      sort: "-position",
+    }).then(works => {
+      return similarArtworksLoader({
+        artwork_id: map(works, "_id").slice(0, 7),
+      })
+    })
+  },
+  similar_to_recently_viewed: ({
+    rootValue: { meLoader, similarArtworksLoader },
+  }) => {
+    return meLoader().then(({ recently_viewed_artwork_ids }) => {
+      if (recently_viewed_artwork_ids.length === 0) {
+        return []
+      }
+      const recentlyViewedIds = recently_viewed_artwork_ids.slice(0, 7)
+      return similarArtworksLoader({ artwork_id: recentlyViewedIds })
+    })
+  },
+  recently_viewed_works: ({ rootValue: { meLoader, artworksLoader } }) => {
+    return meLoader().then(({ recently_viewed_artwork_ids }) => {
+      if (recently_viewed_artwork_ids.length === 0) {
+        return []
+      }
+      const ids = recently_viewed_artwork_ids.slice(0, RESULTS_SIZE)
+      return artworksLoader({ ids })
     })
   },
 }
