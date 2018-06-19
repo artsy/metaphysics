@@ -39,5 +39,5 @@ it("tries to parse the response when there is a String and resolves with it", as
     callback(null, reqResponse)
   })
 
-  return expectPromiseRejectionToMatch(fetch("foo/bar"), /Bad object/)
+  return expectPromiseRejectionToMatch(fetch("foo/bar"), /Unexpected token/)
 })
