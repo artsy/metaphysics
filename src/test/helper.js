@@ -11,6 +11,9 @@ if (fs.existsSync(".env.test")) {
 import sinon from "sinon"
 global.sinon = sinon
 
+import Bluebird from "bluebird"
+global.Promise = Bluebird
+
 // prettier-ignore
 
 /**
