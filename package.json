@@ -96,8 +96,7 @@
     "request": "^2.67.0",
     "source-map-support": "^0.4.3",
     "url-join": "^4.0.0",
-    "uuid": "^3.1.0",
-    "yieldable-json": "1.0.1"
+    "uuid": "^3.1.0"
   },
   "resolutions": {
     "babel-core": "^7.0.0-bridge.0",
