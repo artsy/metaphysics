@@ -829,6 +829,7 @@ describe("Artist type", () => {
                 }
               }
               pageInfo {
+                startCursor
                 hasNextPage
                 hasPreviousPage
               }
@@ -841,7 +842,7 @@ describe("Artist type", () => {
         ({
           artist: {
             articlesConnection: {
-              pageInfo: { hasNextPage, hasPreviousPage },
+              pageInfo: { startCursor, hasNextPage, hasPreviousPage },
               pageCursors,
               edges,
             },
@@ -861,6 +862,7 @@ describe("Artist type", () => {
           // Check prev/next are true.
           expect(hasNextPage).toBe(true)
           expect(hasPreviousPage).toBe(true)
+          expect(startCursor).not.toBe(null)
         }
       )
     })
