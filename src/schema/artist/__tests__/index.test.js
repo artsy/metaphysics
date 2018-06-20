@@ -852,7 +852,7 @@ describe("Artist type", () => {
   })
 
   describe("showsConnection", () => {
-    it("returns connection of shows augmented by cursor info", () => {
+    it("returns connection of shows augmented by cursor and pagination info", () => {
       const relatedShowsLoader = jest.fn().mockReturnValueOnce(
         Promise.resolve({
           body: [
@@ -869,7 +869,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "percy") {
-            showsConnection(first: 10) {
+            showsConnection(first: 10, after: "YXJyYXljb25uZWN0aW9uOjk=") {
               pageCursors {
                 first {
                   page
@@ -880,6 +880,10 @@ describe("Artist type", () => {
                 last {
                   page
                 }
+              }
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
               }
               edges {
                 node {
@@ -892,7 +896,15 @@ describe("Artist type", () => {
       `
 
       return runQuery(query, rootValue).then(
-        ({ artist: { showsConnection: { pageCursors, edges } } }) => {
+        ({
+          artist: {
+            showsConnection: {
+              pageInfo: { hasNextPage, hasPreviousPage },
+              pageCursors,
+              edges,
+            },
+          },
+        }) => {
           // Check expected page cursors exist in response.
           const { first, around, last } = pageCursors
           expect(first).toEqual(null)
@@ -902,8 +914,11 @@ describe("Artist type", () => {
           for (index = 0; index < 4; index++) {
             expect(around[index].page).toBe(index + 1)
           }
-          // Check article data included in edges.
+          // Check show data included in edges.
           expect(edges[0].node.name).toEqual("Catty Art Show")
+          // Check that there is a previous and next page.
+          expect(hasNextPage).toBe(true)
+          expect(hasPreviousPage).toBe(true)
         }
       )
     })

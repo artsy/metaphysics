@@ -184,4 +184,22 @@ describe("Artist type", () => {
       }
     )
   })
+
+  it("returns the total number of records", () => {
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResults(recordsTrusted: true, first: 10) {
+            totalCount
+          }
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(
+      ({ artist: { auctionResults: { totalCount } } }) => {
+        expect(totalCount).toBe(35)
+      }
+    )
+  })
 })
