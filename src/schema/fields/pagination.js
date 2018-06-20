@@ -130,6 +130,10 @@ export function connectionWithCursorInfo(type) {
         type: PageCursorsType,
         resolve: ({ pageCursors }) => pageCursors,
       },
+      totalCount: {
+        type: GraphQLInt,
+        resolve: ({ totalCount }) => totalCount,
+      },
     },
   }).connectionType
 }

@@ -275,6 +275,9 @@ export const ArtistType = new GraphQLObjectType({
                     total_count
                   ),
                 },
+                {
+                  totalCount: total_count,
+                },
                 connectionFromArraySlice(_embedded.items, options, {
                   arrayLength: total_count,
                   sliceStart: offset,
