@@ -811,7 +811,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "percy") {
-            articlesConnection(first: 10) {
+            articlesConnection(first: 10, after: "YXJyYXljb25uZWN0aW9uOjk=") {
               pageCursors {
                 first {
                   page
@@ -828,13 +828,25 @@ describe("Artist type", () => {
                   title
                 }
               }
+              pageInfo {
+                hasNextPage
+                hasPreviousPage
+              }
             }
           }
         }
       `
 
       return runQuery(query, rootValue).then(
-        ({ artist: { articlesConnection: { pageCursors, edges } } }) => {
+        ({
+          artist: {
+            articlesConnection: {
+              pageInfo: { hasNextPage, hasPreviousPage },
+              pageCursors,
+              edges,
+            },
+          },
+        }) => {
           // Check expected page cursors exist in response.
           const { first, around, last } = pageCursors
           expect(first).toEqual(null)
@@ -846,6 +858,9 @@ describe("Artist type", () => {
           }
           // Check article data included in edges.
           expect(edges[0].node.title).toEqual("My Awesome Article")
+          // Check prev/next are true.
+          expect(hasNextPage).toBe(true)
+          expect(hasPreviousPage).toBe(true)
         }
       )
     })
