@@ -4,7 +4,7 @@ const runLinkChain = (link, op, complete) =>
   link.request(op).subscribe({ complete })
 
 // FIXME: This seems to be hitting the actual network and thus fails without it.
-describe("stress link", () => {
+describe("exchange link", () => {
   it("passes request ID headers to the fetch", () => {
     expect.assertions(1)
 

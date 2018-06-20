@@ -7,12 +7,12 @@ import urljoin from "url-join"
 
 import { middlewareLink } from "../lib/middlewareLink"
 
-const { STRESS_API_BASE } = config
+const { EXCHANGE_API_BASE } = config
 
 export const createStressLink = () => {
   const httpLink = createHttpLink({
     fetch,
-    uri: urljoin(STRESS_API_BASE, "graphql"),
+    uri: urljoin(EXCHANGE_API_BASE, "graphql"),
   })
 
   const authMiddleware = setContext((_request, context) => {
@@ -28,7 +28,7 @@ export const createStressLink = () => {
         }
       })
     }
-    // Stress uses no authentication for now
+    // Exchange uses no authentication for now
     return { headers }
   })
 

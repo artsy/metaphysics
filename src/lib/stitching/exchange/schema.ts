@@ -8,7 +8,7 @@ import {
 import { readFileSync } from "fs"
 
 export const executableStressSchema = async () => {
-  const stressSDL = readFileSync("src/data/stress.graphql", "utf8")
+  const stressSDL = readFileSync("src/data/exchange.graphql", "utf8")
   const stressLink = createStressLink()
 
   const schema = await makeRemoteExecutableSchema({

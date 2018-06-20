@@ -29,7 +29,7 @@ import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
 import { mergeSchemas } from "./lib/stitching/mergeSchemas"
 import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
-import { executableStressSchema } from "./lib/stitching/stress/schema"
+import { executableStressSchema } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 
 import { logQueryDetails } from "./lib/logQueryDetails"

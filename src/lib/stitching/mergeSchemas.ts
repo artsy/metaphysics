@@ -3,7 +3,7 @@ import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
 import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitching"
 import { executableLewittSchema } from "lib/stitching/lewitt/schema"
-import { executableStressSchema } from "lib/stitching/stress/schema"
+import { executableStressSchema } from "lib/stitching/exchange/schema"
 
 import localSchema from "../../schema"
 

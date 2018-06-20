@@ -1,7 +1,7 @@
 import convectionLoaders from "./convection"
 import impulseLoaders from "./impulse"
 import gravityLoaders from "./gravity"
-import stressLoaders from "./stress"
+import stressLoaders from "./exchange"
 
 export default (accessToken, userID, opts) => ({
   ...gravityLoaders(accessToken, userID, opts),
