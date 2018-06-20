@@ -11,7 +11,7 @@ import EditionSet from "schema/edition_set"
 import Location from "schema/location"
 import Partner from "schema/partner"
 import money from "schema/fields/money"
-import User from "schema/user"
+import { UserByID } from "schema/user"
 
 export const OrderLineItemType = new GraphQLObjectType({
   name: "OrderLineItem",
@@ -71,10 +71,14 @@ export const OrderType = new GraphQLObjectType({
       ) => partnerLoader(partnerId),
     },
     user: {
-      type: User.type,
+      type: UserByID.type,
       description: "User of this order",
-      // resolve: ({ userId }, _args, _context, { rootValue: { userLoader } }) =>
-      //   userLoader(userId),
+      resolve: (
+        { userId },
+        _args,
+        _context,
+        { rootValue: { userByIDLoader } }
+      ) => userByIDLoader(userId),
     },
     currencyCode: {
       type: GraphQLString,

@@ -101,6 +101,7 @@ export default opts => {
     ),
     tagLoader: gravityLoader(id => `tag/${id}`),
     trendingArtistsLoader: gravityLoader("artists/trending"),
-    userLoader: gravityLoader("user", {}, { method: "GET" }),
+    userByIDLoader: gravityLoader(id => `user/${id}`, {}, { method: "GET" }),
+    userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
   }
 }
