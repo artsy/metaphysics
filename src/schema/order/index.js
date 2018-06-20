@@ -11,7 +11,6 @@ import EditionSet from "schema/edition_set"
 import Location from "schema/location"
 import Partner from "schema/partner"
 import money from "schema/fields/money"
-import { GravityIDFields } from "schema/object_identification"
 import User from "schema/user"
 
 export const OrderLineItemType = new GraphQLObjectType({
@@ -34,7 +33,7 @@ export const OrderLineItemType = new GraphQLObjectType({
     edition_set: {
       type: EditionSet.type,
       description: "Edition set on the artwork",
-      resolve: ({ edition_set_id }) => edition_set_id,
+      resolve: ({ editionSetId }) => editionSetId,
     },
     priceCents: {
       type: GraphQLInt,
@@ -90,4 +89,11 @@ export const OrderType = new GraphQLObjectType({
       description: "Tracking code of the order",
     },
   }),
+})
+
+export const {
+  connectionType: OrderConnection,
+  edgeType: OrderEdge,
+} = connectionDefinitions({
+  nodeType: OrderType,
 })

@@ -17,6 +17,7 @@ import GeneFamilies from "./gene_families"
 import GeneFamily from "./gene_family"
 import HomePage from "./home"
 import { Order } from "./order/order"
+import { Orders } from "./order/orders"
 import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
 import Profile from "./profile"
@@ -100,6 +101,7 @@ const rootFields = {
   me: Me,
   node: ObjectIdentification.NodeField,
   order: Order,
+  orders: Orders,
   ordered_set: OrderedSet,
   ordered_sets: OrderedSets,
   partner: Partner,

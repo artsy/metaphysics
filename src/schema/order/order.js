@@ -5,7 +5,7 @@ export const Order = {
   type: OrderType,
   description: "Returns a single Order",
   args: { id: { type: new GraphQLNonNull(GraphQLString) } },
-  resolve: (_parent, _args, context, { rootValue: { stressSchema } }) => {
+  resolve: (_parent, { id }, context, { rootValue: { stressSchema } }) => {
     const query = `
       query EcommerceOrder($id: ID!) {
         ecommerce_order(id: $id) {
@@ -29,10 +29,7 @@ export const Order = {
       }
     `
     return graphql(stressSchema, query, null, context, {
-      id: _args.id,
-    }).then(a => {
-      console.log(a)
-      return a.data.ecommerce_order
-    })
+      id,
+    }).then(a => a.data.ecommerce_order)
   },
 }

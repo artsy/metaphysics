@@ -1,24 +1,52 @@
-import { graphql, GraphQLNonNull, GraphQLString } from "graphql"
-import { OrderType } from "schema/order/index"
-export const Order = {
+import { graphql, GraphQLString } from "graphql"
+import { connectionDefinitions } from "graphql-relay"
+import { OrderConnection } from "schema/order/index"
+
+export const Orders = {
   name: "Orders",
-  type: OrderType,
-  description: "Returns a single Order",
-  args: { id: { type: new GraphQLNonNull(GraphQLString) } },
-  resolve: (_parent, _args, context, { rootValue: { stressSchema } }) => {
+  type: OrderConnection,
+  description: "Returns list of orders",
+  args: {
+    userId: { type: GraphQLString },
+    partnerId: { type: GraphQLString },
+    state: { type: GraphQLString },
+  },
+  resolve: (
+    _parent,
+    { userId, partnerId, state },
+    context,
+    { rootValue: { stressSchema } }
+  ) => {
     const query = `
-      query EcommerceOrder($id: ID!) {
-        ecommerce_order(id: $id) {
-          id
-          code
-          currencyCode
-          state
-          partnerId
+      query EcommerceOrders($userId: String, $partnerId: String, $state: String) {
+        ecommerce_orders(userId: $userId, partnerId: $partnerId, state: $state) {
+          edges{
+            node{
+              id
+              code
+              currencyCode
+              state
+              partnerId
+              userId
+              lineItems{
+                edges{
+                  node{
+                    id
+                    priceCents
+                    artworkId
+                    editionSetId
+                  }
+                }
+              }
+            }
+          }
         }
       }
     `
     return graphql(stressSchema, query, null, context, {
-      id: _args.id,
-    }).then(a => a.data.ecommerce_order)
+      userId,
+      partnerId,
+      state,
+    }).then(a => a.data.ecommerce_orders)
   },
 }
