@@ -207,39 +207,6 @@ describe("graphQLTimeoutMiddleware", () => {
       expect(nestedResolver).not.toBeCalled()
     })
 
-    describe("concerning cases where no timeout is needed", () => {
-
-      beforeEach(() => {
-        jest.useFakeTimers()
-      })
-
-      afterEach(() => {
-        jest.useRealTimers()
-      })
-
-      it("does not start a timeout when a resolver does not return a promise", async () => {
-
-        resolvers = {
-          Query: {
-            artwork: () => responseData,
-          },
-        }
-        await query()
-        expect(setTimeout).not.toBeCalled()
-      })
-
-      it("does not start a timeout when a resolver returns a promise that’s no longer pending", async () => {
-
-        resolvers = {
-          Query: {
-            artwork: () => Promise.resolve(responseData),
-          },
-        }
-        await query()
-        expect(setTimeout).not.toBeCalled()
-      })
-    })
-
     describe("concerning clearing timeouts", () => {
       beforeAll(() => {
         jest.useFakeTimers()
@@ -250,11 +217,9 @@ describe("graphQLTimeoutMiddleware", () => {
       })
 
       it("clears the timeout when a resolver succeeds", async () => {
-        const promise = Promise.resolve(responseData)
-        promise.isPending = () => true
         resolvers = {
           Query: {
-            artwork: () => promise,
+            artwork: () => responseData,
           },
         }
         await query()
@@ -262,11 +227,9 @@ describe("graphQLTimeoutMiddleware", () => {
       })
 
       it("clears the timeout when a resolver fails", async () => {
-        const promise = Promise.reject(new Error("oh noes"))
-        promise.isPending = () => true
         resolvers = {
           Query: {
-            artwork: () => promise,
+            artwork: () => Promise.reject(new Error("oh noes")),
           },
         }
         await query()
