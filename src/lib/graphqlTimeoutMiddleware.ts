@@ -31,22 +31,6 @@ export function timeoutForField(field: GraphQLField<any, any>) {
   return null
 }
 
-function isPendingPromise(value) {
-  return Boolean(
-    value &&
-    typeof value.then === "function" &&
-    /**
-     * In case of using a user-land Promise wrapper, such as Bluebird, check if
-     * it has a ‘pending’ check, in which case we can further reduce the number
-     * of time-outs needed.
-     *
-     * Alas this check can’t be done once on start-up, because async/await usage
-     * will return an unwrapped native `Promise`.
-     */
-    (typeof value.isPending === "function" ? value.isPending() : true)
-  )
-}
-
 export const graphqlTimeoutMiddleware = (defaultTimeoutInMS: number) => {
   const middleware: IMiddleware = (
     middlewareResolver,
@@ -55,11 +39,6 @@ export const graphqlTimeoutMiddleware = (defaultTimeoutInMS: number) => {
     context,
     info
   ) => {
-    const resolverResult = middlewareResolver(parent, args, context, info)
-    // Only add a timeout if there’s async work in progress.
-    if (!isPendingPromise(resolverResult)) {
-      return resolverResult
-    }
     // TODO: Maybe cache if it turns out to take significant time.
     //       Should probably be cached on the schema instance.
     const timeoutInMS = timeoutForField(fieldFromResolveInfo(info)) || defaultTimeoutInMS
@@ -71,16 +50,18 @@ export const graphqlTimeoutMiddleware = (defaultTimeoutInMS: number) => {
           reject(new GraphQLTimeoutError(`GraphQL Timeout Error: ${field} has timed out after waiting for ${timeoutInMS}ms`))
         }, timeoutInMS)
       }),
-      resolverResult.then(
-        result => {
-          clearTimeout(timeoutID)
-          result
-        },
-        error => {
-          clearTimeout(timeoutID)
-          throw error
+      new Promise(async (resolve, reject) => {
+        try {
+          const result = await middlewareResolver(parent, args, context, info)
+          resolve(result)
         }
-      )
+        catch (error) {
+          reject(error)
+        }
+        finally {
+          clearTimeout(timeoutID)
+        }
+      })
     ])
   }
   return middleware
