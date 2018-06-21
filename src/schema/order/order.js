@@ -22,6 +22,7 @@ export const Order = {
                 priceCents
                 artworkId
                 editionSetId
+                quantity
               }
             }
           }

@@ -18,8 +18,8 @@ export const Orders = {
     { rootValue: { stressSchema } }
   ) => {
     const query = `
-      query EcommerceOrders($userId: String, $partnerId: String, $state: String) {
-        ecommerce_orders(userId: $userId, partnerId: $partnerId, state: $state) {
+      query EcommerceOrders($userId: String, $partnerId: String, $state: EcommerceOrderStateEnum, $sort: EcommerceOrderConnectionSortEnum) {
+        ecommerce_orders(userId: $userId, partnerId: $partnerId, state: $state, sort: $sort) {
           edges{
             node{
               id
@@ -35,6 +35,7 @@ export const Orders = {
                     priceCents
                     artworkId
                     editionSetId
+                    quantity
                   }
                 }
               }

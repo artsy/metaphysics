@@ -39,6 +39,10 @@ export const OrderLineItemType = new GraphQLObjectType({
       type: GraphQLInt,
       description: "Price of this line item in cents",
     },
+    quantity: {
+      type: GraphQLInt,
+      description: "Quantity of items in this line item",
+    },
   }),
 })
 
