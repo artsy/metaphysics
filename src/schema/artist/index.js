@@ -107,7 +107,7 @@ export const ArtistType = new GraphQLObjectType({
             })
           ).then(({ results, count }) => {
             const totalPages = Math.ceil(count / size)
-            return assign(
+            return merge(
               { pageCursors: createPageCursors(pageOptions, count) },
               connectionFromArraySlice(results, args, {
                 arrayLength: count,
