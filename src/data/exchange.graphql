@@ -55,6 +55,7 @@ type LineItem {
   editionSetId: String
   id: ID!
   priceCents: Int!
+  quantity: Int!
 }
 
 # Attributes for a LineItem
@@ -67,6 +68,9 @@ input LineItemAttributes {
 
   # Item's price in cents
   priceCents: Int!
+
+  # Number of items in the line item
+  quantity: Int!
 }
 
 # The connection type for LineItem.
