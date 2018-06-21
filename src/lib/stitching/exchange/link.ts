@@ -19,8 +19,8 @@ export const createStressLink = () => {
     const locals = context.graphqlContext && context.graphqlContext.res.locals
     const tokenLoader = locals && locals.dataLoaders.stressTokenLoader
     const headers = { ...(locals && requestIDHeaders(locals.requestIDs)) }
-    // If a token loader exists for Convection (i.e. this is an authenticated request), use that token to make
-    // authenticated requests to Convection.
+    // If a token loader exists for Exchange (i.e. this is an authenticated request), use that token to make
+    // authenticated requests to Exchange.
     if (tokenLoader) {
       return tokenLoader().then(({ token }) => {
         return {
