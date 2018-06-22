@@ -1,6 +1,6 @@
 import { graphql, GraphQLString } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
-import { OrderConnection } from "schema/order/index"
+import { OrderConnection } from "schema/ecommerce/types/order"
 
 export const Orders = {
   name: "Orders",

@@ -1,5 +1,5 @@
 import { graphql, GraphQLNonNull, GraphQLString } from "graphql"
-import { OrderType } from "schema/order/index"
+import { OrderType } from "schema/ecommerce/types/order"
 export const Order = {
   name: "Order",
   type: OrderType,
