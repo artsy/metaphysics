@@ -7,7 +7,8 @@ import {
 import { connectionDefinitions } from "graphql-relay"
 
 import Partner from "schema/partner"
-import money from "schema/fields/money"
+import { amount } from "schema/fields/money"
+import date from "schema/fields/date"
 import { UserByID } from "schema/user"
 import { OrderLineItemConnection } from "./order_line_item"
 
@@ -18,6 +19,25 @@ export const OrderType = new GraphQLObjectType({
       type: GraphQLID,
       description: "ID of the order",
     },
+    currencyCode: {
+      type: GraphQLString,
+      description: "Currency code of this order",
+    },
+    state: {
+      type: GraphQLString,
+      description: "State of the order",
+    },
+    code: {
+      type: GraphQLString,
+      description: "Tracking code of the order",
+    },
+    itemTotalCents: amount(({ itemTotalCents }) => itemTotalCents),
+    shippingTotalCents: amount(({ shippingTotalCents }) => shippingTotalCents),
+    taxTotalCents: amount(({ taxTotalCents }) => taxTotalCents),
+    transactionFeeCents: amount(
+      ({ transactionFeeCents }) => transactionFeeCents
+    ),
+    commissionFeeCents: amount(({ commissionFeeCents }) => commissionFeeCents),
     lineItems: {
       type: OrderLineItemConnection,
       description: "List of order line items",
@@ -42,18 +62,8 @@ export const OrderType = new GraphQLObjectType({
         { rootValue: { userByIDLoader } }
       ) => userByIDLoader(userId),
     },
-    currencyCode: {
-      type: GraphQLString,
-      description: "Currency code of this order",
-    },
-    state: {
-      type: GraphQLString,
-      description: "State of the order",
-    },
-    code: {
-      type: GraphQLString,
-      description: "Tracking code of the order",
-    },
+    updatedAt: date,
+    createdAt: date,
   }),
 })
 

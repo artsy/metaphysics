@@ -120,7 +120,7 @@ type Order {
   ): LineItemConnection
   partnerId: String!
   state: OrderStateEnum!
-  updateAt: DateTime!
+  updatedAt: DateTime!
   userId: String!
 }
 

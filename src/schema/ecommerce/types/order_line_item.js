@@ -2,6 +2,7 @@ import { GraphQLID, GraphQLInt, GraphQLObjectType } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 import Artwork from "schema/artwork"
 import EditionSet from "schema/edition_set"
+import { amount } from "schema/fields/money"
 
 export const OrderLineItemType = new GraphQLObjectType({
   name: "OrderLineItem",
@@ -25,10 +26,7 @@ export const OrderLineItemType = new GraphQLObjectType({
       description: "Edition set on the artwork",
       resolve: ({ editionSetId }) => editionSetId,
     },
-    priceCents: {
-      type: GraphQLInt,
-      description: "Price of this line item in cents",
-    },
+    price: amount(({ priceCents }) => priceCents),
     quantity: {
       type: GraphQLInt,
       description: "Quantity of items in this line item",

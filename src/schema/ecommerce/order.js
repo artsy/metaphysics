@@ -15,6 +15,8 @@ export const Order = {
           state
           partnerId
           userId
+          updatedAt
+          createdAt
           lineItems{
             edges{
               node{

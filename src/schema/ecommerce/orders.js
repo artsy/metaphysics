@@ -28,6 +28,8 @@ export const Orders = {
               state
               partnerId
               userId
+              updatedAt
+              createdAt
               lineItems{
                 edges{
                   node{
@@ -48,6 +50,9 @@ export const Orders = {
       userId,
       partnerId,
       state,
-    }).then(a => a.data.ecommerce_orders)
+    }).then(a => {
+      console.log(a)
+      return a.data.ecommerce_orders
+    })
   },
 }
