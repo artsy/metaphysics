@@ -4,7 +4,7 @@ import exampleOrderResult from "test/fixtures/results/submit_order_mutation"
 import orderJSON from "test/fixtures/gravity/order.json"
 
 describe("Me", () => {
-  describe("SubmitOrderMutation", () => {
+  xdescribe("SubmitOrderMutation", () => {
     describe("authenticated", () => {
       const mutation = `
         mutation {

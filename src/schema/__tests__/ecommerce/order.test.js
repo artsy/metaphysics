@@ -17,7 +17,7 @@ let rootValue
 describe("Order type", () => {
   beforeEach(() => {
     const typeDefs = fs.readFileSync(
-      path.resolve(__dirname, "../../data/exchange.graphql"),
+      path.resolve(__dirname, "../../../data/exchange.graphql"),
       "utf8"
     )
 

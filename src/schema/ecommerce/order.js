@@ -33,6 +33,6 @@ export const Order = {
     `
     return graphql(stressSchema, query, null, context, {
       id,
-    }).then(result => result.data.ecommerce_order)
+    }).then(result => (result.data ? result.data.ecommerce_order : null))
   },
 }

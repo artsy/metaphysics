@@ -5,6 +5,8 @@
   "currencyCode": "usd",
   "partnerId": "111",
   "userId": "111",
+  "updatedAt": "",
+  "createdAt": "",
   "lineItems": {
     "edges": [
       {
