@@ -50,9 +50,6 @@ export const Orders = {
       userId,
       partnerId,
       state,
-    }).then(a => {
-      console.log(a)
-      return a.data.ecommerce_orders
-    })
+    }).then(a => a.data.ecommerce_orders)
   },
 }
