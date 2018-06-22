@@ -1,0 +1,22 @@
+{
+  "id": "fooid123",
+  "code": "1",
+  "state": "PENDING",
+  "currencyCode": "usd",
+  "partnerId": "111",
+  "userId": "111",
+  "lineItems": {
+    "edges": [
+      {
+        "node": {
+          "id": "1",
+          "priceCents": 420000,
+          "artworkId": "541324567261693f97790b00",
+          "artistId": "222",
+          "editionSetId": null,
+          "quantity": 1
+        }
+      }
+    ]
+  }
+}
