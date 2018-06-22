@@ -27,8 +27,9 @@ describe("createPageCursors", () => {
     const { around } = pageCursors
     expect(around.length).toBe(4)
 
-    // We are on the first page.
+    // We are on the first page, and there is no previous page info.
     expect(around[0].isCurrent).toBe(true)
+    expect(pageCursors).not.toHaveProperty("previous")
 
     checkCursorArray(around, size)
   })
@@ -46,8 +47,9 @@ describe("createPageCursors", () => {
     const { around } = pageCursors
     expect(around.length).toBe(4)
 
-    // We are on the first page.
+    // We are on the first page, and there is no previous page info.
     expect(around[0].isCurrent).toBe(true)
+    expect(pageCursors).not.toHaveProperty("previous")
 
     checkCursorArray(around, size)
   })
@@ -62,12 +64,13 @@ describe("createPageCursors", () => {
     // Last page starts at `70`.
     expect(offsetFromCursor(pageCursors.last)).toBe("69")
 
-    const { around } = pageCursors
+    const { around, previous } = pageCursors
     expect(around.length).toBe(3)
 
     // We are on the fourth page.
     expect(around[1].page).toBe(4)
     expect(around[1].isCurrent).toBe(true)
+    expect(previous.page).toBe(3)
 
     checkCursorArray(around, size)
   })
@@ -82,12 +85,13 @@ describe("createPageCursors", () => {
     // There shouldn't be a `last` as it is contained in `around`.
     expect(pageCursors).not.toHaveProperty("last")
 
-    const { around } = pageCursors
+    const { around, previous } = pageCursors
     expect(around.length).toBe(4)
 
     // We are on the seventh page.
     expect(around[2].page).toBe(7)
     expect(around[2].isCurrent).toBe(true)
+    expect(previous.page).toBe(6)
 
     checkCursorArray(around, size)
   })
@@ -99,6 +103,7 @@ describe("createPageCursors", () => {
     // There shouldn't be a `first` or `last` as it is contained in `around`.
     expect(pageCursors).not.toHaveProperty("last")
     expect(pageCursors).not.toHaveProperty("first")
+    expect(pageCursors).not.toHaveProperty("previous")
 
     const { around } = pageCursors
     expect(around.length).toBe(1)

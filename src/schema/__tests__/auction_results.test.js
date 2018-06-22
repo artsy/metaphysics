@@ -168,6 +168,11 @@ describe("Artist type", () => {
               hasNextPage
               hasPreviousPage
             }
+            pageCursors {
+              previous {
+                page
+              }
+            }
           }
         }
       }
@@ -176,11 +181,15 @@ describe("Artist type", () => {
     return runQuery(query, rootValue).then(
       ({
         artist: {
-          auctionResults: { pageInfo: { hasNextPage, hasPreviousPage } },
+          auctionResults: {
+            pageCursors: { previous: { page } },
+            pageInfo: { hasNextPage, hasPreviousPage },
+          },
         },
       }) => {
         expect(hasNextPage).toBe(true)
         expect(hasPreviousPage).toBe(true)
+        expect(page).toBe(1)
       }
     )
   })
