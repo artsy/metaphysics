@@ -95,23 +95,30 @@ export const ArtistType = new GraphQLObjectType({
           _request,
           { rootValue: { articlesLoader } }
         ) => {
-          const relayOptions = parseRelayOptions(args)
+          const pageOptions = parseRelayOptions(args)
+          const { page, size, offset } = pageOptions
+
           const gravityArgs = omit(args, ["first", "after", "last", "before"])
           return articlesLoader(
-            defaults(gravityArgs, relayOptions, {
+            defaults(gravityArgs, pageOptions, {
               artist_id: _id,
               published: true,
               count: true,
             })
           ).then(({ results, count }) => {
-            return assign(
-              {
-                pageCursors: createPageCursors(relayOptions, count),
-              },
+            const totalPages = Math.ceil(count / size)
+            return merge(
+              { pageCursors: createPageCursors(pageOptions, count) },
               connectionFromArraySlice(results, args, {
                 arrayLength: count,
-                sliceStart: relayOptions.offset,
-              })
+                sliceStart: offset,
+              }),
+              {
+                pageInfo: {
+                  hasPreviousPage: page > 1,
+                  hasNextPage: page < totalPages,
+                },
+              }
             )
           })
         },
@@ -274,6 +281,9 @@ export const ArtistType = new GraphQLObjectType({
                     },
                     total_count
                   ),
+                },
+                {
+                  totalCount: total_count,
                 },
                 connectionFromArraySlice(_embedded.items, options, {
                   arrayLength: total_count,

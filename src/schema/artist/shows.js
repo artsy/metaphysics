@@ -1,7 +1,7 @@
 import { pageable } from "relay-cursor-paging"
 import { GraphQLInt, GraphQLString, GraphQLBoolean } from "graphql"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
-import { assign, defaults, reject, includes, omit } from "lodash"
+import { merge, defaults, reject, includes, omit } from "lodash"
 import { createPageCursors } from "schema/fields/pagination"
 import { parseRelayOptions } from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
@@ -75,22 +75,34 @@ export const ShowField = {
 export const ShowsConnectionField = {
   args: pageable(ShowArgs),
   resolve: ({ id }, args, _request, { rootValue: { relatedShowsLoader } }) => {
-    const relayOptions = parseRelayOptions(args)
+    const pageOptions = parseRelayOptions(args)
+    const { page, size, offset } = pageOptions
     const gravityArgs = omit(args, ["first", "after", "last", "before"])
     return relatedShowsLoader(
-      defaults(gravityArgs, relayOptions, {
+      defaults(gravityArgs, pageOptions, {
         artist_id: id,
         sort: "-end_at",
         total_count: true,
       })
     ).then(({ body, headers }) => {
-      return assign({
-        pageCursors: createPageCursors(relayOptions, headers["x-total-count"]),
-        ...connectionFromArraySlice(body, args, {
-          arrayLength: headers["x-total-count"],
-          sliceStart: relayOptions.offset,
+      const totalCount = headers["x-total-count"]
+      const totalPages = Math.ceil(totalCount / size)
+
+      return merge(
+        {
+          pageCursors: createPageCursors(pageOptions, totalCount),
+        },
+        connectionFromArraySlice(body, args, {
+          arrayLength: totalCount,
+          sliceStart: offset,
         }),
-      })
+        {
+          pageInfo: {
+            hasPreviousPage: page > 1,
+            hasNextPage: page < totalPages,
+          },
+        }
+      )
     })
   },
 }

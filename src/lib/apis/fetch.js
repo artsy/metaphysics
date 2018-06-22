@@ -33,7 +33,7 @@ export default (url, options = {}) => {
           get(response, "request.uri.href"),
           response.body,
         ]).join(" - ")
-        return reject(new HTTPError(message, response.statusCode))
+        return reject(new HTTPError(message, response.statusCode, response.body))
       }
 
       try {

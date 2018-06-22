@@ -1,27 +1,23 @@
-// @ts-check
-
-import { stringify } from "qs"
-import { formatMarkdownValue } from "schema/fields/markdown"
-import { getPagingParameters } from "relay-cursor-paging"
-
 import {
   assign,
   camelCase,
   compact,
   difference,
-  flow,
   flatMap,
+  flow,
   includes,
   isEmpty,
   isObject,
   isString,
-  trim,
-  reject,
-  omit,
   map,
+  omit,
+  reject,
+  trim,
 } from "lodash"
-
 import now from "performance-now"
+import { stringify } from "qs"
+import { getPagingParameters } from "relay-cursor-paging"
+import { formatMarkdownValue } from "schema/fields/markdown"
 
 const loadNs = now()
 const loadMs = Date.now()
