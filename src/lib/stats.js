@@ -58,4 +58,15 @@ if (enableMetrics && !isTest) {
     statsClient.timing("eventloop.latency.max", eventloopMetrics.latency.max)
     statsClient.timing("eventloop.latency.avg", eventloopMetrics.latency.avg)
   })
+
+  monitoring.on("memory", memoryMetrics => {
+    statsClient.gauge("memory.physical", memoryMetrics.physical)
+    statsClient.gauge("memory.virtual", memoryMetrics.virtual)
+  })
+
+  monitoring.on("gc", gcMetrics => {
+    statsClient.gauge("gc.heap_size", gcMetrics.size)
+    statsClient.gauge("gc.heap_used", gcMetrics.used)
+    statsClient.timing("gc.sweep_duration", gcMetrics.duration, {sweep_type: gcMetrics.type})
+  })
 }
