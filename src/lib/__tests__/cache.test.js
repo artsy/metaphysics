@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import zlib from 'zlib'
-import cache, { client, cacheCompressionEnabled } from "lib/cache"
+import cache, { client, cacheCompressionEnabled, cacheKey } from "lib/cache"
 
 function parseCacheResponse(data) {
   if (cacheCompressionEnabled) {
@@ -42,7 +42,7 @@ describe("Cache", () => {
         it("sets the cache and includes a timestamp", async (done) => {
           await cache.set("set_foo", { bar: "baz" })
 
-          client.get("set_foo", (err, data) => {
+          client.get(cacheKey("set_foo"), (err, data) => {
             const parsed = parseCacheResponse(data)
 
             expect(parsed.bar).toBe("baz")
@@ -56,7 +56,7 @@ describe("Cache", () => {
       it("with an Array it sets the cache and includes a timestamp", async (done) => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
-        client.get("set_bar", (err, data) => {
+        client.get(cacheKey("set_bar"), (err, data) => {
           const parsed = parseCacheResponse(data)
 
           expect(parsed.length).toBe(1)

@@ -22,6 +22,16 @@ const VerboseEvents = ["issue", "failure", "reconnecting", "reconnect", "remove"
 
 export const cacheCompressionEnabled = CACHE_COMPRESSION_ENABLED === "true"
 
+const cacheKeyDelimiter = "::"
+
+export const cacheKey = (key) => {
+  if (cacheCompressionEnabled) {
+    return "1" + cacheKeyDelimiter + key
+  } else {
+    return "0" + cacheKeyDelimiter + key
+  }
+}
+
 const deflateP = (dataz) => {
   return new Promise((resolve, reject) =>
     zlib.deflate(JSON.stringify(dataz), (er, deflatedData) => {
@@ -62,17 +72,17 @@ function _get(key) {
 
     let timeoutId = setTimeout(() => {
       timeoutId = null
-      const err = new Error(`[Cache#get] Timeout for key ${key}`)
+      const err = new Error(`[Cache#get] Timeout for key ${cacheKey(key)}`)
       statsClient.increment('cache.timeout')
       error(err)
       reject(err)
     }, CACHE_RETRIEVAL_TIMEOUT_MS)
 
     const start = Date.now()
-    client.get(key, (err, data) => {
+    client.get(cacheKey(key), (err, data) => {
       const time = Date.now() - start
       if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
-        error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
+        error(`[Cache#get] Slow read of ${time}ms for key ${cacheKey(key)}`)
         statsClient.timing('cache.slow_read', time)
       }
 
@@ -120,10 +130,10 @@ function _set(key, data) {
   if (cacheCompressionEnabled) {
     return deflateP(data).then(deflatedData => {
       const payload = deflatedData.toString('base64')
-      verbose(`CACHE SET: ${key}: ${payload}`)
+      verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
 
       return client.set(
-        key,
+        cacheKey(key),
         payload,
         CACHE_LIFETIME_IN_SECONDS,
         err => {
@@ -136,10 +146,10 @@ function _set(key, data) {
   } else {
     return new Promise((resolve, reject) => {
       const payload = JSON.stringify(data)
-      verbose(`CACHE SET: ${key}: ${payload}`)
+      verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
       resolve(
         client.set(
-          key,
+          cacheKey(key),
           payload,
           CACHE_LIFETIME_IN_SECONDS,
           err => {
@@ -155,7 +165,7 @@ function _set(key, data) {
 
 const _delete = (key) =>
   new Promise((resolve, reject) =>
-    client.del(key, (err) => {
+    client.del(cacheKey(key), (err) => {
       if (err) return reject(err)
     })
   )
