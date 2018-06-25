@@ -2,10 +2,11 @@ import { GraphQLBoolean, GraphQLEnumType, GraphQLObjectType } from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
 import { artistConnection } from "schema/artist"
+import { geneConnection } from "schema/gene"
 import { parseRelayOptions } from "lib/helpers"
 import { createPageCursors } from "schema/fields/pagination"
 import { assign } from "lodash"
-import { connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
 
 const RelatedArtistsKind = {
   type: new GraphQLEnumType({
@@ -21,10 +22,24 @@ const RelatedArtistsKind = {
   }),
 }
 
-export const RelatedArtists = {
+export const Related = {
   type: new GraphQLObjectType({
-    name: "RelatedArtists",
+    name: "ArtistRelatedData",
     fields: () => ({
+      genes: {
+        type: geneConnection,
+        args: pageable({}),
+        resolve: (
+          { id },
+          args,
+          _request,
+          { rootValue: { relatedGenesLoader } }
+        ) => {
+          return relatedGenesLoader({ artist: [id] }).then(response => {
+            return connectionFromArray(response, args)
+          })
+        },
+      },
       artists: {
         type: artistConnection,
         args: pageable({

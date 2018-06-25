@@ -68,6 +68,7 @@ export default opts => {
       { headers: true }
     ),
     relatedFairsLoader: gravityLoader("related/fairs"),
+    relatedGenesLoader: gravityLoader("related/genes"),
     relatedMainArtistsLoader: gravityLoader(
       "related/layer/main/artists",
       {},
