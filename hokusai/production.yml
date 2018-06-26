@@ -30,10 +30,9 @@ spec:
         resources:
           requests:
             cpu: "0.5"
-            memory: "512Mi"
-          limits:
-            cpu: "1"
             memory: "768Mi"
+          limits:
+            memory: "1Gi"
         readinessProbe:
           httpGet:
             port: 3000
