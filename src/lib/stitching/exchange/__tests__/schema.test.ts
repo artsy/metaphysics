@@ -1,13 +1,13 @@
-import { executableStressSchema } from "../schema"
+import { executableExchangeSchema } from "../schema"
 import { getTypesFromSchema } from "lib/stitching/lib/getTypesFromSchema"
 
 it("Does not include generic type names", async () => {
-  const stressSchema = await executableStressSchema()
-  const stressTypes = await getTypesFromSchema(stressSchema)
+  const exchangeSchema = await executableExchangeSchema()
+  const exchangeTypes = await getTypesFromSchema(exchangeSchema)
 
-  expect(stressTypes).not.toContain("Order")
-  expect(stressTypes).not.toContain("LineItem")
-  expect(stressTypes).not.toContain("DateTime")
+  expect(exchangeTypes).not.toContain("Order")
+  expect(exchangeTypes).not.toContain("LineItem")
+  expect(exchangeTypes).not.toContain("DateTime")
 
-  expect(stressTypes).toContain("EcommerceOrder")
+  expect(exchangeTypes).toContain("EcommerceOrder")
 })

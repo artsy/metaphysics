@@ -1,4 +1,4 @@
-import { createStressLink } from "./link"
+import { createExchangeLink } from "./link"
 import {
   makeRemoteExecutableSchema,
   transformSchema,
@@ -7,13 +7,13 @@ import {
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
-export const executableStressSchema = async () => {
-  const stressSDL = readFileSync("src/data/exchange.graphql", "utf8")
-  const stressLink = createStressLink()
+export const executableExchangeSchema = async () => {
+  const exchangeSDL = readFileSync("src/data/exchange.graphql", "utf8")
+  const exchangeLink = createExchangeLink()
 
   const schema = await makeRemoteExecutableSchema({
-    schema: stressSDL,
-    link: stressLink,
+    schema: exchangeSDL,
+    link: exchangeLink,
   })
 
   // Return the new modified schema

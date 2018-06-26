@@ -15,7 +15,7 @@ export const Orders = {
     _parent,
     { userId, partnerId, state },
     context,
-    { rootValue: { stressSchema } }
+    { rootValue: { exchangeSchema } }
   ) => {
     const query = `
       query EcommerceOrders($userId: String, $partnerId: String, $state: EcommerceOrderStateEnum, $sort: EcommerceOrderConnectionSortEnum) {
@@ -46,7 +46,7 @@ export const Orders = {
         }
       }
     `
-    return graphql(stressSchema, query, null, context, {
+    return graphql(exchangeSchema, query, null, context, {
       userId,
       partnerId,
       state,

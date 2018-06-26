@@ -10,7 +10,7 @@ import {
 import fs from "fs"
 import path from "path"
 import sampleOrder from "test/fixtures/results/sample_order"
-import stressOrdersJSON from "test/fixtures/exchange/orders.json"
+import exchangeOrdersJSON from "test/fixtures/exchange/orders.json"
 
 let rootValue
 
@@ -21,14 +21,14 @@ describe("Order type", () => {
       "utf8"
     )
 
-    const resolvers = { Query: { orders: () => stressOrdersJSON } }
+    const resolvers = { Query: { orders: () => exchangeOrdersJSON } }
     const schema = makeExecutableSchema({
       typeDefs,
       resolvers,
     })
 
     // namespace schema similar to src/lib/stitching/exchange/schema.ts
-    const stressSchema = transformSchema(schema, [
+    const exchangeSchema = transformSchema(schema, [
       new RenameTypes(name => {
         return `Ecommerce${name}`
       }),
@@ -57,7 +57,7 @@ describe("Order type", () => {
       })
     )
 
-    rootValue = { stressSchema, partnerLoader, userByIDLoader, artworkLoader }
+    rootValue = { exchangeSchema, partnerLoader, userByIDLoader, artworkLoader }
   })
   it("fetches order by partner id", () => {
     const query = `

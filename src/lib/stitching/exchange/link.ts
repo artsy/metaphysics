@@ -9,7 +9,7 @@ import { middlewareLink } from "../lib/middlewareLink"
 
 const { EXCHANGE_API_BASE } = config
 
-export const createStressLink = () => {
+export const createExchangeLink = () => {
   const httpLink = createHttpLink({
     fetch,
     uri: urljoin(EXCHANGE_API_BASE, "graphql"),
@@ -17,7 +17,7 @@ export const createStressLink = () => {
 
   const authMiddleware = setContext((_request, context) => {
     const locals = context.graphqlContext && context.graphqlContext.res.locals
-    const tokenLoader = locals && locals.dataLoaders.stressTokenLoader
+    const tokenLoader = locals && locals.dataLoaders.exchangeTokenLoader
     const headers = { ...(locals && requestIDHeaders(locals.requestIDs)) }
     // If a token loader exists for Exchange (i.e. this is an authenticated request), use that token to make
     // authenticated requests to Exchange.

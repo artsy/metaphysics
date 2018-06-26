@@ -1,4 +1,4 @@
-import { createStressLink } from "../link"
+import { createExchangeLink } from "../link"
 
 const runLinkChain = (link, op, complete) =>
   link.request(op).subscribe({ complete })
@@ -8,7 +8,7 @@ describe("exchange link", () => {
   it("passes request ID headers to the fetch", () => {
     expect.assertions(1)
 
-    const link = createStressLink()
+    const link = createExchangeLink()
     const defaultContext = {
       graphqlContext: {
         res: {
@@ -50,9 +50,9 @@ describe("exchange link", () => {
     it("also gravity auth HTTP headers to the fetch", () => {
       expect.assertions(1)
 
-      // The difference here is that locals will now include a dataloader named stressTokenLoader
+      // The difference here is that locals will now include a dataloader named exchangeTokenLoader
       // which would normally only show up in locals if you have an auth'd user
-      const link = createStressLink()
+      const link = createExchangeLink()
       const defaultContext = {
         graphqlContext: {
           res: {
@@ -63,7 +63,7 @@ describe("exchange link", () => {
                 parentSpanId: "span123",
               },
               dataLoaders: {
-                stressTokenLoader: () =>
+                exchangeTokenLoader: () =>
                   Promise.resolve({ token: "token_123" }),
               },
             },
