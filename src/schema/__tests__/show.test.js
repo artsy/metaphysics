@@ -196,6 +196,20 @@ describe("Show type", () => {
         })
       })
     })
+    it("returns the fair city if one is set", () => {
+      showData.fair = { location: { city: "Quonochontaug" } }
+      showData.partner_city = "Something Else"
+      const query = `
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            city
+          }
+        }
+      `
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ show: { city: "Quonochontaug" } })
+      })
+    })
   })
 
   describe("kind", () => {
