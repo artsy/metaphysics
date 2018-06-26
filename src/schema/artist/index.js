@@ -1,7 +1,5 @@
-// @ts-check
-
 import { pageable, getPagingParameters } from "relay-cursor-paging"
-import { assign, compact, defaults, first, omit, includes } from "lodash"
+import { assign, compact, defaults, first, omit, includes, merge } from "lodash"
 import { exclude } from "lib/helpers"
 import cached from "schema/fields/cached"
 import initials from "schema/fields/initials"
@@ -33,7 +31,7 @@ import {
 import ArtistArtworksFilters from "./artwork_filters"
 import filterArtworks from "schema/filter_artworks"
 import { connectionWithCursorInfo } from "schema/fields/pagination"
-import { RelatedArtists } from "./related"
+import { Related } from "./related"
 import { createPageCursors } from "schema/fields/pagination"
 import {
   ShowField,
@@ -95,21 +93,30 @@ export const ArtistType = new GraphQLObjectType({
           _request,
           { rootValue: { articlesLoader } }
         ) => {
-          const relayOptions = parseRelayOptions(args)
+          const pageOptions = parseRelayOptions(args)
+          const { page, size, offset } = pageOptions
+
           const gravityArgs = omit(args, ["first", "after", "last", "before"])
           return articlesLoader(
-            defaults(gravityArgs, relayOptions, {
+            defaults(gravityArgs, pageOptions, {
               artist_id: _id,
               published: true,
               count: true,
             })
           ).then(({ results, count }) => {
-            return assign(
-              { pageCursors: createPageCursors(relayOptions, count) },
+            const totalPages = Math.ceil(count / size)
+            return merge(
+              { pageCursors: createPageCursors(pageOptions, count) },
               connectionFromArraySlice(results, args, {
                 arrayLength: count,
-                sliceStart: relayOptions.offset,
-              })
+                sliceStart: offset,
+              }),
+              {
+                pageInfo: {
+                  hasPreviousPage: page > 1,
+                  hasNextPage: page < totalPages,
+                },
+              }
             )
           })
         },
@@ -243,14 +250,30 @@ export const ArtistType = new GraphQLObjectType({
           }
           return auctionLotLoader(diffusionArgs).then(
             ({ total_count, _embedded }) => {
-              return assign(
+              const totalPages = Math.ceil(total_count / size)
+              return merge(
                 {
-                  pageCursors: createPageCursors({ page, size }, total_count),
+                  pageCursors: createPageCursors(
+                    {
+                      page,
+                      size,
+                    },
+                    total_count
+                  ),
+                },
+                {
+                  totalCount: total_count,
                 },
                 connectionFromArraySlice(_embedded.items, options, {
                   arrayLength: total_count,
                   sliceStart: offset,
-                })
+                }),
+                {
+                  pageInfo: {
+                    hasPreviousPage: page > 1,
+                    hasNextPage: page < totalPages,
+                  },
+                }
               )
             }
           )
@@ -607,7 +630,7 @@ export const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         deprecationReason: "Favor `is_`-prefixed boolean attributes",
       },
-      related: RelatedArtists,
+      related: Related,
       sales: {
         type: new GraphQLList(Sale.type),
         args: {

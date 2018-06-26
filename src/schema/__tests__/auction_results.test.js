@@ -32,6 +32,8 @@ describe("Artist type", () => {
             currency: "JPY",
             price_realized_cents: 420000,
             price_realized_cents_usd: 100000,
+            low_estimate_cents: 200000,
+            high_estimate_cents: 500000,
           },
         ],
       },
@@ -70,6 +72,9 @@ describe("Artist type", () => {
                   cents
                   cents_usd
                 }
+                estimate {
+                  display
+                }
               }
             }
           }
@@ -98,6 +103,9 @@ describe("Artist type", () => {
                     cents: 420000,
                     cents_usd: 100000,
                     display: "JPY ¥420k",
+                  },
+                  estimate: {
+                    display: "JPY ¥200,000 - 500,000",
                   },
                 },
               },
@@ -147,6 +155,59 @@ describe("Artist type", () => {
         }
         // Check auction result included in edges.
         expect(edges[0].node.id).toEqual("1")
+      }
+    )
+  })
+
+  it("returns correct page info", () => {
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResults(recordsTrusted: true, first: 10, after: "YXJyYXljb25uZWN0aW9uOjk=") {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+            }
+            pageCursors {
+              previous {
+                page
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(
+      ({
+        artist: {
+          auctionResults: {
+            pageCursors: { previous: { page } },
+            pageInfo: { hasNextPage, hasPreviousPage },
+          },
+        },
+      }) => {
+        expect(hasNextPage).toBe(true)
+        expect(hasPreviousPage).toBe(true)
+        expect(page).toBe(1)
+      }
+    )
+  })
+
+  it("returns the total number of records", () => {
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResults(recordsTrusted: true, first: 10) {
+            totalCount
+          }
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(
+      ({ artist: { auctionResults: { totalCount } } }) => {
+        expect(totalCount).toBe(35)
       }
     )
   })

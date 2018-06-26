@@ -1,32 +1,67 @@
-import { GraphQLBoolean, GraphQLObjectType } from "graphql"
+import { GraphQLBoolean, GraphQLEnumType, GraphQLObjectType } from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
 import { artistConnection } from "schema/artist"
+import { geneConnection } from "schema/gene"
 import { parseRelayOptions } from "lib/helpers"
 import { createPageCursors } from "schema/fields/pagination"
 import { assign } from "lodash"
-import { connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
 
-export const RelatedArtists = {
+const RelatedArtistsKind = {
+  type: new GraphQLEnumType({
+    name: "RelatedArtistsKind",
+    values: {
+      MAIN: {
+        value: "main",
+      },
+      CONTEMPORARY: {
+        value: "contemporary",
+      },
+    },
+  }),
+}
+
+export const Related = {
   type: new GraphQLObjectType({
-    name: "RelatedArtists",
+    name: "ArtistRelatedData",
     fields: () => ({
-      contemporary: {
+      genes: {
+        type: geneConnection,
+        args: pageable({}),
+        resolve: (
+          { id },
+          args,
+          _request,
+          { rootValue: { relatedGenesLoader } }
+        ) => {
+          return relatedGenesLoader({ artist: [id] }).then(response => {
+            return connectionFromArray(response, args)
+          })
+        },
+      },
+      artists: {
         type: artistConnection,
         args: pageable({
           exclude_artists_without_artworks: {
             type: GraphQLBoolean,
             defaultValue: true,
           },
+          kind: RelatedArtistsKind,
         }),
         resolve: (
           { id },
           args,
           _request,
-          { rootValue: { relatedContemporaryArtistsLoader } }
+          {
+            rootValue: {
+              relatedContemporaryArtistsLoader,
+              relatedMainArtistsLoader,
+            },
+          }
         ) => {
           const { page, size, offset } = parseRelayOptions(args)
-          const { exclude_artists_without_artworks } = args
+          const { kind, exclude_artists_without_artworks } = args
           const gravityArgs = {
             page,
             size,
@@ -35,62 +70,26 @@ export const RelatedArtists = {
             exclude_artists_without_artworks,
           }
 
-          return relatedContemporaryArtistsLoader(gravityArgs).then(
-            ({ body, headers }) => {
-              const totalCount = headers["x-total-count"]
-              const pageCursors = createPageCursors({ page, size }, totalCount)
+          const fetch =
+            kind === "main"
+              ? relatedMainArtistsLoader
+              : relatedContemporaryArtistsLoader
 
-              return assign({
-                pageCursors,
-                ...connectionFromArraySlice(body, args, {
-                  arrayLength: totalCount,
-                  sliceStart: offset,
-                }),
-              })
-            }
-          )
+          return fetch(gravityArgs).then(({ body, headers }) => {
+            const totalCount = headers["x-total-count"]
+            const pageCursors = createPageCursors({ page, size }, totalCount)
+
+            return assign({
+              pageCursors,
+              ...connectionFromArraySlice(body, args, {
+                arrayLength: totalCount,
+                sliceStart: offset,
+              }),
+            })
+          })
         },
       },
-      main: {
-        type: artistConnection,
-        args: pageable({
-          exclude_artists_without_artworks: {
-            type: GraphQLBoolean,
-            defaultValue: true,
-          },
-        }),
-        resolve: (
-          { id },
-          args,
-          _request,
-          { rootValue: { relatedMainArtistsLoader } }
-        ) => {
-          const { page, size, offset } = parseRelayOptions(args)
-          const { exclude_artists_without_artworks } = args
-          const gravityArgs = {
-            page,
-            size,
-            artist: [id],
-            total_count: true,
-            exclude_artists_without_artworks,
-          }
 
-          return relatedMainArtistsLoader(gravityArgs).then(
-            ({ body, headers }) => {
-              const totalCount = headers["x-total-count"]
-              const pageCursors = createPageCursors({ page, size }, totalCount)
-              debugger
-              return assign({
-                pageCursors,
-                ...connectionFromArraySlice(body, args, {
-                  arrayLength: totalCount,
-                  sliceStart: offset,
-                }),
-              })
-            }
-          )
-        },
-      },
       suggested: {
         type: artistConnection,
         args: pageable(SuggestedArtistsArgs),

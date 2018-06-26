@@ -27,7 +27,7 @@ export function markdown(fn) {
     args: {
       format: Format,
     },
-    resolve: (obj, { format }, request, { fieldName }) => {
+    resolve: (obj, { format }, _, { fieldName }) => {
       const value = fn ? fn(obj) : obj[fieldName]
 
       if (!isExisty(value)) return null

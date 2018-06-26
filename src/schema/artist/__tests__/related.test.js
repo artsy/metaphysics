@@ -7,17 +7,28 @@ describe("Artist type", () => {
     birthday: "2012",
   }
 
-  const artistsResponse = {
+  const contemporaryArtistsResponse = {
+    headers: { "x-total-count": 35 },
+    body: [{ id: "contemporary-percy-z", birthday: "2012" }],
+  }
+  const mainArtistsResponse = {
     headers: { "x-total-count": 35 },
     body: [{ id: "percy-z", birthday: "2012" }],
   }
-  const loader = jest.fn().mockReturnValue(Promise.resolve(artistsResponse))
+  const relatedContemporaryArtistsLoader = jest
+    .fn()
+    .mockReturnValue(Promise.resolve(contemporaryArtistsResponse))
+
+  const relatedMainArtistsLoader = jest
+    .fn()
+    .mockReturnValue(Promise.resolve(mainArtistsResponse))
 
   const artistLoader = () => Promise.resolve(artist)
   const rootValue = {
-    relatedContemporaryArtistsLoader: loader,
-    relatedMainArtistsLoader: loader,
+    relatedContemporaryArtistsLoader,
+    relatedMainArtistsLoader,
     artistLoader,
+    relatedGenesLoader: () => Promise.resolve([{ id: "catty-gene" }]),
   }
 
   it("returns contemporary artists", () => {
@@ -25,7 +36,7 @@ describe("Artist type", () => {
       {
         artist(id: "percy-z") {
           related {
-            contemporary(first: 10) {
+            artists(kind: CONTEMPORARY, first: 10) {
               pageCursors {
                 first {
                   page
@@ -49,7 +60,52 @@ describe("Artist type", () => {
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { related: { contemporary: { pageCursors, edges } } } }) => {
+      ({ artist: { related: { artists: { pageCursors, edges } } } }) => {
+        // Check expected page cursors exist in response.
+        const { first, around, last } = pageCursors
+        expect(first).toEqual(null)
+        expect(last).toEqual(null)
+        expect(around.length).toEqual(4)
+        let index
+        for (index = 0; index < 4; index++) {
+          expect(around[index].page).toBe(index + 1)
+        }
+        // Check auction result included in edges.
+        expect(edges[0].node.id).toEqual("contemporary-percy-z")
+      }
+    )
+  })
+
+  it("returns main related artists", () => {
+    const query = `
+      {
+        artist(id: "percy-z") {
+          related {
+            artists(kind: MAIN, first: 10) {
+              pageCursors {
+                first {
+                  page
+                }
+                around {
+                  page
+                }
+                last {
+                  page
+                }
+              }
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(
+      ({ artist: { related: { artists: { pageCursors, edges } } } }) => {
         // Check expected page cursors exist in response.
         const { first, around, last } = pageCursors
         expect(first).toEqual(null)
@@ -65,23 +121,12 @@ describe("Artist type", () => {
     )
   })
 
-  it("returns main related artists", () => {
+  it("returns related genes", () => {
     const query = `
       {
         artist(id: "percy-z") {
           related {
-            main(first: 10) {
-              pageCursors {
-                first {
-                  page
-                }
-                around {
-                  page
-                }
-                last {
-                  page
-                }
-              }
+            genes(first: 10) {
               edges {
                 node {
                   id
@@ -94,18 +139,8 @@ describe("Artist type", () => {
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { related: { main: { pageCursors, edges } } } }) => {
-        // Check expected page cursors exist in response.
-        const { first, around, last } = pageCursors
-        expect(first).toEqual(null)
-        expect(last).toEqual(null)
-        expect(around.length).toEqual(4)
-        let index
-        for (index = 0; index < 4; index++) {
-          expect(around[index].page).toBe(index + 1)
-        }
-        // Check auction result included in edges.
-        expect(edges[0].node.id).toEqual("percy-z")
+      ({ artist: { related: { genes: { edges } } } }) => {
+        expect(edges[0].node.id).toEqual("catty-gene")
       }
     )
   })

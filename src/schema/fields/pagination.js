@@ -43,6 +43,7 @@ export const PageCursorsType = new GraphQLObjectType({
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PageCursor))),
       description: "Always includes current page",
     },
+    previous: { type: PageCursor },
   }),
 })
 
@@ -78,26 +79,24 @@ export function createPageCursors(
   }
 
   const totalPages = Math.ceil(totalRecords / size)
-
+  let pageCursors
   // Degenerate case of no records found.
   if (totalPages === 0) {
-    return { around: [pageToCursor(1, 1, size)] }
-  }
-
-  if (totalPages <= max) {
+    pageCursors = { around: [pageToCursor(1, 1, size)] }
+  } else if (totalPages <= max) {
     // Collection is short, and `around` includes page 1 and the last page.
-    return {
+    pageCursors = {
       around: pageCursorsToArray(1, totalPages, currentPage, size),
     }
   } else if (currentPage <= Math.floor(max / 2) + 1) {
     // We are near the beginning, and `around` will include page 1.
-    return {
+    pageCursors = {
       last: pageToCursor(totalPages, currentPage, size),
       around: pageCursorsToArray(1, max - 1, currentPage, size),
     }
   } else if (currentPage >= totalPages - Math.floor(max / 2)) {
     // We are near the end, and `around` will include the last page.
-    return {
+    pageCursors = {
       first: pageToCursor(1, currentPage, size),
       around: pageCursorsToArray(
         totalPages - max + 2,
@@ -109,7 +108,7 @@ export function createPageCursors(
   } else {
     // We are in the middle, and `around` doesn't include the first or last page.
     const offset = Math.floor((max - 3) / 2)
-    return {
+    pageCursors = {
       first: pageToCursor(1, currentPage, size),
       around: pageCursorsToArray(
         currentPage - offset,
@@ -120,6 +119,11 @@ export function createPageCursors(
       last: pageToCursor(totalPages, currentPage, size),
     }
   }
+
+  if (currentPage > 1 && totalPages > 1) {
+    pageCursors.previous = pageToCursor(currentPage - 1, currentPage, size)
+  }
+  return pageCursors
 }
 
 export function connectionWithCursorInfo(type) {
@@ -129,6 +133,10 @@ export function connectionWithCursorInfo(type) {
       pageCursors: {
         type: PageCursorsType,
         resolve: ({ pageCursors }) => pageCursors,
+      },
+      totalCount: {
+        type: GraphQLInt,
+        resolve: ({ totalCount }) => totalCount,
       },
     },
   }).connectionType
