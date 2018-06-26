@@ -33,7 +33,7 @@ spec:
             memory: "512Mi"
           limits:
             cpu: "0.5"
-            memory: "768Mi"
+            memory: "1Gi"
         readinessProbe:
           httpGet:
             port: 3000
