@@ -6,8 +6,7 @@ import { error } from "./loggers"
 
 const { NODE_ENV, ENABLE_METRICS, STATSD_HOST, STATSD_PORT } = config
 
-const isTest = NODE_ENV === "test"
-const isDev = NODE_ENV === "development"
+const isProd = NODE_ENV === "production"
 const enableMetrics = ENABLE_METRICS === "true"
 const appMetricsDisable = [
   "http",
@@ -30,13 +29,13 @@ export const statsClient = new StatsD({
   host: STATSD_HOST,
   port: STATSD_PORT,
   globalTags: { service: "metaphysics", pod_name: os.hostname() },
-  mock: isDev || isTest,
+  mock: !isProd,
   errorHandler: function(err) {
     error(`Statsd client error ${err}`)
   },
 })
 
-if (enableMetrics && !isDev && !isTest) {
+if (enableMetrics && isProd) {
   const appmetrics = require("appmetrics")
   appmetrics.configure({
     mqtt: "off",
