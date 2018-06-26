@@ -159,8 +159,6 @@ const schema = new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
-      // updateOrder: UpdateOrderMutation,
-      // submitOrder: SubmitOrderMutation,
       sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtworkMutation,
       endSale: endSaleMutation,
