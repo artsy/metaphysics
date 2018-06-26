@@ -1,4 +1,4 @@
-import { exclude, toKey, isExisty, removeNulls, stripTags } from "lib/helpers"
+import { exclude, toKey, isExisty, removeNulls, stripTags, resolveBlueGreen } from "lib/helpers"
 
 describe("exclude", () => {
   const xs = [
@@ -121,5 +121,22 @@ describe("removeNulls", () => {
     expect(objWithNulls).toHaveProperty("a", "percy")
     expect(objWithNulls).not.toHaveProperty("b")
     expect(objWithNulls).not.toHaveProperty("c")
+  })
+})
+
+describe("resolveBlueGreen", () => {
+  const resolveBlue = "https://blue.artsy.test"
+  const resolveGreen = "https://green.artsy.test"
+
+  it("resolves to blue by default", () => {
+    expect(resolveBlueGreen(resolveBlue)).toBe(resolveBlue)
+  })
+
+  it("resolves to blue with blue and green at 0 percent", () => {
+    expect(resolveBlueGreen(resolveBlue, resolveGreen, 0)).toBe(resolveBlue)
+  })
+
+  it("resolves to green with blue and green at 100 percent", () => {
+    expect(resolveBlueGreen(resolveBlue, resolveGreen, 100)).toBe(resolveGreen)
   })
 })

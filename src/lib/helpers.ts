@@ -96,3 +96,11 @@ export const parseRelayOptions = options => {
 export const removeNulls = object => {
   Object.keys(object).forEach(key => object[key] == null && delete object[key]) // eslint-disable-line eqeqeq, no-param-reassign, max-len
 }
+export const resolveBlueGreen = (resolveBlue, resolveGreen, percentResolveGreen) => {
+  if (resolveGreen && percentResolveGreen) {
+    if (Math.random() <= (percentResolveGreen / 100)) {
+      return resolveGreen
+    }
+  }
+  return resolveBlue
+}
