@@ -142,6 +142,9 @@ const AuctionResultType = new GraphQLObjectType({
               low_estimate_cents,
               high_estimate_cents,
             }) => {
+              if (!low_estimate_cents && !high_estimate_cents) {
+                return null
+              }
               const { symbol, subunit_to_unit } = currencyCodes[
                 currency.toLowerCase()
               ]
