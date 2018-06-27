@@ -19,8 +19,6 @@ export const createExchangeLink = () => {
     const locals = context.graphqlContext && context.graphqlContext.res.locals
     const tokenLoader = locals && locals.dataLoaders.exchangeTokenLoader
     const headers = { ...(locals && requestIDHeaders(locals.requestIDs)) }
-    // console.log("---> locals ", locals)
-    console.log("---> tokenloadr", tokenLoader)
     // If a token loader exists for Exchange (i.e. this is an authenticated request), use that token to make
     // authenticated requests to Exchange.
     if (tokenLoader) {
