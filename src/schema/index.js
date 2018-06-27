@@ -16,7 +16,8 @@ import Genes from "./genes"
 import GeneFamilies from "./gene_families"
 import GeneFamily from "./gene_family"
 import HomePage from "./home"
-import { Order } from "./order"
+import { Order } from "./ecommerce/order"
+import { Orders } from "./ecommerce/orders"
 import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
 import Profile from "./profile"
@@ -42,7 +43,7 @@ import SuggestedGenes from "./suggested_genes"
 import Tag from "./tag"
 import TrendingArtists from "./artists/trending"
 import Users from "./users"
-import User from "./user"
+import { UserByEmail } from "./user"
 import MatchArtist from "./match/artist"
 import MatchGene from "./match/gene"
 import Me from "./me"
@@ -61,8 +62,8 @@ import { recordArtworkViewMutation } from "./me/recently_viewed_artworks"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
-import UpdateOrderMutation from "./me/order/update_order_mutation"
-import SubmitOrderMutation from "./me/order/submit_order_mutation"
+// import UpdateOrderMutation from "./me/order/update_order_mutation"
+// import SubmitOrderMutation from "./me/order/submit_order_mutation"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
 
 import CausalityJWT from "./causality_jwt"
@@ -100,6 +101,7 @@ const rootFields = {
   me: Me,
   node: ObjectIdentification.NodeField,
   order: Order,
+  orders: Orders,
   ordered_set: OrderedSet,
   ordered_sets: OrderedSets,
   partner: Partner,
@@ -118,7 +120,7 @@ const rootFields = {
   status: Status,
   tag: Tag,
   trending_artists: TrendingArtists,
-  user: User,
+  user: UserByEmail,
   users: Users,
   popular_artists: PopularArtists,
 }
@@ -157,8 +159,6 @@ const schema = new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
-      updateOrder: UpdateOrderMutation,
-      submitOrder: SubmitOrderMutation,
       sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtworkMutation,
       endSale: endSaleMutation,
