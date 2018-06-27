@@ -102,16 +102,7 @@ export default opts => {
     ),
     tagLoader: gravityLoader(id => `tag/${id}`),
     trendingArtistsLoader: gravityLoader("artists/trending"),
-    updateOrderLoader: gravityLoader(
-      id => `me/order/${id}`,
-      {},
-      { method: "PUT" }
-    ),
-    userLoader: gravityLoader("user", {}, { method: "GET" }),
-    submitOrderLoader: gravityLoader(
-      id => `me/order/${id}/submit`,
-      {},
-      { method: "PUT" }
-    ),
+    userByIDLoader: gravityLoader(id => `user/${id}`, {}, { method: "GET" }),
+    userByEmailLoader: gravityLoader("user", {}, { method: "GET" }),
   }
 }

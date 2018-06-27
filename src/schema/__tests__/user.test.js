@@ -8,7 +8,7 @@ describe("User", () => {
       _id: "000012345",
       name: "foo bar",
     }
-    const userLoader = data => {
+    const userByEmailLoader = data => {
       if (data) {
         return Promise.resolve(foundUser)
       }
@@ -22,7 +22,7 @@ describe("User", () => {
       }
     `
 
-    const { user } = await runAuthenticatedQuery(query, { userLoader })
+    const { user } = await runAuthenticatedQuery(query, { userByEmailLoader })
     expect(user.userAlreadyExists).toEqual(true)
   })
 
@@ -30,7 +30,7 @@ describe("User", () => {
     const notFoundUser = { error: "User Not Found" }
     const error = new Error(notFoundUser)
     error.statusCode = 404
-    const userLoader = data => {
+    const userByEmailLoader = data => {
       if (data) {
         return Promise.resolve(notFoundUser)
       }
@@ -43,7 +43,7 @@ describe("User", () => {
         }
       }
     `
-    const { user } = await runAuthenticatedQuery(query, { userLoader })
+    const { user } = await runAuthenticatedQuery(query, { userByEmailLoader })
     expect(user.userAlreadyExists).toEqual(false)
   })
 })

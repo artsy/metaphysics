@@ -51,17 +51,17 @@ export const UserType = new GraphQLObjectType({
   }),
 })
 
-const User = {
+export const UserByEmail = {
   type: UserType,
-  name: "User",
+  name: "User by Email",
   args: {
     email: {
       type: GraphQLString,
       description: "Email to search for user by",
     },
   },
-  resolve: (root, option, request, { rootValue: { userLoader } }) => {
-    return userLoader(option)
+  resolve: (root, option, request, { rootValue: { userByEmailLoader } }) => {
+    return userByEmailLoader(option)
       .then(result => {
         return result
       })
@@ -73,4 +73,24 @@ const User = {
   },
 }
 
-export default User
+export const UserByID = {
+  type: UserType,
+  name: "User by ID",
+  args: {
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "user id",
+    },
+  },
+  resolve: (root, option, request, { rootValue: { userByIDLoader } }) => {
+    return userByIDLoader(option)
+      .then(result => {
+        return result
+      })
+      .catch(err => {
+        if (err.statusCode === 404) {
+          return false
+        }
+      })
+  },
+}
