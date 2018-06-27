@@ -3,6 +3,7 @@ import { IDFields } from "./object_identification"
 import Dimensions from "./dimensions"
 import { GraphQLString, GraphQLBoolean, GraphQLObjectType } from "graphql"
 import { capitalizeFirstCharacter } from "lib/helpers"
+import { Saleable } from "./saleable"
 
 const EditionSetAvailabilities = [
   "sold",
@@ -13,6 +14,7 @@ const EditionSetAvailabilities = [
 
 const EditionSetType = new GraphQLObjectType({
   name: "EditionSet",
+  interfaces: [Saleable],
   fields: {
     ...IDFields,
     dimensions: Dimensions,
