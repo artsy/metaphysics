@@ -28,6 +28,7 @@ describe("Artist type", () => {
     relatedContemporaryArtistsLoader,
     relatedMainArtistsLoader,
     artistLoader,
+    relatedGenesLoader: () => Promise.resolve([{ id: "catty-gene" }]),
   }
 
   it("returns contemporary artists", () => {
@@ -116,6 +117,30 @@ describe("Artist type", () => {
         }
         // Check auction result included in edges.
         expect(edges[0].node.id).toEqual("percy-z")
+      }
+    )
+  })
+
+  it("returns related genes", () => {
+    const query = `
+      {
+        artist(id: "percy-z") {
+          related {
+            genes(first: 10) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(
+      ({ artist: { related: { genes: { edges } } } }) => {
+        expect(edges[0].node.id).toEqual("catty-gene")
       }
     )
   })

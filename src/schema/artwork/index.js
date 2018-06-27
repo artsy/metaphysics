@@ -18,6 +18,7 @@ import Meta, { artistNames } from "./meta"
 import Highlight from "./highlight"
 import Dimensions from "schema/dimensions"
 import EditionSet from "schema/edition_set"
+import { Sellable } from "schema/sellable"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
@@ -292,7 +293,7 @@ export const artworkFields = () => {
     },
     is_acquireable: {
       type: GraphQLBoolean,
-      description: "Whether work can be purchased through e-commerce",
+      description: "Whether a work can be purchased through e-commerce",
       resolve: ({ acquireable }) => acquireable,
     },
     is_biddable: {
@@ -474,7 +475,7 @@ export const artworkFields = () => {
     },
     is_saved: {
       type: GraphQLBoolean,
-      resolve: ({ id }, {}, request, { rootValue: { savedArtworkLoader } }) => {
+      resolve: ({ id }, { }, request, { rootValue: { savedArtworkLoader } }) => {
         if (!savedArtworkLoader) return false
         return savedArtworkLoader(id).then(({ is_saved }) => is_saved)
       },
@@ -729,7 +730,7 @@ export const artworkFields = () => {
 
 export const ArtworkType = new GraphQLObjectType({
   name: "Artwork",
-  interfaces: [NodeInterface],
+  interfaces: [NodeInterface, Sellable],
   fields: () => {
     return {
       ...artworkFields(),
