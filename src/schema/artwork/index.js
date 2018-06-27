@@ -18,7 +18,7 @@ import Meta, { artistNames } from "./meta"
 import Highlight from "./highlight"
 import Dimensions from "schema/dimensions"
 import EditionSet from "schema/edition_set"
-import { Saleable } from "schema/saleable"
+import { Sellable } from "schema/sellable"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
@@ -730,7 +730,7 @@ export const artworkFields = () => {
 
 export const ArtworkType = new GraphQLObjectType({
   name: "Artwork",
-  interfaces: [NodeInterface, Saleable],
+  interfaces: [NodeInterface, Sellable],
   fields: () => {
     return {
       ...artworkFields(),

@@ -1,8 +1,8 @@
 import Dimensions from "./dimensions"
 import { GraphQLInterfaceType, GraphQLBoolean, GraphQLString } from "graphql"
 
-export const Saleable = new GraphQLInterfaceType({
-  name: "Saleable",
+export const Sellable = new GraphQLInterfaceType({
+  name: "Sellable",
   description: "A piece that can be sold",
   fields: {
     dimensions: Dimensions,
