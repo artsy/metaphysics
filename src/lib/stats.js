@@ -6,7 +6,7 @@ import { error } from "./loggers"
 
 const { NODE_ENV, ENABLE_METRICS, STATSD_HOST, STATSD_PORT } = config
 
-const isTest = NODE_ENV === "test"
+const isProd = NODE_ENV === "production"
 const enableMetrics = ENABLE_METRICS === "true"
 const appMetricsDisable = [
   "http",
@@ -28,14 +28,14 @@ const appMetricsDisable = [
 export const statsClient = new StatsD({
   host: STATSD_HOST,
   port: STATSD_PORT,
-  globalTags: { service: "metaphysics", hostname: os.hostname() },
-  mock: isTest,
+  globalTags: { service: "metaphysics", pod_name: os.hostname() },
+  mock: !isProd,
   errorHandler: function(err) {
     error(`Statsd client error ${err}`)
   },
 })
 
-if (enableMetrics && !isTest) {
+if (enableMetrics && isProd) {
   const appmetrics = require("appmetrics")
   appmetrics.configure({
     mqtt: "off",
@@ -57,5 +57,16 @@ if (enableMetrics && !isTest) {
     statsClient.timing("eventloop.latency.min", eventloopMetrics.latency.min)
     statsClient.timing("eventloop.latency.max", eventloopMetrics.latency.max)
     statsClient.timing("eventloop.latency.avg", eventloopMetrics.latency.avg)
+  })
+
+  monitoring.on("memory", memoryMetrics => {
+    statsClient.gauge("memory.physical", memoryMetrics.physical)
+    statsClient.gauge("memory.virtual", memoryMetrics.virtual)
+  })
+
+  monitoring.on("gc", gcMetrics => {
+    statsClient.gauge("gc.heap_size", gcMetrics.size)
+    statsClient.gauge("gc.heap_used", gcMetrics.used)
+    statsClient.timing("gc.sweep_duration", gcMetrics.duration, {sweep_type: gcMetrics.type})
   })
 }
