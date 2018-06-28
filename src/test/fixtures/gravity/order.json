@@ -208,7 +208,7 @@
       "sale_conditions_url": null
     }
   ],
-  "item_total_cents": 200000,
+  "items_total_cents": 200000,
   "tax_total_cents": 0,
   "total_cents": 200000,
   "item_total": "$2,000.00",

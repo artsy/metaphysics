@@ -52,10 +52,12 @@ type FinalizeOrderPayload {
 # A Line Item
 type LineItem {
   artworkId: String!
+  createdAt: DateTime!
   editionSetId: String
   id: ID!
   priceCents: Int!
   quantity: Int!
+  updatedAt: DateTime!
 }
 
 # Attributes for a LineItem
@@ -102,9 +104,11 @@ type Mutation {
 # An Order
 type Order {
   code: String!
+  commissionFeeCents: Int
   createdAt: DateTime!
   currencyCode: String!
   id: ID!
+  itemsTotalCents: Int!
   lineItems(
     # Returns the elements in the list that come after the specified global ID.
     after: String
@@ -119,7 +123,10 @@ type Order {
     last: Int
   ): LineItemConnection
   partnerId: String!
+  shippingTotalCents: Int
   state: OrderStateEnum!
+  taxTotalCents: Int
+  transactionFeeCents: Int
   updatedAt: DateTime!
   userId: String!
 }
@@ -185,7 +192,7 @@ type PageInfo {
 
 type Query {
   # Find an order by ID
-  order(id: ID!): Order!
+  order(id: ID!): Order
 
   # Find list of orders
   orders(
