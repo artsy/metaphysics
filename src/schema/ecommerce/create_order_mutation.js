@@ -69,11 +69,12 @@ export const CreateOrderMutation = mutationWithClientMutationId({
     }
 
     const mutation = `
-      mutation creatorder($currencyCode: String!, $partnerId: String!, $userId: String!) {
+      mutation creatorder($currencyCode: String!, $partnerId: String!, $userId: String!, $lineItems: [EcommerceLineItemAttributes!]) {
         ecommerce_createOrder(input: {
           partnerId: $partnerId,
           userId: $userId,
           currencyCode: $currencyCode,
+          lineItems: $lineItems,
         }) {
           order {
            id
