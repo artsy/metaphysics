@@ -31,7 +31,7 @@ export const OrderType = new GraphQLObjectType({
       type: GraphQLString,
       description: "Tracking code of the order",
     },
-    itemTotalCents: amount(({ itemTotalCents }) => itemTotalCents),
+    itemsTotalCents: amount(({ itemsTotalCents }) => itemsTotalCents),
     shippingTotalCents: amount(({ shippingTotalCents }) => shippingTotalCents),
     taxTotalCents: amount(({ taxTotalCents }) => taxTotalCents),
     transactionFeeCents: amount(
