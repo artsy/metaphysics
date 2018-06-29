@@ -81,36 +81,39 @@ describe("Submit Order Mutation", () => {
             orderId: "111",
             creditCardId: "111",
           }) {
-            order {
-              id
-              code
-              currencyCode
-              state
-              partner {
+            result {
+              order {
                 id
-                name
-              }
-              user {
-                id
-                email
-              }
-              lineItems {
-                edges {
-                  node {
-                    artwork {
-                      id
-                      title
+                code
+                currencyCode
+                state
+                partner {
+                  id
+                  name
+                }
+                user {
+                  id
+                  email
+                }
+                lineItems {
+                  edges {
+                    node {
+                      artwork {
+                        id
+                        title
+                      }
                     }
                   }
                 }
               }
+              errors
             }
           }
         }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.submitOrder.order).toEqual(sampleOrder)
+      expect(data.submitOrder.result.order).toEqual(sampleOrder)
     })
   })
 })

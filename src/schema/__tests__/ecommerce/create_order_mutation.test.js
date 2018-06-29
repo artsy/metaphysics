@@ -87,36 +87,39 @@ describe("Create Order Mutation", () => {
               priceCents: 300000
             }]
           }) {
-            order {
-              id
-              code
-              currencyCode
-              state
-              partner {
+            result {
+              order {
                 id
-                name
-              }
-              user {
-                id
-                email
-              }
-              lineItems {
-                edges {
-                  node {
-                    artwork {
-                      id
-                      title
+                code
+                currencyCode
+                state
+                partner {
+                  id
+                  name
+                }
+                user {
+                  id
+                  email
+                }
+                lineItems {
+                  edges {
+                    node {
+                      artwork {
+                        id
+                        title
+                      }
                     }
                   }
                 }
               }
+              errors
             }
           }
         }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.createOrder.order).toEqual(sampleOrder)
+      expect(data.createOrder.result.order).toEqual(sampleOrder)
     })
   })
 })

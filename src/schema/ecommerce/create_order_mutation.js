@@ -1,12 +1,13 @@
 import {
   GraphQLInputObjectType,
   GraphQLNonNull,
-  GraphQLString,
   GraphQLList,
   GraphQLInt,
+  GraphQLString,
   graphql,
 } from "graphql"
-import { OrderType } from "schema/ecommerce/types/order"
+
+import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 const LineItemInputType = new GraphQLInputObjectType({
@@ -54,9 +55,9 @@ export const CreateOrderMutation = mutationWithClientMutationId({
   decription: "Creates an order with payment",
   inputFields: CreateOrderInputType.getFields(),
   outputFields: {
-    order: {
-      type: OrderType,
-      resolve: order => order,
+    result: {
+      type: OrderReturnType,
+      resolve: result => result,
     },
   },
   mutateAndGetPayload: (
@@ -83,6 +84,7 @@ export const CreateOrderMutation = mutationWithClientMutationId({
             state
             partnerId
             userId
+            createdAt
             updatedAt
             createdAt
             lineItems{
@@ -106,6 +108,12 @@ export const CreateOrderMutation = mutationWithClientMutationId({
       partnerId,
       currencyCode,
       lineItems,
-    }).then(result => result.data.ecommerce_createOrder.order)
+    }).then(result => {
+      const { order, errors } = result.data.ecommerce_createOrder
+      return {
+        order,
+        errors,
+      }
+    })
   },
 })

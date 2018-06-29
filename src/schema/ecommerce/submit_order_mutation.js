@@ -4,7 +4,7 @@ import {
   GraphQLString,
   graphql,
 } from "graphql"
-import { OrderType } from "schema/ecommerce/types/order"
+import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
 
 const SubmitOrderInputType = new GraphQLInputObjectType({
@@ -26,9 +26,9 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
   decription: "Submitss an order with payment",
   inputFields: SubmitOrderInputType.getFields(),
   outputFields: {
-    order: {
-      type: OrderType,
-      resolve: order => order,
+    result: {
+      type: OrderReturnType,
+      resolve: result => result,
     },
   },
   mutateAndGetPayload: (
@@ -74,6 +74,9 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       creditCardId,
-    }).then(result => result.data.ecommerce_submitOrder.order)
+    }).then(result => {
+      const { order, errors } = result.data.ecommerce_submitOrder
+      return { order, errors }
+    })
   },
 })
