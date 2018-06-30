@@ -322,7 +322,7 @@ export const SaleType = new GraphQLObjectType({
       registration_ends_at: date,
       registrationStatus: {
         type: Bidder.type,
-        description: "A registration for this sale",
+        description: "A registration for this sale or null",
         resolve: (
           { id },
           _args,
