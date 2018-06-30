@@ -1,4 +1,5 @@
 import Artwork from "schema/artwork"
+import Bidder from "schema/bidder"
 import Image from "schema/image/index"
 import Profile from "schema/profile"
 import Partner from "schema/partner"
@@ -319,6 +320,19 @@ export const SaleType = new GraphQLObjectType({
         },
       },
       registration_ends_at: date,
+      registrationStatus: {
+        type: Bidder.type,
+        description: "A registration for this sale or null",
+        resolve: (
+          { id },
+          _args,
+          _request,
+          { rootValue: { meBiddersLoader } }
+        ) => {
+          if (!meBiddersLoader) return null
+          return meBiddersLoader({ sale_id: id }).then(([bidder]) => bidder)
+        },
+      },
       require_bidder_approval: {
         type: GraphQLBoolean,
       },

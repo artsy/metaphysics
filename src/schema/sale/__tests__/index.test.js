@@ -1,7 +1,9 @@
 /* eslint-disable promise/always-return */
 import moment from "moment"
+import _ from "lodash"
 import { fill } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "test/utils"
+import gql from "test/gql"
 
 describe("Sale type", () => {
   const sale = {
@@ -538,6 +540,48 @@ describe("Sale type", () => {
       results.forEach(({ sale: { display_timely_at } }, index) => {
         expect(display_timely_at).toEqual(labels[index])
       })
+    })
+  })
+
+  describe("registration status", () => {
+    it("returns null if not registered for this sale", async () => {
+      const query = gql`
+        {
+          sale(id: "foo-foo") {
+            registrationStatus {
+              qualified_for_bidding
+            }
+          }
+        }
+      `
+      const rootValue = {
+        saleLoader: () => Promise.resolve(sale),
+        meBiddersLoader: () => Promise.resolve([]),
+      }
+
+      const data = await runAuthenticatedQuery(query, rootValue)
+      expect(data.sale.registrationStatus).toEqual(null)
+    })
+
+    it("returns the registration status for the sale", async () => {
+      const query = gql`
+        {
+          sale(id: "foo-foo") {
+            registrationStatus {
+              qualified_for_bidding
+            }
+          }
+        }
+      `
+      const rootValue = {
+        saleLoader: () => Promise.resolve(sale),
+        meBiddersLoader: params =>
+          _.isEqual(params, { sale_id: "foo-foo" }) &&
+          Promise.resolve([{ qualified_for_bidding: true }]),
+      }
+
+      const data = await runAuthenticatedQuery(query, rootValue)
+      expect(data.sale.registrationStatus.qualified_for_bidding).toEqual(true)
     })
   })
 })
