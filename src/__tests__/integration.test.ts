@@ -32,6 +32,6 @@ it("It can make a request against the schema", async () => {
       `,
     })
 
-  expect(response.body).toEqual({ data: { artist: { name: "Mr Bank" } } })
+  expect(response.body.data).toEqual({ artist: { name: "Mr Bank" } })
   expect(response.statusCode).toBe(200)
 })
