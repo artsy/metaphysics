@@ -15,6 +15,7 @@ export const Order = {
           state
           partnerId
           userId
+          itemsTotalCents
           updatedAt
           createdAt
           lineItems{
@@ -34,6 +35,7 @@ export const Order = {
     return graphql(exchangeSchema, query, null, context, {
       id,
     }).then(result => {
+      console.log(result)
       if (result.errors) {
         throw Error(result.errors.map(d => d.message))
       }

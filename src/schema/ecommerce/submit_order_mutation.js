@@ -53,6 +53,7 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
             state
             partnerId
             userId
+            itemsTotalCents
             updatedAt
             createdAt
             lineItems{

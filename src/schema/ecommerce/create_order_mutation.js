@@ -84,7 +84,7 @@ export const CreateOrderMutation = mutationWithClientMutationId({
             state
             partnerId
             userId
-            createdAt
+            itemsTotalCents
             updatedAt
             createdAt
             lineItems{
