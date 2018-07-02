@@ -1,5 +1,4 @@
 import { graphql, GraphQLString } from "graphql"
-import { connectionDefinitions } from "graphql-relay"
 import { OrderConnection } from "schema/ecommerce/types/order"
 
 export const Orders = {
@@ -50,6 +49,11 @@ export const Orders = {
       userId,
       partnerId,
       state,
-    }).then(a => a.data.ecommerce_orders)
+    }).then(result => {
+      if (result.errors) {
+        throw Error(result.errors.map(d => d.message))
+      }
+      return result.data.ecommerce_orders
+    })
   },
 }
