@@ -91,6 +91,8 @@ export const CreateOrderMutation = mutationWithClientMutationId({
             transactionFeeCents
             updatedAt
             createdAt
+            stateUpdatedAt
+            stateExpiresAt
             lineItems{
               edges{
                 node{

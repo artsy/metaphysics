@@ -60,6 +60,8 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
             transactionFeeCents
             updatedAt
             createdAt
+            stateUpdatedAt
+            stateExpiresAt
             lineItems{
               edges{
                 node{

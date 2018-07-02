@@ -64,6 +64,8 @@ export const OrderType = new GraphQLObjectType({
     },
     updatedAt: date,
     createdAt: date,
+    stateUpdatedAt: date,
+    stateExpiresAt: date,
   }),
 })
 
