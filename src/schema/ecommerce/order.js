@@ -33,6 +33,11 @@ export const Order = {
     `
     return graphql(exchangeSchema, query, null, context, {
       id,
-    }).then(result => (result.data ? result.data.ecommerce_order : null))
+    }).then(result => {
+      if (result.errors) {
+        throw Error(result.errors.map(d => d.message))
+      }
+      return result.data.ecommerce_order
+    })
   },
 }
