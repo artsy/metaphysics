@@ -40,6 +40,7 @@ import SaleArtworks from "./sale_artworks"
 import Services from "./services"
 import Show from "./show"
 import SuggestedGenes from "./suggested_genes"
+import SystemTime from "./system_time"
 import Tag from "./tag"
 import TrendingArtists from "./artists/trending"
 import Users from "./users"
@@ -118,6 +119,7 @@ const rootFields = {
   services: Services,
   show: Show,
   status: Status,
+  system_time: SystemTime,
   tag: Tag,
   trending_artists: TrendingArtists,
   user: UserByEmail,
