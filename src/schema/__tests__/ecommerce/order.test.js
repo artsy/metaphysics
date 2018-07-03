@@ -73,6 +73,10 @@ describe("Order type", () => {
           code
           currencyCode
           itemsTotalCents
+          shippingTotalCents
+          taxTotalCents
+          commissionFeeCents
+          transactionFeeCents
           state
           partner {
             id

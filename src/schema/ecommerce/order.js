@@ -16,6 +16,10 @@ export const Order = {
           partnerId
           userId
           itemsTotalCents
+          shippingTotalCents
+          taxTotalCents
+          commissionFeeCents
+          transactionFeeCents
           updatedAt
           createdAt
           lineItems{
