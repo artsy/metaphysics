@@ -64,9 +64,10 @@ describe("Order type", () => {
     const query = `
       {
         order(id: "52dd3c2e4b8480091700027f") {
-           id
+          id
           code
           currencyCode
+          itemsTotalCents
           state
           partner {
             id

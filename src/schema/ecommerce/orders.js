@@ -29,6 +29,7 @@ export const Orders = {
               userId
               updatedAt
               createdAt
+              itemsTotalCents
               lineItems{
                 edges{
                   node{

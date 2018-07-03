@@ -15,6 +15,7 @@ export const Order = {
           state
           partnerId
           userId
+          itemsTotalCents
           updatedAt
           createdAt
           lineItems{

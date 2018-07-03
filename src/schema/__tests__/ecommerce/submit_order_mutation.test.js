@@ -86,6 +86,7 @@ describe("Submit Order Mutation", () => {
                 id
                 code
                 currencyCode
+                itemsTotalCents
                 state
                 partner {
                   id
