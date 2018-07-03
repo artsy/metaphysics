@@ -310,7 +310,7 @@ export const artworkFields = () => {
         return Image.resolve(size ? _.take(sorted, size) : sorted)
       },
     },
-    inventory_id: {
+    inventoryId: {
       type: GraphQLString,
       description: "Private text field for partner use",
     },
