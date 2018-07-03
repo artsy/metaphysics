@@ -64,11 +64,12 @@ describe("Order type", () => {
       {
         orders(partnerId: "581b45e4cd530e658b000124") {
           edges {
-            node {          
+            node {
               id
               code
               currencyCode
               state
+              itemsTotalCents
               partner {
                 id
                 name

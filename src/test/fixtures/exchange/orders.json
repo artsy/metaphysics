@@ -1,4 +1,4 @@
-{ 
+{
   "edges": [
     {
       "node": {
@@ -8,6 +8,7 @@
         "currencyCode": "usd",
         "partnerId": "111",
         "userId": "111",
+        "itemsTotalCents": "420000",
         "updatedAt": "",
         "createdAt": "",
         "lineItems": {

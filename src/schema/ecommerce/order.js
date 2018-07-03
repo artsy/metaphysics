@@ -35,7 +35,6 @@ export const Order = {
     return graphql(exchangeSchema, query, null, context, {
       id,
     }).then(result => {
-      console.log(result)
       if (result.errors) {
         throw Error(result.errors.map(d => d.message))
       }

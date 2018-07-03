@@ -2,6 +2,7 @@ export default {
   id: "fooid123",
   code: "1",
   currencyCode: "usd",
+  itemsTotalCents: "$4,200",
   state: "PENDING",
   partner: {
     id: "111",
