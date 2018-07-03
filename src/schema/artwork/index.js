@@ -313,6 +313,7 @@ export const artworkFields = () => {
     inventoryId: {
       type: GraphQLString,
       description: "Private text field for partner use",
+      resolve: ({ inventory_id }) => inventory_id,
     },
     is_acquireable: {
       type: GraphQLBoolean,

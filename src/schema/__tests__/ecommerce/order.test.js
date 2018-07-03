@@ -55,6 +55,7 @@ describe("Order type", () => {
         id: "hubert-farnsworth-smell-o-scope",
         title: "Smell-O-Scope",
         display: "Smell-O-Scope (2017)",
+        inventory_id: "inventory note",
       })
     )
 
@@ -92,6 +93,7 @@ describe("Order type", () => {
                 artwork {
                   id
                   title
+                  inventoryId
                 }
               }
             }

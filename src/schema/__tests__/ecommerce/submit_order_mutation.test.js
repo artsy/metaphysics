@@ -61,6 +61,7 @@ describe("Submit Order Mutation", () => {
         id: "hubert-farnsworth-smell-o-scope",
         title: "Smell-O-Scope",
         display: "Smell-O-Scope (2017)",
+        inventory_id: "inventory note",
       })
     )
 
@@ -106,6 +107,7 @@ describe("Submit Order Mutation", () => {
                       artwork {
                         id
                         title
+                        inventoryId
                       }
                     }
                   }

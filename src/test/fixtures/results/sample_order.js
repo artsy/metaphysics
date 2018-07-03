@@ -23,6 +23,7 @@ export default {
           artwork: {
             id: "hubert-farnsworth-smell-o-scope",
             title: "Smell-O-Scope",
+            inventoryId: "inventory note",
           },
         },
       },
