@@ -5,26 +5,26 @@ import fetch from "lib/apis/fetch"
 
 describe("SystemTime type", () => {
   const systemTimeData = {
-    body: {
-      time: "2018-07-02 20:58:58 UTC",
-      day: 2,
-      wday: 1,
-      month: 7,
-      year: 2018,
-      hour: 20,
-      min: 58,
-      sec: 58,
-      dst: false,
-      unix: 1530565138,
-      utc_offset: 0,
-      zone: "UTC",
-      iso8601: "2018-07-02T20:58:58Z",
-    },
+    time: "2018-07-02 20:58:58 UTC",
+    day: 2,
+    wday: 1,
+    month: 7,
+    year: 2018,
+    hour: 20,
+    min: 58,
+    sec: 58,
+    dst: false,
+    unix: 1530565138,
+    utc_offset: 0,
+    zone: "UTC",
+    iso8601: "2018-07-02T20:58:58Z",
+  }
+
+  const rootValue = {
+    systemTimeLoader: sinon.stub().returns(Promise.resolve(systemTimeData)),
   }
 
   it("fetches gravity's system time", async () => {
-    fetch.mockReturnValueOnce(Promise.resolve(systemTimeData))
-
     const query = `
       {
         system {
@@ -46,8 +46,8 @@ describe("SystemTime type", () => {
       }
     `
 
-    const data = await runQuery(query, {})
-    expect(data.system.time.day).toEqual(2)
-    expect(data.system.time.iso8601).toEqual("2018-07-02T20:58:58Z")
+    const { system } = await runQuery(query, rootValue)
+    expect(system.time.day).toEqual(2)
+    expect(system.time.iso8601).toEqual("2018-07-02T20:58:58Z")
   })
 })
