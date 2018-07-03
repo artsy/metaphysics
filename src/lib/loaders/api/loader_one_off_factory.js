@@ -14,6 +14,8 @@ import { loaderInterface } from "./loader_interface"
  */
 
 export const loaderOneOffFactory = (api, _apiName, path, options) => {
+  // If you use gravity as the api here, then options will get interpreted as
+  // an accessToken, so you have to explicitly pass null
   const loader = new DataLoader(
     () => Promise.resolve([api(path, options).then(r => r.body)]),
     { cache: false }
