@@ -1,4 +1,7 @@
 import gravity from "lib/apis/gravity" // Uncached
+
+import { loaderOneOffFactory } from "lib/loaders/api/loader_one_off_factory"
+
 import {
   GraphQLString,
   GraphQLBoolean,
@@ -31,8 +34,16 @@ const SystemTime = {
   description:
     "Gravity system time, necessary for synchronizing device clocks.",
   resolve: async () => {
-    const { body } = await gravity("system/time")
-    return body
+    try {
+      const result = await loaderOneOffFactory(
+        gravity,
+        "gravity",
+        "system/time"
+      )
+      return result
+    } catch (e) {
+      console.error("system/time error", e)
+    }
   },
 }
 

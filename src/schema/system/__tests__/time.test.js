@@ -27,25 +27,27 @@ describe("SystemTime type", () => {
 
     const query = `
       {
-        system_time {
-          day
-          wday
-          month
-          year
-          hour
-          min
-          sec
-          dst
-          unix
-          utc_offset
-          zone
-          iso8601
+        system {
+          time {
+            day
+            wday
+            month
+            year
+            hour
+            min
+            sec
+            dst
+            unix
+            utc_offset
+            zone
+            iso8601
+          }
         }
       }
     `
 
     const data = await runQuery(query, {})
-    expect(data.system_time.day).toEqual(2)
-    expect(data.system_time.iso8601).toEqual("2018-07-02T20:58:58Z")
+    expect(data.system.time.day).toEqual(2)
+    expect(data.system.time.iso8601).toEqual("2018-07-02T20:58:58Z")
   })
 })
