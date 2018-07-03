@@ -22,6 +22,8 @@ export const Order = {
           transactionFeeCents
           updatedAt
           createdAt
+          stateUpdatedAt
+          stateExpiresAt
           lineItems{
             edges{
               node{

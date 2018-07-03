@@ -34,6 +34,8 @@ export const Orders = {
               taxTotalCents
               commissionFeeCents
               transactionFeeCents
+              stateUpdatedAt
+              stateExpiresAt
               lineItems{
                 edges{
                   node{
