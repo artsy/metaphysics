@@ -991,6 +991,76 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#bidderStatus", () => {
+    const lotStandings = [
+      { sale_artwork: { id: "past" } },
+      { sale_artwork: { id: "live" } },
+    ]
+
+    function query(live) {
+      return gql`
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            bidderStatus${live === undefined ? "" : `(live: ${live})`} {
+              sale_artwork {
+                id
+              }
+            }
+          }
+        }
+      `
+    }
+
+    beforeEach(() => {
+      rootValue.lotStandingLoader = params => {
+        if (params.live === true) {
+          return Promise.resolve([lotStandings[1]])
+        } else if (params.live === false) {
+          return Promise.resolve([lotStandings[0]])
+        }
+        return Promise.resolve(lotStandings)
+      }
+    })
+
+    it("returns all lot standings by default", () => {
+      return runQuery(query(undefined), rootValue).then(
+        ({ artwork: { bidderStatus } }) => {
+          expect(bidderStatus).toEqual([
+            { sale_artwork: { id: "past" } },
+            { sale_artwork: { id: "live" } },
+          ])
+        }
+      )
+    })
+
+    it("returns all lot standings", () => {
+      return runQuery(query(null), rootValue).then(
+        ({ artwork: { bidderStatus } }) => {
+          expect(bidderStatus).toEqual([
+            { sale_artwork: { id: "past" } },
+            { sale_artwork: { id: "live" } },
+          ])
+        }
+      )
+    })
+
+    it("returns only lot standings for live sales", () => {
+      return runQuery(query(true), rootValue).then(
+        ({ artwork: { bidderStatus } }) => {
+          expect(bidderStatus).toEqual([{ sale_artwork: { id: "live" } }])
+        }
+      )
+    })
+
+    it("returns only lot standings for not-live sales", () => {
+      return runQuery(query(false), rootValue).then(
+        ({ artwork: { bidderStatus } }) => {
+          expect(bidderStatus).toEqual([{ sale_artwork: { id: "past" } }])
+        }
+      )
+    })
+  })
+
   describe("Attribution class", () => {
     it(`returns proper attribution class name for unique artwork`, () => {
       const query = `

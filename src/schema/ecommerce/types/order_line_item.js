@@ -19,8 +19,8 @@ export const OrderLineItemType = new GraphQLObjectType({
         { artworkId },
         _args,
         _context,
-        { rootValue: { artworkLoader } }
-      ) => artworkLoader(artworkId),
+        { rootValue: { authenticatedArtworkLoader } }
+      ) => authenticatedArtworkLoader(artworkId),
     },
     editionSet: {
       type: EditionSet.type,

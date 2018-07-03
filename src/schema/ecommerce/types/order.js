@@ -60,10 +60,12 @@ export const OrderType = new GraphQLObjectType({
         _args,
         _context,
         { rootValue: { userByIDLoader } }
-      ) => userByIDLoader(userId),
+      ) => (userId ? userByIDLoader(userId) : null),
     },
     updatedAt: date,
     createdAt: date,
+    stateUpdatedAt: date,
+    stateExpiresAt: date,
   }),
 })
 

@@ -1,5 +1,4 @@
 /* eslint-disable promise/always-return */
-
 import { runQuery } from "test/utils"
 import {
   makeExecutableSchema,
@@ -10,18 +9,26 @@ import {
 import fs from "fs"
 import path from "path"
 import sampleOrder from "test/fixtures/results/sample_order"
-import exchangeOrdersJSON from "test/fixtures/exchange/orders.json"
+import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 
 let rootValue
 
-describe("Order type", () => {
+describe("Submit Order Mutation", () => {
   beforeEach(() => {
     const typeDefs = fs.readFileSync(
       path.resolve(__dirname, "../../../data/exchange.graphql"),
       "utf8"
     )
 
-    const resolvers = { Query: { orders: () => exchangeOrdersJSON } }
+    const resolvers = {
+      Mutation: {
+        submitOrder: () => ({
+          order: exchangeOrderJSON,
+          errors: [],
+        }),
+      },
+    }
+
     const schema = makeExecutableSchema({
       typeDefs,
       resolvers,
@@ -58,55 +65,62 @@ describe("Order type", () => {
       })
     )
 
+    const accessToken = "open-sesame"
+
     rootValue = {
       exchangeSchema,
       partnerLoader,
       userByIDLoader,
       authenticatedArtworkLoader,
+      accessToken,
     }
   })
-  it("fetches order by partner id", () => {
-    const query = `
-      {
-        orders(partnerId: "581b45e4cd530e658b000124") {
-          edges {
-            node {
-              id
-              code
-              currencyCode
-              state
-              itemsTotalCents
-              shippingTotalCents
-              taxTotalCents
-              commissionFeeCents
-              transactionFeeCents
-              partner {
+  it("fetches order by id", () => {
+    const mutation = `
+      mutation {
+        submitOrder(input: {
+            orderId: "111",
+            creditCardId: "111",
+          }) {
+            result {
+              order {
                 id
-                name
-              }
-              user {
-                id
-                email
-              }
-              lineItems {
-                edges {
-                  node {
-                    artwork {
-                      id
-                      title
-                      inventoryId
+                code
+                currencyCode
+                itemsTotalCents
+                shippingTotalCents
+                taxTotalCents
+                commissionFeeCents
+                transactionFeeCents
+                state
+                partner {
+                  id
+                  name
+                }
+                user {
+                  id
+                  email
+                }
+                lineItems {
+                  edges {
+                    node {
+                      artwork {
+                        id
+                        title
+                        inventoryId
+                      }
                     }
                   }
                 }
               }
+              errors
             }
           }
         }
-      }
     `
 
-    return runQuery(query, rootValue).then(data => {
-      expect(data.orders.edges[0].node).toEqual(sampleOrder)
+    return runQuery(mutation, rootValue).then(data => {
+      expect(data.submitOrder.result.order).toEqual(sampleOrder)
     })
   })
 })

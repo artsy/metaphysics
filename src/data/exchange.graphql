@@ -125,6 +125,8 @@ type Order {
   partnerId: String!
   shippingTotalCents: Int
   state: OrderStateEnum!
+  stateExpiresAt: DateTime
+  stateUpdatedAt: DateTime
   taxTotalCents: Int
   transactionFeeCents: Int
   updatedAt: DateTime!

@@ -5,6 +5,11 @@
   "currencyCode": "usd",
   "partnerId": "111",
   "userId": "111",
+  "itemsTotalCents": "420000",
+  "shippingTotalCents": "420100",
+  "taxTotalCents": "420200",
+  "commissionFeeCents": "420300",
+  "transactionFeeCents": "420400",
   "updatedAt": "",
   "createdAt": "",
   "lineItems": {

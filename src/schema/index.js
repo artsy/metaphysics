@@ -18,6 +18,8 @@ import GeneFamily from "./gene_family"
 import HomePage from "./home"
 import { Order } from "./ecommerce/order"
 import { Orders } from "./ecommerce/orders"
+import { CreateOrderMutation } from "./ecommerce/create_order_mutation"
+import { SubmitOrderMutation } from "./ecommerce/submit_order_mutation"
 import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
 import Profile from "./profile"
@@ -161,6 +163,8 @@ const schema = new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
+      createOrder: CreateOrderMutation,
+      submitOrder: SubmitOrderMutation,
       sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtworkMutation,
       endSale: endSaleMutation,

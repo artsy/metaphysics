@@ -33,6 +33,7 @@ import {
 import AttributionClass from "schema/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "../../lib/attributionClasses.js"
+import { LotStandingType } from "../me/lot_standing"
 
 const is_inquireable = ({ inquireable, acquireable }) => {
   return inquireable && !acquireable
@@ -122,6 +123,24 @@ export const artworkFields = () => {
     },
     availability: {
       type: GraphQLString,
+    },
+    bidderStatus: {
+      type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
+      args: {
+        live: {
+          type: GraphQLBoolean,
+          defaultValue: null,
+        },
+      },
+      resolve: (
+        { id },
+        { live },
+        _request,
+        { rootValue: { lotStandingLoader } }
+      ) => {
+        if (!lotStandingLoader) return null
+        return lotStandingLoader({ artwork_id: id, live })
+      },
     },
     can_share_image: {
       type: GraphQLBoolean,
@@ -290,6 +309,11 @@ export const artworkFields = () => {
         const sorted = _.sortBy(images, "position")
         return Image.resolve(size ? _.take(sorted, size) : sorted)
       },
+    },
+    inventoryId: {
+      type: GraphQLString,
+      description: "Private text field for partner use",
+      resolve: ({ inventory_id }) => inventory_id,
     },
     is_acquireable: {
       type: GraphQLBoolean,
@@ -475,7 +499,7 @@ export const artworkFields = () => {
     },
     is_saved: {
       type: GraphQLBoolean,
-      resolve: ({ id }, { }, request, { rootValue: { savedArtworkLoader } }) => {
+      resolve: ({ id }, {}, request, { rootValue: { savedArtworkLoader } }) => {
         if (!savedArtworkLoader) return false
         return savedArtworkLoader(id).then(({ is_saved }) => is_saved)
       },
