@@ -56,7 +56,7 @@ describe("Submit Order Mutation", () => {
       })
     )
 
-    const artworkLoader = sinon.stub().returns(
+    const authenticatedArtworkLoader = sinon.stub().returns(
       Promise.resolve({
         id: "hubert-farnsworth-smell-o-scope",
         title: "Smell-O-Scope",
@@ -70,7 +70,7 @@ describe("Submit Order Mutation", () => {
       exchangeSchema,
       partnerLoader,
       userByIDLoader,
-      artworkLoader,
+      authenticatedArtworkLoader,
       accessToken,
     }
   })

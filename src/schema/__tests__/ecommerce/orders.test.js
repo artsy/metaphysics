@@ -49,7 +49,7 @@ describe("Order type", () => {
       })
     )
 
-    const artworkLoader = sinon.stub().returns(
+    const authenticatedArtworkLoader = sinon.stub().returns(
       Promise.resolve({
         id: "hubert-farnsworth-smell-o-scope",
         title: "Smell-O-Scope",
@@ -57,7 +57,7 @@ describe("Order type", () => {
       })
     )
 
-    rootValue = { exchangeSchema, partnerLoader, userByIDLoader, artworkLoader }
+    rootValue = { exchangeSchema, partnerLoader, userByIDLoader, authenticatedArtworkLoader }
   })
   it("fetches order by partner id", () => {
     const query = `
