@@ -61,6 +61,7 @@ describe("Create Order Mutation", () => {
         id: "hubert-farnsworth-smell-o-scope",
         title: "Smell-O-Scope",
         display: "Smell-O-Scope (2017)",
+        inventory_id: "inventory note",
       })
     )
 
@@ -112,6 +113,7 @@ describe("Create Order Mutation", () => {
                       artwork {
                         id
                         title
+                        inventoryId
                       }
                     }
                   }

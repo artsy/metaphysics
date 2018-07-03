@@ -54,10 +54,16 @@ describe("Order type", () => {
         id: "hubert-farnsworth-smell-o-scope",
         title: "Smell-O-Scope",
         display: "Smell-O-Scope (2017)",
+        inventory_id: "inventory note",
       })
     )
 
-    rootValue = { exchangeSchema, partnerLoader, userByIDLoader, authenticatedArtworkLoader }
+    rootValue = {
+      exchangeSchema,
+      partnerLoader,
+      userByIDLoader,
+      authenticatedArtworkLoader,
+    }
   })
   it("fetches order by partner id", () => {
     const query = `
@@ -88,6 +94,7 @@ describe("Order type", () => {
                     artwork {
                       id
                       title
+                      inventoryId
                     }
                   }
                 }
