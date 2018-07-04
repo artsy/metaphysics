@@ -44,18 +44,18 @@ describe("Artist type", () => {
         artist(id: "percy-z") {
           currentEvent {
             name
-            headline
-            subHeadline
+            status 
+            details
           }
         }
       }
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { currentEvent: { name, headline, subHeadline } } }) => {
+      ({ artist: { currentEvent: { name, status, details } } }) => {
         expect(name).toBe("Catty Sale")
-        expect(headline).toBe("Currently at auction")
-        expect(subHeadline).toBe("Live bidding begins at Dec 28, 2018")
+        expect(status).toBe("Currently at auction")
+        expect(details).toBe("Live bidding begins at Dec 28, 2018")
       }
     )
   })
@@ -68,18 +68,18 @@ describe("Artist type", () => {
         artist(id: "percy-z") {
           currentEvent {
             name
-            headline
-            subHeadline
+            status 
+            details
           }
         }
       }
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { currentEvent: { name, headline, subHeadline } } }) => {
+      ({ artist: { currentEvent: { name, status, details } } }) => {
         expect(name).toBe("Catty Show")
-        expect(headline).toBe("Currently on view")
-        expect(subHeadline).toMatch(/Catty Partner/)
+        expect(status).toBe("Currently on view")
+        expect(details).toMatch(/Catty Partner/)
       }
     )
   })
