@@ -61,6 +61,7 @@ describe("Reject Order Mutation", () => {
         id: "hubert-farnsworth-smell-o-scope",
         title: "Smell-O-Scope",
         display: "Smell-O-Scope (2017)",
+        inventory_id: "inventory note",
       })
     )
 
@@ -85,12 +86,16 @@ describe("Reject Order Mutation", () => {
                 id
                 code
                 currencyCode
+                state
                 itemsTotalCents
                 shippingTotalCents
                 taxTotalCents
                 commissionFeeCents
                 transactionFeeCents
-                state
+                updatedAt
+                createdAt
+                stateUpdatedAt
+                stateExpiresAt
                 partner {
                   id
                   name
@@ -105,6 +110,7 @@ describe("Reject Order Mutation", () => {
                       artwork {
                         id
                         title
+                        inventoryId
                       }
                     }
                   }

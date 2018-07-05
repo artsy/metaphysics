@@ -41,6 +41,8 @@ export const FinalizeOrderMutation = mutationWithClientMutationId({
             transactionFeeCents
             updatedAt
             createdAt
+            stateUpdatedAt
+            stateExpiresAt
             lineItems{
               edges{
                 node{

@@ -40,6 +40,8 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
             transactionFeeCents
             updatedAt
             createdAt
+            stateUpdatedAt
+            stateExpiresAt
             lineItems{
               edges{
                 node{

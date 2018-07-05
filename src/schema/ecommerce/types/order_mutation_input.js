@@ -1,7 +1,7 @@
 import { GraphQLInputObjectType, GraphQLNonNull, GraphQLString } from "graphql"
 
 export const OrderMutationInputType = new GraphQLInputObjectType({
-  name: "SubmitOrderInput",
+  name: "OrderMutationInput",
   fields: {
     orderId: {
       type: new GraphQLNonNull(GraphQLString),

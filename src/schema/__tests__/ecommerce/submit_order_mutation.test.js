@@ -87,12 +87,16 @@ describe("Submit Order Mutation", () => {
                 id
                 code
                 currencyCode
+                state
                 itemsTotalCents
                 shippingTotalCents
                 taxTotalCents
                 commissionFeeCents
                 transactionFeeCents
-                state
+                updatedAt
+                createdAt
+                stateUpdatedAt
+                stateExpiresAt
                 partner {
                   id
                   name

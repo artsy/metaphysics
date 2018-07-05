@@ -80,6 +80,10 @@ describe("Order type", () => {
               taxTotalCents
               commissionFeeCents
               transactionFeeCents
+              updatedAt
+              createdAt
+              stateUpdatedAt
+              stateExpiresAt
               partner {
                 id
                 name
