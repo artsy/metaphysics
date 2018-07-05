@@ -8,6 +8,10 @@ export default {
   commissionFeeCents: "$4,203",
   transactionFeeCents: "$4,204",
   state: "PENDING",
+  createdAt: "2018-07-03 17:57:47 UTC",
+  updatedAt: "2018-07-03 17:57:47 UTC",
+  stateUpdatedAt: "2018-07-03 17:57:47 UTC",
+  stateExpiresAt: "2018-07-03 17:57:47 UTC",
   partner: {
     id: "111",
     name: "Subscription Partner",

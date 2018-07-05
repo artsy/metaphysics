@@ -78,7 +78,7 @@ export const CreateOrderMutation = mutationWithClientMutationId({
           lineItems: $lineItems,
         }) {
           order {
-           id
+            id
             code
             currencyCode
             state

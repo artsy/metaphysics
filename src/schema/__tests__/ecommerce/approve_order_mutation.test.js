@@ -1,5 +1,4 @@
 /* eslint-disable promise/always-return */
-
 import { runQuery } from "test/utils"
 import {
   makeExecutableSchema,
@@ -14,14 +13,21 @@ import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 
 let rootValue
 
-describe("Order type", () => {
+describe("Approve Order Mutation", () => {
   beforeEach(() => {
     const typeDefs = fs.readFileSync(
       path.resolve(__dirname, "../../../data/exchange.graphql"),
       "utf8"
     )
 
-    const resolvers = { Query: { order: () => exchangeOrderJSON } }
+    const resolvers = {
+      Mutation: {
+        approveOrder: () => ({
+          order: exchangeOrderJSON,
+          errors: [],
+        }),
+      },
+    }
 
     const schema = makeExecutableSchema({
       typeDefs,
@@ -59,55 +65,65 @@ describe("Order type", () => {
       })
     )
 
+    const accessToken = "open-sesame"
+
     rootValue = {
       exchangeSchema,
       partnerLoader,
       userByIDLoader,
       authenticatedArtworkLoader,
+      accessToken,
     }
   })
   it("fetches order by id", () => {
-    const query = `
-      {
-        order(id: "52dd3c2e4b8480091700027f") {
-          id
-          code
-          currencyCode
-          state
-          itemsTotalCents
-          shippingTotalCents
-          taxTotalCents
-          commissionFeeCents
-          transactionFeeCents
-          updatedAt
-          createdAt
-          stateUpdatedAt
-          stateExpiresAt
-          partner {
-            id
-            name
-          }
-          user {
-            id
-            email
-          }
-          lineItems {
-            edges {
-              node {
-                artwork {
+    const mutation = `
+      mutation {
+        approveOrder(input: {
+            orderId: "111",
+          }) {
+            result {
+              order {
+                id
+                code
+                currencyCode
+                state
+                itemsTotalCents
+                shippingTotalCents
+                taxTotalCents
+                commissionFeeCents
+                transactionFeeCents
+                updatedAt
+                createdAt
+                stateUpdatedAt
+                stateExpiresAt
+                partner {
                   id
-                  title
-                  inventoryId
+                  name
+                }
+                user {
+                  id
+                  email
+                }
+                lineItems {
+                  edges {
+                    node {
+                      artwork {
+                        id
+                        title
+                        inventoryId
+                      }
+                    }
+                  }
                 }
               }
+            errors
             }
           }
         }
-      }
     `
 
-    return runQuery(query, rootValue).then(data => {
-      expect(data.order).toEqual(sampleOrder)
+    return runQuery(mutation, rootValue).then(data => {
+      expect(data.approveOrder.result.order).toEqual(sampleOrder)
     })
   })
 })
