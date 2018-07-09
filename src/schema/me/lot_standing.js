@@ -72,21 +72,26 @@ export default {
   description: "The current user's status relating to bids on artworks",
   args: {
     artwork_id: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
     sale_id: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
+    },
+    sale_artwork_id: {
+      type: GraphQLString,
     },
   },
   resolve: (
     root,
-    { sale_id, artwork_id },
+    { sale_id, artwork_id, sale_artwork_id },
     request,
     { rootValue: { lotStandingLoader } }
   ) => {
     if (!lotStandingLoader) return null
-    return lotStandingLoader({ sale_id, artwork_id }).then(([lotStanding]) => {
-      return lotStanding
-    })
+    return lotStandingLoader({ sale_id, artwork_id, sale_artwork_id }).then(
+      ([lotStanding]) => {
+        return lotStanding
+      }
+    )
   },
 }
