@@ -1,4 +1,4 @@
-import { runQuery } from "test/utils"
+import { runAuthenticatedQuery, runQuery } from "test/utils"
 
 describe("SaleArtwork type", () => {
   const saleArtwork = {
@@ -289,6 +289,143 @@ describe("SaleArtwork type", () => {
         {
           cents: 355000,
           display: "€3,550",
+        },
+      ])
+    })
+  })
+
+  describe("my_increments", () => {
+    let rootValue
+    let query
+
+    beforeEach(() => {
+      rootValue = {
+        saleLoader: () => {
+          return Promise.resolve({ increment_strategy: "default" })
+        },
+        saleArtworkRootLoader: () => Promise.resolve(saleArtwork),
+        lotStandingLoader: () => null,
+        incrementsLoader: sale => {
+          return Promise.resolve([
+            {
+              key: sale.increment_strategy,
+              increments: [
+                {
+                  from: 0,
+                  to: 399999,
+                  amount: 5000,
+                },
+                {
+                  from: 400000,
+                  to: 1000000,
+                  amount: 10000,
+                },
+              ],
+            },
+          ])
+        },
+      }
+
+      query = `
+        {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            my_increments {
+              cents
+              display
+            }
+          }
+        }
+      `
+    })
+
+    it("returns increments from the minimum next bid cents if the user has no lot standings", async () => {
+      const data = await runAuthenticatedQuery(query, rootValue)
+      expect(data.sale_artwork.my_increments.slice(0, 5)).toEqual([
+        {
+          cents: 351000,
+          display: "€3,510",
+        },
+        {
+          cents: 355000,
+          display: "€3,550",
+        },
+        {
+          cents: 360000,
+          display: "€3,600",
+        },
+        {
+          cents: 365000,
+          display: "€3,650",
+        },
+        {
+          cents: 370000,
+          display: "€3,700",
+        },
+      ])
+    })
+
+    it("returns increments from the most recent bid if greater than the minimum_next_bid_cents", async () => {
+      const lotStandingLoader = () => {
+        return [{ max_position: { max_bid_amount_cents: 390000 } }]
+      }
+
+      const data = await execute(query, saleArtwork, {
+        ...rootValue,
+        lotStandingLoader: lotStandingLoader,
+      })
+      expect(data.sale_artwork.my_increments.slice(0, 5)).toEqual([
+        {
+          cents: 390000,
+          display: "€3,900",
+        },
+        {
+          cents: 395000,
+          display: "€3,950",
+        },
+        {
+          cents: 400000,
+          display: "€4,000",
+        },
+        {
+          cents: 410000,
+          display: "€4,100",
+        },
+        {
+          cents: 420000,
+          display: "€4,200",
+        },
+      ])
+    })
+
+    it("returns increments from the minimum_next_bid_cents if greater than my most recent bid", async () => {
+      const lotStandingLoader = () => {
+        return [{ max_position: { max_bid_amount_cents: 340000 } }]
+      }
+
+      const data = await execute(query, saleArtwork, {
+        ...rootValue,
+        lotStandingLoader: lotStandingLoader,
+      })
+      expect(data.sale_artwork.my_increments.slice(0, 5)).toEqual([
+        {
+          cents: 351000,
+          display: "€3,510",
+        },
+        {
+          cents: 355000,
+          display: "€3,550",
+        },
+        {
+          cents: 360000,
+          display: "€3,600",
+        },
+        {
+          cents: 365000,
+          display: "€3,650",
+        },
+        {
+          cents: 370000,
+          display: "€3,700",
         },
       ])
     })
