@@ -185,17 +185,42 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       increments: {
         type: new GraphQLList(BidIncrementsFormatted),
+        args: {
+          useMyMaxBid: {
+            type: GraphQLBoolean,
+            description:
+              "Whether or not to start the increments at the user's latest bid",
+          },
+        },
         resolve: async (
-          { minimum_next_bid_cents, sale_id, symbol },
-          options,
+          { _id, minimum_next_bid_cents, sale_id, symbol },
+          { useMyMaxBid },
           request,
-          { rootValue: { incrementsLoader, saleLoader } }
+          { rootValue: { incrementsLoader, lotStandingLoader, saleLoader } }
         ) => {
+          let minimumNextBid
+          minimumNextBid = minimum_next_bid_cents
+
+          if (useMyMaxBid) {
+            const myLotStandings = await lotStandingLoader({
+              sale_artwork_id: _id,
+            })
+
+            const myCurrentMax = get(
+              myLotStandings,
+              "0.max_position.max_bid_amount_cents"
+            )
+
+            minimumNextBid = myCurrentMax
+              ? maxBy([myCurrentMax, minimum_next_bid_cents])
+              : minimum_next_bid_cents
+          }
+
           return bid_increments_calculator({
             sale_id,
             saleLoader,
             incrementsLoader,
-            minimum_next_bid_cents,
+            minimum_next_bid_cents: minimumNextBid,
           }).then(bid_increments => {
             return bid_increments.map(increment => {
               return {
@@ -260,42 +285,6 @@ const SaleArtworkType = new GraphQLObjectType({
       minimum_next_bid_cents: {
         type: GraphQLFloat,
         deprecationReason: "Favor `minimum_next_bid`",
-      },
-      my_increments: {
-        type: new GraphQLList(BidIncrementsFormatted),
-        resolve: async (
-          { _id, minimum_next_bid_cents, sale_id, symbol },
-          options,
-          request,
-          { rootValue: { incrementsLoader, lotStandingLoader, saleLoader } }
-        ) => {
-          const myLotStandings = await lotStandingLoader({
-            sale_artwork_id: _id,
-          })
-
-          const myCurrentMax = get(
-            myLotStandings,
-            "0.max_position.max_bid_amount_cents"
-          )
-
-          const myMinimumNextBid = myCurrentMax
-            ? maxBy([myCurrentMax, minimum_next_bid_cents])
-            : minimum_next_bid_cents
-
-          return bid_increments_calculator({
-            sale_id,
-            saleLoader,
-            incrementsLoader,
-            minimum_next_bid_cents: myMinimumNextBid,
-          }).then(bid_increments => {
-            return bid_increments.map(increment => {
-              return {
-                cents: increment,
-                display: formatMoney(increment / 100, { symbol, precision: 0 }),
-              }
-            })
-          })
-        },
       },
       opening_bid: money({
         name: "SaleArtworkOpeningBid",

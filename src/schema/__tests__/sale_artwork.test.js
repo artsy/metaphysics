@@ -329,7 +329,7 @@ describe("SaleArtwork type", () => {
       query = `
         {
           sale_artwork(id: "54c7ed2a7261692bfa910200") {
-            my_increments {
+            increments(useMyMaxBid: true) {
               cents
               display
             }
@@ -340,7 +340,7 @@ describe("SaleArtwork type", () => {
 
     it("returns increments from the minimum next bid cents if the user has no lot standings", async () => {
       const data = await runAuthenticatedQuery(query, rootValue)
-      expect(data.sale_artwork.my_increments.slice(0, 5)).toEqual([
+      expect(data.sale_artwork.increments.slice(0, 5)).toEqual([
         {
           cents: 351000,
           display: "€3,510",
@@ -373,7 +373,7 @@ describe("SaleArtwork type", () => {
         ...rootValue,
         lotStandingLoader: lotStandingLoader,
       })
-      expect(data.sale_artwork.my_increments.slice(0, 5)).toEqual([
+      expect(data.sale_artwork.increments.slice(0, 5)).toEqual([
         {
           cents: 390000,
           display: "€3,900",
@@ -406,7 +406,7 @@ describe("SaleArtwork type", () => {
         ...rootValue,
         lotStandingLoader: lotStandingLoader,
       })
-      expect(data.sale_artwork.my_increments.slice(0, 5)).toEqual([
+      expect(data.sale_artwork.increments.slice(0, 5)).toEqual([
         {
           cents: 351000,
           display: "€3,510",
