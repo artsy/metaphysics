@@ -20,6 +20,8 @@ export const Order = {
           taxTotalCents
           commissionFeeCents
           transactionFeeCents
+          subtotalCents
+          totalCents
           updatedAt
           createdAt
           stateUpdatedAt

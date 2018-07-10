@@ -38,6 +38,8 @@ export const OrderType = new GraphQLObjectType({
       ({ transactionFeeCents }) => transactionFeeCents
     ),
     commissionFeeCents: amount(({ commissionFeeCents }) => commissionFeeCents),
+    subtotalCents: amount(({ subtotalCents }) => subtotalCents),
+    totalCents: amount(({ totalCents }) => totalCents),
     lineItems: {
       type: OrderLineItemConnection,
       description: "List of order line items",
