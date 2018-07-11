@@ -3,9 +3,26 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GravityIDFields } from "schema/object_identification"
+import { formatGravityError } from "lib/graphqlErrorHandler"
+
+export const GravityMutationErrorType = new GraphQLObjectType({
+  name: "GravityMutationError",
+  fields: () => ({
+    type: {
+      type: GraphQLString,
+    },
+    message: {
+      type: GraphQLString,
+    },
+    detail: {
+      type: GraphQLString,
+    },
+  }),
+})
 
 export const CreditCardType = new GraphQLObjectType({
   name: "CreditCard",
@@ -34,6 +51,33 @@ export const CreditCardType = new GraphQLObjectType({
   }),
 })
 
+export const CreditCardMutationSuccessType = new GraphQLObjectType({
+  name: "CreditCardMutationSuccess",
+  isTypeOf: data => data.id,
+  fields: () => ({
+    credit_card: {
+      type: CreditCardType,
+      resolve: credit_card => credit_card,
+    },
+  }),
+})
+
+export const CreditCardMutationFailureType = new GraphQLObjectType({
+  name: "CreditCardMutationFailure",
+  isTypeOf: data => data.type && data.message,
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: err => err,
+    },
+  }),
+})
+
+export const CreditCardMutationType = new GraphQLUnionType({
+  name: "CreditCardMutationType",
+  types: [CreditCardMutationSuccessType, CreditCardMutationFailureType],
+})
+
 export default mutationWithClientMutationId({
   name: "CreditCard",
   description: "Create a credit card",
@@ -43,9 +87,9 @@ export default mutationWithClientMutationId({
     },
   },
   outputFields: {
-    credit_card: {
-      type: CreditCardType,
-      resolve: credit_card => credit_card,
+    result: {
+      type: CreditCardMutationType,
+      resolve: result => result,
     },
   },
   mutateAndGetPayload: (
@@ -58,5 +102,14 @@ export default mutationWithClientMutationId({
     }
 
     return createCreditCardLoader({ token, provider: "stripe" })
+      .then(result => result)
+      .catch(error => {
+        const formattedErr = formatGravityError(error)
+        if (formattedErr) {
+          return formattedErr
+        } else {
+          return new Error(error)
+        }
+      })
   },
 })
