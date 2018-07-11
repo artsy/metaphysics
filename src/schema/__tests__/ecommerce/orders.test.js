@@ -27,6 +27,8 @@ describe("Order type", () => {
               taxTotalCents
               commissionFeeCents
               transactionFeeCents
+              subtotalCents
+              totalCents
               updatedAt
               createdAt
               stateUpdatedAt

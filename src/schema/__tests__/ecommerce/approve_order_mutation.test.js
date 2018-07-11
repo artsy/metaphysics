@@ -36,6 +36,8 @@ describe("Approve Order Mutation", () => {
                 taxTotalCents
                 commissionFeeCents
                 transactionFeeCents
+                subtotalCents
+                totalCents
                 updatedAt
                 createdAt
                 stateUpdatedAt
