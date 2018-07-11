@@ -7,6 +7,8 @@ export default {
   taxTotalCents: "$4,202",
   commissionFeeCents: "$4,203",
   transactionFeeCents: "$4,204",
+  subtotalCents: "$8,000",
+  totalCents: "$8,900",
   state: "PENDING",
   createdAt: "2018-07-03 17:57:47 UTC",
   updatedAt: "2018-07-03 17:57:47 UTC",

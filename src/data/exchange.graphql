@@ -110,10 +110,10 @@ type Order {
   id: ID!
   itemsTotalCents: Int!
   lineItems(
-    # Returns the elements in the list that come after the specified global ID.
+    # Returns the elements in the list that come after the specified cursor.
     after: String
 
-    # Returns the elements in the list that come before the specified global ID.
+    # Returns the elements in the list that come before the specified cursor.
     before: String
 
     # Returns the first _n_ elements from the list.
@@ -127,7 +127,9 @@ type Order {
   state: OrderStateEnum!
   stateExpiresAt: DateTime
   stateUpdatedAt: DateTime
+  subtotalCents: Int
   taxTotalCents: Int
+  totalCents: Int
   transactionFeeCents: Int
   updatedAt: DateTime!
   userId: String!
@@ -198,10 +200,10 @@ type Query {
 
   # Find list of orders
   orders(
-    # Returns the elements in the list that come after the specified global ID.
+    # Returns the elements in the list that come after the specified cursor.
     after: String
 
-    # Returns the elements in the list that come before the specified global ID.
+    # Returns the elements in the list that come before the specified cursor.
     before: String
 
     # Returns the first _n_ elements from the list.
