@@ -15,6 +15,9 @@ export const GravityMutationErrorType = new GraphQLObjectType({
     statusCode: {
       type: GraphQLInt,
     },
+    error: {
+      type: GraphQLString,
+    },
   }),
 })
 
