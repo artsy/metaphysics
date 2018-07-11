@@ -69,4 +69,9 @@ if (enableMetrics && isProd) {
     statsClient.gauge("gc.heap_used", gcMetrics.used)
     statsClient.timing("gc.sweep_duration", gcMetrics.duration, {sweep_type: gcMetrics.type})
   })
+
+  setInterval(() => {
+    statsClient.gauge("process.active_handles", process._getActiveHandles().length)
+    statsClient.gauge("process.active_requests", process._getActiveRequests().length)
+  }, 5000)
 }
