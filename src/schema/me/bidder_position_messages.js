@@ -5,14 +5,14 @@ export const BiddingMessages = [
     gravity_key: "Please enter a bid higher than",
     header: "Your bid wasn’t high enough",
     description_md: () =>
-      `Another bidder placed a higher max bid\nor the same max bid before you did.\n\nBid again to take the lead.`,
+      `Another bidder placed a higher max bid\nor the same max bid before you did.`,
   },
   {
     id: "RESERVE_NOT_MET",
     gravity_key: "Please enter a bid higher than",
     header: "Your bid wasn’t high enough",
     description_md: () =>
-      `Your bid didn’t meet the reserve price\nfor this work.\n\nBid again to take the lead.`,
+      `Your bid didn’t meet the reserve price\nfor this work.`,
   },
   {
     id: "SALE_CLOSED",
