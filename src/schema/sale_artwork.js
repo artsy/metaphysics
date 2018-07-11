@@ -1,3 +1,4 @@
+import { isExisty } from "lib/helpers"
 import { assign, compact, get, maxBy } from "lodash"
 import cached from "./fields/cached"
 import date from "./fields/date"
@@ -201,7 +202,10 @@ const SaleArtworkType = new GraphQLObjectType({
           let minimumNextBid
           minimumNextBid = minimum_next_bid_cents
 
-          if (useMyMaxBid) {
+          let isLeading
+          isLeading = false
+
+          if (useMyMaxBid && lotStandingLoader) {
             const myLotStandings = await lotStandingLoader({
               sale_artwork_id: _id,
             })
@@ -211,9 +215,8 @@ const SaleArtworkType = new GraphQLObjectType({
               "0.max_position.max_bid_amount_cents"
             )
 
-            minimumNextBid = myCurrentMax
-              ? maxBy([myCurrentMax, minimum_next_bid_cents])
-              : minimum_next_bid_cents
+            isLeading = isExisty(get(myLotStandings, "0.leading_position"))
+            minimumNextBid = isLeading ? myCurrentMax : minimum_next_bid_cents
           }
 
           return bid_increments_calculator({
@@ -222,6 +225,14 @@ const SaleArtworkType = new GraphQLObjectType({
             incrementsLoader,
             minimum_next_bid_cents: minimumNextBid,
           }).then(bid_increments => {
+            // If you are leading, we want to show increments _above_ your max
+            // bid (which is the first element of the array). If you are not
+            // leading, the first element of the array represents the next
+            // amount you could bid.
+            if (isLeading) {
+              bid_increments.shift()
+            }
+
             return bid_increments.map(increment => {
               return {
                 cents: increment,
