@@ -7,22 +7,10 @@ import {
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { GravityIDFields } from "schema/object_identification"
-import { formatGravityError } from "lib/graphqlErrorHandler"
-
-export const GravityMutationErrorType = new GraphQLObjectType({
-  name: "GravityMutationError",
-  fields: () => ({
-    type: {
-      type: GraphQLString,
-    },
-    message: {
-      type: GraphQLString,
-    },
-    detail: {
-      type: GraphQLString,
-    },
-  }),
-})
+import {
+  formatGravityError,
+  GravityMutationErrorType,
+} from "lib/gravityErrorHandler"
 
 export const CreditCardType = new GraphQLObjectType({
   name: "CreditCard",
@@ -87,7 +75,16 @@ export default mutationWithClientMutationId({
     },
   },
   outputFields: {
-    result: {
+    credit_card: {
+      type: CreditCardType,
+      deprecationReason: "Favor `creditCardOrError`",
+      resolve: result => {
+        // have to return a dummy id since it is a non-nullable field
+        // TODO: remove in favor of creditCardOrError
+        return result && result.id ? result : { id: "", _id: "" }
+      },
+    },
+    creditCardOrError: {
       type: CreditCardMutationType,
       resolve: result => result,
     },

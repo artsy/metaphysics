@@ -20,13 +20,6 @@ export const shouldReportError = originalError => {
   return true
 }
 
-export const formatGravityError = error => {
-  const errorSplit = error.message.split(" - ")
-  const errorObject =
-    errorSplit && errorSplit.length > 1 ? JSON.parse(errorSplit[1]) : null
-  return errorObject
-}
-
 export default function graphqlErrorHandler(
   req,
   { isProduction, enableSentry }
