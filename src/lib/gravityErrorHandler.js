@@ -12,9 +12,6 @@ export const GravityMutationErrorType = new GraphQLObjectType({
     detail: {
       type: GraphQLString,
     },
-    statusCode: {
-      type: GraphQLInt,
-    },
     error: {
       type: GraphQLString,
     },
@@ -23,13 +20,12 @@ export const GravityMutationErrorType = new GraphQLObjectType({
 
 export const formatGravityError = error => {
   const errorSplit = error.message.split(" - ")
-  const statusCode = error.statusCode
 
   if (errorSplit && errorSplit.length > 1) {
     try {
-      return { ...JSON.parse(errorSplit[1]), statusCode }
+      return { ...JSON.parse(errorSplit[1]) }
     } catch (e) {
-      return { message: errorSplit[1], statusCode }
+      return { message: errorSplit[1] }
     }
   } else {
     return null

@@ -29,7 +29,7 @@ describe("Credit card mutation", () => {
     createCreditCard(input: {token: "tok_foo"}) {
       creditCardOrError {
         ... on CreditCardMutationSuccess {
-          credit_card {
+          creditCard {
             id
           }
         }
@@ -38,7 +38,6 @@ describe("Credit card mutation", () => {
             type
             message
             detail
-            statusCode
           }
         }
       }
@@ -80,7 +79,6 @@ describe("Credit card mutation", () => {
           mutationError: {
             detail: "Your card has expired.",
             message: "Payment information could not be processed.",
-            statusCode: null,
             type: "payment_error",
           },
         },
@@ -92,7 +90,7 @@ describe("Credit card mutation", () => {
     const data = await runAuthenticatedQuery(newQuery, rootValue)
     expect(data).toEqual({
       createCreditCard: {
-        creditCardOrError: { credit_card: { id: "foo-foo" } },
+        creditCardOrError: { creditCard: { id: "foo-foo" } },
       },
     })
   })

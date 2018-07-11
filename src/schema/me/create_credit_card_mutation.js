@@ -43,9 +43,9 @@ export const CreditCardMutationSuccessType = new GraphQLObjectType({
   name: "CreditCardMutationSuccess",
   isTypeOf: data => data.id,
   fields: () => ({
-    credit_card: {
+    creditCard: {
       type: CreditCardType,
-      resolve: credit_card => credit_card,
+      resolve: creditCard => creditCard,
     },
   }),
 })
@@ -79,9 +79,7 @@ export default mutationWithClientMutationId({
       type: CreditCardType,
       deprecationReason: "Favor `creditCardOrError`",
       resolve: result => {
-        // have to return a dummy id since it is a non-nullable field
-        // TODO: remove in favor of creditCardOrError
-        return result && result.id ? result : { id: "", _id: "" }
+        return result && result.id ? result : null
       },
     },
     creditCardOrError: {

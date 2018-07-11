@@ -10,7 +10,6 @@ describe("gravityErrorHandler", () => {
       expect(formatGravityError(expectedErrorFormat)).toEqual({
         detail: "Your card has expired.",
         message: "Payment information could not be processed.",
-        statusCode: 400,
         type: "payment_error",
       })
     })
@@ -21,7 +20,6 @@ describe("gravityErrorHandler", () => {
       }
       expect(formatGravityError(unexpectedErrorFormat)).toEqual({
         message: '{"fooError"',
-        statusCode: 400,
       })
     })
     it("returns null if the error is unrecognizable", () => {
