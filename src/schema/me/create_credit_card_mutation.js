@@ -52,7 +52,9 @@ export const CreditCardMutationSuccessType = new GraphQLObjectType({
 
 export const CreditCardMutationFailureType = new GraphQLObjectType({
   name: "CreditCardMutationFailure",
-  isTypeOf: data => data.type && data.message,
+  isTypeOf: data => {
+    return data._type === "GravityMutationError"
+  },
   fields: () => ({
     mutationError: {
       type: GravityMutationErrorType,
@@ -101,7 +103,7 @@ export default mutationWithClientMutationId({
       .catch(error => {
         const formattedErr = formatGravityError(error)
         if (formattedErr) {
-          return formattedErr
+          return { ...formattedErr, _type: "GravityMutationError" }
         } else {
           return new Error(error)
         }
