@@ -79,7 +79,8 @@ import config from "config"
 const { ENABLE_SCHEMA_STITCHING } = config
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
 
-const rootFields = {
+// TODO: Remove this any
+const rootFields: any = {
   article: Article,
   articles: Articles,
   artwork: Artwork,
@@ -142,7 +143,7 @@ const Viewer = {
   resolve: x => x,
 }
 
-const stitchedMutations = enableSchemaStitching
+const stitchedMutations: any = enableSchemaStitching
   ? {}
   : {
       createConsignmentSubmission: CreateSubmissionMutation,

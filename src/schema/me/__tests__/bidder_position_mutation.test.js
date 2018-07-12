@@ -20,7 +20,7 @@ const query = `
   }
   `
 
-const errorMEssageTemplate = `{ Error: https://stagingapi.artsy.net/api/v1/me/bidder_position?
+const errorMessageTemplate = `{ Error: https://stagingapi.artsy.net/api/v1/me/bidder_position?
         artwork_id=mohammed-qasim-ashfaq-surrealism&max_bid_amount_cents=3700000&
         sale_id=bidding-test - `
 
@@ -51,7 +51,7 @@ describe("Bidder position mutation", () => {
       const errorObjectString = `{"type": "param_error", "message":"Please enter a bid higher than $37,000.","detail"\
 :{"base":["Please enter a bid higher than $37,000"]}}`
       const errorMessage = {
-        message: errorMEssageTemplate + errorObjectString,
+        message: errorMessageTemplate + errorObjectString,
       }
       const rootValue = {
         createBidderPositionLoader: sinon
@@ -73,7 +73,7 @@ describe("Bidder position mutation", () => {
     it("creates correct message when sale is closed", async () => {
       const errorObjectString = `{"error":"Sale Closed to Bids"}`
       const errorMessage = {
-        message: errorMEssageTemplate + errorObjectString,
+        message: errorMessageTemplate + errorObjectString,
       }
       const rootValue = {
         createBidderPositionLoader: sinon
@@ -88,7 +88,7 @@ describe("Bidder position mutation", () => {
         "Lot closed"
       )
       expect(data.createBidderPosition.result.message_description_md).toEqual(
-        "Sorry, your bid wasn’t received\n" + "before the lot closed."
+        "Sorry, your bid wasn’t received\nbefore the lot closed."
       )
     })
   })
@@ -96,7 +96,7 @@ describe("Bidder position mutation", () => {
   it("creates correct message when live bidding has started", async () => {
     const errorObjectString = `{"error":"Live Bidding has Started"}`
     const errorMessage = {
-      message: errorMEssageTemplate + errorObjectString,
+      message: errorMessageTemplate + errorObjectString,
     }
     const rootValue = {
       createBidderPositionLoader: sinon
@@ -123,7 +123,7 @@ describe("Bidder position mutation", () => {
 it("creates correct message when bidder is not qualifdied", async () => {
   const errorObjectString = `{"type": "param_error", "message":"Bidder not qualified to bid on this auction."}`
   const errorMessage = {
-    message: errorMEssageTemplate + errorObjectString,
+    message: errorMessageTemplate + errorObjectString,
   }
   const rootValue = {
     createBidderPositionLoader: sinon

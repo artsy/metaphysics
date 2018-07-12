@@ -1,5 +1,3 @@
-// @ts-check
-
 import DataLoader from "dataloader"
 import { pick } from "lodash"
 
@@ -28,14 +26,14 @@ import logger from "lib/loaders/api/logger"
  * @param {any} globalAPIOptions options that need to be passed to any API loader created with this factory
  */
 export const apiLoaderWithoutAuthenticationFactory = (
-  api,
-  apiName,
-  globalAPIOptions = {}
+  api: (path: string, token: string | null, apiOptions: any) => Promise<any>,
+  apiName: string,
+  globalAPIOptions: any = {}
 ) => {
   return (path, globalParams = {}, pathAPIOptions = {}) => {
     const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
     const loader = new DataLoader(
-      keys =>
+      (keys: string[]) =>
         Promise.all(
           keys.map(key => {
             const clock = timer(key)

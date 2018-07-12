@@ -32,7 +32,7 @@ import {
 } from "graphql"
 import AttributionClass from "schema/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
-import attributionClasses from "../../lib/attributionClasses.js"
+import attributionClasses from "../../lib/attributionClasses"
 import { LotStandingType } from "../me/lot_standing"
 
 const is_inquireable = ({ inquireable, acquireable }) => {

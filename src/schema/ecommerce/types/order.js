@@ -1,9 +1,4 @@
-import {
-  GraphQLID,
-  GraphQLInt,
-  GraphQLObjectType,
-  GraphQLString,
-} from "graphql"
+import { GraphQLID, GraphQLObjectType, GraphQLString } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 
 import Partner from "schema/partner"

@@ -21,6 +21,7 @@
     "test": "${workspaceRoot}/test"
   },
   "cSpell.words": [
+    "consignable",
     "urljoin"
   ]
 }

@@ -3,12 +3,7 @@ import BidderPosition from "schema/bidder_position"
 import Bidder from "schema/bidder"
 import Sale from "schema/sale"
 import SaleArtwork from "schema/sale_artwork"
-import {
-  GraphQLObjectType,
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLBoolean,
-} from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLBoolean } from "graphql"
 
 // is leading human bidder
 export const isLeadingBidder = lotStanding =>
