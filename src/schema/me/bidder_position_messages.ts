@@ -1,5 +1,19 @@
 // the description_md must be a function to delay interpolation of string literal
-export const BiddingMessages = [
+
+interface BiddingMessage {
+  id:
+    | "OUTBID"
+    | "RESERVE_NOT_MET"
+    | "SALE_CLOSED"
+    | "LIVE_BIDDING_STARTED"
+    | "BIDDER_NOT_QUALIFIED"
+    | "ERROR"
+  gravity_key: string
+  header: string
+  description_md: (opts: any) => string
+}
+
+export const BiddingMessages: BiddingMessage[] = [
   {
     id: "OUTBID",
     gravity_key: "Please enter a bid higher than",

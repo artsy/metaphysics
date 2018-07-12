@@ -1,5 +1,3 @@
-// @ts-check
-
 import DataLoader from "dataloader"
 import { pick } from "lodash"
 
@@ -17,20 +15,20 @@ import logger from "lib/loaders/api/logger"
  * The data loaders produced by this factory do cache data for the duration of the query execution, but do not cache
  * data to memcache.
  *
- * @param {(path: string, token: string, apiOptions: any) => Promise<any>} api a function that performs an API request
- * @param {string} apiName a function that performs an API request
- * @param {any} globalAPIOptions options that need to be passed to any API loader created with this factory
+ * @param api a function that performs an API request
+ * @param apiName a function that performs an API request
+ * @param globalAPIOptions options that need to be passed to any API loader created with this factory
  */
 export const apiLoaderWithAuthenticationFactory = (
-  api,
-  apiName,
-  globalAPIOptions
+  api: (path: string, token: string, apiOptions: any) => Promise<any>,
+  apiName: string,
+  globalAPIOptions: any
 ) => {
   return accessTokenLoader => {
     return (path, globalParams = {}, pathAPIOptions = {}) => {
       const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
       const loader = new DataLoader(
-        keys => {
+        (keys: string[]) => {
           return accessTokenLoader().then(accessToken =>
             Promise.all(
               keys.map(key => {

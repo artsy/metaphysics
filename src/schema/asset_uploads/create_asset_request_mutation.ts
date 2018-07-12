@@ -1,5 +1,3 @@
-// @ts-check
-
 import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
@@ -93,7 +91,7 @@ export default mutationWithClientMutationId({
   },
   mutateAndGetPayload: (
     { name, acl },
-    request,
+    _request,
     { rootValue: { createNewGeminiAssetLoader } }
   ) => {
     if (!createNewGeminiAssetLoader) return null

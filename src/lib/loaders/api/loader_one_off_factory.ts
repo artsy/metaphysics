@@ -1,5 +1,3 @@
-// @ts-check
-
 import DataLoader from "dataloader"
 import { loaderInterface } from "./loader_interface"
 
@@ -13,7 +11,12 @@ import { loaderInterface } from "./loader_interface"
  * @param {any} options values which should be passed into the fetch request
  */
 
-export const loaderOneOffFactory = (api, _apiName, path, options) => {
+export const loaderOneOffFactory = (
+  api: (route: string, params) => Promise<any>,
+  _apiName: string,
+  path: string,
+  options: any
+) => {
   // If you use gravity as the api here, then options will get interpreted as
   // an accessToken, so you have to explicitly pass null
   const loader = new DataLoader(

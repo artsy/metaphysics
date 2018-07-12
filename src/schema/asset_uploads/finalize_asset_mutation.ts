@@ -1,5 +1,3 @@
-// @ts-check
-
 import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import GraphQLJSON from "graphql-type-json"
@@ -47,7 +45,7 @@ export default mutationWithClientMutationId({
   },
   mutateAndGetPayload: (
     { name, template_key, source_key, source_bucket, metadata },
-    request,
+    _request,
     { rootValue: { createNewGeminiEntryAssetLoader } }
   ) => {
     if (!createNewGeminiEntryAssetLoader) return null

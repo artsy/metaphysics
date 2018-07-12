@@ -3,6 +3,8 @@
 import { toKey } from "lib/helpers"
 import DataLoader from "dataloader"
 
+export type FuncToString = () => string
+
 const encodeStaticPath = (path, globalParams, params) => {
   return toKey(path, Object.assign({}, globalParams, params))
 }
@@ -31,7 +33,7 @@ const encodeDynamicPath = (pathGenerator, globalParams, id, params) => {
 
 export function loaderInterface<R = any>(
   loader: DataLoader<string, R>,
-  pathOrGenerator: () => string | string,
+  pathOrGenerator: string | FuncToString,
   globalParams: any
 ) {
   return (...idAndOrParams) => {

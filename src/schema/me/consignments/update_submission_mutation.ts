@@ -1,14 +1,13 @@
-// @ts-check
 import { mutationWithClientMutationId } from "graphql-relay"
 import { SubmissionType } from "./submission"
 import { omit } from "lodash"
 
 export const config = {
   name: "UpdateSubmissionMutation",
-  description: "Update a consigment using Convection",
+  description: "Update a consignment using Convection",
   inputFields: {
     ...omit(SubmissionType.getFields(), ["__id", "_id", "artist"]),
-  },
+  } as any,
   outputFields: {
     consignment_submission: {
       type: SubmissionType,
