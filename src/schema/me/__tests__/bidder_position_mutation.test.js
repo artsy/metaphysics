@@ -66,8 +66,7 @@ describe("Bidder position mutation", () => {
         "Your bid wasn’t high enough"
       )
       expect(data.createBidderPosition.result.message_description_md).toEqual(
-        "Another bidder placed a higher max bid\nor the same max bid before you did.\n\n" +
-          "Bid again to take the lead."
+        "Another bidder placed a higher max bid\nor the same max bid before you did."
       )
     })
 
