@@ -86,6 +86,17 @@ describe("Credit card mutation", () => {
     })
   })
 
+  it("throws an error if there is one we don't recognize", async () => {
+    const errorRootValue = {
+      createCreditCardLoader: () => {
+        throw new Error("ETIMEOUT service unreachable")
+      },
+    }
+    runAuthenticatedQuery(newQuery, errorRootValue).catch(error => {
+      expect(error.message).toEqual("ETIMEOUT service unreachable")
+    })
+  })
+
   it("creates a credit card successfully with the new-style query", async () => {
     const data = await runAuthenticatedQuery(newQuery, rootValue)
     expect(data).toEqual({

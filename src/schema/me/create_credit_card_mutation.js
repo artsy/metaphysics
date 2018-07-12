@@ -95,7 +95,7 @@ export default mutationWithClientMutationId({
     { rootValue: { accessToken, createCreditCardLoader } }
   ) => {
     if (!accessToken) {
-      return new Error("You need to be signed in to perform this action")
+      throw new Error("You need to be signed in to perform this action")
     }
 
     return createCreditCardLoader({ token, provider: "stripe" })
@@ -105,7 +105,7 @@ export default mutationWithClientMutationId({
         if (formattedErr) {
           return { ...formattedErr, _type: "GravityMutationError" }
         } else {
-          return new Error(error)
+          throw new Error(error)
         }
       })
   },
