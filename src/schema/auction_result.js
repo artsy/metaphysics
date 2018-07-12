@@ -3,7 +3,6 @@ import numeral from "numeral"
 import { IDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLFloat,
-  GraphQLInt,
   GraphQLNonNull,
   GraphQLString,
   GraphQLObjectType,

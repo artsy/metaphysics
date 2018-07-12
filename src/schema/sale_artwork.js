@@ -1,5 +1,5 @@
 import { isExisty } from "lib/helpers"
-import { assign, compact, get, maxBy } from "lodash"
+import { assign, compact, get } from "lodash"
 import cached from "./fields/cached"
 import date from "./fields/date"
 import money, { amount } from "./fields/money"

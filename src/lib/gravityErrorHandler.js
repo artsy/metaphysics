@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLInt, GraphQLObjectType } from "graphql"
+import { GraphQLString, GraphQLObjectType } from "graphql"
 
 export const GravityMutationErrorType = new GraphQLObjectType({
   name: "GravityMutationError",

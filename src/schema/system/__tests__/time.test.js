@@ -1,7 +1,6 @@
 import { runQuery } from "test/utils"
 
 jest.mock("lib/apis/fetch", () => jest.fn())
-import fetch from "lib/apis/fetch"
 
 describe("SystemTime type", () => {
   const systemTimeData = {
