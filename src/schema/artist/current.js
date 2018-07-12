@@ -26,7 +26,7 @@ const CurrentEventType = new GraphQLObjectType({
       type: GraphQLString,
       description: "Name of the event",
     },
-    page: {
+    href: {
       type: GraphQLString,
       description: "Link to the event",
     },
@@ -75,6 +75,7 @@ export const CurrentEvent = {
           return {
             status: "Currently at auction",
             name: sale.name,
+            href: `/auction/${sale.id}`,
             details: `Live bidding begins at ${liveMoment.format(
               "MMM DD, YYYY"
             )}`,
@@ -86,7 +87,7 @@ export const CurrentEvent = {
           return {
             status: "Currently on view",
             name: show.name,
-            page: show.page,
+            href: `/show/${show.id}`,
             partner: show.partner.name,
             details: showDetails(show),
             image: Image.resolve({ image_versions, image_url }),

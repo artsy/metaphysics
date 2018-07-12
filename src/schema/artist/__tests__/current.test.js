@@ -16,8 +16,11 @@ describe("Artist type", () => {
         partner: {
           name: "Catty Partner",
         },
-        id: "contemporary-percy-z",
+        id: "catty-show",
         name: "Catty Show",
+        location: {
+          city: "Quonochontaug",
+        },
       },
     ],
   }
@@ -28,7 +31,7 @@ describe("Artist type", () => {
   const salesResponse = [
     {
       live_start_at: "2018-12-28T12:00:00+00:00",
-      id: "percy-z",
+      id: "catty-sale",
       name: "Catty Sale",
     },
   ]
@@ -43,19 +46,23 @@ describe("Artist type", () => {
       {
         artist(id: "percy-z") {
           currentEvent {
-            name
-            status 
+            status
             details
+            name
+            href
           }
         }
       }
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { currentEvent: { name, status, details } } }) => {
+      ({
+        artist: { currentEvent: { status, partner, details, name, href } },
+      }) => {
         expect(name).toBe("Catty Sale")
         expect(status).toBe("Currently at auction")
         expect(details).toBe("Live bidding begins at Dec 28, 2018")
+        expect(href).toBe("/auction/catty-sale")
       }
     )
   })
@@ -67,19 +74,25 @@ describe("Artist type", () => {
         
         artist(id: "percy-z") {
           currentEvent {
-            name
-            status 
+            status
             details
+            name
+            href
+            partner
           }
         }
       }
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { currentEvent: { name, status, details } } }) => {
+      ({
+        artist: { currentEvent: { name, status, details, href, partner } },
+      }) => {
         expect(name).toBe("Catty Show")
         expect(status).toBe("Currently on view")
-        expect(details).toMatch(/Catty Partner/)
+        expect(href).toBe("/show/catty-show")
+        expect(partner).toBe("Catty Partner")
+        expect(details).toBe("Quonochontaug, Dec 21 – 31")
       }
     )
   })
