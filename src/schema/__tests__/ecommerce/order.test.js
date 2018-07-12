@@ -1,14 +1,7 @@
 /* eslint-disable promise/always-return */
 
 import { runQuery } from "test/utils"
-import {
-  makeExecutableSchema,
-  transformSchema,
-  RenameTypes,
-  RenameRootFields,
-} from "graphql-tools"
-import fs from "fs"
-import path from "path"
+import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 
@@ -16,55 +9,9 @@ let rootValue
 
 describe("Order type", () => {
   beforeEach(() => {
-    const typeDefs = fs.readFileSync(
-      path.resolve(__dirname, "../../../data/exchange.graphql"),
-      "utf8"
-    )
-
     const resolvers = { Query: { order: () => exchangeOrderJSON } }
 
-    const schema = makeExecutableSchema({
-      typeDefs,
-      resolvers,
-    })
-
-    // namespace schema similar to src/lib/stitching/exchange/schema.ts
-    const exchangeSchema = transformSchema(schema, [
-      new RenameTypes(name => {
-        return `Ecommerce${name}`
-      }),
-      new RenameRootFields((_operation, name) => `ecommerce_${name}`),
-    ])
-
-    const partnerLoader = sinon.stub().returns(
-      Promise.resolve({
-        id: "111",
-        name: "Subscription Partner",
-      })
-    )
-
-    const userByIDLoader = sinon.stub().returns(
-      Promise.resolve({
-        id: "111",
-        email: "bob@ross.com",
-      })
-    )
-
-    const authenticatedArtworkLoader = sinon.stub().returns(
-      Promise.resolve({
-        id: "hubert-farnsworth-smell-o-scope",
-        title: "Smell-O-Scope",
-        display: "Smell-O-Scope (2017)",
-        inventory_id: "inventory note",
-      })
-    )
-
-    rootValue = {
-      exchangeSchema,
-      partnerLoader,
-      userByIDLoader,
-      authenticatedArtworkLoader,
-    }
+    rootValue = mockxchange(resolvers)
   })
   it("fetches order by id", () => {
     const query = `
@@ -73,12 +20,18 @@ describe("Order type", () => {
           id
           code
           currencyCode
+          state
           itemsTotalCents
           shippingTotalCents
           taxTotalCents
           commissionFeeCents
           transactionFeeCents
-          state
+          subtotalCents
+          totalCents
+          updatedAt
+          createdAt
+          stateUpdatedAt
+          stateExpiresAt
           partner {
             id
             name

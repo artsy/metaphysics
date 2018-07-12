@@ -6,11 +6,11 @@ import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 
 let rootValue
 
-describe("Submit Order Mutation", () => {
+describe("Finalize Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        submitOrder: () => ({
+        finalizeOrder: () => ({
           order: exchangeOrderJSON,
           errors: [],
         }),
@@ -22,9 +22,8 @@ describe("Submit Order Mutation", () => {
   it("fetches order by id", () => {
     const mutation = `
       mutation {
-        submitOrder(input: {
+        finalizeOrder(input: {
             orderId: "111",
-            creditCardId: "111",
           }) {
             result {
               order {
@@ -63,14 +62,14 @@ describe("Submit Order Mutation", () => {
                   }
                 }
               }
-              errors
+            errors
             }
           }
         }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.submitOrder.result.order).toEqual(sampleOrder)
+      expect(data.finalizeOrder.result.order).toEqual(sampleOrder)
     })
   })
 })

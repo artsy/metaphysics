@@ -20,6 +20,9 @@ import { Order } from "./ecommerce/order"
 import { Orders } from "./ecommerce/orders"
 import { CreateOrderMutation } from "./ecommerce/create_order_mutation"
 import { SubmitOrderMutation } from "./ecommerce/submit_order_mutation"
+import { ApproveOrderMutation } from "./ecommerce/approve_order_mutation"
+import { FinalizeOrderMutation } from "./ecommerce/finalize_order_mutation"
+import { RejectOrderMutation } from "./ecommerce/reject_order_mutation"
 import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
 import Profile from "./profile"
@@ -65,8 +68,6 @@ import { recordArtworkViewMutation } from "./me/recently_viewed_artworks"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
-// import UpdateOrderMutation from "./me/order/update_order_mutation"
-// import SubmitOrderMutation from "./me/order/submit_order_mutation"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
 
 import CausalityJWT from "./causality_jwt"
@@ -164,6 +165,9 @@ const schema = new GraphQLSchema({
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
       createOrder: CreateOrderMutation,
+      approveOrder: ApproveOrderMutation,
+      finalizeOrder: FinalizeOrderMutation,
+      rejectOrder: RejectOrderMutation,
       submitOrder: SubmitOrderMutation,
       sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtworkMutation,

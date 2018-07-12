@@ -6,25 +6,23 @@ import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 
 let rootValue
 
-describe("Submit Order Mutation", () => {
+describe("Reject Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        submitOrder: () => ({
+        rejectOrder: () => ({
           order: exchangeOrderJSON,
           errors: [],
         }),
       },
     }
-
     rootValue = mockxchange(resolvers)
   })
   it("fetches order by id", () => {
     const mutation = `
       mutation {
-        submitOrder(input: {
+        rejectOrder(input: {
             orderId: "111",
-            creditCardId: "111",
           }) {
             result {
               order {
@@ -63,14 +61,14 @@ describe("Submit Order Mutation", () => {
                   }
                 }
               }
-              errors
+            errors
             }
           }
         }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.submitOrder.result.order).toEqual(sampleOrder)
+      expect(data.rejectOrder.result.order).toEqual(sampleOrder)
     })
   })
 })

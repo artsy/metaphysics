@@ -1,4 +1,5 @@
-import { assign, compact } from "lodash"
+import { isExisty } from "lib/helpers"
+import { assign, compact, get, maxBy } from "lodash"
 import cached from "./fields/cached"
 import date from "./fields/date"
 import money, { amount } from "./fields/money"
@@ -75,10 +76,7 @@ const SaleArtworkType = new GraphQLObjectType({
     return {
       ...GravityIDFields,
       cached,
-      artwork: {
-        type: Artwork.type,
-        resolve: ({ artwork }) => artwork,
-      },
+      artwork: { type: Artwork.type, resolve: ({ artwork }) => artwork },
       bidder_positions_count: {
         type: GraphQLInt,
         deprecationReason: "Favor `counts.bidder_positions`",
@@ -184,28 +182,57 @@ const SaleArtworkType = new GraphQLObjectType({
             },
           },
         }),
-        resolve: ({ symbol, highest_bid }) =>
-          assign(
-            {
-              symbol,
-            },
-            highest_bid
-          ),
+        resolve: ({ symbol, highest_bid }) => assign({ symbol }, highest_bid),
       },
       increments: {
         type: new GraphQLList(BidIncrementsFormatted),
+        args: {
+          useMyMaxBid: {
+            type: GraphQLBoolean,
+            description:
+              "Whether or not to start the increments at the user's latest bid",
+          },
+        },
         resolve: async (
-          { minimum_next_bid_cents, sale_id, symbol },
-          options,
+          { _id, minimum_next_bid_cents, sale_id, symbol },
+          { useMyMaxBid },
           request,
-          { rootValue: { incrementsLoader, saleLoader } }
+          { rootValue: { incrementsLoader, lotStandingLoader, saleLoader } }
         ) => {
+          let minimumNextBid
+          minimumNextBid = minimum_next_bid_cents
+
+          let isLeading
+          isLeading = false
+
+          if (useMyMaxBid && lotStandingLoader) {
+            const myLotStandings = await lotStandingLoader({
+              sale_artwork_id: _id,
+            })
+
+            const myCurrentMax = get(
+              myLotStandings,
+              "0.max_position.max_bid_amount_cents"
+            )
+
+            isLeading = isExisty(get(myLotStandings, "0.leading_position"))
+            minimumNextBid = isLeading ? myCurrentMax : minimum_next_bid_cents
+          }
+
           return bid_increments_calculator({
             sale_id,
             saleLoader,
             incrementsLoader,
-            minimum_next_bid_cents,
+            minimum_next_bid_cents: minimumNextBid,
           }).then(bid_increments => {
+            // If you are leading, we want to show increments _above_ your max
+            // bid (which is the first element of the array). If you are not
+            // leading, the first element of the array represents the next
+            // amount you could bid.
+            if (isLeading) {
+              bid_increments.shift()
+            }
+
             return bid_increments.map(increment => {
               return {
                 cents: increment,
@@ -240,9 +267,7 @@ const SaleArtworkType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ reserve_status }) => reserve_status !== "no_reserve",
       },
-      lot_label: {
-        type: GraphQLString,
-      },
+      lot_label: { type: GraphQLString },
       lot_number: {
         type: GraphQLString,
         deprecationReason: "Favor `lot_label`",
@@ -283,9 +308,7 @@ const SaleArtworkType = new GraphQLObjectType({
         type: GraphQLFloat,
         deprecationReason: "Favor `opening_bid`",
       },
-      position: {
-        type: GraphQLInt,
-      },
+      position: { type: GraphQLInt },
       reserve: money({
         name: "SaleArtworkReserve",
         resolve: ({ display_reserve_dollars, reserve_cents }) => ({
@@ -312,12 +335,8 @@ const SaleArtworkType = new GraphQLObjectType({
           return null
         },
       },
-      reserve_status: {
-        type: GraphQLString,
-      },
-      sale_id: {
-        type: GraphQLString,
-      },
+      reserve_status: { type: GraphQLString },
+      sale_id: { type: GraphQLString },
       sale: {
         type: Sale.type,
         resolve: (

@@ -1,34 +1,16 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLNonNull,
-  GraphQLString,
-  graphql,
-} from "graphql"
+import { graphql } from "graphql"
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
+import { OrderMutationInputType } from "schema/ecommerce/types/order_mutation_input"
 import { mutationWithClientMutationId } from "graphql-relay"
 
-const SubmitOrderInputType = new GraphQLInputObjectType({
-  name: "SubmitOrderInput",
-  fields: {
-    orderId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Order ID",
-    },
-    creditCardId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Credit card ID",
-    },
-  },
-})
-
-export const SubmitOrderMutation = mutationWithClientMutationId({
-  name: "SubmitOrder",
-  decription: "Submitss an order with payment",
-  inputFields: SubmitOrderInputType.getFields(),
+export const RejectOrderMutation = mutationWithClientMutationId({
+  name: "RejectOrder",
+  decription: "Rejects an order",
+  inputFields: OrderMutationInputType.getFields(),
   outputFields: {
     result: {
       type: OrderReturnType,
-      resolve: result => result,
+      resolve: order => order,
     },
   },
   mutateAndGetPayload: (
@@ -41,10 +23,9 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
     }
 
     const mutation = `
-      mutation submitOrder($orderId: ID!, $creditCardId: String!) {
-        ecommerce_submitOrder(input: {
+      mutation rejectOrder($orderId: ID!) {
+        ecommerce_rejectOrder(input: {
           id: $orderId,
-          creditCardId: $creditCardId,
         }) {
           order {
            id
@@ -84,8 +65,11 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
       orderId,
       creditCardId,
     }).then(result => {
-      const { order, errors } = result.data.ecommerce_submitOrder
-      return { order, errors }
+      const { order, errors } = result.data.ecommerce_rejectOrder
+      return {
+        order,
+        errors,
+      }
     })
   },
 })

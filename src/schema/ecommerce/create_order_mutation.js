@@ -78,7 +78,7 @@ export const CreateOrderMutation = mutationWithClientMutationId({
           lineItems: $lineItems,
         }) {
           order {
-           id
+            id
             code
             currencyCode
             state
@@ -89,6 +89,8 @@ export const CreateOrderMutation = mutationWithClientMutationId({
             taxTotalCents
             commissionFeeCents
             transactionFeeCents
+            subtotalCents
+            totalCents
             updatedAt
             createdAt
             stateUpdatedAt

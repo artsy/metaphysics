@@ -34,6 +34,8 @@ export const Orders = {
               taxTotalCents
               commissionFeeCents
               transactionFeeCents
+              subtotalCents
+              totalCents
               stateUpdatedAt
               stateExpiresAt
               lineItems{

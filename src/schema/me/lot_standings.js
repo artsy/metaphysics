@@ -23,10 +23,13 @@ export default {
       type: GraphQLString,
       description: "Only the lot standings for a specific auction",
     },
+    sale_artwork_id: {
+      type: GraphQLString,
+    },
   },
   resolve: (
     root,
-    { active_positions, artwork_id, live, sale_id },
+    { active_positions, artwork_id, live, sale_id, sale_artwork_id },
     request,
     { rootValue: { lotStandingLoader } }
   ) => {
@@ -36,6 +39,7 @@ export default {
       artwork_id,
       live,
       sale_id,
+      sale_artwork_id,
     }).then(lotStandings => {
       return lotStandings
     })
