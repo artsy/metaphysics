@@ -364,9 +364,14 @@ describe("SaleArtwork type", () => {
       ])
     })
 
-    it("returns increments from the most recent bid if greater than the minimum_next_bid_cents", async () => {
+    it("returns increments from the most recent bid if you are leading", async () => {
       const lotStandingLoader = () => {
-        return [{ max_position: { max_bid_amount_cents: 390000 } }]
+        return [
+          {
+            max_position: { max_bid_amount_cents: 390000 },
+            leading_position: { max_bid_amount_cents: 390000 },
+          },
+        ]
       }
 
       const data = await execute(query, saleArtwork, {
@@ -374,10 +379,6 @@ describe("SaleArtwork type", () => {
         lotStandingLoader: lotStandingLoader,
       })
       expect(data.sale_artwork.increments.slice(0, 5)).toEqual([
-        {
-          cents: 390000,
-          display: "€3,900",
-        },
         {
           cents: 395000,
           display: "€3,950",
@@ -394,12 +395,21 @@ describe("SaleArtwork type", () => {
           cents: 420000,
           display: "€4,200",
         },
+        {
+          cents: 430000,
+          display: "€4,300",
+        },
       ])
     })
 
-    it("returns increments from the minimum_next_bid_cents if greater than my most recent bid", async () => {
+    it("returns increments from the minimum_next_bid_cents if you are not leading", async () => {
       const lotStandingLoader = () => {
-        return [{ max_position: { max_bid_amount_cents: 340000 } }]
+        return [
+          {
+            max_position: { max_bid_amount_cents: 340000 },
+            leading_position: null,
+          },
+        ]
       }
 
       const data = await execute(query, saleArtwork, {

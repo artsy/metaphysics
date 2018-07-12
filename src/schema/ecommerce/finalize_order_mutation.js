@@ -39,6 +39,8 @@ export const FinalizeOrderMutation = mutationWithClientMutationId({
             taxTotalCents
             commissionFeeCents
             transactionFeeCents
+            subtotalCents
+            totalCents
             updatedAt
             createdAt
             stateUpdatedAt
