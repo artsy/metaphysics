@@ -10,25 +10,36 @@ const CurrentEventType = new GraphQLObjectType({
     image: {
       type: Image.type,
     },
-    headline: {
+    status: {
       type: GraphQLString,
+      description: "The state of the event",
     },
-    subHeadline: {
+    partner: {
       type: GraphQLString,
+      description: "Name of the partner associated to the event",
+    },
+    details: {
+      type: GraphQLString,
+      description: "Location and date of the event if available",
     },
     name: {
       type: GraphQLString,
+      description: "Name of the event",
+    },
+    href: {
+      type: GraphQLString,
+      description: "Link to the event",
     },
   },
 })
 
-const showSubHeadline = show => {
-  let headline = show.partner.name + "\n"
+const showDetails = show => {
+  let status = ""
   if (show.location && show.location.city) {
-    headline += show.location.city + ", "
+    status += show.location.city + ", "
   }
-  headline += exhibitionPeriod(show.start_at, show.end_at)
-  return headline
+  status += exhibitionPeriod(show.start_at, show.end_at)
+  return status
 }
 
 export const CurrentEvent = {
@@ -62,9 +73,10 @@ export const CurrentEvent = {
           const liveMoment = moment(sale.live_start_at)
           const { image_versions, image_url } = sale
           return {
-            headline: "Currently at auction",
+            status: "Currently at auction",
             name: sale.name,
-            subHeadline: `Live bidding begins at ${liveMoment.format(
+            href: `/auction/${sale.id}`,
+            details: `Live bidding begins at ${liveMoment.format(
               "MMM DD, YYYY"
             )}`,
             image: Image.resolve({ image_versions, image_url }),
@@ -73,9 +85,11 @@ export const CurrentEvent = {
           const show = shows[0]
           const { image_versions, image_url } = show
           return {
-            headline: "Currently on view",
+            status: "Currently on view",
             name: show.name,
-            subHeadline: showSubHeadline(show),
+            href: `/show/${show.id}`,
+            partner: show.partner.name,
+            details: showDetails(show),
             image: Image.resolve({ image_versions, image_url }),
           }
         } else {
