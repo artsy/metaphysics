@@ -238,6 +238,7 @@ input SubmitOrderInput {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
   creditCardId: String!
+  destinationAccountId: String!
   id: ID!
 }
 

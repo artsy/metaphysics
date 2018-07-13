@@ -25,6 +25,7 @@ describe("Submit Order Mutation", () => {
         submitOrder(input: {
             orderId: "111",
             creditCardId: "111",
+            destinationAccountId: "222",
           }) {
             result {
               order {
