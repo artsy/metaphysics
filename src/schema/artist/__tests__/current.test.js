@@ -50,6 +50,12 @@ describe("Artist type", () => {
             details
             name
             href
+            event {
+              __typename
+              ... on Sale {
+                id
+              }
+            }
           }
         }
       }
@@ -57,12 +63,22 @@ describe("Artist type", () => {
 
     return runQuery(query, rootValue).then(
       ({
-        artist: { currentEvent: { status, partner, details, name, href } },
+        artist: {
+          currentEvent: {
+            status,
+            partner,
+            details,
+            name,
+            href,
+            event,
+          },
+        },
       }) => {
         expect(name).toBe("Catty Sale")
         expect(status).toBe("Currently at auction")
         expect(details).toBe("Live bidding begins at Dec 28, 2018")
         expect(href).toBe("/auction/catty-sale")
+        expect(event).toEqual({ "__typename": "Sale", id: "catty-sale" })
       }
     )
   })
@@ -71,7 +87,7 @@ describe("Artist type", () => {
     rootValue.relatedSalesLoader = () => Promise.resolve([])
     const query = `
       {
-        
+
         artist(id: "percy-z") {
           currentEvent {
             status
@@ -79,6 +95,12 @@ describe("Artist type", () => {
             name
             href
             partner
+            event {
+              __typename
+              ... on Show {
+                id
+              }
+            }
           }
         }
       }
@@ -86,13 +108,14 @@ describe("Artist type", () => {
 
     return runQuery(query, rootValue).then(
       ({
-        artist: { currentEvent: { name, status, details, href, partner } },
+        artist: { currentEvent: { name, status, details, href, partner, event } },
       }) => {
         expect(name).toBe("Catty Show")
         expect(status).toBe("Currently on view")
         expect(href).toBe("/show/catty-show")
         expect(partner).toBe("Catty Partner")
         expect(details).toBe("Quonochontaug, Dec 21 – 31")
+        expect(event).toEqual({ "__typename": "Show", id: "catty-show" })
       }
     )
   })
