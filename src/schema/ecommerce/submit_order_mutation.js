@@ -18,6 +18,10 @@ const SubmitOrderInputType = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: "Credit card ID",
     },
+    destinationAccountId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Partner's merchant account ID"
+    },
   },
 })
 
@@ -32,7 +36,7 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { orderId, creditCardId },
+    { orderId, creditCardId, destinationAccountId },
     context,
     { rootValue: { accessToken, exchangeSchema } }
   ) => {
@@ -41,10 +45,11 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
     }
 
     const mutation = `
-      mutation submitOrder($orderId: ID!, $creditCardId: String!) {
+      mutation submitOrder($orderId: ID!, $creditCardId: String!, $destinationAccountId: String!) {
         ecommerce_submitOrder(input: {
           id: $orderId,
           creditCardId: $creditCardId,
+          destinationAccountId: $destinationAccountId,
         }) {
           order {
            id
@@ -83,6 +88,7 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       creditCardId,
+      destinationAccountId,
     }).then(result => {
       const { order, errors } = result.data.ecommerce_submitOrder
       return { order, errors }
