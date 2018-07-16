@@ -1,5 +1,4 @@
 import "moment-timezone"
-import Bluebird from "bluebird"
 import xapp from "artsy-xapp"
 import compression from "compression"
 import express from "express"
@@ -17,8 +16,6 @@ const {
   NODE_ENV,
   PORT,
 } = config
-
-global.Promise = Bluebird
 
 const port = PORT
 const isDevelopment = NODE_ENV === "development"
@@ -62,12 +59,15 @@ function bootApp() {
       .end()
   })
 
-  app.get('/health', (req, res) => {
-    cache.isAvailable().then((stats) => {
-      return res.status(200).end()
-    }).catch((err) => {
-      return res.status(503).end()
-    })
+  app.get("/health", (req, res) => {
+    cache
+      .isAvailable()
+      .then(stats => {
+        return res.status(200).end()
+      })
+      .catch(err => {
+        return res.status(503).end()
+      })
   })
 
   app.all("/graphql", (_req, res) => res.redirect("/"))
