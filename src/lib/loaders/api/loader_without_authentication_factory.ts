@@ -2,11 +2,14 @@ import DataLoader from "dataloader"
 import { pick } from "lodash"
 
 import { loaderInterface } from "./loader_interface"
-import cache, { cacheEnabled } from "lib/cache"
+import cache from "lib/cache"
 import timer from "lib/timer"
 import { throttled } from "lib/throttle"
 import { verbose, warn } from "lib/loggers"
 import logger from "lib/loaders/api/logger"
+import config from "config"
+
+const { CACHE_DISABLED } = config
 
 // TODO Signatures for when we move to TypeScript (may not be 100% correct)
 //
@@ -39,7 +42,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
             const clock = timer(key)
             clock.start()
             return new Promise((resolve, reject) => {
-              if (cacheEnabled) {
+              if (!CACHE_DISABLED) {
                 return cache.get(key).then(
                   // Cache hit
                   data => {
