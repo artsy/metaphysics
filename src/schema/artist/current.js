@@ -1,12 +1,23 @@
-import { GraphQLObjectType, GraphQLString } from "graphql"
+import { GraphQLNonNull, GraphQLObjectType, GraphQLString, GraphQLUnionType } from "graphql"
 import Image from "schema/image"
 import { error } from "lib/loggers"
 import moment from "moment"
 import { exhibitionPeriod } from "lib/date"
+import { ShowType } from "../show";
+import { SaleType } from "../sale";
+
+const UnderlyingCurrentEventType = new GraphQLUnionType({
+  name: "UnderlyingCurrentEvent",
+  types: [ShowType, SaleType],
+  resolveType: ({ __type }) => __type
+})
 
 const CurrentEventType = new GraphQLObjectType({
   name: "CurrentEvent",
   fields: {
+    event: {
+      type: new GraphQLNonNull(UnderlyingCurrentEventType),
+    },
     image: {
       type: Image.type,
     },
@@ -73,6 +84,10 @@ export const CurrentEvent = {
           const liveMoment = moment(sale.live_start_at)
           const { image_versions, image_url } = sale
           return {
+            event: {
+              __type: SaleType,
+              ...sale,
+            },
             status: "Currently at auction",
             name: sale.name,
             href: `/auction/${sale.id}`,
@@ -85,6 +100,10 @@ export const CurrentEvent = {
           const show = shows[0]
           const { image_versions, image_url } = show
           return {
+            event: {
+              __type: ShowType,
+              ...show,
+            },
             status: "Currently on view",
             name: show.name,
             href: `/show/${show.id}`,
