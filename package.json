@@ -25,6 +25,7 @@
     "build:fixtures": "cp src/lib/*.json build/src/lib/",
     "build:remote-schemas": "cp src/data/*.graphql build/src/data/",
     "precommit": "lint-staged",
+    "prepush": "yarn danger local",
     "prepare": "patch-package",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"

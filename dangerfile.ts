@@ -1,4 +1,4 @@
-import { danger, warn } from "danger"
+import { danger, fail } from "danger"
 
 // Rule: encourage all new files to be TypeScript
 const jsAppFiles = danger.git.created_files.filter(
@@ -7,5 +7,5 @@ const jsAppFiles = danger.git.created_files.filter(
 
 if (jsAppFiles.length) {
   const listed = danger.github.utils.fileLinks(jsAppFiles)
-  warn(`Please use <code>*.ts</code> for new files. Found: ${listed}.`)
+  fail(`Please use <code>*.ts</code> for new files. Found: ${listed}.`)
 }
