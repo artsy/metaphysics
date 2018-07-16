@@ -1,11 +1,12 @@
 // @ts-check
 import factories from "../api"
-import { loaderOneOffFactory } from "lib/loaders/api/loader_one_off_factory"
+import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_factory"
 import gravity from "lib/apis/gravity"
 
 export default opts => {
   const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
+  const gravityUncachedLoader = uncachedLoaderFactory(gravity, "gravity")
 
   return {
     artworksLoader: gravityLoader("artworks"),
@@ -84,7 +85,10 @@ export default opts => {
       ({ saleId, saleArtworkId }) =>
         `sale/${saleId}/sale_artwork/${saleArtworkId}`
     ),
-    saleArtworkRootLoader: gravityLoader(id => `sale_artwork/${id}`),
+    saleArtworkRootLoader: gravityUncachedLoader(
+      id => `sale_artwork/${id}`,
+      null
+    ),
     saleArtworksLoader: gravityLoader(
       id => `sale/${id}/sale_artworks`,
       {},
@@ -102,8 +106,7 @@ export default opts => {
       {},
       { headers: true }
     ),
-    systemTimeLoader: () =>
-      loaderOneOffFactory(gravity, "gravity", "system/time", null),
+    systemTimeLoader: gravityUncachedLoader("system/time", null),
     tagLoader: gravityLoader(id => `tag/${id}`),
     trendingArtistsLoader: gravityLoader("artists/trending"),
     userByIDLoader: gravityLoader(id => `user/${id}`, {}, { method: "GET" }),
