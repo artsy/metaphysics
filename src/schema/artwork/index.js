@@ -18,6 +18,7 @@ import Meta, { artistNames } from "./meta"
 import Highlight from "./highlight"
 import Dimensions from "schema/dimensions"
 import EditionSet from "schema/edition_set"
+import { Sellable } from "schema/sellable"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
@@ -31,7 +32,8 @@ import {
 } from "graphql"
 import AttributionClass from "schema/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
-import attributionClasses from "../../lib/attributionClasses.js"
+import attributionClasses from "../../lib/attributionClasses"
+import { LotStandingType } from "../me/lot_standing"
 
 const is_inquireable = ({ inquireable, acquireable }) => {
   return inquireable && !acquireable
@@ -121,6 +123,24 @@ export const artworkFields = () => {
     },
     availability: {
       type: GraphQLString,
+    },
+    bidderStatus: {
+      type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
+      args: {
+        live: {
+          type: GraphQLBoolean,
+          defaultValue: null,
+        },
+      },
+      resolve: (
+        { id },
+        { live },
+        _request,
+        { rootValue: { lotStandingLoader } }
+      ) => {
+        if (!lotStandingLoader) return null
+        return lotStandingLoader({ artwork_id: id, live })
+      },
     },
     can_share_image: {
       type: GraphQLBoolean,
@@ -290,9 +310,14 @@ export const artworkFields = () => {
         return Image.resolve(size ? _.take(sorted, size) : sorted)
       },
     },
+    inventoryId: {
+      type: GraphQLString,
+      description: "Private text field for partner use",
+      resolve: ({ inventory_id }) => inventory_id,
+    },
     is_acquireable: {
       type: GraphQLBoolean,
-      description: "Whether work can be purchased through e-commerce",
+      description: "Whether a work can be purchased through e-commerce",
       resolve: ({ acquireable }) => acquireable,
     },
     is_biddable: {
@@ -729,7 +754,7 @@ export const artworkFields = () => {
 
 export const ArtworkType = new GraphQLObjectType({
   name: "Artwork",
-  interfaces: [NodeInterface],
+  interfaces: [NodeInterface, Sellable],
   fields: () => {
     return {
       ...artworkFields(),

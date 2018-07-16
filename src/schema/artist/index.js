@@ -24,6 +24,7 @@ import SaleSorts from "schema/sale/sorts"
 import ArtistCarousel from "./carousel"
 import ArtistStatuses from "./statuses"
 import ArtistHighlights from "./highlights"
+import { CurrentEvent } from "./current"
 import {
   auctionResultConnection,
   AuctionResultSorts,
@@ -458,6 +459,7 @@ export const ArtistType = new GraphQLObjectType({
         }),
         resolve: artist => artist,
       },
+      currentEvent: CurrentEvent,
       deathday: { type: GraphQLString },
       display_auction_link: {
         type: GraphQLBoolean,

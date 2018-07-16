@@ -91,6 +91,7 @@ export const ShowsConnectionField = {
       return merge(
         {
           pageCursors: createPageCursors(pageOptions, totalCount),
+          totalCount,
         },
         connectionFromArraySlice(body, args, {
           arrayLength: totalCount,

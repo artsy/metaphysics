@@ -151,7 +151,10 @@ export const ShowType = new GraphQLObjectType({
     },
     city: {
       type: GraphQLString,
-      resolve: ({ location, partner_city }) => {
+      resolve: ({ fair, location, partner_city }) => {
+        if (fair && fair.location && fair.location.city) {
+          return fair.location.city
+        }
         if (location && isExisty(location.city)) {
           return location.city
         }
@@ -225,6 +228,7 @@ export const ShowType = new GraphQLObjectType({
       type: GraphQLBoolean,
       deprecationReason: "Prefix Boolean returning fields with `is_`",
     },
+
     end_at: date,
     events: {
       type: new GraphQLList(PartnerShowEventType),

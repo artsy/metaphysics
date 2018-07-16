@@ -26,7 +26,7 @@ it("resolves an Artist on a Consignment Submission", async () => {
     schema: allMergedSchemas,
     mocks: {
       Query: () => ({
-        submission: (root, params) => {
+        submission: (_root, _params) => {
           return { artist_id: "321" }
         },
       }),

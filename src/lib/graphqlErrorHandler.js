@@ -42,7 +42,10 @@ export default function graphqlErrorHandler(
         )
       )
     } else {
-      const path = error.path && error.path.length > 0 ? ` (${JSON.stringify(error.path)})` : ""
+      const path =
+        error.path && error.path.length > 0
+          ? ` (${JSON.stringify(error.path)})`
+          : ""
       log(`${error.message}${path}`)
     }
     return {

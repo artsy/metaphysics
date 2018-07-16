@@ -35,7 +35,7 @@ const Sales = {
     },
     sort: SaleSorts,
   },
-  resolve: (root, options, request, { rootValue: { salesLoader } }) => {
+  resolve: (_root, options, _request, { rootValue: { salesLoader } }) => {
     const cleanedOptions = clone(options)
     // Rename ids plural to id to match Gravity
     if (options.ids) {

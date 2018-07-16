@@ -5,8 +5,9 @@ import { assign, omit } from "lodash"
 import fetch from "./fetch"
 import config from "config"
 import { headers as requestIDHeaders } from "../requestIDs"
+import { resolveBlueGreen } from "lib/helpers"
 
-const { GRAVITY_API_BASE } = config
+const { GRAVITY_API_BASE, GRAVITY_API_BASE_GREEN, GRAVITY_API_PERCENT_REDIRECT } = config
 
 export default (path, accessToken, fetchOptions = {}) => {
   const headers = { "X-XAPP-TOKEN": config.GRAVITY_XAPP_TOKEN }
@@ -21,7 +22,7 @@ export default (path, accessToken, fetchOptions = {}) => {
   if (accessToken) assign(headers, { "X-ACCESS-TOKEN": accessToken })
 
   return fetch(
-    urljoin(GRAVITY_API_BASE, path),
+    urljoin(resolveBlueGreen(GRAVITY_API_BASE, GRAVITY_API_BASE_GREEN, GRAVITY_API_PERCENT_REDIRECT), path),
     assign({}, fetchParams, { headers })
   )
 }

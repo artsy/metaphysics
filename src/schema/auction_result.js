@@ -3,7 +3,6 @@ import numeral from "numeral"
 import { IDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLFloat,
-  GraphQLInt,
   GraphQLNonNull,
   GraphQLString,
   GraphQLObjectType,
@@ -142,6 +141,9 @@ const AuctionResultType = new GraphQLObjectType({
               low_estimate_cents,
               high_estimate_cents,
             }) => {
+              if (!low_estimate_cents && !high_estimate_cents) {
+                return null
+              }
               const { symbol, subunit_to_unit } = currencyCodes[
                 currency.toLowerCase()
               ]

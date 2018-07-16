@@ -97,8 +97,8 @@ describe("BidderPosition", () => {
       expect(me).toEqual({
         bidder_position: {
           status: "RESERVE_NOT_MET",
-          message_header: "Your bid wasn't high enough",
-          message_description_md: `Your bid didn’t meet the reserve price\nfor this work.\n\nBid again to take the lead.`,
+          message_header: "Your bid wasn’t high enough",
+          message_description_md: `Your bid didn’t meet the reserve price\nfor this work.`,
           position: {
             processed_at: "2018-04-26T14:15:52+00:00",
           },
@@ -111,8 +111,8 @@ describe("BidderPosition", () => {
       expect(me).toEqual({
         bidder_position: {
           status: "OUTBID",
-          message_header: "Your bid wasn't high enough",
-          message_description_md: `Another bidder placed a higher max bid\nor the same max bid before you did.\n\nBid again to take the lead.`,
+          message_header: "Your bid wasn’t high enough",
+          message_description_md: `Another bidder placed a higher max bid\nor the same max bid before you did.`,
           position: {
             processed_at: "2018-04-26T14:15:52+00:00",
           },
