@@ -64,9 +64,9 @@ export const toQueryString = (options = {}) =>
     sort: (a, b) => a.localeCompare(b),
   })
 export const toKey = (path, options = {}) => `${path}?${toQueryString(options)}`
-export const exclude = (values, property) => xs =>
+export const exclude = (values?: any[], property?: any) => xs =>
   reject(xs, x => includes(values, x[property]))
-export const stripTags = str => {
+export const stripTags = (str?: string) => {
   if (!str) return ""
   return String(str).replace(/<\/?[^>]+>/g, "")
 }
@@ -96,9 +96,13 @@ export const parseRelayOptions = options => {
 export const removeNulls = object => {
   Object.keys(object).forEach(key => object[key] == null && delete object[key]) // eslint-disable-line eqeqeq, no-param-reassign, max-len
 }
-export const resolveBlueGreen = (resolveBlue, resolveGreen, percentResolveGreen) => {
+export const resolveBlueGreen = (
+  resolveBlue: string,
+  resolveGreen?: string,
+  percentResolveGreen?: number
+) => {
   if (resolveGreen && percentResolveGreen) {
-    if (Math.random() <= (percentResolveGreen / 100)) {
+    if (Math.random() <= percentResolveGreen / 100) {
       return resolveGreen
     }
   }

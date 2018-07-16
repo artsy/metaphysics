@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import zlib from 'zlib'
+import zlib from "zlib"
 import cache, { client } from "lib/cache"
 
 describe("Cache", () => {
@@ -27,14 +27,12 @@ describe("Cache", () => {
 
     describe("#set", () => {
       describe("with a plain Object", () => {
-        it("sets the cache and includes a timestamp", async (done) => {
+        it("sets the cache and includes a timestamp", async done => {
           await cache.set("set_foo", { bar: "baz" })
 
-          client.get("set_foo", (err, data) => {
+          client.get("set_foo", (_err, data) => {
             const parsed = JSON.parse(
-              zlib.inflateSync(
-                new Buffer(data, 'base64')
-              ).toString()
+              zlib.inflateSync(new Buffer(data, "base64")).toString()
             )
 
             expect(parsed.bar).toBe("baz")
@@ -45,14 +43,12 @@ describe("Cache", () => {
         })
       })
 
-      it("with an Array it sets the cache and includes a timestamp", async (done) => {
+      it("with an Array it sets the cache and includes a timestamp", async done => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
-        client.get("set_bar", (err, data) => {
+        client.get("set_bar", (_err, data) => {
           const parsed = JSON.parse(
-            zlib.inflateSync(
-              new Buffer(data, 'base64')
-            ).toString()
+            zlib.inflateSync(new Buffer(data, "base64")).toString()
           )
 
           expect(parsed.length).toBe(1)

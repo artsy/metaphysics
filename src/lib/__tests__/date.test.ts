@@ -1,5 +1,5 @@
 import { isNull } from "lodash"
-import moment from "moment"
+import moment, { Moment } from "moment"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
 
 describe("date", () => {
@@ -46,14 +46,14 @@ describe("date", () => {
   })
 
   describe("exhibitionStatus", () => {
-    let today = null
+    let today: Moment = null as any
 
     beforeEach(() => {
       today = moment()
     })
 
     describe("before an exhibition opens", () => {
-      let future = null
+      let future: Moment = null as any
 
       beforeEach(() => {
         future = today.clone().add(1, "M")
@@ -83,7 +83,7 @@ describe("date", () => {
     })
 
     describe("before an exhibition opens", () => {
-      let past = null
+      let past: Moment = null as any
 
       beforeEach(() => {
         past = today.clone().subtract(1, "M")

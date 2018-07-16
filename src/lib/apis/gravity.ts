@@ -1,5 +1,3 @@
-// @ts-check
-
 import urljoin from "url-join"
 import { assign, omit } from "lodash"
 import fetch from "./fetch"
@@ -7,9 +5,13 @@ import config from "config"
 import { headers as requestIDHeaders } from "../requestIDs"
 import { resolveBlueGreen } from "lib/helpers"
 
-const { GRAVITY_API_BASE, GRAVITY_API_BASE_GREEN, GRAVITY_API_PERCENT_REDIRECT } = config
+const {
+  GRAVITY_API_BASE,
+  GRAVITY_API_BASE_GREEN,
+  GRAVITY_API_PERCENT_REDIRECT,
+} = config
 
-export default (path, accessToken, fetchOptions = {}) => {
+export default (path, accessToken, fetchOptions: any = {}) => {
   const headers = { "X-XAPP-TOKEN": config.GRAVITY_XAPP_TOKEN }
   let fetchParams = fetchOptions
 
@@ -22,7 +24,14 @@ export default (path, accessToken, fetchOptions = {}) => {
   if (accessToken) assign(headers, { "X-ACCESS-TOKEN": accessToken })
 
   return fetch(
-    urljoin(resolveBlueGreen(GRAVITY_API_BASE, GRAVITY_API_BASE_GREEN, GRAVITY_API_PERCENT_REDIRECT), path),
+    urljoin(
+      resolveBlueGreen(
+        GRAVITY_API_BASE!,
+        GRAVITY_API_BASE_GREEN!,
+        GRAVITY_API_PERCENT_REDIRECT
+      ),
+      path
+    ),
     assign({}, fetchParams, { headers })
   )
 }
