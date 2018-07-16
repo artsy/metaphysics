@@ -2,7 +2,7 @@ import DataLoader from "dataloader"
 import { pick } from "lodash"
 
 import { loaderInterface } from "./loader_interface"
-import cache from "lib/cache"
+import cache, { cacheEnabled } from "lib/cache"
 import timer from "lib/timer"
 import { throttled } from "lib/throttle"
 import { verbose, warn } from "lib/loggers"
@@ -39,76 +39,101 @@ export const apiLoaderWithoutAuthenticationFactory = (
             const clock = timer(key)
             clock.start()
             return new Promise((resolve, reject) => {
-              return cache.get(key).then(
-                // Cache hit
-                data => {
-                  // Return cached data first
-                  if (apiOptions.headers) {
-                    resolve(pick(data, ["body", "headers"]))
-                  } else {
-                    resolve(data)
+              if (cacheEnabled) {
+                return cache.get(key).then(
+                  // Cache hit
+                  data => {
+                    // Return cached data first
+                    if (apiOptions.headers) {
+                      resolve(pick(data, ["body", "headers"]))
+                    } else {
+                      resolve(data)
+                    }
+                    verbose(`Cached: ${key}`)
+
+                    const time = clock.end()
+                    logger(globalAPIOptions.requestIDs.requestID, apiName, key, {
+                      time,
+                      cache: true,
+                    })
+
+                    // Then refresh cache
+                    return throttled(
+                      key,
+                      () => {
+                        api(key, null, apiOptions)
+                          .then(({ body, headers }) => {
+                            verbose(`Refreshing: ${key}`)
+
+                            if (apiOptions.headers) {
+                              return cache.set(key, { body, headers })
+                            } else {
+                              return cache.set(key, body)
+                            }
+                          })
+                          .catch(err => {
+                            if (err.statusCode === 404) {
+                              // Unpublished
+                              cache.delete(key)
+                            }
+                          })
+                      },
+                      { requestThrottleMs: apiOptions.requestThrottleMs }
+                    )
+                  },
+                  // Cache miss
+                  () => {
+                    api(key, null, apiOptions)
+                      .then(({ body, headers }) => {
+                        if (apiOptions.headers) {
+                          resolve({ body, headers })
+                        } else {
+                          resolve(body)
+                        }
+                        verbose(`Requested (Uncached): ${key}`)
+                        const time = clock.end()
+                        logger(
+                          globalAPIOptions.requestIDs.requestID,
+                          apiName,
+                          key,
+                          { time, cache: false }
+                        )
+                        if (apiOptions.headers) {
+                          return cache.set(key, { body, headers })
+                        } else {
+                          return cache.set(key, body)
+                        }
+                      })
+                      .catch(err => {
+                        warn(key, err)
+                        reject(err)
+                      })
                   }
-                  verbose(`Cached: ${key}`)
-
-                  const time = clock.end()
-                  logger(globalAPIOptions.requestIDs.requestID, apiName, key, {
-                    time,
-                    cache: true,
-                  })
-
-                  // Then refresh cache
-                  return throttled(
-                    key,
-                    () => {
-                      api(key, null, apiOptions)
-                        .then(({ body, headers }) => {
-                          verbose(`Refreshing: ${key}`)
-
-                          if (apiOptions.headers) {
-                            return cache.set(key, { body, headers })
-                          } else {
-                            return cache.set(key, body)
-                          }
-                        })
-                        .catch(err => {
-                          if (err.statusCode === 404) {
-                            // Unpublished
-                            cache.delete(key)
-                          }
-                        })
-                    },
-                    { requestThrottleMs: apiOptions.requestThrottleMs }
-                  )
-                },
-                // Cache miss
+                )
+              } else {
                 () => {
-                  api(key, null, apiOptions)
-                    .then(({ body, headers }) => {
-                      if (apiOptions.headers) {
-                        resolve({ body, headers })
-                      } else {
-                        resolve(body)
-                      }
-                      verbose(`Requested (Uncached): ${key}`)
-                      const time = clock.end()
-                      logger(
-                        globalAPIOptions.requestIDs.requestID,
-                        apiName,
-                        key,
-                        { time, cache: false }
-                      )
-                      if (apiOptions.headers) {
-                        return cache.set(key, { body, headers })
-                      } else {
-                        return cache.set(key, body)
-                      }
-                    })
-                    .catch(err => {
-                      warn(key, err)
-                      reject(err)
-                    })
-                }
-              )
+                    api(key, null, apiOptions)
+                      .then(({ body, headers }) => {
+                        if (apiOptions.headers) {
+                          resolve({ body, headers })
+                        } else {
+                          resolve(body)
+                        }
+                        verbose(`Requested (Uncached): ${key}`)
+                        const time = clock.end()
+                        logger(
+                          globalAPIOptions.requestIDs.requestID,
+                          apiName,
+                          key,
+                          { time, cache: false }
+                        )
+                      })
+                      .catch(err => {
+                        warn(key, err)
+                        reject(err)
+                      })
+                  }
+              }
             })
           })
         ),

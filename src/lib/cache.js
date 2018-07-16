@@ -10,6 +10,7 @@ const {
   NODE_ENV,
   MEMCACHED_URL,
   MEMCACHED_MAX_POOL,
+  CACHE_ENABLED,
   CACHE_LIFETIME_IN_SECONDS,
   CACHE_QUERY_LOGGING_THRESHOLD_MS,
   CACHE_RETRIEVAL_TIMEOUT_MS,
@@ -18,6 +19,8 @@ const {
 const isTest = NODE_ENV === "test"
 
 const VerboseEvents = ["issue", "failure", "reconnecting", "reconnect", "remove"]
+
+export const cacheEnabled = CACHE_ENABLED === "true"
 
 const deflateP = (dataz) => {
   return new Promise((resolve, reject) =>
