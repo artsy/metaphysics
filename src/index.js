@@ -33,6 +33,7 @@ import { executableExchangeSchema } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
+import "heapdump" // Request a heapdump by sending `kill -USR2 [pid of metaphysics]`
 
 const {
   ENABLE_QUERY_TRACING,
@@ -93,7 +94,10 @@ async function startApp() {
 
   if (RESOLVER_TIMEOUT_MS > 0) {
     console.warn("[FEATURE] Enabling resolver timeouts")
-    schema = applyGraphQLMiddleware(schema, graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS))
+    schema = applyGraphQLMiddleware(
+      schema,
+      graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS)
+    )
   }
 
   app.use(requestIDsAdder)
