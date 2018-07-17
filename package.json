@@ -13,7 +13,7 @@
     "start": "yarn run dev",
     "verbose-dev": "DEBUG=verbose,info,error nf start --procfile Procfile.dev",
     "dev": "DEBUG=info,warn,error nf start --procfile Procfile.dev -w",
-    "test": "yarn run lint && jest",
+    "test": "yarn run lint && jest && CACHE_COMPRESSION_ENABLED=false jest src/lib/__tests__/cache.test.js",
     "watch": "jest --watch",
     "lint": "eslint .",
     "fix": "eslint . --fix",
