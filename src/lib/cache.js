@@ -20,13 +20,13 @@ const isTest = NODE_ENV === "test"
 
 const VerboseEvents = ["issue", "failure", "reconnecting", "reconnect", "remove"]
 
-const cacheKeyDelimiter = "::"
+const uncompressedKeyPrefix = "::"
 
 export const cacheKey = (key) => {
   if (CACHE_COMPRESSION_DISABLED) {
-    return "0" + cacheKeyDelimiter + key
+    return uncompressedKeyPrefix + key
   } else {
-    return "1" + cacheKeyDelimiter + key
+    return key
   }
 }
 
