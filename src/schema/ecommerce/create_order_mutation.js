@@ -89,8 +89,8 @@ export const CreateOrderMutation = mutationWithClientMutationId({
             taxTotalCents
             commissionFeeCents
             transactionFeeCents
-            subtotalCents
-            totalCents
+            buyerTotalCents
+            sellerTotalCents
             updatedAt
             createdAt
             stateUpdatedAt
