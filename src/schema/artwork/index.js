@@ -124,7 +124,7 @@ export const artworkFields = () => {
     availability: {
       type: GraphQLString,
     },
-    bidderStatus: {
+    myLotStanding: {
       type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
       args: {
         live: {
