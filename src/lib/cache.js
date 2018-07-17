@@ -20,12 +20,10 @@ const isTest = NODE_ENV === "test"
 
 const VerboseEvents = ["issue", "failure", "reconnecting", "reconnect", "remove"]
 
-export const cacheCompressionEnabled = CACHE_COMPRESSION_ENABLED === "true"
-
 const cacheKeyDelimiter = "::"
 
 export const cacheKey = (key) => {
-  if (cacheCompressionEnabled) {
+  if (CACHE_COMPRESSION_ENABLED) {
     return "1" + cacheKeyDelimiter + key
   } else {
     return "0" + cacheKeyDelimiter + key
@@ -97,7 +95,7 @@ function _get(key) {
         error(err)
         reject(err)
       } else if (data) {
-        if (cacheCompressionEnabled) {
+        if (CACHE_COMPRESSION_ENABLED) {
           zlib.inflate(new Buffer(data, 'base64'), (er, inflatedData) => {
             if (er) {
               reject(er)
@@ -127,7 +125,7 @@ function _set(key, data) {
   }
   /* eslint-enable no-param-reassign */
 
-  if (cacheCompressionEnabled) {
+  if (CACHE_COMPRESSION_ENABLED) {
     return deflateP(data).then(deflatedData => {
       const payload = deflatedData.toString('base64')
       verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
