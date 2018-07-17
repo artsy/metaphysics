@@ -10,21 +10,21 @@ beforeEach(() => {
   cacheKey = require("lib/cache").cacheKey
 })
 
-function parseCacheResponse(data, cacheCompressionEnabled) {
-  if (cacheCompressionEnabled) {
+function parseCacheResponse(data, cacheCompressionDisabled) {
+  if (cacheCompressionDisabled) {
+    return JSON.parse(data)
+  } else {
     return JSON.parse(
       zlib.inflateSync(
         new Buffer(data, 'base64')
       ).toString()
     )
-  } else {
-    return JSON.parse(data)
   }
 }
 
 describe("Cache with compression enabled", () => {
-  config.CACHE_COMPRESSION_ENABLED = true
-  expect(config.CACHE_COMPRESSION_ENABLED).toBe(true)
+  config.CACHE_COMPRESSION_DISABLED = true
+  expect(config.CACHE_COMPRESSION_DISABLED).toBe(true)
   describe("when successfully connected to the cache", () => {
     describe("#get", () => {
       beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
@@ -53,7 +53,7 @@ describe("Cache with compression enabled", () => {
           await cache.set("set_foo", { bar: "baz" })
 
           client.get(cacheKey("set_foo"), (err, data) => {
-            const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_ENABLED)
+            const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_DISABLED)
 
             expect(parsed.bar).toBe("baz")
             expect(typeof parsed.cached).toBe("number")
@@ -67,7 +67,7 @@ describe("Cache with compression enabled", () => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
         client.get(cacheKey("set_bar"), (err, data) => {
-          const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_ENABLED)
+          const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_DISABLED)
 
           expect(parsed.length).toBe(1)
           expect(parsed[0].baz).toBe("qux")
@@ -82,8 +82,8 @@ describe("Cache with compression enabled", () => {
 
 
 describe("Cache with compression disabled", () => {
-  config.CACHE_COMPRESSION_ENABLED = false
-  expect(config.CACHE_COMPRESSION_ENABLED).toBe(false)
+  config.CACHE_COMPRESSION_DISABLED = false
+  expect(config.CACHE_COMPRESSION_DISABLED).toBe(false)
   describe("when successfully connected to the cache", () => {
     describe("#get", () => {
       beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
@@ -112,7 +112,7 @@ describe("Cache with compression disabled", () => {
           await cache.set("set_foo", { bar: "baz" })
 
           client.get(cacheKey("set_foo"), (err, data) => {
-            const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_ENABLED)
+            const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_DISABLED)
 
             expect(parsed.bar).toBe("baz")
             expect(typeof parsed.cached).toBe("number")
@@ -126,7 +126,7 @@ describe("Cache with compression disabled", () => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
         client.get(cacheKey("set_bar"), (err, data) => {
-          const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_ENABLED)
+          const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_DISABLED)
 
           expect(parsed.length).toBe(1)
           expect(parsed[0].baz).toBe("qux")

@@ -10,7 +10,7 @@ const {
   NODE_ENV,
   MEMCACHED_URL,
   MEMCACHED_MAX_POOL,
-  CACHE_COMPRESSION_ENABLED,
+  CACHE_COMPRESSION_DISABLED,
   CACHE_LIFETIME_IN_SECONDS,
   CACHE_QUERY_LOGGING_THRESHOLD_MS,
   CACHE_RETRIEVAL_TIMEOUT_MS,
@@ -23,10 +23,10 @@ const VerboseEvents = ["issue", "failure", "reconnecting", "reconnect", "remove"
 const cacheKeyDelimiter = "::"
 
 export const cacheKey = (key) => {
-  if (CACHE_COMPRESSION_ENABLED) {
-    return "1" + cacheKeyDelimiter + key
-  } else {
+  if (CACHE_COMPRESSION_DISABLED) {
     return "0" + cacheKeyDelimiter + key
+  } else {
+    return "1" + cacheKeyDelimiter + key
   }
 }
 
@@ -95,7 +95,9 @@ function _get(key) {
         error(err)
         reject(err)
       } else if (data) {
-        if (CACHE_COMPRESSION_ENABLED) {
+        if (CACHE_COMPRESSION_DISABLED) {
+          resolve(JSON.parse(data.toString()))
+        } else {
           zlib.inflate(new Buffer(data, 'base64'), (er, inflatedData) => {
             if (er) {
               reject(er)
@@ -103,8 +105,6 @@ function _get(key) {
               resolve(JSON.parse(inflatedData.toString()))
             }
           })
-        } else {
-          resolve(JSON.parse(data.toString()))
         }
       } else {
         reject(new Error("[Cache#get] Cache miss"))
@@ -125,23 +125,7 @@ function _set(key, data) {
   }
   /* eslint-enable no-param-reassign */
 
-  if (CACHE_COMPRESSION_ENABLED) {
-    return deflateP(data).then(deflatedData => {
-      const payload = deflatedData.toString('base64')
-      verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
-
-      return client.set(
-        cacheKey(key),
-        payload,
-        CACHE_LIFETIME_IN_SECONDS,
-        err => {
-          if (err) error(err)
-        }
-      )
-    }).catch(err => {
-      error(err)
-    })
-  } else {
+  if (CACHE_COMPRESSION_DISABLED) {
     return new Promise((resolve, reject) => {
       const payload = JSON.stringify(data)
       verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
@@ -154,6 +138,22 @@ function _set(key, data) {
             if (err) error(err)
           }
         )
+      )
+    }).catch(err => {
+      error(err)
+    })
+  } else {
+    return deflateP(data).then(deflatedData => {
+      const payload = deflatedData.toString('base64')
+      verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
+
+      return client.set(
+        cacheKey(key),
+        payload,
+        CACHE_LIFETIME_IN_SECONDS,
+        err => {
+          if (err) error(err)
+        }
       )
     }).catch(err => {
       error(err)
