@@ -31,6 +31,13 @@ describe("Approve Order Mutation", () => {
                 code
                 currencyCode
                 state
+                fulfillmentType
+                shippingAddressLine1
+                shippingAddressLine2
+                shippingCity
+                shippingCountry
+                shippingPostalCode
+                shippingRegion
                 itemsTotalCents
                 shippingTotalCents
                 taxTotalCents

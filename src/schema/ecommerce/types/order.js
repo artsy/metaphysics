@@ -1,4 +1,5 @@
 import { GraphQLID, GraphQLObjectType, GraphQLString } from "graphql"
+import { OrderFulfillmentTypeEnum } from "./order_fulfillment_type_enum"
 import { connectionDefinitions } from "graphql-relay"
 
 import Partner from "schema/partner"
@@ -25,6 +26,34 @@ export const OrderType = new GraphQLObjectType({
     code: {
       type: GraphQLString,
       description: "Tracking code of the order",
+    },
+    fulfillmentType: {
+      type: GraphQLString,
+      description: "Fulfillment Type",
+    },
+    shippingAddressLine1: {
+      type: GraphQLString,
+      description: "Shipping address line 1",
+    },
+    shippingAddressLine2: {
+      type: GraphQLString,
+      description: "Shipping address line 2",
+    },
+    shippingCity: {
+      type: GraphQLString,
+      description: "Shipping city",
+    },
+    shippingCountry: {
+      type: GraphQLString,
+      description: "Shipping country",
+    },
+    shippingPostalCode: {
+      type: GraphQLString,
+      description: "Shipping postal code",
+    },
+    shippingRegion: {
+      type: GraphQLString,
+      description: "Shipping region",
     },
     itemsTotalCents: amount(({ itemsTotalCents }) => itemsTotalCents),
     shippingTotalCents: amount(({ shippingTotalCents }) => shippingTotalCents),
