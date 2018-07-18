@@ -5,7 +5,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 
 export const FinalizeOrderMutation = mutationWithClientMutationId({
   name: "FinalizeOrder",
-  decription: "Finalizes an order",
+  description: "Finalizes an order",
   inputFields: OrderMutationInputType.getFields(),
   outputFields: {
     result: {
@@ -39,8 +39,8 @@ export const FinalizeOrderMutation = mutationWithClientMutationId({
             taxTotalCents
             commissionFeeCents
             transactionFeeCents
-            subtotalCents
-            totalCents
+            buyerTotalCents
+            sellerTotalCents
             updatedAt
             createdAt
             stateUpdatedAt

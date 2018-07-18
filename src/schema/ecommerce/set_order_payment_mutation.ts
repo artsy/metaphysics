@@ -1,12 +1,30 @@
-import { graphql } from "graphql"
+import {
+  graphql,
+  GraphQLInputObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+} from "graphql"
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
-import { OrderMutationInputType } from "schema/ecommerce/types/order_mutation_input"
 import { mutationWithClientMutationId } from "graphql-relay"
 
-export const RejectOrderMutation = mutationWithClientMutationId({
-  name: "RejectOrder",
-  description: "Rejects an order",
-  inputFields: OrderMutationInputType.getFields(),
+const SetOrderPaymentInputType = new GraphQLInputObjectType({
+  name: "SetOrderPaymentInput",
+  fields: {
+    orderId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Order ID",
+    },
+    creditCardId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Gravity Credit Card Id",
+    },
+  },
+})
+
+export const SetOrderPaymentMutation = mutationWithClientMutationId({
+  name: "SetOrderPayment",
+  description: "Sets payment information on an order",
+  inputFields: SetOrderPaymentInputType.getFields(),
   outputFields: {
     result: {
       type: OrderReturnType,
@@ -21,11 +39,11 @@ export const RejectOrderMutation = mutationWithClientMutationId({
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }
-
     const mutation = `
-      mutation rejectOrder($orderId: ID!) {
-        ecommerce_rejectOrder(input: {
+      mutation setOrderPayment($orderId: ID!, $creditCardId: String!) {
+        ecommerce_setPayment(input: {
           id: $orderId,
+          creditCardId: $creditCardId,
         }) {
           order {
            id
@@ -65,7 +83,7 @@ export const RejectOrderMutation = mutationWithClientMutationId({
       orderId,
       creditCardId,
     }).then(result => {
-      const { order, errors } = result.data.ecommerce_rejectOrder
+      const { order, errors } = result.data.ecommerce_setPayment
       return {
         order,
         errors,
