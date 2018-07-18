@@ -5,7 +5,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 
 export const RejectOrderMutation = mutationWithClientMutationId({
   name: "RejectOrder",
-  decription: "Rejects an order",
+  description: "Rejects an order",
   inputFields: OrderMutationInputType.getFields(),
   outputFields: {
     result: {

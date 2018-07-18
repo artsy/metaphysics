@@ -48,7 +48,7 @@ const CreateOrderInputType = new GraphQLInputObjectType({
 
 export const CreateOrderMutation = mutationWithClientMutationId({
   name: "CreateOrder",
-  decription: "Creates an order with payment",
+  description: "Creates an order with payment",
   inputFields: CreateOrderInputType.getFields(),
   outputFields: {
     result: {
