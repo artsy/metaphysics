@@ -24,7 +24,6 @@ describe("Create Order Mutation", () => {
       mutation {
         createOrder(input: {
             partnerId: "111",
-            userId: "111",
             currencyCode: "usd",
             lineItems: [{
               artworkId: "111",

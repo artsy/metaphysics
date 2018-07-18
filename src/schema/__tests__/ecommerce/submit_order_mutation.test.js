@@ -23,8 +23,7 @@ describe("Submit Order Mutation", () => {
     const mutation = `
       mutation {
         submitOrder(input: {
-            orderId: "111",
-            creditCardId: "111",
+            orderId: "111"
           }) {
             result {
               order {
