@@ -20,6 +20,15 @@ spec:
     spec:
       containers:
       - name: metaphysics-web
+        env:
+        - name: DD_TRACER_HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: STATSD_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
         envFrom:
         - configMapRef:
             name: metaphysics-environment
@@ -43,6 +52,7 @@ spec:
               value: https
           initialDelaySeconds: 5
           periodSeconds: 5
+      dnsPolicy: Default
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
