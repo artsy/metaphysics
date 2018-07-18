@@ -5,7 +5,7 @@ import { mutationWithClientMutationId } from "graphql-relay"
 
 export const ApproveOrderMutation = mutationWithClientMutationId({
   name: "ApproveOrder",
-  decription: "Approvess an order with payment",
+  description: "Approves an order with payment",
   inputFields: OrderMutationInputType.getFields(),
   outputFields: {
     result: {
