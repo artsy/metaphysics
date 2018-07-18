@@ -31,10 +31,6 @@ const LineItemInputType = new GraphQLInputObjectType({
 const CreateOrderInputType = new GraphQLInputObjectType({
   name: "CreateOrderInput",
   fields: {
-    userId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "ID of user submitting the order",
-    },
     partnerId: {
       type: GraphQLString,
       description: "ID of partner representing artwork",
@@ -70,10 +66,9 @@ export const CreateOrderMutation = mutationWithClientMutationId({
     }
 
     const mutation = `
-      mutation creatorder($currencyCode: String!, $partnerId: String!, $userId: String!, $lineItems: [EcommerceLineItemAttributes!]) {
+      mutation creatorder($currencyCode: String!, $partnerId: String!, $lineItems: [EcommerceLineItemAttributes!]) {
         ecommerce_createOrder(input: {
           partnerId: $partnerId,
-          userId: $userId,
           currencyCode: $currencyCode,
           lineItems: $lineItems,
         }) {
