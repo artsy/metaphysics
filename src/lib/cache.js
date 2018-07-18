@@ -139,9 +139,7 @@ function _set(key, data) {
           }
         )
       )
-    }).catch(err => {
-      error(err)
-    })
+    }).catch(error)
   } else {
     return deflateP(data).then(deflatedData => {
       const payload = deflatedData.toString('base64')
@@ -155,9 +153,7 @@ function _set(key, data) {
           if (err) error(err)
         }
       )
-    }).catch(err => {
-      error(err)
-    })
+    }).catch(error)
   }
 }
 

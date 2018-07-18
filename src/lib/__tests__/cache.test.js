@@ -24,7 +24,8 @@ function parseCacheResponse(data, cacheCompressionDisabled) {
 
 describe("Cache with compression enabled", () => {
   config.CACHE_COMPRESSION_DISABLED = true
-  expect(config.CACHE_COMPRESSION_DISABLED).toBe(true)
+  expect(config.CACHE_COMPRESSION_DISABLED).toBe(true) // check that the config is mocked
+
   describe("when successfully connected to the cache", () => {
     describe("#get", () => {
       beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
@@ -83,7 +84,8 @@ describe("Cache with compression enabled", () => {
 
 describe("Cache with compression disabled", () => {
   config.CACHE_COMPRESSION_DISABLED = false
-  expect(config.CACHE_COMPRESSION_DISABLED).toBe(false)
+  expect(config.CACHE_COMPRESSION_DISABLED).toBe(false) // check that the config is mocked
+
   describe("when successfully connected to the cache", () => {
     describe("#get", () => {
       beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
