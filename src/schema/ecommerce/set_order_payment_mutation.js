@@ -1,12 +1,30 @@
-import { graphql } from "graphql"
+import {
+  graphql,
+  GraphQLInputObjectType,
+  GraphQLString,
+  GraphQLNonNull,
+} from "graphql"
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
-import { OrderMutationInputType } from "schema/ecommerce/types/order_mutation_input"
 import { mutationWithClientMutationId } from "graphql-relay"
 
-export const ApproveOrderMutation = mutationWithClientMutationId({
-  name: "ApproveOrder",
-  description: "Approves an order with payment",
-  inputFields: OrderMutationInputType.getFields(),
+const SetOrderPaymentInputType = new GraphQLInputObjectType({
+  name: "SetOrderPaymentInput",
+  fields: {
+    orderId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Order ID",
+    },
+    creditCardId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "Gravity Credit Card Id",
+    },
+  },
+})
+
+export const SetOrderPaymentMutation = mutationWithClientMutationId({
+  name: "SetOrderPayment",
+  description: "Sets payment information on an order",
+  inputFields: SetOrderPaymentInputType.getFields(),
   outputFields: {
     result: {
       type: OrderReturnType,
@@ -14,7 +32,7 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { orderId },
+    { orderId, creditCardId },
     context,
     { rootValue: { accessToken, exchangeSchema } }
   ) => {
@@ -22,9 +40,10 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
       return new Error("You need to be signed in to perform this action")
     }
     const mutation = `
-      mutation approveOrder($orderId: ID!) {
-        ecommerce_approveOrder(input: {
+      mutation setOrderPayment($orderId: ID!, $creditCardId: String!) {
+        ecommerce_setPayment(input: {
           id: $orderId,
+          creditCardId: $creditCardId,
         }) {
           order {
            id
@@ -62,8 +81,10 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
     `
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
+      creditCardId,
     }).then(result => {
-      const { order, errors } = result.data.ecommerce_approveOrder
+      console.log(result)
+      const { order, errors } = result.data.ecommerce_setPayment
       return {
         order,
         errors,
