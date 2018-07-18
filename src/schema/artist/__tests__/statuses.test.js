@@ -50,4 +50,26 @@ describe("Artist Statuses", () => {
       })
     })
   })
+
+  it("allows an optional min show count arg for the CV status", () => {
+    const query = `
+      {
+        artist(id: "foo-bar") {
+          statuses {
+            cv(minShowCount: 43)
+          }
+        }
+      }
+    `
+
+    return runQuery(query, rootValue).then(data => {
+      expect(data).toEqual({
+        artist: {
+          statuses: {
+            cv: false,
+          },
+        },
+      })
+    })
+  })
 })
