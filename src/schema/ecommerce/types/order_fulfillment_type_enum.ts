@@ -1,6 +1,6 @@
 import { GraphQLEnumType } from "graphql"
 
-export const OrderFulfillmentType = new GraphQLEnumType({
+export const OrderFulfillmentTypeEnum = new GraphQLEnumType({
   name: "OrderFulfillmentType",
   values: {
     SHIP: {

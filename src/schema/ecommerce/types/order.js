@@ -28,7 +28,7 @@ export const OrderType = new GraphQLObjectType({
       description: "Tracking code of the order",
     },
     fulfillmentType: {
-      type: GraphQLString,
+      type: OrderFulfillmentTypeEnum,
       description: "Fulfillment Type",
     },
     shippingAddressLine1: {
