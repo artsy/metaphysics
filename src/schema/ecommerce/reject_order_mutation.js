@@ -34,6 +34,13 @@ export const RejectOrderMutation = mutationWithClientMutationId({
             state
             partnerId
             userId
+            fulfillmentType
+            shippingAddressLine1
+            shippingAddressLine2
+            shippingCity
+            shippingCountry
+            shippingPostalCode
+            shippingRegion
             itemsTotalCents
             shippingTotalCents
             taxTotalCents
