@@ -81,9 +81,10 @@ export default opts => {
     relatedShowsLoader: gravityLoader("related/shows", {}, { headers: true }),
     saleLoader: gravityLoader(id => `sale/${id}`),
     salesLoader: gravityLoader("sales"),
-    saleArtworkLoader: gravityLoader(
+    saleArtworkLoader: gravityUncachedLoader(
       ({ saleId, saleArtworkId }) =>
-        `sale/${saleId}/sale_artwork/${saleArtworkId}`
+        `sale/${saleId}/sale_artwork/${saleArtworkId}`,
+      null
     ),
     saleArtworkRootLoader: gravityUncachedLoader(
       id => `sale_artwork/${id}`,
