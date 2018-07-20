@@ -991,7 +991,7 @@ describe("Artwork type", () => {
     })
   })
 
-  describe("#bidderStatus", () => {
+  describe("#myLotStanding", () => {
     const lotStandings = [
       { sale_artwork: { id: "past" } },
       { sale_artwork: { id: "live" } },
@@ -1001,7 +1001,7 @@ describe("Artwork type", () => {
       return gql`
         {
           artwork(id: "richard-prince-untitled-portrait") {
-            bidderStatus${live === undefined ? "" : `(live: ${live})`} {
+            myLotStanding${live === undefined ? "" : `(live: ${live})`} {
               sale_artwork {
                 id
               }
@@ -1024,8 +1024,8 @@ describe("Artwork type", () => {
 
     it("returns all lot standings by default", () => {
       return runQuery(query(undefined), rootValue).then(
-        ({ artwork: { bidderStatus } }) => {
-          expect(bidderStatus).toEqual([
+        ({ artwork: { myLotStanding } }) => {
+          expect(myLotStanding).toEqual([
             { sale_artwork: { id: "past" } },
             { sale_artwork: { id: "live" } },
           ])
@@ -1035,8 +1035,8 @@ describe("Artwork type", () => {
 
     it("returns all lot standings", () => {
       return runQuery(query(null), rootValue).then(
-        ({ artwork: { bidderStatus } }) => {
-          expect(bidderStatus).toEqual([
+        ({ artwork: { myLotStanding } }) => {
+          expect(myLotStanding).toEqual([
             { sale_artwork: { id: "past" } },
             { sale_artwork: { id: "live" } },
           ])
@@ -1046,16 +1046,16 @@ describe("Artwork type", () => {
 
     it("returns only lot standings for live sales", () => {
       return runQuery(query(true), rootValue).then(
-        ({ artwork: { bidderStatus } }) => {
-          expect(bidderStatus).toEqual([{ sale_artwork: { id: "live" } }])
+        ({ artwork: { myLotStanding } }) => {
+          expect(myLotStanding).toEqual([{ sale_artwork: { id: "live" } }])
         }
       )
     })
 
     it("returns only lot standings for not-live sales", () => {
       return runQuery(query(false), rootValue).then(
-        ({ artwork: { bidderStatus } }) => {
-          expect(bidderStatus).toEqual([{ sale_artwork: { id: "past" } }])
+        ({ artwork: { myLotStanding } }) => {
+          expect(myLotStanding).toEqual([{ sale_artwork: { id: "past" } }])
         }
       )
     })

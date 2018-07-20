@@ -14,16 +14,12 @@ const SubmitOrderInputType = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLString),
       description: "Order ID",
     },
-    creditCardId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Credit card ID",
-    },
   },
 })
 
 export const SubmitOrderMutation = mutationWithClientMutationId({
   name: "SubmitOrder",
-  decription: "Submitss an order with payment",
+  description: "Submits an order",
   inputFields: SubmitOrderInputType.getFields(),
   outputFields: {
     result: {
@@ -41,10 +37,9 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
     }
 
     const mutation = `
-      mutation submitOrder($orderId: ID!, $creditCardId: String!) {
+      mutation submitOrder($orderId: ID!) {
         ecommerce_submitOrder(input: {
-          id: $orderId,
-          creditCardId: $creditCardId,
+          id: $orderId
         }) {
           order {
            id
@@ -58,8 +53,8 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
             taxTotalCents
             commissionFeeCents
             transactionFeeCents
-            subtotalCents
-            totalCents
+            buyerTotalCents
+            sellerTotalCents
             updatedAt
             createdAt
             stateUpdatedAt

@@ -1,16 +1,16 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
-import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
+import { mockxchange } from "test/fixtures/exchange/mockxchange"
 
 let rootValue
 
-describe("Submit Order Mutation", () => {
+describe("Approve Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        submitOrder: () => ({
+        setPayment: () => ({
           order: exchangeOrderJSON,
           errors: [],
         }),
@@ -19,11 +19,12 @@ describe("Submit Order Mutation", () => {
 
     rootValue = mockxchange(resolvers)
   })
-  it("fetches order by id", () => {
+  it("sets order's payment information", () => {
     const mutation = `
       mutation {
-        submitOrder(input: {
-            orderId: "111"
+        setOrderPayment(input: {
+            orderId: "111",
+            creditCardId: "1231-1232-4343-4343"
           }) {
             result {
               order {
@@ -62,14 +63,14 @@ describe("Submit Order Mutation", () => {
                   }
                 }
               }
-              errors
+            errors
             }
           }
         }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.submitOrder.result.order).toEqual(sampleOrder)
+      expect(data.setOrderPayment.result.order).toEqual(sampleOrder)
     })
   })
 })
