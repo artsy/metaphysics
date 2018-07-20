@@ -33,7 +33,6 @@ import { executableExchangeSchema } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
-import "heapdump" // Request a heapdump by sending `kill -USR2 [pid of metaphysics]`
 
 const {
   ENABLE_QUERY_TRACING,
@@ -45,6 +44,7 @@ const {
   RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
 } = config
+
 const isProduction = NODE_ENV === "production"
 const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
@@ -53,6 +53,10 @@ const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 const logQueryDetailsThreshold =
   LOG_QUERY_DETAILS_THRESHOLD && parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10) // null by default
+
+if (NODE_ENV !== "test") {
+  require("heapdump") // Request a heapdump by sending `kill -USR2 [pid of metaphysics]`
+}
 
 function logQueryDetailsIfEnabled() {
   if (Number.isInteger(logQueryDetailsThreshold)) {

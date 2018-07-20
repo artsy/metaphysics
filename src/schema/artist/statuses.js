@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLBoolean } from "graphql"
+import { GraphQLObjectType, GraphQLBoolean, GraphQLInt } from "graphql"
 import { totalViaLoader } from "lib/total"
 
 const ArtistStatusesType = new GraphQLObjectType({
@@ -67,7 +67,16 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     cv: {
       type: GraphQLBoolean,
-      resolve: ({ partner_shows_count }) => partner_shows_count > 15,
+      args: {
+        minShowCount: {
+          type: GraphQLInt,
+          description:
+            "Suppress the cv tab when artist show count is less than this.",
+          defaultValue: 15,
+        },
+      },
+      resolve: ({ partner_shows_count }, { minShowCount }) =>
+        partner_shows_count > minShowCount,
     },
     shows: {
       type: GraphQLBoolean,

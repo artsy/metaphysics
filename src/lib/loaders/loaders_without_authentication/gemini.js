@@ -3,16 +3,17 @@
 import gemini from "../../apis/gemini"
 import { unescape } from "querystring"
 
-import { loaderOneOffFactory } from "../api/loader_one_off_factory"
+import { uncachedLoaderFactory } from "../api/loader_without_cache_factory"
 
 const toBase64 = string =>
   new Buffer(unescape(encodeURIComponent(string)), "binary").toString("base64")
+const geminiUncachedLoader = uncachedLoaderFactory(gemini, "gemini")
 
 export default () => ({
   // The outer function is so that we can pass params from the schema,
-  // into the gemini api.
+  // into the gemini api options.
   createNewGeminiAssetLoader: ({ name, acl }) =>
-    loaderOneOffFactory(gemini, "gemini", `uploads/new.json?acl=${acl}`, {
+    geminiUncachedLoader(`uploads/new.json?acl=${acl}`, {
       acl,
       headers: {
         Authorization: "Basic " + toBase64(name + ":"),
@@ -25,7 +26,7 @@ export default () => ({
     source_bucket,
     metadata,
   }) =>
-    loaderOneOffFactory(gemini, "gemini", `entries.json`, {
+    geminiUncachedLoader("entries.json", {
       method: "POST",
       form: {
         entry: {

@@ -24,7 +24,6 @@ describe("Create Order Mutation", () => {
       mutation {
         createOrder(input: {
             partnerId: "111",
-            userId: "111",
             currencyCode: "usd",
             lineItems: [{
               artworkId: "111",
@@ -38,13 +37,20 @@ describe("Create Order Mutation", () => {
                 code
                 currencyCode
                 state
+                fulfillmentType
+                shippingAddressLine1
+                shippingAddressLine2
+                shippingCity
+                shippingCountry
+                shippingPostalCode
+                shippingRegion
                 itemsTotalCents
                 shippingTotalCents
                 taxTotalCents
                 commissionFeeCents
                 transactionFeeCents
-                subtotalCents
-                totalCents
+                buyerTotalCents
+                sellerTotalCents
                 updatedAt
                 createdAt
                 stateUpdatedAt

@@ -10,6 +10,7 @@ const {
   NODE_ENV,
   MEMCACHED_URL,
   MEMCACHED_MAX_POOL,
+  CACHE_COMPRESSION_DISABLED,
   CACHE_LIFETIME_IN_SECONDS,
   CACHE_QUERY_LOGGING_THRESHOLD_MS,
   CACHE_RETRIEVAL_TIMEOUT_MS,
@@ -18,6 +19,16 @@ const {
 const isTest = NODE_ENV === "test"
 
 const VerboseEvents = ["issue", "failure", "reconnecting", "reconnect", "remove"]
+
+const uncompressedKeyPrefix = "::"
+
+export const cacheKey = (key) => {
+  if (CACHE_COMPRESSION_DISABLED) {
+    return uncompressedKeyPrefix + key
+  } else {
+    return key
+  }
+}
 
 const deflateP = (dataz) => {
   return new Promise((resolve, reject) =>
@@ -59,17 +70,17 @@ function _get(key) {
 
     let timeoutId = setTimeout(() => {
       timeoutId = null
-      const err = new Error(`[Cache#get] Timeout for key ${key}`)
+      const err = new Error(`[Cache#get] Timeout for key ${cacheKey(key)}`)
       statsClient.increment('cache.timeout')
       error(err)
       reject(err)
     }, CACHE_RETRIEVAL_TIMEOUT_MS)
 
     const start = Date.now()
-    client.get(key, (err, data) => {
+    client.get(cacheKey(key), (err, data) => {
       const time = Date.now() - start
       if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
-        error(`[Cache#get] Slow read of ${time}ms for key ${key}`)
+        error(`[Cache#get] Slow read of ${time}ms for key ${cacheKey(key)}`)
         statsClient.timing('cache.slow_read', time)
       }
 
@@ -84,13 +95,17 @@ function _get(key) {
         error(err)
         reject(err)
       } else if (data) {
-        zlib.inflate(new Buffer(data, 'base64'), (er, inflatedData) => {
-          if (er) {
-            reject(er)
-          } else {
-            resolve(JSON.parse(inflatedData.toString()))
-          }
-        })
+        if (CACHE_COMPRESSION_DISABLED) {
+          resolve(JSON.parse(data.toString()))
+        } else {
+          zlib.inflate(new Buffer(data, 'base64'), (er, inflatedData) => {
+            if (er) {
+              reject(er)
+            } else {
+              resolve(JSON.parse(inflatedData.toString()))
+            }
+          })
+        }
       } else {
         reject(new Error("[Cache#get] Cache miss"))
       }
@@ -110,25 +125,41 @@ function _set(key, data) {
   }
   /* eslint-enable no-param-reassign */
 
-  return deflateP(data).then(deflatedData => {
-    const payload = deflatedData.toString('base64')
-    verbose(`CACHE SET: ${key}: ${payload}`)
-    return client.set(
-      key,
-      payload,
-      CACHE_LIFETIME_IN_SECONDS,
-      err => {
-        if (err) error(err)
-      }
-    )
-  }).catch(err => {
-    error(err)
-  })
+  if (CACHE_COMPRESSION_DISABLED) {
+    return new Promise((resolve, reject) => {
+      const payload = JSON.stringify(data)
+      verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
+      resolve(
+        client.set(
+          cacheKey(key),
+          payload,
+          CACHE_LIFETIME_IN_SECONDS,
+          err => {
+            if (err) error(err)
+          }
+        )
+      )
+    }).catch(error)
+  } else {
+    return deflateP(data).then(deflatedData => {
+      const payload = deflatedData.toString('base64')
+      verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
+
+      return client.set(
+        cacheKey(key),
+        payload,
+        CACHE_LIFETIME_IN_SECONDS,
+        err => {
+          if (err) error(err)
+        }
+      )
+    }).catch(error)
+  }
 }
 
 const _delete = (key) =>
   new Promise((resolve, reject) =>
-    client.del(key, (err) => {
+    client.del(cacheKey(key), (err) => {
       if (err) return reject(err)
     })
   )

@@ -31,10 +31,6 @@ const LineItemInputType = new GraphQLInputObjectType({
 const CreateOrderInputType = new GraphQLInputObjectType({
   name: "CreateOrderInput",
   fields: {
-    userId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "ID of user submitting the order",
-    },
     partnerId: {
       type: GraphQLString,
       description: "ID of partner representing artwork",
@@ -52,7 +48,7 @@ const CreateOrderInputType = new GraphQLInputObjectType({
 
 export const CreateOrderMutation = mutationWithClientMutationId({
   name: "CreateOrder",
-  decription: "Creates an order with payment",
+  description: "Creates an order with payment",
   inputFields: CreateOrderInputType.getFields(),
   outputFields: {
     result: {
@@ -70,10 +66,9 @@ export const CreateOrderMutation = mutationWithClientMutationId({
     }
 
     const mutation = `
-      mutation creatorder($currencyCode: String!, $partnerId: String!, $userId: String!, $lineItems: [EcommerceLineItemAttributes!]) {
+      mutation creatorder($currencyCode: String!, $partnerId: String!, $lineItems: [EcommerceLineItemAttributes!]) {
         ecommerce_createOrder(input: {
           partnerId: $partnerId,
-          userId: $userId,
           currencyCode: $currencyCode,
           lineItems: $lineItems,
         }) {
@@ -84,13 +79,20 @@ export const CreateOrderMutation = mutationWithClientMutationId({
             state
             partnerId
             userId
+            fulfillmentType
+            shippingAddressLine1
+            shippingAddressLine2
+            shippingCity
+            shippingCountry
+            shippingPostalCode
+            shippingRegion
             itemsTotalCents
             shippingTotalCents
             taxTotalCents
             commissionFeeCents
             transactionFeeCents
-            subtotalCents
-            totalCents
+            buyerTotalCents
+            sellerTotalCents
             updatedAt
             createdAt
             stateUpdatedAt

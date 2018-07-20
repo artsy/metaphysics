@@ -1,4 +1,5 @@
 import { GraphQLID, GraphQLObjectType, GraphQLString } from "graphql"
+import { OrderFulfillmentTypeEnum } from "./order_fulfillment_type_enum"
 import { connectionDefinitions } from "graphql-relay"
 
 import Partner from "schema/partner"
@@ -26,6 +27,34 @@ export const OrderType = new GraphQLObjectType({
       type: GraphQLString,
       description: "Tracking code of the order",
     },
+    fulfillmentType: {
+      type: OrderFulfillmentTypeEnum,
+      description: "Fulfillment Type",
+    },
+    shippingAddressLine1: {
+      type: GraphQLString,
+      description: "Shipping address line 1",
+    },
+    shippingAddressLine2: {
+      type: GraphQLString,
+      description: "Shipping address line 2",
+    },
+    shippingCity: {
+      type: GraphQLString,
+      description: "Shipping city",
+    },
+    shippingCountry: {
+      type: GraphQLString,
+      description: "Shipping country",
+    },
+    shippingPostalCode: {
+      type: GraphQLString,
+      description: "Shipping postal code",
+    },
+    shippingRegion: {
+      type: GraphQLString,
+      description: "Shipping region",
+    },
     itemsTotalCents: amount(({ itemsTotalCents }) => itemsTotalCents),
     shippingTotalCents: amount(({ shippingTotalCents }) => shippingTotalCents),
     taxTotalCents: amount(({ taxTotalCents }) => taxTotalCents),
@@ -33,8 +62,8 @@ export const OrderType = new GraphQLObjectType({
       ({ transactionFeeCents }) => transactionFeeCents
     ),
     commissionFeeCents: amount(({ commissionFeeCents }) => commissionFeeCents),
-    subtotalCents: amount(({ subtotalCents }) => subtotalCents),
-    totalCents: amount(({ totalCents }) => totalCents),
+    buyerTotalCents: amount(({ buyerTotalCents }) => buyerTotalCents),
+    sellerTotalCents: amount(({ sellerTotalCents }) => sellerTotalCents),
     lineItems: {
       type: OrderLineItemConnection,
       description: "List of order line items",
