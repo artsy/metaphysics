@@ -25,6 +25,8 @@ const isDevelopment = NODE_ENV === "development"
 const isProduction = NODE_ENV === "production"
 const enableAsyncStackTraces = ENABLE_ASYNC_STACK_TRACES === "true"
 
+let server, isShuttingDown
+
 if (enableAsyncStackTraces) {
   console.warn("[FEATURE] Enabling long async stack traces") // eslint-disable-line
   require("longjohn")
@@ -63,6 +65,9 @@ function bootApp() {
   })
 
   app.get('/health', (req, res) => {
+    if (isShuttingDown) {
+      return res.status(503).end()
+    }
     cache.isAvailable().then((stats) => {
       return res.status(200).end()
     }).catch((err) => {
@@ -80,7 +85,19 @@ function bootApp() {
     app.use(require("./src").default)
   }
 
-  app.listen(port, () =>
+  server = app.listen(port, () =>
     info(`[Metaphysics] Listening on http://localhost:${port}`)
   )
+}
+
+process.on('SIGTERM', gracefulExit)
+
+function gracefulExit() {
+  if (isShuttingDown) return
+  isShuttingDown = true
+  console.log('Received signal SIGTERM, shutting down')
+  server.close(function () {
+    console.log('Closed existing connections.')
+    process.exit(0)
+  })
 }
