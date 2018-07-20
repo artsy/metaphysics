@@ -29,6 +29,13 @@ export const Orders = {
               userId
               updatedAt
               createdAt
+              fulfillmentType
+              shippingAddressLine1
+              shippingAddressLine2
+              shippingCity
+              shippingCountry
+              shippingPostalCode
+              shippingRegion
               itemsTotalCents
               shippingTotalCents
               taxTotalCents
