@@ -15,9 +15,8 @@ export const uncachedLoaderFactory = (
 ) => (path: string | FuncToString, options: any | null) => {
   // If you use gravity as the api here, then options will get interpreted as
   // an accessToken, so you have to explicitly pass null
-  const loader = new DataLoader(
-    ([route]) =>
-      Promise.resolve([api(route as string, options).then(r => r.body)]),
+  const loader = new DataLoader<string, Promise<string>>(
+    ([route]) => Promise.resolve([api(route, options).then(r => r.body)]),
     { cache: false }
   )
   return loaderInterface(loader, path, options)
