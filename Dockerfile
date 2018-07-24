@@ -28,4 +28,4 @@ RUN yarn install
 RUN yarn build
 
 ENTRYPOINT ["/usr/local/bin/dumb-init", "--"]
-CMD node build/index.js
+CMD ["node", "build/index.js"]

@@ -17,7 +17,7 @@ export const uncachedLoaderFactory = (
   // an accessToken, so you have to explicitly pass null
   const loader = new DataLoader<string, Promise<string>>(
     ([route]) => Promise.resolve([api(route, options).then(r => r.body)]),
-    { cache: false }
+    { cache: false, batch: false }
   )
   return loaderInterface(loader, path, options)
 }
