@@ -20,12 +20,23 @@ export const shouldReportError = originalError => {
   return true
 }
 
+const isStaging = process.env.GRAVITY_API_URL.includes("staging")
+const subdomain = isStaging ? "metaphysics-staging" : "metaphysics-production"
+
 export default function graphqlErrorHandler(
   req,
-  { isProduction, enableSentry }
+  { isProduction, enableSentry, variables }
 ) {
   return error => {
     if (enableSentry && shouldReportError(error.originalError)) {
+      // Generate a clickable link to re-create this error
+      const baseURL = `https://${subdomain}.artsy.net`
+      const encodedVars = encodeURIComponent(JSON.stringify(variables))
+      const encodedQuery = encodeURIComponent(error.source && error.source.body)
+      const href = `${baseURL}/graphiql?variables=${encodedVars}&query=${
+        encodedQuery
+      }`
+
       raven.captureException(
         error,
         assign(
@@ -36,6 +47,8 @@ export default function graphqlErrorHandler(
               source: error.source && error.source.body,
               positions: error.positions,
               path: error.path,
+              variables,
+              href,
             },
           },
           raven.parsers.parseRequest(req)

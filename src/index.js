@@ -93,7 +93,10 @@ async function startApp() {
 
   if (RESOLVER_TIMEOUT_MS > 0) {
     console.warn("[FEATURE] Enabling resolver timeouts")
-    schema = applyGraphQLMiddleware(schema, graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS))
+    schema = applyGraphQLMiddleware(
+      schema,
+      graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS)
+    )
   }
 
   app.use(requestIDsAdder)
@@ -117,7 +120,7 @@ async function startApp() {
     logQueryDetailsIfEnabled(),
     fetchPersistedQuery,
     crunchInterceptor,
-    graphqlHTTP((req, res) => {
+    graphqlHTTP((req, res, params) => {
       const accessToken = req.headers["x-access-token"]
       const userID = req.headers["x-user-id"]
       const timezone = req.headers["x-timezone"]
@@ -164,6 +167,7 @@ async function startApp() {
         formatError: graphqlErrorHandler(req, {
           enableSentry,
           isProduction,
+          variables: params.variables,
         }),
         validationRules: [depthLimit(queryLimit)],
         extensions: enableRequestLogging
