@@ -740,11 +740,12 @@
     "@types/express" "*"
     "@types/node" "*"
 
-"@types/express-graphql@^0.0.35":
-  version "0.0.35"
-  resolved "https://registry.yarnpkg.com/@types/express-graphql/-/express-graphql-0.0.35.tgz#b3e2cc1b0e5f29d14e499cbefa164a54374b160c"
+"@types/express-graphql@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@types/express-graphql/-/express-graphql-0.6.1.tgz#9e8c5544a5099c3db82d29847b1efb2af4ad147c"
   dependencies:
     "@types/express" "*"
+    "@types/graphql" "*"
 
 "@types/express-serve-static-core@*":
   version "4.0.57"
@@ -775,6 +776,10 @@
 "@types/graphql@*", "@types/graphql@0.12.6", "@types/graphql@^0.13.1":
   version "0.13.1"
   resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.13.1.tgz#7d39750355c9ecb921816d6f76c080405b5f6bea"
+
+"@types/graphql@^0.13.3":
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.13.3.tgz#23af65796d341f93ef5b485138bd52c67786452d"
 
 "@types/invariant@^2.2.29":
   version "2.2.29"

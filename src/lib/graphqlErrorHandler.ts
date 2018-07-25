@@ -2,6 +2,7 @@ import raven from "raven"
 import { assign } from "lodash"
 import { error as log } from "lib/loggers"
 import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
+import { Request } from "../../node_modules/@types/express"
 
 const blacklistHttpStatuses = [401, 403, 404]
 
@@ -20,19 +21,16 @@ export const shouldReportError = originalError => {
   return true
 }
 
-const isStaging = process.env.GRAVITY_API_URL.includes("staging")
-const subdomain = isStaging ? "metaphysics-staging" : "metaphysics-production"
-
-export default function graphqlErrorHandler(
-  req,
-  { isProduction, enableSentry, variables }
-) {
+export const graphqlErrorHandler = (
+  req: Request,
+  { isProduction, enableSentry, variables, query }
+) => {
   return error => {
     if (enableSentry && shouldReportError(error.originalError)) {
       // Generate a clickable link to re-create this error
-      const baseURL = `https://${subdomain}.artsy.net`
+      const baseURL = req.baseUrl
       const encodedVars = encodeURIComponent(JSON.stringify(variables))
-      const encodedQuery = encodeURIComponent(error.source && error.source.body)
+      const encodedQuery = encodeURIComponent(query)
       const href = `${baseURL}/graphiql?variables=${encodedVars}&query=${
         encodedQuery
       }`
@@ -44,7 +42,7 @@ export default function graphqlErrorHandler(
           {
             tags: { graphql: "exec_error" },
             extra: {
-              source: error.source && error.source.body,
+              source: (error.source && error.source.body) || query,
               positions: error.positions,
               path: error.path,
               variables,

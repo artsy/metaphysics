@@ -13,7 +13,7 @@ import cors from "cors"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
-import graphqlErrorHandler from "./lib/graphqlErrorHandler"
+import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
 import graphqlHTTP from "express-graphql"
 import localSchema from "./schema"
 import moment from "moment"
@@ -168,6 +168,7 @@ async function startApp() {
           enableSentry,
           isProduction,
           variables: params.variables,
+          query: params.query,
         }),
         validationRules: [depthLimit(queryLimit)],
         extensions: enableRequestLogging
