@@ -38,12 +38,14 @@ const {
   ENABLE_QUERY_TRACING,
   ENABLE_REQUEST_LOGGING,
   ENABLE_SCHEMA_STITCHING,
+  ENABLE_HEAPDUMPS,
   LOG_QUERY_DETAILS_THRESHOLD,
   NODE_ENV,
   QUERY_DEPTH_LIMIT,
   RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
 } = config
+
 const isProduction = NODE_ENV === "production"
 const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
@@ -52,6 +54,10 @@ const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 const logQueryDetailsThreshold =
   LOG_QUERY_DETAILS_THRESHOLD && parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10) // null by default
+
+if (ENABLE_HEAPDUMPS) {
+  require("heapdump") // Request a heapdump by sending `kill -USR2 [pid of metaphysics]`
+}
 
 function logQueryDetailsIfEnabled() {
   if (Number.isInteger(logQueryDetailsThreshold)) {
