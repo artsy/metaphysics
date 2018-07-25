@@ -1,28 +1,30 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
-import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
+import { mockxchange } from "test/fixtures/exchange/mockxchange"
 
 let rootValue
 
-describe("Reject Order Mutation", () => {
+describe("Approve Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        rejectOrder: () => ({
+        setPayment: () => ({
           order: exchangeOrderJSON,
           errors: [],
         }),
       },
     }
+
     rootValue = mockxchange(resolvers)
   })
-  it("fetches order by id", () => {
+  it("sets order's payment information", () => {
     const mutation = `
       mutation {
-        rejectOrder(input: {
+        setOrderPayment(input: {
             orderId: "111",
+            creditCardId: "1231-1232-4343-4343"
           }) {
             result {
               order {
@@ -75,7 +77,7 @@ describe("Reject Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.rejectOrder.result.order).toEqual(sampleOrder)
+      expect(data.setOrderPayment.result.order).toEqual(sampleOrder)
     })
   })
 })

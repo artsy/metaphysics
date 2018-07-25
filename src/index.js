@@ -93,7 +93,10 @@ async function startApp() {
 
   if (RESOLVER_TIMEOUT_MS > 0) {
     console.warn("[FEATURE] Enabling resolver timeouts")
-    schema = applyGraphQLMiddleware(schema, graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS))
+    schema = applyGraphQLMiddleware(
+      schema,
+      graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS)
+    )
   }
 
   app.use(requestIDsAdder)

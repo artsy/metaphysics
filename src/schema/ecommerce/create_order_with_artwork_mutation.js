@@ -10,49 +10,27 @@ import {
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
 
-const LineItemInputType = new GraphQLInputObjectType({
-  name: "LineItemInput",
+const CreateOrderInputType = new GraphQLInputObjectType({
+  name: "CreateOrderInput",
   fields: {
     artworkId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of artwork",
     },
+    editionSetId: {
+      type: GraphQLString,
+      description: "ID of artwork's edition set",
+    },
     quantity: {
-      type: new GraphQLNonNull(GraphQLInt),
+      type: GraphQLInt,
       description: "quantity of artwork",
     },
-    priceCents: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: "Price in cents",
-    },
   },
 })
 
-const CreateOrderInputType = new GraphQLInputObjectType({
-  name: "CreateOrderInput",
-  fields: {
-    userId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "ID of user submitting the order",
-    },
-    partnerId: {
-      type: GraphQLString,
-      description: "ID of partner representing artwork",
-    },
-    currencyCode: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Currency code",
-    },
-    lineItems: {
-      type: new GraphQLList(LineItemInputType),
-      description: "Line items in the order",
-    },
-  },
-})
-
-export const CreateOrderMutation = mutationWithClientMutationId({
-  name: "CreateOrder",
-  decription: "Creates an order with payment",
+export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
+  name: "CreateOrderWithArtwork",
+  description: "Creates an order with an artwork",
   inputFields: CreateOrderInputType.getFields(),
   outputFields: {
     result: {
@@ -61,7 +39,7 @@ export const CreateOrderMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { userId, partnerId, currencyCode, lineItems },
+    { artworkId, editionSetId, quantity },
     context,
     { rootValue: { accessToken, exchangeSchema } }
   ) => {
@@ -70,12 +48,11 @@ export const CreateOrderMutation = mutationWithClientMutationId({
     }
 
     const mutation = `
-      mutation creatorder($currencyCode: String!, $partnerId: String!, $userId: String!, $lineItems: [EcommerceLineItemAttributes!]) {
-        ecommerce_createOrder(input: {
-          partnerId: $partnerId,
-          userId: $userId,
-          currencyCode: $currencyCode,
-          lineItems: $lineItems,
+      mutation createOrderWithArtwork($artworkId: String!, $editionSetId: String, $quantity: Int) {
+        ecommerce_createOrderWithArtwork(input: {
+          artworkId: $artworkId,
+          editionSetId: $editionSetId,
+          quantity: $quantity,
         }) {
           order {
             id
@@ -84,13 +61,20 @@ export const CreateOrderMutation = mutationWithClientMutationId({
             state
             partnerId
             userId
+            fulfillmentType
+            shippingAddressLine1
+            shippingAddressLine2
+            shippingCity
+            shippingCountry
+            shippingPostalCode
+            shippingRegion
             itemsTotalCents
             shippingTotalCents
             taxTotalCents
             commissionFeeCents
             transactionFeeCents
-            subtotalCents
-            totalCents
+            buyerTotalCents
+            sellerTotalCents
             updatedAt
             createdAt
             stateUpdatedAt
@@ -112,12 +96,12 @@ export const CreateOrderMutation = mutationWithClientMutationId({
       }
     `
     return graphql(exchangeSchema, mutation, null, context, {
-      userId,
-      partnerId,
-      currencyCode,
-      lineItems,
+      artworkId,
+      editionSetId,
+      quantity,
     }).then(result => {
-      const { order, errors } = result.data.ecommerce_createOrder
+      console.log(result)
+      const { order, errors } = result.data.ecommerce_createOrderWithArtwork
       return {
         order,
         errors,

@@ -18,7 +18,9 @@ import GeneFamily from "./gene_family"
 import HomePage from "./home"
 import { Order } from "./ecommerce/order"
 import { Orders } from "./ecommerce/orders"
-import { CreateOrderMutation } from "./ecommerce/create_order_mutation"
+import { CreateOrderWithArtworkMutation } from "./ecommerce/create_order_with_artwork_mutation"
+import { SetOrderShippingMutation } from "./ecommerce/set_order_shipping_mutation"
+import { SetOrderPaymentMutation } from "./ecommerce/set_order_payment_mutation"
 import { SubmitOrderMutation } from "./ecommerce/submit_order_mutation"
 import { ApproveOrderMutation } from "./ecommerce/approve_order_mutation"
 import { FinalizeOrderMutation } from "./ecommerce/finalize_order_mutation"
@@ -165,7 +167,9 @@ const schema = new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
-      createOrder: CreateOrderMutation,
+      createOrderWithArtwork: CreateOrderWithArtworkMutation,
+      setOrderShipping: SetOrderShippingMutation,
+      setOrderPayment: SetOrderPaymentMutation,
       approveOrder: ApproveOrderMutation,
       finalizeOrder: FinalizeOrderMutation,
       rejectOrder: RejectOrderMutation,

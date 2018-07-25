@@ -10,7 +10,7 @@ describe("Create Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        createOrder: () => ({
+        createOrderWithArtwork: () => ({
           order: exchangeOrderJSON,
           errors: [],
         }),
@@ -22,15 +22,10 @@ describe("Create Order Mutation", () => {
   it("fetches order by id", () => {
     const mutation = `
       mutation {
-        createOrder(input: {
-            partnerId: "111",
-            userId: "111",
-            currencyCode: "usd",
-            lineItems: [{
-              artworkId: "111",
-              quantity: 1
-              priceCents: 300000
-            }]
+        createOrderWithArtwork(input: {
+            artworkId: "111",
+            editionSetId: "232",
+            quantity: 1
           }) {
             result {
               order {
@@ -38,13 +33,20 @@ describe("Create Order Mutation", () => {
                 code
                 currencyCode
                 state
+                fulfillmentType
+                shippingAddressLine1
+                shippingAddressLine2
+                shippingCity
+                shippingCountry
+                shippingPostalCode
+                shippingRegion
                 itemsTotalCents
                 shippingTotalCents
                 taxTotalCents
                 commissionFeeCents
                 transactionFeeCents
-                subtotalCents
-                totalCents
+                buyerTotalCents
+                sellerTotalCents
                 updatedAt
                 createdAt
                 stateUpdatedAt
@@ -76,7 +78,7 @@ describe("Create Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.createOrder.result.order).toEqual(sampleOrder)
+      expect(data.createOrderWithArtwork.result.order).toEqual(sampleOrder)
     })
   })
 })

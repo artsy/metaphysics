@@ -1,12 +1,29 @@
-import { GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLUnionType,
+} from "graphql"
 import Image from "schema/image"
 import { error } from "lib/loggers"
 import moment from "moment"
 import { exhibitionPeriod } from "lib/date"
+import { ShowType } from "../show"
+import { SaleType } from "../sale"
+import { date as DateFormat } from "schema/fields/date"
+
+const UnderlyingCurrentEventType = new GraphQLUnionType({
+  name: "UnderlyingCurrentEvent",
+  types: [ShowType, SaleType],
+  resolveType: ({ __type }) => __type,
+})
 
 const CurrentEventType = new GraphQLObjectType({
   name: "CurrentEvent",
   fields: {
+    event: {
+      type: new GraphQLNonNull(UnderlyingCurrentEventType),
+    },
     image: {
       type: Image.type,
     },
@@ -42,13 +59,32 @@ const showDetails = show => {
   return status
 }
 
+// TODO: Standardize/move these?
+// These currently displays either end_at/live_start_at
+// in the client-provided `defaultTimezone`, or in EST/EDT.
+const FORMAT = "MMM D h:mm A z"
+const DEFAULT_TZ = "America/New_York"
+
+const saleDetails = (sale, timezone) => {
+  const dateLabel = DateFormat(
+    sale.live_start_at || sale.end_at,
+    FORMAT,
+    timezone
+  )
+
+  if (sale.live_start_at) {
+    return `Live bidding begins ${dateLabel}`
+  }
+  return `Bidding ends ${dateLabel}`
+}
+
 export const CurrentEvent = {
   type: CurrentEventType,
   resolve: (
     { id },
     options,
     _request,
-    { rootValue: { relatedSalesLoader, relatedShowsLoader } }
+    { rootValue: { relatedSalesLoader, relatedShowsLoader, defaultTimezone } }
   ) => {
     return Promise.all([
       relatedShowsLoader({
@@ -70,21 +106,23 @@ export const CurrentEvent = {
       .then(([{ body: shows }, sales]) => {
         if (sales.length > 0) {
           const sale = sales[0]
-          const liveMoment = moment(sale.live_start_at)
           const { image_versions, image_url } = sale
           return {
+            event: { __type: SaleType, ...sale },
             status: "Currently at auction",
             name: sale.name,
             href: `/auction/${sale.id}`,
-            details: `Live bidding begins at ${liveMoment.format(
-              "MMM DD, YYYY"
-            )}`,
+            details: saleDetails(sale, defaultTimezone || DEFAULT_TZ),
             image: Image.resolve({ image_versions, image_url }),
           }
         } else if (shows.length > 0) {
           const show = shows[0]
           const { image_versions, image_url } = show
           return {
+            event: {
+              __type: ShowType,
+              ...show,
+            },
             status: "Currently on view",
             name: show.name,
             href: `/show/${show.id}`,
