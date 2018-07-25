@@ -38,6 +38,7 @@ const {
   ENABLE_QUERY_TRACING,
   ENABLE_REQUEST_LOGGING,
   ENABLE_SCHEMA_STITCHING,
+  ENABLE_HEAPDUMPS,
   LOG_QUERY_DETAILS_THRESHOLD,
   NODE_ENV,
   QUERY_DEPTH_LIMIT,
@@ -54,7 +55,7 @@ const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 const logQueryDetailsThreshold =
   LOG_QUERY_DETAILS_THRESHOLD && parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10) // null by default
 
-if (NODE_ENV !== "test") {
+if (ENABLE_HEAPDUMPS) {
   require("heapdump") // Request a heapdump by sending `kill -USR2 [pid of metaphysics]`
 }
 
