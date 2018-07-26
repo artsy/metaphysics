@@ -61,7 +61,7 @@ export const apiLoaderWithAuthenticationFactory = (
           )
         },
         {
-          batch: true,
+          batch: false,
           cache: true,
         }
       )
