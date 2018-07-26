@@ -27,6 +27,10 @@ export const OrderLineItemType = new GraphQLObjectType({
       description: "Edition set on the artwork",
       resolve: ({ editionSetId }) => editionSetId,
     },
+    priceCents: {
+      type: GraphQLInt,
+      description: "Unit price in cents",
+    },
     price: amount(({ priceCents }) => priceCents),
     updatedAt: date,
     createdAt: date,

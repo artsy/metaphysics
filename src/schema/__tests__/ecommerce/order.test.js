@@ -35,6 +35,13 @@ describe("Order type", () => {
           transactionFeeCents
           buyerTotalCents
           sellerTotalCents
+          itemsTotal
+          shippingTotal
+          taxTotal
+          commissionFee
+          transactionFee
+          buyerTotal
+          sellerTotal
           updatedAt
           createdAt
           stateUpdatedAt

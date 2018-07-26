@@ -46,6 +46,13 @@ describe("Approve Order Mutation", () => {
                 transactionFeeCents
                 buyerTotalCents
                 sellerTotalCents
+                itemsTotal
+                shippingTotal
+                taxTotal
+                commissionFee
+                transactionFee
+                buyerTotal
+                sellerTotal
                 updatedAt
                 createdAt
                 stateUpdatedAt
