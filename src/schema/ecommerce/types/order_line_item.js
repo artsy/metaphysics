@@ -29,7 +29,7 @@ export const OrderLineItemType = new GraphQLObjectType({
     },
     priceCents: {
       type: GraphQLInt,
-      description: "Price in cents",
+      description: "Unit price in cents",
     },
     price: amount(({ priceCents }) => priceCents),
     updatedAt: date,
