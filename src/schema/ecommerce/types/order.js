@@ -1,4 +1,9 @@
-import { GraphQLID, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLID,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+} from "graphql"
 import { OrderFulfillmentTypeEnum } from "./order_fulfillment_type_enum"
 import { connectionDefinitions } from "graphql-relay"
 
@@ -55,15 +60,41 @@ export const OrderType = new GraphQLObjectType({
       type: GraphQLString,
       description: "Shipping region",
     },
-    itemsTotalCents: amount(({ itemsTotalCents }) => itemsTotalCents),
-    shippingTotalCents: amount(({ shippingTotalCents }) => shippingTotalCents),
-    taxTotalCents: amount(({ taxTotalCents }) => taxTotalCents),
-    transactionFeeCents: amount(
-      ({ transactionFeeCents }) => transactionFeeCents
-    ),
-    commissionFeeCents: amount(({ commissionFeeCents }) => commissionFeeCents),
-    buyerTotalCents: amount(({ buyerTotalCents }) => buyerTotalCents),
-    sellerTotalCents: amount(({ sellerTotalCents }) => sellerTotalCents),
+    itemsTotalCents: {
+      type: GraphQLInt,
+      description: "Item total in cents",
+    },
+    itemsTotal: amount(({ itemsTotalCents }) => itemsTotalCents),
+    shippingTotalCents: {
+      type: GraphQLInt,
+      description: "Shipping total in cents",
+    },
+    shippingTotal: amount(({ shippingTotalCents }) => shippingTotalCents),
+    taxTotalCents: {
+      type: GraphQLInt,
+      description: "Tax total in cents",
+    },
+    taxTotal: amount(({ taxTotalCents }) => taxTotalCents),
+    transactionFeeCents: {
+      type: GraphQLInt,
+      description: "Transaction fee in cents",
+    },
+    transactionFee: amount(({ transactionFeeCents }) => transactionFeeCents),
+    commissionFeeCents: {
+      type: GraphQLInt,
+      description: "Commission fee in cents",
+    },
+    commissionFee: amount(({ commissionFeeCents }) => commissionFeeCents),
+    buyerTotalCents: {
+      type: GraphQLInt,
+      description: "Buyer total in cents",
+    },
+    buyerTotal: amount(({ buyerTotalCents }) => buyerTotalCents),
+    sellerTotalCents: {
+      type: GraphQLInt,
+      description: "Seller total in cents",
+    },
+    sellerTotal: amount(({ sellerTotalCents }) => sellerTotalCents),
     lineItems: {
       type: OrderLineItemConnection,
       description: "List of order line items",
