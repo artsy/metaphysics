@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import zlib from 'zlib'
+import zlib from "zlib"
 import config from "config"
 
 let cache, client, cacheKey
@@ -14,11 +14,7 @@ function parseCacheResponse(data, cacheCompressionDisabled) {
   if (cacheCompressionDisabled) {
     return JSON.parse(data)
   } else {
-    return JSON.parse(
-      zlib.inflateSync(
-        new Buffer(data, 'base64')
-      ).toString()
-    )
+    return JSON.parse(zlib.inflateSync(new Buffer(data, "base64")).toString())
   }
 }
 
@@ -50,11 +46,14 @@ describe("Cache with compression enabled", () => {
 
     describe("#set", () => {
       describe("with a plain Object", () => {
-        it("sets the cache and includes a timestamp", async (done) => {
+        it("sets the cache and includes a timestamp", async done => {
           await cache.set("set_foo", { bar: "baz" })
 
           client.get(cacheKey("set_foo"), (err, data) => {
-            const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_DISABLED)
+            const parsed = parseCacheResponse(
+              data,
+              config.CACHE_COMPRESSION_DISABLED
+            )
 
             expect(parsed.bar).toBe("baz")
             expect(typeof parsed.cached).toBe("number")
@@ -64,11 +63,14 @@ describe("Cache with compression enabled", () => {
         })
       })
 
-      it("with an Array it sets the cache and includes a timestamp", async (done) => {
+      it("with an Array it sets the cache and includes a timestamp", async done => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
         client.get(cacheKey("set_bar"), (err, data) => {
-          const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_DISABLED)
+          const parsed = parseCacheResponse(
+            data,
+            config.CACHE_COMPRESSION_DISABLED
+          )
 
           expect(parsed.length).toBe(1)
           expect(parsed[0].baz).toBe("qux")
@@ -80,7 +82,6 @@ describe("Cache with compression enabled", () => {
     })
   })
 })
-
 
 describe("Cache with compression disabled", () => {
   config.CACHE_COMPRESSION_DISABLED = false
@@ -110,11 +111,14 @@ describe("Cache with compression disabled", () => {
 
     describe("#set", () => {
       describe("with a plain Object", () => {
-        it("sets the cache and includes a timestamp", async (done) => {
+        it("sets the cache and includes a timestamp", async done => {
           await cache.set("set_foo", { bar: "baz" })
 
           client.get(cacheKey("set_foo"), (err, data) => {
-            const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_DISABLED)
+            const parsed = parseCacheResponse(
+              data,
+              config.CACHE_COMPRESSION_DISABLED
+            )
 
             expect(parsed.bar).toBe("baz")
             expect(typeof parsed.cached).toBe("number")
@@ -124,11 +128,14 @@ describe("Cache with compression disabled", () => {
         })
       })
 
-      it("with an Array it sets the cache and includes a timestamp", async (done) => {
+      it("with an Array it sets the cache and includes a timestamp", async done => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
         client.get(cacheKey("set_bar"), (err, data) => {
-          const parsed = parseCacheResponse(data, config.CACHE_COMPRESSION_DISABLED)
+          const parsed = parseCacheResponse(
+            data,
+            config.CACHE_COMPRESSION_DISABLED
+          )
 
           expect(parsed.length).toBe(1)
           expect(parsed[0].baz).toBe("qux")
