@@ -1,7 +1,6 @@
 import {
   GraphQLInputObjectType,
   GraphQLNonNull,
-  GraphQLList,
   GraphQLInt,
   GraphQLString,
   graphql,

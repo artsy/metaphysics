@@ -45,6 +45,18 @@ export default {
             title: "Smell-O-Scope",
             inventoryId: "inventory note",
           },
+          fulfillments: {
+            edges: [
+              {
+                node: {
+                  id: "12",
+                  courier: "fedEx",
+                  trackingId: "track1",
+                  estimatedDelivery: "2018-05-18",
+                },
+              },
+            ],
+          },
         },
       },
     ],

@@ -25,44 +25,43 @@ const FulfillmentInputType = new GraphQLInputObjectType({
   },
 })
 
-const FulfillOrderWithOneFulfillmentInputType = new GraphQLInputObjectType({
-  name: "FulfillOrderWithOneFulfillmentInput",
+const FulfillOrderAtOnceInputType = new GraphQLInputObjectType({
+  name: "FulfillOrderAtOnceInput",
   fields: {
     orderId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "ID of the order",
     },
     fulfillment: {
-      type: GraphQLNonNull(FulfillmentInputType),
+      type: new GraphQLNonNull(FulfillmentInputType),
       description: "Fulfillment information of this order",
     },
   },
 })
 
-export const FulfillOrderWithOneFulfillmentMutation = mutationWithClientMutationId(
-  {
-    name: "FulfillOrderWithOneFulfillment",
-    description:
-      "Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order",
-    inputFields: FulfillOrderWithOneFulfillmentInputType.getFields(),
-    outputFields: {
-      result: {
-        type: OrderReturnType,
-        resolve: order => order,
-      },
+export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
+  name: "FulfillOrderAtOnce",
+  description:
+    "Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order",
+  inputFields: FulfillOrderAtOnceInputType.getFields(),
+  outputFields: {
+    result: {
+      type: OrderReturnType,
+      resolve: order => order,
     },
-    mutateAndGetPayload: (
-      { orderId, fulfillment },
-      context,
-      { rootValue: { accessToken, exchangeSchema } }
-    ) => {
-      if (!accessToken) {
-        return new Error("You need to be signed in to perform this action")
-      }
+  },
+  mutateAndGetPayload: (
+    { orderId, fulfillment },
+    context,
+    { rootValue: { accessToken, exchangeSchema } }
+  ) => {
+    if (!accessToken) {
+      return new Error("You need to be signed in to perform this action")
+    }
 
-      const mutation = `
-      mutation finalizeOrder($orderId: ID!) {
-        ecommerce_fulfillWithOneFulfillment(input: {
+    const mutation = `
+      mutation fulfillOrderAtOnce($orderId: ID!, $fulfillment: FulfillmentAttributes!) {
+        ecommerce_fulfillAtOnce(input: {
           id: $orderId,
           fulfillment: $fulfillment
         }) {
@@ -99,6 +98,16 @@ export const FulfillOrderWithOneFulfillmentMutation = mutationWithClientMutation
                   artworkId
                   editionSetId
                   quantity
+                  fulfillments{
+                    edges{
+                      node{
+                        id
+                        courier
+                        trackingId
+                        estimatedDelivery
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -107,19 +116,15 @@ export const FulfillOrderWithOneFulfillmentMutation = mutationWithClientMutation
         }
       }
     `
-      return graphql(exchangeSchema, mutation, null, context, {
-        orderId,
-        fulfillment,
-      }).then(result => {
-        const {
-          order,
-          errors,
-        } = result.data.ecommerce_fulfillWithOneFulfillment
-        return {
-          order,
-          errors,
-        }
-      })
-    },
-  }
-)
+    return graphql(exchangeSchema, mutation, null, context, {
+      orderId,
+      fulfillment,
+    }).then(result => {
+      const { order, errors } = result.data.ecommerce_fulfillAtOnce
+      return {
+        order,
+        errors,
+      }
+    })
+  },
+})

@@ -68,6 +68,15 @@ describe("Approve Order Mutation", () => {
                 lineItems {
                   edges {
                     node {
+                      fulfillments {
+                        edges {
+                          node {
+                            courier
+                            trackingId
+                            estimatedDelivery
+                          }
+                        }
+                      }
                       artwork {
                         id
                         title

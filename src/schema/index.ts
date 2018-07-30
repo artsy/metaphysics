@@ -23,7 +23,7 @@ import { SetOrderShippingMutation } from "./ecommerce/set_order_shipping_mutatio
 import { SetOrderPaymentMutation } from "./ecommerce/set_order_payment_mutation"
 import { SubmitOrderMutation } from "./ecommerce/submit_order_mutation"
 import { ApproveOrderMutation } from "./ecommerce/approve_order_mutation"
-import { FinalizeOrderMutation } from "./ecommerce/finalize_order_mutation"
+import { FulfillOrderAtOnceMutation } from "./ecommerce/fulfill_order_at_once_mutation"
 import { RejectOrderMutation } from "./ecommerce/reject_order_mutation"
 import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
@@ -171,7 +171,7 @@ const schema = new GraphQLSchema({
       setOrderShipping: SetOrderShippingMutation,
       setOrderPayment: SetOrderPaymentMutation,
       approveOrder: ApproveOrderMutation,
-      finalizeOrder: FinalizeOrderMutation,
+      FulfillOrderAtOnce: FulfillOrderAtOnceMutation,
       rejectOrder: RejectOrderMutation,
       submitOrder: SubmitOrderMutation,
       sendConversationMessage: SendConversationMessageMutation,
