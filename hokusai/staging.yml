@@ -63,14 +63,16 @@ spec:
                 values:
                 - foreground
         podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: temperament
-                operator: In
-                values:
-                - cpu-hog
-            topologyKey: "kubernetes.io/hostname"
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: temperament
+                  operator: In
+                  values:
+                  - cpu-hog
+              topologyKey: "kubernetes.io/hostname"
 
 ---
 apiVersion: autoscaling/v1
