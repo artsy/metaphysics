@@ -15,6 +15,7 @@ spec:
         app: metaphysics
         layer: application
         component: web
+        temperament: cpu-hog
       name: metaphysics-web
       namespace: default
     spec:
@@ -38,11 +39,10 @@ spec:
         - containerPort: 3000
         resources:
           requests:
-            cpu: "0.5"
-            memory: "512Mi"
+            cpu: 500m
+            memory: 768Mi
           limits:
-            cpu: "1"
-            memory: "1Gi"
+            memory: 1Gi
         readinessProbe:
           httpGet:
             port: 3000
@@ -62,77 +62,17 @@ spec:
                 operator: In
                 values:
                 - foreground
-
-
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: metaphysics-web-green
-spec:
-  replicas: 2
-  strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
-        app: metaphysics
-        layer: application
-        component: web
-      name: metaphysics-web-green
-      namespace: default
-    spec:
-      containers:
-      - name: metaphysics-web-green
-        env:
-        - name: DD_TRACER_SERVICE_NAME
-          value: metaphysics-green
-        - name: CACHE_COMPRESSION_DISABLED
-          value: "true"
-        - name: DD_TRACER_HOSTNAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        - name: STATSD_HOST
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        envFrom:
-        - configMapRef:
-            name: metaphysics-environment
-        image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:production
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 3000
-        resources:
-          requests:
-            cpu: "0.5"
-            memory: "512Mi"
-          limits:
-            cpu: "1"
-            memory: "1Gi"
-        readinessProbe:
-          httpGet:
-            port: 3000
-            path: /health
-            httpHeaders:
-            - name: X-FORWARDED-PROTO
-              value: https
-          initialDelaySeconds: 5
-          periodSeconds: 5
-      dnsPolicy: Default
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: tier
-                operator: In
-                values:
-                - foreground
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: temperament
+                  operator: In
+                  values:
+                  - cpu-hog
+              topologyKey: "kubernetes.io/hostname"
 
 
 ---
@@ -148,7 +88,7 @@ spec:
     name: metaphysics-web
   minReplicas: 10
   maxReplicas: 20
-  targetCPUUtilizationPercentage: 70
+  targetCPUUtilizationPercentage: 80
 
 ---
 apiVersion: v1

@@ -15,6 +15,7 @@ spec:
         app: metaphysics
         layer: application
         component: web
+        temperament: cpu-hog
       name: metaphysics-web
       namespace: default
     spec:
@@ -38,11 +39,10 @@ spec:
         - containerPort: 3000
         resources:
           requests:
-            cpu: "0.2"
-            memory: "512Mi"
+            cpu: 200m
+            memory: 512Mi
           limits:
-            cpu: "0.5"
-            memory: "1Gi"
+            memory: 1Gi
         readinessProbe:
           httpGet:
             port: 3000
@@ -62,6 +62,17 @@ spec:
                 operator: In
                 values:
                 - foreground
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: temperament
+                  operator: In
+                  values:
+                  - cpu-hog
+              topologyKey: "kubernetes.io/hostname"
 
 ---
 apiVersion: autoscaling/v1
