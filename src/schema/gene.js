@@ -131,7 +131,7 @@ export const GeneType = new GraphQLObjectType({
       filtered_artworks: filterArtworks("gene_id"),
       href: {
         type: GraphQLString,
-        resolve: ({ id }) => `gene/${id}`,
+        resolve: ({ id }) => `/gene/${id}`,
       },
       image: Image,
       is_published: {
