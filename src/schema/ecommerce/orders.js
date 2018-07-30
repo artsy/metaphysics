@@ -1,5 +1,6 @@
 import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
+import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
 
 export const Orders = {
   name: "Orders",
@@ -9,10 +10,11 @@ export const Orders = {
     userId: { type: GraphQLString },
     partnerId: { type: GraphQLString },
     state: { type: GraphQLString },
+    sort: { type: OrdersSortMethodTypeEnum },
   },
   resolve: (
     _parent,
-    { userId, partnerId, state },
+    { userId, partnerId, state, sort },
     context,
     { rootValue: { exchangeSchema } }
   ) => {
@@ -65,6 +67,7 @@ export const Orders = {
       userId,
       partnerId,
       state,
+      sort,
     }).then(result => {
       if (result.errors) {
         throw Error(result.errors.map(d => d.message))
