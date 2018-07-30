@@ -15,7 +15,7 @@ const CreateOrderInputType = new GraphQLInputObjectType({
   fields: {
     artworkId: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "ID of artwork",
+      description: "BSON ID of artwork",
     },
     editionSetId: {
       type: GraphQLString,
