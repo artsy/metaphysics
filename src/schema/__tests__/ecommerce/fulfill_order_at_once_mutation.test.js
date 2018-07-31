@@ -6,11 +6,11 @@ import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 
 let rootValue
 
-describe("Finalize Order Mutation", () => {
+describe("Fulfill Order at Once Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        finalizeOrder: () => ({
+        fulfillAtOnce: () => ({
           order: exchangeOrderJSON,
           errors: [],
         }),
@@ -19,11 +19,16 @@ describe("Finalize Order Mutation", () => {
 
     rootValue = mockxchange(resolvers)
   })
-  it("fetches order by id", () => {
+  it("fulfills the order and return it", () => {
     const mutation = `
       mutation {
-        finalizeOrder(input: {
+        fulfillOrderAtOnce(input: {
             orderId: "111",
+            fulfillment: {
+              courier: "fedEx",
+              trackingId: "track1",
+              estimatedDelivery: "2018-05-18"
+            }
           }) {
             result {
               order {
@@ -67,6 +72,16 @@ describe("Finalize Order Mutation", () => {
                 lineItems {
                   edges {
                     node {
+                      fulfillments {
+                        edges {
+                          node {
+                            id
+                            courier
+                            trackingId
+                            estimatedDelivery
+                          }
+                        }
+                      }
                       artwork {
                         id
                         title
@@ -83,7 +98,9 @@ describe("Finalize Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.finalizeOrder.result.order).toEqual(sampleOrder)
+      expect(data.fulfillOrderAtOnce.result.order).toEqual(
+        sampleOrder(true, true)
+      )
     })
   })
 })

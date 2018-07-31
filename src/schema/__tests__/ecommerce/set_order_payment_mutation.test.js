@@ -84,7 +84,9 @@ describe("Approve Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.setOrderPayment.result.order).toEqual(sampleOrder)
+      expect(data.setOrderPayment.result.order).toEqual(
+        sampleOrder(true, false)
+      )
     })
   })
 })

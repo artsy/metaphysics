@@ -19,7 +19,7 @@ describe("Approve Order Mutation", () => {
 
     rootValue = mockxchange(resolvers)
   })
-  it("sets order's payment information", () => {
+  it("sets order's shipping information", () => {
     const mutation = `
       mutation {
         setOrderShipping(input: {
@@ -90,7 +90,9 @@ describe("Approve Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.setOrderShipping.result.order).toEqual(sampleOrder)
+      expect(data.setOrderShipping.result.order).toEqual(
+        sampleOrder(true, false)
+      )
     })
   })
 })

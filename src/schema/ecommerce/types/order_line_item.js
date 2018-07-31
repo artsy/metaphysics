@@ -2,6 +2,7 @@ import { GraphQLID, GraphQLInt, GraphQLObjectType } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 import Artwork from "schema/artwork"
 import EditionSet from "schema/edition_set"
+import { OrderFulfillmentConnection } from "./order_fulfillment"
 import { amount } from "schema/fields/money"
 import date from "schema/fields/date"
 
@@ -37,6 +38,10 @@ export const OrderLineItemType = new GraphQLObjectType({
     quantity: {
       type: GraphQLInt,
       description: "Quantity of items in this line item",
+    },
+    fulfillments: {
+      type: OrderFulfillmentConnection,
+      description: "List of order line items",
     },
   }),
 })

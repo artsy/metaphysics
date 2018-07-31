@@ -32,7 +32,19 @@
           "artworkId": "541324567261693f97790b00",
           "artistId": "222",
           "editionSetId": null,
-          "quantity": 1
+          "quantity": 1,
+          "fulfillments": {
+            "edges": [
+              {
+                "node": {
+                  "id": "f-1",
+                  "courier": "fedEx",
+                  "trackingId": "track1",
+                  "estimatedDelivery": "2018-05-18"
+                }
+              }
+            ]
+          }
         }
       }
     ]

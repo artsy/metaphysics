@@ -73,7 +73,7 @@ describe("Order type", () => {
     `
 
     return runQuery(query, rootValue).then(data => {
-      expect(data.orders.edges[0].node).toEqual(sampleOrder)
+      expect(data.orders.edges[0].node).toEqual(sampleOrder(true, false))
     })
   })
 })

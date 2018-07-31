@@ -1,44 +1,57 @@
 import {
   GraphQLInputObjectType,
   GraphQLNonNull,
-  GraphQLInt,
   GraphQLString,
   graphql,
 } from "graphql"
-
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
 
-const CreateOrderInputType = new GraphQLInputObjectType({
-  name: "CreateOrderInput",
+const FulfillmentInputType = new GraphQLInputObjectType({
+  name: "FulfillmentInputType",
   fields: {
-    artworkId: {
+    courier: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "BSON ID of artwork",
+      description: "Courier of the fulfiller",
     },
-    editionSetId: {
+    trackingId: {
       type: GraphQLString,
-      description: "ID of artwork's edition set",
+      description: "Courier's Tracking ID of this fulfillment",
     },
-    quantity: {
-      type: GraphQLInt,
-      description: "quantity of artwork",
+    estimatedDelivery: {
+      type: GraphQLString,
+      description: "Estimated delivery in YY-MM-DD format",
     },
   },
 })
 
-export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
-  name: "CreateOrderWithArtwork",
-  description: "Creates an order with an artwork",
-  inputFields: CreateOrderInputType.getFields(),
+const FulfillOrderAtOnceInputType = new GraphQLInputObjectType({
+  name: "FulfillOrderAtOnceInput",
+  fields: {
+    orderId: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "ID of the order",
+    },
+    fulfillment: {
+      type: new GraphQLNonNull(FulfillmentInputType),
+      description: "Fulfillment information of this order",
+    },
+  },
+})
+
+export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
+  name: "FulfillOrderAtOnce",
+  description:
+    "Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order",
+  inputFields: FulfillOrderAtOnceInputType.getFields(),
   outputFields: {
     result: {
       type: OrderReturnType,
-      resolve: result => result,
+      resolve: order => order,
     },
   },
   mutateAndGetPayload: (
-    { artworkId, editionSetId, quantity },
+    { orderId, fulfillment },
     context,
     { rootValue: { accessToken, exchangeSchema } }
   ) => {
@@ -47,14 +60,13 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
     }
 
     const mutation = `
-      mutation createOrderWithArtwork($artworkId: String!, $editionSetId: String, $quantity: Int) {
-        ecommerce_createOrderWithArtwork(input: {
-          artworkId: $artworkId,
-          editionSetId: $editionSetId,
-          quantity: $quantity,
+      mutation fulfillOrderAtOnce($orderId: ID!, $fulfillment: EcommerceFulfillmentAttributes!) {
+        ecommerce_fulfillAtOnce(input: {
+          id: $orderId,
+          fulfillment: $fulfillment
         }) {
           order {
-            id
+           id
             code
             currencyCode
             state
@@ -86,6 +98,16 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
                   artworkId
                   editionSetId
                   quantity
+                  fulfillments{
+                    edges{
+                      node{
+                        id
+                        courier
+                        trackingId
+                        estimatedDelivery
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -95,12 +117,11 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
       }
     `
     return graphql(exchangeSchema, mutation, null, context, {
-      artworkId,
-      editionSetId,
-      quantity,
+      orderId,
+      fulfillment,
     }).then(result => {
       console.log(result)
-      const { order, errors } = result.data.ecommerce_createOrderWithArtwork
+      const { order, errors } = result.data.ecommerce_fulfillAtOnce
       return {
         order,
         errors,
