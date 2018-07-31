@@ -18,7 +18,7 @@ describe("Reject Order Mutation", () => {
     }
     rootValue = mockxchange(resolvers)
   })
-  it("fetches order by id", () => {
+  it("rejects order and return it", () => {
     const mutation = `
       mutation {
         rejectOrder(input: {
@@ -66,15 +66,6 @@ describe("Reject Order Mutation", () => {
                 lineItems {
                   edges {
                     node {
-                      fulfillments {
-                        edges {
-                          node {
-                            courier
-                            trackingId
-                            estimatedDelivery
-                          }
-                        }
-                      }
                       artwork {
                         id
                         title
@@ -91,7 +82,7 @@ describe("Reject Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.rejectOrder.result.order).toEqual(sampleOrder)
+      expect(data.rejectOrder.result.order).toEqual(sampleOrder(true, false))
     })
   })
 })

@@ -37,6 +37,7 @@
             "edges": [
               {
                 "node": {
+                  "id": "f-1",
                   "courier": "fedEx",
                   "trackingId": "track1",
                   "estimatedDelivery": "2018-05-18"

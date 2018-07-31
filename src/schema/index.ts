@@ -171,7 +171,7 @@ const schema = new GraphQLSchema({
       setOrderShipping: SetOrderShippingMutation,
       setOrderPayment: SetOrderPaymentMutation,
       approveOrder: ApproveOrderMutation,
-      FulfillOrderAtOnce: FulfillOrderAtOnceMutation,
+      fulfillOrderAtOnce: FulfillOrderAtOnceMutation,
       rejectOrder: RejectOrderMutation,
       submitOrder: SubmitOrderMutation,
       sendConversationMessage: SendConversationMessageMutation,

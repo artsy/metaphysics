@@ -10,7 +10,7 @@ describe("Fulfill Order at Once Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        fulfillOrderAtOnce: () => ({
+        fulfillAtOnce: () => ({
           order: exchangeOrderJSON,
           errors: [],
         }),
@@ -19,15 +19,15 @@ describe("Fulfill Order at Once Mutation", () => {
 
     rootValue = mockxchange(resolvers)
   })
-  it("fetches order by id", () => {
+  it("fulfills the order and return it", () => {
     const mutation = `
       mutation {
         fulfillOrderAtOnce(input: {
             orderId: "111",
             fulfillment: {
-              "courier": "fedEx",
-              "trackingId": "track1",
-              "estimatedDelivery": "2018-05-18"
+              courier: "fedEx",
+              trackingId: "track1",
+              estimatedDelivery: "2018-05-18"
             }
           }) {
             result {
@@ -75,6 +75,7 @@ describe("Fulfill Order at Once Mutation", () => {
                       fulfillments {
                         edges {
                           node {
+                            id
                             courier
                             trackingId
                             estimatedDelivery
@@ -97,7 +98,9 @@ describe("Fulfill Order at Once Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.fulfillOrderAtOnce.result.order).toEqual(sampleOrder)
+      expect(data.fulfillOrderAtOnce.result.order).toEqual(
+        sampleOrder(true, true)
+      )
     })
   })
 })

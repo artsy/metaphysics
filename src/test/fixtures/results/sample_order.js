@@ -1,4 +1,4 @@
-export default {
+const defaultResponse = {
   id: "fooid123",
   code: "1",
   currencyCode: "usd",
@@ -36,7 +36,42 @@ export default {
     id: "111",
     email: "bob@ross.com",
   },
-  lineItems: {
+  lineItems: [],
+}
+
+function sampleFulfillments() {
+  return {
+    edges: [
+      {
+        node: {
+          id: "f-1",
+          courier: "fedEx",
+          trackingId: "track1",
+          estimatedDelivery: "2018-05-18",
+        },
+      },
+    ],
+  }
+}
+
+function sampleLineItems(fulfillments = false) {
+  if (fulfillments) {
+    return {
+      edges: [
+        {
+          node: {
+            artwork: {
+              id: "hubert-farnsworth-smell-o-scope",
+              title: "Smell-O-Scope",
+              inventoryId: "inventory note",
+            },
+            fulfillments: sampleFulfillments(),
+          },
+        },
+      ],
+    }
+  }
+  return {
     edges: [
       {
         node: {
@@ -45,20 +80,16 @@ export default {
             title: "Smell-O-Scope",
             inventoryId: "inventory note",
           },
-          fulfillments: {
-            edges: [
-              {
-                node: {
-                  id: "12",
-                  courier: "fedEx",
-                  trackingId: "track1",
-                  estimatedDelivery: "2018-05-18",
-                },
-              },
-            ],
-          },
         },
       },
     ],
-  },
+  }
+}
+
+export default function sampleResponse(lineItems = true, fulfillments = false) {
+  if (lineItems) {
+    return { ...defaultResponse, lineItems: sampleLineItems(fulfillments) }
+  } else {
+    return defaultResponse
+  }
 }

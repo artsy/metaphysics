@@ -60,6 +60,7 @@ describe("Order type", () => {
                 fulfillments {
                   edges {
                     node {
+                      id
                       courier
                       trackingId
                       estimatedDelivery
@@ -79,7 +80,7 @@ describe("Order type", () => {
     `
 
     return runQuery(query, rootValue).then(data => {
-      expect(data.order).toEqual(sampleOrder)
+      expect(data.order).toEqual(sampleOrder(true, true))
     })
   })
 })

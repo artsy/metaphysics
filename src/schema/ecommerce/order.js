@@ -41,6 +41,16 @@ export const Order = {
                 artworkId
                 editionSetId
                 quantity
+                fulfillments{
+                  edges{
+                    node{
+                      id
+                      courier
+                      trackingId
+                      estimatedDelivery
+                    }
+                  }
+                }
               }
             }
           }

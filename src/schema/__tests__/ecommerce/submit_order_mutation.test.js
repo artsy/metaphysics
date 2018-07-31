@@ -19,7 +19,7 @@ describe("Submit Order Mutation", () => {
 
     rootValue = mockxchange(resolvers)
   })
-  it("fetches order by id", () => {
+  it("submits order and returns it", () => {
     const mutation = `
       mutation {
         submitOrder(input: {
@@ -67,15 +67,6 @@ describe("Submit Order Mutation", () => {
                 lineItems {
                   edges {
                     node {
-                      fulfillments {
-                        edges {
-                          node {
-                            courier
-                            trackingId
-                            estimatedDelivery
-                          }
-                        }
-                      }
                       artwork {
                         id
                         title
@@ -92,7 +83,7 @@ describe("Submit Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.submitOrder.result.order).toEqual(sampleOrder)
+      expect(data.submitOrder.result.order).toEqual(sampleOrder(true, false))
     })
   })
 })

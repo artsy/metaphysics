@@ -60,7 +60,7 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
     }
 
     const mutation = `
-      mutation fulfillOrderAtOnce($orderId: ID!, $fulfillment: FulfillmentAttributes!) {
+      mutation fulfillOrderAtOnce($orderId: ID!, $fulfillment: EcommerceFulfillmentAttributes!) {
         ecommerce_fulfillAtOnce(input: {
           id: $orderId,
           fulfillment: $fulfillment
@@ -120,6 +120,7 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
       orderId,
       fulfillment,
     }).then(result => {
+      console.log(result)
       const { order, errors } = result.data.ecommerce_fulfillAtOnce
       return {
         order,
