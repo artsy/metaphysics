@@ -3,6 +3,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: metaphysics-web
+  namespace: default
 spec:
   strategy:
     rollingUpdate:
@@ -17,7 +18,6 @@ spec:
         component: web
         temperament: cpu-hog
       name: metaphysics-web
-      namespace: default
     spec:
       containers:
       - name: metaphysics-web
