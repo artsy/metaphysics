@@ -1176,4 +1176,56 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("#domesticShipping", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          domesticShipping
+        }
+      }
+    `
+
+    it("is null when its domestic_shipping_fee_cents is null", () => {
+      artwork.domestic_shipping_fee_cents = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: { domesticShipping: null },
+        })
+      })
+    })
+
+    it("is formatted domestic_shipping_fee_cents when its domestic_shipping_fee_cents is set", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: { domesticShipping: "$10" },
+        })
+      })
+    })
+  })
+
+  describe("#internationalShipping", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          internationalShipping
+        }
+      }
+    `
+
+    it("is null when its international_shipping_fee_cents is null", () => {
+      artwork.domestic_shipping_fee_cents = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ artwork: { internationalShipping: null } })
+      })
+    })
+
+    it("is formatted international_shipping_fee_cents when its international_shipping_fee_cents is set", () => {
+      artwork.international_shipping_fee_cents = 1100
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ artwork: { internationalShipping: "$11" } })
+      })
+    })
+  })
 })

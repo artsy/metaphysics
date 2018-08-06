@@ -34,6 +34,7 @@ import AttributionClass from "schema/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "../../lib/attributionClasses"
 import { LotStandingType } from "../me/lot_standing"
+import { amount } from "schema/fields/money"
 
 const is_inquireable = ({ inquireable, acquireable }) => {
   return inquireable && !acquireable
@@ -104,11 +105,7 @@ export const artworkFields = () => {
     },
     articles: {
       type: new GraphQLList(Article.type),
-      args: {
-        size: {
-          type: GraphQLInt,
-        },
-      },
+      args: { size: { type: GraphQLInt } },
       resolve: (
         { _id },
         { size },
@@ -121,17 +118,10 @@ export const artworkFields = () => {
           limit: size,
         }).then(({ results }) => results),
     },
-    availability: {
-      type: GraphQLString,
-    },
+    availability: { type: GraphQLString },
     myLotStanding: {
       type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
-      args: {
-        live: {
-          type: GraphQLBoolean,
-          defaultValue: null,
-        },
-      },
+      args: { live: { type: GraphQLBoolean, defaultValue: null } },
       resolve: (
         { id },
         { live },
@@ -146,9 +136,7 @@ export const artworkFields = () => {
       type: GraphQLBoolean,
       deprecationReason: "Favor `is_`-prefixed boolean attributes",
     },
-    category: {
-      type: GraphQLString,
-    },
+    category: { type: GraphQLString },
     attribution_class: {
       type: AttributionClass,
       description: "Attribution class object",
@@ -197,12 +185,8 @@ export const artworkFields = () => {
       },
     },
     context: Context,
-    cultural_maker: {
-      type: GraphQLString,
-    },
-    date: {
-      type: GraphQLString,
-    },
+    cultural_maker: { type: GraphQLString },
+    date: { type: GraphQLString },
     description: markdown(({ blurb }) => blurb),
     dimensions: Dimensions,
     embed: {
@@ -210,18 +194,9 @@ export const artworkFields = () => {
       description:
         "Returns an HTML string representing the embedded content (video)",
       args: {
-        width: {
-          type: GraphQLInt,
-          defaultValue: 853,
-        },
-        height: {
-          type: GraphQLInt,
-          defaultValue: 450,
-        },
-        autoplay: {
-          type: GraphQLBoolean,
-          defaultValue: false,
-        },
+        width: { type: GraphQLInt, defaultValue: 853 },
+        height: { type: GraphQLInt, defaultValue: 450 },
+        autoplay: { type: GraphQLBoolean, defaultValue: false },
       },
       resolve: ({ website }, options) =>
         isEmbeddedVideo ? embed(website, options) : null,
@@ -275,19 +250,14 @@ export const artworkFields = () => {
           return highlightedShows.concat(highlightedArticles)
         }),
     },
-    href: {
-      type: GraphQLString,
-      resolve: ({ id }) => `/artwork/${id}`,
-    },
+    href: { type: GraphQLString, resolve: ({ id }) => `/artwork/${id}` },
     image: {
       type: Image.type,
       resolve: ({ images }) => {
         return Image.resolve(getDefault(images))
       },
     },
-    image_rights: {
-      type: GraphQLString,
-    },
+    image_rights: { type: GraphQLString },
     image_title: {
       type: GraphQLString,
       resolve: ({ artist, title, date }) => {
@@ -300,11 +270,7 @@ export const artworkFields = () => {
     },
     images: {
       type: new GraphQLList(Image.type),
-      args: {
-        size: {
-          type: GraphQLInt,
-        },
-      },
+      args: { size: { type: GraphQLInt } },
       resolve: ({ images }, { size }) => {
         const sorted = _.sortBy(images, "position")
         return Image.resolve(size ? _.take(sorted, size) : sorted)
@@ -401,19 +367,13 @@ export const artworkFields = () => {
       resolve: ({ images }) =>
         !!(_.first(images) && _.first(images).downloadable),
     },
-    is_embeddable_video: {
-      type: GraphQLBoolean,
-      resolve: isEmbeddedVideo,
-    },
+    is_embeddable_video: { type: GraphQLBoolean, resolve: isEmbeddedVideo },
     is_ecommerce: {
       type: GraphQLBoolean,
       deprecationReason: "Should not be used to determine anything UI-level",
       resolve: ({ ecommerce }) => ecommerce,
     },
-    is_for_sale: {
-      type: GraphQLBoolean,
-      resolve: ({ forsale }) => forsale,
-    },
+    is_for_sale: { type: GraphQLBoolean, resolve: ({ forsale }) => forsale },
     is_hangable: {
       type: GraphQLBoolean,
       resolve: artwork => {
@@ -508,21 +468,11 @@ export const artworkFields = () => {
       type: GraphQLBoolean,
       resolve: ({ can_share_image }) => can_share_image,
     },
-    is_sold: {
-      type: GraphQLBoolean,
-      resolve: ({ sold }) => sold,
-    },
-    is_unique: {
-      type: GraphQLBoolean,
-      resolve: ({ unique }) => unique,
-    },
+    is_sold: { type: GraphQLBoolean, resolve: ({ sold }) => sold },
+    is_unique: { type: GraphQLBoolean, resolve: ({ unique }) => unique },
     layer: {
       type: ArtworkLayer.type,
-      args: {
-        id: {
-          type: GraphQLString,
-        },
-      },
+      args: { id: { type: GraphQLString } },
       resolve: (
         artwork,
         { id },
@@ -546,9 +496,7 @@ export const artworkFields = () => {
       literature.replace(/^literature:\s+/i, "")
     ),
     manufacturer: markdown(),
-    medium: {
-      type: GraphQLString,
-    },
+    medium: { type: GraphQLString },
     meta: Meta,
     partner: {
       type: Partner.type,
@@ -570,20 +518,20 @@ export const artworkFields = () => {
         return partnerLoader(partner.id).catch(() => null)
       },
     },
-    price: {
-      type: GraphQLString,
-    },
+    price: { type: GraphQLString },
+    domesticShipping: amount(
+      ({ domestic_shipping_fee_cents }) => domestic_shipping_fee_cents
+    ),
+    internationalShipping: amount(
+      ({ international_shipping_fee_cents }) => international_shipping_fee_cents
+    ),
     provenance: markdown(({ provenance }) =>
       provenance.replace(/^provenance:\s+/i, "")
     ),
     publisher: markdown(),
     related: {
       type: new GraphQLList(Artwork.type),
-      args: {
-        size: {
-          type: GraphQLInt,
-        },
-      },
+      args: { size: { type: GraphQLInt } },
       resolve: (
         { _id },
         { size },
@@ -609,12 +557,7 @@ export const artworkFields = () => {
     },
     sale_artwork: {
       type: SaleArtwork.type,
-      args: {
-        sale_id: {
-          type: GraphQLString,
-          defaultValue: null,
-        },
-      },
+      args: { sale_id: { type: GraphQLString, defaultValue: null } },
       resolve: (
         { id, sale_ids },
         { sale_id },
@@ -668,18 +611,10 @@ export const artworkFields = () => {
     show: {
       type: PartnerShow.type,
       args: {
-        size: {
-          type: GraphQLInt,
-        },
-        active: {
-          type: GraphQLBoolean,
-        },
-        at_a_fair: {
-          type: GraphQLBoolean,
-        },
-        sort: {
-          type: PartnerShowSorts.type,
-        },
+        size: { type: GraphQLInt },
+        active: { type: GraphQLBoolean },
+        at_a_fair: { type: GraphQLBoolean },
+        sort: { type: PartnerShowSorts.type },
       },
       resolve: (
         { id },
@@ -700,18 +635,10 @@ export const artworkFields = () => {
     shows: {
       type: new GraphQLList(PartnerShow.type),
       args: {
-        size: {
-          type: GraphQLInt,
-        },
-        active: {
-          type: GraphQLBoolean,
-        },
-        at_a_fair: {
-          type: GraphQLBoolean,
-        },
-        sort: {
-          type: PartnerShowSorts.type,
-        },
+        size: { type: GraphQLInt },
+        active: { type: GraphQLBoolean },
+        at_a_fair: { type: GraphQLBoolean },
+        sort: { type: PartnerShowSorts.type },
       },
       resolve: (
         { id },
