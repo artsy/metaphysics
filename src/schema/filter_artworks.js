@@ -194,11 +194,17 @@ export const filterArtworksArgs = {
   artist_ids: {
     type: new GraphQLList(GraphQLString),
   },
+  at_auction: {
+    type: GraphQLBoolean,
+  },
   color: {
     type: GraphQLString,
   },
   dimension_range: {
     type: GraphQLString,
+  },
+  ecommerce: {
+    type: GraphQLBoolean,
   },
   extra_aggregation_gene_ids: {
     type: new GraphQLList(GraphQLString),
