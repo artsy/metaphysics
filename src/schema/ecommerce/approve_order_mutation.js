@@ -70,6 +70,9 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
     }).then(result => {
+      if (result.errors) {
+        throw Error(result.errors.map(d => d.message))
+      }
       const { order, errors } = result.data.ecommerce_approveOrder
       return {
         order,

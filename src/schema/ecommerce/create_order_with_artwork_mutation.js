@@ -99,7 +99,9 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
       editionSetId,
       quantity,
     }).then(result => {
-      console.log(result)
+      if (result.errors) {
+        throw Error(result.errors.map(d => d.message))
+      }
       const { order, errors } = result.data.ecommerce_createOrderWithArtwork
       return {
         order,
