@@ -7,8 +7,7 @@ metadata:
 spec:
   strategy:
     rollingUpdate:
-      maxSurge: 2
-      maxUnavailable: 0
+      maxUnavailable: 20%
     type: RollingUpdate
   template:
     metadata:
@@ -63,16 +62,14 @@ spec:
                 values:
                 - foreground
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 50
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: temperament
-                  operator: In
-                  values:
-                  - cpu-hog
-              topologyKey: "kubernetes.io/hostname"
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: temperament
+                operator: In
+                values:
+                - cpu-hog
+            topologyKey: "kubernetes.io/hostname"
 
 
 ---
@@ -86,8 +83,8 @@ spec:
     apiVersion: extensions/v1beta1
     kind: Deployment
     name: metaphysics-web
-  minReplicas: 10
-  maxReplicas: 20
+  minReplicas: 8
+  maxReplicas: 15
   targetCPUUtilizationPercentage: 80
 
 ---
