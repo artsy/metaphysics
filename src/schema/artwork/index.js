@@ -519,12 +519,40 @@ export const artworkFields = () => {
       },
     },
     price: { type: GraphQLString },
-    domesticShipping: amount(
-      ({ domestic_shipping_fee_cents }) => domestic_shipping_fee_cents
-    ),
-    internationalShipping: amount(
-      ({ international_shipping_fee_cents }) => international_shipping_fee_cents
-    ),
+    shippingInfo: {
+      type: GraphQLString,
+      description:
+        "The string that describes domestic and international shipping.",
+      resolve: artwork => {
+        if (
+          artwork.domestic_shipping_fee_cents == null &&
+          artwork.international_shipping_fee_cents == null
+        )
+          return "Shipping, tax, and service quoted by seller"
+        if (
+          artwork.domestic_shipping_fee_cents === 0 &&
+          artwork.international_shipping_fee_cents === 0
+        )
+          return "Free shipping worldwide"
+        var domesticShipping = amount(
+          ({ domestic_shipping_fee_cents }) => domestic_shipping_fee_cents
+        ).resolve(artwork, { precision: 0 })
+        var internationalShipping = amount(
+          ({ international_shipping_fee_cents }) =>
+            international_shipping_fee_cents
+        ).resolve(artwork, { precision: 0 })
+
+        if (domesticShipping && !internationalShipping)
+          return "Shipping: " + domesticShipping + " Continental US only"
+        return (
+          "Shipping: " +
+          domesticShipping +
+          " Continental US, " +
+          internationalShipping +
+          " rest of the world"
+        )
+      },
+    },
     provenance: markdown(({ provenance }) =>
       provenance.replace(/^provenance:\s+/i, "")
     ),
