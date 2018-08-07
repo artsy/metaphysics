@@ -7,6 +7,7 @@ metadata:
 spec:
   strategy:
     rollingUpdate:
+      maxSurge: 0
       maxUnavailable: 20%
     type: RollingUpdate
   template:
