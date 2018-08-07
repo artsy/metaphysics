@@ -1195,6 +1195,13 @@ describe("Artwork type", () => {
       })
     })
 
+    it("is $0 when its domestic_shipping_fee_cents is 0", () => {
+      artwork.domestic_shipping_fee_cents = 0
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ artwork: { domesticShipping: "$0" } })
+      })
+    })
+
     it("is formatted domestic_shipping_fee_cents when its domestic_shipping_fee_cents is set", () => {
       artwork.domestic_shipping_fee_cents = 1000
       return runQuery(query, rootValue).then(data => {
@@ -1215,9 +1222,16 @@ describe("Artwork type", () => {
     `
 
     it("is null when its international_shipping_fee_cents is null", () => {
-      artwork.domestic_shipping_fee_cents = null
+      artwork.international_shipping_fee_cents = null
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({ artwork: { internationalShipping: null } })
+      })
+    })
+
+    it("is $0 when its international_shipping_fee_cents is 0", () => {
+      artwork.international_shipping_fee_cents = 0
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ artwork: { internationalShipping: "$0" } })
       })
     })
 
