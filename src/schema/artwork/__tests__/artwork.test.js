@@ -1177,54 +1177,60 @@ describe("Artwork type", () => {
     })
   })
 
-  describe("#domesticShipping", () => {
+  describe("#shippingInfo", () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
-          domesticShipping
+          shippingInfo
         }
       }
     `
 
-    it("is null when its domestic_shipping_fee_cents is null", () => {
+    it("is set to prompt string when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = null
+      artwork.international_shipping_fee_cents = null
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
-          artwork: { domesticShipping: null },
+          artwork: {
+            shippingInfo: "Shipping, tax, and service quoted by seller",
+          },
         })
       })
     })
 
-    it("is formatted domestic_shipping_fee_cents when its domestic_shipping_fee_cents is set", () => {
+    it("is set to free shipping string when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = 0
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Free shipping worldwide",
+          },
+        })
+      })
+    })
+
+    it("is set to domestic shipping only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is not", () => {
       artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 0
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
-          artwork: { domesticShipping: "$10" },
+          artwork: {
+            shippingInfo: "Shipping: $10 Continental US only",
+          },
         })
       })
     })
-  })
 
-  describe("#internationalShipping", () => {
-    const query = `
-      {
-        artwork(id: "richard-prince-untitled-portrait") {
-          internationalShipping
-        }
-      }
-    `
-
-    it("is null when its international_shipping_fee_cents is null", () => {
-      artwork.domestic_shipping_fee_cents = null
+    it("is set to domestic and intermational shipping when both domestic_shipping_fee_cents and present and international_shipping_fee_cents are set", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 2000
       return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({ artwork: { internationalShipping: null } })
-      })
-    })
-
-    it("is formatted international_shipping_fee_cents when its international_shipping_fee_cents is set", () => {
-      artwork.international_shipping_fee_cents = 1100
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({ artwork: { internationalShipping: "$11" } })
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping: $10 Continental US, $20 rest of the world",
+          },
+        })
       })
     })
   })
