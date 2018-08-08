@@ -90,6 +90,9 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
       orderId,
       creditCardId,
     }).then(result => {
+      if (result.errors) {
+        throw Error(result.errors.map(d => d.message))
+      }
       const { order, errors } = result.data.ecommerce_setPayment
       return {
         order,
