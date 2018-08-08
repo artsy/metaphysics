@@ -120,7 +120,9 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
       orderId,
       fulfillment,
     }).then(result => {
-      console.log(result)
+      if (result.errors) {
+        throw Error(result.errors.map(d => d.message))
+      }
       const { order, errors } = result.data.ecommerce_fulfillAtOnce
       return {
         order,
