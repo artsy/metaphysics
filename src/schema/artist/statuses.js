@@ -24,9 +24,12 @@ const ArtistStatusesType = new GraphQLObjectType({
         articlesLoader({
           artist_id: _id,
           published: true,
+          in_editorial_feed: true,
           limit: 0,
           count: true,
-        }).then(({ count }) => count > 0),
+        }).then(({ count }) => {
+          return count > 0
+        }),
     },
     artworks: {
       type: GraphQLBoolean,
