@@ -186,6 +186,9 @@ export const ConversationFields = {
   created_at: date,
   purchase_request: {
     type: GraphQLBoolean,
+    deprecationReason:
+      "Purchase requests are not supported. Replaced by buy now.",
+    resolve: () => null,
   },
   from_last_viewed_message_id: {
     type: GraphQLString,
