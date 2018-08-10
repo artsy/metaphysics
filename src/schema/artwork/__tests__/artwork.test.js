@@ -178,7 +178,7 @@ describe("Artwork type", () => {
       }
     `
 
-    it("is purchasable if it is inquireable with an exact price", () => {
+    it("always null", () => {
       artwork.inquireable = true
       artwork.price = "$420"
 
@@ -186,79 +186,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
-            is_purchasable: true,
-          },
-        })
-      })
-    })
-
-    it("is not purchasable if it has multiple edition sets", () => {
-      artwork.inquireable = true
-      artwork.price = "$420"
-      artwork.edition_sets = [{}]
-
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          artwork: {
-            id: "richard-prince-untitled-portrait",
-            is_purchasable: false,
-          },
-        })
-      })
-    })
-
-    it("is not purchasable if it is inquireable without an exact price", () => {
-      artwork.inquireable = true
-      artwork.price = "$420 - $500"
-
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          artwork: {
-            id: "richard-prince-untitled-portrait",
-            is_purchasable: false,
-          },
-        })
-      })
-    })
-
-    it("is not purchasable if it is not inquireable with an exact price", () => {
-      artwork.inquireable = false
-      artwork.price = "$420"
-
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          artwork: {
-            id: "richard-prince-untitled-portrait",
-            is_purchasable: false,
-          },
-        })
-      })
-    })
-
-    it("is not purchasable if it is inquireable with a blank price", () => {
-      artwork.inquireable = true
-      artwork.price = ""
-
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          artwork: {
-            id: "richard-prince-untitled-portrait",
-            is_purchasable: false,
-          },
-        })
-      })
-    })
-
-    it("is not purchasable if it is inquireable w/ an exact price but not for sale", () => {
-      artwork.inquireable = true
-      artwork.price = "$420"
-      artwork.forsale = false
-
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          artwork: {
-            id: "richard-prince-untitled-portrait",
-            is_purchasable: false,
+            is_purchasable: null,
           },
         })
       })

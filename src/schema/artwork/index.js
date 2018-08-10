@@ -446,16 +446,9 @@ export const artworkFields = () => {
     },
     is_purchasable: {
       type: GraphQLBoolean,
-      description: "True for inquireable artworks that have an exact price.",
-      resolve: artwork => {
-        return (
-          !has_editions(artwork.edition_sets) &&
-          is_inquireable(artwork) &&
-          isExisty(artwork.price) &&
-          !has_price_range(artwork.price) &&
-          artwork.forsale
-        )
-      },
+      deprecationReason:
+        "Purchase requests are not supported. Replaced by buy now.",
+      resolve: () => null,
     },
     is_saved: {
       type: GraphQLBoolean,
