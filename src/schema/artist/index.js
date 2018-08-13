@@ -455,6 +455,12 @@ export const ArtistType = new GraphQLObjectType({
                   count: true,
                 }).then(({ count }) => count),
             },
+            ecommerce_artworks: numeral(
+              ({ ecommerce_artworks_count }) => ecommerce_artworks_count
+            ),
+            auction_artworks: numeral(
+              ({ auction_artworks_count }) => auction_artworks_count
+            ),
           },
         }),
         resolve: artist => artist,
