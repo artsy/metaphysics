@@ -21,6 +21,7 @@ export default (accessToken, userID, opts) => {
       { headers: true }
     ),
     collectorProfileLoader: gravityLoader("me/collector_profile"),
+    creditCardLoader: gravityLoader(id => `credit_card/${id}`),
     createBidderLoader: gravityLoader("bidder", {}, { method: "POST" }),
     createCreditCardLoader: gravityLoader(
       "me/credit_cards",

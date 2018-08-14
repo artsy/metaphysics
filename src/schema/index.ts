@@ -8,6 +8,7 @@ import Artworks from "./artworks"
 import Artist from "./artist"
 import Artists from "./artists"
 import Collection from "./collection"
+import { CreditCard } from "./credit_card"
 import ExternalPartner from "./external_partner"
 import Fair from "./fair"
 import Fairs from "./fairs"
@@ -91,6 +92,7 @@ const rootFields: any = {
   artists: Artists,
   causality_jwt: CausalityJWT,
   collection: Collection,
+  credit_card: CreditCard,
   external_partner: ExternalPartner,
   fair: Fair,
   fairs: Fairs,
