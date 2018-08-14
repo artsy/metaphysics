@@ -5,6 +5,7 @@
   "currencyCode": "usd",
   "partnerId": "111",
   "userId": "111",
+  "creditCardId": "card123",
   "fulfillmentType": "SHIP",
   "shippingAddressLine1": "Vanak 123",
   "shippingAddressLine2": "P 80",
