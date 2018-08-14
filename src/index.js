@@ -26,6 +26,7 @@ import {
   fetchLoggerRequestDone,
 } from "lib/loaders/api/logger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
+import { checkForProblematicArtistQuery } from "./lib/checkForProblematicArtistQuery"
 import { info } from "./lib/loggers"
 import { mergeSchemas } from "./lib/stitching/mergeSchemas"
 import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
@@ -124,6 +125,7 @@ async function startApp() {
       next()
     },
     logQueryDetailsIfEnabled(),
+    checkForProblematicArtistQuery,
     fetchPersistedQuery,
     crunchInterceptor,
     graphqlHTTP((req, res, params) => {
