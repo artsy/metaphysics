@@ -91,17 +91,8 @@ We recommend the [graphiql.app](https://github.com/skevy/graphiql-app) client fo
 
 You will need to set up headers with both:
 
-* `x-access-token` - Get your client ID and secret, use this command to generate
-  a token.
-* `x-user-id` - Go to the [users admin](https://admin-staging.artsy.net/users)
-  and find your user account ID.
-
-If you need to generate a token,
-[this command](https://artsy.slack.com/archives/C02BC3HEJ/p1492126234025615)
-will create one for you. Add it to your `.bash_rc.private` and update the values
-between `<` and `>`.
-
-    alias generate-access-token='curl "https://stagingapi.artsy.net/oauth2/access_token?client_id=><client id>&client_secret=<client secret>&grant_type=credentials&email=<your email>&password=<your password>&scope=offline_access"'
+* `x-access-token` - Evaluate `sd.CURRENT_USER.accessToken` in a dev console on staging.artsy.net (sign in first, obvs).
+* `x-user-id` - As above, but `sd.CURRENT_USER.id`.
 
 ### Testing
 
