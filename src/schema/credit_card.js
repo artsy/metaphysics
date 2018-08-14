@@ -11,7 +11,7 @@ const CreditCardType = new GraphQLObjectType({
   fields: () => ({
     ...GravityIDFields,
     brand: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description: "Brand of credit card",
     },
     name: {
@@ -19,15 +19,15 @@ const CreditCardType = new GraphQLObjectType({
       description: "Name on the credit card",
     },
     last_digits: {
-      type: GraphQLString,
+      type: GraphQLNonNull(GraphQLString),
       description: "Last four digits on the credit card",
     },
     expiration_month: {
-      type: GraphQLInt,
+      type: GraphQLNonNull(GraphQLInt),
       description: "Credit card's expiration month",
     },
     expiration_year: {
-      type: GraphQLInt,
+      type: GraphQLNonNull(GraphQLInt),
       description: "Credit card's expiration year",
     },
   }),
