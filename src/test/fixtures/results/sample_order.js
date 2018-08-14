@@ -39,6 +39,12 @@ const defaultResponse = {
   lineItems: [],
 }
 
+const creditCard = {
+  id: "card123",
+  brand: "Visa",
+  last_digits: "4242",
+}
+
 function sampleFulfillments() {
   return {
     edges: [
@@ -86,10 +92,23 @@ function sampleLineItems(fulfillments = false) {
   }
 }
 
-export default function sampleResponse(lineItems = true, fulfillments = false) {
+export default function sampleResponse(
+  lineItems = true,
+  fulfillments = false,
+  includeCreditCard = false
+) {
+  let orderResponse = defaultResponse
+
   if (lineItems) {
-    return { ...defaultResponse, lineItems: sampleLineItems(fulfillments) }
-  } else {
-    return defaultResponse
+    orderResponse = {
+      ...defaultResponse,
+      lineItems: sampleLineItems(fulfillments),
+    }
   }
+
+  if (includeCreditCard) {
+    orderResponse = { ...orderResponse, creditCard }
+  }
+
+  return orderResponse
 }

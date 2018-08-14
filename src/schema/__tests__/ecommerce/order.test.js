@@ -54,6 +54,11 @@ describe("Order type", () => {
             id
             email
           }
+          creditCard {
+            id
+            brand
+            last_digits
+          }
           lineItems {
             edges {
               node {
@@ -80,7 +85,7 @@ describe("Order type", () => {
     `
 
     return runQuery(query, rootValue).then(data => {
-      expect(data.order).toEqual(sampleOrder(true, true))
+      expect(data.order).toEqual(sampleOrder(true, true, true))
     })
   })
 })

@@ -40,6 +40,14 @@ export const mockxchange = resolvers => {
     })
   )
 
+  const creditCardLoader = sinon.stub().returns(
+    Promise.resolve({
+      id: "card123",
+      brand: "Visa",
+      last_digits: "4242",
+    })
+  )
+
   const authenticatedArtworkLoader = sinon.stub().returns(
     Promise.resolve({
       id: "hubert-farnsworth-smell-o-scope",
@@ -55,6 +63,7 @@ export const mockxchange = resolvers => {
     exchangeSchema,
     partnerLoader,
     userByIDLoader,
+    creditCardLoader,
     authenticatedArtworkLoader,
     accessToken,
   }
