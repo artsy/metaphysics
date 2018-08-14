@@ -1162,4 +1162,36 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("#shippingOrigin", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          shippingOrigin
+        }
+      }
+    `
+
+    it("is null when shipping_origin is null", () => {
+      artwork.shipping_origin = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOrigin: null,
+          },
+        })
+      })
+    })
+
+    it("is set to concatinated values from shipping_origin when shipping origin is present", () => {
+      artwork.shipping_origin = ["Kharkov", "Ukraine"]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOrigin: "Kharkov, Ukraine",
+          },
+        })
+      })
+    })
+  })
 })
