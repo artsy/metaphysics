@@ -11,6 +11,7 @@ import Partner from "schema/partner"
 import { amount } from "schema/fields/money"
 import date from "schema/fields/date"
 import { UserByID } from "schema/user"
+import { CreditCard } from "schema/credit_card"
 import { OrderLineItemConnection } from "./order_line_item"
 
 export const OrderType = new GraphQLObjectType({
@@ -118,6 +119,16 @@ export const OrderType = new GraphQLObjectType({
         _context,
         { rootValue: { userByIDLoader } }
       ) => (userId ? userByIDLoader(userId) : null),
+    },
+    creditCard: {
+      type: CreditCard.type,
+      description: "Credit card on this order",
+      resolve: (
+        { creditCardId },
+        _args,
+        _context,
+        { rootValue: { creditCardLoader } }
+      ) => (creditCardId ? creditCardLoader(creditCardId) : null),
     },
     updatedAt: date,
     createdAt: date,

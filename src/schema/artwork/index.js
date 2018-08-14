@@ -546,6 +546,14 @@ export const artworkFields = () => {
         )
       },
     },
+    shippingOrigin: {
+      type: GraphQLString,
+      description:
+        "Minimal location information describing from where artwork will be shipped.",
+      resolve: artwork => {
+        return artwork.shipping_origin && artwork.shipping_origin.join(", ")
+      },
+    },
     provenance: markdown(({ provenance }) =>
       provenance.replace(/^provenance:\s+/i, "")
     ),
