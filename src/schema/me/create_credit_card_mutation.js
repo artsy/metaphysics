@@ -1,50 +1,22 @@
 import {
-  GraphQLInt,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { GravityIDFields } from "schema/object_identification"
 import {
   formatGravityError,
   GravityMutationErrorType,
 } from "lib/gravityErrorHandler"
-
-export const CreditCardType = new GraphQLObjectType({
-  name: "CreditCard",
-  fields: () => ({
-    ...GravityIDFields,
-    brand: {
-      type: GraphQLString,
-      description: "Brand of credit card",
-    },
-    name: {
-      type: GraphQLString,
-      description: "Name on the credit card",
-    },
-    last_digits: {
-      type: GraphQLString,
-      description: "Last four digits on the credit card",
-    },
-    expiration_month: {
-      type: GraphQLInt,
-      description: "Credit card's expiration month",
-    },
-    expiration_year: {
-      type: GraphQLInt,
-      description: "Credit card's expiration year",
-    },
-  }),
-})
+import { CreditCard } from "../credit_card"
 
 export const CreditCardMutationSuccessType = new GraphQLObjectType({
   name: "CreditCardMutationSuccess",
   isTypeOf: data => data.id,
   fields: () => ({
     creditCard: {
-      type: CreditCardType,
+      type: CreditCard.type,
       resolve: creditCard => creditCard,
     },
   }),
@@ -78,7 +50,7 @@ export default mutationWithClientMutationId({
   },
   outputFields: {
     credit_card: {
-      type: CreditCardType,
+      type: CreditCard.type,
       deprecationReason: "Favor `creditCardOrError`",
       resolve: result => {
         return result && result.id ? result : null

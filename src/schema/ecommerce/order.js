@@ -15,6 +15,7 @@ export const Order = {
           state
           partnerId
           userId
+          creditCardId
           fulfillmentType
           shippingAddressLine1
           shippingAddressLine2
