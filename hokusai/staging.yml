@@ -52,14 +52,6 @@ spec:
               value: https
           initialDelaySeconds: 5
           periodSeconds: 5
-      - name: metaphysics-goreplay
-        image: artsy/goreplay:latest
-        args: ["/usr/local/bin/goreplay", "--input-raw", ":3000", "--output-tcp", "goreplay.stg.artsy.systems:80"]
-        securityContext:
-          capabilities:
-            add:
-            - NET_RAW
-            - NET_ADMIN
       dnsPolicy: Default
       affinity:
         nodeAffinity:
