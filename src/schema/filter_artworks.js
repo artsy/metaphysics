@@ -182,6 +182,9 @@ export const FilterArtworksType = new GraphQLObjectType({
 })
 
 export const filterArtworksArgs = {
+  acquireable: {
+    type: GraphQLBoolean,
+  },
   aggregation_partner_cities: {
     type: new GraphQLList(GraphQLString),
   },
@@ -202,9 +205,6 @@ export const filterArtworksArgs = {
   },
   dimension_range: {
     type: GraphQLString,
-  },
-  ecommerce: {
-    type: GraphQLBoolean,
   },
   extra_aggregation_gene_ids: {
     type: new GraphQLList(GraphQLString),
