@@ -14,6 +14,11 @@ ADD https://github.com/buger/goreplay/releases/download/v0.16.1/gor_0.16.1_x64.t
 RUN tar xfvz /tmp/goreplay.tar.gz
 RUN mv goreplay /usr/local/bin/
 RUN rm -f /tmp/goreplay.tar.gz
+RUN addgroup gor
+RUN addgroup deploy gor
+RUN chgrp gor /usr/local/bin/goreplay
+RUN chmod 0750 /usr/local/bin/goreplay
+RUN setcap "cap_net_raw,cap_net_admin+eip" /usr/local/bin/goreplay
 
 RUN npm install -g yarn@1.0.1
 
