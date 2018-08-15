@@ -52,6 +52,18 @@ spec:
               value: https
           initialDelaySeconds: 5
           periodSeconds: 5
+      - name: metaphysics-goreplay
+        envFrom:
+        - configMapRef:
+            name: metaphysics-environment
+        image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:production
+        imagePullPolicy: Always
+        args: ["./scripts/run-goreplay.sh"]
+        securityContext:
+          capabilities:
+            add:
+            - NET_RAW
+            - NET_ADMIN
       dnsPolicy: Default
       affinity:
         nodeAffinity:

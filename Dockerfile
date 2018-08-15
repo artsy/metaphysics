@@ -9,6 +9,17 @@ ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_a
 RUN chown deploy:deploy /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 
+# Set up goreplay
+ADD https://github.com/buger/goreplay/releases/download/v0.16.1/gor_0.16.1_x64.tar.gz /tmp/goreplay.tar.gz
+RUN tar xfvz /tmp/goreplay.tar.gz
+RUN mv goreplay /usr/local/bin/
+RUN rm -f /tmp/goreplay.tar.gz
+RUN addgroup gor
+RUN addgroup deploy gor
+RUN chgrp gor /usr/local/bin/goreplay
+RUN chmod 0750 /usr/local/bin/goreplay
+RUN setcap "cap_net_raw,cap_net_admin+eip" /usr/local/bin/goreplay
+
 RUN npm install -g yarn@1.0.1
 
 # Set up /app for deploy user

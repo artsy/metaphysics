@@ -16,3 +16,12 @@ services:
     image: memcached
     ports:
     - 11211:11211
+  metaphysics-goreplay:
+    extends:
+      file: common.yml
+      service: metaphysics
+    environment:
+    - GOREPLAY_PORT=5001
+    - GOREPLAY_OUTPUT=stdout
+    command: ["./scripts/run-goreplay.sh"]
+    privileged: true
