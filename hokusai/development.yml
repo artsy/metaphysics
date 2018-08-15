@@ -16,3 +16,9 @@ services:
     image: memcached
     ports:
     - 11211:11211
+  metaphysics-goreplay:
+    extends:
+      file: common.yml
+      service: metaphysics
+    command: ["/usr/local/bin/goreplay", "--input-raw", ":5001", "--output-stdout"]
+    privileged: true
