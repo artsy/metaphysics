@@ -1,4 +1,4 @@
-FROM node:8.4.0
+FROM node:8.11.3
 
 # Set up deploy user and working directory
 RUN adduser --disabled-password --gecos '' deploy
