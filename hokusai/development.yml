@@ -20,5 +20,8 @@ services:
     extends:
       file: common.yml
       service: metaphysics
-    command: ["/usr/local/bin/goreplay", "--input-raw", ":5001", "--output-stdout"]
+    environment:
+    - GOREPLAY_PORT=5001
+    - GOREPLAY_OUTPUT=stdout
+    command: ["./scripts/run-goreplay.sh"]
     privileged: true

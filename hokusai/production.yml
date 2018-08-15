@@ -53,9 +53,12 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 5
       - name: metaphysics-goreplay
+        envFrom:
+        - configMapRef:
+            name: metaphysics-environment
         image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:production
         imagePullPolicy: Always
-        args: ["/usr/local/bin/goreplay", "--input-raw", ":3000", "--output-tcp", "goreplay.prd.artsy.systems:80"]
+        args: ["./scripts/run-goreplay.sh"]
         securityContext:
           capabilities:
             add:
