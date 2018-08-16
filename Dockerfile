@@ -5,7 +5,7 @@ RUN adduser --disabled-password --gecos '' deploy
 RUN mkdir -p /app
 
 # Set up dumb-init
-ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 /usr/local/bin/dumb-init
+ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 /usr/local/bin/dumb-init
 RUN chown deploy:deploy /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 
@@ -21,6 +21,11 @@ RUN chmod 0750 /usr/local/bin/goreplay
 RUN setcap "cap_net_raw,cap_net_admin+eip" /usr/local/bin/goreplay
 
 RUN npm install -g yarn@1.0.1
+
+# Set up mc
+ADD https://dl.minio.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc
+RUN chown deploy:deploy /usr/local/bin/mc
+RUN chmod +x /usr/local/bin/mc
 
 # Set up /app for deploy user
 ADD . /app
