@@ -1,7 +1,8 @@
 #! /bin/bash
 
+# Check required env vars
 if [[ -z $AWS_ACCESS_KEY_ID || -z $AWS_SECRET_ACCESS_KEY || -z $AWS_BUCKET || -z $AWS_BUCKET_PATH ]]; then
-  echo "Unset require env vars AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET and AWS_BUCKET_PATH"
+  echo "Unset required env vars AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET and AWS_BUCKET_PATH"
   exit 1
 fi
 
@@ -10,6 +11,7 @@ fi
 
 # create heapsnapshot - dumb-init proxies signal to children
 kill -USR2 1
+sleep 1
 
 # find heapsnapshots
 for heapsnapshot in $(ls -l | grep heapsnapshot | awk '{print $9}')
@@ -19,7 +21,7 @@ do
   echo "Created $heapsnapshot"
 
   # Upload heapsnpshot to S3
-  /usr/local/bin/mc cp $heapsnapshot s3/$AWS_BUCKET/$AWS_BUCKET_PATH/$heapsnapshot
+  /usr/local/bin/mc cp $heapsnapshot s3/$AWS_BUCKET/$AWS_BUCKET_PATH/$(date '+%Y-%m-%d--%H-%M-%S')-$(hostname)-$heapsnapshot
 done
 
 # Clean up
