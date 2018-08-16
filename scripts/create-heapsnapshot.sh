@@ -2,7 +2,7 @@
 
 # Check required env vars
 if [[ -z $AWS_ACCESS_KEY_ID || -z $AWS_SECRET_ACCESS_KEY || -z $AWS_BUCKET || -z $AWS_BUCKET_PATH ]]; then
-  echo "Unset required env vars AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET and AWS_BUCKET_PATH"
+  echo "Set required env vars AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_BUCKET and AWS_BUCKET_PATH"
   exit 1
 fi
 
