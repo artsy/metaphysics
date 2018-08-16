@@ -73,9 +73,9 @@ function logQueryDetailsIfEnabled() {
   return (req, res, next) => next()
 }
 
-const app = express()
-
 async function startApp() {
+  const app = express()
+
   config.GRAVITY_XAPP_TOKEN = xapp.token
 
   let schema = localSchema
@@ -189,7 +189,19 @@ async function startApp() {
   if (enableSentry) {
     app.use(raven.errorHandler())
   }
+
+  return app
 }
 
-startApp()
-export default app
+let startedApp = null
+
+export default async (req, res, next) => {
+  try {
+    if (!startedApp) {
+      startedApp = await startApp()
+    }
+    startedApp(req, res, next)
+  } catch (err) {
+    next(err)
+  }
+}

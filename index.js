@@ -64,15 +64,18 @@ function bootApp() {
       .end()
   })
 
-  app.get('/health', (req, res) => {
+  app.get("/health", (req, res) => {
     if (isShuttingDown) {
       return res.status(503).end()
     }
-    cache.isAvailable().then((stats) => {
-      return res.status(200).end()
-    }).catch((err) => {
-      return res.status(503).end()
-    })
+    cache
+      .isAvailable()
+      .then(stats => {
+        return res.status(200).end()
+      })
+      .catch(err => {
+        return res.status(503).end()
+      })
   })
 
   app.all("/graphql", (_req, res) => res.redirect("/"))
@@ -85,19 +88,21 @@ function bootApp() {
     app.use(require("./src").default)
   }
 
-  server = require('http-shutdown')(app.listen(port, () =>
-    info(`[Metaphysics] Listening on http://localhost:${port}`)
-  ))
+  server = require("http-shutdown")(
+    app.listen(port, () =>
+      info(`[Metaphysics] Listening on http://localhost:${port}`)
+    )
+  )
 }
 
-process.on('SIGTERM', gracefulExit)
+process.on("SIGTERM", gracefulExit)
 
 function gracefulExit() {
   if (isShuttingDown) return
   isShuttingDown = true
-  console.log('Received signal SIGTERM, shutting down')
-  server.shutdown(function () {
-    console.log('Closed existing connections.')
+  console.log("Received signal SIGTERM, shutting down")
+  server.shutdown(function() {
+    console.log("Closed existing connections.")
     process.exit(0)
   })
 }
