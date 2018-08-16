@@ -21,6 +21,9 @@ RUN chmod 0750 /usr/local/bin/goreplay
 RUN setcap "cap_net_raw,cap_net_admin+eip" /usr/local/bin/goreplay
 
 RUN npm install -g yarn@1.0.1
+# Set up mc
+ADD https://dl.minio.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc
+RUN chmod +x /usr/local/bin/mc
 
 # Set up /app for deploy user
 ADD . /app
