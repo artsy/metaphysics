@@ -6,7 +6,6 @@ import {
 } from "graphql"
 import Image from "schema/image"
 import { error } from "lib/loggers"
-import moment from "moment"
 import { exhibitionPeriod } from "lib/date"
 import { ShowType } from "../show"
 import { SaleType } from "../sale"
