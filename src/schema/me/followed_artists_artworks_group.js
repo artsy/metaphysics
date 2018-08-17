@@ -1,6 +1,6 @@
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import Artwork from "schema/artwork"
+import Artwork, { artworkConnection } from "schema/artwork"
 import ArtworkSorts from "schema/sorts/artwork_sorts"
 import Image from "schema/image"
 import { GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
@@ -16,6 +16,16 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
     artworks: {
       type: new GraphQLList(Artwork.type),
       description: "List of artworks in this group.",
+    },
+    artworksConnection: {
+      type: artworkConnection,
+      args: pageable({}),
+      resolve: ({ artworks }, args) => {
+        return connectionFromArraySlice(artworks, args, {
+          arrayLength: artworks.length,
+          sliceStart: 0,
+        })
+      },
     },
     artists: {
       type: GraphQLString,
