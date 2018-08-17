@@ -32,6 +32,7 @@ export const Orders = {
               updatedAt
               createdAt
               fulfillmentType
+              shippingName
               shippingAddressLine1
               shippingAddressLine2
               shippingCity

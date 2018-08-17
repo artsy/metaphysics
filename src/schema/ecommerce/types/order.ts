@@ -37,6 +37,10 @@ export const OrderType = new GraphQLObjectType({
       type: OrderFulfillmentTypeEnum,
       description: "Fulfillment Type",
     },
+    shippingName: {
+      type: GraphQLString,
+      description: "Name for shipping information",
+    },
     shippingAddressLine1: {
       type: GraphQLString,
       description: "Shipping address line 1",

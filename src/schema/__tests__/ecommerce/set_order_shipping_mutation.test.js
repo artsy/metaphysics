@@ -25,6 +25,7 @@ describe("Approve Order Mutation", () => {
         setOrderShipping(input: {
             orderId: "111",
             fulfillmentType: SHIP,
+            shippingName: "Dr Collector",
             shippingAddressLine1: "Vanak",
             shippingAddressLine2: "P 80",
             shippingCity: "Tehran",
@@ -39,6 +40,7 @@ describe("Approve Order Mutation", () => {
                 currencyCode
                 state
                 fulfillmentType
+                shippingName
                 shippingAddressLine1
                 shippingAddressLine2
                 shippingCity
