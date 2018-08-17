@@ -17,6 +17,13 @@ describe("Me", () => {
                   node {
                     summary
                     artists
+                    artworksConnection(first: 10) {
+                      edges {
+                        node {
+                          title
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -39,6 +46,16 @@ describe("Me", () => {
             node: {
               summary: "2 Works Added",
               artists: "Percy Z",
+              artworksConnection: {
+                edges: [
+                  {
+                    node: { title: "Artwork1" },
+                  },
+                  {
+                    node: { title: "Artwork2" },
+                  },
+                ],
+              },
             },
           },
         ],
