@@ -20,6 +20,10 @@ const SetOrderShippingInput = new GraphQLInputObjectType({
       type: OrderFulfillmentTypeEnum,
       description: "Fulfillment Type of this Order",
     },
+    shippingName: {
+      type: GraphQLString,
+      description: "Name for the shipping information",
+    },
     shippingAddressLine1: {
       type: GraphQLString,
       description: "Shipping address line 1",
@@ -61,6 +65,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
     {
       orderId,
       fulfillmentType,
+      shippingName,
       shippingAddressLine1,
       shippingAddressLine2,
       shippingCity,
@@ -76,10 +81,11 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
     }
 
     const mutation = `
-      mutation setOrderShipping($orderId: ID!, $fulfillmentType: EcommerceOrderFulfillmentTypeEnum, $shippingAddressLine1: String, $shippingAddressLine2: String, $shippingCity: String, $shippingRegion: String, $shippingCountry: String, $shippingPostalCode: String) {
+      mutation setOrderShipping($orderId: ID!, $fulfillmentType: EcommerceOrderFulfillmentTypeEnum, $shippingName: String, $shippingAddressLine1: String, $shippingAddressLine2: String, $shippingCity: String, $shippingRegion: String, $shippingCountry: String, $shippingPostalCode: String) {
         ecommerce_setShipping(input: {
           id: $orderId,
           fulfillmentType: $fulfillmentType,
+          shippingName: $shippingName,
           shippingAddressLine1: $shippingAddressLine1,
           shippingAddressLine2: $shippingAddressLine2,
           shippingCity: $shippingCity,
@@ -95,6 +101,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
             partnerId
             userId
             fulfillmentType
+            shippingName
             shippingAddressLine1
             shippingAddressLine2
             shippingCity
@@ -131,6 +138,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       fulfillmentType,
+      shippingName,
       shippingAddressLine1,
       shippingAddressLine2,
       shippingCity,

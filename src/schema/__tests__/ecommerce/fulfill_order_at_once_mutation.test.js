@@ -37,6 +37,7 @@ describe("Fulfill Order at Once Mutation", () => {
                 currencyCode
                 state
                 fulfillmentType
+                shippingName
                 shippingAddressLine1
                 shippingAddressLine2
                 shippingCity
