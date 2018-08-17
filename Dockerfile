@@ -20,7 +20,9 @@ RUN chgrp gor /usr/local/bin/goreplay
 RUN chmod 0750 /usr/local/bin/goreplay
 RUN setcap "cap_net_raw,cap_net_admin+eip" /usr/local/bin/goreplay
 
+# Set up yarn
 RUN npm install -g yarn@1.9.4
+RUN chmod +x /usr/local/bin/yarn
 
 # Set up mc
 ADD https://dl.minio.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc
