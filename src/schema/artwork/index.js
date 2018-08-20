@@ -705,6 +705,7 @@ export const artworkFields = () => {
       type: GraphQLString,
       resolve: artwork => (isEmbeddedVideo(artwork) ? null : artwork.website),
     },
+    framed: { type: GraphQLBoolean },
   }
 }
 
