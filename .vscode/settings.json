@@ -21,7 +21,9 @@
     "test": "${workspaceRoot}/test"
   },
   "cSpell.words": [
+    "Ecommerce",
     "consignable",
+    "mockxchange",
     "urljoin"
   ]
 }
