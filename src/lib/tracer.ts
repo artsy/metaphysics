@@ -14,13 +14,13 @@ export function init() {
     debug: !PRODUCTION_ENV,
   })
   tracer.use("express", {
-    service: DD_TRACER_SERVICE_NAME + ".request",
+    service: `${DD_TRACER_SERVICE_NAME}.request`,
   })
   tracer.use("http", {
-    service: DD_TRACER_SERVICE_NAME + ".http-client",
+    service: `${DD_TRACER_SERVICE_NAME}.http-client`,
   })
   tracer.use("graphql", {
-    service: DD_TRACER_SERVICE_NAME + ".graphql-query",
+    service: `${DD_TRACER_SERVICE_NAME}.graphql`,
   })
 }
 
@@ -33,7 +33,7 @@ const createCommand = (command: string) => <T>(
     tags: {
       [Tags.SPAN_KIND]: Tags.SPAN_KIND_RPC_CLIENT,
       [Tags.DB_TYPE]: "memcached",
-      "service.name": `${DD_TRACER_SERVICE_NAME}-memcached`,
+      "service.name": `${DD_TRACER_SERVICE_NAME}.memcached`,
       "resource.name": command,
       "span.type": "memcached",
     },
