@@ -17,10 +17,13 @@ type ApproveOrderPayload {
 input CreateOrderWithArtworkInput {
   # Artwork Id
   artworkId: String!
+
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
+
   # EditionSet Id
   editionSetId: String
+
   # Number of items in the line item
   quantity: Int
 }
@@ -78,6 +81,7 @@ input FulfillmentAttributes {
 type FulfillmentConnection {
   # A list of edges.
   edges: [FulfillmentEdge]
+
   # Information to aid in pagination.
   pageInfo: PageInfo!
 }
@@ -86,6 +90,7 @@ type FulfillmentConnection {
 type FulfillmentEdge {
   # A cursor for use in pagination.
   cursor: String!
+
   # The item at the end of the edge.
   node: Fulfillment
 }
@@ -98,10 +103,13 @@ type LineItem {
   fulfillments(
     # Returns the elements in the list that come after the specified cursor.
     after: String
+
     # Returns the elements in the list that come before the specified cursor.
     before: String
+
     # Returns the first _n_ elements from the list.
     first: Int
+
     # Returns the last _n_ elements from the list.
     last: Int
   ): FulfillmentConnection
@@ -115,6 +123,7 @@ type LineItem {
 type LineItemConnection {
   # A list of edges.
   edges: [LineItemEdge]
+
   # Information to aid in pagination.
   pageInfo: PageInfo!
 }
@@ -123,15 +132,15 @@ type LineItemConnection {
 type LineItemEdge {
   # A cursor for use in pagination.
   cursor: String!
+
   # The item at the end of the edge.
   node: LineItem
 }
 
 type Mutation {
   approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
-  createOrderWithArtwork(
-    input: CreateOrderWithArtworkInput!
-  ): CreateOrderWithArtworkPayload
+  createOrderWithArtwork(input: CreateOrderWithArtworkInput!): CreateOrderWithArtworkPayload
+
   # Fulfill an order with one Fulfillment, it sets this fulfillment to each line item in order
   fulfillAtOnce(input: FulfillAtOnceInput!): FulfillAtOncePayload
   rejectOrder(input: RejectOrderInput!): RejectOrderPayload
@@ -154,10 +163,13 @@ type Order {
   lineItems(
     # Returns the elements in the list that come after the specified cursor.
     after: String
+
     # Returns the elements in the list that come before the specified cursor.
     before: String
+
     # Returns the first _n_ elements from the list.
     first: Int
+
     # Returns the last _n_ elements from the list.
     last: Int
   ): LineItemConnection
@@ -167,7 +179,7 @@ type Order {
   shippingAddressLine2: String
   shippingCity: String
   shippingCountry: String
-  shippingName: String!
+  shippingName: String
   shippingPostalCode: String
   shippingRegion: String
   shippingTotalCents: Int
@@ -184,6 +196,7 @@ type Order {
 type OrderConnection {
   # A list of edges.
   edges: [OrderEdge]
+
   # Information to aid in pagination.
   pageInfo: PageInfo!
 }
@@ -192,6 +205,7 @@ type OrderConnection {
 enum OrderConnectionSortEnum {
   # Sort by latest timestamp order was updated in ascending order
   UPDATED_AT_ASC
+
   # Sort by latest timestamp order was updated in descending order
   UPDATED_AT_DESC
 }
@@ -200,6 +214,7 @@ enum OrderConnectionSortEnum {
 type OrderEdge {
   # A cursor for use in pagination.
   cursor: String!
+
   # The item at the end of the edge.
   node: Order
 }
@@ -207,6 +222,7 @@ type OrderEdge {
 enum OrderFulfillmentTypeEnum {
   # fulfillment type is: pickup
   PICKUP
+
   # fulfillment type is: ship
   SHIP
 }
@@ -214,14 +230,19 @@ enum OrderFulfillmentTypeEnum {
 enum OrderStateEnum {
   # order is abandoned by collector and never submitted
   ABANDONED
+
   # order is approved by partner
   APPROVED
+
   # order is fulfilled by partner
   FULFILLED
+
   # order is still pending submission by collector
   PENDING
+
   # order is rejected by partner
   REJECTED
+
   # order is submitted by collector
   SUBMITTED
 }
@@ -230,10 +251,13 @@ enum OrderStateEnum {
 type PageInfo {
   # When paginating forwards, the cursor to continue.
   endCursor: String
+
   # When paginating forwards, are there more items?
   hasNextPage: Boolean!
+
   # When paginating backwards, are there more items?
   hasPreviousPage: Boolean!
+
   # When paginating backwards, the cursor to continue.
   startCursor: String
 }
@@ -241,14 +265,18 @@ type PageInfo {
 type Query {
   # Find an order by ID
   order(id: ID!): Order
+
   # Find list of orders
   orders(
     # Returns the elements in the list that come after the specified cursor.
     after: String
+
     # Returns the elements in the list that come before the specified cursor.
     before: String
+
     # Returns the first _n_ elements from the list.
     first: Int
+
     # Returns the last _n_ elements from the list.
     last: Int
     partnerId: String
