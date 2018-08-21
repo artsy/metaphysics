@@ -3,7 +3,12 @@ import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import Artwork, { artworkConnection } from "schema/artwork"
 import ArtworkSorts from "schema/sorts/artwork_sorts"
 import Image from "schema/image"
-import { GraphQLList, GraphQLObjectType, GraphQLString } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { omit, groupBy, map } from "lodash"
 import { parseRelayOptions } from "lib/helpers"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
@@ -53,6 +58,7 @@ const FollowedArtistsArtworksGroup = {
     "A list of published artworks by followed artists (grouped by date and artists).",
   args: pageable({
     sort: ArtworkSorts,
+    for_sale: { type: GraphQLBoolean },
   }),
   resolve: (
     root,
