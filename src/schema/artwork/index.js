@@ -714,7 +714,7 @@ export const artworkFields = () => {
         }
         return {
           label: "Framed",
-          details: "",
+          details: null,
         }
       },
     },
@@ -757,7 +757,7 @@ export const artworkFields = () => {
         }
         return {
           label: "Condition details",
-          details: condition_description,
+          details: capitalizeFirstCharacter(condition_description),
         }
       },
     },
@@ -767,7 +767,7 @@ export const artworkFields = () => {
         if (!certificate_of_authenticity) {
           return null
         }
-        return { label: "Certificate of authenticity", details: "" }
+        return { label: "Certificate of authenticity", details: null }
       },
     },
   }

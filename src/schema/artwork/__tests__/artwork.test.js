@@ -1194,4 +1194,201 @@ describe("Artwork type", () => {
       })
     })
   })
+
+  describe("#framed", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          framed {
+            label,
+            details
+          }
+        }
+      }
+    `
+    it("is null when framed is null", () => {
+      artwork.framed = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ artwork: { framed: null } })
+      })
+    })
+    it("is null when framed is false", () => {
+      artwork.framed = false
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ artwork: { framed: null } })
+      })
+    })
+    it("is set to proper object when framed is true", () => {
+      artwork.framed = true
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            framed: { label: "Framed", details: null },
+          },
+        })
+      })
+    })
+  })
+
+  describe("#signatureInfo", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          signatureInfo {
+            label,
+            details
+          }
+        }
+      }
+    `
+    it("is null when all related fields are null", () => {
+      artwork.signature = null
+      artwork.signed_by_artist = null
+      artwork.stamped_by_artist_estate = null
+      artwork.sticker_label = null
+      artwork.signed_other = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ artwork: { signatureInfo: null } })
+      })
+    })
+    it("is null when all related fields are false", () => {
+      artwork.signature = ""
+      artwork.signed_by_artist = false
+      artwork.stamped_by_artist_estate = false
+      artwork.sticker_label = false
+      artwork.signed_other = false
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ artwork: { signatureInfo: null } })
+      })
+    })
+    it("is set to proper object when signed_other is true", () => {
+      artwork.signature = ""
+      artwork.signed_by_artist = false
+      artwork.stamped_by_artist_estate = false
+      artwork.sticker_label = false
+      artwork.signed_other = true
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: { signatureInfo: { label: "Signed", details: "" } },
+        })
+      })
+    })
+    it("is set to proper object when several fileds are true", () => {
+      artwork.signature = "some details about signature"
+      artwork.signed_by_artist = true
+      artwork.stamped_by_artist_estate = true
+      artwork.sticker_label = true
+      artwork.signed_other = true
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            signatureInfo: {
+              label: "Signed",
+              details:
+                "Hand-signed by artist, stamped by artist's estate, sticker label, some details about signature",
+            },
+          },
+        })
+      })
+    })
+    it("is set to proper object when only signed_other is true", () => {
+      artwork.signature = ""
+      artwork.signed_by_artist = false
+      artwork.stamped_by_artist_estate = false
+      artwork.sticker_label = false
+      artwork.signed_other = true
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            signatureInfo: {
+              label: "Signed",
+              details: "",
+            },
+          },
+        })
+      })
+    })
+  })
+
+  describe("#conditionDescription", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          conditionDescription {
+            label,
+            details
+          }
+        }
+      }
+    `
+    it("is null when condition_description is null", () => {
+      artwork.condition_description = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ artwork: { conditionDescription: null } })
+      })
+    })
+    it("is null when condition_description is blank", () => {
+      artwork.condition_description = ""
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({ artwork: { conditionDescription: null } })
+      })
+    })
+    it("is set to proper object when condition_description is present", () => {
+      artwork.condition_description = "very detailed description of condition"
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            conditionDescription: {
+              label: "Condition details",
+              details: "Very detailed description of condition",
+            },
+          },
+        })
+      })
+    })
+  })
+
+  describe("#certificateOfAuthenticity", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          certificateOfAuthenticity {
+            label,
+            details
+          }
+        }
+      }
+    `
+    it("is null when certificate_of_authenticity is null", () => {
+      artwork.framed = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: { certificateOfAuthenticity: null },
+        })
+      })
+    })
+    it("is null when certificate_of_authenticity is false", () => {
+      artwork.certificate_of_authenticity = false
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            certificateOfAuthenticity: null,
+          },
+        })
+      })
+    })
+    it("is set to proper object when certificate_of_authenticity is true", () => {
+      artwork.certificate_of_authenticity = true
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            certificateOfAuthenticity: {
+              label: "Certificate of authenticity",
+              details: null,
+            },
+          },
+        })
+      })
+    })
+  })
 })
