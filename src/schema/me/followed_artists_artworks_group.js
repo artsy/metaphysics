@@ -1,8 +1,10 @@
 import { pageable } from "relay-cursor-paging"
+import moment from "moment"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import Artwork, { artworkConnection } from "schema/artwork"
 import ArtworkSorts from "schema/sorts/artwork_sorts"
 import Image from "schema/image"
+import date from "schema/fields/date"
 import {
   GraphQLBoolean,
   GraphQLList,
@@ -18,6 +20,10 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
   interfaces: [NodeInterface],
   fields: () => ({
     __id: GlobalIDField,
+    href: {
+      type: GraphQLString,
+      resolve: ({ artistSlug }) => `/artist/${artistSlug}`,
+    },
     artworks: {
       type: new GraphQLList(Artwork.type),
       description: "List of artworks in this group.",
@@ -48,6 +54,7 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
         )
       },
     },
+    published_at: date,
   }),
 })
 
@@ -97,7 +104,13 @@ const FollowedArtistsArtworksGroup = {
               }),
               id: groupedNodes[0].node._id,
               artists: groupedNodes[0].node.artist.name,
+              artistSlug: groupedNodes[0].node.artist.id,
               _type: "FollowedArtistsArtworksGroup",
+              published_at: moment.max(
+                groupedNodes.map(({ node: { published_at } }) =>
+                  moment(published_at)
+                )
+              ),
             },
             cursor: groupedNodes[0].cursor,
           }
