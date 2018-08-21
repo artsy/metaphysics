@@ -23,6 +23,7 @@ describe("Order type", () => {
               currencyCode
               state
               fulfillmentType
+              shippingName
               shippingAddressLine1
               shippingAddressLine2
               shippingCity

@@ -3,6 +3,7 @@ const defaultResponse = {
   code: "1",
   currencyCode: "usd",
   fulfillmentType: "SHIP",
+  shippingName: "Dr Collector",
   shippingAddressLine1: "Vanak 123",
   shippingAddressLine2: "P 80",
   shippingCity: "Tehran",

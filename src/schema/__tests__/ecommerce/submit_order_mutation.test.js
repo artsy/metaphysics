@@ -32,6 +32,7 @@ describe("Submit Order Mutation", () => {
                 currencyCode
                 state
                 fulfillmentType
+                shippingName
                 shippingAddressLine1
                 shippingAddressLine2
                 shippingCity

@@ -17,6 +17,7 @@ export const Order = {
           userId
           creditCardId
           fulfillmentType
+          shippingName
           shippingAddressLine1
           shippingAddressLine2
           shippingCity

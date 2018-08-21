@@ -179,6 +179,7 @@ type Order {
   shippingAddressLine2: String
   shippingCity: String
   shippingCountry: String
+  shippingName: String
   shippingPostalCode: String
   shippingRegion: String
   shippingTotalCents: Int
@@ -326,6 +327,7 @@ input SetShippingInput {
   shippingAddressLine2: String
   shippingCity: String
   shippingCountry: String
+  shippingName: String
   shippingPostalCode: String
   shippingRegion: String
 }

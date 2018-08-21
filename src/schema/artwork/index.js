@@ -35,6 +35,7 @@ import AttributionClass from "schema/artwork/attributionClass"
 import attributionClasses from "../../lib/attributionClasses"
 import { LotStandingType } from "../me/lot_standing"
 import { amount } from "schema/fields/money"
+import { capitalizeFirstCharacter } from "lib/helpers"
 
 const is_inquireable = ({ inquireable, acquireable }) => {
   return inquireable && !acquireable
@@ -705,6 +706,70 @@ export const artworkFields = () => {
       type: GraphQLString,
       resolve: artwork => (isEmbeddedVideo(artwork) ? null : artwork.website),
     },
+    framed: {
+      type: ArtworkInfoRowType,
+      resolve: ({ framed }) => {
+        if (!framed) {
+          return null
+        }
+        return {
+          label: "Framed",
+          details: "",
+        }
+      },
+    },
+    signatureInfo: {
+      type: ArtworkInfoRowType,
+      resolve: ({
+        signature,
+        signed_by_artist,
+        stamped_by_artist_estate,
+        sticker_label,
+        signed_other,
+      }) => {
+        var detailsParts = []
+        if (signed_by_artist) {
+          detailsParts.push("hand-signed by artist")
+        }
+        if (stamped_by_artist_estate) {
+          detailsParts.push("stamped by artist's estate")
+        }
+        if (sticker_label) {
+          detailsParts.push("sticker label")
+        }
+        if (signature && signature.length > 0) {
+          detailsParts.push(signature)
+        }
+        if (detailsParts.length === 0 && !signed_other) {
+          return null
+        }
+        return {
+          label: "Signed",
+          details: capitalizeFirstCharacter(detailsParts.join(", ")),
+        }
+      },
+    },
+    conditionDescription: {
+      type: ArtworkInfoRowType,
+      resolve: ({ condition_description }) => {
+        if (!condition_description || condition_description.length === 0) {
+          return null
+        }
+        return {
+          label: "Condition details",
+          details: condition_description,
+        }
+      },
+    },
+    certificateOfAuthenticity: {
+      type: ArtworkInfoRowType,
+      resolve: ({ certificate_of_authenticity }) => {
+        if (!certificate_of_authenticity) {
+          return null
+        }
+        return { label: "Certificate of authenticity", details: "" }
+      },
+    },
   }
 }
 
@@ -716,6 +781,20 @@ export const ArtworkType = new GraphQLObjectType({
       ...artworkFields(),
       cached,
     }
+  },
+})
+
+const ArtworkInfoRowType = new GraphQLObjectType({
+  name: "ArtworkInfoRow",
+  fields: {
+    label: {
+      type: GraphQLString,
+      description: "Label for information row",
+    },
+    details: {
+      type: GraphQLString,
+      description: "Additional details about given attribute",
+    },
   },
 })
 

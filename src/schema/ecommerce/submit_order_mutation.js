@@ -49,6 +49,7 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
             partnerId
             userId
             fulfillmentType
+            shippingName
             shippingAddressLine1
             shippingAddressLine2
             shippingCity
