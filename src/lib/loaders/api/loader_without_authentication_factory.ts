@@ -114,28 +114,26 @@ export const apiLoaderWithoutAuthenticationFactory = (
                   }
                 )
               } else {
-                () => {
-                    api(key, null, apiOptions)
-                      .then(({ body, headers }) => {
-                        if (apiOptions.headers) {
-                          resolve({ body, headers })
-                        } else {
-                          resolve(body)
-                        }
-                        verbose(`Requested (Uncached): ${key}`)
-                        const time = clock.end()
-                        logger(
-                          globalAPIOptions.requestIDs.requestID,
-                          apiName,
-                          key,
-                          { time, cache: false }
-                        )
-                      })
-                      .catch(err => {
-                        warn(key, err)
-                        reject(err)
-                      })
-                  }
+                return api(key, null, apiOptions)
+                  .then(({ body, headers }) => {
+                    if (apiOptions.headers) {
+                      resolve({ body, headers })
+                    } else {
+                      resolve(body)
+                    }
+                    verbose(`Requested (Uncached): ${key}`)
+                    const time = clock.end()
+                    logger(
+                      globalAPIOptions.requestIDs.requestID,
+                      apiName,
+                      key,
+                      { time, cache: false }
+                    )
+                  })
+                  .catch(err => {
+                    warn(key, err)
+                    reject(err)
+                  })
               }
             })
           })
