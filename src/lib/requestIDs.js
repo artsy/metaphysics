@@ -11,7 +11,7 @@ export function headers({ requestID, traceId, parentSpanId, xForwardedFor }) {
 
 function resolveProxies(req) {
   if (req.headers["x-forwarded-for"]) {
-    return req.headers["x-forwarded-for"] + ", " + req.connection.remoteAddress
+    return `${req.headers["x-forwarded-for"]}, ${req.connection.remoteAddress}`
   } else {
     return req.connection.remoteAddress
   }
