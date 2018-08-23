@@ -1,5 +1,5 @@
 import { runAuthenticatedQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("User", () => {
   it("returns true if a user exist", async () => {

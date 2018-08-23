@@ -1,5 +1,5 @@
 import { runQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("Partners", () => {
   it("returns a list of partners matching array of ids", async () => {

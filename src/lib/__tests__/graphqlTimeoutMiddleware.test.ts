@@ -1,7 +1,11 @@
-import { graphqlTimeoutMiddleware, fieldFromResolveInfo, timeoutForField } from "../graphqlTimeoutMiddleware"
+import {
+  graphqlTimeoutMiddleware,
+  fieldFromResolveInfo,
+  timeoutForField,
+} from "../graphqlTimeoutMiddleware"
 
 import { makeExecutableSchema, IResolvers } from "graphql-tools"
-import gql from "../../test/gql"
+import gql from "../../lib/gql"
 import { graphql, buildSchema, GraphQLResolveInfo } from "graphql"
 import { applyMiddleware } from "graphql-middleware"
 
@@ -55,8 +59,12 @@ describe("graphQLTimeoutMiddleware", () => {
 
   describe("timeoutForField", () => {
     function timeoutField(timeout: object | null) {
-      const args = timeout && Object.keys(timeout).map(key => `${key}: ${timeout[key]}`).join(", ")
-      const directive = timeout && `@timeout${args ? `(${args})` : ""}` || ""
+      const args =
+        timeout &&
+        Object.keys(timeout)
+          .map(key => `${key}: ${timeout[key]}`)
+          .join(", ")
+      const directive = (timeout && `@timeout${args ? `(${args})` : ""}`) || ""
       const schema = buildSchema(gql`
         schema {
           query: Query
@@ -77,11 +85,15 @@ describe("graphQLTimeoutMiddleware", () => {
     })
 
     it("throws an error if the directive is specified but no ms argument is given", () => {
-      expect(() => timeoutForField(timeoutField({ sec: 42 }))).toThrowError(/argument is required/)
+      expect(() => timeoutForField(timeoutField({ sec: 42 }))).toThrowError(
+        /argument is required/
+      )
     })
 
     it("throws an error if the directive is specified but no integer argument is given", () => {
-      expect(() => timeoutForField(timeoutField({ ms: `"42"` }))).toThrowError(/Expected.+IntValue.+got.+StringValue/)
+      expect(() => timeoutForField(timeoutField({ ms: `"42"` }))).toThrowError(
+        /Expected.+IntValue.+got.+StringValue/
+      )
     })
   })
 
@@ -90,10 +102,7 @@ describe("graphQLTimeoutMiddleware", () => {
 
     const responseData = {
       title: "An artwork",
-      artists: [
-        { name: "An artist" },
-        { name: "Another artist" },
-      ],
+      artists: [{ name: "An artist" }, { name: "Another artist" }],
     }
 
     function query() {
@@ -147,7 +156,7 @@ describe("graphQLTimeoutMiddleware", () => {
           artwork: async () => {
             await delay(artworkTimeout + 2)
             return responseData
-          }
+          },
         },
       }
       const response = await query()
@@ -171,15 +180,15 @@ describe("graphQLTimeoutMiddleware", () => {
           name: async () => {
             await delay(defaultTimeout + 2)
             return "Some artist"
-          }
-        }
+          },
+        },
       }
       const response = await query()
       expect(response.data).toEqual({
         artwork: {
           title: responseData.title,
-          artists: [{ name: null }, { name: null }]
-        }
+          artists: [{ name: null }, { name: null }],
+        },
       })
       expect(response.errors!.length).toEqual(2)
       expect(response.errors![0].message).toMatch(
@@ -195,12 +204,12 @@ describe("graphQLTimeoutMiddleware", () => {
           artwork: async () => {
             await delay(artworkTimeout + 2)
             return responseData
-          }
+          },
         },
         Artist: {
           // This resolver should not be called once the above has timed out
           name: nestedResolver,
-        }
+        },
       }
       await query()
       await delay(artworkTimeout + 4)

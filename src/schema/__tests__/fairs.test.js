@@ -1,5 +1,5 @@
 import { runQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("Fairs", () => {
   it("returns a list of fairs matching array of ids", async () => {

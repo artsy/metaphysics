@@ -1,7 +1,7 @@
 import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 export const Orders = {
   name: "Orders",

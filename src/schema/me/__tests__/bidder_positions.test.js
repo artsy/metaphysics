@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { map } from "lodash"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 import { runAuthenticatedQuery } from "test/utils"
 

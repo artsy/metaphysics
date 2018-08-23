@@ -1,5 +1,5 @@
 import _ from "lodash"
-import gql from "test/gql"
+import gql from "lib/gql"
 import { runQuery } from "test/utils"
 
 describe("Sale Artworks", () => {
