@@ -107,6 +107,9 @@ async function startApp() {
   }
 
   app.use(requestIDsAdder)
+  if (isProduction) {
+    app.set('trust proxy', true)
+  }
 
   if (enableSentry) {
     raven.config(SENTRY_PRIVATE_DSN).install()

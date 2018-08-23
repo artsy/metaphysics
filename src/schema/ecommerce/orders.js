@@ -1,6 +1,7 @@
 import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
+import gql from "lib/gql"
 
 export const Orders = {
   name: "Orders",
@@ -18,11 +19,21 @@ export const Orders = {
     context,
     { rootValue: { exchangeSchema } }
   ) => {
-    const query = `
-      query EcommerceOrders($userId: String, $partnerId: String, $state: EcommerceOrderStateEnum, $sort: EcommerceOrderConnectionSortEnum) {
-        ecommerce_orders(userId: $userId, partnerId: $partnerId, state: $state, sort: $sort) {
-          edges{
-            node{
+    const query = gql`
+      query EcommerceOrders(
+        $userId: String
+        $partnerId: String
+        $state: EcommerceOrderStateEnum
+        $sort: EcommerceOrderConnectionSortEnum
+      ) {
+        ecommerce_orders(
+          userId: $userId
+          partnerId: $partnerId
+          state: $state
+          sort: $sort
+        ) {
+          edges {
+            node {
               id
               code
               currencyCode
@@ -48,9 +59,9 @@ export const Orders = {
               sellerTotalCents
               stateUpdatedAt
               stateExpiresAt
-              lineItems{
-                edges{
-                  node{
+              lineItems {
+                edges {
+                  node {
                     id
                     priceCents
                     artworkId

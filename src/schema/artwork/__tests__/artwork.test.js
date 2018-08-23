@@ -3,7 +3,7 @@ import { assign } from "lodash"
 import moment from "moment"
 
 import { runQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("Artwork type", () => {
   const partner = { id: "existy" }

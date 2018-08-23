@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 import { makeExecutableSchema } from "graphql-tools"
 import fs from "fs"

@@ -3,7 +3,7 @@ import moment from "moment"
 import _ from "lodash"
 import { fill } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("Sale type", () => {
   const sale = {

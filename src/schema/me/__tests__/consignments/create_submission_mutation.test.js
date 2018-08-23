@@ -2,7 +2,7 @@
 import { runAuthenticatedQuery } from "test/utils"
 import { config as createSubmissionMutation } from "schema/me/consignments/create_submission_mutation"
 
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("UpdateSubmissionMutation", () => {
   it("does not include the id param", () => {

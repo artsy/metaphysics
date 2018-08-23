@@ -1,5 +1,5 @@
 import { runAuthenticatedQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("Users", () => {
   it("returns a list of users matching array of ids", async () => {

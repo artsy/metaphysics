@@ -2,7 +2,7 @@
 import { resolve } from "path"
 import { readFileSync } from "fs"
 import { runAuthenticatedQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 it("returns artworks for a collection", () => {
   const genesPath = resolve(

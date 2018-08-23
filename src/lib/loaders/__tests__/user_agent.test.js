@@ -1,6 +1,6 @@
 import { runAuthenticatedQuery, runQuery } from "test/utils"
 import createLoaders from "../../../lib/loaders"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 jest.mock("../../apis/gravity", () => jest.fn(() => Promise.resolve({})))
 import gravity from "../../apis/gravity"

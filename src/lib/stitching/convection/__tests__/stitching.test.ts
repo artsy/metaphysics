@@ -1,6 +1,6 @@
 import { mergeSchemas } from "../../mergeSchemas"
 import { graphql } from "graphql"
-import gql from "test/gql"
+import gql from "lib/gql"
 import { addMockFunctionsToSchema } from "graphql-tools"
 
 it("resolves an Artist on a Consignment Submission", async () => {

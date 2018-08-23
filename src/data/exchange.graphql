@@ -32,8 +32,9 @@ input CreateOrderWithArtworkInput {
 type CreateOrderWithArtworkPayload {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
-  errors: [String!]!
-  order: Order
+
+  # A union of success/failure
+  orderOrError: OrderOrFailureUnion!
 }
 
 # Date in YYYY-MM-DD format
@@ -149,6 +150,21 @@ type Mutation {
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
 }
 
+# An generic error type for mutations
+type MutationError {
+  # Optional error code, for example when coming from a REST request
+  code: Int
+
+  # What error has occured
+  description: String!
+
+  # What caused the error
+  failureReason: String
+
+  # What can the user do to fix the error
+  recoverySuggestion: String
+}
+
 # An Order
 type Order {
   buyerTotalCents: Int
@@ -227,6 +243,9 @@ enum OrderFulfillmentTypeEnum {
   SHIP
 }
 
+# Represents either a resolved Order or a potential failure
+union OrderOrFailureUnion = OrderWithMutationFailure | OrderWithMutationSuccess
+
 enum OrderStateEnum {
   # order is abandoned by collector and never submitted
   ABANDONED
@@ -245,6 +264,16 @@ enum OrderStateEnum {
 
   # order is submitted by collector
   SUBMITTED
+}
+
+# An error response for changes to an order
+type OrderWithMutationFailure {
+  error: MutationError!
+}
+
+# A successfully returned order type
+type OrderWithMutationSuccess {
+  order: Order!
 }
 
 # Information about pagination in a connection.

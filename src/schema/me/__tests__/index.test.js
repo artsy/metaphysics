@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("me/index", () => {
   describe("has_qualified_credit_cards", () => {

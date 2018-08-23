@@ -3,6 +3,7 @@ import { runQuery } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
+import gql from "lib/gql"
 
 let rootValue
 
@@ -11,54 +12,62 @@ describe("Create Order Mutation", () => {
     const resolvers = {
       Mutation: {
         createOrderWithArtwork: () => ({
-          order: exchangeOrderJSON,
-          errors: [],
+          orderOrError: { order: exchangeOrderJSON },
         }),
+      },
+      OrderOrFailureUnion: {
+        __resolveType(obj, context, info) {
+          if (obj.order) {
+            return "OrderWithMutationSuccess"
+          } else if (obj.error) {
+            return "OrderWithMutationFailure"
+          }
+        },
       },
     }
 
     rootValue = mockxchange(resolvers)
   })
+
   it("creates order and returns it", () => {
-    const mutation = `
+    const mutation = gql`
       mutation {
-        createOrderWithArtwork(input: {
-            artworkId: "111",
-            editionSetId: "232",
-            quantity: 1
-          }) {
-            result {
+        createOrderWithArtwork(
+          input: { artworkId: "111", editionSetId: "232", quantity: 1 }
+        ) {
+          orderOrError {
+            ... on OrderWithMutationSuccess {
               order {
                 id
+                buyerTotal
+                buyerTotalCents
                 code
+                commissionFee
+                commissionFeeCents
+                createdAt
                 currencyCode
-                state
                 fulfillmentType
-                shippingName
+                itemsTotal
+                itemsTotalCents
+                sellerTotal
+                sellerTotalCents
                 shippingAddressLine1
                 shippingAddressLine2
                 shippingCity
                 shippingCountry
+                shippingName
                 shippingPostalCode
                 shippingRegion
-                itemsTotalCents
-                shippingTotalCents
-                taxTotalCents
-                commissionFeeCents
-                transactionFeeCents
-                buyerTotalCents
-                sellerTotalCents
-                itemsTotal
                 shippingTotal
-                taxTotal
-                commissionFee
-                transactionFee
-                buyerTotal
-                sellerTotal
-                updatedAt
-                createdAt
-                stateUpdatedAt
+                shippingTotalCents
+                state
                 stateExpiresAt
+                stateUpdatedAt
+                taxTotal
+                taxTotalCents
+                transactionFee
+                transactionFeeCents
+                updatedAt
                 partner {
                   id
                   name
@@ -79,14 +88,19 @@ describe("Create Order Mutation", () => {
                   }
                 }
               }
-              errors
+            }
+            ... on OrderWithMutationFailure {
+              error {
+                description
+              }
             }
           }
         }
+      }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.createOrderWithArtwork.result.order).toEqual(
+      expect(data.createOrderWithArtwork.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )
     })
