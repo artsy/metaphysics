@@ -44,7 +44,7 @@ describe("Me", () => {
         edges: [
           {
             node: {
-              summary: "2 Works Added",
+              summary: "2 works added",
               artists: "Percy Z",
               artworksConnection: {
                 edges: [
