@@ -15,7 +15,7 @@ describe("requestID (with the real data loaders)", () => {
       }
     `
 
-    const requestIDs = { requestId: "request-id" }
+    const requestIDs = { requestId: "request-id", xForwardedFor: "192.168.0.1" }
     const rootValue = createLoaders("access-token", "user-id", { requestIDs })
     expect.assertions(1)
 
@@ -36,7 +36,7 @@ describe("requestID (with the real data loaders)", () => {
         }
       }
     `
-    const requestIDs = { requestId: "request-id" }
+    const requestIDs = { requestId: "request-id", xForwardedFor: "192.168.0.1" }
     const rootValue = createLoaders("secret", "user-42", { requestIDs })
     expect.assertions(1)
     await runAuthenticatedQuery(query, rootValue)
