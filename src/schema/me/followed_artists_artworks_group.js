@@ -96,9 +96,9 @@ const FollowedArtistsArtworksGroup = {
           const groupedNodes = groupedByArtist[artist]
           newEdge = {
             node: {
-              summary: `${groupedNodes.length} Work${
+              summary: `${groupedNodes.length} work${
                 groupedNodes.length === 1 ? "" : "s"
-              } Added`,
+              } added`,
               artworks: map(groupedNodes, groupped => {
                 return groupped.node
               }),
