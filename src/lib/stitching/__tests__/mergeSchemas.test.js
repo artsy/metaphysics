@@ -1,5 +1,5 @@
 import { runQueryMerged } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("stiched schema regressions", () => {
   it("union in interface fragment issue", async () => {

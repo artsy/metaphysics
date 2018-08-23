@@ -1,5 +1,5 @@
 import { graphql, GraphQLSchema } from "graphql"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 export const getTypesFromSchema = async (schema: GraphQLSchema) => {
   // An introspection query that pulls out the names of all types in the schema

@@ -1,6 +1,6 @@
 import request from "supertest"
 import app from "../index"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 jest.mock("lib/apis/fetch", () => jest.fn())
 import fetch from "lib/apis/fetch"

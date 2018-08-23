@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("UpdateMeMutation", () => {
   it("updates the user profile and returns its new data payload", () => {

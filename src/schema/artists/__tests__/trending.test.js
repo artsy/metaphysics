@@ -1,4 +1,4 @@
-import gql from "test/gql"
+import gql from "lib/gql"
 import { runQuery } from "test/utils"
 
 describe("Trending Artists", () => {

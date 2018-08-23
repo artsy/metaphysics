@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 
 import { runQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("PartnerShows type", () => {
   describe("#kind", () => {

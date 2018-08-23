@@ -134,10 +134,11 @@ export const OrderType = new GraphQLObjectType({
         { rootValue: { creditCardLoader } }
       ) => (creditCardId ? creditCardLoader(creditCardId) : null),
     },
-    updatedAt: date,
-    createdAt: date,
-    stateUpdatedAt: date,
-    stateExpiresAt: date,
+    // TODO: The `date` resolver not typed correctly
+    updatedAt: date as any,
+    createdAt: date as any,
+    stateUpdatedAt: date as any,
+    stateExpiresAt: date as any,
   }),
 })
 

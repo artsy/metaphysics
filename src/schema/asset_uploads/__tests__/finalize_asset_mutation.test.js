@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("CreateGeminiEntryForAsset", () => {
   it("creates a submission and returns its new data payload", () => {
