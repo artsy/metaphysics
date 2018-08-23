@@ -1,6 +1,6 @@
 import { find } from "lodash"
 import { runQuery } from "test/utils"
-import gql from "test/gql"
+import gql from "lib/gql"
 
 describe("Genes", () => {
   const apiResponse = [

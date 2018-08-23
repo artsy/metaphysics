@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import gql from "test/gql"
+import gql from "lib/gql"
 import { resolve } from "path"
 import { readFileSync } from "fs"
 import { runAuthenticatedQuery } from "test/utils"
