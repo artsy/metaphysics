@@ -2,6 +2,7 @@ import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
 import gql from "lib/gql"
+import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
 
 export const Orders = {
   name: "Orders",
@@ -42,14 +43,9 @@ export const Orders = {
               userId
               updatedAt
               createdAt
-              fulfillmentType
-              shippingName
-              shippingAddressLine1
-              shippingAddressLine2
-              shippingCity
-              shippingCountry
-              shippingPostalCode
-              shippingRegion
+              requestedFulfillment {
+                ${RequestedFulfillmentFragment}
+              }
               itemsTotalCents
               shippingTotalCents
               taxTotalCents

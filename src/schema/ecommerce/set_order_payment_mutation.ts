@@ -6,6 +6,8 @@ import {
 } from "graphql"
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
+import gql from "lib/gql"
 
 const SetOrderPaymentInputType = new GraphQLInputObjectType({
   name: "SetOrderPaymentInput",
@@ -39,7 +41,7 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }
-    const mutation = `
+    const mutation = gql`
       mutation setOrderPayment($orderId: ID!, $creditCardId: String!) {
         ecommerce_setPayment(input: {
           id: $orderId,
@@ -52,14 +54,9 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
             state
             partnerId
             userId
-            fulfillmentType
-            shippingName
-            shippingAddressLine1
-            shippingAddressLine2
-            shippingCity
-            shippingCountry
-            shippingPostalCode
-            shippingRegion
+            requestedFulfillment {
+              ${RequestedFulfillmentFragment}
+            }
             itemsTotalCents
             shippingTotalCents
             taxTotalCents

@@ -6,14 +6,17 @@ export const OrderBuyerFields = gql`
   code
   currencyCode
   state
-  fulfillmentType
-  shippingName
-  shippingAddressLine1
-  shippingAddressLine2
-  shippingCity
-  shippingCountry
-  shippingPostalCode
-  shippingRegion
+  requestedFulfillment {
+    ... on Ship {
+      name
+      addressLine1
+      addressLine2
+      city
+      region
+      country
+      postalCode
+    }
+  }
   itemsTotalCents
   shippingTotalCents
   taxTotalCents
@@ -75,14 +78,17 @@ export const OrderSellerFields = gql`
   code
   currencyCode
   state
-  fulfillmentType
-  shippingName
-  shippingAddressLine1
-  shippingAddressLine2
-  shippingCity
-  shippingCountry
-  shippingPostalCode
-  shippingRegion
+  requestedFulfillment {
+    ... on Ship {
+      name
+      addressLine1
+      addressLine2
+      city
+      region
+      country
+      postalCode
+    }
+  }
   itemsTotalCents
   shippingTotalCents
   taxTotalCents

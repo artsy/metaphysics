@@ -9,6 +9,7 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { OrderOrFailureUnionType } from "schema/ecommerce/types/order_or_error_union"
 import gql from "lib/gql"
+import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
 
 const CreateOrderInputType = new GraphQLInputObjectType({
   name: "CreateOrderInput",
@@ -68,17 +69,12 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
                 commissionFeeCents
                 createdAt
                 currencyCode
-                fulfillmentType
                 itemsTotalCents
                 partnerId
                 sellerTotalCents
-                shippingAddressLine1
-                shippingAddressLine2
-                shippingCity
-                shippingCountry
-                shippingName
-                shippingPostalCode
-                shippingRegion
+                requestedFulfillment {
+                  ${RequestedFulfillmentFragment}
+                }
                 shippingTotalCents
                 state
                 stateExpiresAt

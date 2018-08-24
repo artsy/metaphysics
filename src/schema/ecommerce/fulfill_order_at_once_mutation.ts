@@ -6,6 +6,7 @@ import {
 } from "graphql"
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
 
 const FulfillmentInputType = new GraphQLInputObjectType({
   name: "FulfillmentInputType",
@@ -72,14 +73,9 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
             state
             partnerId
             userId
-            fulfillmentType
-            shippingName
-            shippingAddressLine1
-            shippingAddressLine2
-            shippingCity
-            shippingCountry
-            shippingPostalCode
-            shippingRegion
+            requestedFulfillment {
+              ${RequestedFulfillmentFragment}
+            }
             itemsTotalCents
             shippingTotalCents
             taxTotalCents

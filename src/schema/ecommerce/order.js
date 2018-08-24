@@ -1,5 +1,6 @@
 import { graphql, GraphQLNonNull, GraphQLString } from "graphql"
 import { OrderType } from "schema/ecommerce/types/order"
+import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
 export const Order = {
   name: "Order",
   type: OrderType,
@@ -16,14 +17,9 @@ export const Order = {
           partnerId
           userId
           creditCardId
-          fulfillmentType
-          shippingName
-          shippingAddressLine1
-          shippingAddressLine2
-          shippingCity
-          shippingCountry
-          shippingPostalCode
-          shippingRegion
+          requestedFulfillment {
+            ${RequestedFulfillmentFragment}
+          }
           itemsTotalCents
           shippingTotalCents
           taxTotalCents
