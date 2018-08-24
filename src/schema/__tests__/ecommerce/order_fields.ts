@@ -1,6 +1,7 @@
 import gql from "lib/gql"
 
 export const OrderBuyerFields = gql`
+... on Order {
   id
   code
   currencyCode
@@ -65,9 +66,11 @@ export const OrderBuyerFields = gql`
       }
     }
   }
+}
 `
 
 export const OrderSellerFields = gql`
+... on Order {
   id
   code
   currencyCode
@@ -132,4 +135,5 @@ export const OrderSellerFields = gql`
       }
     }
   }
+}
 `
