@@ -21,7 +21,8 @@ export function init() {
   })
   tracer.use("graphql", {
     service: `${DD_TRACER_SERVICE_NAME}.graphql`,
-  })
+    filterVariables: variables => variables,
+  } as any)
 }
 
 const createCommand = (command: string) => <T>(
@@ -45,11 +46,14 @@ const createCommand = (command: string) => <T>(
       return result
     },
     err => {
-      span.addTags({
+      const tags = {
         "error.type": err.name,
         "error.msg": err.message,
-        "error.stack": err.stack,
-      })
+      }
+      if (!err.message.includes("Cache miss")) {
+        tags["error.stack"] = err.stack
+      }
+      span.addTags(tags)
       span.finish()
       throw err
     }

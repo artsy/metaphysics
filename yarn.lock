@@ -704,9 +704,9 @@
     "@types/express" "*"
     "@types/node" "*"
 
-"@types/dd-trace@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@types/dd-trace/-/dd-trace-0.2.3.tgz#6308c992c764dbf3fda49426b99a554865d4d5d6"
+"@types/dd-trace@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@types/dd-trace/-/dd-trace-0.5.1.tgz#de8489274c96decc2d1023f198b82bc3ad690fc1"
   dependencies:
     opentracing ">=0.14.1"
 
@@ -2062,8 +2062,8 @@ date-fns@^1.27.2:
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
 
 dd-trace@artsy/dd-trace-js#graphql-trace-query-parsing-and-validation:
-  version "0.5.5"
-  resolved "https://codeload.github.com/artsy/dd-trace-js/tar.gz/8732dd80e12c32daf7fdbabe45830d8bf96f6d1d"
+  version "0.5.6"
+  resolved "https://codeload.github.com/artsy/dd-trace-js/tar.gz/5dfd48e365a12b6190a9b6294859c94f10d8b5de"
   dependencies:
     async-hook-jl "^1.7.6"
     int64-buffer "^0.1.9"
@@ -5344,8 +5344,8 @@ path-to-regexp@0.1.7:
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
 
 path-to-regexp@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-2.2.1.tgz#90b617025a16381a879bc82a38d4e8bdeb2bcf45"
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-2.3.0.tgz#690d682cb9e2dde26d25f41bcc2b4774b67d1fa2"
 
 path-type@^1.0.0:
   version "1.1.0"
@@ -6145,7 +6145,11 @@ semver-diff@^2.0.0:
   dependencies:
     semver "^5.0.3"
 
-"semver@2 || 3 || 4 || 5", semver@^5.0.3, semver@^5.1.0, semver@^5.4.1, semver@^5.5.0:
+"semver@2 || 3 || 4 || 5", semver@^5.5.0:
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.1.tgz#7dfdd8814bdb7cabc7be0fb1d734cfb66c940477"
+
+semver@^5.0.3, semver@^5.1.0, semver@^5.4.1:
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
 
