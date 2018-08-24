@@ -1360,7 +1360,7 @@ describe("Artwork type", () => {
       }
     `
     it("is null when certificate_of_authenticity is null", () => {
-      artwork.framed = null
+      artwork.certificate_of_authenticity = null
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: { certificateOfAuthenticity: null },

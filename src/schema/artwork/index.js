@@ -727,7 +727,7 @@ export const artworkFields = () => {
         sticker_label,
         signed_other,
       }) => {
-        var detailsParts = []
+        let detailsParts = []
         if (signed_by_artist) {
           detailsParts.push("hand-signed by artist")
         }
