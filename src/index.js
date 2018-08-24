@@ -124,7 +124,7 @@ async function startApp() {
       const timezone = req.headers["x-timezone"]
       const userAgent = req.headers["user-agent"]
 
-      const { requestIDs, span } = res.locals
+      const { requestIDs } = res.locals
       const requestID = requestIDs.requestID
 
       if (enableRequestLogging) {
@@ -141,11 +141,12 @@ async function startApp() {
       const loaders = createLoaders(accessToken, userID, {
         requestIDs,
         userAgent,
-        span,
       })
+
       // Share with e.g. the Convection ApolloLink in mergedSchema.
       res.locals.dataLoaders = loaders // eslint-disable-line no-param-reassign
       res.locals.accessToken = accessToken // eslint-disable-line no-param-reassign
+
       return {
         schema,
         graphiql: true,
@@ -153,14 +154,9 @@ async function startApp() {
           accessToken,
           userID,
           defaultTimezone,
-          span,
           lewittSchema,
           exchangeSchema,
-          ...createLoaders(accessToken, userID, {
-            requestIDs,
-            userAgent,
-            span,
-          }),
+          ...loaders,
         },
         formatError: graphqlErrorHandler(req, {
           enableSentry,
