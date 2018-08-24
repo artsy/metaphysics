@@ -3,6 +3,8 @@ import { runQuery } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
+import { OrderSellerFields } from "./order_fields"
+import gql from "lib/gql"
 
 let rootValue
 
@@ -19,67 +21,17 @@ describe("Reject Order Mutation", () => {
     rootValue = mockxchange(resolvers)
   })
   it("rejects order and return it", () => {
-    const mutation = `
+    const mutation = gql`
       mutation {
-        rejectOrder(input: {
-            orderId: "111",
-          }) {
-            result {
-              order {
-                id
-                code
-                currencyCode
-                state
-                fulfillmentType
-                shippingName
-                shippingAddressLine1
-                shippingAddressLine2
-                shippingCity
-                shippingCountry
-                shippingPostalCode
-                shippingRegion
-                itemsTotalCents
-                shippingTotalCents
-                taxTotalCents
-                commissionFeeCents
-                transactionFeeCents
-                buyerTotalCents
-                sellerTotalCents
-                itemsTotal
-                shippingTotal
-                taxTotal
-                commissionFee
-                transactionFee
-                buyerTotal
-                sellerTotal
-                updatedAt
-                createdAt
-                stateUpdatedAt
-                stateExpiresAt
-                partner {
-                  id
-                  name
-                }
-                user {
-                  id
-                  email
-                }
-                lineItems {
-                  edges {
-                    node {
-                      artwork {
-                        id
-                        title
-                        inventoryId
-                      }
-                    }
-                  }
-                }
-              }
-            errors
+        rejectOrder(input: { orderId: "111" }) {
+          result {
+            order {
+              ${OrderSellerFields}
             }
+            errors
           }
         }
+      }
     `
 
     return runQuery(mutation, rootValue).then(data => {

@@ -3,6 +3,8 @@ import { runQuery } from "test/utils"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
+import { OrderBuyerFields } from "./order_fields"
+import gql from "lib/gql"
 
 let rootValue
 
@@ -20,75 +22,31 @@ describe("Approve Order Mutation", () => {
     rootValue = mockxchange(resolvers)
   })
   it("sets order's shipping information", () => {
-    const mutation = `
+    const mutation = gql`
       mutation {
-        setOrderShipping(input: {
-            orderId: "111",
-            fulfillmentType: SHIP,
-            shippingName: "Dr Collector",
-            shippingAddressLine1: "Vanak",
-            shippingAddressLine2: "P 80",
-            shippingCity: "Tehran",
-            shippingRegion: "TH",
-            shippingCountry: "Iran",
-            shippingPostalCode: "09821",
-          }) {
-            result {
-              order {
-                id
-                code
-                currencyCode
-                state
-                fulfillmentType
-                shippingName
-                shippingAddressLine1
-                shippingAddressLine2
-                shippingCity
-                shippingCountry
-                shippingPostalCode
-                shippingRegion
-                itemsTotalCents
-                shippingTotalCents
-                taxTotalCents
-                commissionFeeCents
-                transactionFeeCents
-                buyerTotalCents
-                sellerTotalCents
-                itemsTotal
-                shippingTotal
-                taxTotal
-                commissionFee
-                transactionFee
-                buyerTotal
-                sellerTotal
-                updatedAt
-                createdAt
-                stateUpdatedAt
-                stateExpiresAt
-                partner {
-                  id
-                  name
-                }
-                user {
-                  id
-                  email
-                }
-                lineItems {
-                  edges {
-                    node {
-                      artwork {
-                        id
-                        title
-                        inventoryId
-                      }
-                    }
-                  }
-                }
-              }
-            errors
+        setOrderShipping(
+          input: {
+            orderId: "111"
+            fulfillmentType: SHIP
+            shipping: {
+              name: "Dr Collector"
+              addressLine1: "Vanak"
+              addressLine2: "P 80"
+              city: "Tehran"
+              region: "TH"
+              country: "Iran"
+              postalCode: "09821"
             }
           }
+        ) {
+          result {
+            order {
+              ${OrderBuyerFields}
+            }
+            errors
+          }
         }
+      }
     `
 
     return runQuery(mutation, rootValue).then(data => {
