@@ -29,6 +29,7 @@ const defaultResponse = {
   updatedAt: "2018-07-03 17:57:47 UTC",
   stateUpdatedAt: "2018-07-03 17:57:47 UTC",
   stateExpiresAt: "2018-07-03 17:57:47 UTC",
+  creditCard: null,
   partner: {
     id: "111",
     name: "Subscription Partner",
@@ -62,22 +63,6 @@ function sampleFulfillments() {
 }
 
 function sampleLineItems(fulfillments = false) {
-  if (fulfillments) {
-    return {
-      edges: [
-        {
-          node: {
-            artwork: {
-              id: "hubert-farnsworth-smell-o-scope",
-              title: "Smell-O-Scope",
-              inventoryId: "inventory note",
-            },
-            fulfillments: sampleFulfillments(),
-          },
-        },
-      ],
-    }
-  }
   return {
     edges: [
       {
@@ -87,6 +72,7 @@ function sampleLineItems(fulfillments = false) {
             title: "Smell-O-Scope",
             inventoryId: "inventory note",
           },
+          fulfillments: fulfillments ? sampleFulfillments() : null,
         },
       },
     ],
