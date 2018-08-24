@@ -36,6 +36,7 @@ const {
   ENABLE_SCHEMA_STITCHING,
   ENABLE_HEAPDUMPS,
   LOG_QUERY_DETAILS_THRESHOLD,
+  PRODUCTION_ENV,
   QUERY_DEPTH_LIMIT,
   RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
@@ -93,8 +94,8 @@ async function startApp() {
   }
 
   app.use(requestIDsAdder)
-  if (isProduction) {
-    app.set('trust proxy', true)
+  if (PRODUCTION_ENV) {
+    app.set("trust proxy", true)
   }
 
   if (enableSentry) {

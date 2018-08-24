@@ -4,7 +4,6 @@ import {
   GraphQLString,
   GraphQLInt,
 } from "graphql"
-import { OrderFulfillmentTypeEnum } from "./order_fulfillment_type_enum"
 import { connectionDefinitions } from "graphql-relay"
 
 import Partner from "schema/partner"
