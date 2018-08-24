@@ -16,6 +16,9 @@ export const OrderBuyerFields = gql`
       country
       postalCode
     }
+    ... on Pickup {
+      fulfillmentType
+    }
   }
   itemsTotalCents
   shippingTotalCents
@@ -87,6 +90,9 @@ export const OrderSellerFields = gql`
       region
       country
       postalCode
+    }
+    ... on Pickup {
+      fulfillmentType
     }
   }
   itemsTotalCents
