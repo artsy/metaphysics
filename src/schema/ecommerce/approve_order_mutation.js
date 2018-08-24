@@ -2,7 +2,7 @@ import { graphql } from "graphql"
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { OrderMutationInputType } from "schema/ecommerce/types/order_mutation_input"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
+import { RequestedFulfillmentFragment } from "./query_helpers"
 import gql from "lib/gql"
 
 export const ApproveOrderMutation = mutationWithClientMutationId({

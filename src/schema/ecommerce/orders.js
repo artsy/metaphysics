@@ -2,7 +2,7 @@ import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
 import gql from "lib/gql"
-import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
+import { PageInfo, RequestedFulfillmentFragment } from "./query_helpers"
 
 export const Orders = {
   name: "Orders",
@@ -33,6 +33,7 @@ export const Orders = {
           state: $state
           sort: $sort
         ) {
+          ${PageInfo}
           edges {
             node {
               id
@@ -56,6 +57,7 @@ export const Orders = {
               stateUpdatedAt
               stateExpiresAt
               lineItems {
+                ${PageInfo}
                 edges {
                   node {
                     id

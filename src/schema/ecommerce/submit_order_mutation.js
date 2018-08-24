@@ -7,7 +7,7 @@ import {
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
 import gql from "lib/gql"
-import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
+import { RequestedFulfillmentFragment } from "./query_helpers"
 
 const SubmitOrderInputType = new GraphQLInputObjectType({
   name: "SubmitOrderInput",

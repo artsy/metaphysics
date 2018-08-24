@@ -1,4 +1,10 @@
 {
+  "pageInfo": {
+    "hasNextPage": false,
+    "hasPreviousPage": false,
+    "startCursor": 0,
+    "endCursor": 0
+  },
   "edges": [
     {
       "node": {
@@ -29,6 +35,12 @@
         "stateUpdatedAt": "2018-07-03 17:57:47 UTC",
         "stateExpiresAt": "2018-07-03 17:57:47 UTC",
         "lineItems": {
+          "pageInfo": {
+            "hasNextPage": false,
+            "hasPreviousPage": false,
+            "startCursor": 0,
+            "endCursor": 0
+          },
           "edges": [
             {
               "node": {

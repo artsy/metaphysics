@@ -4,7 +4,6 @@ import {
   GraphQLNonNull,
   GraphQLString,
 } from "graphql"
-import gql from "lib/gql"
 
 export const Ship = new GraphQLObjectType({
   name: "Ship",
@@ -55,18 +54,3 @@ export const RequestedFulfillmentUnionType = new GraphQLUnionType({
   types: [Ship, Pickup],
   resolveType: obj => (obj.country ? Ship : Pickup),
 })
-
-export const RequestedFulfillmentFragment = gql`
-  ...on EcommerceShip {
-    name
-    addressLine1
-    addressLine2
-    city
-    region
-    country
-    postalCode
-  }
-  ... on EcommercePickup {
-    fulfillmentType
-  }
-`

@@ -1,6 +1,6 @@
 import { graphql, GraphQLNonNull, GraphQLString } from "graphql"
 import { OrderType } from "schema/ecommerce/types/order"
-import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
+import { RequestedFulfillmentFragment } from "./query_helpers"
 export const Order = {
   name: "Order",
   type: OrderType,

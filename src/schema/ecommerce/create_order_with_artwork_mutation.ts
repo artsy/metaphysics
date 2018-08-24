@@ -9,7 +9,7 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { OrderOrFailureUnionType } from "schema/ecommerce/types/order_or_error_union"
 import gql from "lib/gql"
-import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
+import { RequestedFulfillmentFragment } from "./query_helpers"
 
 const CreateOrderInputType = new GraphQLInputObjectType({
   name: "CreateOrderInput",

@@ -9,7 +9,7 @@ import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { OrderFulfillmentTypeEnum } from "./types/order_fulfillment_type_enum"
 import { mutationWithClientMutationId } from "graphql-relay"
 import gql from "lib/gql"
-import { RequestedFulfillmentFragment } from "./types/requested_fulfillment_union_type"
+import { RequestedFulfillmentFragment } from "./query_helpers"
 
 const ShippingInputField = new GraphQLInputObjectType({
   name: "ShippingInputField",
