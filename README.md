@@ -43,24 +43,34 @@ It is currently used in production all over the place in
 
 ### Getting Setup
 
-Read and run setup script:
+To get yourself set up with all the project's dependencies:
 
 ```
-$ cat bin/setup
-$ bin/setup
+git clone https://github.com/artsy/metaphysics
+cd metaphysics
+
+# Install node modules
+yarn install
+# Installed system tools (like cache servers)
+brew bundle
+# Get set up with a default env
+cp .env.example .env
 ```
 
-Set up your `.env` file based on `.env.example`. For Artsy staff, grab the
-keys/secrets from 1Password.
+For Artsy staff wanting to expand on your `.env`, you can use `hokusai staging env get` to see staging's env vars.
 
 ### Development
 
-To start up a development server, run:
+With your dependencies set up, you can run Metaphysics by running:
 
 ```sh
-yarn install
 yarn dev
 ```
+
+Which will start the server on http://localhost:5001
+
+_Recommended:_ You can run the commands inside the terminal in VS Code, then the debugger will be hooked up
+by default.
 
 ### Setting up your local GraphiQL
 
@@ -80,6 +90,8 @@ You will need to set up headers with both:
 - [Debugging with VS Code](docs/debugging_with_vscode.md)
 
 ### Docker and Kubernetes setup
+
+This is deployed using Hokusai to manage Docker and Kubernetes. To replicate this:
 
 - Install [Docker for Mac](https://github.com/artsy/hokusai#requirements) and
   [Hokusai](https://github.com/artsy/hokusai#setup)
