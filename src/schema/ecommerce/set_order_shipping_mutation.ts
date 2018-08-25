@@ -8,6 +8,42 @@ import {
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { OrderFulfillmentTypeEnum } from "./types/order_fulfillment_type_enum"
 import { mutationWithClientMutationId } from "graphql-relay"
+import gql from "lib/gql"
+import { RequestedFulfillmentFragment } from "./query_helpers"
+
+const ShippingInputField = new GraphQLInputObjectType({
+  name: "ShippingInputField",
+  fields: {
+    name: {
+      type: GraphQLString,
+      description: "Name for the shipping information",
+    },
+    addressLine1: {
+      type: GraphQLString,
+      description: "Shipping address line 1",
+    },
+    addressLine2: {
+      type: GraphQLString,
+      description: "Shipping address line 2",
+    },
+    city: {
+      type: GraphQLString,
+      description: "Shipping city",
+    },
+    region: {
+      type: GraphQLString,
+      description: "Shipping region",
+    },
+    country: {
+      type: GraphQLString,
+      description: "Shipping country",
+    },
+    postalCode: {
+      type: GraphQLString,
+      description: "Shipping postal code",
+    },
+  },
+})
 
 const SetOrderShippingInput = new GraphQLInputObjectType({
   name: "SetOrderShippingInput",
@@ -20,33 +56,9 @@ const SetOrderShippingInput = new GraphQLInputObjectType({
       type: OrderFulfillmentTypeEnum,
       description: "Fulfillment Type of this Order",
     },
-    shippingName: {
-      type: GraphQLString,
-      description: "Name for the shipping information",
-    },
-    shippingAddressLine1: {
-      type: GraphQLString,
-      description: "Shipping address line 1",
-    },
-    shippingAddressLine2: {
-      type: GraphQLString,
-      description: "Shipping address line 2",
-    },
-    shippingCity: {
-      type: GraphQLString,
-      description: "Shipping city",
-    },
-    shippingRegion: {
-      type: GraphQLString,
-      description: "Shipping region",
-    },
-    shippingCountry: {
-      type: GraphQLString,
-      description: "Shipping country",
-    },
-    shippingPostalCode: {
-      type: GraphQLString,
-      description: "Shipping postal code",
+    shipping: {
+      type: ShippingInputField,
+      description: "Shipping information",
     },
   },
 })
@@ -62,17 +74,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    {
-      orderId,
-      fulfillmentType,
-      shippingName,
-      shippingAddressLine1,
-      shippingAddressLine2,
-      shippingCity,
-      shippingRegion,
-      shippingCountry,
-      shippingPostalCode,
-    },
+    { orderId, fulfillmentType, shipping },
     context,
     { rootValue: { accessToken, exchangeSchema } }
   ) => {
@@ -80,19 +82,19 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
       return new Error("You need to be signed in to perform this action")
     }
 
-    const mutation = `
-      mutation setOrderShipping($orderId: ID!, $fulfillmentType: EcommerceOrderFulfillmentTypeEnum, $shippingName: String, $shippingAddressLine1: String, $shippingAddressLine2: String, $shippingCity: String, $shippingRegion: String, $shippingCountry: String, $shippingPostalCode: String) {
-        ecommerce_setShipping(input: {
-          id: $orderId,
-          fulfillmentType: $fulfillmentType,
-          shippingName: $shippingName,
-          shippingAddressLine1: $shippingAddressLine1,
-          shippingAddressLine2: $shippingAddressLine2,
-          shippingCity: $shippingCity,
-          shippingRegion: $shippingRegion,
-          shippingCountry: $shippingCountry,
-          shippingPostalCode: $shippingPostalCode
-        }) {
+    const mutation = gql`
+      mutation setOrderShipping(
+        $orderId: ID!
+        $fulfillmentType: EcommerceOrderFulfillmentTypeEnum
+        $shipping: EcommerceShippingAttributes
+      ) {
+        ecommerce_setShipping(
+          input: {
+            id: $orderId
+            fulfillmentType: $fulfillmentType
+            shipping: $shipping
+          }
+        ) {
           order {
             id
             code
@@ -100,14 +102,9 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
             state
             partnerId
             userId
-            fulfillmentType
-            shippingName
-            shippingAddressLine1
-            shippingAddressLine2
-            shippingCity
-            shippingCountry
-            shippingPostalCode
-            shippingRegion
+            requestedFulfillment {
+              ${RequestedFulfillmentFragment}
+            }
             itemsTotalCents
             shippingTotalCents
             taxTotalCents
@@ -119,9 +116,9 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
             createdAt
             stateUpdatedAt
             stateExpiresAt
-            lineItems{
-              edges{
-                node{
+            lineItems {
+              edges {
+                node {
                   id
                   priceCents
                   artworkId
@@ -138,13 +135,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       fulfillmentType,
-      shippingName,
-      shippingAddressLine1,
-      shippingAddressLine2,
-      shippingCity,
-      shippingRegion,
-      shippingCountry,
-      shippingPostalCode,
+      shipping,
     }).then(result => {
       if (result.errors) {
         throw Error(result.errors.map(d => d.message))

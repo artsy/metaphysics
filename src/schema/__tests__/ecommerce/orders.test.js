@@ -4,6 +4,8 @@ import { runQuery } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrdersJSON from "test/fixtures/exchange/orders.json"
+import gql from "lib/gql"
+import { OrderSellerFields } from "./order_fields"
 
 let rootValue
 
@@ -12,61 +14,13 @@ describe("Order type", () => {
     const resolvers = { Query: { orders: () => exchangeOrdersJSON } }
     rootValue = mockxchange(resolvers)
   })
-  it("fetches order by partner id", () => {
-    const query = `
+  it("fetches orders by partner id", () => {
+    const query = gql`
       {
         orders(partnerId: "581b45e4cd530e658b000124") {
           edges {
             node {
-              id
-              code
-              currencyCode
-              state
-              fulfillmentType
-              shippingName
-              shippingAddressLine1
-              shippingAddressLine2
-              shippingCity
-              shippingCountry
-              shippingPostalCode
-              shippingRegion
-              itemsTotalCents
-              shippingTotalCents
-              taxTotalCents
-              commissionFeeCents
-              transactionFeeCents
-              buyerTotalCents
-              sellerTotalCents
-              itemsTotal
-              shippingTotal
-              taxTotal
-              commissionFee
-              transactionFee
-              buyerTotal
-              sellerTotal
-              updatedAt
-              createdAt
-              stateUpdatedAt
-              stateExpiresAt
-              partner {
-                id
-                name
-              }
-              user {
-                id
-                email
-              }
-              lineItems {
-                edges {
-                  node {
-                    artwork {
-                      id
-                      title
-                      inventoryId
-                    }
-                  }
-                }
-              }
+              ${OrderSellerFields}
             }
           }
         }

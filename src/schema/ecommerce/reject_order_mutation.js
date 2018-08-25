@@ -2,6 +2,8 @@ import { graphql } from "graphql"
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { OrderMutationInputType } from "schema/ecommerce/types/order_mutation_input"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { RequestedFulfillmentFragment } from "./query_helpers"
+import gql from "lib/gql"
 
 export const RejectOrderMutation = mutationWithClientMutationId({
   name: "RejectOrder",
@@ -22,7 +24,7 @@ export const RejectOrderMutation = mutationWithClientMutationId({
       return new Error("You need to be signed in to perform this action")
     }
 
-    const mutation = `
+    const mutation = gql`
       mutation rejectOrder($orderId: ID!) {
         ecommerce_rejectOrder(input: {
           id: $orderId,
@@ -34,14 +36,9 @@ export const RejectOrderMutation = mutationWithClientMutationId({
             state
             partnerId
             userId
-            fulfillmentType
-            shippingName
-            shippingAddressLine1
-            shippingAddressLine2
-            shippingCity
-            shippingCountry
-            shippingPostalCode
-            shippingRegion
+            requestedFulfillment {
+              ${RequestedFulfillmentFragment}
+            }
             itemsTotalCents
             shippingTotalCents
             taxTotalCents

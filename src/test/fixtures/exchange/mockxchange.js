@@ -12,10 +12,30 @@ export const mockxchange = resolvers => {
     path.resolve(__dirname, "../../../data/exchange.graphql"),
     "utf8"
   )
+  const defaultUnionResolvers = {
+    OrderOrFailureUnion: {
+      __resolveType(obj, context, info) {
+        if (obj.order) {
+          return "OrderWithMutationSuccess"
+        } else if (obj.error) {
+          return "OrderWithMutationFailure"
+        }
+      },
+    },
+    RequestedFulfillmentUnion: {
+      __resolveType(obj, context, info) {
+        if (obj.country) {
+          return "Ship"
+        } else if (obj.error) {
+          return "Pickup"
+        }
+      },
+    },
+  }
 
   const schema = makeExecutableSchema({
     typeDefs,
-    resolvers,
+    resolvers: { ...defaultUnionResolvers, ...resolvers },
   })
 
   // namespace schema similar to src/lib/stitching/exchange/schema.ts

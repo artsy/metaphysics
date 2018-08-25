@@ -3,6 +3,8 @@ import { runQuery } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
+import { OrderBuyerFields } from "./order_fields"
+import gql from "lib/gql"
 
 let rootValue
 
@@ -20,67 +22,17 @@ describe("Submit Order Mutation", () => {
     rootValue = mockxchange(resolvers)
   })
   it("submits order and returns it", () => {
-    const mutation = `
+    const mutation = gql`
       mutation {
-        submitOrder(input: {
-            orderId: "111"
-          }) {
-            result {
-              order {
-                id
-                code
-                currencyCode
-                state
-                fulfillmentType
-                shippingName
-                shippingAddressLine1
-                shippingAddressLine2
-                shippingCity
-                shippingCountry
-                shippingPostalCode
-                shippingRegion
-                itemsTotalCents
-                shippingTotalCents
-                taxTotalCents
-                commissionFeeCents
-                transactionFeeCents
-                buyerTotalCents
-                sellerTotalCents
-                itemsTotal
-                shippingTotal
-                taxTotal
-                commissionFee
-                transactionFee
-                buyerTotal
-                sellerTotal
-                updatedAt
-                createdAt
-                stateUpdatedAt
-                stateExpiresAt
-                partner {
-                  id
-                  name
-                }
-                user {
-                  id
-                  email
-                }
-                lineItems {
-                  edges {
-                    node {
-                      artwork {
-                        id
-                        title
-                        inventoryId
-                      }
-                    }
-                  }
-                }
-              }
-              errors
+        submitOrder(input: { orderId: "111" }) {
+          result {
+            order {
+              ${OrderBuyerFields}
             }
+            errors
           }
         }
+      }
     `
 
     return runQuery(mutation, rootValue).then(data => {

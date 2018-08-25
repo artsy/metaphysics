@@ -2,14 +2,15 @@ const defaultResponse = {
   id: "fooid123",
   code: "1",
   currencyCode: "usd",
-  fulfillmentType: "SHIP",
-  shippingName: "Dr Collector",
-  shippingAddressLine1: "Vanak 123",
-  shippingAddressLine2: "P 80",
-  shippingCity: "Tehran",
-  shippingRegion: "Tehran",
-  shippingCountry: "IR",
-  shippingPostalCode: "09821",
+  requestedFulfillment: {
+    name: "Dr Collector",
+    addressLine1: "Vanak 123",
+    addressLine2: "P 80",
+    city: "Tehran",
+    region: "Tehran",
+    country: "IR",
+    postalCode: "09821",
+  },
   itemsTotalCents: 420000,
   itemsTotal: "$4,200",
   shippingTotalCents: 420100,
@@ -29,6 +30,7 @@ const defaultResponse = {
   updatedAt: "2018-07-03 17:57:47 UTC",
   stateUpdatedAt: "2018-07-03 17:57:47 UTC",
   stateExpiresAt: "2018-07-03 17:57:47 UTC",
+  creditCard: null,
   partner: {
     id: "111",
     name: "Subscription Partner",
@@ -62,22 +64,6 @@ function sampleFulfillments() {
 }
 
 function sampleLineItems(fulfillments = false) {
-  if (fulfillments) {
-    return {
-      edges: [
-        {
-          node: {
-            artwork: {
-              id: "hubert-farnsworth-smell-o-scope",
-              title: "Smell-O-Scope",
-              inventoryId: "inventory note",
-            },
-            fulfillments: sampleFulfillments(),
-          },
-        },
-      ],
-    }
-  }
   return {
     edges: [
       {
@@ -87,6 +73,7 @@ function sampleLineItems(fulfillments = false) {
             title: "Smell-O-Scope",
             inventoryId: "inventory note",
           },
+          fulfillments: fulfillments ? sampleFulfillments() : null,
         },
       },
     ],
