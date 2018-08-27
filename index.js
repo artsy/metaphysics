@@ -8,6 +8,7 @@ import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
 import config from "config"
 import cache from "lib/cache"
+import chalk from "chalk"
 
 const {
   ENABLE_ASYNC_STACK_TRACES,
@@ -37,6 +38,9 @@ const app = express()
 app.use(compression())
 
 xapp.on("error", err => {
+  error(
+    "Could not start Metaphysics because it could not set up the xapp token, this is likely due to your `GRAVITY_*` env vars:"
+  )
   error(err)
   process.exit(1)
 })
