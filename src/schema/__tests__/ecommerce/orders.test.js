@@ -9,15 +9,15 @@ import { OrderSellerFields } from "./order_fields"
 
 let rootValue
 
-describe("Order type", () => {
+describe("Orders query", () => {
   beforeEach(() => {
     const resolvers = { Query: { orders: () => exchangeOrdersJSON } }
     rootValue = mockxchange(resolvers)
   })
-  it("fetches orders by partner id", () => {
+  it("fetches orders by seller id", () => {
     const query = gql`
       {
-        orders(partnerId: "581b45e4cd530e658b000124") {
+        orders(sellerId: "581b45e4cd530e658b000124") {
           edges {
             node {
               ${OrderSellerFields}

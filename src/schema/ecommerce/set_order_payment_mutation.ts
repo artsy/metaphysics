@@ -6,7 +6,10 @@ import {
 } from "graphql"
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { RequestedFulfillmentFragment } from "./query_helpers"
+import {
+  RequestedFulfillmentFragment,
+  BuyerSellerFields,
+} from "./query_helpers"
 import gql from "lib/gql"
 
 const SetOrderPaymentInputType = new GraphQLInputObjectType({
@@ -52,8 +55,7 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
             code
             currencyCode
             state
-            partnerId
-            userId
+            ${BuyerSellerFields}
             requestedFulfillment {
               ${RequestedFulfillmentFragment}
             }

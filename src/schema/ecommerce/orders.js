@@ -2,34 +2,44 @@ import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
 import gql from "lib/gql"
-import { PageInfo, RequestedFulfillmentFragment } from "./query_helpers"
+import {
+  PageInfo,
+  RequestedFulfillmentFragment,
+  BuyerSellerFields,
+} from "./query_helpers"
 
 export const Orders = {
   name: "Orders",
   type: OrderConnection,
   description: "Returns list of orders",
   args: {
-    userId: { type: GraphQLString },
-    partnerId: { type: GraphQLString },
+    buyerId: { type: GraphQLString },
+    buyerType: { type: GraphQLString },
+    sellerId: { type: GraphQLString },
+    sellerType: { type: GraphQLString },
     state: { type: GraphQLString },
     sort: { type: OrdersSortMethodTypeEnum },
   },
   resolve: (
     _parent,
-    { userId, partnerId, state, sort },
+    { sellerId, sellerType, buyerId, buyerType, state, sort },
     context,
     { rootValue: { exchangeSchema } }
   ) => {
     const query = gql`
       query EcommerceOrders(
-        $userId: String
-        $partnerId: String
+        $buyerId: String
+        $buyerType: String
+        $sellerId: String
+        $sellerType: String
         $state: EcommerceOrderStateEnum
         $sort: EcommerceOrderConnectionSortEnum
       ) {
         ecommerce_orders(
-          userId: $userId
-          partnerId: $partnerId
+          buyerId: $buyerId
+          buyerType: $buyerType
+          sellerId: $sellerId
+          sellerType: $sellerType
           state: $state
           sort: $sort
         ) {
@@ -40,8 +50,7 @@ export const Orders = {
               code
               currencyCode
               state
-              partnerId
-              userId
+              ${BuyerSellerFields}
               updatedAt
               createdAt
               requestedFulfillment {
@@ -74,8 +83,10 @@ export const Orders = {
       }
     `
     return graphql(exchangeSchema, query, null, context, {
-      userId,
-      partnerId,
+      buyerId,
+      buyerType,
+      sellerId,
+      sellerType,
       state,
       sort,
     }).then(result => {
