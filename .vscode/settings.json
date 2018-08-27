@@ -22,8 +22,10 @@
   },
   "cSpell.words": [
     "Ecommerce",
+    "Reloadable",
     "consignable",
     "mockxchange",
     "urljoin"
-  ]
+  ],
+  "debug.node.autoAttach": "on"
 }

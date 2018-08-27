@@ -49,6 +49,9 @@ const app = require("express")()
 app.use(compression())
 
 xapp.on("error", err => {
+  error(
+    "Could not start Metaphysics because it could not set up the xapp token, this is likely due to your `GRAVITY_*` env vars:"
+  )
   error(err)
   process.exit(1)
 })
