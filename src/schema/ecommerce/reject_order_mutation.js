@@ -2,7 +2,10 @@ import { graphql } from "graphql"
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { OrderMutationInputType } from "schema/ecommerce/types/order_mutation_input"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { RequestedFulfillmentFragment } from "./query_helpers"
+import {
+  RequestedFulfillmentFragment,
+  BuyerSellerFields,
+} from "./query_helpers"
 import gql from "lib/gql"
 
 export const RejectOrderMutation = mutationWithClientMutationId({
@@ -34,8 +37,7 @@ export const RejectOrderMutation = mutationWithClientMutationId({
             code
             currencyCode
             state
-            partnerId
-            userId
+            ${BuyerSellerFields}
             requestedFulfillment {
               ${RequestedFulfillmentFragment}
             }

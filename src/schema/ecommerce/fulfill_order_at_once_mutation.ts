@@ -6,7 +6,11 @@ import {
 } from "graphql"
 import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { RequestedFulfillmentFragment } from "./query_helpers"
+import {
+  RequestedFulfillmentFragment,
+  BuyerSellerFields,
+} from "./query_helpers"
+import gql from "lib/gql"
 
 const FulfillmentInputType = new GraphQLInputObjectType({
   name: "FulfillmentInputType",
@@ -60,7 +64,7 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
       return new Error("You need to be signed in to perform this action")
     }
 
-    const mutation = `
+    const mutation = gql`
       mutation fulfillOrderAtOnce($orderId: ID!, $fulfillment: EcommerceFulfillmentAttributes!) {
         ecommerce_fulfillAtOnce(input: {
           id: $orderId,
@@ -71,8 +75,7 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
             code
             currencyCode
             state
-            partnerId
-            userId
+            ${BuyerSellerFields}
             requestedFulfillment {
               ${RequestedFulfillmentFragment}
             }

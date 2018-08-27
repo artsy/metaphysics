@@ -23,3 +23,24 @@ export const PageInfo = gql`
     endCursor
   }
 `
+
+export const BuyerSellerFields = gql`
+  seller {
+    __typename
+    ... on EcommercePartner{
+      id
+    }
+    ... on EcommerceUser {
+      id
+    }
+  }
+  buyer {
+    __typename
+    ... on EcommerceUser {
+      id
+    }
+    ... on EcommercePartner{
+      id
+    }
+  }
+`

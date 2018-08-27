@@ -31,11 +31,11 @@ const defaultResponse = {
   stateUpdatedAt: "2018-07-03 17:57:47 UTC",
   stateExpiresAt: "2018-07-03 17:57:47 UTC",
   creditCard: null,
-  partner: {
+  seller: {
     id: "111",
     name: "Subscription Partner",
   },
-  user: {
+  buyer: {
     id: "111",
     email: "bob@ross.com",
   },
