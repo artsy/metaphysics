@@ -11,6 +11,7 @@ import {
   BuyerSellerFields,
 } from "./query_helpers"
 import gql from "lib/gql"
+import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 
 const SetOrderPaymentInputType = new GraphQLInputObjectType({
   name: "SetOrderPaymentInput",
@@ -31,9 +32,8 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
   description: "Sets payment information on an order",
   inputFields: SetOrderPaymentInputType.getFields(),
   outputFields: {
-    result: {
-      type: OrderReturnType,
-      resolve: order => order,
+    orderOrError: {
+      type: OrderOrFailureUnionType,
     },
   },
   mutateAndGetPayload: (
@@ -50,52 +50,51 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
           id: $orderId,
           creditCardId: $creditCardId,
         }) {
-          order {
-           id
-            code
-            currencyCode
-            state
-            ${BuyerSellerFields}
-            ${RequestedFulfillmentFragment}
-            itemsTotalCents
-            shippingTotalCents
-            taxTotalCents
-            commissionFeeCents
-            transactionFeeCents
-            buyerTotalCents
-            sellerTotalCents
-            updatedAt
-            createdAt
-            stateUpdatedAt
-            stateExpiresAt
-            lineItems{
-              edges{
-                node{
-                  id
-                  priceCents
-                  artworkId
-                  editionSetId
-                  quantity
+          orderOrError {
+            ... on EcommerceOrderWithMutationSuccess {
+              order {
+              id
+                code
+                currencyCode
+                state
+                ${BuyerSellerFields}
+                ${RequestedFulfillmentFragment}
+                itemsTotalCents
+                shippingTotalCents
+                taxTotalCents
+                commissionFeeCents
+                transactionFeeCents
+                buyerTotalCents
+                sellerTotalCents
+                updatedAt
+                createdAt
+                stateUpdatedAt
+                stateExpiresAt
+                lineItems{
+                  edges{
+                    node{
+                      id
+                      priceCents
+                      artworkId
+                      editionSetId
+                      quantity
+                    }
+                  }
                 }
               }
             }
+            ... on EcommerceOrderWithMutationFailure {
+              error {
+                description
+              }
+            }
           }
-          errors
         }
       }
     `
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       creditCardId,
-    }).then(result => {
-      if (result.errors) {
-        throw Error(result.errors.map(d => d.message))
-      }
-      const { order, errors } = result.data.ecommerce_setPayment
-      return {
-        order,
-        errors,
-      }
-    })
+    }).then(result => result.data!.ecommerce_setPayment)
   },
 })

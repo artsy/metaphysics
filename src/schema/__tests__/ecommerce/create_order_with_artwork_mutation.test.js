@@ -16,15 +16,6 @@ describe("Create Order Mutation", () => {
           orderOrError: { order: exchangeOrderJSON },
         }),
       },
-      OrderOrFailureUnion: {
-        __resolveType(obj, context, info) {
-          if (obj.order) {
-            return "OrderWithMutationSuccess"
-          } else if (obj.error) {
-            return "OrderWithMutationFailure"
-          }
-        },
-      },
     }
 
     rootValue = mockxchange(resolvers)

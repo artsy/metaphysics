@@ -13,8 +13,7 @@ describe("Reject Order Mutation", () => {
     const resolvers = {
       Mutation: {
         rejectOrder: () => ({
-          order: exchangeOrderJSON,
-          errors: [],
+          orderOrError: { order: exchangeOrderJSON },
         }),
       },
     }
@@ -24,18 +23,26 @@ describe("Reject Order Mutation", () => {
     const mutation = gql`
       mutation {
         rejectOrder(input: { orderId: "111" }) {
-          result {
-            order {
-              ${OrderSellerFields}
+          orderOrError {
+            ... on OrderWithMutationSuccess {
+              order {
+                ${OrderSellerFields}
+              }
             }
-            errors
+            ... on OrderWithMutationFailure {
+              error {
+                description
+              }
+            }
           }
         }
       }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.rejectOrder.result.order).toEqual(sampleOrder(true, false))
+      expect(data.rejectOrder.orderOrError.order).toEqual(
+        sampleOrder(true, false)
+      )
     })
   })
 })
