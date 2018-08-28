@@ -104,9 +104,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
             currencyCode
             state
             ${BuyerSellerFields}
-            requestedFulfillment {
-              ${RequestedFulfillmentFragment}
-            }
+            ${RequestedFulfillmentFragment}
             itemsTotalCents
             shippingTotalCents
             taxTotalCents

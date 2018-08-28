@@ -20,9 +20,7 @@ export const Order = {
           state
           ${BuyerSellerFields}
           creditCardId
-          requestedFulfillment {
-            ${RequestedFulfillmentFragment}
-          }
+          ${RequestedFulfillmentFragment}
           itemsTotalCents
           shippingTotalCents
           taxTotalCents
