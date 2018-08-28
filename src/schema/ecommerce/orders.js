@@ -53,9 +53,7 @@ export const Orders = {
               ${BuyerSellerFields}
               updatedAt
               createdAt
-              requestedFulfillment {
-                ${RequestedFulfillmentFragment}
-              }
+              ${RequestedFulfillmentFragment}
               itemsTotalCents
               shippingTotalCents
               taxTotalCents

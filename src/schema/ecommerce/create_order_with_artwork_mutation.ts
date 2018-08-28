@@ -75,9 +75,7 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
                 itemsTotalCents
                 ${BuyerSellerFields}
                 sellerTotalCents
-                requestedFulfillment {
-                  ${RequestedFulfillmentFragment}
-                }
+                ${RequestedFulfillmentFragment}
                 shippingTotalCents
                 state
                 stateExpiresAt

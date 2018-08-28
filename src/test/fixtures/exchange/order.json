@@ -13,6 +13,7 @@
   },
   "creditCardId": "card123",
   "requestedFulfillment": {
+    "__typename": "Ship",
     "name": "Dr Collector",
     "addressLine1": "Vanak 123",
     "addressLine2": "P 80",
