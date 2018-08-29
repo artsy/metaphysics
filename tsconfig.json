@@ -16,5 +16,5 @@
     "strict": true,
     "target": "es5"
   },
-  "exclude": ["node_modules", "**/node_modules/*"]
+  "exclude": ["build", "node_modules", "**/node_modules/*"]
 }

@@ -5,7 +5,6 @@ import {
   GraphQLID,
 } from "graphql"
 
-import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { OrderFulfillmentTypeEnum } from "./types/order_fulfillment_type_enum"
 import { mutationWithClientMutationId } from "graphql-relay"
 import gql from "lib/gql"

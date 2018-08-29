@@ -4,7 +4,6 @@ import {
   GraphQLString,
   graphql,
 } from "graphql"
-import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
   RequestedFulfillmentFragment,

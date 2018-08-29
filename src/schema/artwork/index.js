@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { isTwoDimensional, isTooBig, isEmbeddedVideo, embed } from "./utilities"
-import { enhance, existyValue, isExisty } from "lib/helpers"
+import { enhance, existyValue } from "lib/helpers"
 import cached from "schema/fields/cached"
 import { markdown } from "schema/fields/markdown"
 import Article from "schema/article"
@@ -43,10 +43,6 @@ const is_inquireable = ({ inquireable, acquireable }) => {
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
-}
-
-const has_editions = edition_sets => {
-  return edition_sets && edition_sets.length > 0
 }
 
 const has_multiple_editions = edition_sets => {

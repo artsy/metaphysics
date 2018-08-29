@@ -1,10 +1,6 @@
 /* eslint-disable no-console */
 
-import {
-  middleware as requestTracer,
-  traceMiddleware as graphqlTraceMiddleware,
-} from "./lib/tracer"
-import { graphqlTimeoutMiddleware } from "./lib/graphqlTimeoutMiddleware"
+import { graphqlTimeoutMiddleware } from "lib/graphqlTimeoutMiddleware"
 import { applyMiddleware as applyGraphQLMiddleware } from "graphql-middleware"
 
 import bodyParser from "body-parser"
@@ -36,21 +32,18 @@ import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { logQueryDetails } from "./lib/logQueryDetails"
 
 const {
-  ENABLE_QUERY_TRACING,
   ENABLE_REQUEST_LOGGING,
   ENABLE_SCHEMA_STITCHING,
   ENABLE_HEAPDUMPS,
   LOG_QUERY_DETAILS_THRESHOLD,
-  NODE_ENV,
+  PRODUCTION_ENV,
   QUERY_DEPTH_LIMIT,
   RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
 } = config
 
-const isProduction = NODE_ENV === "production"
 const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
-const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
 const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 const logQueryDetailsThreshold =
@@ -80,12 +73,6 @@ async function startApp() {
 
   let schema = localSchema
 
-  if (enableQueryTracing) {
-    console.warn("[FEATURE] Enabling query tracing")
-    schema = applyGraphQLMiddleware(schema, graphqlTraceMiddleware)
-    app.use(requestTracer)
-  }
-
   const lewittSchema = await executableLewittSchema()
   const exchangeSchema = await executableExchangeSchema()
 
@@ -107,8 +94,8 @@ async function startApp() {
   }
 
   app.use(requestIDsAdder)
-  if (isProduction) {
-    app.set('trust proxy', true)
+  if (PRODUCTION_ENV) {
+    app.set("trust proxy", true)
   }
 
   if (enableSentry) {
@@ -137,7 +124,7 @@ async function startApp() {
       const timezone = req.headers["x-timezone"]
       const userAgent = req.headers["user-agent"]
 
-      const { requestIDs, span } = res.locals
+      const { requestIDs } = res.locals
       const requestID = requestIDs.requestID
 
       if (enableRequestLogging) {
@@ -154,11 +141,12 @@ async function startApp() {
       const loaders = createLoaders(accessToken, userID, {
         requestIDs,
         userAgent,
-        span,
       })
+
       // Share with e.g. the Convection ApolloLink in mergedSchema.
       res.locals.dataLoaders = loaders // eslint-disable-line no-param-reassign
       res.locals.accessToken = accessToken // eslint-disable-line no-param-reassign
+
       return {
         schema,
         graphiql: true,
@@ -166,18 +154,12 @@ async function startApp() {
           accessToken,
           userID,
           defaultTimezone,
-          span,
           lewittSchema,
           exchangeSchema,
-          ...createLoaders(accessToken, userID, {
-            requestIDs,
-            userAgent,
-            span,
-          }),
+          ...loaders,
         },
         formatError: graphqlErrorHandler(req, {
           enableSentry,
-          isProduction,
           variables: params.variables,
           query: params.query,
         }),
