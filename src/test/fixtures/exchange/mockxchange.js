@@ -26,8 +26,17 @@ export const mockxchange = resolvers => {
       __resolveType(obj, context, info) {
         if (obj.country) {
           return "Ship"
-        } else if (obj.error) {
+        } else {
           return "Pickup"
+        }
+      },
+    },
+    OrderPartyUnion: {
+      __resolveType(obj, _context, _info) {
+        if (obj.__typename === "User") {
+          return "User"
+        } else {
+          return "Partner"
         }
       },
     },

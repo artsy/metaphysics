@@ -12,9 +12,16 @@
         "code": "1",
         "state": "PENDING",
         "currencyCode": "usd",
-        "partnerId": "111",
-        "userId": "111",
+        "seller":{
+          "id": "111",
+          "__typename": "Partner"
+        },
+        "buyer":{
+          "id": "111",
+          "__typename": "User"
+        },
         "requestedFulfillment": {
+          "__typename": "Ship",
           "name": "Dr Collector",
           "addressLine1": "Vanak 123",
           "addressLine2": "P 80",

@@ -9,7 +9,10 @@ import { OrderReturnType } from "./types/order_return"
 import { OrderFulfillmentTypeEnum } from "./types/order_fulfillment_type_enum"
 import { mutationWithClientMutationId } from "graphql-relay"
 import gql from "lib/gql"
-import { RequestedFulfillmentFragment } from "./query_helpers"
+import {
+  RequestedFulfillmentFragment,
+  BuyerSellerFields,
+} from "./query_helpers"
 
 const ShippingInputField = new GraphQLInputObjectType({
   name: "ShippingInputField",
@@ -100,11 +103,8 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
             code
             currencyCode
             state
-            partnerId
-            userId
-            requestedFulfillment {
-              ${RequestedFulfillmentFragment}
-            }
+            ${BuyerSellerFields}
+            ${RequestedFulfillmentFragment}
             itemsTotalCents
             shippingTotalCents
             taxTotalCents

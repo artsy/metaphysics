@@ -509,6 +509,7 @@ export const artworkFields = () => {
       },
     },
     price: { type: GraphQLString },
+    price_currency: { type: GraphQLString },
     shippingInfo: {
       type: GraphQLString,
       description:
