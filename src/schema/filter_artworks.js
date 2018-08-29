@@ -215,7 +215,7 @@ export const filterArtworksArgs = {
   include_medium_filter_in_aggregation: {
     type: GraphQLBoolean,
   },
-  inquireable: {
+  inquireable_only: {
     type: GraphQLBoolean,
   },
   for_sale: {
