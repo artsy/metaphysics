@@ -1,5 +1,4 @@
 import { graphql } from "graphql"
-import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { OrderMutationInputType } from "schema/ecommerce/types/order_mutation_input"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
