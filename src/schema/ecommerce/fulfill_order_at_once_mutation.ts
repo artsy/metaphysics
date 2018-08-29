@@ -4,13 +4,13 @@ import {
   GraphQLString,
   graphql,
 } from "graphql"
-import { OrderReturnType } from "./types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
   RequestedFulfillmentFragment,
   BuyerSellerFields,
 } from "./query_helpers"
 import gql from "lib/gql"
+import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 
 const FulfillmentInputType = new GraphQLInputObjectType({
   name: "FulfillmentInputType",
@@ -50,9 +50,8 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
     "Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order",
   inputFields: FulfillOrderAtOnceInputType.getFields(),
   outputFields: {
-    result: {
-      type: OrderReturnType,
-      resolve: order => order,
+    orderOrError: {
+      type: OrderOrFailureUnionType,
     },
   },
   mutateAndGetPayload: (
@@ -70,62 +69,61 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
           id: $orderId,
           fulfillment: $fulfillment
         }) {
-          order {
-           id
-            code
-            currencyCode
-            state
-            ${BuyerSellerFields}
-            ${RequestedFulfillmentFragment}
-            itemsTotalCents
-            shippingTotalCents
-            taxTotalCents
-            commissionFeeCents
-            transactionFeeCents
-            buyerTotalCents
-            sellerTotalCents
-            updatedAt
-            createdAt
-            stateUpdatedAt
-            stateExpiresAt
-            lineItems{
-              edges{
-                node{
-                  id
-                  priceCents
-                  artworkId
-                  editionSetId
-                  quantity
-                  fulfillments{
-                    edges{
-                      node{
-                        id
-                        courier
-                        trackingId
-                        estimatedDelivery
+          orderOrError {
+            ... on EcommerceOrderWithMutationSuccess {
+              order {
+              id
+                code
+                currencyCode
+                state
+                ${BuyerSellerFields}
+                ${RequestedFulfillmentFragment}
+                itemsTotalCents
+                shippingTotalCents
+                taxTotalCents
+                commissionFeeCents
+                transactionFeeCents
+                buyerTotalCents
+                sellerTotalCents
+                updatedAt
+                createdAt
+                stateUpdatedAt
+                stateExpiresAt
+                lineItems{
+                  edges{
+                    node{
+                      id
+                      priceCents
+                      artworkId
+                      editionSetId
+                      quantity
+                      fulfillments{
+                        edges{
+                          node{
+                            id
+                            courier
+                            trackingId
+                            estimatedDelivery
+                          }
+                        }
                       }
                     }
                   }
                 }
               }
             }
+            ... on EcommerceOrderWithMutationFailure {
+              error {
+                description
+              }
+            }
           }
-          errors
         }
       }
     `
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       fulfillment,
-    }).then(result => {
-      if (result.errors) {
-        throw Error(result.errors.map(d => d.message).join("\n"))
-      }
-      const { order, errors } = result.data!.ecommerce_fulfillAtOnce
-      return {
-        order,
-        errors,
-      }
-    })
+    }).then(result => result.data!.ecommerce_fulfillAtOnce)
   },
 })

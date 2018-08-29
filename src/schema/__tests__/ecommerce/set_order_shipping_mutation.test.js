@@ -13,8 +13,7 @@ describe("Approve Order Mutation", () => {
     const resolvers = {
       Mutation: {
         setShipping: () => ({
-          order: exchangeOrderJSON,
-          errors: [],
+          orderOrError: { order: exchangeOrderJSON },
         }),
       },
     }
@@ -39,18 +38,24 @@ describe("Approve Order Mutation", () => {
             }
           }
         ) {
-          result {
-            order {
-              ${OrderBuyerFields}
+          orderOrError {
+            ... on OrderWithMutationSuccess {
+              order {
+                ${OrderBuyerFields}
+              }
             }
-            errors
+            ... on OrderWithMutationFailure {
+              error {
+                description
+              }
+            }
           }
         }
       }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.setOrderShipping.result.order).toEqual(
+      expect(data.setOrderShipping.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )
     })
