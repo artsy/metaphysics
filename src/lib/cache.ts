@@ -1,5 +1,5 @@
-import zlib from 'zlib'
-import { isNull, isArray } from "lodash"
+import zlib from "zlib"
+import { isArray } from "lodash"
 import config from "config"
 import { error, verbose } from "./loggers"
 import Memcached from "memcached"
@@ -18,11 +18,17 @@ const {
 
 const isTest = NODE_ENV === "test"
 
-const VerboseEvents = ["issue", "failure", "reconnecting", "reconnect", "remove"]
+const VerboseEvents = [
+  "issue",
+  "failure",
+  "reconnecting",
+  "reconnect",
+  "remove",
+]
 
 const uncompressedKeyPrefix = "::"
 
-export const cacheKey = (key) => {
+export const cacheKey = key => {
   if (CACHE_COMPRESSION_DISABLED) {
     return uncompressedKeyPrefix + key
   } else {
@@ -30,11 +36,11 @@ export const cacheKey = (key) => {
   }
 }
 
-const deflateP = (dataz) => {
-  return new Promise((resolve, reject) =>
-    zlib.deflate(JSON.stringify(dataz), (er, deflatedData) => {
-      if (er) {
-        error(er)
+const deflateP = dataz => {
+  return new Promise<Buffer>((resolve, reject) =>
+    zlib.deflate(JSON.stringify(dataz), (err, deflatedData) => {
+      if (err) {
+        reject(err)
       } else {
         resolve(deflatedData)
       }
@@ -47,14 +53,20 @@ function createMockClient() {
   return {
     store,
     get: (key, cb) => cb(null, store[key]),
-    set: (key, data) => (store[key] = data),
-    del: key => delete store[key],
+    set: (key, data, _options, cb) => {
+      store[key] = data
+      cb()
+    },
+    del: (key, cb) => {
+      delete store[key]
+      cb()
+    },
   }
 }
 
 function createMemcachedClient() {
   const client = new Memcached(MEMCACHED_URL, {
-    poolSize: MEMCACHED_MAX_POOL
+    poolSize: MEMCACHED_MAX_POOL,
   })
   VerboseEvents.forEach(event => {
     client.on(event, () => verbose(`[Cache] ${event}`))
@@ -64,14 +76,12 @@ function createMemcachedClient() {
 
 export const client = isTest ? createMockClient() : createMemcachedClient()
 
-function _get(key) {
-  return new Promise((resolve, reject) => {
-    if (isNull(client)) return reject(new Error("[Cache] `client` is `null`"))
-
-    let timeoutId = setTimeout(() => {
+function _get<T>(key) {
+  return new Promise<T>((resolve, reject) => {
+    let timeoutId: NodeJS.Timer | null = setTimeout(() => {
       timeoutId = null
       const err = new Error(`[Cache#get] Timeout for key ${cacheKey(key)}`)
-      statsClient.increment('cache.timeout')
+      statsClient.increment("cache.timeout")
       error(err)
       reject(err)
     }, CACHE_RETRIEVAL_TIMEOUT_MS)
@@ -81,7 +91,7 @@ function _get(key) {
       const time = Date.now() - start
       if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
         error(`[Cache#get] Slow read of ${time}ms for key ${cacheKey(key)}`)
-        statsClient.timing('cache.slow_read', time)
+        statsClient.timing("cache.slow_read", time)
       }
 
       if (timeoutId) {
@@ -98,7 +108,7 @@ function _get(key) {
         if (CACHE_COMPRESSION_DISABLED) {
           resolve(JSON.parse(data.toString()))
         } else {
-          zlib.inflate(new Buffer(data, 'base64'), (er, inflatedData) => {
+          zlib.inflate(new Buffer(data, "base64"), (er, inflatedData) => {
             if (er) {
               reject(er)
             } else {
@@ -114,8 +124,6 @@ function _get(key) {
 }
 
 function _set(key, data) {
-  if (isNull(client)) return false
-
   const timestamp = new Date().getTime()
   /* eslint-disable no-param-reassign */
   if (isArray(data)) {
@@ -126,76 +134,50 @@ function _set(key, data) {
   /* eslint-enable no-param-reassign */
 
   if (CACHE_COMPRESSION_DISABLED) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       const payload = JSON.stringify(data)
       verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
-      resolve(
-        client.set(
-          cacheKey(key),
-          payload,
-          CACHE_LIFETIME_IN_SECONDS,
-          err => {
-            if (err) error(err)
-          }
-        )
-      )
+      client.set(cacheKey(key), payload, CACHE_LIFETIME_IN_SECONDS, err => {
+        err ? reject(err) : resolve()
+      })
     }).catch(error)
   } else {
-    return deflateP(data).then(deflatedData => {
-      const payload = deflatedData.toString('base64')
-      verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
+    return deflateP(data)
+      .then(deflatedData => {
+        const payload = deflatedData.toString("base64")
+        verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
 
-      return client.set(
-        cacheKey(key),
-        payload,
-        CACHE_LIFETIME_IN_SECONDS,
-        err => {
-          if (err) error(err)
-        }
-      )
-    }).catch(error)
+        return new Promise<void>((resolve, reject) => {
+          client.set(
+            cacheKey(key),
+            payload,
+            CACHE_LIFETIME_IN_SECONDS,
+            err => (err ? reject(err) : resolve())
+          )
+        })
+      })
+      .catch(error)
   }
 }
 
-const _delete = (key) =>
-  new Promise((resolve, reject) =>
-    client.del(cacheKey(key), (err) => {
-      if (err) return reject(err)
+const _delete = key =>
+  new Promise<void>((resolve, reject) =>
+    client.del(cacheKey(key), err => {
+      err ? reject(err) : resolve()
     })
   )
 
-
-function finishSpan(span, promise) {
-  return promise.then(
-    result => {
-      span.finish()
-      return result
-    }, err => {
-      span.finish()
-      throw err
-    })
-}
-
 export default {
-  get: key => {
-    return cacheTracer().then(span => {
-      span.setTag("resource.name", "get")
-      return finishSpan(span, _get(key))
-    })
+  get: <T = any>(key: string) => {
+    return cacheTracer.get(_get<T>(key))
   },
 
-  set: (key, data) => {
-    return cacheTracer().then(span => {
-      span.setTag("resource.name", "set")
-      return finishSpan(span, _set(key, data))
-    })
+  set: (key: string, data: any) => {
+    return cacheTracer.set(_set(key, data))
   },
 
-  delete: key => {
-    return cacheTracer().then(span => {
-      span.setTag("resource.name", "delete")
-      return finishSpan(span, _delete(key))
-    })
+  delete: (key: string) => {
+    return cacheTracer.delete(_delete(key))
   },
 
   isAvailable: () => {
@@ -209,5 +191,5 @@ export default {
         }
       })
     })
-  }
+  },
 }

@@ -1,4 +1,4 @@
-FROM node:8.4.0
+FROM node:8.11.3
 
 # Set up deploy user and working directory
 RUN adduser --disabled-password --gecos '' deploy
@@ -20,7 +20,9 @@ RUN chgrp gor /usr/local/bin/goreplay
 RUN chmod 0750 /usr/local/bin/goreplay
 RUN setcap "cap_net_raw,cap_net_admin+eip" /usr/local/bin/goreplay
 
-RUN npm install -g yarn@1.0.1
+# Set up yarn
+RUN npm install -g yarn@1.9.4
+RUN chmod +x /usr/local/bin/yarn
 
 # Set up mc
 ADD https://dl.minio.io/client/mc/release/linux-amd64/mc /usr/local/bin/mc

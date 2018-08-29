@@ -5,7 +5,7 @@ import {
   GraphQLID,
 } from "graphql"
 
-import { OrderReturnType } from "schema/ecommerce/types/order_return"
+import { OrderReturnType } from "./types/order_return"
 import { OrderFulfillmentTypeEnum } from "./types/order_fulfillment_type_enum"
 import { mutationWithClientMutationId } from "graphql-relay"
 import gql from "lib/gql"
@@ -138,9 +138,9 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
       shipping,
     }).then(result => {
       if (result.errors) {
-        throw Error(result.errors.map(d => d.message))
+        throw Error(result.errors.map(d => d.message).join("\n"))
       }
-      const { order, errors } = result.data.ecommerce_setShipping
+      const { order, errors } = result.data!.ecommerce_setShipping
       return {
         order,
         errors,

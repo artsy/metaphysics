@@ -4,7 +4,7 @@ import {
   GraphQLString,
   graphql,
 } from "graphql"
-import { OrderReturnType } from "schema/ecommerce/types/order_return"
+import { OrderReturnType } from "./types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
 import {
   RequestedFulfillmentFragment,
@@ -119,9 +119,9 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
       fulfillment,
     }).then(result => {
       if (result.errors) {
-        throw Error(result.errors.map(d => d.message))
+        throw Error(result.errors.map(d => d.message).join("\n"))
       }
-      const { order, errors } = result.data.ecommerce_fulfillAtOnce
+      const { order, errors } = result.data!.ecommerce_fulfillAtOnce
       return {
         order,
         errors,
