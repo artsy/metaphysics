@@ -9,12 +9,14 @@ import { info, error } from "./src/lib/loggers"
 import config from "config"
 import cache from "lib/cache"
 import chalk from "chalk"
+import { IpFilter as ipfilter } from 'express-ipfilter'
 
 const {
   ENABLE_ASYNC_STACK_TRACES,
   GRAVITY_API_URL,
   GRAVITY_ID,
   GRAVITY_SECRET,
+  IP_BLACKLIST,
   NODE_ENV,
   PORT,
 } = config
@@ -58,6 +60,12 @@ function bootApp() {
     app.set("forceSSLOptions", { trustXFPHeader: true }).use(forceSSL)
     app.set("trust proxy", 1)
   }
+
+  app.use(ipfilter(IP_BLACKLIST.split(','), {
+    allowedHeaders: ['x-forwarded-for'],
+    log: false,
+    mode: 'deny'
+  }))
 
   app.use(bodyParser.json())
 
@@ -105,7 +113,7 @@ function gracefulExit() {
   if (isShuttingDown) return
   isShuttingDown = true
   console.log("Received signal SIGTERM, shutting down")
-  server.shutdown(function() {
+  server.shutdown(function () {
     console.log("Closed existing connections.")
     process.exit(0)
   })
