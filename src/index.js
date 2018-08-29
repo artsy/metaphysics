@@ -56,9 +56,7 @@ if (ENABLE_HEAPDUMPS) {
 function logQueryDetailsIfEnabled() {
   if (Number.isInteger(logQueryDetailsThreshold)) {
     console.warn(
-      `[FEATURE] Enabling logging of queries running past the ${
-        logQueryDetailsThreshold
-      } sec threshold.`
+      `[FEATURE] Enabling logging of queries running past the ${logQueryDetailsThreshold} sec threshold.`
     )
     return logQueryDetails(logQueryDetailsThreshold)
   }
