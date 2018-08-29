@@ -37,8 +37,8 @@ import { LotStandingType } from "../me/lot_standing"
 import { amount } from "schema/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
 
-const is_inquireable = ({ inquireable, acquireable }) => {
-  return inquireable && !acquireable
+const is_inquireable = ({ inquireable }) => {
+  return inquireable
 }
 
 const has_price_range = price => {
