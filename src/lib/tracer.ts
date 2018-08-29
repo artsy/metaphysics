@@ -21,6 +21,10 @@ export function init() {
   })
   tracer.use("graphql", {
     service: `${DD_TRACER_SERVICE_NAME}.graphql`,
+    /**
+     * NOTE: This means we capture _all_ variables. When/if needed, we can
+     *       use this callback to redact sensitive variables.
+     */
     filterVariables: variables => variables,
   } as any)
 }
