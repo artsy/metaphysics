@@ -1,5 +1,6 @@
 import uuid from "uuid/v1"
 import tracer from "dd-trace"
+import { FORMAT_HTTP_HEADERS } from "opentracing"
 
 export function headers({ requestID, xForwardedFor }) {
   const headers = {
@@ -7,12 +8,9 @@ export function headers({ requestID, xForwardedFor }) {
     "x-forwarded-for": xForwardedFor,
   }
 
-  const scope = tracer.scopeManager().active()
-  if (scope) {
-    // TODO: Update dd-trace typings
-    const traceContext = scope.span().context() as any
-    headers["x-datadog-trace-id"] = traceContext.traceId.toString()
-    headers["x-datadog-parent-id"] = traceContext.spanId.toString()
+  const span = tracer.currentSpan()
+  if (span) {
+    tracer.inject(span, FORMAT_HTTP_HEADERS, headers)
   }
 
   return headers
