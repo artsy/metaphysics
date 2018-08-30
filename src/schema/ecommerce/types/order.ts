@@ -139,7 +139,6 @@ export const {
   connectionFields: {
     totalCount: {
       type: GraphQLInt,
-      resolve: ({ totalCount }) => totalCount,
     },
   },
 })
