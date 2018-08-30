@@ -9,7 +9,6 @@ import { OrderType } from "schema/ecommerce/types/order"
 
 export const OrderWithMutationSuccess = new GraphQLObjectType({
   name: "OrderWithMutationSuccess",
-  isTypeOf: data => data.order,
   fields: () => ({
     order: { type: OrderType },
   }),
@@ -17,7 +16,6 @@ export const OrderWithMutationSuccess = new GraphQLObjectType({
 
 export const EcommerceError = new GraphQLObjectType({
   name: "EcommerceError",
-  isTypeOf: data => data.order,
   fields: {
     description: {
       type: new GraphQLNonNull(GraphQLString),
@@ -28,7 +26,6 @@ export const EcommerceError = new GraphQLObjectType({
 
 export const OrderWithMutationFailure = new GraphQLObjectType({
   name: "OrderWithMutationFailure",
-  isTypeOf: data => data.error,
   fields: {
     error: { type: EcommerceError },
   },
@@ -37,4 +34,8 @@ export const OrderWithMutationFailure = new GraphQLObjectType({
 export const OrderOrFailureUnionType = new GraphQLUnionType({
   name: "OrderOrFailureUnionType",
   types: [OrderWithMutationSuccess, OrderWithMutationFailure],
+  resolveType: object =>
+    object.__typename === "EcommerceOrderWithMutationSuccess"
+      ? OrderWithMutationSuccess
+      : OrderWithMutationFailure,
 })

@@ -47,6 +47,7 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
           id: $orderId
         }) {
           orderOrError {
+            __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 id

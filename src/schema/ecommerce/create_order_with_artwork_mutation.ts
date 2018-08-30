@@ -65,6 +65,7 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
           }
         ) {
           orderOrError {
+            __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 id
