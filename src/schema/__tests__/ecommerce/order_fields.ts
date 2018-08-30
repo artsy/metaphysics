@@ -38,6 +38,8 @@ export const OrderBuyerFields = gql`
   createdAt
   stateUpdatedAt
   stateExpiresAt
+  lastApprovedAt
+  lastSubmittedAt
   seller {
     ...on Partner {
       id
@@ -125,6 +127,8 @@ export const OrderSellerFields = gql`
   createdAt
   stateUpdatedAt
   stateExpiresAt
+  lastApprovedAt
+  lastSubmittedAt
   seller {
     ...on Partner {
       id

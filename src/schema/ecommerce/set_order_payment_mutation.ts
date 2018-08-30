@@ -69,6 +69,8 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
                 createdAt
                 stateUpdatedAt
                 stateExpiresAt
+                lastApprovedAt
+                lastSubmittedAt
                 lineItems{
                   edges{
                     node{

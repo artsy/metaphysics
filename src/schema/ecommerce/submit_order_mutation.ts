@@ -28,8 +28,8 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
   inputFields: SubmitOrderInputType.getFields(),
   outputFields: {
     orderOrError: {
-      type: OrderOrFailureUnionType
-    }
+      type: OrderOrFailureUnionType,
+    },
   },
   mutateAndGetPayload: (
     { orderId, creditCardId },
@@ -65,6 +65,8 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
                 createdAt
                 stateUpdatedAt
                 stateExpiresAt
+                lastApprovedAt
+                lastSubmittedAt
                 lineItems{
                   edges{
                     node{

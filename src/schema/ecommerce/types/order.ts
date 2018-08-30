@@ -106,6 +106,8 @@ export const OrderType = new GraphQLObjectType({
       ) => (creditCardId ? creditCardLoader(creditCardId) : null),
     },
     // TODO: The `date` resolver not typed correctly
+    lastApprovedAt: date as any,
+    lastSubmittedAt: date as any,
     updatedAt: date as any,
     createdAt: date as any,
     stateUpdatedAt: date as any,
@@ -134,4 +136,10 @@ export const {
   edgeType: OrderEdge,
 } = connectionDefinitions({
   nodeType: OrderType,
+  connectionFields: {
+    totalCount: {
+      type: GraphQLInt,
+      resolve: ({ totalCount }) => totalCount,
+    },
+  },
 })
