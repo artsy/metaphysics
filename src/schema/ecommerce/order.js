@@ -5,6 +5,8 @@ import {
   BuyerSellerFields,
 } from "./query_helpers"
 import gql from "lib/gql"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
+
 export const Order = {
   name: "Order",
   type: OrderType,
@@ -60,11 +62,6 @@ export const Order = {
     `
     return graphql(exchangeSchema, query, null, context, {
       id,
-    }).then(result => {
-      if (result.errors) {
-        throw Error(result.errors.map(d => d.message))
-      }
-      return result.data.ecommerce_order
-    })
+    }).then(extractEcommerceResponse("ecommerce_order"))
   },
 }

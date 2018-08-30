@@ -11,6 +11,7 @@ import {
   BuyerSellerFields,
 } from "./query_helpers"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 const SubmitOrderInputType = new GraphQLInputObjectType({
   name: "SubmitOrderInput",
@@ -92,6 +93,6 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       creditCardId,
-    }).then(result => result.data!.ecommerce_submitOrder)
+    }).then(extractEcommerceResponse("ecommerce_submitOrder"))
   },
 })

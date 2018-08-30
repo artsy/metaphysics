@@ -11,6 +11,7 @@ import {
 } from "./query_helpers"
 import gql from "lib/gql"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 const SetOrderPaymentInputType = new GraphQLInputObjectType({
   name: "SetOrderPaymentInput",
@@ -96,6 +97,6 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       creditCardId,
-    }).then(result => result.data!.ecommerce_setPayment)
+    }).then(extractEcommerceResponse("ecommerce_setPayment"))
   },
 })
