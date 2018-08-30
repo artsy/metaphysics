@@ -51,6 +51,8 @@ export const RejectOrderMutation = mutationWithClientMutationId({
                 createdAt
                 stateUpdatedAt
                 stateExpiresAt
+                lastApprovedAt
+                lastSubmittedAt
                 lineItems{
                   edges{
                     node{

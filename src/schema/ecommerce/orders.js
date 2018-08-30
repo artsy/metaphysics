@@ -44,6 +44,7 @@ export const Orders = {
           sort: $sort
         ) {
           ${PageInfo}
+          totalCount
           edges {
             node {
               id
@@ -63,6 +64,8 @@ export const Orders = {
               sellerTotalCents
               stateUpdatedAt
               stateExpiresAt
+              lastApprovedAt
+              lastSubmittedAt
               lineItems {
                 ${PageInfo}
                 edges {

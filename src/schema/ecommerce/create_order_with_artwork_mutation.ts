@@ -83,6 +83,8 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
                 taxTotalCents
                 transactionFeeCents
                 updatedAt
+                lastApprovedAt
+                lastSubmittedAt
                 lineItems {
                   edges {
                     node {

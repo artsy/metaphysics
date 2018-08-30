@@ -18,6 +18,7 @@ describe("Orders query", () => {
     const query = gql`
       {
         orders(sellerId: "581b45e4cd530e658b000124") {
+          totalCount
           edges {
             node {
               ${OrderSellerFields}
@@ -28,6 +29,7 @@ describe("Orders query", () => {
     `
 
     return runQuery(query, rootValue).then(data => {
+      expect(data.orders.totalCount).toEqual(100)
       expect(data.orders.edges[0].node).toEqual(sampleOrder(true, false))
     })
   })

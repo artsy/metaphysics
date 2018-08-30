@@ -50,6 +50,8 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
                 createdAt
                 stateUpdatedAt
                 stateExpiresAt
+                lastApprovedAt
+                lastSubmittedAt
                 lineItems{
                   edges{
                     node{

@@ -117,6 +117,8 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
                 createdAt
                 stateUpdatedAt
                 stateExpiresAt
+                lastApprovedAt
+                lastSubmittedAt
                 lineItems {
                   edges {
                     node {

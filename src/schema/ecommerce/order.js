@@ -32,6 +32,8 @@ export const Order = {
           createdAt
           stateUpdatedAt
           stateExpiresAt
+          lastApprovedAt
+          lastSubmittedAt
           lineItems{
             edges{
               node{
