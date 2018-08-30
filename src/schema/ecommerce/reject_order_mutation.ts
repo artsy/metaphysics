@@ -7,6 +7,7 @@ import {
 } from "./query_helpers"
 import gql from "lib/gql"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 export const RejectOrderMutation = mutationWithClientMutationId({
   name: "RejectOrder",
@@ -78,6 +79,6 @@ export const RejectOrderMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       creditCardId,
-    }).then(result => result.data!.ecommerce_rejectOrder)
+    }).then(extractEcommerceResponse("ecommerce_rejectOrder"))
   },
 })

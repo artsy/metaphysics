@@ -7,6 +7,7 @@ import {
   RequestedFulfillmentFragment,
   BuyerSellerFields,
 } from "./query_helpers"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 export const Orders = {
   name: "Orders",
@@ -90,11 +91,6 @@ export const Orders = {
       sellerType,
       state,
       sort,
-    }).then(result => {
-      if (result.errors) {
-        throw Error(result.errors.map(d => d.message))
-      }
-      return result.data.ecommerce_orders
-    })
+    }).then(extractEcommerceResponse("ecommerce_orders"))
   },
 }
