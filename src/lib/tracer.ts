@@ -15,7 +15,8 @@ export function init() {
   })
   tracer.use("express", {
     service: `${DD_TRACER_SERVICE_NAME}.request`,
-  })
+    recordHeaders: ["User-Agent"],
+  } as any)
   tracer.use("http", {
     service: `${DD_TRACER_SERVICE_NAME}.http-client`,
   })
