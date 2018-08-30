@@ -32,6 +32,7 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
           id: $orderId,
         }) {
           orderOrError {
+            __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
               id

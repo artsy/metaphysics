@@ -99,6 +99,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
           }
         ) {
           orderOrError {
+            __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 id

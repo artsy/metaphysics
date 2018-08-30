@@ -71,6 +71,7 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
           fulfillment: $fulfillment
         }) {
           orderOrError {
+            __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
               id
