@@ -10,3 +10,5 @@ flow-typed
 package-lock.json
 yarn-error.log
 resourceRegistry.log
+tmp
+_schema.graphql 
