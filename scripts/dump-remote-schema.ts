@@ -1,7 +1,7 @@
-/* eslint-disable no-console */
-
 // The below all relate to Convection stitching.
 // TODO: Refactor when adding another service.
+// Also, consider https://github.com/artsy/README/issues/31
+//
 import fs from "fs"
 import path from "path"
 import { printSchema } from "graphql/utilities"

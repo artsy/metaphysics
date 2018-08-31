@@ -13,6 +13,7 @@ import {
   RequestedFulfillmentFragment,
   BuyerSellerFields,
 } from "./query_helpers"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 const CreateOrderInputType = new GraphQLInputObjectType({
   name: "CreateOrderInput",
@@ -64,6 +65,7 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
           }
         ) {
           orderOrError {
+            __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 id
@@ -83,6 +85,8 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
                 taxTotalCents
                 transactionFeeCents
                 updatedAt
+                lastApprovedAt
+                lastSubmittedAt
                 lineItems {
                   edges {
                     node {
@@ -106,16 +110,10 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
       }
     `
 
-    return (
-      graphql(exchangeSchema, mutation, null, context, {
-        artworkId,
-        editionSetId,
-        quantity,
-      })
-        // Because the error types are represented in the type system we
-        // can always assume that data is being used. If the call to Exchange
-        // fails then the error would have stopped execution before here
-        .then(result => result.data!.ecommerce_createOrderWithArtwork)
-    )
+    return graphql(exchangeSchema, mutation, null, context, {
+      artworkId,
+      editionSetId,
+      quantity,
+    }).then(extractEcommerceResponse("ecommerce_createOrderWithArtwork"))
   },
 })

@@ -13,6 +13,7 @@ import {
   BuyerSellerFields,
 } from "./query_helpers"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 const ShippingInputField = new GraphQLInputObjectType({
   name: "ShippingInputField",
@@ -98,6 +99,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
           }
         ) {
           orderOrError {
+            __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 id
@@ -117,6 +119,8 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
                 createdAt
                 stateUpdatedAt
                 stateExpiresAt
+                lastApprovedAt
+                lastSubmittedAt
                 lineItems {
                   edges {
                     node {
@@ -143,6 +147,6 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
       orderId,
       fulfillmentType,
       shipping,
-    }).then(result => result.data!.ecommerce_setShipping)
+    }).then(extractEcommerceResponse("ecommerce_setShipping"))
   },
 })

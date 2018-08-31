@@ -11,6 +11,7 @@ import {
 } from "./query_helpers"
 import gql from "lib/gql"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 const FulfillmentInputType = new GraphQLInputObjectType({
   name: "FulfillmentInputType",
@@ -70,6 +71,7 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
           fulfillment: $fulfillment
         }) {
           orderOrError {
+            __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
               id
@@ -89,6 +91,8 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
                 createdAt
                 stateUpdatedAt
                 stateExpiresAt
+                lastApprovedAt
+                lastSubmittedAt
                 lineItems{
                   edges{
                     node{
@@ -124,6 +128,6 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       fulfillment,
-    }).then(result => result.data!.ecommerce_fulfillAtOnce)
+    }).then(extractEcommerceResponse("ecommerce_fulfillAtOnce"))
   },
 })
