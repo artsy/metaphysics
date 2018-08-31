@@ -3,7 +3,7 @@ import { RequestHandler } from "express"
 
 export const nameOldEigenQueries: RequestHandler = (req, _res, next) => {
   const agent = req.headers["user-agent"]
-  if (agent && agent.includes("Eigen") && req.body.query) {
+  if (req.body.query && agent && agent.includes("Eigen")) {
     const { query } = req.body as { query: string }
     if (!query.startsWith("query ")) {
       if (query.includes("saved_artworks")) {
