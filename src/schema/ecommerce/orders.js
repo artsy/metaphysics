@@ -7,6 +7,7 @@ import {
   RequestedFulfillmentFragment,
   BuyerSellerFields,
 } from "./query_helpers"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 export const Orders = {
   name: "Orders",
@@ -44,6 +45,7 @@ export const Orders = {
           sort: $sort
         ) {
           ${PageInfo}
+          totalCount
           edges {
             node {
               id
@@ -63,6 +65,8 @@ export const Orders = {
               sellerTotalCents
               stateUpdatedAt
               stateExpiresAt
+              lastApprovedAt
+              lastSubmittedAt
               lineItems {
                 ${PageInfo}
                 edges {
@@ -87,11 +91,6 @@ export const Orders = {
       sellerType,
       state,
       sort,
-    }).then(result => {
-      if (result.errors) {
-        throw Error(result.errors.map(d => d.message))
-      }
-      return result.data.ecommerce_orders
-    })
+    }).then(extractEcommerceResponse("ecommerce_orders"))
   },
 }
