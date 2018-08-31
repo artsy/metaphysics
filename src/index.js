@@ -28,6 +28,7 @@ import { mergeSchemas } from "./lib/stitching/mergeSchemas"
 import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
 import { executableExchangeSchema } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
+import { nameOldEigenQueries } from "./lib/nameOldEigenQueries"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
 
@@ -114,6 +115,7 @@ async function startApp() {
     },
     logQueryDetailsIfEnabled(),
     checkForProblematicArtistQuery,
+    nameOldEigenQueries,
     fetchPersistedQuery,
     crunchInterceptor,
     graphqlHTTP((req, res, params) => {
