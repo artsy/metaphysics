@@ -16,7 +16,7 @@ export const nameOldEigenQueries: RequestHandler = (req, _res, next) => {
         // https://github.com/artsy/eigen/blob/master/Artsy/Networking/conversations.graphql
         req.body.query = `query TotalUnreadCountQuery ${query}`
       } else {
-        error(`Unpexpected Eigen query: ${query}`)
+        error(`Unexpected Eigen query: ${query}`)
       }
     }
   }
