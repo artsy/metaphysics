@@ -20,3 +20,4 @@ tmp
 node_modules
 .vscode
 redis.conf
+build

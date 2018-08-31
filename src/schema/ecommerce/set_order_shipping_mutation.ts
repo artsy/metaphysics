@@ -5,11 +5,15 @@ import {
   GraphQLID,
 } from "graphql"
 
-import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { OrderFulfillmentTypeEnum } from "./types/order_fulfillment_type_enum"
 import { mutationWithClientMutationId } from "graphql-relay"
 import gql from "lib/gql"
-import { RequestedFulfillmentFragment } from "./query_helpers"
+import {
+  RequestedFulfillmentFragment,
+  BuyerSellerFields,
+} from "./query_helpers"
+import { OrderOrFailureUnionType } from "./types/order_or_error_union"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 const ShippingInputField = new GraphQLInputObjectType({
   name: "ShippingInputField",
@@ -68,9 +72,8 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
   description: "Sets shipping information for an order",
   inputFields: SetOrderShippingInput.getFields(),
   outputFields: {
-    result: {
-      type: OrderReturnType,
-      resolve: order => order,
+    orderOrError: {
+      type: OrderOrFailureUnionType,
     },
   },
   mutateAndGetPayload: (
@@ -95,40 +98,48 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
             shipping: $shipping
           }
         ) {
-          order {
-            id
-            code
-            currencyCode
-            state
-            partnerId
-            userId
-            requestedFulfillment {
-              ${RequestedFulfillmentFragment}
-            }
-            itemsTotalCents
-            shippingTotalCents
-            taxTotalCents
-            commissionFeeCents
-            transactionFeeCents
-            buyerTotalCents
-            sellerTotalCents
-            updatedAt
-            createdAt
-            stateUpdatedAt
-            stateExpiresAt
-            lineItems {
-              edges {
-                node {
-                  id
-                  priceCents
-                  artworkId
-                  editionSetId
-                  quantity
+          orderOrError {
+            __typename
+            ... on EcommerceOrderWithMutationSuccess {
+              order {
+                id
+                code
+                currencyCode
+                state
+                ${BuyerSellerFields}
+                ${RequestedFulfillmentFragment}
+                itemsTotalCents
+                shippingTotalCents
+                taxTotalCents
+                commissionFeeCents
+                transactionFeeCents
+                buyerTotalCents
+                sellerTotalCents
+                updatedAt
+                createdAt
+                stateUpdatedAt
+                stateExpiresAt
+                lastApprovedAt
+                lastSubmittedAt
+                lineItems {
+                  edges {
+                    node {
+                      id
+                      priceCents
+                      artworkId
+                      editionSetId
+                      quantity
+                    }
+                  }
                 }
               }
             }
+            ... on EcommerceOrderWithMutationFailure {
+              error {
+                description
+              }
+            }
           }
-          errors
         }
       }
     `
@@ -136,15 +147,6 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
       orderId,
       fulfillmentType,
       shipping,
-    }).then(result => {
-      if (result.errors) {
-        throw Error(result.errors.map(d => d.message))
-      }
-      const { order, errors } = result.data.ecommerce_setShipping
-      return {
-        order,
-        errors,
-      }
-    })
+    }).then(extractEcommerceResponse("ecommerce_setShipping"))
   },
 })

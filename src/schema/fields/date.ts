@@ -1,6 +1,6 @@
 import moment from "moment"
 import "moment-timezone"
-import { GraphQLString, GraphQLBoolean } from "graphql"
+import { GraphQLString, GraphQLBoolean, GraphQLFieldConfig } from "graphql"
 
 export function date(rawDate, format, timezone) {
   if (timezone) {
@@ -17,12 +17,15 @@ export function date(rawDate, format, timezone) {
   return rawDate
 }
 
-export default {
+const dateField: GraphQLFieldConfig<
+  { format: string; timezone: string },
+  any
+> = {
   type: GraphQLString,
   args: {
     convert_to_utc: {
       type: GraphQLBoolean,
-      deprecationReason: "Use timezone instead",
+      description: "This arg is deprecated, use timezone instead",
     },
     format: {
       type: GraphQLString,
@@ -32,13 +35,13 @@ export default {
     timezone: {
       type: GraphQLString,
       description:
-        "Specify a tz database time zone, otherwise falls back to `X-TIMEZONE` header",
+        "A tz database time zone, otherwise falls back to `X-TIMEZONE` header",
     },
   },
   resolve: (
     obj,
-    { format, timezone, ignoreTimezone },
-    request,
+    { format, timezone },
+    _request,
     { fieldName, rootValue: { defaultTimezone } }
   ) => {
     const rawDate = obj[fieldName]
@@ -46,3 +49,5 @@ export default {
     return date(rawDate, format, timezoneString)
   },
 }
+
+export default dateField

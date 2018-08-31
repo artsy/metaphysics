@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { isTwoDimensional, isTooBig, isEmbeddedVideo, embed } from "./utilities"
-import { enhance, existyValue, isExisty } from "lib/helpers"
+import { enhance, existyValue } from "lib/helpers"
 import cached from "schema/fields/cached"
 import { markdown } from "schema/fields/markdown"
 import Article from "schema/article"
@@ -43,10 +43,6 @@ const is_inquireable = ({ inquireable, acquireable }) => {
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
-}
-
-const has_editions = edition_sets => {
-  return edition_sets && edition_sets.length > 0
 }
 
 const has_multiple_editions = edition_sets => {
@@ -513,6 +509,7 @@ export const artworkFields = () => {
       },
     },
     price: { type: GraphQLString },
+    price_currency: { type: GraphQLString },
     shippingInfo: {
       type: GraphQLString,
       description:
@@ -714,7 +711,7 @@ export const artworkFields = () => {
         }
         return {
           label: "Framed",
-          details: "",
+          details: null,
         }
       },
     },
@@ -727,7 +724,7 @@ export const artworkFields = () => {
         sticker_label,
         signed_other,
       }) => {
-        var detailsParts = []
+        let detailsParts = []
         if (signed_by_artist) {
           detailsParts.push("hand-signed by artist")
         }
@@ -757,7 +754,7 @@ export const artworkFields = () => {
         }
         return {
           label: "Condition details",
-          details: condition_description,
+          details: capitalizeFirstCharacter(condition_description),
         }
       },
     },
@@ -767,7 +764,7 @@ export const artworkFields = () => {
         if (!certificate_of_authenticity) {
           return null
         }
-        return { label: "Certificate of authenticity", details: "" }
+        return { label: "Certificate of authenticity", details: null }
       },
     },
   }

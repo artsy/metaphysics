@@ -9,7 +9,11 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 import { OrderOrFailureUnionType } from "schema/ecommerce/types/order_or_error_union"
 import gql from "lib/gql"
-import { RequestedFulfillmentFragment } from "./query_helpers"
+import {
+  RequestedFulfillmentFragment,
+  BuyerSellerFields,
+} from "./query_helpers"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 const CreateOrderInputType = new GraphQLInputObjectType({
   name: "CreateOrderInput",
@@ -61,6 +65,7 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
           }
         ) {
           orderOrError {
+            __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 id
@@ -70,11 +75,9 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
                 createdAt
                 currencyCode
                 itemsTotalCents
-                partnerId
+                ${BuyerSellerFields}
                 sellerTotalCents
-                requestedFulfillment {
-                  ${RequestedFulfillmentFragment}
-                }
+                ${RequestedFulfillmentFragment}
                 shippingTotalCents
                 state
                 stateExpiresAt
@@ -82,7 +85,8 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
                 taxTotalCents
                 transactionFeeCents
                 updatedAt
-                userId
+                lastApprovedAt
+                lastSubmittedAt
                 lineItems {
                   edges {
                     node {
@@ -106,16 +110,10 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
       }
     `
 
-    return (
-      graphql(exchangeSchema, mutation, null, context, {
-        artworkId,
-        editionSetId,
-        quantity,
-      })
-        // Because the error types are represented in the type system we
-        // can always assume that data is being used. If the call to Exchange
-        // fails then the error would have stopped execution before here
-        .then(result => result.data!.ecommerce_createOrderWithArtwork)
-    )
+    return graphql(exchangeSchema, mutation, null, context, {
+      artworkId,
+      editionSetId,
+      quantity,
+    }).then(extractEcommerceResponse("ecommerce_createOrderWithArtwork"))
   },
 })

@@ -4,16 +4,14 @@ import {
   GraphQLString,
   GraphQLInt,
 } from "graphql"
-import { OrderFulfillmentTypeEnum } from "./order_fulfillment_type_enum"
 import { connectionDefinitions } from "graphql-relay"
 
-import Partner from "schema/partner"
 import { amount } from "schema/fields/money"
 import date from "schema/fields/date"
-import { UserByID } from "schema/user"
 import { CreditCard } from "schema/credit_card"
 import { OrderLineItemConnection } from "./order_line_item"
 import { RequestedFulfillmentUnionType } from "./requested_fulfillment_union_type"
+import { OrderPartyUnionType } from "./order_party_union"
 
 export const OrderType = new GraphQLObjectType({
   name: "Order",
@@ -77,25 +75,25 @@ export const OrderType = new GraphQLObjectType({
       type: OrderLineItemConnection,
       description: "List of order line items",
     },
-    partner: {
-      type: Partner.type,
-      description: "Partner of this order",
+    seller: {
+      type: OrderPartyUnionType,
+      description: "Seller of this order",
       resolve: (
-        { partnerId },
+        { seller },
         _args,
         _context,
-        { rootValue: { partnerLoader } }
-      ) => partnerLoader(partnerId),
+        { rootValue: { userByIDLoader, partnerLoader } }
+      ) => resolveOrderParty(seller, userByIDLoader, partnerLoader),
     },
-    user: {
-      type: UserByID.type,
-      description: "User of this order",
+    buyer: {
+      type: OrderPartyUnionType,
+      description: "Buyer of this order",
       resolve: (
-        { userId },
+        { buyer },
         _args,
         _context,
-        { rootValue: { userByIDLoader } }
-      ) => (userId ? userByIDLoader(userId) : null),
+        { rootValue: { userByIDLoader, partnerLoader } }
+      ) => resolveOrderParty(buyer, userByIDLoader, partnerLoader),
     },
     creditCard: {
       type: CreditCard.type,
@@ -108,6 +106,8 @@ export const OrderType = new GraphQLObjectType({
       ) => (creditCardId ? creditCardLoader(creditCardId) : null),
     },
     // TODO: The `date` resolver not typed correctly
+    lastApprovedAt: date as any,
+    lastSubmittedAt: date as any,
     updatedAt: date as any,
     createdAt: date as any,
     stateUpdatedAt: date as any,
@@ -115,9 +115,30 @@ export const OrderType = new GraphQLObjectType({
   }),
 })
 
+const resolveOrderParty = async (orderParty, userByIDLoader, partnerLoader) => {
+  if (orderParty.id) {
+    if (orderParty.__typename === "EcommerceUser") {
+      const user = await userByIDLoader(orderParty.id)
+      user.__typename = "User"
+      return user
+    } else if (orderParty.__typename === "EcommercePartner") {
+      const partner = await partnerLoader(orderParty.id)
+      partner.__typename = "Partner"
+      return partner
+    }
+  } else {
+    return null
+  }
+}
+
 export const {
   connectionType: OrderConnection,
   edgeType: OrderEdge,
 } = connectionDefinitions({
   nodeType: OrderType,
+  connectionFields: {
+    totalCount: {
+      type: GraphQLInt,
+    },
+  },
 })

@@ -4,9 +4,14 @@ import {
   GraphQLString,
   graphql,
 } from "graphql"
-import { OrderReturnType } from "schema/ecommerce/types/order_return"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { RequestedFulfillmentFragment } from "./query_helpers"
+import {
+  RequestedFulfillmentFragment,
+  BuyerSellerFields,
+} from "./query_helpers"
+import gql from "lib/gql"
+import { OrderOrFailureUnionType } from "./types/order_or_error_union"
+import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 const FulfillmentInputType = new GraphQLInputObjectType({
   name: "FulfillmentInputType",
@@ -46,9 +51,8 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
     "Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order",
   inputFields: FulfillOrderAtOnceInputType.getFields(),
   outputFields: {
-    result: {
-      type: OrderReturnType,
-      resolve: order => order,
+    orderOrError: {
+      type: OrderOrFailureUnionType,
     },
   },
   mutateAndGetPayload: (
@@ -60,71 +64,70 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
       return new Error("You need to be signed in to perform this action")
     }
 
-    const mutation = `
+    const mutation = gql`
       mutation fulfillOrderAtOnce($orderId: ID!, $fulfillment: EcommerceFulfillmentAttributes!) {
         ecommerce_fulfillAtOnce(input: {
           id: $orderId,
           fulfillment: $fulfillment
         }) {
-          order {
-           id
-            code
-            currencyCode
-            state
-            partnerId
-            userId
-            requestedFulfillment {
-              ${RequestedFulfillmentFragment}
-            }
-            itemsTotalCents
-            shippingTotalCents
-            taxTotalCents
-            commissionFeeCents
-            transactionFeeCents
-            buyerTotalCents
-            sellerTotalCents
-            updatedAt
-            createdAt
-            stateUpdatedAt
-            stateExpiresAt
-            lineItems{
-              edges{
-                node{
-                  id
-                  priceCents
-                  artworkId
-                  editionSetId
-                  quantity
-                  fulfillments{
-                    edges{
-                      node{
-                        id
-                        courier
-                        trackingId
-                        estimatedDelivery
+          orderOrError {
+            __typename
+            ... on EcommerceOrderWithMutationSuccess {
+              order {
+              id
+                code
+                currencyCode
+                state
+                ${BuyerSellerFields}
+                ${RequestedFulfillmentFragment}
+                itemsTotalCents
+                shippingTotalCents
+                taxTotalCents
+                commissionFeeCents
+                transactionFeeCents
+                buyerTotalCents
+                sellerTotalCents
+                updatedAt
+                createdAt
+                stateUpdatedAt
+                stateExpiresAt
+                lastApprovedAt
+                lastSubmittedAt
+                lineItems{
+                  edges{
+                    node{
+                      id
+                      priceCents
+                      artworkId
+                      editionSetId
+                      quantity
+                      fulfillments{
+                        edges{
+                          node{
+                            id
+                            courier
+                            trackingId
+                            estimatedDelivery
+                          }
+                        }
                       }
                     }
                   }
                 }
               }
             }
+            ... on EcommerceOrderWithMutationFailure {
+              error {
+                description
+              }
+            }
           }
-          errors
         }
       }
     `
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       fulfillment,
-    }).then(result => {
-      if (result.errors) {
-        throw Error(result.errors.map(d => d.message))
-      }
-      const { order, errors } = result.data.ecommerce_fulfillAtOnce
-      return {
-        order,
-        errors,
-      }
-    })
+    }).then(extractEcommerceResponse("ecommerce_fulfillAtOnce"))
   },
 })

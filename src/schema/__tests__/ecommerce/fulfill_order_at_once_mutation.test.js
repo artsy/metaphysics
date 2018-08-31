@@ -13,8 +13,7 @@ describe("Fulfill Order at Once Mutation", () => {
     const resolvers = {
       Mutation: {
         fulfillAtOnce: () => ({
-          order: exchangeOrderJSON,
-          errors: [],
+          orderOrError: { order: exchangeOrderJSON },
         }),
       },
     }
@@ -33,19 +32,25 @@ describe("Fulfill Order at Once Mutation", () => {
               estimatedDelivery: "2018-05-18"
             }
           }
-        ) {
-          result {
+        )
+        { orderOrError {
+          ... on OrderWithMutationSuccess {
             order {
               ${OrderSellerFields}
             }
-            errors
+          }
+          ... on OrderWithMutationFailure {
+            error {
+              description
+            }
           }
         }
       }
+    }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.fulfillOrderAtOnce.result.order).toEqual(
+      expect(data.fulfillOrderAtOnce.orderOrError.order).toEqual(
         sampleOrder(true, true)
       )
     })

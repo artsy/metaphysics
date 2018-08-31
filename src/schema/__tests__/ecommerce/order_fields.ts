@@ -38,13 +38,27 @@ export const OrderBuyerFields = gql`
   createdAt
   stateUpdatedAt
   stateExpiresAt
-  partner {
-    id
-    name
+  lastApprovedAt
+  lastSubmittedAt
+  seller {
+    ...on Partner {
+      id
+      name
+    }
+    ... on User {
+      id
+      email
+    }
   }
-  user {
-    id
-    email
+  buyer {
+    ... on User {
+      id
+      email
+    }
+    ...on Partner {
+      id
+      name
+    }
   }
   creditCard {
     id
@@ -113,13 +127,19 @@ export const OrderSellerFields = gql`
   createdAt
   stateUpdatedAt
   stateExpiresAt
-  partner {
-    id
-    name
+  lastApprovedAt
+  lastSubmittedAt
+  seller {
+    ...on Partner {
+      id
+      name
+    }
   }
-  user {
-    id
-    email
+  buyer {
+    ... on User {
+      id
+      email
+    }
   }
   creditCard {
     id

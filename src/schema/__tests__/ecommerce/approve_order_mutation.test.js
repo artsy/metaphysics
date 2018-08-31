@@ -13,8 +13,7 @@ describe("Approve Order Mutation", () => {
     const resolvers = {
       Mutation: {
         approveOrder: () => ({
-          order: exchangeOrderJSON,
-          errors: [],
+          orderOrError: { order: exchangeOrderJSON },
         }),
       },
     }
@@ -25,18 +24,26 @@ describe("Approve Order Mutation", () => {
     const mutation = gql`
       mutation {
         approveOrder(input: { orderId: "111" }) {
-          result {
-            order {
-              ${OrderSellerFields}
+          orderOrError {
+            ... on OrderWithMutationSuccess {
+              order {
+                ${OrderSellerFields}
+              }
             }
-            errors
+            ... on OrderWithMutationFailure {
+              error {
+                description
+              }
+            }
           }
         }
       }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.approveOrder.result.order).toEqual(sampleOrder(true, false))
+      expect(data.approveOrder.orderOrError.order).toEqual(
+        sampleOrder(true, false)
+      )
     })
   })
 })

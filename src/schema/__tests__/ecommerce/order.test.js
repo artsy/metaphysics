@@ -9,7 +9,7 @@ import { OrderSellerFields } from "./order_fields"
 
 let rootValue
 
-describe("Order type", () => {
+describe("Order query", () => {
   beforeEach(() => {
     const resolvers = { Query: { order: () => exchangeOrderJSON } }
 

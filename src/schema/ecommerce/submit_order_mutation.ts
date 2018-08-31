@@ -1,36 +1,32 @@
 import {
-  graphql,
   GraphQLInputObjectType,
-  GraphQLString,
   GraphQLNonNull,
+  GraphQLString,
+  graphql,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import gql from "lib/gql"
 import {
   RequestedFulfillmentFragment,
   BuyerSellerFields,
 } from "./query_helpers"
-import gql from "lib/gql"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
-const SetOrderPaymentInputType = new GraphQLInputObjectType({
-  name: "SetOrderPaymentInput",
+const SubmitOrderInputType = new GraphQLInputObjectType({
+  name: "SubmitOrderInput",
   fields: {
     orderId: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Order ID",
     },
-    creditCardId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Gravity Credit Card Id",
-    },
   },
 })
 
-export const SetOrderPaymentMutation = mutationWithClientMutationId({
-  name: "SetOrderPayment",
-  description: "Sets payment information on an order",
-  inputFields: SetOrderPaymentInputType.getFields(),
+export const SubmitOrderMutation = mutationWithClientMutationId({
+  name: "SubmitOrder",
+  description: "Submits an order",
+  inputFields: SubmitOrderInputType.getFields(),
   outputFields: {
     orderOrError: {
       type: OrderOrFailureUnionType,
@@ -44,17 +40,17 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }
+
     const mutation = gql`
-      mutation setOrderPayment($orderId: ID!, $creditCardId: String!) {
-        ecommerce_setPayment(input: {
-          id: $orderId,
-          creditCardId: $creditCardId,
+      mutation submitOrder($orderId: ID!) {
+        ecommerce_submitOrder(input: {
+          id: $orderId
         }) {
           orderOrError {
             __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
-              id
+                id
                 code
                 currencyCode
                 state
@@ -98,6 +94,6 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       creditCardId,
-    }).then(extractEcommerceResponse("ecommerce_setPayment"))
+    }).then(extractEcommerceResponse("ecommerce_submitOrder"))
   },
 })

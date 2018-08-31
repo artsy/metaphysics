@@ -3,6 +3,7 @@ import { assign } from "lodash"
 import { error as log } from "lib/loggers"
 import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
 import { Request } from "../../node_modules/@types/express"
+import config from "config"
 
 const blacklistHttpStatuses = [401, 403, 404]
 
@@ -23,7 +24,7 @@ export const shouldReportError = originalError => {
 
 export const graphqlErrorHandler = (
   req: Request,
-  { isProduction, enableSentry, variables, query }
+  { enableSentry, variables, query }
 ) => {
   return error => {
     if (enableSentry && shouldReportError(error.originalError)) {
@@ -62,8 +63,8 @@ export const graphqlErrorHandler = (
     return {
       message: error.message,
       locations: error.locations,
-      path: isProduction ? null : error.path,
-      stack: isProduction ? null : error.stack,
+      path: config.PRODUCTION_ENV ? null : error.path,
+      stack: config.PRODUCTION_ENV ? null : error.stack,
     }
   }
 }
