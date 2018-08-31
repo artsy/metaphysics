@@ -12,11 +12,11 @@ export const nameOldEigenQueries: RequestHandler = (req, _res, next) => {
       } else if (query.includes("sale_artworks")) {
         // https://github.com/artsy/eigen/blob/master/Artsy/Networking/artworks_in_sale.graphql
         req.body.query = `query ArtworksInSaleQuery ${query}`
-      } else if (query.includes("sale_artworks")) {
+      } else if (query.includes("totalUnreadCount")) {
         // https://github.com/artsy/eigen/blob/master/Artsy/Networking/conversations.graphql
         req.body.query = `query TotalUnreadCountQuery ${query}`
       } else {
-        error(`Unpexpected Eigen query: ${query}`)
+        error(`Unexpected Eigen query: ${query}`)
       }
     }
   }
