@@ -26,7 +26,7 @@ export function init() {
      * NOTE: This means we capture _all_ variables. When/if needed, we can
      *       use this callback to redact sensitive variables.
      */
-    filterVariables: variables => variables,
+    variables: variables => variables,
   } as any)
 }
 

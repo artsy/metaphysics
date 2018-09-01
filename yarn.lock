@@ -2076,7 +2076,7 @@ date-fns@^1.27.2:
 
 dd-trace@artsy/dd-trace-js#artsy:
   version "0.5.6"
-  resolved "https://codeload.github.com/artsy/dd-trace-js/tar.gz/403b9c6d61d4dd7574633bea7d34a5187e1473c7"
+  resolved "https://codeload.github.com/artsy/dd-trace-js/tar.gz/f24a24bf8bb9ea60a5ebc9b320d1df3aef7b5608"
   dependencies:
     async-hook-jl "^1.7.6"
     int64-buffer "^0.1.9"
@@ -2095,7 +2095,7 @@ dd-trace@artsy/dd-trace-js#artsy:
     safe-buffer "^5.1.1"
     semver "^5.5.0"
     shimmer "^1.2.0"
-    url-parse "^1.2.0"
+    url-parse "^1.4.3"
   optionalDependencies:
     "@airbnb/node-memwatch" "^1.0.2"
 
@@ -4960,13 +4960,17 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-nan@2.x, nan@^2.9.2:
+nan@2.x:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
 
 nan@^2.3.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.8.0.tgz#ed715f3fe9de02b57a5e6252d90a96675e1f085a"
+
+nan@^2.9.2:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.11.0.tgz#574e360e4d954ab16966ec102c0c049fd961a099"
 
 nanomatch@^1.2.9:
   version "1.2.9"
@@ -5393,8 +5397,8 @@ path-to-regexp@0.1.7:
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
 
 path-to-regexp@^2.2.1:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-2.3.0.tgz#690d682cb9e2dde26d25f41bcc2b4774b67d1fa2"
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-2.4.0.tgz#35ce7f333d5616f1c1e1bfe266c3aba2e5b2e704"
 
 path-type@^1.0.0:
   version "1.1.0"
@@ -6985,7 +6989,7 @@ url-parse-lax@^1.0.0:
   dependencies:
     prepend-http "^1.0.1"
 
-url-parse@^1.2.0:
+url-parse@^1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.4.3.tgz#bfaee455c889023219d757e045fa6a684ec36c15"
   dependencies:

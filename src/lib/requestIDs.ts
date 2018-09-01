@@ -8,9 +8,9 @@ export function headers({ requestID, xForwardedFor }) {
     "x-forwarded-for": xForwardedFor,
   }
 
-  const span = tracer.currentSpan()
-  if (span) {
-    tracer.inject(span, FORMAT_HTTP_HEADERS, headers)
+  const scope = tracer.scopeManager().active()
+  if (scope) {
+    tracer.inject(scope.span(), FORMAT_HTTP_HEADERS, headers)
   }
 
   return headers
