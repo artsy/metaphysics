@@ -1,18 +1,10 @@
 import uuid from "uuid/v1"
-import tracer from "dd-trace"
-import { FORMAT_HTTP_HEADERS } from "opentracing"
 
 export function headers({ requestID, xForwardedFor }) {
   const headers = {
     "x-request-id": requestID,
     "x-forwarded-for": xForwardedFor,
   }
-
-  const scope = tracer.scopeManager().active()
-  if (scope) {
-    tracer.inject(scope.span(), FORMAT_HTTP_HEADERS, headers)
-  }
-
   return headers
 }
 
