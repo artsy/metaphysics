@@ -1,20 +1,10 @@
 import uuid from "uuid/v1"
-import tracer from "dd-trace"
 
 export function headers({ requestID, xForwardedFor }) {
   const headers = {
     "x-request-id": requestID,
     "x-forwarded-for": xForwardedFor,
   }
-
-  const scope = tracer.scopeManager().active()
-  if (scope) {
-    // TODO: Update dd-trace typings
-    const traceContext = scope.span().context() as any
-    headers["x-datadog-trace-id"] = traceContext.traceId.toString()
-    headers["x-datadog-parent-id"] = traceContext.spanId.toString()
-  }
-
   return headers
 }
 

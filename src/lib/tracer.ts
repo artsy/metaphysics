@@ -15,7 +15,8 @@ export function init() {
   })
   tracer.use("express", {
     service: `${DD_TRACER_SERVICE_NAME}.request`,
-  })
+    recordHeaders: ["User-Agent"],
+  } as any)
   tracer.use("http", {
     service: `${DD_TRACER_SERVICE_NAME}.http-client`,
   })
@@ -25,7 +26,7 @@ export function init() {
      * NOTE: This means we capture _all_ variables. When/if needed, we can
      *       use this callback to redact sensitive variables.
      */
-    filterVariables: variables => variables,
+    variables: variables => variables,
   } as any)
 }
 
