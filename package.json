@@ -14,6 +14,7 @@
     "verbose-dev": "DEBUG=verbose,info,error nf start --procfile Procfile.dev",
     "dev": "DEBUG=info,warn,error nf start --procfile Procfile.dev -w",
     "test": "yarn type-check && yarn lint && jest",
+    "test:validQueries": "babel-node --extensions '.ts,.js' src/__tests__/runStoredQueryTests.ts",
     "watch": "jest --watch",
     "lint": "eslint .",
     "fix": "eslint . --fix",
