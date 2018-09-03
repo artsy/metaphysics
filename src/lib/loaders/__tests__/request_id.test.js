@@ -1,6 +1,7 @@
 import { runAuthenticatedQuery, runQuery } from "test/utils"
 import createLoaders from "../../../lib/loaders"
 import gql from "lib/gql"
+import { resolveIPv4 } from "../../../lib/requestIDs"
 
 jest.mock("../../apis/gravity", () => jest.fn(() => Promise.resolve({})))
 import gravity from "../../apis/gravity"
@@ -44,5 +45,14 @@ describe("requestID (with the real data loaders)", () => {
     expect(gravity).toBeCalledWith("me/lot_standings?", "secret", {
       requestIDs,
     })
+  })
+})
+
+describe("resolve ipv4 addresses", () => {
+  it("resolves an ipv6 address to ipv4", () => {
+    expect(resolveIPv4('::ffff:127.0.0.1')).toEqual('127.0.0.1')
+  })
+  it("resolves an ipv4 address to an ipv4 address", () => {
+    expect(resolveIPv4('127.0.0.1')).toEqual('127.0.0.1')
   })
 })

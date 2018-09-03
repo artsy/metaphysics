@@ -1,4 +1,5 @@
 import uuid from "uuid/v1"
+import ip from "ip"
 
 export function headers({ requestID, xForwardedFor }) {
   const headers = {
@@ -8,11 +9,20 @@ export function headers({ requestID, xForwardedFor }) {
   return headers
 }
 
+export function resolveIPv4(ipAddress) {
+  if(ip.isV6Format(ipAddress) && ~ipAddress.indexOf('::ffff')){
+    return ipAddress.split('::ffff:')[1]
+  }
+  return ipAddress
+}
+
 function resolveProxies(req) {
+  var ipAddress = resolveIPv4(req.connection.remoteAddress)
+
   if (req.headers["x-forwarded-for"]) {
-    return `${req.headers["x-forwarded-for"]}, ${req.connection.remoteAddress}`
+    return `${req.headers["x-forwarded-for"]}, ${ipAddress}`
   } else {
-    return req.connection.remoteAddress
+    return ipAddress
   }
 }
 
