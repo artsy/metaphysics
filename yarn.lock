@@ -2076,7 +2076,7 @@ date-fns@^1.27.2:
 
 dd-trace@artsy/dd-trace-js#artsy:
   version "0.5.6"
-  resolved "https://codeload.github.com/artsy/dd-trace-js/tar.gz/f24a24bf8bb9ea60a5ebc9b320d1df3aef7b5608"
+  resolved "https://codeload.github.com/artsy/dd-trace-js/tar.gz/10a28ad1ee22316c7499dad15d01eff0f73bf534"
   dependencies:
     async-hook-jl "^1.7.6"
     int64-buffer "^0.1.9"
