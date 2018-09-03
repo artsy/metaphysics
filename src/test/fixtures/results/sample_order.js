@@ -10,6 +10,7 @@ const defaultResponse = {
     region: "Tehran",
     country: "IR",
     postalCode: "09821",
+    phoneNumber: "0393939821",
   },
   itemsTotalCents: 420000,
   itemsTotal: "$4,200",

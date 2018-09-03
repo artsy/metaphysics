@@ -35,6 +35,7 @@ describe("Approve Order Mutation", () => {
               region: "TH"
               country: "Iran"
               postalCode: "09821"
+              phoneNumber: "090302821"
             }
           }
         ) {

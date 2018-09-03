@@ -46,6 +46,10 @@ const ShippingInputField = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "Shipping postal code",
     },
+    phoneNumber: {
+      type: GraphQLString,
+      description: "Shipping phone number",
+    },
   },
 })
 

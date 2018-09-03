@@ -15,6 +15,7 @@ export const OrderBuyerFields = gql`
       region
       country
       postalCode
+      phoneNumber
     }
     ... on Pickup {
       fulfillmentType
@@ -104,6 +105,7 @@ export const OrderSellerFields = gql`
       region
       country
       postalCode
+      phoneNumber
     }
     ... on Pickup {
       fulfillmentType

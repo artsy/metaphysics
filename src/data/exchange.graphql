@@ -372,7 +372,7 @@ type SetPaymentPayload {
 input SetShippingInput {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
-  fulfillmentType: OrderFulfillmentTypeEnum
+  fulfillmentType: OrderFulfillmentTypeEnum!
   id: ID!
   shipping: ShippingAttributes
 }
@@ -392,6 +392,7 @@ type Ship {
   city: String
   country: String
   name: String
+  phoneNumber: String
   postalCode: String
   region: String
 }
@@ -403,6 +404,7 @@ input ShippingAttributes {
   city: String
   country: String
   name: String
+  phoneNumber: String
   postalCode: String
   region: String
 }
