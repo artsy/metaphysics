@@ -1,4 +1,6 @@
 # Metaphysics [![CircleCI](https://circleci.com/gh/artsy/metaphysics.svg?style=svg)](https://circleci.com/gh/artsy/metaphysics)
+[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/artsy/metaphysics.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/artsy/metaphysics/context:javascript)
+[![Total Alerts](https://img.shields.io/lgtm/alerts/g/artsy/metaphysics.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/artsy/metaphysics/alerts)
 
 Metaphysics is a [GraphQL](http://graphql.org)-compliant API that wraps various
 Artsy APIs. You can [try it here](https://metaphysics-staging.artsy.net/)
