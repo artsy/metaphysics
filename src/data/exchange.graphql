@@ -170,7 +170,7 @@ type MutationError {
 # An Order
 type Order {
   buyer: OrderPartyUnion!
-  buyerPhoneNumber: Int
+  buyerPhoneNumber: String
   buyerTotalCents: Int
   code: String!
   commissionFeeCents: Int
