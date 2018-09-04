@@ -6,6 +6,7 @@ export const OrderBuyerFields = gql`
   code
   currencyCode
   state
+  buyerPhoneNumber
   requestedFulfillment {
     ... on Ship {
       name
@@ -15,7 +16,6 @@ export const OrderBuyerFields = gql`
       region
       country
       postalCode
-      phoneNumber
     }
     ... on Pickup {
       fulfillmentType
@@ -96,6 +96,7 @@ export const OrderSellerFields = gql`
   code
   currencyCode
   state
+  buyerPhoneNumber
   requestedFulfillment {
     ... on Ship {
       name
@@ -105,7 +106,6 @@ export const OrderSellerFields = gql`
       region
       country
       postalCode
-      phoneNumber
     }
     ... on Pickup {
       fulfillmentType

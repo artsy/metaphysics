@@ -46,10 +46,6 @@ const ShippingInputField = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "Shipping postal code",
     },
-    phoneNumber: {
-      type: GraphQLString,
-      description: "Shipping phone number",
-    },
   },
 })
 
@@ -63,6 +59,10 @@ const SetOrderShippingInput = new GraphQLInputObjectType({
     fulfillmentType: {
       type: OrderFulfillmentTypeEnum,
       description: "Fulfillment Type of this Order",
+    },
+    phoneNumber: {
+      type: GraphQLString,
+      description: "Shipping phone number",
     },
     shipping: {
       type: ShippingInputField,
