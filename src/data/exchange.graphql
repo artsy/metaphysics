@@ -170,6 +170,7 @@ type MutationError {
 # An Order
 type Order {
   buyer: OrderPartyUnion!
+  buyerPhoneNumber: String
   buyerTotalCents: Int
   code: String!
   commissionFeeCents: Int
@@ -372,8 +373,9 @@ type SetPaymentPayload {
 input SetShippingInput {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
-  fulfillmentType: OrderFulfillmentTypeEnum
+  fulfillmentType: OrderFulfillmentTypeEnum!
   id: ID!
+  phoneNumber: String
   shipping: ShippingAttributes
 }
 

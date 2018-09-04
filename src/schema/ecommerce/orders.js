@@ -61,6 +61,7 @@ export const Orders = {
               taxTotalCents
               commissionFeeCents
               transactionFeeCents
+              buyerPhoneNumber
               buyerTotalCents
               sellerTotalCents
               stateUpdatedAt

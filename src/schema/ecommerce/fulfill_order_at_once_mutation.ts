@@ -85,6 +85,7 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
                 taxTotalCents
                 commissionFeeCents
                 transactionFeeCents
+                buyerPhoneNumber
                 buyerTotalCents
                 sellerTotalCents
                 updatedAt

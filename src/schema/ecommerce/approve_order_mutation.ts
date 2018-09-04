@@ -42,6 +42,7 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
                 ${BuyerSellerFields}
                 ${RequestedFulfillmentFragment}
                 itemsTotalCents
+                buyerPhoneNumber
                 shippingTotalCents
                 taxTotalCents
                 commissionFeeCents

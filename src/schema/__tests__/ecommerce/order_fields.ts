@@ -6,6 +6,7 @@ export const OrderBuyerFields = gql`
   code
   currencyCode
   state
+  buyerPhoneNumber
   requestedFulfillment {
     ... on Ship {
       name
@@ -95,6 +96,7 @@ export const OrderSellerFields = gql`
   code
   currencyCode
   state
+  buyerPhoneNumber
   requestedFulfillment {
     ... on Ship {
       name
