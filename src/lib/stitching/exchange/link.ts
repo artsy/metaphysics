@@ -6,6 +6,7 @@ import fetch from "node-fetch"
 import urljoin from "url-join"
 
 import { middlewareLink } from "../lib/middlewareLink"
+import { responseLoggerLink } from "../logLinkMiddleware"
 
 const { EXCHANGE_API_BASE } = config
 
@@ -32,5 +33,8 @@ export const createExchangeLink = () => {
     return { headers }
   })
 
-  return middlewareLink.concat(authMiddleware).concat(httpLink)
+  return middlewareLink
+    .concat(authMiddleware)
+    .concat(responseLoggerLink("Exchange"))
+    .concat(httpLink)
 }

@@ -6,6 +6,7 @@ import fetch from "node-fetch"
 import urljoin from "url-join"
 
 import { middlewareLink } from "../lib/middlewareLink"
+import { responseLoggerLink } from "../logLinkMiddleware"
 
 const { CONVECTION_API_BASE } = config
 
@@ -30,5 +31,8 @@ export const createConvectionLink = () => {
     return { headers }
   })
 
-  return middlewareLink.concat(authMiddleware).concat(httpLink)
+  return middlewareLink
+    .concat(authMiddleware)
+    .concat(responseLoggerLink("Convection"))
+    .concat(httpLink)
 }
