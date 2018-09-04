@@ -105,13 +105,16 @@ export const OrderType = new GraphQLObjectType({
         { rootValue: { creditCardLoader } }
       ) => (creditCardId ? creditCardLoader(creditCardId) : null),
     },
-    // TODO: The `date` resolver not typed correctly
-    lastApprovedAt: date as any,
-    lastSubmittedAt: date as any,
-    updatedAt: date as any,
-    createdAt: date as any,
-    stateUpdatedAt: date as any,
-    stateExpiresAt: date as any,
+    lastApprovedAt: date,
+    lastSubmittedAt: date,
+    updatedAt: date,
+    createdAt: date,
+    stateUpdatedAt: date,
+    stateExpiresAt: date,
+    buyerPhoneNumber: {
+      type: GraphQLString,
+      description: "Buyer phone number",
+    },
   }),
 })
 

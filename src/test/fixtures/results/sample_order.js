@@ -11,7 +11,7 @@ const defaultResponse = {
     country: "IR",
     postalCode: "09821",
   },
-  buyerPhoneNumber: "090302821",
+  buyerPhoneNumber: "093929821",
   itemsTotalCents: 420000,
   itemsTotal: "$4,200",
   shippingTotalCents: 420100,

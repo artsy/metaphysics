@@ -65,6 +65,7 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
                 taxTotalCents
                 commissionFeeCents
                 transactionFeeCents
+                buyerPhoneNumber
                 buyerTotalCents
                 sellerTotalCents
                 updatedAt

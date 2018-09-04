@@ -70,6 +70,7 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
               order {
                 id
                 buyerTotalCents
+                buyerPhoneNumber
                 code
                 commissionFeeCents
                 createdAt
