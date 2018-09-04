@@ -6,6 +6,7 @@ import fetch from "node-fetch"
 import urljoin from "url-join"
 
 import { middlewareLink } from "../lib/middlewareLink"
+import { responseLoggerLink } from "../logLinkMiddleware"
 
 const { LEWITT_API_BASE } = config
 
@@ -22,5 +23,8 @@ export const createLewittLink = () => {
     return { headers }
   })
 
-  return middlewareLink.concat(authMiddleware).concat(httpLink)
+  return middlewareLink
+    .concat(authMiddleware)
+    .concat(responseLoggerLink("Lewitt"))
+    .concat(httpLink)
 }

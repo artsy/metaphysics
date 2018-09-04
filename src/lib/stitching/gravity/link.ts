@@ -6,6 +6,7 @@ import fetch from "node-fetch"
 import urljoin from "url-join"
 
 import { middlewareLink } from "../lib/middlewareLink"
+import { responseLoggerLink } from "../logLinkMiddleware"
 
 const { GRAVITY_GRAPHQL_ENDPOINT } = config
 
@@ -25,5 +26,8 @@ export const createGravityLink = () => {
     return { headers }
   })
 
-  return middlewareLink.concat(authMiddleware).concat(httpLink)
+  return middlewareLink
+    .concat(authMiddleware)
+    .concat(responseLoggerLink("GravQL"))
+    .concat(httpLink)
 }
