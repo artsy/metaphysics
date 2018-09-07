@@ -112,7 +112,7 @@ type Artist implements Node {
   auctionResults(
     sort: AuctionResultSorts
 
-    # When true, will only return records for whitelisted artists.
+    # When true, will only return records for allowed artists.
     recordsTrusted: Boolean = false
     after: String
     first: Int
@@ -383,7 +383,7 @@ type ArtistItem implements Node {
   auctionResults(
     sort: AuctionResultSorts
 
-    # When true, will only return records for whitelisted artists.
+    # When true, will only return records for allowed artists.
     recordsTrusted: Boolean = false
     after: String
     first: Int
