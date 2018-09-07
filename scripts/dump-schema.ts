@@ -1,7 +1,7 @@
 import fs from "fs"
+import { printSchema } from "graphql/utilities"
 import path from "path"
 import schema from "schema"
-import { printSchema } from "graphql/utilities"
 
 const message =
   "Usage: dump-schema.js /path/to/output/directory or /path/to/filename.graphql"
@@ -13,16 +13,14 @@ if (destination === undefined) {
 }
 
 // Support both passing a folder or a filename
-const folder = path.dirname(destination)
-const filename = path.basename(destination) || "schema.graphql"
-if (!fs.existsSync(folder)) {
-  console.error(message)
-  process.exit(1)
-}
+const schemaPath =
+  fs.existsSync(destination) && fs.statSync(destination).isDirectory()
+    ? path.join(destination, "schema.graphql")
+    : destination
 
 // Save user readable type system shorthand of schema
 fs.writeFileSync(
-  path.join(folder, filename),
+  schemaPath,
   printSchema(schema, { commentDescriptions: true }),
   "utf8"
 )

@@ -25,7 +25,7 @@
     "build:index": "babel index.js -s inline -d build",
     "build:fixtures": "cp src/lib/*.json build/src/lib/",
     "build:remote-schemas": "cp src/data/*.graphql build/src/data/",
-    "precommit": "lint-staged",
+    "precommit": "lint-staged; yarn dump-schema _schema.graphql",
     "prepare": "patch-package",
     "prettier-project": "prettier --write '**/*.js'",
     "type-check": "tsc --noEmit --pretty"
