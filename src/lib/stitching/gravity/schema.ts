@@ -40,11 +40,11 @@ export const executableGravitySchema = async () => {
       }
       return name
     }),
-    // We have the same restrictions for root, so let's double underscore
+    // We have the same restrictions for root, so let's prefix
     // for now
     new RenameRootFields((type, name, _field) => {
       if (type === "Query") {
-        return `_deprecated_${name}`
+        return `_unused_gravity_${name}`
       } else {
         return name
       }
