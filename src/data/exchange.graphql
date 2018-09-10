@@ -375,7 +375,6 @@ input SetShippingInput {
   clientMutationId: String
   fulfillmentType: OrderFulfillmentTypeEnum!
   id: ID!
-  phoneNumber: String
   shipping: ShippingAttributes
 }
 
@@ -394,6 +393,7 @@ type Ship {
   city: String
   country: String
   name: String
+  phoneNumber: String
   postalCode: String
   region: String
 }
@@ -405,6 +405,7 @@ input ShippingAttributes {
   city: String
   country: String
   name: String
+  phoneNumber: String!
   postalCode: String
   region: String
 }
