@@ -58,11 +58,11 @@ export const SaleArtworkAggregations = {
   description: "Returns aggregation counts for the given filter query.",
   type: new GraphQLList(SaleArtworksAggregationResultsType),
   resolve: ({ aggregations }) => {
-    const whitelistedAggregations = omit(aggregations, [
+    const allowedAggregations = omit(aggregations, [
       "total",
       "followed_artists",
     ])
-    return map(whitelistedAggregations, (counts, slice) => ({
+    return map(allowedAggregations, (counts, slice) => ({
       slice,
       counts,
     }))

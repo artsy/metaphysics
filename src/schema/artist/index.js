@@ -228,7 +228,7 @@ export const ArtistType = new GraphQLObjectType({
             type: GraphQLBoolean,
             defaultValue: false,
             description:
-              "When true, will only return records for whitelisted artists.",
+              "When true, will only return records for allowed artists.",
           },
         }),
         resolve: (
