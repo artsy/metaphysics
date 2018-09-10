@@ -46,6 +46,10 @@ const ShippingInputField = new GraphQLInputObjectType({
       type: GraphQLString,
       description: "Shipping postal code",
     },
+    phoneNumber: {
+      type: GraphQLString,
+      description: "Shipping phone number",
+    },
   },
 })
 
@@ -59,10 +63,6 @@ const SetOrderShippingInput = new GraphQLInputObjectType({
     fulfillmentType: {
       type: OrderFulfillmentTypeEnum,
       description: "Fulfillment Type of this Order",
-    },
-    phoneNumber: {
-      type: GraphQLString,
-      description: "Shipping phone number",
     },
     shipping: {
       type: ShippingInputField,
@@ -81,7 +81,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { orderId, fulfillmentType, shipping, phoneNumber },
+    { orderId, fulfillmentType, shipping },
     context,
     { rootValue: { accessToken, exchangeSchema } }
   ) => {
@@ -93,14 +93,12 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
       mutation setOrderShipping(
         $orderId: ID!
         $fulfillmentType: EcommerceOrderFulfillmentTypeEnum!
-        $phoneNumber: String
         $shipping: EcommerceShippingAttributes
       ) {
         ecommerce_setShipping(
           input: {
             id: $orderId
             fulfillmentType: $fulfillmentType
-            phoneNumber: $phoneNumber
             shipping: $shipping
           }
         ) {
@@ -154,7 +152,6 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
       orderId,
       fulfillmentType,
       shipping,
-      phoneNumber,
     }).then(extractEcommerceResponse("ecommerce_setShipping"))
   },
 })

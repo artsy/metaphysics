@@ -27,7 +27,6 @@ describe("Approve Order Mutation", () => {
           input: {
             orderId: "111"
             fulfillmentType: SHIP
-            phoneNumber: "090302821"
             shipping: {
               name: "Dr Collector"
               addressLine1: "Vanak"
@@ -36,6 +35,7 @@ describe("Approve Order Mutation", () => {
               region: "TH"
               country: "Iran"
               postalCode: "09821"
+              phoneNumber: "090302821"
             }
           }
         ) {

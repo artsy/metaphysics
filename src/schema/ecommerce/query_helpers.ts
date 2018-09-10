@@ -11,6 +11,7 @@ export const RequestedFulfillmentFragment = gql`
       region
       country
       postalCode
+      phoneNumber
     }
     ... on EcommercePickup {
       fulfillmentType
