@@ -25,7 +25,7 @@ enum Env {
   Dev,
 }
 
-const url = getURL(Env.Prod)
+const url = getURL(Env.Dev)
 
 const saleArtworkID =
   "georg-jensen-beaded-slash-kugle-sterling-silver-cutlery-60"
