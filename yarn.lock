@@ -1303,19 +1303,9 @@ babel-plugin-module-resolver@^3.0.0:
     reselect "^3.0.1"
     resolve "^1.4.0"
 
-babel-plugin-syntax-flow@7.0.0-beta.3:
-  version "7.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/babel-plugin-syntax-flow/-/babel-plugin-syntax-flow-7.0.0-beta.3.tgz#b96eceea4ffa380b95ccb21e8c75a556bffce879"
-
 babel-plugin-syntax-object-rest-spread@^6.13.0:
   version "6.13.0"
   resolved "https://registry.yarnpkg.com/babel-plugin-syntax-object-rest-spread/-/babel-plugin-syntax-object-rest-spread-6.13.0.tgz#fd6536f2bce13836ffa3a5458c4903a597bb3bf5"
-
-babel-plugin-transform-flow-strip-types@7.0.0-beta.3:
-  version "7.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/babel-plugin-transform-flow-strip-types/-/babel-plugin-transform-flow-strip-types-7.0.0-beta.3.tgz#40d7c030895dc9811e7dd09997ee96df6054eed6"
-  dependencies:
-    babel-plugin-syntax-flow "7.0.0-beta.3"
 
 babel-polyfill@^6.23.0:
   version "6.26.0"
@@ -2025,9 +2015,9 @@ damerau-levenshtein@^1.0.0:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.4.tgz#03191c432cb6eea168bb77f3a55ffdccb8978514"
 
-danger@^3.8.6:
-  version "3.8.6"
-  resolved "https://registry.yarnpkg.com/danger/-/danger-3.8.6.tgz#6760e17a191e0b0e5a255cc9389a0f303033950d"
+danger@^3.9.0:
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/danger/-/danger-3.9.0.tgz#41e6257fcfd4b92dcde16a47c96f5731931b5108"
   dependencies:
     "@octokit/rest" "^15.9.5"
     babel-polyfill "^6.23.0"
@@ -2095,7 +2085,7 @@ dd-trace@artsy/dd-trace-js#artsy:
     safe-buffer "^5.1.1"
     semver "^5.5.0"
     shimmer "^1.2.0"
-    url-parse "^1.4.3"
+    url-parse "^1.2.0"
   optionalDependencies:
     "@airbnb/node-memwatch" "^1.0.2"
 
@@ -2382,8 +2372,8 @@ eslint-module-utils@^2.2.0:
     pkg-dir "^1.0.0"
 
 eslint-plugin-flowtype@^2.34.1:
-  version "2.49.3"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-flowtype/-/eslint-plugin-flowtype-2.49.3.tgz#ccca6ee5ba2027eb3ed36bc2ec8c9a842feee841"
+  version "2.50.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-flowtype/-/eslint-plugin-flowtype-2.50.0.tgz#953e262fa9b5d0fa76e178604892cf60dfb916da"
   dependencies:
     lodash "^4.17.10"
 
@@ -6989,7 +6979,7 @@ url-parse-lax@^1.0.0:
   dependencies:
     prepend-http "^1.0.1"
 
-url-parse@^1.4.3:
+url-parse@^1.2.0:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.4.3.tgz#bfaee455c889023219d757e045fa6a684ec36c15"
   dependencies:
