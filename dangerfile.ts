@@ -1,4 +1,8 @@
-import { danger, fail } from "danger"
+import { danger, fail, markdown } from "danger"
+import { printSchema } from "graphql/utilities/schemaPrinter"
+import { readFileSync } from "fs"
+import * as prettier from "prettier"
+import * as jsdiff from "diff"
 
 // Rule: encourage all new files to be TypeScript
 const jsAppFiles = danger.git.created_files.filter(
@@ -8,4 +12,28 @@ const jsAppFiles = danger.git.created_files.filter(
 if (jsAppFiles.length) {
   const listed = danger.github.utils.fileLinks(jsAppFiles)
   fail(`Please use <code>*.ts</code> for new files. Found: ${listed}.`)
+}
+
+// Grab the built schema to skip all the babel path faff
+import schema from "./build/src/schema"
+
+// Compare a printed copy of the schema
+// with the file in the repo.
+const schemaText = printSchema(schema as any, { commentDescriptions: true })
+const prettySchema = prettier.format(schemaText, { parser: "graphql" })
+const localGQL = readFileSync("_schema.graphql", "utf8")
+if (prettySchema !== localGQL) {
+  fail(`Please update the schema in the root of the app via: 
+  
+\`yarn dump-schema _schema.graphql\`
+  
+Note: This script uses your current \`.env\` variables.`)
+  const diff = jsdiff.createPatch(
+    "_schema.graphql",
+    localGQL,
+    prettySchema,
+    "Version in Repo",
+    "Added in this PR"
+  )
+  markdown("The changes to the Schema:\n\n```diff\n" + diff + "```")
 }
