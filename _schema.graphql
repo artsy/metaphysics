@@ -1,3 +1,20 @@
+input AddAssetToConsignmentSubmissionInput {
+  # The type of the asset
+  asset_type: String!
+
+  # The token provided by Gemini for your asset
+  gemini_token: String!
+
+  # The id of the submission you want to attach an asset to
+  submission_id: String!
+  clientMutationId: String
+}
+
+type AddAssetToConsignmentSubmissionPayload {
+  asset: Asset
+  clientMutationId: String
+}
+
 # One item in an aggregation
 type AggregationCount {
   # A globally unique ID.
@@ -8,6 +25,12 @@ type AggregationCount {
   count: Int
   name: String
   sortable_id: String
+}
+
+input ApproveOrderInput {
+  # Order ID
+  orderId: String!
+  clientMutationId: String
 }
 
 type ApproveOrderPayload {
@@ -1585,6 +1608,21 @@ enum ArtworkSorts {
   TITLE_DESC
 }
 
+# An asset which is assigned to a consignment submission
+type Asset {
+  # Convection asset ID.
+  id: String!
+
+  # The convection submission ID
+  submission_id: String
+
+  # The gemini token for the asset
+  gemini_token: String
+
+  # The type of the asset
+  asset_type: String
+}
+
 # Fields of an attachment (currently from Radiation)
 type Attachment {
   # Attachment id.
@@ -1967,6 +2005,97 @@ type CollectorProfileType {
   intents: [String]
 }
 
+# A work to be consigned to the user
+type ConsignmentSubmission implements Node {
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
+  id: String!
+
+  # A type-specific Gravity Mongo Document ID.
+  _id: String!
+
+  # The gravity ID for an Artist
+  artist_id: String!
+
+  # Does the artwork come with an certificate of authenticity?
+  authenticity_certificate: Boolean
+
+  # The set in which to put the work
+  category: SubmissionCategoryAggregation
+
+  # The depth of the work
+  depth: String
+
+  # A string, either CM or IN
+  dimensions_metric: SubmissionDimensionAggregation
+
+  # Is the work a part of an edition
+  edition: Boolean
+
+  # The number of the individual work if in a set
+  edition_number: String
+
+  # The whole size of the set of works
+  edition_size: Int
+
+  # The height of the work
+  height: String
+
+  # The city where the work currently resides
+  location_city: String
+
+  # The country where the work currently resides
+  location_country: String
+
+  # The state where the work currently resides
+  location_state: String
+
+  # The materials in which the work is created
+  medium: String
+
+  # The history of an work
+  provenance: String
+
+  # Is this work signed?
+  signature: Boolean
+
+  # The name of the work
+  title: String
+
+  # The internal state of the work, e.g. draft/submitted
+  state: SubmissionStateAggregation
+
+  # The width of the work
+  width: String
+
+  # The year the work was created
+  year: String
+
+  # The user who submitted the work
+  user_id: ID
+  artist: Artist
+}
+
+# A connection to a list of items.
+type ConsignmentSubmissionConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [ConsignmentSubmissionEdge]
+}
+
+# An edge in a connection.
+type ConsignmentSubmissionEdge {
+  # The item at the end of the edge
+  node: ConsignmentSubmission
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
 type Convection {
   geminiTemplateKey: String!
 }
@@ -2155,6 +2284,74 @@ input CreateOrderWithArtworkInput {
 
 type CreateOrderWithArtworkPayload {
   orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
+input CreateSubmissionMutationInput {
+  # The gravity ID for an Artist
+  artist_id: String!
+
+  # Does the artwork come with an certificate of authenticity?
+  authenticity_certificate: Boolean
+
+  # The set in which to put the work
+  category: SubmissionCategoryAggregation
+
+  # The depth of the work
+  depth: String
+
+  # A string, either CM or IN
+  dimensions_metric: SubmissionDimensionAggregation
+
+  # Is the work a part of an edition
+  edition: Boolean
+
+  # The number of the individual work if in a set
+  edition_number: String
+
+  # The whole size of the set of works
+  edition_size: Int
+
+  # The height of the work
+  height: String
+
+  # The city where the work currently resides
+  location_city: String
+
+  # The country where the work currently resides
+  location_country: String
+
+  # The state where the work currently resides
+  location_state: String
+
+  # The materials in which the work is created
+  medium: String
+
+  # The history of an work
+  provenance: String
+
+  # Is this work signed?
+  signature: Boolean
+
+  # The name of the work
+  title: String
+
+  # The internal state of the work, e.g. draft/submitted
+  state: SubmissionStateAggregation
+
+  # The width of the work
+  width: String
+
+  # The year the work was created
+  year: String
+
+  # The user who submitted the work
+  user_id: ID
+  clientMutationId: String
+}
+
+type CreateSubmissionMutationPayload {
+  consignment_submission: ConsignmentSubmission
   clientMutationId: String
 }
 
@@ -3791,6 +3988,15 @@ type Me implements Node {
   # A type-specific ID.
   id: String!
 
+  # A list of the current user’s consignment submissions
+  consignment_submissions(
+    after: String
+    first: Int
+    before: String
+    last: Int
+    completed: Boolean
+  ): ConsignmentSubmissionConnection
+
   # A list of the current user’s inquiry requests
   artwork_inquiries_connection(
     after: String
@@ -4104,6 +4310,24 @@ type Mutation {
   createGeminiEntryForAsset(
     input: CreateGeminiEntryForAssetInput!
   ): CreateGeminiEntryForAssetPayload
+
+  # Create a new consignment submission using Convection
+  createConsignmentSubmission(
+    input: CreateSubmissionMutationInput!
+  ): CreateSubmissionMutationPayload
+
+  # Update a consignment using Convection
+  updateConsignmentSubmission(
+    input: UpdateSubmissionMutationInput!
+  ): UpdateSubmissionMutationPayload
+
+  # Attach an gemini asset to a consignment submission
+  addAssetToConsignmentSubmission(
+    input: AddAssetToConsignmentSubmissionInput!
+  ): AddAssetToConsignmentSubmissionPayload
+
+  # Records an artwork view.
+  recordArtworkView(input: RecordArtworkViewInput!): RecordArtworkViewPayload
 }
 
 input Near {
@@ -5450,6 +5674,16 @@ type Query {
   viewer: Viewer
 }
 
+input RecordArtworkViewInput {
+  artwork_id: String!
+  clientMutationId: String
+}
+
+type RecordArtworkViewPayload {
+  artwork_id: String!
+  clientMutationId: String
+}
+
 input RejectOrderInput {
   # Order ID
   orderId: String!
@@ -6209,6 +6443,36 @@ type StatusGravity {
   ping: Boolean
 }
 
+enum SubmissionCategoryAggregation {
+  PAINTING
+  SCULPTURE
+  PHOTOGRAPHY
+  PRINT
+  DRAWING_COLLAGE_OR_OTHER_WORK_ON_PAPER
+  MIXED_MEDIA
+  PERFORMANCE_ART
+  INSTALLATION
+  VIDEO_FILM_ANIMATION
+  ARCHITECTURE
+  FASHION_DESIGN_AND_WEARABLE_ART
+  JEWELRY
+  DESIGN_DECORATIVE_ART
+  TEXTILE_ARTS
+  OTHER
+}
+
+enum SubmissionDimensionAggregation {
+  CM
+  IN
+}
+
+enum SubmissionStateAggregation {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
 input SubmitOrderInput {
   # Order ID
   orderId: String!
@@ -6413,6 +6677,77 @@ input UpdateMyProfileInput {
 
 type UpdateMyProfilePayload {
   user: User
+  clientMutationId: String
+}
+
+input UpdateSubmissionMutationInput {
+  # A type-specific ID.
+  id: String!
+
+  # The gravity ID for an Artist
+  artist_id: String!
+
+  # Does the artwork come with an certificate of authenticity?
+  authenticity_certificate: Boolean
+
+  # The set in which to put the work
+  category: SubmissionCategoryAggregation
+
+  # The depth of the work
+  depth: String
+
+  # A string, either CM or IN
+  dimensions_metric: SubmissionDimensionAggregation
+
+  # Is the work a part of an edition
+  edition: Boolean
+
+  # The number of the individual work if in a set
+  edition_number: String
+
+  # The whole size of the set of works
+  edition_size: Int
+
+  # The height of the work
+  height: String
+
+  # The city where the work currently resides
+  location_city: String
+
+  # The country where the work currently resides
+  location_country: String
+
+  # The state where the work currently resides
+  location_state: String
+
+  # The materials in which the work is created
+  medium: String
+
+  # The history of an work
+  provenance: String
+
+  # Is this work signed?
+  signature: Boolean
+
+  # The name of the work
+  title: String
+
+  # The internal state of the work, e.g. draft/submitted
+  state: SubmissionStateAggregation
+
+  # The width of the work
+  width: String
+
+  # The year the work was created
+  year: String
+
+  # The user who submitted the work
+  user_id: ID
+  clientMutationId: String
+}
+
+type UpdateSubmissionMutationPayload {
+  consignment_submission: ConsignmentSubmission
   clientMutationId: String
 }
 
