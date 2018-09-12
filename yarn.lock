@@ -2085,7 +2085,7 @@ dd-trace@artsy/dd-trace-js#artsy:
     safe-buffer "^5.1.1"
     semver "^5.5.0"
     shimmer "^1.2.0"
-    url-parse "^1.2.0"
+    url-parse "^1.4.3"
   optionalDependencies:
     "@airbnb/node-memwatch" "^1.0.2"
 
