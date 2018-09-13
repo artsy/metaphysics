@@ -806,6 +806,7 @@ type Artwork implements Node & Sellable {
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): Partner
+  pickup_available: Boolean
   price: String
   price_currency: String
 
@@ -1518,6 +1519,7 @@ type ArtworkItem implements Node & Sellable {
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): Partner
+  pickup_available: Boolean
   price: String
   price_currency: String
 

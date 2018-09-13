@@ -508,6 +508,7 @@ export const artworkFields = () => {
         return partnerLoader(partner.id).catch(() => null)
       },
     },
+    pickup_available: { type: GraphQLBoolean },
     price: { type: GraphQLString },
     price_currency: { type: GraphQLString },
     shippingInfo: {
