@@ -203,6 +203,7 @@ const schema = new GraphQLSchema({
     name: "Query",
     fields: {
       ...rootFields,
+      ...stitchedRootFields,
       viewer: Viewer,
     },
   }),

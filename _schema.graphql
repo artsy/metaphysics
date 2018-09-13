@@ -4565,6 +4565,25 @@ type Order {
   buyerPhoneNumber: String
 }
 
+# A connection to a list of items.
+type OrderConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [OrderEdge]
+  totalCount: Int
+}
+
+# An edge in a connection.
+type OrderEdge {
+  # The item at the end of the edge
+  node: Order
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
 type OrderedSet {
   # A globally unique ID.
   __id: ID!
@@ -4691,6 +4710,14 @@ union OrderOrFailureUnionType =
   | OrderWithMutationFailure
 
 union OrderParty = Partner | User
+
+enum OrdersSortMethodType {
+  # Sort by latest timestamp order was updated in ascending order
+  UPDATED_AT_ASC
+
+  # Sort by latest timestamp order was updated in descending order
+  UPDATED_AT_DESC
+}
 
 type OrderWithMutationFailure {
   error: EcommerceError
@@ -5631,6 +5658,19 @@ type Query {
     # Number of results to return
     size: Int
   ): PopularArtists
+
+  # Returns a single Order
+  order(id: String!): Order
+
+  # Returns list of orders
+  orders(
+    buyerId: String
+    buyerType: String
+    sellerId: String
+    sellerType: String
+    state: String
+    sort: OrdersSortMethodType
+  ): OrderConnection
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
