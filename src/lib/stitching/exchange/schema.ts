@@ -18,9 +18,14 @@ export const executableExchangeSchema = async () => {
 
   // Return the new modified schema
   return transformSchema(schema, [
+    // Apply a prefix to all the typenames
     new RenameTypes(name => {
       return `Ecommerce${name}`
     }),
-    new RenameRootFields((_operation, name) => `ecommerce_${name}`),
+    // Rename all the root fields to be camelCased
+    new RenameRootFields(
+      (_operation, name) =>
+        `ecommerce${name.charAt(0).toUpperCase() + name.slice(1)}`
+    ),
   ])
 }
