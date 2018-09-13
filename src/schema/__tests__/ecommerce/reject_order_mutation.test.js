@@ -31,7 +31,9 @@ describe("Reject Order Mutation", () => {
             }
             ... on OrderWithMutationFailure {
               error {
-                description
+                type
+                code
+                data
               }
             }
           }
