@@ -79,8 +79,11 @@ import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
 import config from "config"
 
-const { ENABLE_SCHEMA_STITCHING } = config
-const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
+const {
+  ENABLE_CONSIGNMENTS_STITCHING,
+  ENABLE_GRAVQL_ONLY_STITCHING,
+  ENABLE_ORDER_STITCHING,
+} = config
 
 // TODO: Remove this any
 const rootFields: any = {
@@ -109,8 +112,6 @@ const rootFields: any = {
   match_gene: MatchGene,
   me: Me,
   node: ObjectIdentification.NodeField,
-  order: Order,
-  orders: Orders,
   ordered_set: OrderedSet,
   ordered_sets: OrderedSets,
   partner: Partner,
@@ -147,14 +148,35 @@ const Viewer = {
   resolve: x => x,
 }
 
-const stitchedMutations: any = enableSchemaStitching
-  ? {}
-  : {
-      createConsignmentSubmission: CreateSubmissionMutation,
-      updateConsignmentSubmission: UpdateSubmissionMutation,
-      addAssetToConsignmentSubmission: AddAssetToConsignmentSubmission,
-      recordArtworkView: recordArtworkViewMutation,
-    }
+// A set of fields which are overridden when coming in from stitching
+const stitchedRootFields: any = {}
+
+// If you're using stitching then we _don't_ want to include particular mutations
+// which come from the stitching instead of our manual version
+const stitchedMutations: any = {}
+
+if (!ENABLE_GRAVQL_ONLY_STITCHING) {
+  stitchedMutations.recordArtworkView = recordArtworkViewMutation
+}
+
+if (!ENABLE_CONSIGNMENTS_STITCHING) {
+  stitchedMutations.createConsignmentSubmission = CreateSubmissionMutation
+  stitchedMutations.updateConsignmentSubmission = UpdateSubmissionMutation
+  stitchedMutations.addAssetToConsignmentSubmission = AddAssetToConsignmentSubmission
+}
+
+if (!ENABLE_ORDER_STITCHING) {
+  stitchedRootFields.order = Order
+  stitchedRootFields.orders = Orders
+
+  stitchedMutations.createOrderWithArtwork = CreateOrderWithArtworkMutation
+  stitchedMutations.setOrderShipping = SetOrderShippingMutation
+  stitchedMutations.setOrderPayment = SetOrderPaymentMutation
+  stitchedMutations.approveOrder = ApproveOrderMutation
+  stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
+  stitchedMutations.rejectOrder = RejectOrderMutation
+  stitchedMutations.submitOrder = SubmitOrderMutation
+}
 
 const schema = new GraphQLSchema({
   allowedLegacyNames: ["__id"],
@@ -169,13 +191,6 @@ const schema = new GraphQLSchema({
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
-      createOrderWithArtwork: CreateOrderWithArtworkMutation,
-      setOrderShipping: SetOrderShippingMutation,
-      setOrderPayment: SetOrderPaymentMutation,
-      approveOrder: ApproveOrderMutation,
-      fulfillOrderAtOnce: FulfillOrderAtOnceMutation,
-      rejectOrder: RejectOrderMutation,
-      submitOrder: SubmitOrderMutation,
       sendConversationMessage: SendConversationMessageMutation,
       saveArtwork: SaveArtworkMutation,
       endSale: endSaleMutation,

@@ -4269,6 +4269,45 @@ type Mutation {
     input: UpdateConversationMutationInput!
   ): UpdateConversationMutationPayload
 
+  # Appending a message to a conversation thread
+  sendConversationMessage(
+    input: SendConversationMessageMutationInput!
+  ): SendConversationMessageMutationPayload
+
+  # Save (or remove) an artwork to (from) a users default collection.
+  saveArtwork(input: SaveArtworkInput!): SaveArtworkPayload
+
+  # Mark sale as ended.
+  endSale(input: EndSaleInput!): EndSalePayload
+
+  # Attach an gemini asset to a consignment submission
+  requestCredentialsForAssetUpload(
+    input: RequestCredentialsForAssetUploadInput!
+  ): RequestCredentialsForAssetUploadPayload
+
+  # Attach an gemini asset to a consignment submission
+  createGeminiEntryForAsset(
+    input: CreateGeminiEntryForAssetInput!
+  ): CreateGeminiEntryForAssetPayload
+
+  # Records an artwork view.
+  recordArtworkView(input: RecordArtworkViewInput!): RecordArtworkViewPayload
+
+  # Create a new consignment submission using Convection
+  createConsignmentSubmission(
+    input: CreateSubmissionMutationInput!
+  ): CreateSubmissionMutationPayload
+
+  # Update a consignment using Convection
+  updateConsignmentSubmission(
+    input: UpdateSubmissionMutationInput!
+  ): UpdateSubmissionMutationPayload
+
+  # Attach an gemini asset to a consignment submission
+  addAssetToConsignmentSubmission(
+    input: AddAssetToConsignmentSubmissionInput!
+  ): AddAssetToConsignmentSubmissionPayload
+
   # Creates an order with an artwork
   createOrderWithArtwork(
     input: CreateOrderWithArtworkInput!
@@ -4291,45 +4330,6 @@ type Mutation {
 
   # Submits an order
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
-
-  # Appending a message to a conversation thread
-  sendConversationMessage(
-    input: SendConversationMessageMutationInput!
-  ): SendConversationMessageMutationPayload
-
-  # Save (or remove) an artwork to (from) a users default collection.
-  saveArtwork(input: SaveArtworkInput!): SaveArtworkPayload
-
-  # Mark sale as ended.
-  endSale(input: EndSaleInput!): EndSalePayload
-
-  # Attach an gemini asset to a consignment submission
-  requestCredentialsForAssetUpload(
-    input: RequestCredentialsForAssetUploadInput!
-  ): RequestCredentialsForAssetUploadPayload
-
-  # Attach an gemini asset to a consignment submission
-  createGeminiEntryForAsset(
-    input: CreateGeminiEntryForAssetInput!
-  ): CreateGeminiEntryForAssetPayload
-
-  # Create a new consignment submission using Convection
-  createConsignmentSubmission(
-    input: CreateSubmissionMutationInput!
-  ): CreateSubmissionMutationPayload
-
-  # Update a consignment using Convection
-  updateConsignmentSubmission(
-    input: UpdateSubmissionMutationInput!
-  ): UpdateSubmissionMutationPayload
-
-  # Attach an gemini asset to a consignment submission
-  addAssetToConsignmentSubmission(
-    input: AddAssetToConsignmentSubmissionInput!
-  ): AddAssetToConsignmentSubmissionPayload
-
-  # Records an artwork view.
-  recordArtworkView(input: RecordArtworkViewInput!): RecordArtworkViewPayload
 }
 
 input Near {
@@ -4565,25 +4565,6 @@ type Order {
   buyerPhoneNumber: String
 }
 
-# A connection to a list of items.
-type OrderConnection {
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-
-  # A list of edges.
-  edges: [OrderEdge]
-  totalCount: Int
-}
-
-# An edge in a connection.
-type OrderEdge {
-  # The item at the end of the edge
-  node: Order
-
-  # A cursor for use in pagination
-  cursor: String!
-}
-
 type OrderedSet {
   # A globally unique ID.
   __id: ID!
@@ -4710,14 +4691,6 @@ union OrderOrFailureUnionType =
   | OrderWithMutationFailure
 
 union OrderParty = Partner | User
-
-enum OrdersSortMethodType {
-  # Sort by latest timestamp order was updated in ascending order
-  UPDATED_AT_ASC
-
-  # Sort by latest timestamp order was updated in descending order
-  UPDATED_AT_DESC
-}
 
 type OrderWithMutationFailure {
   error: EcommerceError
@@ -5456,19 +5429,6 @@ type Query {
     # The ID of the object
     __id: ID!
   ): Node
-
-  # Returns a single Order
-  order(id: String!): Order
-
-  # Returns list of orders
-  orders(
-    buyerId: String
-    buyerType: String
-    sellerId: String
-    sellerType: String
-    state: String
-    sort: OrdersSortMethodType
-  ): OrderConnection
 
   # An OrderedSet
   ordered_set(
@@ -7033,19 +6993,6 @@ type Viewer {
     # The ID of the object
     __id: ID!
   ): Node
-
-  # Returns a single Order
-  order(id: String!): Order
-
-  # Returns list of orders
-  orders(
-    buyerId: String
-    buyerType: String
-    sellerId: String
-    sellerType: String
-    state: String
-    sort: OrdersSortMethodType
-  ): OrderConnection
 
   # An OrderedSet
   ordered_set(
