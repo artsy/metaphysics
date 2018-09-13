@@ -2,6 +2,7 @@ import { executableExchangeSchema } from "../schema"
 import {
   getTypesFromSchema,
   getRootFieldsFromSchema,
+  getMutationFieldsFromSchema,
 } from "lib/stitching/lib/getTypesFromSchema"
 import { printSchema } from "graphql"
 
@@ -22,6 +23,14 @@ it("has all our root fields", async () => {
 
   expect(rootFields).not.toContain("order")
   expect(rootFields).toContain("ecommerceOrder")
+})
+
+it("Includes prefixed mutations", async () => {
+  const exchangeSchema = await executableExchangeSchema()
+  const mutations = await getMutationFieldsFromSchema(exchangeSchema)
+
+  expect(mutations).toContain("ecommerceCreateOrderWithArtwork")
+  expect(mutations).toContain("ecommerceApproveOrder")
 })
 
 it("creates an SDL", async () => {
