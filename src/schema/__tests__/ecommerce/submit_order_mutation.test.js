@@ -34,7 +34,9 @@ describe("Submit Order Mutation", () => {
             }
             ... on OrderWithMutationFailure {
               error {
-                description
+                type
+                code
+                data
               }
             }
           }

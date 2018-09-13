@@ -85,7 +85,9 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
             }
             ... on EcommerceOrderWithMutationFailure {
               error {
-                description
+                type
+                code
+                data
               }
             }
           }

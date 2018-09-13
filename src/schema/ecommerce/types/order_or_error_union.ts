@@ -17,9 +17,18 @@ export const OrderWithMutationSuccess = new GraphQLObjectType({
 export const EcommerceError = new GraphQLObjectType({
   name: "EcommerceError",
   fields: {
-    description: {
+    type: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The error message",
+    },
+    code: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The error message",
+    },
+    data: {
+      type: GraphQLString,
+      description:
+        "A data object in JSON format providing additional context about the error.",
     },
   },
 })
