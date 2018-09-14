@@ -103,7 +103,9 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
             }
             ... on EcommerceOrderWithMutationFailure {
               error {
-                description
+                type
+                code
+                data
               }
             }
           }

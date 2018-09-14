@@ -2519,7 +2519,13 @@ type dimensions {
 
 type EcommerceError {
   # The error message
-  description: String!
+  type: String!
+
+  # The error message
+  code: String!
+
+  # A data object in JSON format providing additional context about the error.
+  data: String
 }
 
 input EditableLocation {
