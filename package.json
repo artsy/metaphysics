@@ -121,7 +121,7 @@
     "@types/request": "^2.0.3",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^22.4.1",
-    "danger": "^3.9.0",
+    "danger": "^4.0",
     "deep-equal": "^1.0.1",
     "dotenv": "^5.0.1",
     "eslint": "^4.1.1",
