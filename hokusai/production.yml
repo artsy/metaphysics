@@ -40,9 +40,9 @@ spec:
         resources:
           requests:
             cpu: 500m
-            memory: 768Mi
-          limits:
             memory: 1Gi
+          limits:
+            memory: 1536Mi
         readinessProbe:
           httpGet:
             port: 3000
@@ -83,7 +83,6 @@ spec:
                 values:
                 - cpu-hog
             topologyKey: "kubernetes.io/hostname"
-
 
 ---
 apiVersion: autoscaling/v1
