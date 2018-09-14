@@ -24,7 +24,10 @@ import {
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { checkForProblematicArtistQuery } from "./lib/checkForProblematicArtistQuery"
 import { info } from "./lib/loggers"
-import { mergeSchemas, minimalMergeSchemas } from "./lib/stitching/mergeSchemas"
+import {
+  mergeSchemas,
+  incrementalMergeSchemas,
+} from "./lib/stitching/mergeSchemas"
 import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
 import { executableExchangeSchema } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
@@ -46,7 +49,6 @@ const {
 
 const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
 const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
-const enableGravQLOnlySchemaStitching = ENABLE_GRAVQL_ONLY_STITCHING === "true"
 const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 const logQueryDetailsThreshold =
@@ -78,13 +80,9 @@ async function startApp() {
   const exchangeSchema = await executableExchangeSchema()
 
   if (enableSchemaStitching) {
-    const mergeSchemaFunc = enableGravQLOnlySchemaStitching
-      ? minimalMergeSchemas
-      : mergeSchemas
-
     try {
       console.warn("[FEATURE] Enabling Schema Stitching")
-      schema = await mergeSchemaFunc()
+      schema = await incrementalMergeSchemas()
     } catch (err) {
       console.log("Error merging schemas:", err)
     }
