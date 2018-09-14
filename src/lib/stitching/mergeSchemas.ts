@@ -2,52 +2,55 @@ import { mergeSchemas as _mergeSchemas } from "graphql-tools"
 import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
 import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitching"
-import { executableLewittSchema } from "lib/stitching/lewitt/schema"
 import { executableExchangeSchema } from "lib/stitching/exchange/schema"
+import config from "config"
 
 import localSchema from "../../schema"
+import { GraphQLSchema } from "graphql"
 
-export const minimalMergeSchemas = async () => {
-  const gravitySchema = await executableGravitySchema()
+/**
+ * Incrementally merges in schemas according to `process.env`
+ */
+export const incrementalMergeSchemas = async (testConfig?: any) => {
+  const {
+    ENABLE_GRAVQL_ONLY_STITCHING,
+    ENABLE_ECOMMERCE_STITCHING,
+    ENABLE_CONSIGNMENTS_STITCHING,
+  } = testConfig || config
 
-  // The order should only matter in that extension schemas come after the
-  // objects that they are expected to build upon
-  const mergedSchema = _mergeSchemas({
-    schemas: [gravitySchema, localSchema],
-  })
+  const schemas = [localSchema] as GraphQLSchema[]
+  const extensionSchemas = [] as string[]
+  const extensionResolvers = {} as any
 
-  // Because __allowedLegacyNames isn't in the public API
-  const anyMergedSchema = mergedSchema as any
-  anyMergedSchema.__allowedLegacyNames = ["__id"]
+  if (ENABLE_GRAVQL_ONLY_STITCHING) {
+    const gravitySchema = await executableGravitySchema()
+    schemas.push(gravitySchema)
+  }
 
-  return mergedSchema
-}
+  if (ENABLE_ECOMMERCE_STITCHING) {
+    const exchangeSchema = await executableExchangeSchema()
+    schemas.push(exchangeSchema)
+  }
 
-export const mergeSchemas = async () => {
-  const convectionSchema = await executableConvectionSchema()
-  const convectionStitching = consignmentStitchingEnvironment(
-    localSchema,
-    convectionSchema
-  )
+  if (ENABLE_CONSIGNMENTS_STITCHING) {
+    const convectionSchema = await executableConvectionSchema()
+    schemas.push(convectionSchema)
 
-  const gravitySchema = await executableGravitySchema()
-  const lewittSchema = await executableLewittSchema()
-  const exchangeSchema = await executableExchangeSchema()
-
-  // The order should only matter in that extension schemas come after the
-  // objects that they are expected to build upon
-  const mergedSchema = _mergeSchemas({
-    schemas: [
-      gravitySchema,
+    const { extensionSchema, resolvers } = consignmentStitchingEnvironment(
       localSchema,
-      convectionSchema,
-      lewittSchema,
-      exchangeSchema,
-      convectionStitching.extensionSchema,
-    ],
-    resolvers: {
-      ...convectionStitching.resolvers,
-    },
+      convectionSchema
+    )
+    extensionSchemas.push(extensionSchema)
+    for (var attr in resolvers) {
+      extensionResolvers[attr] = resolvers[attr]
+    }
+  }
+
+  // The order should only matter in that extension schemas come after the
+  // objects that they are expected to build upon
+  const mergedSchema = _mergeSchemas({
+    schemas: [...schemas, ...extensionSchemas],
+    resolvers: extensionResolvers,
   })
 
   // Because __allowedLegacyNames isn't in the public API
@@ -56,3 +59,39 @@ export const mergeSchemas = async () => {
 
   return mergedSchema
 }
+
+// The end goal:
+//
+// export const mergeSchemas = async () => {
+//   const convectionSchema = await executableConvectionSchema()
+//   const convectionStitching = consignmentStitchingEnvironment(
+//     localSchema,
+//     convectionSchema
+//   )
+
+//   const gravitySchema = await executableGravitySchema()
+//   // const lewittSchema = await executableLewittSchema()
+//   const exchangeSchema = await executableExchangeSchema()
+
+//   // The order should only matter in that extension schemas come after the
+//   // objects that they are expected to build upon
+//   const mergedSchema = _mergeSchemas({
+//     schemas: [
+//       gravitySchema,
+//       localSchema,
+//       convectionSchema,
+//       // lewittSchema,
+//       exchangeSchema,
+//       convectionStitching.extensionSchema,
+//     ],
+//     resolvers: {
+//       ...convectionStitching.resolvers,
+//     },
+//   })
+
+//   // Because __allowedLegacyNames isn't in the public API
+//   const anyMergedSchema = mergedSchema as any
+//   anyMergedSchema.__allowedLegacyNames = ["__id"]
+
+//   return mergedSchema
+// }
