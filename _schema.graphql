@@ -4336,6 +4336,33 @@ type Mutation {
 
   # Submits an order
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
+
+  # Creates an order with an artwork
+  ecommerceCreateOrderWithArtwork(
+    input: CreateOrderWithArtworkInput!
+  ): CreateOrderWithArtworkPayload
+
+  # Sets shipping information for an order
+  ecommerceSetOrderShipping(
+    input: SetOrderShippingInput!
+  ): SetOrderShippingPayload
+
+  # Sets payment information on an order
+  ecommerceSetOrderPayment(input: SetOrderPaymentInput!): SetOrderPaymentPayload
+
+  # Approves an order with payment
+  ecommerceApproveOrder(input: ApproveOrderInput!): ApproveOrderPayload
+
+  # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
+  ecommerceFulfillOrderAtOnce(
+    input: FulfillOrderAtOnceInput!
+  ): FulfillOrderAtOncePayload
+
+  # Rejects an order
+  ecommerceRejectOrder(input: RejectOrderInput!): RejectOrderPayload
+
+  # Submits an order
+  ecommerceSubmitOrder(input: SubmitOrderInput!): SubmitOrderPayload
 }
 
 input Near {
@@ -5670,6 +5697,19 @@ type Query {
 
   # Returns list of orders
   orders(
+    buyerId: String
+    buyerType: String
+    sellerId: String
+    sellerType: String
+    state: String
+    sort: OrdersSortMethodType
+  ): OrderConnection
+
+  # Returns a single Order
+  ecommerceOrder(id: String!): Order
+
+  # Returns list of orders
+  ecommerceOrders(
     buyerId: String
     buyerType: String
     sellerId: String
