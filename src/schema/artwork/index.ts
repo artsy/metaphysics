@@ -309,7 +309,7 @@ export const artworkFields = () => {
       type: GraphQLBoolean,
       description: "When in an auction, can the work be bought immediately",
       resolve: (
-        { id, acquireable, sale_ids },
+        { acquireable, sale_ids },
         _options,
         _request,
         { rootValue: { salesLoader } }
@@ -411,8 +411,8 @@ export const artworkFields = () => {
       description: "Is this artwork part of a current show",
       resolve: (
         { id },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { relatedShowsLoader } }
       ) =>
         relatedShowsLoader({ active: true, size: 1, artwork: [id] }).then(
