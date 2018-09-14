@@ -63,7 +63,7 @@ export const runQueryMerged = async (
   if (!mergedSchema) {
     mergedSchema = await incrementalMergeSchemas({
       ENABLE_GRAVQL_ONLY_STITCHING: true,
-      ENABLE_ORDER_STITCHING: true,
+      ENABLE_ECOMMERCE_STITCHING: true,
       ENABLE_CONSIGNMENTS_STITCHING: true,
     })
   }

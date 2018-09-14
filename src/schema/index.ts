@@ -82,7 +82,7 @@ import config from "config"
 const {
   ENABLE_CONSIGNMENTS_STITCHING,
   ENABLE_GRAVQL_ONLY_STITCHING,
-  ENABLE_ORDER_STITCHING,
+  ENABLE_ECOMMERCE_STITCHING,
 } = config
 
 // TODO: Remove this any
@@ -165,7 +165,7 @@ if (!ENABLE_CONSIGNMENTS_STITCHING) {
   stitchedMutations.addAssetToConsignmentSubmission = AddAssetToConsignmentSubmission
 }
 
-if (!ENABLE_ORDER_STITCHING) {
+if (!ENABLE_ECOMMERCE_STITCHING) {
   // Deprecated
   stitchedRootFields.order = Order
   stitchedRootFields.orders = Orders

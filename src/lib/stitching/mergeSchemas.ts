@@ -14,7 +14,7 @@ import { GraphQLSchema } from "graphql"
 export const incrementalMergeSchemas = async (testConfig?: any) => {
   const {
     ENABLE_GRAVQL_ONLY_STITCHING,
-    ENABLE_ORDER_STITCHING,
+    ENABLE_ECOMMERCE_STITCHING,
     ENABLE_CONSIGNMENTS_STITCHING,
   } = testConfig || config
 
@@ -27,7 +27,7 @@ export const incrementalMergeSchemas = async (testConfig?: any) => {
     schemas.push(gravitySchema)
   }
 
-  if (ENABLE_ORDER_STITCHING) {
+  if (ENABLE_ECOMMERCE_STITCHING) {
     const exchangeSchema = await executableExchangeSchema()
     schemas.push(exchangeSchema)
   }
