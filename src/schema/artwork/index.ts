@@ -700,9 +700,10 @@ export const artworkFields = () => {
         ]).join(", ")
       },
     },
-    published: {
+    is_published: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: "Whether this Artwork is Published of not",
+      resolve: ({ published }) => published,
     },
     website: {
       type: GraphQLString,

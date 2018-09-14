@@ -839,7 +839,7 @@ type Artwork implements Node & Sellable {
   to_s: String
 
   # Whether this Artwork is Published of not
-  published: Boolean!
+  is_published: Boolean!
 
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
@@ -1557,7 +1557,7 @@ type ArtworkItem implements Node & Sellable {
   to_s: String
 
   # Whether this Artwork is Published of not
-  published: Boolean!
+  is_published: Boolean!
 
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
