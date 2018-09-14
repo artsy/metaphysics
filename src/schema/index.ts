@@ -166,9 +166,14 @@ if (!ENABLE_CONSIGNMENTS_STITCHING) {
 }
 
 if (!ENABLE_ORDER_STITCHING) {
+  // Deprecated
   stitchedRootFields.order = Order
   stitchedRootFields.orders = Orders
 
+  stitchedRootFields.ecommerceOrder = Order
+  stitchedRootFields.ecommerceOrders = Orders
+
+  // Deprecated
   stitchedMutations.createOrderWithArtwork = CreateOrderWithArtworkMutation
   stitchedMutations.setOrderShipping = SetOrderShippingMutation
   stitchedMutations.setOrderPayment = SetOrderPaymentMutation
@@ -176,6 +181,14 @@ if (!ENABLE_ORDER_STITCHING) {
   stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
   stitchedMutations.rejectOrder = RejectOrderMutation
   stitchedMutations.submitOrder = SubmitOrderMutation
+
+  stitchedMutations.ecommerceCreateOrderWithArtwork = CreateOrderWithArtworkMutation
+  stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
+  stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
+  stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
+  stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
+  stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
+  stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
 }
 
 const schema = new GraphQLSchema({

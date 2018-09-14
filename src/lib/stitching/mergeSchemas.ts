@@ -5,18 +5,22 @@ import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitch
 import { executableExchangeSchema } from "lib/stitching/exchange/schema"
 import config from "config"
 
-const {
-  ENABLE_GRAVQL_ONLY_STITCHING,
-  ENABLE_ORDER_STITCHING,
-  ENABLE_CONSIGNMENTS_STITCHING,
-} = config
-
 import localSchema from "../../schema"
+import { GraphQLSchema } from "graphql"
 
-export const incrementalMergeSchemas = async () => {
-  const schemas = [] as any[]
-  const extensionSchemas = [] as any[]
-  const resolvers = {} as any
+/**
+ * Incrementally merges in schemas according to `process.env`
+ */
+export const incrementalMergeSchemas = async (testConfig?: any) => {
+  const {
+    ENABLE_GRAVQL_ONLY_STITCHING,
+    ENABLE_ORDER_STITCHING,
+    ENABLE_CONSIGNMENTS_STITCHING,
+  } = testConfig || config
+
+  const schemas = [localSchema] as GraphQLSchema[]
+  const extensionSchemas = [] as string[]
+  const extensionResolvers = {} as any
 
   if (ENABLE_GRAVQL_ONLY_STITCHING) {
     const gravitySchema = await executableGravitySchema()
@@ -30,26 +34,23 @@ export const incrementalMergeSchemas = async () => {
 
   if (ENABLE_CONSIGNMENTS_STITCHING) {
     const convectionSchema = await executableConvectionSchema()
-    const convectionStitching = consignmentStitchingEnvironment(
+    schemas.push(convectionSchema)
+
+    const { extensionSchema, resolvers } = consignmentStitchingEnvironment(
       localSchema,
       convectionSchema
     )
-
-    schemas.push(convectionSchema)
-    extensionSchemas.push(convectionStitching.extensionSchema)
-    for (var attr in convectionStitching.resolvers) {
-      resolvers[attr] = convectionStitching.resolvers[attr]
+    extensionSchemas.push(extensionSchema)
+    for (var attr in resolvers) {
+      extensionResolvers[attr] = resolvers[attr]
     }
   }
-
-  // Add the MP schema last
-  schemas.push(localSchema)
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon
   const mergedSchema = _mergeSchemas({
     schemas: [...schemas, ...extensionSchemas],
-    resolvers,
+    resolvers: extensionResolvers,
   })
 
   // Because __allowedLegacyNames isn't in the public API
@@ -69,7 +70,7 @@ export const incrementalMergeSchemas = async () => {
 //   )
 
 //   const gravitySchema = await executableGravitySchema()
-//   const lewittSchema = await executableLewittSchema()
+//   // const lewittSchema = await executableLewittSchema()
 //   const exchangeSchema = await executableExchangeSchema()
 
 //   // The order should only matter in that extension schemas come after the
@@ -79,7 +80,7 @@ export const incrementalMergeSchemas = async () => {
 //       gravitySchema,
 //       localSchema,
 //       convectionSchema,
-//       lewittSchema,
+//       // lewittSchema,
 //       exchangeSchema,
 //       convectionStitching.extensionSchema,
 //     ],
