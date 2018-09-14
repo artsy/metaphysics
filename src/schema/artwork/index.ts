@@ -67,7 +67,7 @@ export const artworkFields = () => {
       resolve: (
         { artist },
         { shallow },
-        request,
+        _request,
         { rootValue: { artistLoader } }
       ) => {
         if (!artist) return null
@@ -87,7 +87,7 @@ export const artworkFields = () => {
       resolve: (
         { artists },
         { shallow },
-        request,
+        _request,
         { rootValue: { artistLoader } }
       ) => {
         if (shallow) return artists
@@ -106,7 +106,7 @@ export const artworkFields = () => {
       resolve: (
         { _id },
         { size },
-        request,
+        _request,
         { rootValue: { articlesLoader } }
       ) =>
         articlesLoader({
@@ -203,7 +203,7 @@ export const artworkFields = () => {
       resolve: ({ unique, edition_sets }) => {
         if (unique) return "Unique"
         if (edition_sets && edition_sets.length === 1) {
-          return _.first(edition_sets).editions
+          return edition_sets[0]!.editions
         }
       },
     },
@@ -216,8 +216,8 @@ export const artworkFields = () => {
       type: Fair.type,
       resolve: (
         { id },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { relatedFairsLoader } }
       ) => {
         return relatedFairsLoader({ artwork: [id], size: 1 }).then(_.first)
@@ -228,8 +228,8 @@ export const artworkFields = () => {
       description: "Returns the highlighted shows and articles",
       resolve: (
         { id, _id },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { relatedShowsLoader, articlesLoader } }
       ) =>
         Promise.all([
@@ -289,8 +289,8 @@ export const artworkFields = () => {
         "Is this artwork part of an auction that is currently running?",
       resolve: (
         { sale_ids },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { salesLoader } }
       ) => {
         if (sale_ids && sale_ids.length > 0) {
@@ -309,9 +309,9 @@ export const artworkFields = () => {
       type: GraphQLBoolean,
       description: "When in an auction, can the work be bought immediately",
       resolve: (
-        { id, acquireable, sale_ids },
-        options,
-        request,
+        { acquireable, sale_ids },
+        _options,
+        _request,
         { rootValue: { salesLoader } }
       ) => {
         if (sale_ids && sale_ids.length > 0 && acquireable) {
@@ -338,8 +338,8 @@ export const artworkFields = () => {
       deprecationReason: "Prefer to use is_inquireable",
       resolve: (
         artwork,
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { relatedSalesLoader } }
       ) => {
         return relatedSalesLoader({
@@ -361,8 +361,7 @@ export const artworkFields = () => {
     },
     is_downloadable: {
       type: GraphQLBoolean,
-      resolve: ({ images }) =>
-        !!(_.first(images) && _.first(images).downloadable),
+      resolve: ({ images }) => !!(_.first(images) && images[0].downloadable),
     },
     is_embeddable_video: { type: GraphQLBoolean, resolve: isEmbeddedVideo },
     is_ecommerce: {
@@ -374,16 +373,12 @@ export const artworkFields = () => {
     is_hangable: {
       type: GraphQLBoolean,
       resolve: artwork => {
-        return (
-          !_.includes(
-            artwork.category,
-            "sculpture",
-            "installation",
-            "design"
-          ) &&
-          isTwoDimensional(artwork) &&
-          !isTooBig(artwork)
-        )
+        const is3D =
+          _.includes(artwork.category, "sculpture") ||
+          _.includes(artwork.category, "installation") ||
+          _.includes(artwork.category, "design")
+
+        return !is3D && isTwoDimensional(artwork) && !isTooBig(artwork)
       },
     },
     is_inquireable: {
@@ -396,8 +391,8 @@ export const artworkFields = () => {
       description: "Is this artwork part of an auction?",
       resolve: (
         { sale_ids },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { salesLoader } }
       ) => {
         if (sale_ids && sale_ids.length > 0) {
@@ -416,8 +411,8 @@ export const artworkFields = () => {
       description: "Is this artwork part of a current show",
       resolve: (
         { id },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { relatedShowsLoader } }
       ) =>
         relatedShowsLoader({ active: true, size: 1, artwork: [id] }).then(
@@ -449,7 +444,12 @@ export const artworkFields = () => {
     },
     is_saved: {
       type: GraphQLBoolean,
-      resolve: ({ id }, {}, request, { rootValue: { savedArtworkLoader } }) => {
+      resolve: (
+        { id },
+        {},
+        _request,
+        { rootValue: { savedArtworkLoader } }
+      ) => {
         if (!savedArtworkLoader) return false
         return savedArtworkLoader(id).then(({ is_saved }) => is_saved)
       },
@@ -466,7 +466,7 @@ export const artworkFields = () => {
       resolve: (
         artwork,
         { id },
-        request,
+        _request,
         { rootValue: { relatedLayersLoader } }
       ) =>
         artworkLayers(artwork.id, relatedLayersLoader).then(
@@ -477,8 +477,8 @@ export const artworkFields = () => {
       type: ArtworkLayers.type,
       resolve: (
         { id },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { relatedLayersLoader } }
       ) => artworkLayers(id, relatedLayersLoader),
     },
@@ -500,7 +500,7 @@ export const artworkFields = () => {
       resolve: (
         { partner },
         { shallow },
-        request,
+        _request,
         { rootValue: { partnerLoader } }
       ) => {
         if (shallow) return partner
@@ -563,7 +563,7 @@ export const artworkFields = () => {
       resolve: (
         { _id },
         { size },
-        request,
+        _request,
         { rootValue: { relatedArtworksLoader } }
       ) => relatedArtworksLoader({ artwork_id: _id, size }),
     },
@@ -571,8 +571,8 @@ export const artworkFields = () => {
       type: Sale.type,
       resolve: (
         { sale_ids },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { saleLoader } }
       ) => {
         if (sale_ids && sale_ids.length > 0) {
@@ -647,7 +647,7 @@ export const artworkFields = () => {
       resolve: (
         { id },
         { active, sort, at_a_fair },
-        request,
+        _request,
         { rootValue: { relatedShowsLoader } }
       ) =>
         relatedShowsLoader({
@@ -671,7 +671,7 @@ export const artworkFields = () => {
       resolve: (
         { id },
         { size, active, sort, at_a_fair },
-        request,
+        _request,
         { rootValue: { relatedShowsLoader } }
       ) =>
         relatedShowsLoader({
@@ -700,8 +700,14 @@ export const artworkFields = () => {
         ]).join(", ")
       },
     },
+    published: {
+      type: new GraphQLNonNull(GraphQLBoolean),
+      description: "Whether this Artwork is Published of not",
+    },
     website: {
       type: GraphQLString,
+      description:
+        "If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS",
       resolve: artwork => (isEmbeddedVideo(artwork) ? null : artwork.website),
     },
     framed: {
@@ -725,7 +731,7 @@ export const artworkFields = () => {
         sticker_label,
         signed_other,
       }) => {
-        let detailsParts = []
+        let detailsParts: string[] = []
         if (signed_by_artist) {
           detailsParts.push("hand-signed by artist")
         }
@@ -780,7 +786,7 @@ export const ArtworkType = new GraphQLObjectType({
       cached,
     }
   },
-})
+} as any)
 
 const ArtworkInfoRowType = new GraphQLObjectType({
   name: "ArtworkInfoRow",
@@ -805,7 +811,7 @@ Artwork = {
       description: "The slug or ID of the Artwork",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { artworkLoader } }) =>
+  resolve: (_root, { id }, _request, { rootValue: { artworkLoader } }) =>
     artworkLoader(id),
 }
 

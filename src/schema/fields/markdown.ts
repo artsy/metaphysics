@@ -21,7 +21,7 @@ export function formatMarkdownValue(value, format) {
   return value
 }
 
-export function markdown(fn) {
+export function markdown(fn?: any) {
   return {
     type: GraphQLString,
     args: {
