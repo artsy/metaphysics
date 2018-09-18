@@ -16,7 +16,7 @@ export function init() {
   tracer.use("express", {
     // We want the root spans of MP to be labelled as just `metaphysics`
     service: DD_TRACER_SERVICE_NAME,
-    recordHeaders: ["User-Agent", "X-User-ID"],
+    headers: ["User-Agent", "X-User-ID"],
   } as any)
   tracer.use("http", {
     service: `${DD_TRACER_SERVICE_NAME}.http-client`,
