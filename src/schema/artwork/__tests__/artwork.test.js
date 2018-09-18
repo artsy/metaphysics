@@ -193,6 +193,30 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#pickup_available", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          pickup_available
+        }
+      }
+    `
+
+    it("passes true from gravity", () => {
+      artwork.pickup_available = true
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            pickup_available: true,
+          },
+        })
+      })
+    })
+  })
+
   describe("#images", () => {
     const query = `
       {
@@ -550,10 +574,11 @@ describe("Artwork type", () => {
         saleId === artwork.sale_ids[0] &&
         saleArtworkId === "richard-prince-untitled-portrait" &&
         Promise.resolve({ sale_id: saleId })
-      const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
-        query,
-        rootValue
-      )
+      const {
+        artwork: {
+          sale_artwork: { sale_id },
+        },
+      } = await runQuery(query, rootValue)
       expect(sale_id).toEqual(artwork.sale_ids[0])
     })
 
@@ -571,10 +596,11 @@ describe("Artwork type", () => {
         saleId === artwork.sale_ids[1] &&
         saleArtworkId === "richard-prince-untitled-portrait" &&
         Promise.resolve({ sale_id: saleId })
-      const { artwork: { sale_artwork: { sale_id } } } = await runQuery(
-        query,
-        rootValue
-      )
+      const {
+        artwork: {
+          sale_artwork: { sale_id },
+        },
+      } = await runQuery(query, rootValue)
       expect(sale_id).toEqual(artwork.sale_ids[1])
     })
   })
@@ -750,6 +776,16 @@ describe("Artwork type", () => {
         it("is hangable if the artwork is 2d and has reasonable dimensions", () => {
           artwork.width = 100
           artwork.height = 100
+          artwork.category = "ink"
+          return runQuery(query, rootValue).then(data => {
+            expect(data.artwork.is_hangable).toBe(true)
+          })
+        })
+
+        it("is hangable if the artwork is 2d and has reasonable dimensions", () => {
+          artwork.width = 100
+          artwork.height = 100
+          artwork.category = "painting"
           return runQuery(query, rootValue).then(data => {
             expect(data.artwork.is_hangable).toBe(true)
           })
@@ -759,6 +795,15 @@ describe("Artwork type", () => {
       describe("if the artwork is not able to be used with View in Room", () => {
         it("is not hangable if the category is not applicable to wall display", () => {
           artwork.category = "sculpture"
+          artwork.width = 100
+          artwork.height = 100
+          return runQuery(query, rootValue).then(data => {
+            expect(data.artwork.is_hangable).toBe(false)
+          })
+        })
+
+        it("is not hangable if the category is not applicable to wall display like installations", () => {
+          artwork.category = "installation"
           artwork.width = 100
           artwork.height = 100
           return runQuery(query, rootValue).then(data => {

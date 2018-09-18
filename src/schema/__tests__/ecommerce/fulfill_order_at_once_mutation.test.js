@@ -41,7 +41,9 @@ describe("Fulfill Order at Once Mutation", () => {
           }
           ... on OrderWithMutationFailure {
             error {
-              description
+              type
+              code
+              data
             }
           }
         }

@@ -141,7 +141,9 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
             }
             ... on EcommerceOrderWithMutationFailure {
               error {
-                description
+                type
+                code
+                data
               }
             }
           }

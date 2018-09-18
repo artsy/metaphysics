@@ -58,10 +58,14 @@ export const runQueryMerged = async (
   rootValue = { accessToken: null, userID: null }
 ) => {
   process.env.ENABLE_SCHEMA_STITCHING = "true"
-  const { mergeSchemas } = require("lib/stitching/mergeSchemas")
+  const { incrementalMergeSchemas } = require("lib/stitching/mergeSchemas")
 
   if (!mergedSchema) {
-    mergedSchema = await mergeSchemas()
+    mergedSchema = await incrementalMergeSchemas({
+      ENABLE_GRAVQL_ONLY_STITCHING: true,
+      ENABLE_ECOMMERCE_STITCHING: true,
+      ENABLE_CONSIGNMENTS_STITCHING: true,
+    })
   }
   return graphql(mergedSchema, query, rootValue, {}).then(result => {
     if (result.errors) {

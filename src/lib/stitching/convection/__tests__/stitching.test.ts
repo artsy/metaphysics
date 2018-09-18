@@ -1,10 +1,12 @@
-import { mergeSchemas } from "../../mergeSchemas"
+import { incrementalMergeSchemas } from "../../mergeSchemas"
 import { graphql } from "graphql"
 import gql from "lib/gql"
 import { addMockFunctionsToSchema } from "graphql-tools"
 
 it("resolves an Artist on a Consignment Submission", async () => {
-  const allMergedSchemas = await mergeSchemas()
+  const allMergedSchemas = await incrementalMergeSchemas({
+    ENABLE_CONSIGNMENTS_STITCHING: true,
+  })
 
   // This test is that a submission gets the artist by stitching a MP
   // Artist into the ConsignmentSubmission inside the schema
