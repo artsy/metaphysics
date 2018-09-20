@@ -170,6 +170,10 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedRootFields.order = Order
   stitchedRootFields.orders = Orders
 
+  // Also deprecated
+  stitchedRootFields.ecommerce_order = Order
+  stitchedRootFields.ecommerce_orders = Orders
+
   stitchedRootFields.ecommerceOrder = Order
   stitchedRootFields.ecommerceOrders = Orders
 
