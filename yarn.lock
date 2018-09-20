@@ -717,6 +717,12 @@
     "@types/express" "*"
     "@types/graphql" "*"
 
+"@types/express-rate-limit@^2.9.3":
+  version "2.9.3"
+  resolved "https://registry.yarnpkg.com/@types/express-rate-limit/-/express-rate-limit-2.9.3.tgz#e83a548bf251ad12ca49055c22d3f2da4e16b62d"
+  dependencies:
+    "@types/express" "*"
+
 "@types/express-serve-static-core@*":
   version "4.0.57"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.0.57.tgz#3cd8ab4b11d5ecd70393bada7fc1c480491537dd"
@@ -1729,6 +1735,10 @@ cliui@^4.0.0:
     strip-ansi "^4.0.0"
     wrap-ansi "^2.0.0"
 
+clone@^1.0.2:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
+
 co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
@@ -2108,6 +2118,12 @@ default-require-extensions@^1.0.0:
   resolved "https://registry.yarnpkg.com/default-require-extensions/-/default-require-extensions-1.0.0.tgz#f37ea15d3e13ffd9b437d33e1a75b5fb97874cb8"
   dependencies:
     strip-bom "^2.0.0"
+
+defaults@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/defaults/-/defaults-1.0.3.tgz#c656051e9817d9ff08ed881477f3fe4019f3ef7d"
+  dependencies:
+    clone "^1.0.2"
 
 define-properties@^1.1.2:
   version "1.1.2"
@@ -2594,6 +2610,12 @@ express-ipfilter@^0.3.1:
     ip "~1.1.0"
     lodash "~3.10.1"
     range_check "^1.2.0"
+
+express-rate-limit@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-3.2.0.tgz#92368aab15a6b17c68399d4d4b4289850f13c4fe"
+  dependencies:
+    defaults "^1.0.3"
 
 express@^4.13.3:
   version "4.16.2"
@@ -5588,6 +5610,12 @@ range_check@^1.2.0:
   dependencies:
     ip6 "0.0.4"
     ipaddr.js "1.2"
+
+rate-limit-memcached@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/rate-limit-memcached/-/rate-limit-memcached-0.6.0.tgz#e769afe3052d80ef55126f19075fa572951392b2"
+  dependencies:
+    memcached "^2.2.2"
 
 raven@^2.4.2:
   version "2.4.2"
