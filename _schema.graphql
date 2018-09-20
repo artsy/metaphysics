@@ -5745,6 +5745,19 @@ type Query {
   ): OrderConnection
 
   # Returns a single Order
+  ecommerce_order(id: String!): Order
+
+  # Returns list of orders
+  ecommerce_orders(
+    buyerId: String
+    buyerType: String
+    sellerId: String
+    sellerType: String
+    state: String
+    sort: OrdersSortMethodType
+  ): OrderConnection
+
+  # Returns a single Order
   ecommerceOrder(id: String!): Order
 
   # Returns list of orders
