@@ -36,7 +36,7 @@ export const Orders = {
         $state: EcommerceOrderStateEnum
         $sort: EcommerceOrderConnectionSortEnum
       ) {
-        ecommerce_orders(
+        ecommerceOrders(
           buyerId: $buyerId
           buyerType: $buyerType
           sellerId: $sellerId
@@ -92,6 +92,6 @@ export const Orders = {
       sellerType,
       state,
       sort,
-    }).then(extractEcommerceResponse("ecommerce_orders"))
+    }).then(extractEcommerceResponse("ecommerceOrders"))
   },
 }

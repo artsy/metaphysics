@@ -46,7 +46,7 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
     }
     const mutation = gql`
       mutation setOrderPayment($orderId: ID!, $creditCardId: String!) {
-        ecommerce_setPayment(input: {
+        ecommerceSetPayment(input: {
           id: $orderId,
           creditCardId: $creditCardId,
         }) {
@@ -101,6 +101,6 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       creditCardId,
-    }).then(extractEcommerceResponse("ecommerce_setPayment"))
+    }).then(extractEcommerceResponse("ecommerceSetPayment"))
   },
 })

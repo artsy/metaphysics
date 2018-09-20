@@ -52,7 +52,10 @@ export const mockxchange = resolvers => {
     new RenameTypes(name => {
       return `Ecommerce${name}`
     }),
-    new RenameRootFields((_operation, name) => `ecommerce_${name}`),
+    new RenameRootFields(
+      (_operation, name) =>
+        `ecommerce${name.charAt(0).toUpperCase() + name.slice(1)}`
+    ),
   ])
 
   const partnerLoader = sinon.stub().returns(

@@ -28,4 +28,5 @@ export const executableExchangeSchema = async () => {
         `ecommerce${name.charAt(0).toUpperCase() + name.slice(1)}`
     ),
   ])
+  // Note that changes in this will need to be
 }
