@@ -182,6 +182,15 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.rejectOrder = RejectOrderMutation
   stitchedMutations.submitOrder = SubmitOrderMutation
 
+  // Also deprecated
+  stitchedMutations.ecommerce_createOrderWithArtwork = CreateOrderWithArtworkMutation
+  stitchedMutations.ecommerce_setOrderShipping = SetOrderShippingMutation
+  stitchedMutations.ecommerce_setOrderPayment = SetOrderPaymentMutation
+  stitchedMutations.ecommerce_approveOrder = ApproveOrderMutation
+  stitchedMutations.ecommerce_fulfillOrderAtOnce = FulfillOrderAtOnceMutation
+  stitchedMutations.ecommerce_rejectOrder = RejectOrderMutation
+  stitchedMutations.ecommerce_submitOrder = SubmitOrderMutation
+
   stitchedMutations.ecommerceCreateOrderWithArtwork = CreateOrderWithArtworkMutation
   stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
   stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
