@@ -61,6 +61,8 @@ function createMockClient() {
       delete store[key]
       cb()
     },
+    // Just to satisfy rate-limit-memcached
+    increment: (_key, _value, cb) => cb(false),
   }
 }
 
