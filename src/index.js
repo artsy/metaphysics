@@ -22,7 +22,6 @@ import {
   fetchLoggerRequestDone,
 } from "lib/loaders/api/logger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
-import { checkForProblematicArtistQuery } from "./lib/checkForProblematicArtistQuery"
 import { info } from "./lib/loggers"
 import {
   mergeSchemas,
@@ -120,7 +119,6 @@ async function startApp() {
       next()
     },
     logQueryDetailsIfEnabled(),
-    checkForProblematicArtistQuery,
     nameOldEigenQueries,
     fetchPersistedQuery,
     crunchInterceptor,
