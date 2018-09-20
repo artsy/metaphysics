@@ -4,7 +4,7 @@ import { client } from "./cache"
 import { Request } from "express"
 
 // Max 100 requests in 15 minutes from a single IP
-const max = 1
+const max = 100
 const expiration = 15 * 60
 
 export const skip = (req: Request) =>
