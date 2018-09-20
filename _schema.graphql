@@ -4719,8 +4719,8 @@ type OrderLineItem {
   # Artwork that is being ordered
   artwork: Artwork
 
-  # Edition set on the artwork
-  editionSet: EditionSet
+  # ID of the selected Edition set from the artwork
+  editionSetId: String
 
   # Unit price in cents
   priceCents: Int

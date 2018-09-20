@@ -1,7 +1,11 @@
-import { GraphQLID, GraphQLInt, GraphQLObjectType } from "graphql"
+import {
+  GraphQLID,
+  GraphQLInt,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 import Artwork from "schema/artwork"
-import EditionSet from "schema/edition_set"
 import { OrderFulfillmentConnection } from "./order_fulfillment"
 import { amount } from "schema/fields/money"
 import date from "schema/fields/date"
@@ -23,10 +27,9 @@ export const OrderLineItemType = new GraphQLObjectType({
         { rootValue: { authenticatedArtworkLoader } }
       ) => authenticatedArtworkLoader(artworkId),
     },
-    editionSet: {
-      type: EditionSet.type,
-      description: "Edition set on the artwork",
-      resolve: ({ editionSetId }) => editionSetId,
+    editionSetId: {
+      type: GraphQLString,
+      description: "ID of the selected Edition set from the artwork",
     },
     priceCents: {
       type: GraphQLInt,
