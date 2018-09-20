@@ -33,6 +33,11 @@ export default (accessToken, userID, opts) => {
       {},
       { headers: true }
     ),
+    deleteCreditCardLoader: gravityLoader(
+      id => `me/credit_card/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
     followedGeneLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/genes"),

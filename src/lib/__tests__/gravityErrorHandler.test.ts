@@ -13,6 +13,18 @@ describe("gravityErrorHandler", () => {
         type: "payment_error",
       })
     })
+
+    it("returns a parsed error if in the error: format", () => {
+      const expectedErrorFormat = {
+        message: `https://stagingapi.artsy.net/api/v1/me/credit_cards?provider=stripe&token=tok_chargeDeclinedExpiredCard - {"error":"Card Not Found"}`,
+        statusCode: 404,
+      }
+      expect(formatGravityError(expectedErrorFormat)).toEqual({
+        detail: undefined,
+        message: "Card Not Found",
+        type: "error",
+      })
+    })
     it("returns an unparsed error if the format is different", () => {
       const unexpectedErrorFormat = {
         message: `https://stagingapi.artsy.net/api/v1/me/credit_cards?provider=stripe&token=tok_chargeDeclinedExpiredCard - {"fooError"`,

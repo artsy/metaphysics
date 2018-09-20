@@ -23,7 +23,16 @@ export const formatGravityError = error => {
 
   if (errorSplit && errorSplit.length > 1) {
     try {
-      return { ...JSON.parse(errorSplit[1]) }
+      const parsedError = JSON.parse(errorSplit[1])
+      if (parsedError.error) {
+        return {
+          type: "error",
+          message: parsedError.error,
+          detail: parsedError.text,
+        }
+      } else {
+        return { ...parsedError }
+      }
     } catch (e) {
       return { message: errorSplit[1] }
     }
