@@ -28,7 +28,11 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "POST" }
     ),
-    meCreditCardsLoader: gravityLoader("me/credit_cards", {}),
+    meCreditCardsLoader: gravityLoader(
+      "me/credit_cards",
+      {},
+      { headers: true }
+    ),
     followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
     followedGeneLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/genes"),

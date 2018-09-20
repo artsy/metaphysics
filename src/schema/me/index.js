@@ -20,6 +20,7 @@ import { BidderPosition } from "./bidder_position"
 import CollectorProfile from "./collector_profile"
 import Conversation from "./conversation"
 import Conversations from "./conversations"
+import { CreditCards } from "./credit_cards"
 import FollowArtists from "./follow_artists"
 import FollowedArtistsArtworkGroups from "./followed_artists_artworks_group"
 import FollowedArtists from "./followed_artists"
@@ -57,6 +58,7 @@ const Me = new GraphQLObjectType({
     conversation: Conversation,
     conversations: Conversations,
     created_at: date,
+    creditCards: CreditCards,
     email: {
       type: GraphQLString,
     },
@@ -80,8 +82,8 @@ const Me = new GraphQLObjectType({
         request,
         { rootValue: { meCreditCardsLoader } }
       ) => {
-        return meCreditCardsLoader().then(results => {
-          return results.length > 0
+        return meCreditCardsLoader().then(({ body }) => {
+          return body && body.length > 0
         })
       },
     },
@@ -94,8 +96,8 @@ const Me = new GraphQLObjectType({
         { rootValue: { meCreditCardsLoader } }
       ) => {
         return meCreditCardsLoader({ qualified_for_bidding: true }).then(
-          results => {
-            return results.length > 0
+          ({ body }) => {
+            return body && body.length > 0
           }
         )
       },
@@ -137,6 +139,7 @@ export default {
     const blacklistedFields = [
       "id",
       "__id",
+      "creditCards",
       "follow_artists",
       "followed_artists_connection",
       "followed_genes",

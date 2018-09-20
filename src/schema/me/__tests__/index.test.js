@@ -33,7 +33,8 @@ describe("me/index", () => {
       ]
 
       return runAuthenticatedQuery(creditCardQuery, {
-        meCreditCardsLoader: () => Promise.resolve(creditCardsResponse),
+        meCreditCardsLoader: () =>
+          Promise.resolve({ body: creditCardsResponse }),
       }).then(data => {
         expect(data).toEqual({ me: { has_qualified_credit_cards: true } })
       })
@@ -43,7 +44,8 @@ describe("me/index", () => {
       const creditCardsResponse = []
 
       return runAuthenticatedQuery(creditCardQuery, {
-        meCreditCardsLoader: () => Promise.resolve(creditCardsResponse),
+        meCreditCardsLoader: () =>
+          Promise.resolve({ body: creditCardsResponse }),
       }).then(data => {
         expect(data).toEqual({
           me: {
@@ -84,7 +86,8 @@ describe("me/index", () => {
       ]
 
       return runAuthenticatedQuery(creditCardQuery, {
-        meCreditCardsLoader: () => Promise.resolve(creditCardsResponse),
+        meCreditCardsLoader: () =>
+          Promise.resolve({ body: creditCardsResponse }),
       }).then(data => {
         expect(data).toEqual({ me: { has_credit_cards: true } })
       })
@@ -94,7 +97,8 @@ describe("me/index", () => {
       const creditCardsResponse = []
 
       return runAuthenticatedQuery(creditCardQuery, {
-        meCreditCardsLoader: () => Promise.resolve(creditCardsResponse),
+        meCreditCardsLoader: () =>
+          Promise.resolve({ body: creditCardsResponse }),
       }).then(data => {
         expect(data).toEqual({ me: { has_credit_cards: false } })
       })
