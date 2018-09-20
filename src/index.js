@@ -32,6 +32,7 @@ import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
 import { executableExchangeSchema } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/nameOldEigenQueries"
+import { rateLimiter } from "./lib/rateLimiter"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
 
@@ -112,6 +113,7 @@ async function startApp() {
     morgan,
     // Gotta parse the JSON body before passing it to logQueryDetails/fetchPersistedQuery
     bodyParser.json(),
+    rateLimiter,
     // Ensure this divider is logged before both fetchPersistedQuery and graphqlHTTP
     (req, res, next) => {
       info("----------")
