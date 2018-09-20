@@ -6,6 +6,7 @@ import {
 } from "graphql-tools"
 import fs from "fs"
 import path from "path"
+import { transformsForExchange } from "lib/stitching/exchange/schema"
 
 export const mockxchange = resolvers => {
   const typeDefs = fs.readFileSync(
@@ -48,15 +49,7 @@ export const mockxchange = resolvers => {
   })
 
   // namespace schema similar to src/lib/stitching/exchange/schema.ts
-  const exchangeSchema = transformSchema(schema, [
-    new RenameTypes(name => {
-      return `Ecommerce${name}`
-    }),
-    new RenameRootFields(
-      (_operation, name) =>
-        `ecommerce${name.charAt(0).toUpperCase() + name.slice(1)}`
-    ),
-  ])
+  const exchangeSchema = transformSchema(schema, transformsForExchange)
 
   const partnerLoader = sinon.stub().returns(
     Promise.resolve({
