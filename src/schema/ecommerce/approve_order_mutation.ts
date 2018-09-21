@@ -28,7 +28,7 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
     }
     const mutation = gql`
       mutation approveOrder($orderId: ID!) {
-        ecommerce_approveOrder(input: {
+        ecommerceApproveOrder(input: {
           id: $orderId,
         }) {
           orderOrError {
@@ -81,6 +81,6 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
     `
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
-    }).then(extractEcommerceResponse("ecommerce_approveOrder"))
+    }).then(extractEcommerceResponse("ecommerceApproveOrder"))
   },
 })

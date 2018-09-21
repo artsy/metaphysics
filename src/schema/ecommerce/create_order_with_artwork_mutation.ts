@@ -57,7 +57,7 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
         $editionSetId: String
         $quantity: Int
       ) {
-        ecommerce_createOrderWithArtwork(
+        ecommerceCreateOrderWithArtwork(
           input: {
             artworkId: $artworkId
             editionSetId: $editionSetId
@@ -117,6 +117,6 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
       artworkId,
       editionSetId,
       quantity,
-    }).then(extractEcommerceResponse("ecommerce_createOrderWithArtwork"))
+    }).then(extractEcommerceResponse("ecommerceCreateOrderWithArtwork"))
   },
 })

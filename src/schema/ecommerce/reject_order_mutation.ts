@@ -29,7 +29,7 @@ export const RejectOrderMutation = mutationWithClientMutationId({
 
     const mutation = gql`
       mutation rejectOrder($orderId: ID!) {
-        ecommerce_rejectOrder(input: {
+        ecommerceRejectOrder(input: {
           id: $orderId,
         }) {
           orderOrError {
@@ -83,6 +83,6 @@ export const RejectOrderMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       creditCardId,
-    }).then(extractEcommerceResponse("ecommerce_rejectOrder"))
+    }).then(extractEcommerceResponse("ecommerceRejectOrder"))
   },
 })
