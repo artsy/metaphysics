@@ -36,6 +36,10 @@ export const Orders = {
         $sellerType: String
         $state: EcommerceOrderStateEnum
         $sort: EcommerceOrderConnectionSortEnum
+        $after: String
+        $first: Int
+        $before: String
+        $last: Int
       ) {
         ecommerceOrders(
           buyerId: $buyerId
@@ -44,6 +48,10 @@ export const Orders = {
           sellerType: $sellerType
           state: $state
           sort: $sort
+          after: $after
+          first: $first
+          before: $before
+          last: $last
         ) {
           ${PageInfo}
           totalCount
