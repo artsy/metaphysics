@@ -4690,8 +4690,8 @@ type OrderLineItem {
   # Artwork that is being ordered
   artwork: Artwork
 
-  # Edition set on the artwork
-  editionSet: EditionSet
+  # ID of the selected Edition set from the artwork
+  editionSetId: String
 
   # Unit price in cents
   priceCents: Int
@@ -4755,11 +4755,17 @@ union OrderOrFailureUnionType =
 union OrderParty = Partner | User
 
 enum OrdersSortMethodType {
-  # Sort by latest timestamp order was updated in ascending order
+  # Sort by the timestamp the order was last updated in ascending order
   UPDATED_AT_ASC
 
-  # Sort by latest timestamp order was updated in descending order
+  # Sort by the timestamp the order was last updated in descending order
   UPDATED_AT_DESC
+
+  # Sort by the timestamp the state of order was last updated in ascending order
+  STATE_UPDATED_AT_ASC
+
+  # Sort by the timestamp the state of order was last updated in descending order
+  STATE_UPDATED_AT_DESC
 }
 
 type OrderWithMutationFailure {

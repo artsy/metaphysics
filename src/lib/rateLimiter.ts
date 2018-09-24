@@ -5,10 +5,11 @@ import { Request } from "express"
 import config from "../config"
 
 export const skip = (req: Request) =>
-  (req.headers["x-forwarded-for"] &&
-    (req.headers["x-forwarded-for"] as string).split(",").length > 1) ||
-  (req.body.query &&
-    !req.body.query.includes("routes_OverviewQueryRendererQuery"))
+  !!(
+    req.headers["x-request-id"] ||
+    (req.body.query &&
+      !req.body.query.includes("routes_OverviewQueryRendererQuery"))
+  )
 
 export const rateLimiter = new RateLimit({
   max: config.RATE_LIMIT_MAX,

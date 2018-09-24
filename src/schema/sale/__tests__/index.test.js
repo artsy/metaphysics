@@ -420,99 +420,102 @@ describe("Sale type", () => {
           live_start_at: moment().subtract(1, "days"),
           registration_ends_at: moment().subtract(2, "days"),
         },
-        "In Progress",
+        "in progress",
       ],
+      [{ end_at: moment().subtract(1, "days") }, null],
       [
         {
           auction_state: "open",
           live_start_at: moment().subtract(2, "days"),
           registration_ends_at: moment().subtract(3, "days"),
         },
-        "In Progress",
+        "in progress",
       ],
       [
         {
           live_start_at: moment().add(10, "minutes"),
           registration_ends_at: moment().subtract(2, "days"),
         },
-        "Live in 10 minutes",
+        "live in 10 minutes",
       ],
       [
         {
           live_start_at: moment().add(20, "minutes"),
           registration_ends_at: moment().subtract(2, "days"),
         },
-        "Live in 20 minutes",
+        "live in 20 minutes",
       ],
       [
         {
           live_start_at: moment().add(20, "days"),
           registration_ends_at: moment().add(10, "minutes"),
         },
-        `Register by\n${moment(moment().add(10, "minutes")).format("ha")}`,
+        `register by\n${moment(moment().add(10, "minutes")).format("ha")}`,
       ],
       [
         {
           live_start_at: moment().add(30, "days"),
           registration_ends_at: moment().add(10, "days"),
         },
-        `Register by\n${moment(moment().add(10, "days")).format("MMM D, ha")}`,
+        `register by\n${moment(moment().add(10, "days")).format("MMM D, ha")}`,
+      ],
+      [
+        {
+          live_start_at: moment().add(20, "days"),
+          registration_ends_at: moment().add(10, "days"),
+        },
+        "live in 20 days",
+        true, // used to fake registered bidder for this scenario
+      ],
+      [
+        {
+          start_at: moment().add(1, "minutes"),
+          end_at: moment().add(10, "minutes"),
+        },
+        "ends in 10 minutes",
       ],
       [
         {
           start_at: moment().add(10, "minutes"),
-          end_at: moment().add(2, "days"),
+          end_at: moment().add(20, "minutes"),
         },
-        "10 minutes left",
+        "ends in 20 minutes",
       ],
       [
         {
-          start_at: moment().add(20, "minutes"),
-          end_at: moment().add(2, "days"),
+          start_at: moment().add(1, "hours"),
+          end_at: moment().add(10, "hours"),
         },
-        "20 minutes left",
+        "ends in 10 hours",
       ],
       [
         {
-          start_at: moment().add(10, "hours"),
-          end_at: moment().add(2, "days"),
+          start_at: moment().add(2, "hours"),
+          end_at: moment().add(20, "hours"),
         },
-        "10 hours left",
+        "ends in 20 hours",
       ],
       [
-        {
-          start_at: moment().add(20, "hours"),
-          end_at: moment().add(2, "days"),
-        },
-        "20 hours left",
+        { start_at: moment().add(1, "days"), end_at: moment().add(2, "days") },
+        "ends in 2 days",
       ],
       [
-        {
-          start_at: moment().add(2, "days"),
-          end_at: moment().add(4, "days"),
-        },
-        "2 days left",
-      ],
-      [
-        {
-          start_at: moment().add(5, "days"),
-          end_at: moment().add(10, "days"),
-        },
-        "5 days left",
+        { start_at: moment().add(1, "days"), end_at: moment().add(5, "days") },
+        "ends in 5 days",
       ],
       [
         {
           start_at: moment().add(20, "days"),
           end_at: moment().add(30, "days"),
         },
-        `Ends on ${moment(moment().add(30, "days")).format("MMM D, ha")}`,
+        `ends ${moment(moment().add(30, "days")).format("MMM D")}`,
       ],
       [
         {
           start_at: moment().add(30, "days"),
           end_at: moment().add(40, "days"),
         },
-        `Ends on ${moment(moment().add(40, "days")).format("MMM D, ha")}`,
+        `ends ${moment(moment().add(40, "days")).format("MMM D")}`,
       ],
     ]
 
@@ -526,12 +529,20 @@ describe("Sale type", () => {
 
     it("returns proper labels", async () => {
       const results = await Promise.all(
-        testData.map(async ([input]) => {
-          return await execute(query, {
-            currency: "$",
-            is_auction: true,
-            ...input,
-          })
+        testData.map(async ([input, _label, isRegistered]) => {
+          let bidders = []
+          if (isRegistered) {
+            bidders = [{}]
+          }
+          return await execute(
+            query,
+            {
+              currency: "$",
+              is_auction: true,
+              ...input,
+            },
+            { meBiddersLoader: () => Promise.resolve(bidders) }
+          )
         })
       )
 

@@ -29,7 +29,7 @@
     "build:remote-schemas": "cp src/data/*.graphql build/src/data/",
     "precommit": "lint-staged; yarn dump-schema _schema.graphql",
     "prepare": "patch-package",
-    "prettier-project": "prettier --write '**/*.js'",
+    "prettier-project": "prettier --write 'src/**/*.{js,ts,tsx}'",
     "type-check": "tsc --noEmit --pretty"
   },
   "author": "Art.sy Inc",

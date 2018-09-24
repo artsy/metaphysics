@@ -69,8 +69,8 @@ yarn dev
 
 Which will start the server on http://localhost:5001
 
-_Recommended:_ You can run the commands inside the terminal in VS Code, then the debugger will be hooked up
-by default.
+_Recommended:_ You can run the commands inside the terminal in VS Code, then the
+debugger will be hooked up by default.
 
 ### Setting up your local GraphiQL
 
@@ -91,7 +91,8 @@ You will need to set up headers with both:
 
 ### Docker and Kubernetes setup
 
-This is deployed using Hokusai to manage Docker and Kubernetes. To replicate this:
+This is deployed using Hokusai to manage Docker and Kubernetes. To replicate
+this:
 
 - Install [Docker for Mac](https://github.com/artsy/hokusai#requirements) and
   [Hokusai](https://github.com/artsy/hokusai#setup)
@@ -133,7 +134,7 @@ This is deployed using Hokusai to manage Docker and Kubernetes. To replicate thi
 ### Deployment
 
 PRs merged to the `master` branch are automatically deployed to staging. The
-release on staging can be promoted to production via the command `hokusai pipeline promote`. See Hokusai's
+release on staging can be promoted to production via the command `hokusai pipeline promote --git-remote origin`. See Hokusai's
 [docs on the Staging -> Production pipeline](https://github.com/artsy/hokusai/blob/master/docs/Command_Reference.md#working-with-the-staging---production-pipeline)
 for more details.
 
@@ -146,3 +147,5 @@ to interact with the staging environment.
 Use `hokusai production`
 [commands](https://github.com/artsy/hokusai/blob/master/docs/Command_Reference.md#working-with-the-kubernetes-production-environment)
 to interact with the production environment.
+
+(To deploy, `hokusai production deploy --git-remote origin')
