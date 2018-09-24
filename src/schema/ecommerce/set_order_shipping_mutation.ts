@@ -95,7 +95,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
         $fulfillmentType: EcommerceOrderFulfillmentTypeEnum!
         $shipping: EcommerceShippingAttributes
       ) {
-        ecommerce_setShipping(
+        ecommerceSetShipping(
           input: {
             id: $orderId
             fulfillmentType: $fulfillmentType
@@ -154,6 +154,6 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
       orderId,
       fulfillmentType,
       shipping,
-    }).then(extractEcommerceResponse("ecommerce_setShipping"))
+    }).then(extractEcommerceResponse("ecommerceSetShipping"))
   },
 })

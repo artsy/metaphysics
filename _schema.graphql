@@ -4389,35 +4389,6 @@ type Mutation {
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
 
   # Creates an order with an artwork
-  ecommerce_createOrderWithArtwork(
-    input: CreateOrderWithArtworkInput!
-  ): CreateOrderWithArtworkPayload
-
-  # Sets shipping information for an order
-  ecommerce_setOrderShipping(
-    input: SetOrderShippingInput!
-  ): SetOrderShippingPayload
-
-  # Sets payment information on an order
-  ecommerce_setOrderPayment(
-    input: SetOrderPaymentInput!
-  ): SetOrderPaymentPayload
-
-  # Approves an order with payment
-  ecommerce_approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
-
-  # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
-  ecommerce_fulfillOrderAtOnce(
-    input: FulfillOrderAtOnceInput!
-  ): FulfillOrderAtOncePayload
-
-  # Rejects an order
-  ecommerce_rejectOrder(input: RejectOrderInput!): RejectOrderPayload
-
-  # Submits an order
-  ecommerce_submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
-
-  # Creates an order with an artwork
   ecommerceCreateOrderWithArtwork(
     input: CreateOrderWithArtworkInput!
   ): CreateOrderWithArtworkPayload
@@ -4825,11 +4796,17 @@ union OrderOrFailureUnionType =
 union OrderParty = Partner | User
 
 enum OrdersSortMethodType {
-  # Sort by latest timestamp order was updated in ascending order
+  # Sort by the timestamp the order was last updated in ascending order
   UPDATED_AT_ASC
 
-  # Sort by latest timestamp order was updated in descending order
+  # Sort by the timestamp the order was last updated in descending order
   UPDATED_AT_DESC
+
+  # Sort by the timestamp the state of order was last updated in ascending order
+  STATE_UPDATED_AT_ASC
+
+  # Sort by the timestamp the state of order was last updated in descending order
+  STATE_UPDATED_AT_DESC
 }
 
 type OrderWithMutationFailure {
@@ -5783,19 +5760,10 @@ type Query {
     sellerType: String
     state: String
     sort: OrdersSortMethodType
-  ): OrderConnection
-
-  # Returns a single Order
-  ecommerce_order(id: String!): Order
-
-  # Returns list of orders
-  ecommerce_orders(
-    buyerId: String
-    buyerType: String
-    sellerId: String
-    sellerType: String
-    state: String
-    sort: OrdersSortMethodType
+    after: String
+    first: Int
+    before: String
+    last: Int
   ): OrderConnection
 
   # Returns a single Order
@@ -5809,6 +5777,10 @@ type Query {
     sellerType: String
     state: String
     sort: OrdersSortMethodType
+    after: String
+    first: Int
+    before: String
+    last: Int
   ): OrderConnection
 
   # A wildcard used to support complex root queries in Relay

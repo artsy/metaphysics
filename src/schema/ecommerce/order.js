@@ -15,7 +15,7 @@ export const Order = {
   resolve: (_parent, { id }, context, { rootValue: { exchangeSchema } }) => {
     const query = gql`
       query EcommerceOrder($id: ID!) {
-        ecommerce_order(id: $id) {
+        ecommerceOrder(id: $id) {
           id
           code
           currencyCode
@@ -63,6 +63,6 @@ export const Order = {
     `
     return graphql(exchangeSchema, query, null, context, {
       id,
-    }).then(extractEcommerceResponse("ecommerce_order"))
+    }).then(extractEcommerceResponse("ecommerceOrder"))
   },
 }

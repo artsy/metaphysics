@@ -66,7 +66,7 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
 
     const mutation = gql`
       mutation fulfillOrderAtOnce($orderId: ID!, $fulfillment: EcommerceFulfillmentAttributes!) {
-        ecommerce_fulfillAtOnce(input: {
+        ecommerceFulfillAtOnce(input: {
           id: $orderId,
           fulfillment: $fulfillment
         }) {
@@ -131,6 +131,6 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       orderId,
       fulfillment,
-    }).then(extractEcommerceResponse("ecommerce_fulfillAtOnce"))
+    }).then(extractEcommerceResponse("ecommerceFulfillAtOnce"))
   },
 })
