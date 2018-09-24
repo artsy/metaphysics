@@ -10,7 +10,7 @@ import { artworkConnection } from "schema/artwork"
 
 export const RecentlyViewedArtworks = {
   type: artworkConnection,
-  args: pageable(),
+  args: pageable({}),
   description: "A list of the current user’s recently viewed artworks.",
   resolve: (
     { recently_viewed_artwork_ids: ids },

@@ -3,8 +3,39 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLNonNull,
+  GraphQLUnionType,
 } from "graphql"
 import { GravityIDFields } from "schema/object_identification"
+import { GravityMutationErrorType } from "lib/gravityErrorHandler"
+
+const CreditCardMutationSuccessType = new GraphQLObjectType({
+  name: "CreditCardMutationSuccess",
+  isTypeOf: data => data.id,
+  fields: () => ({
+    creditCard: {
+      type: CreditCard.type,
+      resolve: creditCard => creditCard,
+    },
+  }),
+})
+
+const CreditCardMutationFailureType = new GraphQLObjectType({
+  name: "CreditCardMutationFailure",
+  isTypeOf: data => {
+    return data._type === "GravityMutationError"
+  },
+  fields: () => ({
+    mutationError: {
+      type: GravityMutationErrorType,
+      resolve: err => err,
+    },
+  }),
+})
+
+export const CreditCardMutationType = new GraphQLUnionType({
+  name: "CreditCardMutationType",
+  types: [CreditCardMutationSuccessType, CreditCardMutationFailureType],
+})
 
 const CreditCardType = new GraphQLObjectType({
   name: "CreditCard",

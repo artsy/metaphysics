@@ -2,8 +2,8 @@
 import { runQuery } from "test/utils"
 
 describe("CreditCard type", () => {
-  let creditCard = null
-  let rootValue = null
+  let creditCard: any
+  let rootValue: any
 
   beforeEach(() => {
     creditCard = {
@@ -29,9 +29,9 @@ describe("CreditCard type", () => {
     `
 
     return runQuery(query, rootValue).then(data => {
-      expect(data.credit_card.id).toBe("card123")
-      expect(data.credit_card.brand).toBe("Visa")
-      expect(data.credit_card.last_digits).toBe("4242")
+      expect(data!.credit_card.id).toBe("card123")
+      expect(data!.credit_card.brand).toBe("Visa")
+      expect(data!.credit_card.last_digits).toBe("4242")
     })
   })
 })
