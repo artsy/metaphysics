@@ -6,12 +6,22 @@ export const OrdersSortMethodTypeEnum = new GraphQLEnumType({
     UPDATED_AT_ASC: {
       value: "UPDATED_AT_ASC",
       description:
-        "Sort by latest timestamp order was updated in ascending order",
+        "Sort by the timestamp the order was last updated in ascending order",
     },
     UPDATED_AT_DESC: {
       value: "UPDATED_AT_DESC",
       description:
-        "Sort by latest timestamp order was updated in descending order",
+        "Sort by the timestamp the order was last updated in descending order",
+    },
+    STATE_UPDATED_AT_ASC: {
+      value: "STATE_UPDATED_AT_ASC",
+      description:
+        "Sort by the timestamp the state of order was last updated in ascending order",
+    },
+    STATE_UPDATED_AT_DESC: {
+      value: "STATE_UPDATED_AT_DESC",
+      description:
+        "Sort by the timestamp the state of order was last updated in descending order",
     },
   },
 })
