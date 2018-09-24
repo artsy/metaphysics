@@ -200,10 +200,16 @@ type EcommerceOrder {
 
 # Fields to sort by
 enum EcommerceOrderConnectionSortEnum {
-  # Sort by latest timestamp order was updated in ascending order
+  # Sort by the timestamp the state of order was last updated in ascending order
+  STATE_UPDATED_AT_ASC
+
+  # Sort by the timestamp the state of order was last updated in descending order
+  STATE_UPDATED_AT_DESC
+
+  # Sort by the timestamp the order was last updated in ascending order
   UPDATED_AT_ASC
 
-  # Sort by latest timestamp order was updated in descending order
+  # Sort by the timestamp the order was last updated in descending order
   UPDATED_AT_DESC
 }
 
@@ -244,25 +250,22 @@ union EcommerceOrderOrFailureUnion = EcommerceOrderWithMutationFailure | Ecommer
 union EcommerceOrderPartyUnion = EcommercePartner | EcommerceUser
 
 enum EcommerceOrderStateEnum {
-  # order is abandoned by collector and never submitted
+  # order is abandoned by buyer and never submitted
   ABANDONED
 
   # order is approved by seller
   APPROVED
 
+  # order is canceled
+  CANCELED
+
   # order is fulfilled by seller
   FULFILLED
 
-  # order is still pending submission by collector
+  # order is still pending submission by buyer
   PENDING
 
-  # order is rejected by seller
-  REJECTED
-
-  # order was lapsed by the seller
-  SELLER_LAPSED
-
-  # order is submitted by collector
+  # order is submitted by buyer
   SUBMITTED
 }
 
