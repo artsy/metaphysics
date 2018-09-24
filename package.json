@@ -19,6 +19,7 @@
     "watch": "jest --watch",
     "lint": "eslint .",
     "fix": "eslint . --fix",
+    "dump:local": "yarn dump-schema _schema.graphql",
     "dump-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-schema.ts",
     "dump-remote-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-remote-schema.ts",
     "build": "yarn build:lib && yarn build:index && yarn build:fixtures && yarn build:remote-schemas",

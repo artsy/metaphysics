@@ -5713,6 +5713,10 @@ type Query {
     sellerType: String
     state: String
     sort: OrdersSortMethodType
+    after: String
+    first: Int
+    before: String
+    last: Int
   ): OrderConnection
 
   # Returns a single Order
@@ -5726,6 +5730,10 @@ type Query {
     sellerType: String
     state: String
     sort: OrdersSortMethodType
+    after: String
+    first: Int
+    before: String
+    last: Int
   ): OrderConnection
 
   # A wildcard used to support complex root queries in Relay
