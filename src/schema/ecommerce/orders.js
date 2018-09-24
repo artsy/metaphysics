@@ -1,3 +1,4 @@
+import { pageable } from "relay-cursor-paging"
 import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
@@ -13,14 +14,14 @@ export const Orders = {
   name: "Orders",
   type: OrderConnection,
   description: "Returns list of orders",
-  args: {
+  args: pageable({
     buyerId: { type: GraphQLString },
     buyerType: { type: GraphQLString },
     sellerId: { type: GraphQLString },
     sellerType: { type: GraphQLString },
     state: { type: GraphQLString },
     sort: { type: OrdersSortMethodTypeEnum },
-  },
+  }),
   resolve: (
     _parent,
     { sellerId, sellerType, buyerId, buyerType, state, sort },
@@ -35,6 +36,10 @@ export const Orders = {
         $sellerType: String
         $state: EcommerceOrderStateEnum
         $sort: EcommerceOrderConnectionSortEnum
+        $after: String
+        $first: Int
+        $before: String
+        $last: Int
       ) {
         ecommerceOrders(
           buyerId: $buyerId
@@ -43,6 +48,10 @@ export const Orders = {
           sellerType: $sellerType
           state: $state
           sort: $sort
+          after: $after
+          first: $first
+          before: $before
+          last: $last
         ) {
           ${PageInfo}
           totalCount
