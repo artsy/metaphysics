@@ -15,6 +15,7 @@ import { exclude } from "lib/helpers"
 import { map } from "lodash"
 import { NodeInterface } from "schema/object_identification"
 import { allViaLoader } from "../../lib/all"
+import { isLiveOpen, displayTimelyAt } from "./display"
 
 import {
   GraphQLString,
@@ -29,14 +30,6 @@ import {
 import config from "config"
 
 const { PREDICTION_ENDPOINT } = config
-
-const isLiveOpen = sale => {
-  const liveStart = moment(sale.live_start_at)
-  return (
-    sale.auction_state === "open" &&
-    (moment().isAfter(liveStart) || moment().isSame(liveStart))
-  )
-}
 
 const BidIncrement = new GraphQLObjectType({
   name: "BidIncrement",
@@ -82,18 +75,9 @@ export const SaleType = new GraphQLObjectType({
       artworks: {
         type: new GraphQLList(Artwork.type),
         args: {
-          page: {
-            type: GraphQLInt,
-            defaultValue: 1,
-          },
-          size: {
-            type: GraphQLInt,
-            defaultValue: 25,
-          },
-          all: {
-            type: GraphQLBoolean,
-            defaultValue: false,
-          },
+          page: { type: GraphQLInt, defaultValue: 1 },
+          size: { type: GraphQLInt, defaultValue: 25 },
+          all: { type: GraphQLBoolean, defaultValue: false },
           exclude: {
             type: new GraphQLList(GraphQLString),
             description:
@@ -146,11 +130,11 @@ export const SaleType = new GraphQLObjectType({
           request,
           { rootValue: { incrementsLoader } }
         ) => {
-          return incrementsLoader({ key: sale.increment_strategy }).then(
-            increments => {
-              return increments[0].increments
-            }
-          )
+          return incrementsLoader({
+            key: sale.increment_strategy,
+          }).then(increments => {
+            return increments[0].increments
+          })
         },
       },
       buyers_premium: {
@@ -171,90 +155,27 @@ export const SaleType = new GraphQLObjectType({
         resolve: ({ image_versions, image_url }) =>
           Image.resolve({ image_versions, image_url }),
       },
-      currency: {
-        type: GraphQLString,
-      },
-      description: {
-        type: GraphQLString,
-      },
+      currency: { type: GraphQLString },
+      description: { type: GraphQLString },
       display_timely_at: {
         type: GraphQLString,
-        resolve: sale => {
-          const { live_start_at, registration_ends_at, start_at, end_at } = sale
 
-          // Closed
-          if (end_at && end_at < moment()) {
-            return "Ended"
-
-            // End Registration
-          } else if (registration_ends_at > moment()) {
-            const diff = moment().diff(moment(registration_ends_at), "hours")
-            const format = diff > -24 ? "ha" : "MMM D, ha"
-            const label = `Register by\n${moment(registration_ends_at).format(
-              format
-            )}`
-            return label
-
-            // Live Auction
-          } else if (live_start_at) {
-            if (isLiveOpen(sale)) {
-              return "In Progress"
-
-              // Live auction starting soon
-            } else if (live_start_at) {
-              return `Live ${moment(live_start_at).fromNow()}`
-            }
-
-            // Timed Auction
-          } else if (start_at) {
-            const range = moment().add(5, "days")
-            const startAt = moment(start_at)
-            const isInProgress = startAt < moment()
-            const isUpcoming = startAt > moment() && startAt < range
-            const isNearFuture = startAt > range
-            const dateLabel = saleDate => {
-              return (
-                moment(saleDate)
-                  .fromNow()
-                  .replace("in ", "")
-                  .replace("ago", "")
-                  .trim() + " left" // e.g., X min left
-              )
-            }
-
-            // Timed auction in progress
-            if (isInProgress) {
-              return dateLabel(end_at)
-
-              // Coming soon
-            } else if (isUpcoming) {
-              return dateLabel(start_at)
-
-              // Coming in the future
-            } else if (isNearFuture) {
-              return `Ends on ${moment(end_at).format("MMM D, ha")}`
-            }
-          } else {
-            return null
-          }
+        resolve: (
+          sale,
+          _options,
+          _request,
+          { rootValue: { meBiddersLoader } }
+        ) => {
+          return displayTimelyAt({ sale, meBiddersLoader })
         },
       },
-      eligible_sale_artworks_count: {
-        type: GraphQLInt,
-      },
+      eligible_sale_artworks_count: { type: GraphQLInt },
       end_at: date,
       event_start_at: date,
       event_end_at: date,
-      href: {
-        type: GraphQLString,
-        resolve: ({ id }) => `/auction/${id}`,
-      },
-      name: {
-        type: GraphQLString,
-      },
-      is_auction: {
-        type: GraphQLBoolean,
-      },
+      href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
+      name: { type: GraphQLString },
+      is_auction: { type: GraphQLBoolean },
       is_auction_promo: {
         type: GraphQLBoolean,
         resolve: ({ sale_type }) => sale_type === "auction promo",
@@ -267,10 +188,7 @@ export const SaleType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: ({ auction_state }) => auction_state === "open",
       },
-      is_live_open: {
-        type: GraphQLBoolean,
-        resolve: isLiveOpen,
-      },
+      is_live_open: { type: GraphQLBoolean, resolve: isLiveOpen },
       is_preview: {
         type: GraphQLBoolean,
         resolve: ({ auction_state }) => auction_state === "preview",
@@ -294,17 +212,10 @@ export const SaleType = new GraphQLObjectType({
             return PREDICTION_ENDPOINT + "/" + sale.id
           }
         },
-      },
-      // Only fetches the partner info that's already included in the Sale object
+      }, // Only fetches the partner info that's already included in the Sale object
       // since we don't (at this time) need to load the full Partner object.
-      partner: {
-        type: Partner.type,
-        resolve: ({ partner }) => partner,
-      },
-      profile: {
-        type: Profile.type,
-        resolve: ({ profile }) => profile,
-      },
+      partner: { type: Partner.type, resolve: ({ partner }) => partner },
+      profile: { type: Profile.type, resolve: ({ profile }) => profile },
       promoted_sale: {
         type: SaleType,
         resolve: (
@@ -333,24 +244,13 @@ export const SaleType = new GraphQLObjectType({
           return meBiddersLoader({ sale_id: id }).then(([bidder]) => bidder)
         },
       },
-      require_bidder_approval: {
-        type: GraphQLBoolean,
-      },
+      require_bidder_approval: { type: GraphQLBoolean },
       sale_artworks: {
         type: new GraphQLList(SaleArtwork.type),
         args: {
-          page: {
-            type: GraphQLInt,
-            defaultValue: 1,
-          },
-          size: {
-            type: GraphQLInt,
-            defaultValue: 25,
-          },
-          all: {
-            type: GraphQLBoolean,
-            defaultValue: false,
-          },
+          page: { type: GraphQLInt, defaultValue: 1 },
+          size: { type: GraphQLInt, defaultValue: 25 },
+          all: { type: GraphQLBoolean, defaultValue: false },
         },
         resolve: (
           { id },
@@ -378,18 +278,18 @@ export const SaleType = new GraphQLObjectType({
           { rootValue: { saleArtworksLoader } }
         ) => {
           const { limit: size, offset } = getPagingParameters(options)
-          return saleArtworksLoader(sale.id, { size, offset }).then(
-            ({ body }) =>
-              connectionFromArraySlice(body, options, {
-                arrayLength: sale.eligible_sale_artworks_count,
-                sliceStart: offset,
-              })
+          return saleArtworksLoader(sale.id, {
+            size,
+            offset,
+          }).then(({ body }) =>
+            connectionFromArraySlice(body, options, {
+              arrayLength: sale.eligible_sale_artworks_count,
+              sliceStart: offset,
+            })
           )
         },
       },
-      sale_type: {
-        type: GraphQLString,
-      },
+      sale_type: { type: GraphQLString },
       start_at: date,
       status: {
         type: GraphQLString,
@@ -397,11 +297,7 @@ export const SaleType = new GraphQLObjectType({
       },
       sale_artwork: {
         type: SaleArtwork.type,
-        args: {
-          id: {
-            type: new GraphQLNonNull(GraphQLString),
-          },
-        },
+        args: { id: { type: new GraphQLNonNull(GraphQLString) } },
         resolve: (
           sale,
           { id },
@@ -411,9 +307,7 @@ export const SaleType = new GraphQLObjectType({
           return saleArtworkLoader({ saleId: sale.id, saleArtworkId: id })
         },
       },
-      symbol: {
-        type: GraphQLString,
-      },
+      symbol: { type: GraphQLString },
     }
   },
 })
