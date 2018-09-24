@@ -100,7 +100,9 @@ describe("Collections", () => {
           Promise.reject(new Error("Collection Not Found")),
       }
       const {
-        collection: { artworks_connection: { edges } },
+        collection: {
+          artworks_connection: { edges },
+        },
       } = await runAuthenticatedQuery(query, rootValue)
       expect(edges).toEqual([])
     })

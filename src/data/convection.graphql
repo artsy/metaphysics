@@ -82,9 +82,15 @@ type CreateConsignmentSubmissionPayload {
 # Mutation root for this schema
 type Mutation {
   # Create an asset
-  addAssetToConsignmentSubmission(input: AddAssetToConsignmentSubmissionInput): AddAssetToConsignmentSubmissionPayload
-  createConsignmentSubmission(input: CreateConsignmentSubmissionInput): CreateConsignmentSubmissionPayload
-  updateConsignmentSubmission(input: UpdateConsignmentSubmissionInput): UpdateConsignmentSubmissionPayload
+  addAssetToConsignmentSubmission(
+    input: AddAssetToConsignmentSubmissionInput
+  ): AddAssetToConsignmentSubmissionPayload
+  createConsignmentSubmission(
+    input: CreateConsignmentSubmissionInput
+  ): CreateConsignmentSubmissionPayload
+  updateConsignmentSubmission(
+    input: UpdateConsignmentSubmissionInput
+  ): UpdateConsignmentSubmissionPayload
 }
 
 # Information about pagination in a connection.

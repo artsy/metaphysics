@@ -31,20 +31,14 @@ export const embed = (website, { width, height, autoplay }) => {
   switch (host) {
     case "youtu.be":
     case "youtube.com":
-      return `<iframe width='${width}' height='${
-        height
-      }' src='https://www.youtube.com/embed/${
-        id
-      }?rel=0&amp;showinfo=0&amp;autoplay=${
+      return `<iframe width='${width}' height='${height}' src='https://www.youtube.com/embed/${id}?rel=0&amp;showinfo=0&amp;autoplay=${
         autoplay // eslint-disable-line max-len
           ? 1
           : 0
       }' frameborder='0' allowfullscreen></iframe>`
 
     case "vimeo.com":
-      return `<iframe width='${width}' height='${
-        height
-      }' src='//player.vimeo.com/video/${id}?color=ffffff&amp;autoplay=${
+      return `<iframe width='${width}' height='${height}' src='//player.vimeo.com/video/${id}?color=ffffff&amp;autoplay=${
         autoplay // eslint-disable-line max-len
           ? 1
           : 0

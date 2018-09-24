@@ -32,9 +32,7 @@ export const graphqlErrorHandler = (
       const baseURL = req.baseUrl
       const encodedVars = encodeURIComponent(JSON.stringify(variables))
       const encodedQuery = encodeURIComponent(query)
-      const href = `${baseURL}/graphiql?variables=${encodedVars}&query=${
-        encodedQuery
-      }`
+      const href = `${baseURL}/graphiql?variables=${encodedVars}&query=${encodedQuery}`
 
       raven.captureException(
         error,

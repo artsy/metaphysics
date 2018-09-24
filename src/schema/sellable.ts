@@ -25,5 +25,5 @@ export const Sellable = new GraphQLInterfaceType({
     sale_message: {
       type: GraphQLString,
     },
-  }
+  },
 })

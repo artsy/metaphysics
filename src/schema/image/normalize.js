@@ -13,7 +13,11 @@ import {
   curry,
 } from "lodash"
 
-export const grab = flow(pick, values, first)
+export const grab = flow(
+  pick,
+  values,
+  first
+)
 
 export const setVersion = (
   { image_url, image_urls, image_versions },

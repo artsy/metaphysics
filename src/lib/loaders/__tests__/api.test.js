@@ -81,7 +81,7 @@ describe("API loaders", () => {
     })
 
     it("caches the response in memcache", () => {
-      const spy = jest.spyOn(cache, 'set');
+      const spy = jest.spyOn(cache, "set")
       return cache
         .get("some/unauthenticated/memcached/path?")
         .then(() => {

@@ -2068,6 +2068,8 @@ dd-trace@artsy/dd-trace-js#artsy:
     semver "^5.5.0"
     shimmer "^1.2.0"
     url-parse "^1.4.3"
+  optionalDependencies:
+    "@airbnb/node-memwatch" "^1.0.2"
 
 debug@2, debug@2.6.9, debug@^2, debug@^2.2.0, debug@^2.3.3, debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
@@ -5491,8 +5493,8 @@ preserve@^0.2.0:
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
 
 prettier@^1.14.2:
-  version "1.14.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.14.2.tgz#0ac1c6e1a90baa22a62925f41963c841983282f9"
+  version "1.14.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.14.3.tgz#90238dd4c0684b7edce5f83b0fb7328e48bd0895"
 
 pretty-format@^23.5.0:
   version "23.5.0"

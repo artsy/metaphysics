@@ -143,7 +143,11 @@ describe("Artist type", () => {
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { auctionResults: { pageCursors, edges } } }) => {
+      ({
+        artist: {
+          auctionResults: { pageCursors, edges },
+        },
+      }) => {
         // Check expected page cursors exist in response.
         const { first, around, last } = pageCursors
         expect(first).toEqual(null)
@@ -182,7 +186,9 @@ describe("Artist type", () => {
       ({
         artist: {
           auctionResults: {
-            pageCursors: { previous: { page } },
+            pageCursors: {
+              previous: { page },
+            },
             pageInfo: { hasNextPage, hasPreviousPage },
           },
         },
@@ -206,7 +212,11 @@ describe("Artist type", () => {
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { auctionResults: { totalCount } } }) => {
+      ({
+        artist: {
+          auctionResults: { totalCount },
+        },
+      }) => {
         expect(totalCount).toBe(35)
       }
     )

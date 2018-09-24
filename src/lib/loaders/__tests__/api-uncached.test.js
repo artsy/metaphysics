@@ -12,7 +12,8 @@ describe("API loaders uncached", () => {
     beforeEach(() => {
       config.CACHE_DISABLED = true
       cache = require("lib/cache").default
-      apiLoaderWithoutAuthenticationFactory = require("lib/loaders/api/loader_without_authentication_factory").apiLoaderWithoutAuthenticationFactory
+      apiLoaderWithoutAuthenticationFactory = require("lib/loaders/api/loader_without_authentication_factory")
+        .apiLoaderWithoutAuthenticationFactory
 
       api = jest.fn((path, accessToken, options) =>
         Promise.resolve({ body: { path, accessToken, options } })
@@ -31,7 +32,7 @@ describe("API loaders uncached", () => {
     })
 
     it("does not cache the response in memcache", () => {
-      const spy = jest.spyOn(cache, 'set');
+      const spy = jest.spyOn(cache, "set")
       return cache
         .get("some/unauthenticated/path?")
         .then(() => {

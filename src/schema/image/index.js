@@ -79,7 +79,7 @@ const ImageType = new GraphQLObjectType({
       description:
         "Value to use when `padding-bottom` for fluid image placeholders",
       resolve: ({ original_height, original_width }) =>
-        `${original_height / original_width * 100}%`,
+        `${(original_height / original_width) * 100}%`,
     },
     position: {
       type: GraphQLInt,

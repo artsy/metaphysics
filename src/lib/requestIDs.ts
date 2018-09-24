@@ -10,8 +10,8 @@ export function headers({ requestID, xForwardedFor }) {
 }
 
 export function resolveIPv4(ipAddress) {
-  if(ip.isV6Format(ipAddress) && ~ipAddress.indexOf('::ffff')){
-    return ipAddress.split('::ffff:')[1]
+  if (ip.isV6Format(ipAddress) && ~ipAddress.indexOf("::ffff")) {
+    return ipAddress.split("::ffff:")[1]
   }
   return ipAddress
 }

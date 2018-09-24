@@ -775,7 +775,13 @@ describe("Artist type", () => {
       `
 
       return runQuery(query, rootValue).then(
-        ({ artist: { filtered_artworks: { artworks: { pageCursors } } } }) => {
+        ({
+          artist: {
+            filtered_artworks: {
+              artworks: { pageCursors },
+            },
+          },
+        }) => {
           expect(filterArtworksLoader.mock.calls[0][0]).not.toHaveProperty(
             "partner_id"
           )

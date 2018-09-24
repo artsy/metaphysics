@@ -60,7 +60,13 @@ describe("Artist type", () => {
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { related: { artists: { pageCursors, edges } } } }) => {
+      ({
+        artist: {
+          related: {
+            artists: { pageCursors, edges },
+          },
+        },
+      }) => {
         // Check expected page cursors exist in response.
         const { first, around, last } = pageCursors
         expect(first).toEqual(null)
@@ -105,7 +111,13 @@ describe("Artist type", () => {
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { related: { artists: { pageCursors, edges } } } }) => {
+      ({
+        artist: {
+          related: {
+            artists: { pageCursors, edges },
+          },
+        },
+      }) => {
         // Check expected page cursors exist in response.
         const { first, around, last } = pageCursors
         expect(first).toEqual(null)
@@ -139,7 +151,13 @@ describe("Artist type", () => {
     `
 
     return runQuery(query, rootValue).then(
-      ({ artist: { related: { genes: { edges } } } }) => {
+      ({
+        artist: {
+          related: {
+            genes: { edges },
+          },
+        },
+      }) => {
         expect(edges[0].node.id).toEqual("catty-gene")
       }
     )

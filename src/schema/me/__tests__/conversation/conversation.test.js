@@ -231,7 +231,11 @@ describe("Me", () => {
 
       it("returns the conversation items", () => {
         return runAuthenticatedQuery(query, rootValue).then(
-          ({ me: { conversation: { items } } }) => {
+          ({
+            me: {
+              conversation: { items },
+            },
+          }) => {
             expect(items.length).toEqual(2)
             expect(items).toMatchSnapshot()
           }
@@ -250,7 +254,11 @@ describe("Me", () => {
         })
 
         return runAuthenticatedQuery(query, customRootValue).then(
-          ({ me: { conversation: { items } } }) => {
+          ({
+            me: {
+              conversation: { items },
+            },
+          }) => {
             expect(items.length).toEqual(1)
             expect(items).toMatchSnapshot()
           }
@@ -282,7 +290,11 @@ describe("Me", () => {
         const query = getQuery()
 
         return runAuthenticatedQuery(query, rootValue).then(
-          ({ me: { conversation: { messages } } }) => {
+          ({
+            me: {
+              conversation: { messages },
+            },
+          }) => {
             expect(messages.edges.length).toEqual(4)
             expect(messages.edges[0].node.id).toEqual("240")
           }
@@ -293,7 +305,11 @@ describe("Me", () => {
         const query = getQuery("DESC")
 
         return runAuthenticatedQuery(query, rootValue).then(
-          ({ me: { conversation: { messages } } }) => {
+          ({
+            me: {
+              conversation: { messages },
+            },
+          }) => {
             expect(messages.edges.length).toEqual(4)
             expect(messages.edges[0].node.id).toEqual("243")
           }
@@ -303,7 +319,11 @@ describe("Me", () => {
         const query = getQuery()
 
         return runAuthenticatedQuery(query, rootValue).then(
-          ({ me: { conversation: { messages } } }) => {
+          ({
+            me: {
+              conversation: { messages },
+            },
+          }) => {
             expect(messages.edges.length).toEqual(4)
             expect(messages.edges[0].node.is_from_user).toEqual(true)
             expect(messages.edges[1].node.is_from_user).toEqual(false)

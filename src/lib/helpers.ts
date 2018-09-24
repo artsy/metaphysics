@@ -49,7 +49,10 @@ export const existyValue = x => {
 export const capitalizeFirstCharacter = x =>
   x.charAt(0).toUpperCase() + x.slice(1)
 
-export const classify = flow(camelCase, capitalizeFirstCharacter)
+export const classify = flow(
+  camelCase,
+  capitalizeFirstCharacter
+)
 
 export const join = (by, xs) => compact(xs).join(by)
 

@@ -160,7 +160,9 @@ type LineItemEdge {
 
 type Mutation {
   approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
-  createOrderWithArtwork(input: CreateOrderWithArtworkInput!): CreateOrderWithArtworkPayload
+  createOrderWithArtwork(
+    input: CreateOrderWithArtworkInput!
+  ): CreateOrderWithArtworkPayload
 
   # Fulfill an order with one Fulfillment, it sets this fulfillment to each line item in order
   fulfillAtOnce(input: FulfillAtOnceInput!): FulfillAtOncePayload

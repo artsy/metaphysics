@@ -42,7 +42,11 @@ describe("Tag", () => {
       `
 
       return runQuery(query, rootValue).then(
-        ({ tag: { filtered_artworks: { hits } } }) => {
+        ({
+          tag: {
+            filtered_artworks: { hits },
+          },
+        }) => {
           expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
         }
       )

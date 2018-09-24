@@ -50,9 +50,9 @@ describe("requestID (with the real data loaders)", () => {
 
 describe("resolve ipv4 addresses", () => {
   it("resolves an ipv6 address to ipv4", () => {
-    expect(resolveIPv4('::ffff:127.0.0.1')).toEqual('127.0.0.1')
+    expect(resolveIPv4("::ffff:127.0.0.1")).toEqual("127.0.0.1")
   })
   it("resolves an ipv4 address to an ipv4 address", () => {
-    expect(resolveIPv4('127.0.0.1')).toEqual('127.0.0.1')
+    expect(resolveIPv4("127.0.0.1")).toEqual("127.0.0.1")
   })
 })
