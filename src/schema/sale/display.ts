@@ -1,5 +1,24 @@
 import moment from "moment"
 
+moment.updateLocale("en", {
+  relativeTime: {
+    future: "in %s",
+    past: "%s ago",
+    s: "%ds",
+    ss: "%ds",
+    m: "%dm",
+    mm: "%dm",
+    h: "%dh",
+    hh: "%dh",
+    d: "%dd",
+    dd: "%dd",
+    M: "%dM",
+    MM: "%dM",
+    y: "%dY",
+    yy: "%dY",
+  },
+})
+
 export const isLiveOpen = sale => {
   const liveStart = moment(sale.live_start_at)
   return (
