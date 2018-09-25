@@ -810,6 +810,9 @@ type Artwork implements Node & Sellable {
   price: String
   price_currency: String
 
+  # Is this work available for shipping only within the Contenental US?
+  shipsToContinentalUSOnly: Boolean
+
   # The string that describes domestic and international shipping.
   shippingInfo: String
 
@@ -1527,6 +1530,9 @@ type ArtworkItem implements Node & Sellable {
   pickup_available: Boolean
   price: String
   price_currency: String
+
+  # Is this work available for shipping only within the Contenental US?
+  shipsToContinentalUSOnly: Boolean
 
   # The string that describes domestic and international shipping.
   shippingInfo: String
