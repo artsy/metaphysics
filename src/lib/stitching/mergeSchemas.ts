@@ -12,17 +12,20 @@ import { GraphQLSchema } from "graphql"
  * Incrementally merges in schemas according to `process.env`
  */
 export const incrementalMergeSchemas = async (testConfig?: any) => {
+  const environment = testConfig || config
+
   const {
     ENABLE_GRAVQL_ONLY_STITCHING,
     ENABLE_ECOMMERCE_STITCHING,
     ENABLE_CONSIGNMENTS_STITCHING,
-  } = testConfig || config
+  } = environment
 
   const schemas = [localSchema] as GraphQLSchema[]
   const extensionSchemas = [] as string[]
   const extensionResolvers = {} as any
 
   if (ENABLE_GRAVQL_ONLY_STITCHING) {
+    console.log("GRAV")
     const gravitySchema = await executableGravitySchema()
     schemas.push(gravitySchema)
   }

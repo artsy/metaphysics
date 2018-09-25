@@ -157,6 +157,7 @@ const stitchedRootFields: any = {}
 const stitchedMutations: any = {}
 
 if (!ENABLE_GRAVQL_ONLY_STITCHING) {
+  console.log("ADDDING")
   stitchedMutations.recordArtworkView = recordArtworkViewMutation
 }
 

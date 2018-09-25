@@ -23,10 +23,7 @@ import {
 } from "lib/loaders/api/logger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
-import {
-  mergeSchemas,
-  incrementalMergeSchemas,
-} from "./lib/stitching/mergeSchemas"
+import { incrementalMergeSchemas } from "./lib/stitching/mergeSchemas"
 import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
 import { executableExchangeSchema } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
@@ -38,7 +35,6 @@ import { logQueryDetails } from "./lib/logQueryDetails"
 const {
   ENABLE_REQUEST_LOGGING,
   ENABLE_SCHEMA_STITCHING,
-  ENABLE_GRAVQL_ONLY_STITCHING,
   ENABLE_HEAPDUMPS,
   LOG_QUERY_DETAILS_THRESHOLD,
   PRODUCTION_ENV,
@@ -47,26 +43,29 @@ const {
   SENTRY_PRIVATE_DSN,
 } = config
 
+console.log(ENABLE_SCHEMA_STITCHING)
+
 const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
-const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
+const enableSchemaStitching = !!ENABLE_SCHEMA_STITCHING
 const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 const logQueryDetailsThreshold =
-  LOG_QUERY_DETAILS_THRESHOLD && parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10) // null by default
+  (LOG_QUERY_DETAILS_THRESHOLD && parseInt(LOG_QUERY_DETAILS_THRESHOLD, 10)) ||
+  null // null by default
 
 if (ENABLE_HEAPDUMPS) {
   require("heapdump") // Request a heapdump by sending `kill -USR2 [pid of metaphysics]`
 }
 
 function logQueryDetailsIfEnabled() {
-  if (Number.isInteger(logQueryDetailsThreshold)) {
+  if (logQueryDetailsThreshold && Number.isInteger(logQueryDetailsThreshold)) {
     console.warn(
       `[FEATURE] Enabling logging of queries running past the ${logQueryDetailsThreshold} sec threshold.`
     )
     return logQueryDetails(logQueryDetailsThreshold)
   }
   // no-op
-  return (req, res, next) => next()
+  return (_req, _res, next) => next()
 }
 
 async function startApp() {
@@ -114,7 +113,7 @@ async function startApp() {
     bodyParser.json(),
     rateLimiter,
     // Ensure this divider is logged before both fetchPersistedQuery and graphqlHTTP
-    (req, res, next) => {
+    (_req, _res, next) => {
       info("----------")
       next()
     },
@@ -125,7 +124,7 @@ async function startApp() {
     graphqlHTTP((req, res, params) => {
       const accessToken = req.headers["x-access-token"]
       const userID = req.headers["x-user-id"]
-      const timezone = req.headers["x-timezone"]
+      const timezone = req.headers["x-timezone"] as string | undefined
       const userAgent = req.headers["user-agent"]
 
       const { requestIDs } = res.locals
@@ -138,7 +137,7 @@ async function startApp() {
       // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
       // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       let defaultTimezone
-      if (moment.tz.zone(timezone)) {
+      if (timezone && moment.tz.zone(timezone)) {
         defaultTimezone = timezone
       }
 
@@ -164,8 +163,8 @@ async function startApp() {
         },
         formatError: graphqlErrorHandler(req, {
           enableSentry,
-          variables: params.variables,
-          query: params.query,
+          variables: params && params.variables,
+          query: params && params.query,
         }),
         validationRules: [depthLimit(queryLimit)],
         extensions: enableRequestLogging
@@ -182,7 +181,7 @@ async function startApp() {
   return app
 }
 
-let startedApp = null
+let startedApp: express.Express
 
 export default async (req, res, next) => {
   try {
