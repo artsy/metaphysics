@@ -62,7 +62,7 @@ const CreditCardType = new GraphQLObjectType({
       description: "Credit card's expiration year",
     },
     street1: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: "Billing address street1",
     },
     street2: {
@@ -70,19 +70,19 @@ const CreditCardType = new GraphQLObjectType({
       description: "Billing address street2",
     },
     city: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: "Billing address city",
     },
     state: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: "Billing address state",
     },
     country: {
-      type: GraphQLNonNull(GraphQLString), // TODO: We may make this type more strict by throwing ISO "ALPHA-2 Codes
+      type: GraphQLString, // TODO: We may make this type more strict by throwing ISO "ALPHA-2 Codes
       description: "Billing address country code",
     },
     postal_code: {
-      type: GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description: "Billing address postal code",
     },
   }),
