@@ -8,15 +8,15 @@ describe("rateLimiter", () => {
         headers: {},
         body: {},
       }
-      expect(skip(req as Request)).toBeFalsy
+      expect(skip(req as Request)).toBeFalsy()
     })
 
     it("skips a request if it has the header", () => {
       const req: Partial<Request> = {
-        headers: { "x-request-id": "abcde-fghij-klmno-pqrst-uvwxy" },
+        headers: { "x-datadog-trace-id": "abcde-fghij-klmno-pqrst-uvwxy" },
         body: {},
       }
-      expect(skip(req as Request)).toBeTruthy
+      expect(skip(req as Request)).toBeTruthy()
     })
   })
 
@@ -26,7 +26,7 @@ describe("rateLimiter", () => {
         headers: {},
         body: {},
       }
-      expect(skip(req as Request)).toBeFalsy
+      expect(skip(req as Request)).toBeFalsy()
     })
 
     it("does not skip a request if it includes the artist page query", () => {
@@ -34,7 +34,7 @@ describe("rateLimiter", () => {
         headers: {},
         body: { query: "query routes_OverviewQueryRendererQuery {}" },
       }
-      expect(skip(req as Request)).toBeFalsy
+      expect(skip(req as Request)).toBeFalsy()
     })
 
     it("skips a request if it does not include the artist page query", () => {
@@ -42,7 +42,7 @@ describe("rateLimiter", () => {
         headers: {},
         body: { query: "query anotherQuery {}" },
       }
-      expect(skip(req as Request)).toBeTruthy
+      expect(skip(req as Request)).toBeTruthy()
     })
   })
 })
