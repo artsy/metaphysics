@@ -4,7 +4,13 @@ import StatsD from "hot-shots"
 import config from "config"
 import { error } from "./loggers"
 
-const { NODE_ENV, ENABLE_METRICS, STATSD_HOST, STATSD_PORT, DD_TRACER_SERVICE_NAME } = config
+const {
+  NODE_ENV,
+  ENABLE_METRICS,
+  STATSD_HOST,
+  STATSD_PORT,
+  DD_TRACER_SERVICE_NAME,
+} = config
 
 const isProd = NODE_ENV === "production"
 const enableMetrics = ENABLE_METRICS === "true"
@@ -67,11 +73,19 @@ if (enableMetrics && isProd) {
   monitoring.on("gc", gcMetrics => {
     statsClient.gauge("gc.heap_size", gcMetrics.size)
     statsClient.gauge("gc.heap_used", gcMetrics.used)
-    statsClient.timing("gc.sweep_duration", gcMetrics.duration, {sweep_type: gcMetrics.type})
+    statsClient.timing("gc.sweep_duration", gcMetrics.duration, {
+      sweep_type: gcMetrics.type,
+    })
   })
 
   setInterval(() => {
-    statsClient.gauge("process.active_handles", process._getActiveHandles().length)
-    statsClient.gauge("process.active_requests", process._getActiveRequests().length)
+    statsClient.gauge(
+      "process.active_handles",
+      process._getActiveHandles().length
+    )
+    statsClient.gauge(
+      "process.active_requests",
+      process._getActiveRequests().length
+    )
   }, 5000)
 }

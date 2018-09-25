@@ -38,13 +38,14 @@ describe("Sale Artworks", () => {
       }
     `
 
-    const { sale_artworks: { counts: { total }, edges } } = await execute(
-      gravityResponse,
-      query,
-      {
-        saleArtworksAllLoader: () => Promise.resolve(gravityResponse),
-      }
-    )
+    const {
+      sale_artworks: {
+        counts: { total },
+        edges,
+      },
+    } = await execute(gravityResponse, query, {
+      saleArtworksAllLoader: () => Promise.resolve(gravityResponse),
+    })
     expect(total).toEqual(totalCount)
     expect(edges.length).toEqual(hits.length)
   })
@@ -74,10 +75,12 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { counts: { total }, edges } } = await execute(
-      gravityResponse,
-      query
-    )
+    const {
+      sale_artworks: {
+        counts: { total },
+        edges,
+      },
+    } = await execute(gravityResponse, query)
     expect(total).toEqual(totalCount)
     expect(edges.length).toEqual(hits.length)
   })
@@ -104,7 +107,9 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { edges } } = await execute(gravityResponse, query)
+    const {
+      sale_artworks: { edges },
+    } = await execute(gravityResponse, query)
     expect(edges.length).toEqual(size)
   })
 
@@ -155,10 +160,9 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { pageInfo } } = await execute(
-      gravityResponse,
-      query
-    )
+    const {
+      sale_artworks: { pageInfo },
+    } = await execute(gravityResponse, query)
     expect(pageInfo.hasNextPage).toEqual(false)
   })
 
@@ -181,10 +185,11 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { counts: { total } } } = await execute(
-      gravityResponse,
-      query
-    )
+    const {
+      sale_artworks: {
+        counts: { total },
+      },
+    } = await execute(gravityResponse, query)
     expect(total).toEqual(hits.length)
   })
 
@@ -237,10 +242,9 @@ describe("Sale Artworks", () => {
         }
       }
     `
-    const { sale_artworks: { aggregations } } = await execute(
-      gravityResponse,
-      query
-    )
+    const {
+      sale_artworks: { aggregations },
+    } = await execute(gravityResponse, query)
 
     expect(aggregations.length).toBeGreaterThan(0)
     aggregations.forEach(aggregation => {

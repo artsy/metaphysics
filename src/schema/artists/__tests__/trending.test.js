@@ -25,7 +25,9 @@ describe("Trending Artists", () => {
         Promise.resolve({ id, birthday: "1900", artworks_count: 100 }),
     }
 
-    const { trending_artists: { artists } } = await runQuery(query, rootValue)
+    const {
+      trending_artists: { artists },
+    } = await runQuery(query, rootValue)
     expect(artists).toMatchSnapshot()
   })
 })

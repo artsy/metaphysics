@@ -34,7 +34,10 @@ export const ArtworkContextType = new GraphQLUnionType({
   ],
 })
 
-const choose = flow(compact, first)
+const choose = flow(
+  compact,
+  first
+)
 
 export default {
   type: ArtworkContextType,

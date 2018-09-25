@@ -250,7 +250,9 @@ const PartnerType = new GraphQLObjectType({
               // Something is off in Lewitt so cards are not accepted at the moment
               return false
             }
-            const { data: { partner_product_merchant_account } } = response
+            const {
+              data: { partner_product_merchant_account },
+            } = response
             return partner_product_merchant_account.credit_card_enabled
           })
         },

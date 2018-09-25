@@ -55,10 +55,15 @@ export const apiLoaderWithoutAuthenticationFactory = (
                     verbose(`Cached: ${key}`)
 
                     const time = clock.end()
-                    logger(globalAPIOptions.requestIDs.requestID, apiName, key, {
-                      time,
-                      cache: true,
-                    })
+                    logger(
+                      globalAPIOptions.requestIDs.requestID,
+                      apiName,
+                      key,
+                      {
+                        time,
+                        cache: true,
+                      }
+                    )
 
                     // Then refresh cache
                     return throttled(

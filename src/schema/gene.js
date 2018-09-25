@@ -142,7 +142,7 @@ export const GeneType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: (
           { id },
-          { },
+          {},
           request,
           { rootValue: { followedGeneLoader } }
         ) => {
