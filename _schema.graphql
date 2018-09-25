@@ -2408,22 +2408,22 @@ type CreditCard {
   expiration_year: Int!
 
   # Billing address street1
-  street1: String!
+  street1: String
 
   # Billing address street2
   street2: String
 
   # Billing address city
-  city: String!
+  city: String
 
   # Billing address state
-  state: String!
+  state: String
 
   # Billing address country code
-  country: String!
+  country: String
 
   # Billing address postal code
-  postal_code: String!
+  postal_code: String
 }
 
 # A connection to a list of items.
