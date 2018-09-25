@@ -1,12 +1,13 @@
 import { GraphQLObjectType, GraphQLNonNull, GraphQLBoolean } from "graphql"
 import config from "config"
 
-// These are the current env vars
+// These are the current env vars which are exposed at runtime,
+// so that you can validate the env at runtime easily.
 
 const mapEnvBooleans = {
   environment: !!config.NODE_ENV,
   queryTracing: !!config.ENABLE_QUERY_TRACING,
-  headpDumps: !!config.ENABLE_HEAPDUMPS,
+  heapDumps: !!config.ENABLE_HEAPDUMPS,
   stitching: !!config.ENABLE_SCHEMA_STITCHING,
   stitchingGravity: !!config.ENABLE_GRAVQL_ONLY_STITCHING,
   stitchingConvection: !!config.ENABLE_CONSIGNMENTS_STITCHING,

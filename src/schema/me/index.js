@@ -36,10 +36,9 @@ import SuggestedArtists from "./suggested_artists"
 import Submissions from "./consignments/submissions"
 import config from "config"
 
-const { ENABLE_SCHEMA_STITCHING } = config
-const enableSchemaStitching = ENABLE_SCHEMA_STITCHING === "true"
+const { ENABLE_CONVECTION_STITCHING } = config
 
-const mySubmissions = enableSchemaStitching
+const mySubmissions = !!ENABLE_CONVECTION_STITCHING
   ? {}
   : { consignment_submissions: Submissions }
 

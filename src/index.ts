@@ -23,7 +23,6 @@ import {
 } from "lib/loaders/api/logger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
-import { incrementalMergeSchemas } from "./lib/stitching/mergeSchemas"
 import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
 import { executableExchangeSchema } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
@@ -34,7 +33,6 @@ import { logQueryDetails } from "./lib/logQueryDetails"
 
 const {
   ENABLE_REQUEST_LOGGING,
-  ENABLE_SCHEMA_STITCHING,
   ENABLE_HEAPDUMPS,
   LOG_QUERY_DETAILS_THRESHOLD,
   PRODUCTION_ENV,
@@ -43,10 +41,7 @@ const {
   SENTRY_PRIVATE_DSN,
 } = config
 
-console.log(ENABLE_SCHEMA_STITCHING)
-
 const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
-const enableSchemaStitching = !!ENABLE_SCHEMA_STITCHING
 const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 const logQueryDetailsThreshold =
@@ -77,15 +72,6 @@ async function startApp() {
 
   const lewittSchema = await executableLewittSchema()
   const exchangeSchema = await executableExchangeSchema()
-
-  if (enableSchemaStitching) {
-    try {
-      console.warn("[FEATURE] Enabling Schema Stitching")
-      schema = await incrementalMergeSchemas()
-    } catch (err) {
-      console.log("Error merging schemas:", err)
-    }
-  }
 
   if (RESOLVER_TIMEOUT_MS > 0) {
     console.warn("[FEATURE] Enabling resolver timeouts")
