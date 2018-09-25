@@ -2,7 +2,7 @@ version: 2
 jobs:
   test:
     docker:
-      - image: artsy/hokusai:0.4.0
+      - image: artsy/hokusai:0.4.6
     steps:
       - add_ssh_keys
       - checkout
@@ -12,7 +12,7 @@ jobs:
           command: hokusai test
   push:
     docker:
-      - image: artsy/hokusai:0.4.0
+      - image: artsy/hokusai:0.4.6
     steps:
       - add_ssh_keys
       - checkout
@@ -22,7 +22,7 @@ jobs:
           command: hokusai registry push --tag $CIRCLE_SHA1 --force --overwrite
   deploy:
     docker:
-      - image: artsy/hokusai:0.4.0
+      - image: artsy/hokusai:0.4.6
     steps:
       - add_ssh_keys
       - checkout
