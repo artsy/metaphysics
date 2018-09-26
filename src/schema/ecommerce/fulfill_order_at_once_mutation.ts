@@ -78,6 +78,7 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
                 code
                 currencyCode
                 state
+                stateReason
                 ${BuyerSellerFields}
                 ${RequestedFulfillmentFragment}
                 itemsTotalCents

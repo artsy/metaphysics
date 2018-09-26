@@ -192,6 +192,7 @@ type EcommerceOrder {
   shippingTotalCents: Int
   state: EcommerceOrderStateEnum!
   stateExpiresAt: EcommerceDateTime
+  stateReason: String
   stateUpdatedAt: EcommerceDateTime
   taxTotalCents: Int
   transactionFeeCents: Int
