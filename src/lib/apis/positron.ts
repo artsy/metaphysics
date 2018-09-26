@@ -1,5 +1,3 @@
-// @ts-check
-
 import urljoin from "url-join"
 import fetch from "./fetch"
 import config from "config"

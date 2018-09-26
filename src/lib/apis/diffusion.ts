@@ -1,5 +1,3 @@
-// @ts-check
-
 import urljoin from "url-join"
 import { assign } from "lodash"
 import fetch from "./fetch"
