@@ -25,7 +25,7 @@ describe("Order query", () => {
     `
 
     return runQuery(query, rootValue).then(data => {
-      expect(data.order).toEqual(sampleOrder(true, true, true))
+      expect(data!.order).toEqual(sampleOrder(true, true, true))
     })
   })
 })

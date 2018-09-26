@@ -52,7 +52,7 @@ describe("Fulfill Order at Once Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.fulfillOrderAtOnce.orderOrError.order).toEqual(
+      expect(data!.fulfillOrderAtOnce.orderOrError.order).toEqual(
         sampleOrder(true, true)
       )
     })
