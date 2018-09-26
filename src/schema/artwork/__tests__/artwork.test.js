@@ -773,7 +773,7 @@ describe("Artwork type", () => {
       `
 
       describe("if the artwork is able to be used with View in Room", () => {
-        it("is hangable if the artwork is 2d and has reasonable dimensions", () => {
+        it("is hangable if ink artwork is 2d and has reasonable dimensions", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.category = "ink"
@@ -782,7 +782,7 @@ describe("Artwork type", () => {
           })
         })
 
-        it("is hangable if the artwork is 2d and has reasonable dimensions", () => {
+        it("is hangable if painting artwork is 2d and has reasonable dimensions", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.category = "painting"
@@ -793,7 +793,7 @@ describe("Artwork type", () => {
       })
 
       describe("if the artwork is not able to be used with View in Room", () => {
-        it("is not hangable if the category is not applicable to wall display", () => {
+        it("is not hangable if the category is not applicable to wall display like sculpture", () => {
           artwork.category = "sculpture"
           artwork.width = 100
           artwork.height = 100
@@ -1189,7 +1189,31 @@ describe("Artwork type", () => {
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: $10 Continental US only",
+            shippingInfo: "Shipping: $10 continental US only",
+          },
+        })
+      })
+    })
+
+    it("is set to free domestic shipping when domestic_shipping_fee_cents is null and international_shipping_fee_cents is present", () => {
+      artwork.domestic_shipping_fee_cents = null
+      artwork.international_shipping_fee_cents = 10000
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping: Free continental US, $100 rest of world",
+          },
+        })
+      })
+    })
+
+    it("is set to free domestic shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = 10000
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping: Free continental US, $100 rest of world",
           },
         })
       })
@@ -1201,7 +1225,7 @@ describe("Artwork type", () => {
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: $10 Continental US, $20 rest of the world",
+            shippingInfo: "Shipping: $10 continental US, $20 rest of world",
           },
         })
       })
