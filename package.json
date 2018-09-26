@@ -27,7 +27,6 @@
     "build:index": "babel index.js -s inline -d build",
     "build:fixtures": "cp src/lib/*.json build/src/lib/",
     "build:remote-schemas": "cp src/data/*.graphql build/src/data/",
-    "precommit": "lint-staged; yarn dump-schema _schema.graphql",
     "prepare": "patch-package",
     "prettier-project": "prettier --write 'src/**/*.{js,ts,tsx,md,graphql}'",
     "type-check": "tsc --noEmit --pretty"
@@ -35,14 +34,13 @@
   "author": "Art.sy Inc",
   "license": "MIT",
   "dependencies": {
-    "@babel/cli": "7.0.0-beta.46",
-    "@babel/core": "7.0.0-beta.46",
-    "@babel/node": "^7.0.0-beta.46",
-    "@babel/preset-env": "7.0.0-beta.46",
-    "@babel/preset-es2015": "7.0.0-beta.46",
-    "@babel/preset-stage-3": "^7.0.0-beta.46",
-    "@babel/preset-typescript": "7.0.0-beta.46",
-    "@babel/register": "7.0.0-beta.46",
+    "@babel/cli": "7.1.0",
+    "@babel/core": "7.1.0",
+    "@babel/node": "^7.0.0",
+    "@babel/preset-env": "7.1.0",
+    "@babel/preset-stage-3": "^7.0.0",
+    "@babel/preset-typescript": "7.1.0",
+    "@babel/register": "7.0.0",
     "@heroku/foreman": "^2.0.2",
     "accounting": "^0.4.1",
     "apollo-link": "1.2.1",
@@ -52,7 +50,7 @@
     "artsy-morgan": "git://github.com/artsy/artsy-morgan.git",
     "artsy-xapp": "^1.0.4",
     "babel-core": "^7.0.0-bridge.0",
-    "babel-plugin-module-resolver": "^3.0.0",
+    "babel-plugin-module-resolver": "^3.1.1",
     "basic-auth": "^1.0.3",
     "bluebird": "^3.3.4",
     "body-parser": "^1.15.2",
@@ -116,7 +114,7 @@
     "@types/express-rate-limit": "^2.9.3",
     "@types/graphql": "^0.13.3",
     "@types/invariant": "^2.2.29",
-    "@types/jest": "^22.2.3",
+    "@types/jest": "^23.3.2",
     "@types/lodash": "^4.14.74",
     "@types/moment": "^2.13.0",
     "@types/moment-timezone": "^0.5.1",
@@ -124,7 +122,7 @@
     "@types/qs": "^6.5.0",
     "@types/request": "^2.0.3",
     "babel-eslint": "^7.2.3",
-    "babel-jest": "^22.4.1",
+    "babel-jest": "^23.6.0",
     "danger": "^4.0",
     "deep-equal": "^1.0.1",
     "dotenv": "^5.0.1",
@@ -136,14 +134,14 @@
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-react": "^7.1.0",
     "expect.js": "^0.3.1",
-    "husky": "^0.13.3",
-    "jest": "^23.5.0",
-    "lint-staged": "^3.4.0",
+    "husky": "^1.0.0",
+    "jest": "^23.6.0",
+    "lint-staged": "^7.3.0",
     "prettier": "^1.14.2",
     "sinon": "^1.17.2",
     "superagent": "^3.8.3",
     "supertest": "^3.1.0",
-    "typescript": "^3.0.1",
+    "typescript": "^3.0.3",
     "typescript-babel-jest": "^1.0.5"
   },
   "jest": {
@@ -184,5 +182,10 @@
       "yarn prettier --write",
       "git add"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged; yarn dump-schema _schema.graphql"
+    }
   }
 }
