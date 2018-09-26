@@ -11,10 +11,10 @@ import { map, find, extend } from "lodash"
  * @param {string} [entityKeyPath] an optional path to a nested entity
  */
 const trackedEntityLoaderFactory = (
-  dataLoader,
-  paramKey,
-  trackingKey,
-  entityKeyPath
+  dataLoader: any,
+  paramKey: string,
+  trackingKey: string,
+  entityKeyPath?: string
 ) => {
   const trackedEntityLoader = new DataLoader(
     ids => {

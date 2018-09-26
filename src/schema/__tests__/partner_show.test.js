@@ -106,6 +106,7 @@ describe("PartnerShow type", () => {
         throw new Error("Did not expect query to not throw an error")
       })
       .catch(error => {
+        console.log(error)
         expect(error.statusCode).toEqual(404)
       })
   })

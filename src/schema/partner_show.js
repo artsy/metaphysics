@@ -327,6 +327,7 @@ const PartnerShow = {
   },
   resolve: (root, { id }, request, { rootValue: { showLoader } }) => {
     return showLoader(id).then(show => {
+      console.log(show)
       if (!show.displayable) {
         return new HTTPError("Show Not Found", 404)
       }
