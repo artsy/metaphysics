@@ -535,13 +535,14 @@ export const artworkFields = () => {
         ).resolve(artwork, { precision: 0 })
 
         if (domesticShipping && !internationalShipping)
-          return "Shipping: " + domesticShipping + " Continental US only"
+          return "Shipping: " + domesticShipping + " continental US only"
+        if (!domesticShipping) domesticShipping = "Free"
         return (
           "Shipping: " +
           domesticShipping +
-          " Continental US, " +
+          " continental US, " +
           internationalShipping +
-          " rest of the world"
+          " rest of world"
         )
       },
     },
