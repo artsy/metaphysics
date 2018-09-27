@@ -433,17 +433,24 @@ describe("Sale type", () => {
       ],
       [
         {
+          live_start_at: moment().add(1, "minutes"),
+          registration_ends_at: moment().subtract(2, "days"),
+        },
+        "live in 1m",
+      ],
+      [
+        {
           live_start_at: moment().add(10, "minutes"),
           registration_ends_at: moment().subtract(2, "days"),
         },
-        "live in 10 minutes",
+        "live in 10m",
       ],
       [
         {
           live_start_at: moment().add(20, "minutes"),
           registration_ends_at: moment().subtract(2, "days"),
         },
-        "live in 20 minutes",
+        "live in 20m",
       ],
       [
         {
@@ -464,7 +471,7 @@ describe("Sale type", () => {
           live_start_at: moment().add(20, "days"),
           registration_ends_at: moment().add(10, "days"),
         },
-        "live in 20 days",
+        "live in 20d",
         true, // used to fake registered bidder for this scenario
       ],
       [
@@ -472,36 +479,36 @@ describe("Sale type", () => {
           start_at: moment().add(1, "minutes"),
           end_at: moment().add(10, "minutes"),
         },
-        "ends in 10 minutes",
+        "ends in 10m",
       ],
       [
         {
           start_at: moment().add(10, "minutes"),
           end_at: moment().add(20, "minutes"),
         },
-        "ends in 20 minutes",
+        "ends in 20m",
       ],
       [
         {
           start_at: moment().add(1, "hours"),
           end_at: moment().add(10, "hours"),
         },
-        "ends in 10 hours",
+        "ends in 10h",
       ],
       [
         {
           start_at: moment().add(2, "hours"),
           end_at: moment().add(20, "hours"),
         },
-        "ends in 20 hours",
+        "ends in 20h",
       ],
       [
         { start_at: moment().add(1, "days"), end_at: moment().add(2, "days") },
-        "ends in 2 days",
+        "ends in 2d",
       ],
       [
         { start_at: moment().add(1, "days"), end_at: moment().add(5, "days") },
-        "ends in 5 days",
+        "ends in 5d",
       ],
       [
         {

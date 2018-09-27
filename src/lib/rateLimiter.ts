@@ -4,9 +4,10 @@ import { client } from "./cache"
 import { Request } from "express"
 import config from "../config"
 
+// We expect our own services to include DataDog headers.
 export const skip = (req: Request) =>
   !!(
-    req.headers["x-request-id"] ||
+    req.headers["x-datadog-trace-id"] ||
     (req.body.query &&
       !req.body.query.includes("routes_OverviewQueryRendererQuery"))
   )
