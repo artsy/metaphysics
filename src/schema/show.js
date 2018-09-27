@@ -27,6 +27,7 @@ import {
   GraphQLInt,
   GraphQLBoolean,
   GraphQLUnionType,
+  GraphQLError,
 } from "graphql"
 import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
@@ -422,7 +423,7 @@ const Show = {
     return showLoader(id)
       .then(show => {
         if (!show.displayable && !show.is_reference) {
-          return new HTTPError("Show Not Found", 404)
+          return new GraphQLError("Show Not Found")
         }
         return show
       })

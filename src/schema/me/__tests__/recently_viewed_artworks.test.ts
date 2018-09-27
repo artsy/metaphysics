@@ -2,8 +2,11 @@
 import { runAuthenticatedQuery } from "test/utils"
 import gql from "lib/gql"
 
+jest.mock("node-fetch", () => jest.fn())
+import fetch from "node-fetch"
+
 describe("RecentlyViewedArtworks", () => {
-  let rootValue = null
+  let rootValue
   beforeEach(() => {
     const me = {
       recently_viewed_artwork_ids: ["percy", "matt"],
@@ -15,7 +18,7 @@ describe("RecentlyViewedArtworks", () => {
     rootValue = {
       meLoader: () => Promise.resolve(me),
       artworksLoader: () => Promise.resolve(artworks),
-      recordArtworkViewLoader: () => Promise.resolve(me),
+      recordArtworkViewLoader: jest.fn(() => Promise.resolve(me)),
     }
   })
 
@@ -79,6 +82,7 @@ describe("RecentlyViewedArtworks", () => {
     rootValue.meLoader = () =>
       Promise.resolve({ recently_viewed_artwork_ids: [] })
     expect.assertions(1)
+
     return runAuthenticatedQuery(query, rootValue).then(
       ({ me: { recentlyViewedArtworks } }) => {
         expect(recentlyViewedArtworks).toEqual({
@@ -91,7 +95,7 @@ describe("RecentlyViewedArtworks", () => {
     )
   })
 
-  it("records an artwork view", () => {
+  it("records an artwork view", async () => {
     const mutation = gql`
       mutation {
         recordArtworkView(input: { artwork_id: "percy" }) {
@@ -100,11 +104,28 @@ describe("RecentlyViewedArtworks", () => {
       }
     `
 
-    expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
-      ({ recordArtworkView: { artwork_id } }) => {
-        expect(artwork_id).toEqual("percy")
-      }
+    const responseData = {
+      data: { recordArtworkView: { artwork_id: "percy" } },
+    }
+
+    const mockFetch = fetch as jest.Mock<any>
+    mockFetch.mockImplementationOnce(() => {
+      return Promise.resolve({
+        text: () => Promise.resolve(JSON.stringify(responseData)),
+      })
+    })
+
+    const data = await runAuthenticatedQuery(mutation, rootValue, {
+      res: {},
+    })
+
+    // The graphQL API
+    expect(mockFetch).toBeCalledWith(
+      "https://api.artsy.test/api/graphql",
+      expect.anything()
     )
+
+    const artwork_id = data!.recordArtworkView.artwork_id
+    expect(artwork_id).toEqual("percy")
   })
 })
