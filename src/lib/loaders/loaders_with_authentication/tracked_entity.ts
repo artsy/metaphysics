@@ -11,7 +11,7 @@ import { map, find, extend } from "lodash"
  * @param {string} [entityKeyPath] an optional path to a nested entity
  */
 const trackedEntityLoaderFactory = (
-  dataLoader: any,
+  dataLoader: (id: any) => Promise<any>,
   paramKey: string,
   trackingKey: string,
   entityKeyPath?: string
