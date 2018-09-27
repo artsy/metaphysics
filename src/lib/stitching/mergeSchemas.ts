@@ -5,7 +5,7 @@ import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitch
 import { executableExchangeSchema } from "lib/stitching/exchange/schema"
 import config from "config"
 
-import localSchema from "../../schema/schema"
+import localSchema from "schema/schema"
 import { GraphQLSchema } from "graphql"
 
 /**
