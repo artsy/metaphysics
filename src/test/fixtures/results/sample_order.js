@@ -28,6 +28,7 @@ const defaultResponse = {
   sellerTotalCents: 890000,
   sellerTotal: "$8,900",
   state: "PENDING",
+  stateReason: null,
   createdAt: "2018-07-03 17:57:47 UTC",
   updatedAt: "2018-07-03 17:57:47 UTC",
   stateUpdatedAt: "2018-07-03 17:57:47 UTC",

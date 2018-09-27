@@ -20,6 +20,7 @@ export const Order = {
           code
           currencyCode
           state
+          stateReason
           ${BuyerSellerFields}
           creditCardId
           ${RequestedFulfillmentFragment}

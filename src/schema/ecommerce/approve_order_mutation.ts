@@ -39,6 +39,7 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
                 code
                 currencyCode
                 state
+                stateReason
                 ${BuyerSellerFields}
                 ${RequestedFulfillmentFragment}
                 itemsTotalCents

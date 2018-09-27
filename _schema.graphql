@@ -4509,6 +4509,9 @@ type Order {
   # State of the order
   state: String
 
+  # Reason for current state
+  stateReason: String
+
   # Tracking code of the order
   code: String
 

@@ -160,9 +160,7 @@ type LineItemEdge {
 
 type Mutation {
   approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
-  createOrderWithArtwork(
-    input: CreateOrderWithArtworkInput!
-  ): CreateOrderWithArtworkPayload
+  createOrderWithArtwork(input: CreateOrderWithArtworkInput!): CreateOrderWithArtworkPayload
 
   # Fulfill an order with one Fulfillment, it sets this fulfillment to each line item in order
   fulfillAtOnce(input: FulfillAtOnceInput!): FulfillAtOncePayload
@@ -205,6 +203,7 @@ type Order {
   shippingTotalCents: Int
   state: OrderStateEnum!
   stateExpiresAt: DateTime
+  stateReason: String
   stateUpdatedAt: DateTime
   taxTotalCents: Int
   transactionFeeCents: Int
