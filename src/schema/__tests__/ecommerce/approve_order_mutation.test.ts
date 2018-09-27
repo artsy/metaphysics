@@ -4,7 +4,7 @@ import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import gql from "lib/gql"
-import { OrderBuyerFields } from "./order_fields"
+import { OrderSellerFields } from "./order_fields"
 
 let rootValue
 
@@ -12,7 +12,7 @@ describe("Approve Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        setPayment: () => ({
+        approveOrder: () => ({
           orderOrError: { order: exchangeOrderJSON },
         }),
       },
@@ -20,33 +20,30 @@ describe("Approve Order Mutation", () => {
 
     rootValue = mockxchange(resolvers)
   })
-  it("sets order's payment information", () => {
+  it("approves order and returns order", () => {
     const mutation = gql`
       mutation {
-        setOrderPayment(input: {
-            orderId: "111",
-            creditCardId: "1231-1232-4343-4343"
-          }) {
-            orderOrError {
-              ... on OrderWithMutationSuccess {
-                order {
-                  ${OrderBuyerFields}
-                }
+        approveOrder(input: { orderId: "111" }) {
+          orderOrError {
+            ... on OrderWithMutationSuccess {
+              order {
+                ${OrderSellerFields}
               }
-              ... on OrderWithMutationFailure {
-                error {
-                  type
-                  code
-                  data
-                }
+            }
+            ... on OrderWithMutationFailure {
+              error {
+                type
+                code
+                data
               }
             }
           }
         }
+      }
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.setOrderPayment.orderOrError.order).toEqual(
+      expect(data!.approveOrder.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )
     })

@@ -1,32 +1,48 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
-import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
-import { OrderSellerFields } from "./order_fields"
+import { mockxchange } from "test/fixtures/exchange/mockxchange"
+import { OrderBuyerFields } from "./order_fields"
 import gql from "lib/gql"
 
 let rootValue
 
-describe("Reject Order Mutation", () => {
+describe("Approve Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        rejectOrder: () => ({
+        setShipping: () => ({
           orderOrError: { order: exchangeOrderJSON },
         }),
       },
     }
+
     rootValue = mockxchange(resolvers)
   })
-  it("rejects order and return it", () => {
+  it("sets order's shipping information", () => {
     const mutation = gql`
       mutation {
-        rejectOrder(input: { orderId: "111" }) {
+        setOrderShipping(
+          input: {
+            orderId: "111"
+            fulfillmentType: SHIP
+            shipping: {
+              name: "Dr Collector"
+              addressLine1: "Vanak"
+              addressLine2: "P 80"
+              city: "Tehran"
+              region: "TH"
+              country: "Iran"
+              postalCode: "09821"
+              phoneNumber: "090302821"
+            }
+          }
+        ) {
           orderOrError {
             ... on OrderWithMutationSuccess {
               order {
-                ${OrderSellerFields}
+                ${OrderBuyerFields}
               }
             }
             ... on OrderWithMutationFailure {
@@ -42,7 +58,7 @@ describe("Reject Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.rejectOrder.orderOrError.order).toEqual(
+      expect(data!.setOrderShipping.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )
     })

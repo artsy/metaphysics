@@ -1,13 +1,15 @@
-// @ts-check
-
 import { assign, clone, get, defaults, compact } from "lodash"
 import request from "request"
 import config from "config"
 import HTTPError from "lib/http_error"
 
+// TODO: This `any` is a shame, but
+// the type seems to be a bit of a mix of the original
+// response and some faffing
+
 export default (url, options = {}) => {
-  return new Promise((resolve, reject) => {
-    const opts = clone(
+  return new Promise<any>((resolve, reject) => {
+    const opts: any = clone(
       defaults(options, {
         method: "GET",
         timeout: config.REQUEST_TIMEOUT_MS,

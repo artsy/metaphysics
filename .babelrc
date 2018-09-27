@@ -5,7 +5,6 @@
         "node": "current"
       }
     }],
-    "@babel/stage-3",
     "@babel/typescript"
   ],
   "plugins": [
