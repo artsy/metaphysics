@@ -8,11 +8,11 @@ import {
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
-export const executableGravitySchema = async () => {
+export const executableGravitySchema = () => {
   const gravityTypeDefs = readFileSync("src/data/gravity.graphql", "utf8")
 
   const gravityLink = createGravityLink()
-  const schema = await makeRemoteExecutableSchema({
+  const schema = makeRemoteExecutableSchema({
     schema: gravityTypeDefs,
     link: gravityLink,
   })

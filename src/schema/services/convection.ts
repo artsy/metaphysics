@@ -1,4 +1,3 @@
-// @ts-check
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
 import config from "config"
 

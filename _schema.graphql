@@ -4312,6 +4312,16 @@ type MessageInitiator {
   email: String
 }
 
+type Metaphysics {
+  environment: Boolean!
+  queryTracing: Boolean!
+  heapDumps: Boolean!
+  stitching: Boolean!
+  stitchingGravity: Boolean!
+  stitchingConvection: Boolean!
+  stitchingExchange: Boolean!
+}
+
 type Mutation {
   # Create a bidder
   createBidder(input: CreateBidderInput!): CreateBidderPayload
@@ -5716,7 +5726,7 @@ type Query {
     sort: SaleSorts
   ): [Sale]
 
-  # The schema for difference microservice settings
+  # The schema for difference micro-service settings
   services: Services
 
   # A Show
@@ -6324,6 +6334,7 @@ type SendConversationMessageMutationPayload {
 
 type Services {
   convection: Convection!
+  metaphysics: Metaphysics!
 }
 
 input SetOrderPaymentInput {
@@ -7314,7 +7325,7 @@ type Viewer {
     sort: SaleSorts
   ): [Sale]
 
-  # The schema for difference microservice settings
+  # The schema for difference micro-service settings
   services: Services
 
   # A Show

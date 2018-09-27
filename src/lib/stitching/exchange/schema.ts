@@ -7,11 +7,11 @@ import {
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
-export const executableExchangeSchema = async () => {
+export const executableExchangeSchema = () => {
   const exchangeSDL = readFileSync("src/data/exchange.graphql", "utf8")
   const exchangeLink = createExchangeLink()
 
-  const schema = await makeRemoteExecutableSchema({
+  const schema = makeRemoteExecutableSchema({
     schema: exchangeSDL,
     link: exchangeLink,
   })
