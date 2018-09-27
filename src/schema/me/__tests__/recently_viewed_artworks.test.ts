@@ -22,7 +22,7 @@ describe("RecentlyViewedArtworks", () => {
     }
   })
 
-  it("returns an artwork connection", () => {
+  it("returns an artwork connection", async () => {
     const query = gql`
       {
         me {
@@ -41,27 +41,25 @@ describe("RecentlyViewedArtworks", () => {
       }
     `
 
-    expect.assertions(1)
-    return runAuthenticatedQuery(query, rootValue).then(
-      ({ me: { recentlyViewedArtworks } }) => {
-        expect(recentlyViewedArtworks).toEqual({
-          edges: [
-            {
-              node: {
-                id: "percy",
-                title: "Percy the Cat",
-              },
-            },
-          ],
-          pageInfo: {
-            hasNextPage: true,
+    const data = await runAuthenticatedQuery(query, rootValue)
+    const recentlyViewedArtworks = data!.me.recentlyViewedArtworks
+
+    expect(recentlyViewedArtworks).toEqual({
+      edges: [
+        {
+          node: {
+            id: "percy",
+            title: "Percy the Cat",
           },
-        })
-      }
-    )
+        },
+      ],
+      pageInfo: {
+        hasNextPage: true,
+      },
+    })
   })
 
-  it("can return an empty connection", () => {
+  it("can return an empty connection", async () => {
     const query = gql`
       {
         me {
@@ -83,16 +81,15 @@ describe("RecentlyViewedArtworks", () => {
       Promise.resolve({ recently_viewed_artwork_ids: [] })
     expect.assertions(1)
 
-    return runAuthenticatedQuery(query, rootValue).then(
-      ({ me: { recentlyViewedArtworks } }) => {
-        expect(recentlyViewedArtworks).toEqual({
-          edges: [],
-          pageInfo: {
-            hasNextPage: false,
-          },
-        })
-      }
-    )
+    const data = await runAuthenticatedQuery(query, rootValue)
+    const recentlyViewedArtworks = data!.me.recentlyViewedArtworks
+
+    expect(recentlyViewedArtworks).toEqual({
+      edges: [],
+      pageInfo: {
+        hasNextPage: false,
+      },
+    })
   })
 
   it("records an artwork view", async () => {
