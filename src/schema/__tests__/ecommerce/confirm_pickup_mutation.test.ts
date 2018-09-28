@@ -23,7 +23,7 @@ describe("Confirm Pickup Mutation", () => {
   it("confirms pickup on an order and returns order", () => {
     const mutation = gql`
       mutation {
-        confirmPickup(input: { orderId: "111" }) {
+        ecommerceConfirmPickup(input: { orderId: "111" }) {
           orderOrError {
             ... on OrderWithMutationSuccess {
               order {
@@ -43,7 +43,7 @@ describe("Confirm Pickup Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data!.confirmPickup.orderOrError.order).toEqual(
+      expect(data!.ecommerceConfirmPickup.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )
     })

@@ -178,7 +178,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.setOrderPayment = SetOrderPaymentMutation
   stitchedMutations.approveOrder = ApproveOrderMutation
   stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
-  stitchedMutations.confirmPickup = ConfirmPickupMutation
+  // stitchedMutations.confirmPickup = ConfirmPickupMutation
   stitchedMutations.rejectOrder = RejectOrderMutation
   stitchedMutations.submitOrder = SubmitOrderMutation
 

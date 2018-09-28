@@ -11,7 +11,7 @@ import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 export const ConfirmPickupMutation = mutationWithClientMutationId({
   name: "ConfirmPickup",
-  description: "Confrims pickup for an ecommerce order",
+  description: "Confirms pickup for an ecommerce order",
   inputFields: OrderMutationInputType.getFields(),
   outputFields: {
     orderOrError: {

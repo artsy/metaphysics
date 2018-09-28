@@ -4427,9 +4427,6 @@ type Mutation {
   # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
   fulfillOrderAtOnce(input: FulfillOrderAtOnceInput!): FulfillOrderAtOncePayload
 
-  # Confrims pickup for an ecommerce order
-  confirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
-
   # Rejects an order
   rejectOrder(input: RejectOrderInput!): RejectOrderPayload
 
@@ -4452,7 +4449,7 @@ type Mutation {
   # Approves an order with payment
   ecommerceApproveOrder(input: ApproveOrderInput!): ApproveOrderPayload
 
-  # Confrims pickup for an ecommerce order
+  # Confirms pickup for an ecommerce order
   ecommerceConfirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
 
   # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
