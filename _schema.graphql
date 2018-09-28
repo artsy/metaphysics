@@ -1032,7 +1032,7 @@ type ArtworkContextFair {
     section: String
 
     # Sorts for shows in a fair
-    sort: ShowSort = null
+    sort: ShowSort = FEATURED_DESC
     after: String
     first: Int
     before: String
@@ -1964,7 +1964,7 @@ type Collection implements Node {
     before: String
     last: Int
     private: Boolean = false
-    sort: CollectionSorts = null
+    sort: CollectionSorts = POSITION_DESC
   ): ArtworkConnection
   description: String!
   default: Boolean!
@@ -2705,7 +2705,7 @@ type Fair {
     section: String
 
     # Sorts for shows in a fair
-    sort: ShowSort = null
+    sort: ShowSort = FEATURED_DESC
     after: String
     first: Int
     before: String
@@ -3661,7 +3661,7 @@ type HomePageModuleContextFair {
     section: String
 
     # Sorts for shows in a fair
-    sort: ShowSort = null
+    sort: ShowSort = FEATURED_DESC
     after: String
     first: Int
     before: String
