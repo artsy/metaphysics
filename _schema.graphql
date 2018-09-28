@@ -2023,6 +2023,17 @@ type CollectorProfileType {
   intents: [String]
 }
 
+input ConfirmPickupInput {
+  # Order ID
+  orderId: String!
+  clientMutationId: String
+}
+
+type ConfirmPickupPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
 # A work to be consigned to the user
 type ConsignmentSubmission implements Node {
   # A globally unique ID.
@@ -4437,6 +4448,9 @@ type Mutation {
 
   # Approves an order with payment
   ecommerceApproveOrder(input: ApproveOrderInput!): ApproveOrderPayload
+
+  # Confirms pickup for an ecommerce order
+  ecommerceConfirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
 
   # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
   ecommerceFulfillOrderAtOnce(
