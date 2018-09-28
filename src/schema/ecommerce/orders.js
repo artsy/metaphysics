@@ -61,6 +61,7 @@ export const Orders = {
               code
               currencyCode
               state
+              stateReason
               ${BuyerSellerFields}
               updatedAt
               createdAt

@@ -810,6 +810,9 @@ type Artwork implements Node & Sellable {
   price: String
   price_currency: String
 
+  # Is this work available for shipping only within the Contenental US?
+  shipsToContinentalUSOnly: Boolean
+
   # The string that describes domestic and international shipping.
   shippingInfo: String
 
@@ -1528,6 +1531,9 @@ type ArtworkItem implements Node & Sellable {
   price: String
   price_currency: String
 
+  # Is this work available for shipping only within the Contenental US?
+  shipsToContinentalUSOnly: Boolean
+
   # The string that describes domestic and international shipping.
   shippingInfo: String
 
@@ -2015,6 +2021,17 @@ type CollectorProfileType {
     timezone: String
   ): String
   intents: [String]
+}
+
+input ConfirmPickupInput {
+  # Order ID
+  orderId: String!
+  clientMutationId: String
+}
+
+type ConfirmPickupPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
 }
 
 # A work to be consigned to the user
@@ -4446,6 +4463,9 @@ type Mutation {
   # Approves an order with payment
   ecommerceApproveOrder(input: ApproveOrderInput!): ApproveOrderPayload
 
+  # Confirms pickup for an ecommerce order
+  ecommerceConfirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
+
   # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
   ecommerceFulfillOrderAtOnce(
     input: FulfillOrderAtOnceInput!
@@ -4523,6 +4543,9 @@ type Order {
 
   # State of the order
   state: String
+
+  # Reason for current state
+  stateReason: String
 
   # Tracking code of the order
   code: String

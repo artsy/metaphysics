@@ -28,6 +28,10 @@ export const OrderType = new GraphQLObjectType({
       type: GraphQLString,
       description: "State of the order",
     },
+    stateReason: {
+      type: GraphQLString,
+      description: "Reason for current state",
+    },
     code: {
       type: GraphQLString,
       description: "Tracking code of the order",

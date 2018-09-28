@@ -511,6 +511,17 @@ export const artworkFields = () => {
     pickup_available: { type: GraphQLBoolean },
     price: { type: GraphQLString },
     price_currency: { type: GraphQLString },
+    shipsToContinentalUSOnly: {
+      type: GraphQLBoolean,
+      description:
+        "Is this work available for shipping only within the Contenental US?",
+      resolve: artwork => {
+        return Boolean(
+          artwork.domestic_shipping_fee_cents &&
+            artwork.international_shipping_fee_cents == null
+        )
+      },
+    },
     shippingInfo: {
       type: GraphQLString,
       description:
@@ -534,9 +545,16 @@ export const artworkFields = () => {
             international_shipping_fee_cents
         ).resolve(artwork, { precision: 0 })
 
-        if (domesticShipping && !internationalShipping)
+        if (
+          domesticShipping &&
+          artwork.international_shipping_fee_cents == null
+        )
           return "Shipping: " + domesticShipping + " continental US only"
-        if (!domesticShipping) domesticShipping = "Free"
+
+        if (artwork.domestic_shipping_fee_cents === 0) domesticShipping = "Free"
+        if (artwork.international_shipping_fee_cents === 0)
+          internationalShipping = "free"
+
         return (
           "Shipping: " +
           domesticShipping +

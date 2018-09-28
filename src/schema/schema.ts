@@ -23,6 +23,7 @@ import { SetOrderPaymentMutation } from "./ecommerce/set_order_payment_mutation"
 import { SubmitOrderMutation } from "./ecommerce/submit_order_mutation"
 import { ApproveOrderMutation } from "./ecommerce/approve_order_mutation"
 import { FulfillOrderAtOnceMutation } from "./ecommerce/fulfill_order_at_once_mutation"
+import { ConfirmPickupMutation } from "./ecommerce/confirm_pickup_mutation"
 import { RejectOrderMutation } from "./ecommerce/reject_order_mutation"
 import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
@@ -177,6 +178,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.setOrderPayment = SetOrderPaymentMutation
   stitchedMutations.approveOrder = ApproveOrderMutation
   stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
+  // stitchedMutations.confirmPickup = ConfirmPickupMutation
   stitchedMutations.rejectOrder = RejectOrderMutation
   stitchedMutations.submitOrder = SubmitOrderMutation
 
@@ -184,6 +186,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
   stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
   stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
+  stitchedMutations.ecommerceConfirmPickup = ConfirmPickupMutation
   stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
   stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
   stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
