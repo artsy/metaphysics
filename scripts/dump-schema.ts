@@ -24,7 +24,10 @@ if (schemaPath.endsWith("json")) {
   console.log(`Dumping JSON to ${schemaPath}`)
   graphql(schema, introspectionQuery).then(
     result => {
-      fs.writeFileSync(path.join(schemaPath), JSON.stringify(result, null, 2))
+      const prettierResult = prettier.format(JSON.stringify(result), {
+        parser: "json",
+      })
+      fs.writeFileSync(path.join(schemaPath), prettierResult)
     },
     error => {
       console.error(
