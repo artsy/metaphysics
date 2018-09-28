@@ -112,9 +112,7 @@ describe("RecentlyViewedArtworks", () => {
       })
     })
 
-    const data = await runAuthenticatedQuery(mutation, rootValue, {
-      res: {},
-    })
+    const data = await runAuthenticatedQuery(mutation, rootValue)
 
     // The graphQL API
     expect(mockFetch).toBeCalledWith(

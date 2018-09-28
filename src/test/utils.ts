@@ -18,9 +18,18 @@ import { graphql } from "graphql"
 export const runQuery = (
   query,
   rootValue = { accessToken: null, userID: null },
-  context = {}
+  context: any = {}
 ) => {
   const schema = require("schema").default
+
+  // Set up some of the default state when a request is made
+  context.res = context.res || {}
+  context.res.locals = context.res.locals || {}
+  context.res.locals.requestIDs = context.res.locals.requestIDs || {
+    requestID: "123456789",
+    xForwardedFor: "123.456.789",
+  }
+
   return graphql(schema, query, rootValue, context).then(result => {
     if (result.errors) {
       const error = result.errors[0]
