@@ -1032,7 +1032,7 @@ type ArtworkContextFair {
     section: String
 
     # Sorts for shows in a fair
-    sort: ShowSort = FEATURED_DESC
+    sort: ShowSort = null
     after: String
     first: Int
     before: String
@@ -1964,7 +1964,7 @@ type Collection implements Node {
     before: String
     last: Int
     private: Boolean = false
-    sort: CollectionSorts = POSITION_DESC
+    sort: CollectionSorts = null
   ): ArtworkConnection
   description: String!
   default: Boolean!
@@ -2021,6 +2021,17 @@ type CollectorProfileType {
     timezone: String
   ): String
   intents: [String]
+}
+
+input ConfirmPickupInput {
+  # Order ID
+  orderId: String!
+  clientMutationId: String
+}
+
+type ConfirmPickupPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
 }
 
 # A work to be consigned to the user
@@ -2694,7 +2705,7 @@ type Fair {
     section: String
 
     # Sorts for shows in a fair
-    sort: ShowSort = FEATURED_DESC
+    sort: ShowSort = null
     after: String
     first: Int
     before: String
@@ -3650,7 +3661,7 @@ type HomePageModuleContextFair {
     section: String
 
     # Sorts for shows in a fair
-    sort: ShowSort = FEATURED_DESC
+    sort: ShowSort = null
     after: String
     first: Int
     before: String
@@ -4416,6 +4427,9 @@ type Mutation {
   # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
   fulfillOrderAtOnce(input: FulfillOrderAtOnceInput!): FulfillOrderAtOncePayload
 
+  # Confrims pickup for an ecommerce order
+  confirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
+
   # Rejects an order
   rejectOrder(input: RejectOrderInput!): RejectOrderPayload
 
@@ -4437,6 +4451,9 @@ type Mutation {
 
   # Approves an order with payment
   ecommerceApproveOrder(input: ApproveOrderInput!): ApproveOrderPayload
+
+  # Confrims pickup for an ecommerce order
+  ecommerceConfirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
 
   # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
   ecommerceFulfillOrderAtOnce(
