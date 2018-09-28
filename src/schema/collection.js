@@ -35,7 +35,9 @@ export const CollectionType = new GraphQLObjectType({
           type: GraphQLBoolean,
           defaultValue: false,
         },
-        sort: CollectionSorts,
+        sort: {
+          type: CollectionSorts,
+        },
       },
       resolve: (
         { id },
@@ -47,6 +49,8 @@ export const CollectionType = new GraphQLObjectType({
           { total_count: true },
           parseRelayOptions(options)
         )
+        // Adds a default case for the sort
+        gravityOptions.sort = gravityOptions.sort || "-position"
         delete gravityOptions.page // this can't also be used with the offset in gravity
         return collectionArtworksLoader(id, gravityOptions)
           .then(({ body, headers }) => {

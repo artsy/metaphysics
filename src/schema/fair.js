@@ -177,7 +177,6 @@ const FairType = new GraphQLObjectType({
         sort: {
           type: ShowsSort,
           description: "Sorts for shows in a fair",
-          defaultValue: "-featured",
         },
       }),
       resolve: (
@@ -187,6 +186,7 @@ const FairType = new GraphQLObjectType({
         { rootValue: { fairBoothsLoader } }
       ) => {
         const gravityOptions = omit(parseRelayOptions(options), ["page"])
+        gravityOptions.sort = gravityOptions.sort || "-featured"
 
         return Promise.all([
           totalViaLoader(fairBoothsLoader, id, gravityOptions),
