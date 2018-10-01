@@ -2948,6 +2948,17 @@ type FollowGenePayload {
   clientMutationId: String
 }
 
+input FollowProfileInput {
+  profile_id: String
+  unfollow: Boolean = false
+  clientMutationId: String
+}
+
+type FollowProfilePayload {
+  profile: Profile
+  clientMutationId: String
+}
+
 type FollowsAndSaves {
   # A list of published artworks by followed artists (grouped by date and artists).
   bundledArtworksByArtist(
@@ -4327,6 +4338,9 @@ type Mutation {
 
   # Follow (or unfollow) an artist
   followArtist(input: FollowArtistInput!): FollowArtistPayload
+
+  # Follow (or unfollow) a profile
+  followProfile(input: FollowProfileInput!): FollowProfilePayload
 
   # Follow (or unfollow) an gene
   followGene(input: FollowGeneInput!): FollowGenePayload

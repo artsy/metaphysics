@@ -35,6 +35,7 @@ import FilterPartners from "./filter_partners"
 import filterArtworks from "./filter_artworks"
 import FilterSaleArtworks from "./filter_sale_artworks"
 import FollowArtist from "./me/follow_artist"
+import FollowProfile from "./me/follow_profile"
 import FollowGene from "./me/follow_gene"
 import PartnerCategory from "./partner_category"
 import PartnerCategories from "./partner_categories"
@@ -202,6 +203,7 @@ const schema = new GraphQLSchema({
       createCreditCard: createCreditCardMutation,
       deleteCreditCard: deleteCreditCardMutation,
       followArtist: FollowArtist,
+      followProfile: FollowProfile,
       followGene: FollowGene,
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
