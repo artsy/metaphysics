@@ -1,29 +1,28 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
+import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
-import { mockxchange } from "test/fixtures/exchange/mockxchange"
-import gql from "lib/gql"
 import { OrderSellerFields } from "./order_fields"
+import gql from "lib/gql"
 
 let rootValue
 
-describe("Approve Order Mutation", () => {
+describe("Reject Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        approveOrder: () => ({
+        rejectOrder: () => ({
           orderOrError: { order: exchangeOrderJSON },
         }),
       },
     }
-
     rootValue = mockxchange(resolvers)
   })
-  it("approves order and returns order", () => {
+  it("rejects order and return it", () => {
     const mutation = gql`
       mutation {
-        approveOrder(input: { orderId: "111" }) {
+        rejectOrder(input: { orderId: "111" }) {
           orderOrError {
             ... on OrderWithMutationSuccess {
               order {
@@ -43,7 +42,7 @@ describe("Approve Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.approveOrder.orderOrError.order).toEqual(
+      expect(data!.rejectOrder.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )
     })

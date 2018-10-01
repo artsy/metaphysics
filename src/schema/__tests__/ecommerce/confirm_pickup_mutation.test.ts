@@ -1,18 +1,18 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
-import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
+import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import gql from "lib/gql"
-import { OrderBuyerFields } from "./order_fields"
+import { OrderSellerFields } from "./order_fields"
 
 let rootValue
 
-describe("Create Order Mutation", () => {
+describe("Confirm Pickup Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        createOrderWithArtwork: () => ({
+        confirmPickup: () => ({
           orderOrError: { order: exchangeOrderJSON },
         }),
       },
@@ -20,17 +20,14 @@ describe("Create Order Mutation", () => {
 
     rootValue = mockxchange(resolvers)
   })
-
-  it("creates order and returns it", () => {
+  it("confirms pickup on an order and returns order", () => {
     const mutation = gql`
       mutation {
-        createOrderWithArtwork(
-          input: { artworkId: "111", editionSetId: "232", quantity: 1 }
-        ) {
+        ecommerceConfirmPickup(input: { orderId: "111" }) {
           orderOrError {
             ... on OrderWithMutationSuccess {
               order {
-                ${OrderBuyerFields}
+                ${OrderSellerFields}
               }
             }
             ... on OrderWithMutationFailure {
@@ -46,7 +43,7 @@ describe("Create Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.createOrderWithArtwork.orderOrError.order).toEqual(
+      expect(data!.ecommerceConfirmPickup.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )
     })

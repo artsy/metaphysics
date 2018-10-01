@@ -3,29 +3,30 @@ import { runQuery } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
-import { OrderBuyerFields } from "./order_fields"
 import gql from "lib/gql"
+import { OrderBuyerFields } from "./order_fields"
 
 let rootValue
 
-describe("Submit Order Mutation", () => {
+describe("Create Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        submitOrder: () => ({
-          orderOrError: {
-            order: exchangeOrderJSON,
-          },
+        createOrderWithArtwork: () => ({
+          orderOrError: { order: exchangeOrderJSON },
         }),
       },
     }
 
     rootValue = mockxchange(resolvers)
   })
-  it("submits order and returns it", () => {
+
+  it("creates order and returns it", () => {
     const mutation = gql`
       mutation {
-        submitOrder(input: { orderId: "111" }) {
+        createOrderWithArtwork(
+          input: { artworkId: "111", editionSetId: "232", quantity: 1 }
+        ) {
           orderOrError {
             ... on OrderWithMutationSuccess {
               order {
@@ -45,7 +46,7 @@ describe("Submit Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.submitOrder.orderOrError.order).toEqual(
+      expect(data!.createOrderWithArtwork.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )
     })

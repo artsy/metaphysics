@@ -5,35 +5,37 @@ import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitch
 import { executableExchangeSchema } from "lib/stitching/exchange/schema"
 import config from "config"
 
-import localSchema from "../../schema"
+import localSchema from "schema/schema"
 import { GraphQLSchema } from "graphql"
 
 /**
  * Incrementally merges in schemas according to `process.env`
  */
-export const incrementalMergeSchemas = async (testConfig?: any) => {
+export const incrementalMergeSchemas = (testConfig?: any) => {
+  const environment = testConfig || config
+
   const {
     ENABLE_GRAVQL_ONLY_STITCHING,
     ENABLE_ECOMMERCE_STITCHING,
     ENABLE_CONSIGNMENTS_STITCHING,
-  } = testConfig || config
+  } = environment
 
   const schemas = [localSchema] as GraphQLSchema[]
   const extensionSchemas = [] as string[]
   const extensionResolvers = {} as any
 
   if (ENABLE_GRAVQL_ONLY_STITCHING) {
-    const gravitySchema = await executableGravitySchema()
+    const gravitySchema = executableGravitySchema()
     schemas.push(gravitySchema)
   }
 
   if (ENABLE_ECOMMERCE_STITCHING) {
-    const exchangeSchema = await executableExchangeSchema()
+    const exchangeSchema = executableExchangeSchema()
     schemas.push(exchangeSchema)
   }
 
   if (ENABLE_CONSIGNMENTS_STITCHING) {
-    const convectionSchema = await executableConvectionSchema()
+    const convectionSchema = executableConvectionSchema()
     schemas.push(convectionSchema)
 
     const { extensionSchema, resolvers } = consignmentStitchingEnvironment(

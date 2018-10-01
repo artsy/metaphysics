@@ -58,7 +58,7 @@ describe("Approve Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data.setOrderShipping.orderOrError.order).toEqual(
+      expect(data!.setOrderShipping.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )
     })

@@ -118,7 +118,7 @@ describe("Show type", () => {
         throw new Error("Did not expect query to not throw an error")
       })
       .catch(error => {
-        expect(error.statusCode).toEqual(404)
+        expect(error.message).toEqual("Show Not Found")
       })
   })
 

@@ -81,6 +81,7 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
                 ${RequestedFulfillmentFragment}
                 shippingTotalCents
                 state
+                stateReason
                 stateExpiresAt
                 stateUpdatedAt
                 taxTotalCents

@@ -6,12 +6,12 @@ import {
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
-export const executableConvectionSchema = async () => {
+export const executableConvectionSchema = () => {
   const convectionLink = createConvectionLink()
   const convectionTypeDefs = readFileSync("src/data/convection.graphql", "utf8")
 
   // Setup the default Schema
-  const schema = await makeRemoteExecutableSchema({
+  const schema = makeRemoteExecutableSchema({
     schema: convectionTypeDefs,
     link: convectionLink,
   })

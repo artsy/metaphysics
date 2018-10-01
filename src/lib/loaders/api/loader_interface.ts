@@ -3,7 +3,7 @@
 import { toKey } from "lib/helpers"
 import DataLoader from "dataloader"
 
-export type FuncToString = () => string
+export type FuncToString = (data?: any) => string
 
 const encodeStaticPath = (path, globalParams, params) => {
   return toKey(path, Object.assign({}, globalParams, params))

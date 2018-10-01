@@ -15,15 +15,6 @@ export const nameOldEigenQueries: RequestHandler = (req, _res, next) => {
       } else if (query.includes("totalUnreadCount")) {
         // https://github.com/artsy/eigen/blob/master/Artsy/Networking/conversations.graphql
         req.body.query = `query TotalUnreadCountQuery ${query}`
-      } else if (query.includes("recordArtworkView")) {
-        // https://github.com/artsy/eigen/blob/master/Artsy/Networking/record_artwork_view_mutation.graphql
-        req.body.query = `query RecordArtworkView ${query}`
-      } else if (query.includes("createConsignmentSubmission")) {
-        // https://github.com/artsy/emission/blob/master/src/lib/Components/Consignments/Submission/create.ts
-        req.body.query = `query CreateConsignment ${query}`
-      } else if (query.includes("updateConsignmentSubmission")) {
-        // https://github.com/artsy/emission/blob/master/src/lib/Components/Consignments/Submission/update.ts
-        req.body.query = `query UpdateConsignment ${query}`
       } else {
         error(`Unexpected Eigen query: ${query}`)
       }

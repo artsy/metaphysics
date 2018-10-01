@@ -29,8 +29,8 @@ describe("Orders query", () => {
     `
 
     return runQuery(query, rootValue).then(data => {
-      expect(data.orders.totalCount).toEqual(100)
-      expect(data.orders.edges[0].node).toEqual(sampleOrder(true, false))
+      expect(data!.orders.totalCount).toEqual(100)
+      expect(data!.orders.edges[0].node).toEqual(sampleOrder(true, false))
     })
   })
 })

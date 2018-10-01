@@ -2,6 +2,7 @@
   "id": "fooid123",
   "code": "1",
   "state": "PENDING",
+  "stateReason": null,
   "currencyCode": "usd",
   "seller":{
     "id": "111",

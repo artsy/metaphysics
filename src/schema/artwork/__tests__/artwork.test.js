@@ -1183,9 +1183,9 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is set to domestic shipping only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is not", () => {
+    it("is set to domestic shipping only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = 1000
-      artwork.international_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = null
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
@@ -1195,8 +1195,20 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is set to free domestic shipping when domestic_shipping_fee_cents is null and international_shipping_fee_cents is present", () => {
-      artwork.domestic_shipping_fee_cents = null
+    it("is set to free international shipping when domestic_shipping_fee_cents is 0 and domestic_shipping_fee_cents is present", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 0
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping: $10 continental US, free rest of world",
+          },
+        })
+      })
+    })
+
+    it("is set to free domestic shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
+      artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = 10000
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
@@ -1226,6 +1238,63 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingInfo: "Shipping: $10 continental US, $20 rest of world",
+          },
+        })
+      })
+    })
+  })
+
+  describe("#shipsToContinentalUSOnly", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          shipsToContinentalUSOnly 
+        }
+      }
+    `
+    it("is true when domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shipsToContinentalUSOnly: true,
+          },
+        })
+      })
+    })
+
+    it("is false when work ships free internationally", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 0
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shipsToContinentalUSOnly: false,
+          },
+        })
+      })
+    })
+
+    it("is false when work ships free worldwide", () => {
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = 0
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shipsToContinentalUSOnly: false,
+          },
+        })
+      })
+    })
+
+    it("is false when work ships worldwide", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 1000
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shipsToContinentalUSOnly: false,
           },
         })
       })

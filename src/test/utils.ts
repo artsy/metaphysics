@@ -17,10 +17,20 @@ import { graphql } from "graphql"
  */
 export const runQuery = (
   query,
-  rootValue = { accessToken: null, userID: null }
+  rootValue = { accessToken: null, userID: null },
+  context: any = {}
 ) => {
   const schema = require("schema").default
-  return graphql(schema, query, rootValue, {}).then(result => {
+
+  // Set up some of the default state when a request is made
+  context.res = context.res || {}
+  context.res.locals = context.res.locals || {}
+  context.res.locals.requestIDs = context.res.locals.requestIDs || {
+    requestID: "123456789",
+    xForwardedFor: "123.456.789",
+  }
+
+  return graphql(schema, query, rootValue, context).then(result => {
     if (result.errors) {
       const error = result.errors[0]
       throw error.originalError || error
@@ -37,10 +47,15 @@ export const runQuery = (
  * @param {Object} rootValue  The request params, which currently are `accessToken` and `userID`.
  * @see runQuery
  */
-export const runAuthenticatedQuery = (query, rootValue: any = {}) => {
+export const runAuthenticatedQuery = (
+  query,
+  rootValue: any = {},
+  context = {}
+) => {
   return runQuery(
     query,
-    Object.assign({ accessToken: "secret", userID: "user-42" }, rootValue)
+    Object.assign({ accessToken: "secret", userID: "user-42" }, rootValue),
+    context
   )
 }
 
