@@ -12,7 +12,9 @@ let exportedSchema = localSchema
 const enableSchemaStitching = !!ENABLE_SCHEMA_STITCHING
 if (enableSchemaStitching) {
   try {
-    console.warn("[FEATURE] Enabling Schema Stitching")
+    if (typeof jest == "undefined") {
+      console.warn("[FEATURE] Enabling Schema Stitching")
+    }
     exportedSchema = incrementalMergeSchemas()
   } catch (err) {
     console.log("Error merging schemas:", err)
