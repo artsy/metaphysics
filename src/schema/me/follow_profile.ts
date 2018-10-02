@@ -19,22 +19,22 @@ export default mutationWithClientMutationId({
       type: ProfileType,
       resolve: (
         { profile_id },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { profileLoader } }
       ) => profileLoader(profile_id),
     },
   },
   mutateAndGetPayload: (
     { profile_id, unfollow },
-    request,
+    _request,
     { rootValue: { accessToken, followProfileLoader, unfollowProfileLoader } }
   ) => {
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }
 
-    let performAction = null
+    let performAction
     if (unfollow) {
       performAction = unfollowProfileLoader(profile_id)
     } else {

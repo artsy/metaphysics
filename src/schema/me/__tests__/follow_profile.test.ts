@@ -2,14 +2,13 @@
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("FollowProfile", () => {
-  let profile = null
-  let rootValue = null
+  let profile: any
+  let rootValue: any
 
   beforeEach(() => {
     profile = { owner: { name: "Casey Kaplan" }, initials: "CK" }
-
     rootValue = {
-      profileLoader: sinon.stub().returns(Promise.resolve(profile)),
+      profileLoader: () => Promise.resolve(profile),
       followProfileLoader: () => Promise.resolve(profile),
       unfollowProfileLoader: () => Promise.resolve(profile),
     }
@@ -27,14 +26,12 @@ describe("FollowProfile", () => {
     `
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
-      ({ followProfile }) => {
-        expect(followProfile).toEqual({
-          profile: {
-            name: "Casey Kaplan",
-          },
-        })
-      }
-    )
+    return runAuthenticatedQuery(mutation, rootValue).then(data => {
+      expect(data!.followProfile).toEqual({
+        profile: {
+          name: "Casey Kaplan",
+        },
+      })
+    })
   })
 })
