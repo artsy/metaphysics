@@ -335,7 +335,7 @@ type Pickup {
 
 type Query {
   # Find an order by ID
-  order(id: ID!): Order
+  order(code: String, id: ID): Order
 
   # Find list of orders
   orders(

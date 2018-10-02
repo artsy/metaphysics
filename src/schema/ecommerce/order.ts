@@ -14,8 +14,8 @@ export const Order = {
   args: { id: { type: new GraphQLNonNull(GraphQLString) } },
   resolve: (_parent, { id }, context, { rootValue: { exchangeSchema } }) => {
     const query = gql`
-      query EcommerceOrder($id: ID!) {
-        ecommerceOrder(id: $id) {
+      query EcommerceOrder($id: ID, $code: String) {
+        ecommerceOrder(id: $id, code: $code) {
           id
           code
           currencyCode

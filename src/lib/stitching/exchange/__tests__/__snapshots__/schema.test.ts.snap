@@ -431,7 +431,7 @@ type Mutation {
 
 type Query {
   # Find an order by ID
-  ecommerceOrder(id: ID!): EcommerceOrder
+  ecommerceOrder(code: String, id: ID): EcommerceOrder
 
   # Find list of orders
   ecommerceOrders(
