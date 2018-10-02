@@ -174,6 +174,16 @@ export default (accessToken, userID, opts) => {
       {},
       { method: "DELETE" }
     ),
+    followProfileLoader: gravityLoader(
+      "me/follow/profile",
+      {},
+      { method: "POST" }
+    ),
+    unfollowProfileLoader: gravityLoader(
+      id => `me/follow/profile/${id}`,
+      {},
+      { method: "DELETE" }
+    ),
     saveArtworkLoader: gravityLoader(
       id => `collection/saved-artwork/artwork/${id}`,
       {},

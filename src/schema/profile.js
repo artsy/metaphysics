@@ -10,7 +10,7 @@ import {
   GraphQLBoolean,
 } from "graphql"
 
-const ProfileType = new GraphQLObjectType({
+export const ProfileType = new GraphQLObjectType({
   name: "Profile",
   fields: () => ({
     ...GravityIDFields,
