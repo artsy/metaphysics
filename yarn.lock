@@ -2007,9 +2007,9 @@ date-fns@^1.27.2:
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
 
-dd-trace@^0.6.0:
+dd-trace@artsy/dd-trace-js#artsy:
   version "0.6.0"
-  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-0.6.0.tgz#c80fb7ddaa83d5873b0ff9d0e50ca1343d248235"
+  resolved "https://codeload.github.com/artsy/dd-trace-js/tar.gz/8331e739b8878eb17600c02b49e7ac55c1de771d"
   dependencies:
     async-hook-jl "^1.7.6"
     int64-buffer "^0.1.9"
