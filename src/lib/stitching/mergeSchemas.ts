@@ -7,6 +7,7 @@ import config from "config"
 
 import localSchema from "schema/schema"
 import { GraphQLSchema } from "graphql"
+import { ecommerceStitchingEnvironment } from "./exchange/stitching"
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -32,6 +33,16 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
   if (ENABLE_ECOMMERCE_STITCHING) {
     const exchangeSchema = executableExchangeSchema()
     schemas.push(exchangeSchema)
+
+    const { extensionSchema, resolvers } = ecommerceStitchingEnvironment(
+      localSchema,
+      exchangeSchema
+    )
+
+    extensionSchemas.push(extensionSchema)
+    for (var attr in resolvers) {
+      extensionResolvers[attr] = resolvers[attr]
+    }
   }
 
   if (ENABLE_CONSIGNMENTS_STITCHING) {

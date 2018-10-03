@@ -16,6 +16,8 @@ const mapEnvBooleans = {
 
 const MetaphysicsSchema = new GraphQLObjectType({
   name: "Metaphysics",
+  description:
+    "The service config for Metaphysics, basically, what options are turned on",
   fields: () => {
     const fields = {}
     Object.keys(mapEnvBooleans).forEach(key => {
