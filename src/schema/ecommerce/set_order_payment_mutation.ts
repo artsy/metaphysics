@@ -54,26 +54,27 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
             __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
-              id
-                code
-                currencyCode
-                state
+                id
                 ${BuyerSellerFields}
                 ${RequestedFulfillmentFragment}
-                itemsTotalCents
-                shippingTotalCents
-                taxTotalCents
-                commissionFeeCents
-                transactionFeeCents
                 buyerPhoneNumber
                 buyerTotalCents
-                sellerTotalCents
-                updatedAt
+                code
+                commissionFeeCents
                 createdAt
-                stateUpdatedAt
-                stateExpiresAt
+                creditCardId
+                currencyCode
+                itemsTotalCents
                 lastApprovedAt
                 lastSubmittedAt
+                sellerTotalCents
+                shippingTotalCents
+                state
+                stateExpiresAt
+                stateUpdatedAt
+                taxTotalCents
+                transactionFeeCents
+                updatedAt
                 lineItems{
                   edges{
                     node{
