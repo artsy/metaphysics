@@ -196,6 +196,7 @@ type Artist implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -504,6 +505,7 @@ type ArtistItem implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -1304,6 +1306,7 @@ type ArtworkFilterGene implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -1357,6 +1360,7 @@ type ArtworkFilterTag implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -3070,6 +3074,7 @@ type Gene implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -3112,6 +3117,7 @@ type Gene implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -3246,6 +3252,7 @@ type GeneItem implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -3288,6 +3295,7 @@ type GeneItem implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -3750,6 +3758,7 @@ type HomePageModuleContextGene implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -3792,6 +3801,7 @@ type HomePageModuleContextGene implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -5516,6 +5526,7 @@ type Query {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -6738,6 +6749,7 @@ type Tag implements Node {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
@@ -7131,6 +7143,7 @@ type Viewer {
     artist_id: String
     artist_ids: [String]
     at_auction: Boolean
+    attribution_class: [String]
     color: String
     dimension_range: String
     extra_aggregation_gene_ids: [String]
