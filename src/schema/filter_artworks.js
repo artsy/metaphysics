@@ -200,6 +200,9 @@ export const filterArtworksArgs = {
   at_auction: {
     type: GraphQLBoolean,
   },
+  attribution_class: {
+    type: new GraphQLList(GraphQLString),
+  },
   color: {
     type: GraphQLString,
   },
