@@ -1,0 +1,72 @@
+# Object representing a collection page
+type Collection {
+  id: ID!
+
+  # slug version of title, used for pretty URLs (e.g. `kaws-prints` for Kaws Prints
+  slug: String!
+
+  # Name of the collection
+  title: String!
+
+  # Description of the collection which can include links to other collections
+  description: String
+
+  # Background image for the header of the collection page
+  headerImage: Image
+
+  # Set of keywords used for SEO purposes
+  keywords: String!
+
+  # Structured object used to build filtered artworks query
+  query: CollectionQuery!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type CollectionQuery {
+  id: ID!
+  acquireable: Boolean
+  aggregations: [String!]
+  artist_ids: [String!]
+  artist_id: String
+  at_auction: Boolean
+  color: String
+  dimension_range: String
+  extra_aggregation_gene_ids: [String!]
+  include_artworks_by_followed_artists: Boolean
+  include_medium_filter_in_aggregation: Boolean
+  inquireable_only: Boolean
+  for_sale: Boolean
+  gene_id: String
+  gene_ids: [String!]
+  height: String
+  width: String
+  medium: String
+  period: String
+  periods: [String!]
+  major_periods: [String!]
+  partner_id: ID
+  partner_cities: [String!]
+  price_range: String
+  page: Int
+  sale_id: ID
+  size: Int
+  sort: String
+  tag_id: String
+  keyword: String
+}
+
+# The javascript `Date` as string. Type represents date and time as the ISO Date string.
+scalar DateTime
+
+type Image {
+  id: ID!
+  small: String!
+  medium: String!
+  large: String!
+}
+
+type Query {
+  collections: [Collection!]!
+  collection(slug: String!): Collection
+}
