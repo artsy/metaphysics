@@ -26,7 +26,8 @@
     "Reloadable",
     "consignable",
     "mockxchange",
-    "urljoin"
+    "urljoin",
+    "kaws"
   ],
   "debug.node.autoAttach": "on"
 }

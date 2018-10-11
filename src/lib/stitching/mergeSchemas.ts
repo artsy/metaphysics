@@ -3,6 +3,8 @@ import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
 import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitching"
 import { executableExchangeSchema } from "lib/stitching/exchange/schema"
+import { executableKawsSchema } from "lib/stitching/kaws/schema"
+import { kawsStitchingEnvironment } from "lib/stitching/kaws/stitching"
 import config from "config"
 
 import localSchema from "schema/schema"
@@ -18,6 +20,7 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
     ENABLE_GRAVQL_ONLY_STITCHING,
     ENABLE_ECOMMERCE_STITCHING,
     ENABLE_CONSIGNMENTS_STITCHING,
+    ENABLE_KAWS_STITCHING,
   } = environment
 
   const schemas = [localSchema] as GraphQLSchema[]
@@ -41,6 +44,21 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
     const { extensionSchema, resolvers } = consignmentStitchingEnvironment(
       localSchema,
       convectionSchema
+    )
+    extensionSchemas.push(extensionSchema)
+    for (var attr in resolvers) {
+      extensionResolvers[attr] = resolvers[attr]
+    }
+  }
+
+  // TODO: create ENABLE_KAWS_STITCHING env variable
+  if (ENABLE_KAWS_STITCHING) {
+    const kawsSchema = executableKawsSchema()
+    schemas.push(kawsSchema)
+
+    const { extensionSchema, resolvers } = kawsStitchingEnvironment(
+      localSchema,
+      kawsSchema
     )
     extensionSchemas.push(extensionSchema)
     for (var attr in resolvers) {
