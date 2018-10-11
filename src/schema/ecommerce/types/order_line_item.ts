@@ -21,11 +21,11 @@ export const OrderLineItemType = new GraphQLObjectType({
       type: Artwork.type,
       description: "Artwork that is being ordered",
       resolve: (
-        { artworkId },
+        { artworkVersionId },
         _args,
         _context,
-        { rootValue: { authenticatedArtworkLoader } }
-      ) => authenticatedArtworkLoader(artworkId),
+        { rootValue: { authenticatedArtworkVersionLoader } }
+      ) => authenticatedArtworkVersionLoader(artworkVersionId),
     },
     editionSetId: {
       type: GraphQLString,
