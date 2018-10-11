@@ -51,7 +51,6 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
     }
   }
 
-  // TODO: create ENABLE_KAWS_STITCHING env variable
   if (ENABLE_KAWS_STITCHING) {
     const kawsSchema = executableKawsSchema()
     schemas.push(kawsSchema)
