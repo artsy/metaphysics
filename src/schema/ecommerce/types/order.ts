@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
+  GraphQLFloat,
 } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 
@@ -65,6 +66,14 @@ export const OrderType = new GraphQLObjectType({
       description: "Commission fee in cents",
     },
     commissionFee: amount(({ commissionFeeCents }) => commissionFeeCents),
+    commissionRate: {
+      type: GraphQLFloat,
+      description: "Partner commission rate used to calculate commission fee",
+    },
+    displayCommissionRate: {
+      type: GraphQLString,
+      description: "Partner commission rate formatted into percentage",
+    },
     buyerTotalCents: {
       type: GraphQLInt,
       description: "Buyer total in cents",

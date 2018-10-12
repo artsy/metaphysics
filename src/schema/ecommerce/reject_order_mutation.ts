@@ -47,6 +47,8 @@ export const RejectOrderMutation = mutationWithClientMutationId({
                 shippingTotalCents
                 taxTotalCents
                 commissionFeeCents
+                commissionRate
+                displayCommissionRate
                 transactionFeeCents
                 buyerPhoneNumber
                 buyerTotalCents

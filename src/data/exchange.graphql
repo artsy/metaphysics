@@ -132,6 +132,7 @@ type FulfillmentEdge {
 # A Line Item
 type LineItem {
   artworkId: String!
+  commissionFeeCents: Int
   createdAt: DateTime!
   editionSetId: String
   fulfillments(
@@ -196,9 +197,11 @@ type Order {
   buyerTotalCents: Int
   code: String!
   commissionFeeCents: Int
+  commissionRate: Float
   createdAt: DateTime!
   creditCardId: String
   currencyCode: String!
+  displayCommissionRate: String
   id: ID!
   itemsTotalCents: Int!
   lastApprovedAt: DateTime
@@ -296,6 +299,9 @@ enum OrderStateEnum {
   # order is still pending submission by buyer
   PENDING
 
+  # order is refunded after being approved or fulfilled
+  REFUNDED
+
   # order is submitted by buyer
   SUBMITTED
 }
@@ -327,6 +333,7 @@ type PageInfo {
 
 type Partner {
   id: String!
+  type: String!
 }
 
 type Pickup {

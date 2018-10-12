@@ -70,6 +70,8 @@ export const Orders = {
               shippingTotalCents
               taxTotalCents
               commissionFeeCents
+              commissionRate
+              displayCommissionRate
               transactionFeeCents
               buyerPhoneNumber
               buyerTotalCents
