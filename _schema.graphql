@@ -4131,7 +4131,7 @@ type MarketingCollection {
 }
 
 type MarketingCollectionQuery {
-  id: ID!
+  id: ID
   acquireable: Boolean
   aggregations: [String!]
   artist_ids: [String!]
