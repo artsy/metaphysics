@@ -20,7 +20,6 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
     ENABLE_GRAVQL_ONLY_STITCHING,
     ENABLE_ECOMMERCE_STITCHING,
     ENABLE_CONSIGNMENTS_STITCHING,
-    ENABLE_KAWS_STITCHING,
   } = environment
 
   const schemas = [localSchema] as GraphQLSchema[]
@@ -51,18 +50,18 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
     }
   }
 
-  if (ENABLE_KAWS_STITCHING) {
-    const kawsSchema = executableKawsSchema()
-    schemas.push(kawsSchema)
+  // Always stitch kaws
+  const kawsSchema = executableKawsSchema()
+  schemas.push(kawsSchema)
 
-    const { extensionSchema, resolvers } = kawsStitchingEnvironment(
-      localSchema,
-      kawsSchema
-    )
-    extensionSchemas.push(extensionSchema)
-    for (var attr in resolvers) {
-      extensionResolvers[attr] = resolvers[attr]
-    }
+  const { extensionSchema, resolvers } = kawsStitchingEnvironment(
+    localSchema,
+    kawsSchema
+  )
+
+  extensionSchemas.push(extensionSchema)
+  for (var attr in resolvers) {
+    extensionResolvers[attr] = resolvers[attr]
   }
 
   // The order should only matter in that extension schemas come after the
