@@ -810,6 +810,7 @@ type Artwork implements Node & Sellable {
   ): Partner
   pickup_available: Boolean
   price: String
+  priceCents: PriceCents
   price_currency: String
 
   # Is this work available for shipping only within the Contenental US?
@@ -1533,6 +1534,7 @@ type ArtworkItem implements Node & Sellable {
   ): Partner
   pickup_available: Boolean
   price: String
+  priceCents: PriceCents
   price_currency: String
 
   # Is this work available for shipping only within the Contenental US?
@@ -5424,6 +5426,12 @@ type Pickup {
 
 type PopularArtists {
   artists: [Artist]
+}
+
+type PriceCents {
+  min: Int
+  max: Int
+  exact: Boolean
 }
 
 type Profile {
