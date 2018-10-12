@@ -2471,6 +2471,7 @@ type CreditCardEdge {
 
 input CreditCardInput {
   token: String!
+  oneTimeUse: Boolean = false
   clientMutationId: String
 }
 

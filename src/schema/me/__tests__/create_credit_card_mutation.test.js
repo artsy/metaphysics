@@ -26,7 +26,7 @@ describe("Credit card mutation", () => {
 
   const newQuery = `
   mutation {
-    createCreditCard(input: {token: "tok_foo"}) {
+    createCreditCard(input: {token: "tok_foo", oneTimeUse: true}) {
       creditCardOrError {
         ... on CreditCardMutationSuccess {
           creditCard {
@@ -68,7 +68,7 @@ describe("Credit card mutation", () => {
       createCreditCardLoader: () =>
         Promise.reject(
           new Error(
-            `https://stagingapi.artsy.net/api/v1/me/credit_cards?provider=stripe&token=tok_chargeDeclinedExpiredCard - {"type":"payment_error","message":"Payment information could not be processed.","detail":"Your card has expired."}`
+            `https://stagingapi.artsy.net/api/v1/me/credit_cards?provider=stripe&token=tok_chargeDeclinedExpiredCard&one_time_use=true - {"type":"payment_error","message":"Payment information could not be processed.","detail":"Your card has expired."}`
           )
         ),
     }
