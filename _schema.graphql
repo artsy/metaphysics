@@ -4718,6 +4718,12 @@ type Order {
     thousand: String = ","
   ): String
 
+  # Partner commission rate used to calculate commission fee
+  commissionRate: Float
+
+  # Partner commission rate formatted into percentage
+  displayCommissionRate: String
+
   # Buyer total in cents
   buyerTotalCents: Int
 

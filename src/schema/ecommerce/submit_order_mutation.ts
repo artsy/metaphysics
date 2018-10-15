@@ -60,6 +60,8 @@ export const SubmitOrderMutation = mutationWithClientMutationId({
                 shippingTotalCents
                 taxTotalCents
                 commissionFeeCents
+                commissionRate
+                displayCommissionRate
                 transactionFeeCents
                 buyerPhoneNumber
                 buyerTotalCents

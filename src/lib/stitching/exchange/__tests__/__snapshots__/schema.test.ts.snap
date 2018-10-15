@@ -133,6 +133,7 @@ type EcommerceFulfillmentEdge {
 # A Line Item
 type EcommerceLineItem {
   artworkId: String!
+  commissionFeeCents: Int
   createdAt: EcommerceDateTime!
   editionSetId: String
   fulfillments(
@@ -182,9 +183,11 @@ type EcommerceOrder {
   buyerTotalCents: Int
   code: String!
   commissionFeeCents: Int
+  commissionRate: Float
   createdAt: EcommerceDateTime!
   creditCardId: String
   currencyCode: String!
+  displayCommissionRate: String
   id: ID!
   itemsTotalCents: Int!
   lastApprovedAt: EcommerceDateTime
@@ -282,6 +285,9 @@ enum EcommerceOrderStateEnum {
   # order is still pending submission by buyer
   PENDING
 
+  # order is refunded after being approved or fulfilled
+  REFUNDED
+
   # order is submitted by buyer
   SUBMITTED
 }
@@ -313,6 +319,7 @@ type EcommercePageInfo {
 
 type EcommercePartner {
   id: String!
+  type: String!
 }
 
 type EcommercePickup {
