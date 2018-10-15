@@ -47,6 +47,8 @@ export const ConfirmPickupMutation = mutationWithClientMutationId({
                 shippingTotalCents
                 taxTotalCents
                 commissionFeeCents
+                commissionRate
+                displayCommissionRate
                 transactionFeeCents
                 buyerTotalCents
                 sellerTotalCents

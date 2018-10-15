@@ -117,6 +117,8 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
                 shippingTotalCents
                 taxTotalCents
                 commissionFeeCents
+                commissionRate
+                displayCommissionRate
                 transactionFeeCents
                 buyerTotalCents
                 sellerTotalCents

@@ -16,7 +16,6 @@ spec:
         app: metaphysics
         layer: application
         component: web
-        temperament: cpu-hog
       name: metaphysics-web
     spec:
       containers:
@@ -74,15 +73,6 @@ spec:
                 operator: In
                 values:
                 - foreground
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: temperament
-                operator: In
-                values:
-                - cpu-hog
-            topologyKey: "kubernetes.io/hostname"
 
 ---
 apiVersion: autoscaling/v1

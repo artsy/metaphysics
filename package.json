@@ -185,7 +185,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged; yarn dump-schema _schema.graphql"
+      "pre-commit": "lint-staged; yarn dump-schema _schema.graphql; git add _schema.graphql"
     }
   }
 }

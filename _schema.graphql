@@ -810,6 +810,7 @@ type Artwork implements Node & Sellable {
   ): Partner
   pickup_available: Boolean
   price: String
+  priceCents: PriceCents
   price_currency: String
 
   # Is this work available for shipping only within the Contenental US?
@@ -1533,6 +1534,7 @@ type ArtworkItem implements Node & Sellable {
   ): Partner
   pickup_available: Boolean
   price: String
+  priceCents: PriceCents
   price_currency: String
 
   # Is this work available for shipping only within the Contenental US?
@@ -2469,6 +2471,7 @@ type CreditCardEdge {
 
 input CreditCardInput {
   token: String!
+  oneTimeUse: Boolean = false
   clientMutationId: String
 }
 
@@ -4749,6 +4752,12 @@ type Order {
     thousand: String = ","
   ): String
 
+  # Partner commission rate used to calculate commission fee
+  commissionRate: Float
+
+  # Partner commission rate formatted into percentage
+  displayCommissionRate: String
+
   # Buyer total in cents
   buyerTotalCents: Int
 
@@ -5457,6 +5466,12 @@ type Pickup {
 
 type PopularArtists {
   artists: [Artist]
+}
+
+type PriceCents {
+  min: Int
+  max: Int
+  exact: Boolean
 }
 
 type Profile {

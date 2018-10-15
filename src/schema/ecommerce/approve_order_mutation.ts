@@ -47,6 +47,8 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
                 shippingTotalCents
                 taxTotalCents
                 commissionFeeCents
+                commissionRate
+                displayCommissionRate
                 transactionFeeCents
                 buyerTotalCents
                 sellerTotalCents

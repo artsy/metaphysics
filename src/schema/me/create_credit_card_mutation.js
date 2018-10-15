@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLString } from "graphql"
+import { GraphQLNonNull, GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
 import { CreditCard, CreditCardMutationType } from "../credit_card"
@@ -9,6 +9,10 @@ export default mutationWithClientMutationId({
   inputFields: {
     token: {
       type: new GraphQLNonNull(GraphQLString),
+    },
+    oneTimeUse: {
+      type: GraphQLBoolean,
+      defaultValue: false,
     },
   },
   outputFields: {
@@ -25,7 +29,7 @@ export default mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { token },
+    { token, oneTimeUse },
     request,
     { rootValue: { accessToken, createCreditCardLoader } }
   ) => {
@@ -33,7 +37,11 @@ export default mutationWithClientMutationId({
       throw new Error("You need to be signed in to perform this action")
     }
 
-    return createCreditCardLoader({ token, provider: "stripe" })
+    return createCreditCardLoader({
+      token,
+      one_time_use: oneTimeUse,
+      provider: "stripe",
+    })
       .then(result => result)
       .catch(error => {
         const formattedErr = formatGravityError(error)

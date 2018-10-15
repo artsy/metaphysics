@@ -38,6 +38,8 @@ export const Order = {
           stateExpiresAt
           lastApprovedAt
           lastSubmittedAt
+          commissionRate
+          displayCommissionRate
           lineItems{
             edges{
               node{

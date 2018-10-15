@@ -1,3 +1,11 @@
+// This means that  the .env.example is first applied (setting defaults)
+// then your .env is applied (it's set up in the schema files)
+// ensuring consistency across dev's machines
+//
+require("dotenv").config({
+  path: require("path").join(process.cwd(), ".env.example"),
+})
+
 import fs from "fs"
 import { printSchema } from "graphql/utilities"
 import path from "path"

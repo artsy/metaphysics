@@ -193,6 +193,68 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#priceCents", () => {
+    const query = `
+    {
+        artwork(id: "richard-prince-untitled-portrait") {
+          priceCents {
+            min
+            max
+            exact
+          }
+        }
+      }
+    `
+
+    it("returns correct data for an exact priced work", () => {
+      // Exact priced at $420
+      artwork.price_cents = [42000]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            priceCents: {
+              min: 42000,
+              max: 42000,
+              exact: true,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns correct data for an 'Under X' priced work", () => {
+      // Priced at Under $420
+      artwork.price_cents = [null, 42000]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            priceCents: {
+              min: null,
+              max: 42000,
+              exact: false,
+            },
+          },
+        })
+      })
+    })
+
+    it("returns correct data for an 'Starting at X' priced work", () => {
+      // Priced at Starting at $420
+      artwork.price_cents = [42000, null]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            priceCents: {
+              min: 42000,
+              max: null,
+              exact: false,
+            },
+          },
+        })
+      })
+    })
+  })
+
   describe("#pickup_available", () => {
     const query = `
       {
