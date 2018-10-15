@@ -92,7 +92,7 @@ export const queryContainsField = (fieldASTs, soughtField) => {
 }
 export const parseRelayOptions = options => {
   const { limit: size, offset } = getPagingParameters(options)
-  const page = (size + offset) / size
+  const page = Math.round((size + offset) / size)
   const gravityArgs = omit(options, ["first", "after", "last", "before"])
   return Object.assign({}, { page, size, offset }, gravityArgs)
 }
