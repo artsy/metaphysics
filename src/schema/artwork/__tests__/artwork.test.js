@@ -1469,7 +1469,7 @@ describe("Artwork type", () => {
       artwork.signed_other = true
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
-          artwork: { signatureInfo: { label: "Signed", details: "" } },
+          artwork: { signatureInfo: { label: "Signature", details: "" } },
         })
       })
     })
@@ -1483,7 +1483,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             signatureInfo: {
-              label: "Signed",
+              label: "Signature",
               details:
                 "Hand-signed by artist, stamped by artist's estate, sticker label, some details about signature",
             },
@@ -1501,7 +1501,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             signatureInfo: {
-              label: "Signed",
+              label: "Signature",
               details: "",
             },
           },
