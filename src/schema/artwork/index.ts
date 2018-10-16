@@ -793,10 +793,7 @@ export const artworkFields = () => {
         if (detailsParts.length === 0 && !signed_other) {
           return null
         }
-        return {
-          label: "Signed",
-          details: capitalizeFirstCharacter(detailsParts.join(", ")),
-        }
+        return { label: "Signature", details: capitalizeFirstCharacter(detailsParts.join(", ")) }
       },
     },
     conditionDescription: {
