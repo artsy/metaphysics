@@ -113,4 +113,14 @@ describe("createPageCursors", () => {
     expect(around[0].isCurrent).toBe(true)
     expect(offsetFromCursor(around[0])).toBe("-1")
   })
+
+  it("caps the page number to 100", () => {
+    const size = 10
+    const totalPages = 101
+    const totalRecords = totalPages * size
+
+    const pageCursors = createPageCursors({ page: 1, size }, totalRecords)
+
+    expect(pageCursors.last.page).toBe(100)
+  })
 })
