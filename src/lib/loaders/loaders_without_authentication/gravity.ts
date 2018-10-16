@@ -10,6 +10,9 @@ export default opts => {
 
   return {
     artworksLoader: gravityLoader("artworks"),
+    artworkImageLoader: gravityLoader(
+      ({ artwork_id, image_id }) => `artwork/${artwork_id}/image/${image_id}`
+    ),
     artistArtworksLoader: gravityLoader(id => `artist/${id}/artworks`),
     artistGenesLoader: gravityLoader(({ id }) => `artist/${id}/genome/genes`),
     artistLoader: gravityLoader(id => `artist/${id}`),
