@@ -5110,7 +5110,6 @@ type Partner implements Node {
     status: EventStatus
   ): [PartnerShow]
   type: String
-  acceptsCardPayments: Boolean
 }
 
 type PartnerArtist {
