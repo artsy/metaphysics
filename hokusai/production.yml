@@ -72,7 +72,16 @@ spec:
               - key: tier
                 operator: In
                 values:
+                - api
                 - foreground
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: tier
+                operator: In
+                values:
+                - api
 
 ---
 apiVersion: autoscaling/v1
