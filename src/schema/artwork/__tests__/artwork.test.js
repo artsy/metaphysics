@@ -1233,6 +1233,18 @@ describe("Artwork type", () => {
       })
     })
 
+    it("is set to free domestic shipping only when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is null", () => {
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Free shipping within continental US only",
+          },
+        })
+      })
+    })
+
     it("is set to free shipping string when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
       artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = 0
