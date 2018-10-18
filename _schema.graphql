@@ -4121,10 +4121,16 @@ type MarketingCollection {
   description: String
 
   # Background image for the header of the collection page
-  headerImage: MarketingImage
+  headerImage: String
 
   # Set of keywords used for SEO purposes
   keywords: String!
+
+  # Image credit for the header image
+  credit: String
+
+  # Category of the collection
+  category: String!
 
   # Structured object used to build filtered artworks query
   query: MarketingCollectionQuery!
@@ -4198,13 +4204,6 @@ type MarketingCollectionQuery {
   sort: String
   tag_id: String
   keyword: String
-}
-
-type MarketingImage {
-  id: ID!
-  small: String!
-  medium: String!
-  large: String!
 }
 
 type Me implements Node {
