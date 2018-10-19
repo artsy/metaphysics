@@ -148,17 +148,6 @@ export default (accessToken, userID, opts) => {
       { method: "PUT" }
     ),
     updateMeLoader: gravityLoader("me", {}, { method: "PUT" }),
-    orderLoader: gravityLoader(id => `order/${id}`, {}, { headers: true }),
-    updateOrderLoader: gravityLoader(
-      id => `me/order/${id}`,
-      {},
-      { method: "PUT" }
-    ),
-    submitOrderLoader: gravityLoader(
-      id => `me/order/${id}/submit`,
-      {},
-      { method: "PUT" }
-    ),
     recordArtworkViewLoader: gravityLoader(
       "me/recently_viewed_artworks",
       {},
