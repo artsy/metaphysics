@@ -1233,6 +1233,18 @@ describe("Artwork type", () => {
       })
     })
 
+    it("is set to free domestic shipping only when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is null", () => {
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Free shipping within continental US only",
+          },
+        })
+      })
+    })
+
     it("is set to free shipping string when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
       artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = 0
@@ -1469,7 +1481,7 @@ describe("Artwork type", () => {
       artwork.signed_other = true
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
-          artwork: { signatureInfo: { label: "Signed", details: "" } },
+          artwork: { signatureInfo: { label: "Signature", details: "" } },
         })
       })
     })
@@ -1483,7 +1495,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             signatureInfo: {
-              label: "Signed",
+              label: "Signature",
               details:
                 "Hand-signed by artist, stamped by artist's estate, sticker label, some details about signature",
             },
@@ -1501,7 +1513,7 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             signatureInfo: {
-              label: "Signed",
+              label: "Signature",
               details: "",
             },
           },

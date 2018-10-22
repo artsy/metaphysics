@@ -11,6 +11,15 @@ import { warn } from "lib/loggers"
 
 const PREFIX = "arrayconnection"
 
+// In most cases Gravity caps the pagination results to 100 pages and we may not want to return more than that
+// otherwise we'll generate links that do not work. As of writing there are three endpoints that do this:
+//
+// * https://github.com/artsy/gravity/blob/52635528/app/api/v1/filter_endpoint.rb#L38
+// * https://github.com/artsy/gravity/blob/52635528/app/api/v1/filter_endpoint.rb#L79
+// * https://github.com/artsy/gravity/blob/52635528/app/api/v1/partners_endpoint.rb#L168
+//
+const PAGE_NUMBER_CAP = 100
+
 const PageCursor = new GraphQLObjectType({
   name: "PageCursor",
   fields: () => ({
@@ -78,7 +87,8 @@ export function createPageCursors(
     max = max + 1
   }
 
-  const totalPages = Math.ceil(totalRecords / size)
+  const totalPages = Math.min(Math.ceil(totalRecords / size), PAGE_NUMBER_CAP)
+
   let pageCursors
   // Degenerate case of no records found.
   if (totalPages === 0) {

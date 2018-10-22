@@ -561,6 +561,11 @@ export const artworkFields = () => {
           return "Shipping, tax, and service quoted by seller"
         if (
           artwork.domestic_shipping_fee_cents === 0 &&
+          artwork.international_shipping_fee_cents == null
+        )
+          return "Free shipping within continental US only"
+        if (
+          artwork.domestic_shipping_fee_cents === 0 &&
           artwork.international_shipping_fee_cents === 0
         )
           return "Free shipping worldwide"
@@ -794,7 +799,7 @@ export const artworkFields = () => {
           return null
         }
         return {
-          label: "Signed",
+          label: "Signature",
           details: capitalizeFirstCharacter(detailsParts.join(", ")),
         }
       },
