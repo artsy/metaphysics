@@ -142,7 +142,7 @@ const HomePageHeroUnits = {
     const params = { enabled: true }
     params[platform] = true
     return heroUnitsLoader(params).then(units => {
-      return shuffle(units.map(unit => Object.assign({ platform }, unit)))
+      return units.map(unit => Object.assign({ platform }, unit))
     })
   },
 }

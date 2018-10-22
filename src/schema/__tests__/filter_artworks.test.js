@@ -112,4 +112,63 @@ describe("Filter Artworks", () => {
       })
     })
   })
+
+  describe(`Pagination for the last page`, () => {
+    beforeEach(() => {
+      rootValue = {
+        filterArtworksLoader: sinon
+          .stub()
+          .withArgs("filter/artworks")
+          .returns(
+            Promise.resolve({
+              hits: [
+                {
+                  id: "oseberg-norway-queens-ship-0",
+                  cursor: Buffer.from("artwork:297").toString("base64"),
+                },
+                {
+                  id: "oseberg-norway-queens-ship-1",
+                  cursor: Buffer.from("artwork:298").toString("base64"),
+                },
+                {
+                  id: "oseberg-norway-queens-ship-2",
+                  cursor: Buffer.from("artwork:299").toString("base64"),
+                },
+                {
+                  id: "oseberg-norway-queens-ship-3",
+                  cursor: Buffer.from("artwork:300").toString("base64"),
+                },
+              ],
+              aggregations: {
+                total: {
+                  value: 303,
+                },
+              },
+            })
+          ),
+      }
+    })
+
+    it("caps pagination results to 100", () => {
+      const query = `
+        {
+          filter_artworks(aggregations:[TOTAL]){
+            artworks_connection(first: 3, after: "${Buffer.from(
+              "artwork:297"
+            ).toString("base64")}"){
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, rootValue).then(({ filter_artworks }) => {
+        expect(filter_artworks.artworks_connection.pageInfo).toEqual({
+          hasNextPage: false,
+        })
+      })
+    })
+  })
 })

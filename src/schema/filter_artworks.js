@@ -4,7 +4,7 @@ import Artwork from "./artwork"
 import Artist from "./artist"
 import Tag from "./tag"
 import numeral from "./fields/numeral"
-import { createPageCursors } from "./fields/pagination"
+import { computeTotalPages, createPageCursors } from "./fields/pagination"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
 import {
@@ -108,6 +108,11 @@ export const FilterArtworksType = new GraphQLObjectType({
             throw new Error("This query must contain the total aggregation")
           }
 
+          const totalPages = computeTotalPages(
+            aggregations.total.value,
+            relayOptions.size
+          )
+
           return assign(
             {
               pageCursors: createPageCursors(
@@ -116,7 +121,10 @@ export const FilterArtworksType = new GraphQLObjectType({
               ),
             },
             connectionFromArraySlice(hits, args, {
-              arrayLength: aggregations.total.value,
+              arrayLength: Math.min(
+                aggregations.total.value,
+                totalPages * relayOptions.size
+              ),
               sliceStart: relayOptions.offset,
             })
           )
