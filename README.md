@@ -83,6 +83,37 @@ You will need to set up headers with both:
   staging.artsy.net (sign in first, obvs).
 - `x-user-id` - As above, but `sd.CURRENT_USER.id`.
 
+### Sample Queries
+
+Once you have the GraphiQL client running against your local service, 
+you can verify things are working by executing these queries:
+
+#### Get popular artists
+
+```
+{
+  popular_artists {
+    artists {
+      name
+    }
+  }
+}
+```
+
+#### Get your account information
+
+```
+{
+  me {
+    name
+    email
+  }
+}
+```
+
+If any of these queries fail, it's probable that you misconfigured your 
+`x-access-token` or `x-user-id` HTTP headers.
+
 ### Docs
 
 - [How we use DataLoaders](docs/dataloaders.md)
