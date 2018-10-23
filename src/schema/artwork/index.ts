@@ -223,6 +223,9 @@ export const artworkFields = () => {
         return relatedFairsLoader({ artwork: [id], size: 1 }).then(_.first)
       },
     },
+    height: {
+      type: GraphQLString,
+    },
     highlights: {
       type: new GraphQLList(Highlight),
       description: "Returns the highlighted shows and articles",
@@ -760,6 +763,9 @@ export const artworkFields = () => {
       description:
         "If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS",
       resolve: artwork => (isEmbeddedVideo(artwork) ? null : artwork.website),
+    },
+    width: {
+      type: GraphQLString,
     },
     framed: {
       type: ArtworkInfoRowType,

@@ -747,6 +747,7 @@ type Artwork implements Node & Sellable {
   edition_sets: [EditionSet]
   exhibition_history(format: Format): String
   fair: Fair
+  height: String
 
   # Returns the highlighted shows and articles
   highlights: [Highlighted]
@@ -849,6 +850,7 @@ type Artwork implements Node & Sellable {
 
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
+  width: String
   framed: ArtworkInfoRow
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
@@ -1471,6 +1473,7 @@ type ArtworkItem implements Node & Sellable {
   edition_sets: [EditionSet]
   exhibition_history(format: Format): String
   fair: Fair
+  height: String
 
   # Returns the highlighted shows and articles
   highlights: [Highlighted]
@@ -1573,6 +1576,7 @@ type ArtworkItem implements Node & Sellable {
 
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
+  width: String
   framed: ArtworkInfoRow
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
