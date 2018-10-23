@@ -23,7 +23,6 @@ import {
 } from "lib/loaders/api/logger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
-import { executableLewittSchema } from "./lib/stitching/lewitt/schema"
 import { executableExchangeSchema } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/nameOldEigenQueries"
@@ -70,7 +69,6 @@ async function startApp() {
 
   let schema = localSchema
 
-  const lewittSchema = await executableLewittSchema()
   const exchangeSchema = await executableExchangeSchema()
 
   if (RESOLVER_TIMEOUT_MS > 0) {
@@ -143,7 +141,6 @@ async function startApp() {
           accessToken,
           userID,
           defaultTimezone,
-          lewittSchema,
           exchangeSchema,
           ...loaders,
         },

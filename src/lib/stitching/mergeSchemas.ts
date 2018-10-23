@@ -88,7 +88,6 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
 //   )
 
 //   const gravitySchema = await executableGravitySchema()
-//   // const lewittSchema = await executableLewittSchema()
 //   const exchangeSchema = await executableExchangeSchema()
 
 //   // The order should only matter in that extension schemas come after the
@@ -98,7 +97,6 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
 //       gravitySchema,
 //       localSchema,
 //       convectionSchema,
-//       // lewittSchema,
 //       exchangeSchema,
 //       convectionStitching.extensionSchema,
 //     ],
