@@ -26,6 +26,10 @@ const EditionSetType = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve: ({ acquireable }) => acquireable,
     },
+    is_offerable: {
+      type: GraphQLBoolean,
+      resolve: ({ offerable }) => offerable,
+    },
     is_for_sale: {
       type: GraphQLBoolean,
       resolve: ({ forsale }) => forsale,
