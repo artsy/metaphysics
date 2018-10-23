@@ -95,7 +95,6 @@ export const kawsStitchingEnvironment = (
             args: {
               ...query,
               ..._args,
-              aggregations: ["TOTAL"],
             },
             context,
             info,
