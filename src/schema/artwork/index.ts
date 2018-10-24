@@ -225,6 +225,8 @@ export const artworkFields = () => {
     },
     height: {
       type: GraphQLString,
+      // See note on width field.
+      deprecationReason: "Prefer dimensions instead.",
     },
     highlights: {
       type: new GraphQLList(Highlight),
@@ -766,6 +768,8 @@ export const artworkFields = () => {
     },
     width: {
       type: GraphQLString,
+      // Used for Eigen compatibility, see converation at: https://github.com/artsy/metaphysics/pull/1350
+      deprecationReason: "Prefer dimensions instead.",
     },
     framed: {
       type: ArtworkInfoRowType,
