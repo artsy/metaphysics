@@ -63,7 +63,11 @@ spec:
             add:
             - NET_RAW
             - NET_ADMIN
-      dnsPolicy: Default
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "1"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
