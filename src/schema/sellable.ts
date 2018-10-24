@@ -13,6 +13,10 @@ export const Sellable = new GraphQLInterfaceType({
       type: GraphQLBoolean,
       description: "Whether a piece can be purchased through e-commerce",
     },
+    is_offerable: {
+      type: GraphQLBoolean,
+      description: "Whether a user can make an offer on the work",
+    },
     is_for_sale: {
       type: GraphQLBoolean,
     },

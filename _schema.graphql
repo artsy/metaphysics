@@ -762,6 +762,9 @@ type Artwork implements Node & Sellable {
   # Whether a work can be purchased through e-commerce
   is_acquireable: Boolean
 
+  # Whether a user can make an offer on a work
+  is_offerable: Boolean
+
   # Is this artwork part of an auction that is currently running?
   is_biddable: Boolean
 
@@ -1485,6 +1488,9 @@ type ArtworkItem implements Node & Sellable {
 
   # Whether a work can be purchased through e-commerce
   is_acquireable: Boolean
+
+  # Whether a user can make an offer on a work
+  is_offerable: Boolean
 
   # Is this artwork part of an auction that is currently running?
   is_biddable: Boolean
@@ -2664,6 +2670,7 @@ type EditionSet implements Sellable {
   dimensions: dimensions
   edition_of: String
   is_acquireable: Boolean
+  is_offerable: Boolean
   is_for_sale: Boolean
   is_sold: Boolean
   price: String @deprecated(reason: "Prefer to use `sale_message`.")
@@ -5115,7 +5122,6 @@ type Partner implements Node {
     status: EventStatus
   ): [PartnerShow]
   type: String
-  acceptsCardPayments: Boolean
 }
 
 type PartnerArtist {
@@ -6510,6 +6516,9 @@ interface Sellable {
 
   # Whether a piece can be purchased through e-commerce
   is_acquireable: Boolean
+
+  # Whether a user can make an offer on the work
+  is_offerable: Boolean
   is_for_sale: Boolean
   is_sold: Boolean
   price: String

@@ -283,6 +283,11 @@ export const artworkFields = () => {
       description: "Whether a work can be purchased through e-commerce",
       resolve: ({ acquireable }) => acquireable,
     },
+    is_offerable: {
+      type: GraphQLBoolean,
+      description: "Whether a user can make an offer on a work",
+      resolve: ({ offerable }) => offerable,
+    },
     is_biddable: {
       type: GraphQLBoolean,
       description:
@@ -767,10 +772,7 @@ export const artworkFields = () => {
         if (!framed) {
           return null
         }
-        return {
-          label: "Framed",
-          details: null,
-        }
+        return { label: "Framed", details: null }
       },
     },
     signatureInfo: {

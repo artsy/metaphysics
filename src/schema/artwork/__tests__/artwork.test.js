@@ -193,6 +193,30 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#is_offerable", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          is_offerable
+        }
+      }
+    `
+
+    it("will return the value of offerable", () => {
+      artwork.offerable = true
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            is_offerable: true,
+          },
+        })
+      })
+    })
+  })
+
   describe("#priceCents", () => {
     const query = `
     {
@@ -1322,7 +1346,7 @@ describe("Artwork type", () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
-          shipsToContinentalUSOnly 
+          shipsToContinentalUSOnly
         }
       }
     `

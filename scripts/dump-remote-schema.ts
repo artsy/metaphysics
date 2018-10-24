@@ -25,17 +25,3 @@ introspectSchema(httpConvectionLink)
     )
   })
   .catch(error => console.log(error))
-
-const httpLewittLink = createHttpLink({
-  fetch,
-  uri: urljoin("https://lewitt-api-staging.artsy.net", "graphql"),
-})
-
-introspectSchema(httpLewittLink)
-  .then(schema => {
-    return fs.writeFileSync(
-      path.join(destination, "lewitt.graphql"),
-      printSchema(schema, { commentDescriptions: true })
-    )
-  })
-  .catch(error => console.log(error))
