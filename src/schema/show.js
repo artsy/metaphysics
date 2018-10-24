@@ -277,7 +277,7 @@ export const ShowType = new GraphQLObjectType({
         { id },
         options,
         request,
-        { rootValue: partnerShowImagesLoader }
+        { rootValue: { partnerShowImagesLoader } }
       ) => {
         return partnerShowImagesLoader(id, options).then(Image.resolve)
       },
