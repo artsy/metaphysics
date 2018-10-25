@@ -94,7 +94,10 @@ const artistFieldWithError: GraphQLFieldConfig<any, any, any> = {
       if (context.unspecifiedError) {
         throw new Error("What is this?")
       } else {
-        throw new HTTPWithRequestIDError("Oh noes", 401, "a-request-id")
+        // Also testing an async resolver
+        return Promise.resolve().then(() => {
+          throw new HTTPWithRequestIDError("Oh noes", 401, "a-request-id")
+        })
       }
     }
   },

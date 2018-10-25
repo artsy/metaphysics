@@ -2693,6 +2693,10 @@ type EndSalePayload {
   clientMutationId: String
 }
 
+interface Error {
+  message: String
+}
+
 enum EventStatus {
   closed @deprecated(reason: "use capital enums")
   current @deprecated(reason: "use capital enums")
@@ -3999,6 +4003,16 @@ type HomePageModulesParams {
   medium: String
   price_range: String
   related_artist_id: ID
+}
+
+interface HTTPError {
+  statusCode: Int
+  message: String
+}
+
+type HTTPErrorType implements HTTPError & Error {
+  message: String
+  statusCode: Int
 }
 
 type Image {
@@ -5931,6 +5945,12 @@ type Query {
     # The slug or ID of the Show
     id: String!
   ): Show
+
+  # A Show
+  showOrError(
+    # The slug or ID of the Show
+    id: String!
+  ): ShowOrError
   status: Status
 
   # Fields related to internal systems.
@@ -6771,6 +6791,8 @@ type ShowEdge {
   cursor: String!
 }
 
+union ShowOrError = Show | HTTPErrorType
+
 enum ShowSort {
   START_AT_ASC
   START_AT_DESC
@@ -7553,6 +7575,12 @@ type Viewer {
     # The slug or ID of the Show
     id: String!
   ): Show
+
+  # A Show
+  showOrError(
+    # The slug or ID of the Show
+    id: String!
+  ): ShowOrError
   status: Status
 
   # Fields related to internal systems.

@@ -352,9 +352,9 @@ export function precariousField(
 
   const resolver = (
     errorHandler: (error: Error, errorType: GraphQLErrorType<any>) => any
-  ): GraphQLFieldResolver<any, any, any> => (...args) => {
+  ): GraphQLFieldResolver<any, any, any> => async (...args) => {
     try {
-      return config.field.resolve!(...args)
+      return await config.field.resolve!(...args)
     } catch (error) {
       const errorType = config.errors.find(
         possibleError => error instanceof possibleError._errorClass
