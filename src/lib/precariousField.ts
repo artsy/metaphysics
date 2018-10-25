@@ -15,77 +15,49 @@ import {
 } from "graphql"
 import keyValMap from "graphql/jsutils/keyValMap"
 
-function resolveThunk<T>(input: Thunk<T>) {
-  return input instanceof Function ? input() : input
-}
-
-// TODO: Taken from extendSchema, can all be removed when/if this gets merged:
-// https://github.com/graphql/graphql-js/pull/1331
-function extendArgs(
-  args: Array<GraphQLArgument>
-): GraphQLFieldConfigArgumentMap {
-  return keyValMap(
-    args,
-    arg => arg.name,
-    arg => ({
-      type: arg.type,
-      defaultValue: arg.defaultValue,
-      description: arg.description,
-      astNode: arg.astNode,
-    })
-  )
-}
-function interfaceToConfig(interfaceType: GraphQLInterfaceType) {
-  return keyValMap(
-    Object.entries(interfaceType.getFields()),
-    ([name]) => name,
-    ([_name, { isDeprecated, args, ...fieldConfig }]) => ({
-      ...fieldConfig,
-      args: extendArgs(args),
-    })
-  )
-}
-
-export const ErrorInterfaceType = new GraphQLInterfaceType({
-  name: "Error",
-  fields: {
-    message: {
-      type: GraphQLString,
-    },
-  },
-})
-
 export interface GraphQLErrorInterfaceTypeConfig
   extends GraphQLInterfaceTypeConfig<any, any> {
-  extends?: GraphQLErrorInterfaceType[]
+  /**
+   * Any other
+   */
+  extendsInterface: GraphQLErrorInterfaceType
 }
 
 export class GraphQLErrorInterfaceType extends GraphQLInterfaceType {
+  _extendsInterface: GraphQLErrorInterfaceType
+
   constructor(config: GraphQLErrorInterfaceTypeConfig) {
-    const { extends: _extendsInterfaces, ...superConfig } = config
-    const extendsInterfaces = [
-      ...(_extendsInterfaces || []),
-      ErrorInterfaceType,
-    ]
-    const fields = extendsInterfaces.reduce(
-      (fields, errorInterface) => ({
-        ...fields,
-        ...interfaceToConfig(errorInterface),
-      }),
-      resolveThunk(config.fields)
-    )
-    super({ ...superConfig, fields })
+    const { extendsInterface, ...superConfig } = config
+    super({
+      ...superConfig,
+      fields: {
+        ...resolveThunk(config.fields),
+        ...interfaceToConfig(extendsInterface),
+      },
+    })
+    this._extendsInterface = extendsInterface
   }
 }
 
-type ErrorClass<E> = new (...args: any[]) => E
-type ErrorDataFn<E> = (error: E) => { [key: string]: any }
-
-type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
+export class GraphQLBaseErrorInterfaceType extends GraphQLErrorInterfaceType {
+  constructor(config: GraphQLInterfaceTypeConfig<any, any>) {
+    super({
+      ...config,
+      // This is just a hack around the superclass requiring an interface to
+      // extend, in this case we just make that to be a copy of `this`, thus
+      // when the superclass spreads the copy’s fields onto its fields, the end
+      // result is the same as not having supplied a copy.
+      extendsInterface: new GraphQLInterfaceType(
+        config
+      ) as GraphQLErrorInterfaceType,
+    })
+  }
+}
 
 export interface GraphQLErrorTypeConfig<E>
   extends Omit<GraphQLObjectTypeConfig<any, any>, "name"> {
   name?: string
+  errorInterface: GraphQLErrorInterfaceType
   errorClass: ErrorClass<E>
   toErrorData: ErrorDataFn<E>
 }
@@ -95,11 +67,21 @@ export class GraphQLErrorType<E extends Error> extends GraphQLObjectType {
   _toErrorData: ErrorDataFn<E>
 
   constructor(config: GraphQLErrorTypeConfig<E>) {
-    const { errorClass, toErrorData, interfaces, ...superConfig } = config
+    const {
+      errorClass,
+      toErrorData,
+      errorInterface,
+      interfaces,
+      ...superConfig
+    } = config
     super({
       name: errorClass.name,
       ...superConfig,
-      interfaces: [...(resolveThunk(interfaces) || []), ErrorInterfaceType],
+      interfaces: [
+        errorInterface,
+        ...interfaceAncestors(errorInterface),
+        ...(resolveThunk(interfaces) || []),
+      ],
     })
     this._errorClass = errorClass
     this._toErrorData = toErrorData
@@ -160,4 +142,50 @@ export function precariousField(
       })),
     },
   }
+}
+
+type ErrorClass<E> = new (...args: any[]) => E
+type ErrorDataFn<E> = (error: E) => { [key: string]: any }
+
+type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
+
+function resolveThunk<T>(input: Thunk<T>) {
+  return input instanceof Function ? input() : input
+}
+
+function interfaceAncestors(errorInterface: GraphQLErrorInterfaceType) {
+  const interfaces: GraphQLErrorInterfaceType[] = []
+  let iface = errorInterface
+  do {
+    iface = iface._extendsInterface
+    interfaces.push(iface)
+  } while (!(iface instanceof GraphQLBaseErrorInterfaceType))
+  return interfaces
+}
+
+// TODO: Taken from extendSchema, can all be removed when/if this gets merged:
+// https://github.com/graphql/graphql-js/pull/1331
+function extendArgs(
+  args: Array<GraphQLArgument>
+): GraphQLFieldConfigArgumentMap {
+  return keyValMap(
+    args,
+    arg => arg.name,
+    arg => ({
+      type: arg.type,
+      defaultValue: arg.defaultValue,
+      description: arg.description,
+      astNode: arg.astNode,
+    })
+  )
+}
+function interfaceToConfig(interfaceType: GraphQLInterfaceType) {
+  return keyValMap(
+    Object.entries(interfaceType.getFields()),
+    ([name]) => name,
+    ([_name, { isDeprecated, args, ...fieldConfig }]) => ({
+      ...fieldConfig,
+      args: extendArgs(args),
+    })
+  )
 }

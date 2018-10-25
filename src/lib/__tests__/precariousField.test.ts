@@ -11,22 +11,21 @@ import {
   precariousField,
   GraphQLErrorType,
   GraphQLErrorInterfaceType,
-} from "../errors/precariousField"
+  GraphQLBaseErrorInterfaceType,
+} from "lib/precariousField"
 
-// const ErrorType = new GraphQLErrorType({
-//   errorClass: Error,
-//   toErrorData: (error: Error) => ({ message: error.message }),
-//   interfaces: [ErrorInterfaceType],
-//   name: "ErrorType",
-//   fields: {
-//     message: {
-//       type: GraphQLString,
-//     },
-//   },
-// })
+const ErrorInterfaceType = new GraphQLBaseErrorInterfaceType({
+  name: "Error",
+  fields: {
+    message: {
+      type: GraphQLString,
+    },
+  },
+})
 
 const HTTPErrorInterfaceType = new GraphQLErrorInterfaceType({
   name: "HTTPError",
+  extendsInterface: ErrorInterfaceType,
   fields: {
     statusCode: {
       type: GraphQLInt,
@@ -56,12 +55,12 @@ class CustomHTTPError extends HTTPError {
 
 const CustomHTTPErrorType = new GraphQLErrorType({
   errorClass: CustomHTTPError,
+  errorInterface: HTTPErrorInterfaceType,
   toErrorData: error => ({
     message: error.message,
     statusCode: error.statusCode,
     requestID: error.requestID,
   }),
-  interfaces: [HTTPErrorInterfaceType],
   // Test a non-thunk
   fields: {
     message: {
