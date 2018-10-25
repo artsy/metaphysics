@@ -13,7 +13,7 @@ describe("Create Offer Order Mutation", () => {
     const resolvers = {
       Mutation: {
         createOfferOrderWithArtwork: () => ({
-          orderOrError: { exchangeOrderJSON },
+          orderOrError: exchangeOrderJSON,
         }),
       },
     }
