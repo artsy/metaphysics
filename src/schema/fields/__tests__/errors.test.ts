@@ -2,7 +2,6 @@ import {
   GraphQLFieldConfig,
   GraphQLObjectType,
   GraphQLString,
-  GraphQLInterfaceType,
   GraphQLInt,
   GraphQLSchema,
   graphql,
@@ -57,13 +56,12 @@ class CustomHTTPError extends HTTPError {
 
 const CustomHTTPErrorType = new GraphQLErrorType({
   errorClass: CustomHTTPError,
-  toErrorData: (error: CustomHTTPError) => ({
+  toErrorData: error => ({
     message: error.message,
     statusCode: error.statusCode,
     requestID: error.requestID,
   }),
   interfaces: [HTTPErrorInterfaceType],
-  name: "CustomHTTPError",
   // Test a non-thunk
   fields: {
     message: {
@@ -94,7 +92,11 @@ const artistFieldWithError: GraphQLFieldConfig<any, any, any> = {
     if (context.succeed) {
       return { name: "picasso" }
     } else {
-      throw new CustomHTTPError("Oh noes", 401, "a-request-id")
+      if (context.unspecifiedError) {
+        throw new Error("What is this?")
+      } else {
+        throw new CustomHTTPError("Oh noes", 401, "a-request-id")
+      }
     }
   },
 }
@@ -103,7 +105,11 @@ const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: "Query",
     fields: {
-      ...precariousField("artist", [CustomHTTPErrorType], artistFieldWithError),
+      ...precariousField({
+        name: "artist",
+        errors: [CustomHTTPErrorType],
+        field: artistFieldWithError,
+      }),
     },
   }),
 })
@@ -160,98 +166,140 @@ describe("precariousField", () => {
   })
 
   describe("concerning errors", () => {
-    it("works using the standard error interface", async () => {
-      const result = await graphql(
-        schema,
-        gql`
-          {
-            artistOrError {
-              __typename
-              ... on Error {
-                message
+    describe("when using the union field", () => {
+      it("works using the standard error interface", async () => {
+        const result = await graphql(
+          schema,
+          gql`
+            {
+              artistOrError {
+                __typename
+                ... on Error {
+                  message
+                }
               }
             }
-          }
-        `,
-        {},
-        { succeed: false }
-      )
-      expect(result.data).toEqual({
-        artistOrError: {
-          __typename: "CustomHTTPError",
-          message: "Oh noes",
-        },
+          `,
+          {},
+          { succeed: false }
+        )
+        expect(result.data).toEqual({
+          artistOrError: {
+            __typename: "CustomHTTPError",
+            message: "Oh noes",
+          },
+        })
+        expect(result.errors).toBeUndefined()
+      })
+
+      it("works using the network error interface", async () => {
+        const result = await graphql(
+          schema,
+          gql`
+            {
+              artistOrError {
+                __typename
+                ... on HTTPError {
+                  message
+                  statusCode
+                }
+              }
+            }
+          `,
+          {},
+          { succeed: false }
+        )
+        expect(result.data).toEqual({
+          artistOrError: {
+            __typename: "CustomHTTPError",
+            message: "Oh noes",
+            statusCode: 401,
+          },
+        })
+        expect(result.errors).toBeUndefined()
+      })
+
+      it("works using the exact error type", async () => {
+        const result = await graphql(
+          schema,
+          gql`
+            {
+              artistOrError {
+                __typename
+                ... on CustomHTTPError {
+                  message
+                  statusCode
+                  requestID
+                }
+              }
+            }
+          `,
+          {},
+          { succeed: false }
+        )
+        expect(result.data).toEqual({
+          artistOrError: {
+            __typename: "CustomHTTPError",
+            message: "Oh noes",
+            statusCode: 401,
+            requestID: "a-request-id",
+          },
+        })
+        expect(result.errors).toBeUndefined()
+      })
+
+      it("does not catch unspecified errors", async () => {
+        const result = await graphql(
+          schema,
+          gql`
+            {
+              artistOrError {
+                __typename
+              }
+            }
+          `,
+          {},
+          { succeed: false, unspecifiedError: true }
+        )
+        expect(result.data).toEqual({ artistOrError: null })
+        expect(result.errors && result.errors.length).toEqual(1)
       })
     })
 
-    it("works using the network error interface", async () => {
-      const result = await graphql(
-        schema,
-        gql`
-          {
-            artistOrError {
-              __typename
-              ... on HTTPError {
-                message
-                statusCode
+    describe("when using the nullable field", () => {
+      it("returns null", async () => {
+        const result = await graphql(
+          schema,
+          gql`
+            {
+              artist {
+                __typename
               }
             }
-          }
-        `,
-        {},
-        { succeed: false }
-      )
-      expect(result.data).toEqual({
-        artistOrError: {
-          __typename: "CustomHTTPError",
-          message: "Oh noes",
-          statusCode: 401,
-        },
+          `,
+          {},
+          { succeed: false }
+        )
+        expect(result.data).toEqual({ artist: null })
+        expect(result.errors).toBeUndefined()
       })
-    })
 
-    it("works using the exact error type", async () => {
-      const result = await graphql(
-        schema,
-        gql`
-          {
-            artistOrError {
-              __typename
-              ... on CustomHTTPError {
-                message
-                statusCode
-                requestID
+      it("does not catch unspecified errors", async () => {
+        const result = await graphql(
+          schema,
+          gql`
+            {
+              artist {
+                __typename
               }
             }
-          }
-        `,
-        {},
-        { succeed: false }
-      )
-      expect(result.data).toEqual({
-        artistOrError: {
-          __typename: "CustomHTTPError",
-          message: "Oh noes",
-          statusCode: 401,
-          requestID: "a-request-id",
-        },
+          `,
+          {},
+          { succeed: false, unspecifiedError: true }
+        )
+        expect(result.data).toEqual({ artist: null })
+        expect(result.errors && result.errors.length).toEqual(1)
       })
-    })
-
-    it("works using the nullable field", async () => {
-      const result = await graphql(
-        schema,
-        gql`
-          {
-            artist {
-              __typename
-            }
-          }
-        `,
-        {},
-        { succeed: false }
-      )
-      expect(result.data).toEqual({ artist: null })
     })
   })
 })
