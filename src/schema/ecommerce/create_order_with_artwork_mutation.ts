@@ -3,11 +3,7 @@ import { graphql } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { OrderOrFailureUnionType } from "schema/ecommerce/types/order_or_error_union"
 import gql from "lib/gql"
-import {
-  RequestedFulfillmentFragment,
-  BuyerSellerFields,
-  BuyerFields,
-} from "./query_helpers"
+import { BuyerFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { CreateOrderInputType } from "./types/create_order_input_type"
 
