@@ -4,6 +4,7 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLSchema,
+  GraphQLNonNull,
   graphql,
 } from "graphql"
 import gql from "lib/gql"
@@ -18,7 +19,7 @@ const ErrorInterfaceType = new GraphQLBaseErrorInterfaceType({
   name: "Error",
   fields: {
     message: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
 })
@@ -28,7 +29,7 @@ const HTTPErrorInterfaceType = new GraphQLErrorInterfaceType({
   extendsInterface: ErrorInterfaceType,
   fields: {
     statusCode: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
   },
 })
@@ -64,13 +65,13 @@ const HTTPWithRequestIDErrorType = new GraphQLErrorType({
   // Test a non-thunk
   fields: {
     message: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     statusCode: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
     requestID: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
 })

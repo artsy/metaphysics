@@ -1,7 +1,7 @@
 import moment from "moment"
 import { isExisty, exclude } from "lib/helpers"
 import { find } from "lodash"
-import HTTPError from "lib/http_error"
+import { HTTPError } from "schema/errors"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
 import cached from "./fields/cached"

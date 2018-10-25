@@ -3,13 +3,13 @@ import {
   GraphQLErrorInterfaceType,
   GraphQLBaseErrorInterfaceType,
 } from "lib/precariousField"
-import { GraphQLString, GraphQLInt } from "graphql"
+import { GraphQLString, GraphQLInt, GraphQLNonNull } from "graphql"
 
 export const ErrorInterfaceType = new GraphQLBaseErrorInterfaceType({
   name: "Error",
   fields: {
     message: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
   },
 })
@@ -19,22 +19,25 @@ const HTTPErrorInterfaceType = new GraphQLErrorInterfaceType({
   extendsInterface: ErrorInterfaceType,
   fields: {
     statusCode: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
   },
 })
 
 export class HTTPError extends Error {
   public readonly statusCode: number
+  public readonly body?: string
 
-  constructor(message: string, statusCode: number) {
+  constructor(message: string, statusCode: number, body?: string) {
     super(message)
     this.statusCode = statusCode
+    this.body = body
     Error.captureStackTrace(this, this.constructor)
   }
 }
 
 export const HTTPErrorType = new GraphQLErrorType({
+  name: "HTTPErrorType",
   errorClass: HTTPError,
   errorInterface: HTTPErrorInterfaceType,
   toErrorData: error => ({
@@ -43,10 +46,10 @@ export const HTTPErrorType = new GraphQLErrorType({
   }),
   fields: {
     message: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
     },
     statusCode: {
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLInt),
     },
   },
 })

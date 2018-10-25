@@ -3,7 +3,8 @@ import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { isExisty, exclude, existyValue, parseRelayOptions } from "lib/helpers"
 import { find } from "lodash"
-import HTTPError from "lib/http_error"
+import { HTTPError, HTTPErrorType } from "schema/errors"
+import { precariousField } from "lib/precariousField"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
 import cached from "./fields/cached"
@@ -409,25 +410,30 @@ export const ShowType = new GraphQLObjectType({
     },
   }),
 })
-const Show = {
-  type: ShowType,
-  description: "A Show",
-  args: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "The slug or ID of the Show",
+
+export const showFields = precariousField({
+  name: "show",
+  errors: [HTTPErrorType],
+  field: {
+    type: ShowType,
+    description: "A Show",
+    args: {
+      id: {
+        type: new GraphQLNonNull(GraphQLString),
+        description: "The slug or ID of the Show",
+      },
     },
-  },
-  resolve: (root, { id }, request, { rootValue: { showLoader } }) => {
-    return showLoader(id)
-      .then(show => {
+    resolve: (root, { id }, request, { rootValue: { showLoader } }) => {
+      return showLoader(id).then(show => {
         if (!show.displayable && !show.is_reference) {
-          return new HTTPError("Show Not Found", 404)
+          throw new HTTPError("Show Not Found", 404)
         }
         return show
       })
-      .catch(() => null)
+    },
   },
-}
-export default Show
+})
+
+// TODO: Remnove backwards compatible export when we deprecate default exports.
+export default showFields.show
 export const showConnection = connectionWithCursorInfo(ShowType)

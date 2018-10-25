@@ -46,7 +46,7 @@ import Sales from "./sales"
 import SaleArtwork from "./sale_artwork"
 import SaleArtworks from "./sale_artworks"
 import Services from "./services"
-import Show from "./show"
+import { showFields } from "./show"
 import SuggestedGenes from "./suggested_genes"
 import System from "./system"
 import Tag from "./tag"
@@ -126,7 +126,7 @@ const rootFields: any = {
   sale_artworks: SaleArtworks,
   sales: Sales,
   services: Services,
-  show: Show,
+  ...showFields,
   status: Status,
   system: System,
   tag: Tag,

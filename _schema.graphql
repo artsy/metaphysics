@@ -2694,7 +2694,7 @@ type EndSalePayload {
 }
 
 interface Error {
-  message: String
+  message: String!
 }
 
 enum EventStatus {
@@ -4006,13 +4006,13 @@ type HomePageModulesParams {
 }
 
 interface HTTPError {
-  statusCode: Int
-  message: String
+  statusCode: Int!
+  message: String!
 }
 
 type HTTPErrorType implements HTTPError & Error {
-  message: String
-  statusCode: Int
+  message: String!
+  statusCode: Int!
 }
 
 type Image {

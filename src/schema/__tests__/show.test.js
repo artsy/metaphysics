@@ -108,18 +108,22 @@ describe("Show type", () => {
     showData.is_reference = false
     const query = `
       {
-        show(id: "new-museum-1-2015-triennial-surround-audience") {
-          name
+        showOrError(id: "new-museum-1-2015-triennial-surround-audience") {
+          ... on HTTPError {
+            message
+            statusCode
+          }
         }
       }
     `
-    return runQuery(query, rootValue)
-      .then(() => {
-        throw new Error("Did not expect query to not throw an error")
+    return runQuery(query, rootValue).then(data => {
+      expect(data).toEqual({
+        showOrError: {
+          message: "Show Not Found",
+          statusCode: 404,
+        },
       })
-      .catch(error => {
-        expect(error.message).toEqual("Show Not Found")
-      })
+    })
   })
 
   describe("name", () => {
