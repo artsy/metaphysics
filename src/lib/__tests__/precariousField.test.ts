@@ -43,7 +43,7 @@ class HTTPError extends Error {
   }
 }
 
-class CustomHTTPError extends HTTPError {
+class HTTPWithRequestIDError extends HTTPError {
   public readonly requestID: string
 
   constructor(message: string, statusCode: number, requestID: string) {
@@ -53,8 +53,8 @@ class CustomHTTPError extends HTTPError {
   }
 }
 
-const CustomHTTPErrorType = new GraphQLErrorType({
-  errorClass: CustomHTTPError,
+const HTTPWithRequestIDErrorType = new GraphQLErrorType({
+  errorClass: HTTPWithRequestIDError,
   errorInterface: HTTPErrorInterfaceType,
   toErrorData: error => ({
     message: error.message,
@@ -94,7 +94,7 @@ const artistFieldWithError: GraphQLFieldConfig<any, any, any> = {
       if (context.unspecifiedError) {
         throw new Error("What is this?")
       } else {
-        throw new CustomHTTPError("Oh noes", 401, "a-request-id")
+        throw new HTTPWithRequestIDError("Oh noes", 401, "a-request-id")
       }
     }
   },
@@ -106,7 +106,7 @@ const schema = new GraphQLSchema({
     fields: {
       ...precariousField({
         name: "artist",
-        errors: [CustomHTTPErrorType],
+        errors: [HTTPWithRequestIDErrorType],
         field: artistFieldWithError,
       }),
     },
@@ -184,7 +184,7 @@ describe("precariousField", () => {
         )
         expect(result.data).toEqual({
           artistOrError: {
-            __typename: "CustomHTTPError",
+            __typename: "HTTPWithRequestIDError",
             message: "Oh noes",
           },
         })
@@ -210,7 +210,7 @@ describe("precariousField", () => {
         )
         expect(result.data).toEqual({
           artistOrError: {
-            __typename: "CustomHTTPError",
+            __typename: "HTTPWithRequestIDError",
             message: "Oh noes",
             statusCode: 401,
           },
@@ -225,7 +225,7 @@ describe("precariousField", () => {
             {
               artistOrError {
                 __typename
-                ... on CustomHTTPError {
+                ... on HTTPWithRequestIDError {
                   message
                   statusCode
                   requestID
@@ -238,7 +238,7 @@ describe("precariousField", () => {
         )
         expect(result.data).toEqual({
           artistOrError: {
-            __typename: "CustomHTTPError",
+            __typename: "HTTPWithRequestIDError",
             message: "Oh noes",
             statusCode: 401,
             requestID: "a-request-id",

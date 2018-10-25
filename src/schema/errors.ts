@@ -5,26 +5,6 @@ import {
 } from "lib/precariousField"
 import { GraphQLString, GraphQLInt } from "graphql"
 
-/**
- * The base error interface that all other error interfaces should extend and
- * your error types should implement.
- *
- * Selecting on this interface in your GraphQL documents ensures you’ll always
- * be able to select a `message` field that describes the error in a
- * human-readable form.
- * 
- * @example
- * 
-   ```graphql
-   query {
-     artistOrError {
-       ... on Error {
-         message
-       }
-     }
-   }
-   ```
- */
 export const ErrorInterfaceType = new GraphQLBaseErrorInterfaceType({
   name: "Error",
   fields: {
