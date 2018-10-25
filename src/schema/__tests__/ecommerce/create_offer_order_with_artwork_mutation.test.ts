@@ -8,12 +8,12 @@ import { OrderBuyerFields } from "./order_fields"
 
 let rootValue
 
-describe("Create Buy Order Mutation", () => {
+describe("Create Offer Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
-        createOrderWithArtwork: () => ({
-          orderOrError: { order: exchangeOrderJSON },
+        createOfferOrderWithArtwork: () => ({
+          orderOrError: { exchangeOrderJSON },
         }),
       },
     }
@@ -21,24 +21,20 @@ describe("Create Buy Order Mutation", () => {
     rootValue = mockxchange(resolvers)
   })
 
-  it("creates order and returns it", () => {
+  it("creates offer order and returns it", () => {
     const mutation = gql`
       mutation {
-        ecommerceCreateOrderWithArtwork(
+        ecommerceCreateOfferOrderWithArtworkMutation(
           input: { artworkId: "111", editionSetId: "232", quantity: 1 }
         ) {
           orderOrError {
-            ... on OrderWithMutationSuccess {
-              order {
-                ${OrderBuyerFields}
-              }
+            ... on Order {
+              ${OrderBuyerFields}
             }
-            ... on OrderWithMutationFailure {
-              error {
-                type
-                code
-                data
-              }
+            ... on EcommerceError {
+              type
+              errorCode: code
+              data
             }
           }
         }
@@ -46,9 +42,9 @@ describe("Create Buy Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data!.ecommerceCreateOrderWithArtwork.orderOrError.order).toEqual(
-        sampleOrder(true, false)
-      )
+      expect(
+        data!.ecommerceCreateOfferOrderWithArtworkMutation.orderOrError
+      ).toEqual(sampleOrder(true, false))
     })
   })
 })
