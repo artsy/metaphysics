@@ -223,6 +223,11 @@ export const artworkFields = () => {
         return relatedFairsLoader({ artwork: [id], size: 1 }).then(_.first)
       },
     },
+    height: {
+      type: GraphQLString,
+      // See note on `metric` field.
+      deprecationReason: "Prefer dimensions instead.",
+    },
     highlights: {
       type: new GraphQLList(Highlight),
       description: "Returns the highlighted shows and articles",
@@ -492,6 +497,11 @@ export const artworkFields = () => {
     ),
     manufacturer: markdown(),
     medium: { type: GraphQLString },
+    metric: {
+      type: GraphQLString,
+      // Used for Eigen compatibility, see converation at: https://github.com/artsy/metaphysics/pull/1350
+      deprecationReason: "Prefer dimensions instead.",
+    },
     meta: Meta,
     partner: {
       type: Partner.type,
@@ -765,6 +775,11 @@ export const artworkFields = () => {
       description:
         "If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS",
       resolve: artwork => (isEmbeddedVideo(artwork) ? null : artwork.website),
+    },
+    width: {
+      type: GraphQLString,
+      // See note on `metric` field.
+      deprecationReason: "Prefer dimensions instead.",
     },
     framed: {
       type: ArtworkInfoRowType,
