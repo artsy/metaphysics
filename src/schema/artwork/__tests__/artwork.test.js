@@ -62,6 +62,7 @@ describe("Artwork type", () => {
           id
           width
           height
+          metric
         }
       }
     `
@@ -71,6 +72,7 @@ describe("Artwork type", () => {
         ...artwork,
         width: "2",
         height: "3",
+        metric: "cm",
       }
       rootValue = {
         artworkLoader: sinon
@@ -87,6 +89,7 @@ describe("Artwork type", () => {
             id: "richard-prince-untitled-portrait",
             width: "2",
             height: "3",
+            metric: "cm",
           },
         })
       })

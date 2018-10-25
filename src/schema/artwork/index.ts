@@ -225,7 +225,7 @@ export const artworkFields = () => {
     },
     height: {
       type: GraphQLString,
-      // See note on width field.
+      // See note on `metric` field.
       deprecationReason: "Prefer dimensions instead.",
     },
     highlights: {
@@ -492,6 +492,11 @@ export const artworkFields = () => {
     ),
     manufacturer: markdown(),
     medium: { type: GraphQLString },
+    metric: {
+      type: GraphQLString,
+      // Used for Eigen compatibility, see converation at: https://github.com/artsy/metaphysics/pull/1350
+      deprecationReason: "Prefer dimensions instead.",
+    },
     meta: Meta,
     partner: {
       type: Partner.type,
@@ -768,7 +773,7 @@ export const artworkFields = () => {
     },
     width: {
       type: GraphQLString,
-      // Used for Eigen compatibility, see converation at: https://github.com/artsy/metaphysics/pull/1350
+      // See note on `metric` field.
       deprecationReason: "Prefer dimensions instead.",
     },
     framed: {
