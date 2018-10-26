@@ -7,6 +7,7 @@ import {
   PageInfo,
   RequestedFulfillmentFragment,
   BuyerSellerFields,
+  AllOrderFields,
 } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { OrderModeEnum } from "./types/order_mode_enum"
@@ -61,30 +62,7 @@ export const Orders = {
           totalCount
           edges {
             node {
-              id
-              mode
-              code
-              currencyCode
-              state
-              stateReason
-              ${BuyerSellerFields}
-              updatedAt
-              createdAt
-              ${RequestedFulfillmentFragment}
-              itemsTotalCents
-              shippingTotalCents
-              taxTotalCents
-              commissionFeeCents
-              commissionRate
-              displayCommissionRate
-              transactionFeeCents
-              buyerPhoneNumber
-              buyerTotalCents
-              sellerTotalCents
-              stateUpdatedAt
-              stateExpiresAt
-              lastApprovedAt
-              lastSubmittedAt
+              ${AllOrderFields}
               lineItems {
                 ${PageInfo}
                 edges {

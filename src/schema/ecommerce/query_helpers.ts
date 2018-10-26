@@ -48,3 +48,96 @@ export const BuyerSellerFields = gql`
     }
   }
 `
+
+export const BuyerOrderFields = gql`
+  ${BuyerSellerFields}
+  ${RequestedFulfillmentFragment}
+  buyerPhoneNumber
+  buyerTotalCents
+  code
+  commissionFeeCents
+  commissionRate
+  createdAt
+  currencyCode
+  displayCommissionRate
+  id
+  itemsTotalCents
+  lastApprovedAt
+  lastSubmittedAt
+  mode
+  sellerTotalCents
+  shippingTotalCents
+  state
+  stateExpiresAt
+  stateReason
+  stateUpdatedAt
+  taxTotalCents
+  transactionFeeCents
+  updatedAt
+  lineItems {
+    edges {
+      node {
+        id
+        priceCents
+        artworkId
+        editionSetId
+        quantity
+      }
+    }
+  }
+`
+
+export const SellerOrderFields = gql`
+  ${BuyerSellerFields}
+  ${RequestedFulfillmentFragment}
+  buyerPhoneNumber
+  buyerTotalCents
+  code
+  commissionFeeCents
+  commissionRate
+  createdAt
+  currencyCode
+  displayCommissionRate
+  id
+  itemsTotalCents
+  lastApprovedAt
+  lastSubmittedAt
+  mode
+  sellerTotalCents
+  shippingTotalCents
+  state
+  stateExpiresAt
+  stateReason
+  stateUpdatedAt
+  taxTotalCents
+  transactionFeeCents
+  updatedAt
+`
+
+export const AllOrderFields = gql`
+  id
+  mode
+  code
+  currencyCode
+  state
+  stateReason
+  ${BuyerSellerFields}
+  creditCardId
+  ${RequestedFulfillmentFragment}
+  itemsTotalCents
+  shippingTotalCents
+  taxTotalCents
+  commissionFeeCents
+  transactionFeeCents
+  buyerPhoneNumber
+  buyerTotalCents
+  sellerTotalCents
+  updatedAt
+  createdAt
+  stateUpdatedAt
+  stateExpiresAt
+  lastApprovedAt
+  lastSubmittedAt
+  commissionRate
+  displayCommissionRate
+`
