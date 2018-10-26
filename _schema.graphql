@@ -4679,6 +4679,9 @@ type Order {
   # ID of the order
   id: ID
 
+  # Order Mode
+  mode: OrderModeEnum
+
   # Currency code of this order
   currencyCode: String
 
@@ -5000,6 +5003,14 @@ type OrderLineItemEdge {
 
   # A cursor for use in pagination
   cursor: String!
+}
+
+enum OrderModeEnum {
+  # Order initiated by Buy
+  BUY
+
+  # Order initiated by Offer
+  OFFER
 }
 
 union OrderOrFailureUnionType =
@@ -5983,6 +5994,7 @@ type Query {
     buyerType: String
     sellerId: String
     sellerType: String
+    mode: OrderModeEnum
     state: String
     sort: OrdersSortMethodType
     after: String
@@ -6000,6 +6012,7 @@ type Query {
     buyerType: String
     sellerId: String
     sellerType: String
+    mode: OrderModeEnum
     state: String
     sort: OrdersSortMethodType
     after: String
