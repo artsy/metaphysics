@@ -1,10 +1,6 @@
 import { graphql, GraphQLNonNull, GraphQLString } from "graphql"
 import { OrderType } from "schema/ecommerce/types/order"
-import {
-  RequestedFulfillmentFragment,
-  BuyerSellerFields,
-  AllOrderFields,
-} from "./query_helpers"
+import { AllOrderFields } from "./query_helpers"
 import gql from "lib/gql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 

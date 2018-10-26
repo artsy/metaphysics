@@ -3,12 +3,7 @@ import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
 import gql from "lib/gql"
-import {
-  PageInfo,
-  RequestedFulfillmentFragment,
-  BuyerSellerFields,
-  AllOrderFields,
-} from "./query_helpers"
+import { PageInfo, AllOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { OrderModeEnum } from "./types/order_mode_enum"
 
