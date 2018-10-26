@@ -13,6 +13,7 @@ import { CreditCard } from "schema/credit_card"
 import { OrderLineItemConnection } from "./order_line_item"
 import { RequestedFulfillmentUnionType } from "./requested_fulfillment_union_type"
 import { OrderPartyUnionType } from "./order_party_union"
+import { OrderModeEnum } from "./order_mode_enum"
 
 export const OrderType = new GraphQLObjectType({
   name: "Order",
@@ -20,6 +21,10 @@ export const OrderType = new GraphQLObjectType({
     id: {
       type: GraphQLID,
       description: "ID of the order",
+    },
+    mode: {
+      type: OrderModeEnum,
+      description: "Order Mode",
     },
     currencyCode: {
       type: GraphQLString,

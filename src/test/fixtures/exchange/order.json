@@ -4,11 +4,12 @@
   "state": "PENDING",
   "stateReason": null,
   "currencyCode": "usd",
-  "seller":{
+  "mode": "BUY",
+  "seller": {
     "id": "111",
     "__typename": "Partner"
   },
-  "buyer":{
+  "buyer": {
     "id": "111",
     "__typename": "User"
   },

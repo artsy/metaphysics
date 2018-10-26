@@ -23,6 +23,15 @@ export const mockxchange = resolvers => {
         }
       },
     },
+    OrderOrErrorUnion: {
+      __resolveType(obj, context, info) {
+        if (obj.id) {
+          return "Order"
+        } else {
+          return "ApplicationError"
+        }
+      },
+    },
     RequestedFulfillmentUnion: {
       __resolveType(obj, context, info) {
         if (obj.country) {
