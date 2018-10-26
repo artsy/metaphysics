@@ -20,7 +20,7 @@ export const grab = flow(
 )
 
 export const setVersion = (
-  { image_url, image_urls, image_versions },
+  { image_url, image_urls, image_versions = [] },
   versions
 ) => {
   const version =
