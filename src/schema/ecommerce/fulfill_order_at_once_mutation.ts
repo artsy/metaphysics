@@ -74,7 +74,8 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
             __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
-              id
+                id
+                mode
                 code
                 currencyCode
                 state

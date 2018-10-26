@@ -35,7 +35,8 @@ export const ConfirmPickupMutation = mutationWithClientMutationId({
             __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
-              id
+                id
+                mode
                 code
                 currencyCode
                 state

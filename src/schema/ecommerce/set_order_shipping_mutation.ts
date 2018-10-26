@@ -107,6 +107,7 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 id
+                mode
                 code
                 currencyCode
                 state

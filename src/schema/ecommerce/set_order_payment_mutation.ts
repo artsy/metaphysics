@@ -55,6 +55,7 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 id
+                mode
                 ${BuyerSellerFields}
                 ${RequestedFulfillmentFragment}
                 buyerPhoneNumber

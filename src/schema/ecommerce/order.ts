@@ -17,6 +17,7 @@ export const Order = {
       query EcommerceOrder($id: ID, $code: String) {
         ecommerceOrder(id: $id, code: $code) {
           id
+          mode
           code
           currencyCode
           state

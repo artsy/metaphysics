@@ -62,6 +62,7 @@ export const Orders = {
           edges {
             node {
               id
+              mode
               code
               currencyCode
               state

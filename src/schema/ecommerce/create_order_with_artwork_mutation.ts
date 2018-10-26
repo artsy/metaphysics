@@ -69,6 +69,7 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 id
+                mode
                 buyerTotalCents
                 buyerPhoneNumber
                 code

@@ -35,7 +35,8 @@ export const ApproveOrderMutation = mutationWithClientMutationId({
             __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
-              id
+                id
+                mode
                 code
                 currencyCode
                 state
