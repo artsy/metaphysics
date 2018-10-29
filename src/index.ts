@@ -134,7 +134,7 @@ async function startApp() {
       res.locals.dataLoaders = loaders
       res.locals.accessToken = accessToken
 
-      // suppply userAgent for analytics
+      // Supply userAgent for analytics
       res.locals.userAgent = userAgent
 
       return {
