@@ -40,7 +40,9 @@ export const createExchangeLink = () => {
       ...context.graphqlContext,
       headers: {
         ...context.graphqlContext.headers,
-        "x-origin-user-agent": locals.userAgent,
+        "User-Agent": locals.userAgent
+          ? locals.userAgent + "; Metaphysics"
+          : "Metaphysics",
       },
     }
   })
