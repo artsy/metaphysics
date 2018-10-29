@@ -4485,7 +4485,6 @@ type MessageInitiator {
 }
 
 type Metaphysics {
-  environment: Boolean!
   queryTracing: Boolean!
   heapDumps: Boolean!
   stitching: Boolean!
@@ -4493,6 +4492,7 @@ type Metaphysics {
   stitchingExchange: Boolean!
   stitchingGravity: Boolean!
   stitchingKaws: Boolean!
+  environment: String!
 }
 
 type Mutation {

@@ -1,9 +1,4 @@
-import { GraphQLNonNull, GraphQLString } from "graphql"
-import {
-  connectionFromArray,
-  connectionFromArraySlice,
-  mutationWithClientMutationId,
-} from "graphql-relay"
+import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 
 import { artworkConnection } from "schema/artwork"
