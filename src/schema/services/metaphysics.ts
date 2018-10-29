@@ -8,10 +8,11 @@ const mapEnvBooleans = {
   environment: !!config.NODE_ENV,
   queryTracing: !!config.ENABLE_QUERY_TRACING,
   heapDumps: !!config.ENABLE_HEAPDUMPS,
-  stitching: !!config.ENABLE_SCHEMA_STITCHING,
-  stitchingGravity: !!config.ENABLE_GRAVQL_ONLY_STITCHING,
+  stitching: !config.DISABLE_SCHEMA_STITCHING,
   stitchingConvection: !!config.ENABLE_CONSIGNMENTS_STITCHING,
   stitchingExchange: !!config.ENABLE_ECOMMERCE_STITCHING,
+  stitchingGravity: true,
+  stitchingKaws: true,
 }
 
 const MetaphysicsSchema = new GraphQLObjectType({
@@ -29,7 +30,7 @@ const MetaphysicsSchema = new GraphQLObjectType({
 
 const Metaphysics = {
   type: MetaphysicsSchema,
-  description: "The schema for Metaphysic's ENV settings",
+  description: "The schema for Metaphysics' ENV settings",
   args: {},
   resolve: () => mapEnvBooleans,
 }

@@ -30,33 +30,3 @@ export const RecentlyViewedArtworks = {
     })
   },
 }
-
-export const recordArtworkViewMutation = mutationWithClientMutationId({
-  name: "RecordArtworkView",
-  description: "Records an artwork view.",
-  inputFields: {
-    artwork_id: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-  },
-  outputFields: {
-    artwork_id: {
-      type: new GraphQLNonNull(GraphQLString),
-      resolve: ({ artwork_id }) => artwork_id,
-    },
-  },
-  mutateAndGetPayload: (
-    { artwork_id },
-    _request,
-    { rootValue: { recordArtworkViewLoader } }
-  ) => {
-    if (!recordArtworkViewLoader) {
-      throw new Error(
-        "Missing recordArtworkViewLoader. Check that `X-Access-Token` and `X-User-Id` headers are set."
-      )
-    }
-    return recordArtworkViewLoader({ artwork_id }).then(() => {
-      return { artwork_id }
-    })
-  },
-})

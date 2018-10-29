@@ -67,7 +67,6 @@ import SaveArtworkMutation from "./me/save_artwork_mutation"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
-import { recordArtworkViewMutation } from "./me/recently_viewed_artworks"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
@@ -79,11 +78,7 @@ import ObjectIdentification from "./object_identification"
 import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
 import config from "config"
-const {
-  ENABLE_CONSIGNMENTS_STITCHING,
-  ENABLE_GRAVQL_ONLY_STITCHING,
-  ENABLE_ECOMMERCE_STITCHING,
-} = config
+const { ENABLE_CONSIGNMENTS_STITCHING, ENABLE_ECOMMERCE_STITCHING } = config
 
 // TODO: Remove this any
 const rootFields: any = {
@@ -154,10 +149,6 @@ const stitchedRootFields: any = {}
 // If you're using stitching then we _don't_ want to include particular mutations
 // which come from the stitching instead of our manual version
 const stitchedMutations: any = {}
-
-if (!ENABLE_GRAVQL_ONLY_STITCHING) {
-  stitchedMutations.recordArtworkView = recordArtworkViewMutation
-}
 
 if (!ENABLE_CONSIGNMENTS_STITCHING) {
   stitchedMutations.createConsignmentSubmission = CreateSubmissionMutation
