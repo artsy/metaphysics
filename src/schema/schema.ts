@@ -15,6 +15,7 @@ import Genes from "./genes"
 import GeneFamilies from "./gene_families"
 import GeneFamily from "./gene_family"
 import HomePage from "./home"
+import { LocalDiscoveryCity } from "./local_discovery/city"
 import { Order } from "./ecommerce/order"
 import { Orders } from "./ecommerce/orders"
 import { CreateOrderWithArtworkMutation } from "./ecommerce/create_order_with_artwork_mutation"
@@ -108,6 +109,7 @@ const rootFields: any = {
   gene_families: GeneFamilies,
   gene_family: GeneFamily,
   home_page: HomePage,
+  local_discovery_city: LocalDiscoveryCity,
   match_artist: MatchArtist,
   match_gene: MatchGene,
   me: Me,
