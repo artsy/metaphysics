@@ -61,6 +61,8 @@ export const runAuthenticatedQuery = (
 
 let mergedSchema
 
+// TODO: runQueryMerged could be removed now?
+
 /**
  * Same as `runQuery`, but runs against stitched schema
  *
@@ -72,12 +74,10 @@ export const runQueryMerged = async (
   query,
   rootValue = { accessToken: null, userID: null }
 ) => {
-  process.env.ENABLE_SCHEMA_STITCHING = "true"
   const { incrementalMergeSchemas } = require("lib/stitching/mergeSchemas")
 
   if (!mergedSchema) {
     mergedSchema = await incrementalMergeSchemas({
-      ENABLE_GRAVQL_ONLY_STITCHING: true,
       ENABLE_ECOMMERCE_STITCHING: true,
       ENABLE_CONSIGNMENTS_STITCHING: true,
     })

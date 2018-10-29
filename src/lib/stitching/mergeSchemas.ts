@@ -17,7 +17,6 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
   const environment = testConfig || config
 
   const {
-    ENABLE_GRAVQL_ONLY_STITCHING,
     ENABLE_ECOMMERCE_STITCHING,
     ENABLE_CONSIGNMENTS_STITCHING,
   } = environment
@@ -26,10 +25,8 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
   const extensionSchemas = [] as string[]
   const extensionResolvers = {} as any
 
-  if (ENABLE_GRAVQL_ONLY_STITCHING) {
-    const gravitySchema = executableGravitySchema()
-    schemas.push(gravitySchema)
-  }
+  const gravitySchema = executableGravitySchema()
+  schemas.push(gravitySchema)
 
   if (ENABLE_ECOMMERCE_STITCHING) {
     const exchangeSchema = executableExchangeSchema()

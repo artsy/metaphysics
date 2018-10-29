@@ -9,6 +9,6 @@ fi
 
 mkdir -p tmp
 yarn dump-schema _schema.graphql
-ENABLE_SCHEMA_STITCHING=true ENABLE_GRAVQL_ONLY_STITCHING=true yarn dump-schema tmp/stitched.graphql
+yarn dump-schema tmp/stitched.graphql
 
 schema_comparator compare  _schema.graphql tmp/stitched.graphql

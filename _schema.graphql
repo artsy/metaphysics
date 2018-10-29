@@ -4485,13 +4485,14 @@ type MessageInitiator {
 }
 
 type Metaphysics {
-  environment: Boolean!
   queryTracing: Boolean!
   heapDumps: Boolean!
   stitching: Boolean!
-  stitchingGravity: Boolean!
   stitchingConvection: Boolean!
   stitchingExchange: Boolean!
+  stitchingGravity: Boolean!
+  stitchingKaws: Boolean!
+  environment: String!
 }
 
 type Mutation {
