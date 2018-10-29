@@ -22,39 +22,24 @@ const LatLngType = new GraphQLObjectType({
   fields: {
     lat: {
       type: GraphQLFloat,
-      resolve: obj => {
-        return obj.lat
-      },
     },
     lng: {
       type: GraphQLFloat,
-      resolve: obj => {
-        return obj.lng
-      },
     },
   },
 })
 
-const LocalDiscoveryCityType = new GraphQLObjectType({
-  name: "LocalDiscoveryCity",
+const CityType = new GraphQLObjectType({
+  name: "City",
   fields: {
     slug: {
       type: GraphQLString,
-      resolve: obj => {
-        return obj.slug
-      },
     },
     name: {
       type: GraphQLString,
-      resolve: obj => {
-        return obj.name
-      },
     },
     coordinates: {
       type: LatLngType,
-      resolve: obj => {
-        return obj.coordinates
-      },
     },
     shows: {
       type: new GraphQLList(Show.type),
@@ -64,7 +49,7 @@ const LocalDiscoveryCityType = new GraphQLObjectType({
         status: EventStatus,
       },
       resolve: (obj, args, _context, { rootValue: { showsLoader } }) => {
-        let gravityOptions = {
+        const gravityOptions = {
           ...args,
           displayable: true,
           near: `${obj.coordinates.lat},${obj.coordinates.lng}`,
@@ -91,7 +76,7 @@ const LocalDiscoveryCityType = new GraphQLObjectType({
         status: EventStatus,
       },
       resolve: (obj, args, _context, { rootValue: { fairsLoader } }) => {
-        let gravityOptions = {
+        const gravityOptions = {
           ...args,
           near: `${obj.coordinates.lat},${obj.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
@@ -102,8 +87,8 @@ const LocalDiscoveryCityType = new GraphQLObjectType({
   },
 })
 
-export const LocalDiscoveryCity = {
-  type: LocalDiscoveryCityType,
+export const City = {
+  type: CityType,
   description: "A city-based entry point for local discovery",
   args: {
     slug: {
@@ -112,7 +97,7 @@ export const LocalDiscoveryCity = {
         "A slug for the city, conforming to Gravity's city slug naming conventions",
     },
   },
-  resolve: (_obj, args, _context, _info) => {
+  resolve: (_obj, args) => {
     return lookupCity(args.slug)
   },
 }

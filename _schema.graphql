@@ -1966,6 +1966,14 @@ enum CategoryType {
   INSTITUTION
 }
 
+type City {
+  slug: String
+  name: String
+  coordinates: LatLng
+  shows(size: Int, sort: PartnerShowSorts, status: EventStatus): [Show]
+  fairs(size: Int, sort: FairSorts, status: EventStatus): [Fair]
+}
+
 type Collection implements Node {
   # A globally unique ID.
   __id: ID!
@@ -4070,14 +4078,6 @@ type LatLng {
   lng: Float
 }
 
-type LocalDiscoveryCity {
-  slug: String
-  name: String
-  coordinates: LatLng
-  shows(size: Int, sort: PartnerShowSorts, status: EventStatus): [Show]
-  fairs(size: Int, sort: FairSorts, status: EventStatus): [Fair]
-}
-
 type Location {
   # A globally unique ID.
   __id: ID!
@@ -5484,6 +5484,12 @@ type Query {
     # The id of the auction to participate in
     sale_id: String!
   ): String
+
+  # A city-based entry point for local discovery
+  city(
+    # A slug for the city, conforming to Gravity's city slug naming conventions
+    slug: String!
+  ): City
   collection(
     # The slug or ID of the Collection
     id: String!
@@ -5642,12 +5648,6 @@ type Query {
 
   # Home screen content
   home_page: HomePage
-
-  # A city-based entry point for local discovery
-  local_discovery_city(
-    # A slug for the city, conforming to Gravity's city slug naming conventions
-    slug: String!
-  ): LocalDiscoveryCity
 
   # A Search for Artists
   match_artist(
@@ -7096,6 +7096,12 @@ type Viewer {
     # The id of the auction to participate in
     sale_id: String!
   ): String
+
+  # A city-based entry point for local discovery
+  city(
+    # A slug for the city, conforming to Gravity's city slug naming conventions
+    slug: String!
+  ): City
   collection(
     # The slug or ID of the Collection
     id: String!
@@ -7254,12 +7260,6 @@ type Viewer {
 
   # Home screen content
   home_page: HomePage
-
-  # A city-based entry point for local discovery
-  local_discovery_city(
-    # A slug for the city, conforming to Gravity's city slug naming conventions
-    slug: String!
-  ): LocalDiscoveryCity
 
   # A Search for Artists
   match_artist(
