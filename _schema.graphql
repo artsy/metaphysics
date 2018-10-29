@@ -4075,6 +4075,7 @@ type LocalDiscoveryCity {
   name: String
   coordinates: LatLng
   shows(size: Int, sort: PartnerShowSorts, status: EventStatus): [Show]
+  fairs(size: Int, sort: FairSorts, status: EventStatus): [Fair]
 }
 
 type Location {

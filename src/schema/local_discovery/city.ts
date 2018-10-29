@@ -8,8 +8,10 @@ import {
 } from "graphql"
 
 import Show from "schema/show"
-import EventStatus from "schema/input_fields/event_status"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
+import Fair from "schema/fair"
+import FairSorts from "schema/sorts/fair_sorts"
+import EventStatus from "schema/input_fields/event_status"
 
 import cityData from "./city_data.json"
 
@@ -79,6 +81,22 @@ const LocalDiscoveryCityType = new GraphQLObjectType({
         // current reference shows, this problem may be solvable
 
         return showsLoader(gravityOptions)
+      },
+    },
+    fairs: {
+      type: new GraphQLList(Fair.type),
+      args: {
+        size: { type: GraphQLInt },
+        sort: FairSorts,
+        status: EventStatus,
+      },
+      resolve: (obj, args, _context, { rootValue: { fairsLoader } }) => {
+        let gravityOptions = {
+          ...args,
+          near: `${obj.coordinates.lat},${obj.coordinates.lng}`,
+          max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+        }
+        return fairsLoader(gravityOptions)
       },
     },
   },
