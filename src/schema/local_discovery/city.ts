@@ -5,6 +5,8 @@ import {
   GraphQLNonNull,
 } from "graphql"
 
+import cityData from "./city_data.json"
+
 const LatLngType = new GraphQLObjectType({
   name: "LatLng",
   fields: {
@@ -63,44 +65,10 @@ export const LocalDiscoveryCity = {
 }
 
 const lookupCity = slug => {
-  const values = {
-    "new-york-ny-usa": {
-      slug: "new-york-ny-usa",
-      name: "New York",
-      coordinates: { lat: 40.71, lng: -74.01 },
-    },
-    "london-united-kingdom": {
-      slug: "london-united-kingdom",
-      name: "London",
-      coordinates: { lat: 51.51, lng: -0.13 },
-    },
-    "los-angeles-ca-usa": {
-      slug: "los-angeles-ca-usa",
-      name: "Los Angeles",
-      coordinates: { lat: 34.05, lng: -118.24 },
-    },
-    "paris-france": {
-      slug: "paris-france",
-      name: "Paris",
-      coordinates: { lat: 48.86, lng: 2.35 },
-    },
-    "berlin-germany": {
-      slug: "berlin-germany",
-      name: "Berlin",
-      coordinates: { lat: 52.52, lng: 13.4 },
-    },
-    "hong-kong-hong-kong": {
-      slug: "hong-kong-hong-kong",
-      name: "Hong Kong",
-      coordinates: { lat: 22.4, lng: 114.11 },
-    },
-  }
-
-  if (!values.hasOwnProperty(slug)) {
+  if (!cityData.hasOwnProperty(slug)) {
     throw new Error(
-      `City ${slug} not found in : ${Object.keys(values).join(", ")}`
+      `City ${slug} not found in : ${Object.keys(cityData).join(", ")}`
     )
   }
-
-  return values[slug]
+  return cityData[slug]
 }
