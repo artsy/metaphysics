@@ -20,11 +20,12 @@ export const grab = flow(
 )
 
 export const setVersion = (
-  { image_url, image_urls, image_versions },
+  { image_url, image_urls, image_versions = [] },
   versions
 ) => {
   const version =
-    find(versions, curry(includes)(image_versions)) || last(image_versions)
+    find(versions, curry(includes)(image_versions)) ||
+    last(image_versions.filter(version => version !== "normalized"))
   if (image_urls && version) return image_urls[version]
   if (includes(image_url, ":version") && version) {
     return image_url.replace(":version", version)
