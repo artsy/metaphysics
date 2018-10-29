@@ -4074,6 +4074,7 @@ type LocalDiscoveryCity {
   slug: String
   name: String
   coordinates: LatLng
+  shows(size: Int, sort: PartnerShowSorts, status: EventStatus): [Show]
 }
 
 type Location {
