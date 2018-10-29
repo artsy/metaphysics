@@ -2,10 +2,6 @@
 import { runQuery } from "test/utils"
 import gql from "lib/gql"
 
-import { makeExecutableSchema } from "graphql-tools"
-import fs from "fs"
-import path from "path"
-
 describe("Partner type", () => {
   let partner = null
   let rootValue = null
