@@ -4019,7 +4019,7 @@ type HomePageModulesParams {
 }
 
 type Image {
-  aspect_ratio: Float
+  aspect_ratio: Float!
   caption: String
   cropped(width: Int!, height: Int!, version: [String]): CroppedImageUrl
   deep_zoom: DeepZoom

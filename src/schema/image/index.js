@@ -11,6 +11,7 @@ import {
   GraphQLFloat,
   GraphQLInt,
   GraphQLBoolean,
+  GraphQLNonNull,
 } from "graphql"
 
 export const getDefault = images => {
@@ -24,7 +25,10 @@ const ImageType = new GraphQLObjectType({
   name: "Image",
   fields: () => ({
     aspect_ratio: {
-      type: GraphQLFloat,
+      type: new GraphQLNonNull(GraphQLFloat),
+      resolve: ({ aspect_ratio }) => {
+        return aspect_ratio || 1
+      },
     },
     caption: {
       type: GraphQLString,
