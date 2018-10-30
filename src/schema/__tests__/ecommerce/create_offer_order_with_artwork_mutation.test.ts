@@ -15,13 +15,17 @@ describe("Create Offer Order Mutation", () => {
         input: { artworkId: "111", editionSetId: "232", quantity: 1 }
       ) {
         orderOrError {
-          ... on EcommerceOrderWithMutationSuccess {
-            ${OrderBuyerFields}
+          ... on OrderWithMutationSuccess {
+            order {
+              ${OrderBuyerFields}
+            }
           }
-          ... on EcommerceOrderWithMutationFailure {
-            type
-            code
-            data
+          ... on OrderWithMutationFailure {
+            error {
+              type
+              code
+              data
+            }
           }
         }
       }
@@ -40,9 +44,9 @@ describe("Create Offer Order Mutation", () => {
     rootValue = mockxchange(resolvers)
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data!.ecommerceCreateOfferOrderWithArtwork.orderOrError).toEqual(
-        sampleOrder(true, false)
-      )
+      expect(
+        data!.ecommerceCreateOfferOrderWithArtwork.orderOrError.order
+      ).toEqual(sampleOrder(true, false))
     })
   })
 
@@ -65,7 +69,7 @@ describe("Create Offer Order Mutation", () => {
     return runQuery(mutation, rootValue).then(data => {
       expect(
         data!.ecommerceCreateOfferOrderWithArtwork.orderOrError.error
-      ).toEqual({ type: "application_error", code: "404" })
+      ).toEqual({ type: "application_error", code: "404", data: null })
     })
   })
 })
