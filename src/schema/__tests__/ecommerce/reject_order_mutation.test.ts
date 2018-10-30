@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runAuthenticatedQuery } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import sampleOrder from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
@@ -41,7 +41,8 @@ describe("Reject Order Mutation", () => {
       }
     `
 
-    return runQuery(mutation, rootValue).then(data => {
+    return runAuthenticatedQuery(mutation, rootValue).then(data => {
+      console.log("data?", data)
       expect(data!.rejectOrder.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )

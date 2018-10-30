@@ -41,13 +41,17 @@ export const CreateOfferOrderWithArtworkMutation = mutationWithClientMutationId(
           ) {
             orderOrError {
               __typename
-              ... on EcommerceOrder {
-                ${BuyerFields}
+              ... on EcommerceOrderWithMutationSuccess {
+                order {
+                  ${BuyerFields}
+                }
               }
-              ... on EcommerceApplicationError {
-                type
-                code
-                data
+              ... on EcommerceOrderWithMutationFailure {
+                error {
+                  type
+                  code
+                  data
+                }
               }
             }
           }

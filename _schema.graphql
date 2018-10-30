@@ -4612,7 +4612,7 @@ type Mutation {
   ): CreateOrderWithArtworkPayload
 
   # Creates an order with an artwork
-  ecommerceCreateOfferOrderWithArtworkMutation(
+  ecommerceCreateOfferOrderWithArtwork(
     input: CreateOfferOrderWithArtworkInput!
   ): CreateOfferOrderWithArtworkPayload
 
@@ -5039,8 +5039,6 @@ enum OrderModeEnum {
 union OrderOrFailureUnionType =
     OrderWithMutationSuccess
   | OrderWithMutationFailure
-  | Order
-  | EcommerceError
 
 union OrderParty = Partner | User
 

@@ -9,42 +9,63 @@ import { OrderBuyerFields } from "./order_fields"
 let rootValue
 
 describe("Create Offer Order Mutation", () => {
-  beforeEach(() => {
+  const mutation = gql`
+    mutation {
+      ecommerceCreateOfferOrderWithArtwork(
+        input: { artworkId: "111", editionSetId: "232", quantity: 1 }
+      ) {
+        orderOrError {
+          ... on EcommerceOrderWithMutationSuccess {
+            ${OrderBuyerFields}
+          }
+          ... on EcommerceOrderWithMutationFailure {
+            type
+            code
+            data
+          }
+        }
+      }
+    }
+  `
+
+  it("creates offer order and returns it", () => {
     const resolvers = {
       Mutation: {
         createOfferOrderWithArtwork: () => ({
-          orderOrError: exchangeOrderJSON,
+          orderOrError: { order: exchangeOrderJSON },
         }),
       },
     }
 
     rootValue = mockxchange(resolvers)
+
+    return runQuery(mutation, rootValue).then(data => {
+      expect(data!.ecommerceCreateOfferOrderWithArtwork.orderOrError).toEqual(
+        sampleOrder(true, false)
+      )
+    })
   })
 
-  it("creates offer order and returns it", () => {
-    const mutation = gql`
-      mutation {
-        ecommerceCreateOfferOrderWithArtworkMutation(
-          input: { artworkId: "111", editionSetId: "232", quantity: 1 }
-        ) {
-          orderOrError {
-            ... on Order {
-              ${OrderBuyerFields}
-            }
-            ... on EcommerceError {
-              type
-              errorCode: code
-              data
-            }
-          }
-        }
-      }
-    `
+  it("returns an error if there is one", () => {
+    const resolvers = {
+      Mutation: {
+        createOfferOrderWithArtwork: () => ({
+          orderOrError: {
+            error: {
+              type: "application_error",
+              code: "404",
+            },
+          },
+        }),
+      },
+    }
+
+    rootValue = mockxchange(resolvers)
 
     return runQuery(mutation, rootValue).then(data => {
       expect(
-        data!.ecommerceCreateOfferOrderWithArtworkMutation.orderOrError
-      ).toEqual(sampleOrder(true, false))
+        data!.ecommerceCreateOfferOrderWithArtwork.orderOrError.error
+      ).toEqual({ type: "application_error", code: "404" })
     })
   })
 })

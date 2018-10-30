@@ -176,7 +176,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.submitOrder = SubmitOrderMutation
 
   stitchedMutations.ecommerceCreateOrderWithArtwork = CreateOrderWithArtworkMutation
-  stitchedMutations.ecommerceCreateOfferOrderWithArtworkMutation = CreateOfferOrderWithArtworkMutation
+  stitchedMutations.ecommerceCreateOfferOrderWithArtwork = CreateOfferOrderWithArtworkMutation
   stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
   stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
   stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
