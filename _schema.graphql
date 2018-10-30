@@ -2317,6 +2317,23 @@ type CreateGeminiEntryForAssetPayload {
   clientMutationId: String
 }
 
+input CreateOfferOrderWithArtworkInput {
+  # BSON ID of artwork
+  artworkId: String!
+
+  # ID of artwork's edition set
+  editionSetId: String
+
+  # quantity of artwork
+  quantity: Int
+  clientMutationId: String
+}
+
+type CreateOfferOrderWithArtworkPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
 input CreateOrderWithArtworkInput {
   # BSON ID of artwork
   artworkId: String!
@@ -4593,6 +4610,11 @@ type Mutation {
   ecommerceCreateOrderWithArtwork(
     input: CreateOrderWithArtworkInput!
   ): CreateOrderWithArtworkPayload
+
+  # Creates an order with an artwork
+  ecommerceCreateOfferOrderWithArtwork(
+    input: CreateOfferOrderWithArtworkInput!
+  ): CreateOfferOrderWithArtworkPayload
 
   # Sets shipping information for an order
   ecommerceSetOrderShipping(

@@ -18,6 +18,7 @@ import HomePage from "./home"
 import { Order } from "./ecommerce/order"
 import { Orders } from "./ecommerce/orders"
 import { CreateOrderWithArtworkMutation } from "./ecommerce/create_order_with_artwork_mutation"
+import { CreateOfferOrderWithArtworkMutation } from "./ecommerce/create_offer_order_with_artwork_mutation"
 import { SetOrderShippingMutation } from "./ecommerce/set_order_shipping_mutation"
 import { SetOrderPaymentMutation } from "./ecommerce/set_order_payment_mutation"
 import { SubmitOrderMutation } from "./ecommerce/submit_order_mutation"
@@ -175,6 +176,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.submitOrder = SubmitOrderMutation
 
   stitchedMutations.ecommerceCreateOrderWithArtwork = CreateOrderWithArtworkMutation
+  stitchedMutations.ecommerceCreateOfferOrderWithArtwork = CreateOfferOrderWithArtworkMutation
   stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
   stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
   stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation

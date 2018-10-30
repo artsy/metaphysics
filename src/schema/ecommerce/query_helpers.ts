@@ -48,3 +48,40 @@ export const BuyerSellerFields = gql`
     }
   }
 `
+
+export const BuyerFields = gql`
+  id
+  buyerTotalCents
+  buyerPhoneNumber
+  code
+  commissionFeeCents
+  commissionRate
+  displayCommissionRate
+  createdAt
+  currencyCode
+  itemsTotalCents
+  ${BuyerSellerFields}
+  sellerTotalCents
+  ${RequestedFulfillmentFragment}
+  shippingTotalCents
+  state
+  stateReason
+  stateExpiresAt
+  stateUpdatedAt
+  taxTotalCents
+  transactionFeeCents
+  updatedAt
+  lastApprovedAt
+  lastSubmittedAt
+  lineItems {
+    edges {
+      node {
+        id
+        priceCents
+        artworkId
+        editionSetId
+        quantity
+      }
+    }
+  }
+`
