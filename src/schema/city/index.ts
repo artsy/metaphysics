@@ -56,15 +56,7 @@ const CityType = new GraphQLObjectType({
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
         }
 
-        // here is where we could fetch non-partner shows and
-        // merge them in with partner shows.
-        //
-        // but how to deal with sorting across two disparate
-        // collections?
-        //
-        // then again, if we model non-partner shows akin to
-        // current reference shows, this problem may be solvable
-
+        // TODO: ensure non-artsy parnter shows are merged correctly
         return showsLoader(gravityOptions)
       },
     },
@@ -105,7 +97,7 @@ export const City = {
 const lookupCity = slug => {
   if (!cityData.hasOwnProperty(slug)) {
     throw new Error(
-      `City ${slug} not found in : ${Object.keys(cityData).join(", ")}`
+      `City ${slug} not found in: ${Object.keys(cityData).join(", ")}`
     )
   }
   return cityData[slug]
