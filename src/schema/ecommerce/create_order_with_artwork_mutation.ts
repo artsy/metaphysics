@@ -1,34 +1,11 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLNonNull,
-  GraphQLInt,
-  GraphQLString,
-  graphql,
-} from "graphql"
+import { graphql } from "graphql"
 
 import { mutationWithClientMutationId } from "graphql-relay"
 import { OrderOrFailureUnionType } from "schema/ecommerce/types/order_or_error_union"
 import gql from "lib/gql"
 import { BuyerOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
-
-const CreateOrderInputType = new GraphQLInputObjectType({
-  name: "CreateOrderInput",
-  fields: {
-    artworkId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "BSON ID of artwork",
-    },
-    editionSetId: {
-      type: GraphQLString,
-      description: "ID of artwork's edition set",
-    },
-    quantity: {
-      type: GraphQLInt,
-      description: "quantity of artwork",
-    },
-  },
-})
+import { CreateOrderInputType } from "./types/create_order_input_type"
 
 export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
   name: "CreateOrderWithArtwork",

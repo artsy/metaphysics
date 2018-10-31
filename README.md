@@ -85,7 +85,7 @@ You will need to set up headers with both:
 
 ### Sample Queries
 
-Once you have the GraphiQL client running against your local service, 
+Once you have the GraphiQL client running against your local service,
 you can verify things are working by executing these queries:
 
 #### Get popular artists
@@ -111,7 +111,7 @@ you can verify things are working by executing these queries:
 }
 ```
 
-If any of these queries fail, it's probable that you misconfigured your 
+If any of these queries fail, it's probable that you misconfigured your
 `x-access-token` or `x-user-id` HTTP headers.
 
 ### Docs
@@ -165,7 +165,9 @@ this:
 ### Deployment
 
 PRs merged to the `master` branch are automatically deployed to staging. The
-release on staging can be promoted to production via the command `hokusai pipeline promote --git-remote origin`. See Hokusai's
+release on staging can be promoted to production via the command `hokusai pipeline promote --git-remote [upstream|origin]`. The `--git-remote` option pushes a meaningful tag name to the git remote, so use whichever git remote points to Artsy's repository and not a fork (run `git remote -v` to see your git remotes and URLs). (If you accidentally push the git tags to the incorrect remote, you can run `git push upstream production-tag-name` to push a single tag to Artsy's repo.)
+
+See Hokusai's
 [docs on the Staging -> Production pipeline](https://github.com/artsy/hokusai/blob/master/docs/Command_Reference.md#working-with-the-staging---production-pipeline)
 for more details.
 
@@ -179,4 +181,4 @@ Use `hokusai production`
 [commands](https://github.com/artsy/hokusai/blob/master/docs/Command_Reference.md#working-with-the-kubernetes-production-environment)
 to interact with the production environment.
 
-(To deploy, `hokusai production deploy --git-remote origin')
+(To deploy, see [Deployment](#deployment) section above.)

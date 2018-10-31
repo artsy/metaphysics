@@ -8,7 +8,6 @@ import {
   GraphQLString,
   GraphQLBoolean,
 } from "graphql"
-import { shuffle } from "lodash"
 
 const HomePageHeroUnitType = new GraphQLObjectType({
   name: "HomePageHeroUnit",

@@ -1,9 +1,4 @@
-import {
-  makeExecutableSchema,
-  transformSchema,
-  RenameTypes,
-  RenameRootFields,
-} from "graphql-tools"
+import { makeExecutableSchema, transformSchema } from "graphql-tools"
 import fs from "fs"
 import path from "path"
 import { transformsForExchange } from "lib/stitching/exchange/schema"
@@ -20,15 +15,6 @@ export const mockxchange = resolvers => {
           return "OrderWithMutationSuccess"
         } else if (obj.error) {
           return "OrderWithMutationFailure"
-        }
-      },
-    },
-    OrderOrErrorUnion: {
-      __resolveType(obj, context, info) {
-        if (obj.id) {
-          return "Order"
-        } else {
-          return "ApplicationError"
         }
       },
     },

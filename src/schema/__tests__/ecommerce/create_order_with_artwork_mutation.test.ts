@@ -8,7 +8,7 @@ import { OrderBuyerFields } from "./order_fields"
 
 let rootValue
 
-describe("Create Order Mutation", () => {
+describe("Create Buy Order Mutation", () => {
   beforeEach(() => {
     const resolvers = {
       Mutation: {
@@ -24,7 +24,7 @@ describe("Create Order Mutation", () => {
   it("creates order and returns it", () => {
     const mutation = gql`
       mutation {
-        createOrderWithArtwork(
+        ecommerceCreateOrderWithArtwork(
           input: { artworkId: "111", editionSetId: "232", quantity: 1 }
         ) {
           orderOrError {
@@ -46,7 +46,7 @@ describe("Create Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data!.createOrderWithArtwork.orderOrError.order).toEqual(
+      expect(data!.ecommerceCreateOrderWithArtwork.orderOrError.order).toEqual(
         sampleOrder(true, false)
       )
     })

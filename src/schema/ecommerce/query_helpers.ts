@@ -28,7 +28,7 @@ export const PageInfo = gql`
   }
 `
 
-export const BuyerSellerFields = gql`
+export const ParticipantFields = gql`
   seller {
     __typename
     ... on EcommercePartner{
@@ -50,7 +50,7 @@ export const BuyerSellerFields = gql`
 `
 
 export const BuyerOrderFields = gql`
-  ${BuyerSellerFields}
+  ${ParticipantFields}
   ${RequestedFulfillmentFragment}
   buyerPhoneNumber
   buyerTotalCents
@@ -88,7 +88,7 @@ export const BuyerOrderFields = gql`
 `
 
 export const SellerOrderFields = gql`
-  ${BuyerSellerFields}
+  ${ParticipantFields}
   ${RequestedFulfillmentFragment}
   buyerPhoneNumber
   buyerTotalCents
@@ -121,7 +121,7 @@ export const AllOrderFields = gql`
   currencyCode
   state
   stateReason
-  ${BuyerSellerFields}
+  ${ParticipantFields}
   creditCardId
   ${RequestedFulfillmentFragment}
   itemsTotalCents

@@ -50,6 +50,30 @@ describe("Image type", () => {
     }
   })
 
+  describe("#aspect_ratio", () => {
+    const query = `{
+      artwork(id: "richard-prince-untitled-portrait") {
+        image {
+          aspect_ratio
+        }
+      }
+    }`
+
+    it("returns original aspect_ratio when available", () => {
+      assign(image, { aspect_ratio: 1.5 })
+      return runQuery(query, rootValue).then(data => {
+        expect(data.artwork.image.aspect_ratio).toBe(1.5)
+      })
+    })
+
+    it("defaults to 1 when original aspect ratio is not available", () => {
+      assign(image, { aspect_ratio: null })
+      return runQuery(query, rootValue).then(data => {
+        expect(data.artwork.image.aspect_ratio).toBe(1)
+      })
+    })
+  })
+
   describe("#orientation", () => {
     const query = `{
       artwork(id: "richard-prince-untitled-portrait") {

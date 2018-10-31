@@ -28,12 +28,6 @@ if (prettySchema !== localGQL) {
 \`yarn dump-schema _schema.graphql\`
   
 Note: This script uses your current \`.env\` variables.
-**Note 2:** you  should have these set ENV vars set at the moment:
-
-\`\`\`
-ENABLE_SCHEMA_STITCHING=true
-ENABLE_GRAVQL_ONLY_STITCHING=true
-\`\`\`
 `)
   const diff = jsdiff.createPatch(
     "_schema.graphql",
