@@ -1,5 +1,4 @@
 import {
-  GraphQLFloat,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -7,6 +6,7 @@ import {
   GraphQLString,
 } from "graphql"
 
+import { LatLngType } from "../location"
 import Show from "schema/show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import Fair from "schema/fair"
@@ -16,18 +16,6 @@ import EventStatus from "schema/input_fields/event_status"
 import cityData from "./city_data.json"
 
 const LOCAL_DISCOVERY_RADIUS_KM = 75
-
-const LatLngType = new GraphQLObjectType({
-  name: "LatLng",
-  fields: {
-    lat: {
-      type: GraphQLFloat,
-    },
-    lng: {
-      type: GraphQLFloat,
-    },
-  },
-})
 
 const CityType = new GraphQLObjectType({
   name: "City",

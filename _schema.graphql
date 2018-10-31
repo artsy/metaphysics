@@ -2290,11 +2290,6 @@ type ConversationResponder {
   initials(length: Int = 3): String
 }
 
-type coordinates {
-  lat: Float
-  lng: Float
-}
-
 input CreateBidderInput {
   sale_id: String!
   clientMutationId: String
@@ -4108,7 +4103,7 @@ type Location {
   address_2: String
   city: String
   country: String
-  coordinates: coordinates
+  coordinates: LatLng
   day_schedules: [DaySchedule]
   display: String
   phone: String
