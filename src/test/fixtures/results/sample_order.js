@@ -1,5 +1,6 @@
 const defaultResponse = {
   id: "fooid123",
+  mode: "BUY",
   code: "1",
   currencyCode: "usd",
   requestedFulfillment: {
@@ -88,7 +89,8 @@ function sampleLineItems(fulfillments = false) {
 export default function sampleResponse(
   lineItems = true,
   fulfillments = false,
-  includeCreditCard = false
+  includeCreditCard = false,
+  mode = "BUY"
 ) {
   let orderResponse = defaultResponse
 
@@ -96,6 +98,7 @@ export default function sampleResponse(
     orderResponse = {
       ...defaultResponse,
       lineItems: sampleLineItems(fulfillments),
+      mode,
     }
   }
 
