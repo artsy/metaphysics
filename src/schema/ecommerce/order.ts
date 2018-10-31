@@ -1,9 +1,6 @@
 import { graphql, GraphQLNonNull, GraphQLString } from "graphql"
 import { OrderType } from "schema/ecommerce/types/order"
-import {
-  RequestedFulfillmentFragment,
-  BuyerSellerFields,
-} from "./query_helpers"
+import { AllOrderFields } from "./query_helpers"
 import gql from "lib/gql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
@@ -16,31 +13,7 @@ export const Order = {
     const query = gql`
       query EcommerceOrder($id: ID, $code: String) {
         ecommerceOrder(id: $id, code: $code) {
-          id
-          mode
-          code
-          currencyCode
-          state
-          stateReason
-          ${BuyerSellerFields}
-          creditCardId
-          ${RequestedFulfillmentFragment}
-          itemsTotalCents
-          shippingTotalCents
-          taxTotalCents
-          commissionFeeCents
-          transactionFeeCents
-          buyerPhoneNumber
-          buyerTotalCents
-          sellerTotalCents
-          updatedAt
-          createdAt
-          stateUpdatedAt
-          stateExpiresAt
-          lastApprovedAt
-          lastSubmittedAt
-          commissionRate
-          displayCommissionRate
+          ${AllOrderFields}
           lineItems{
             edges{
               node{

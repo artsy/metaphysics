@@ -3,6 +3,7 @@ import gql from "lib/gql"
 export const OrderBuyerFields = gql`
 ... on Order {
   id
+  mode
   code
   currencyCode
   state
@@ -95,6 +96,7 @@ export const OrderBuyerFields = gql`
 export const OrderSellerFields = gql`
 ... on Order {
   id
+  mode
   code
   currencyCode
   state

@@ -28,7 +28,7 @@ export const PageInfo = gql`
   }
 `
 
-export const BuyerSellerFields = gql`
+export const ParticipantFields = gql`
   seller {
     __typename
     ... on EcommercePartner{
@@ -49,30 +49,31 @@ export const BuyerSellerFields = gql`
   }
 `
 
-export const BuyerFields = gql`
-  id
-  buyerTotalCents
+export const BuyerOrderFields = gql`
+  ${ParticipantFields}
+  ${RequestedFulfillmentFragment}
   buyerPhoneNumber
+  buyerTotalCents
   code
   commissionFeeCents
   commissionRate
-  displayCommissionRate
   createdAt
   currencyCode
+  displayCommissionRate
+  id
   itemsTotalCents
-  ${BuyerSellerFields}
+  lastApprovedAt
+  lastSubmittedAt
+  mode
   sellerTotalCents
-  ${RequestedFulfillmentFragment}
   shippingTotalCents
   state
-  stateReason
   stateExpiresAt
+  stateReason
   stateUpdatedAt
   taxTotalCents
   transactionFeeCents
   updatedAt
-  lastApprovedAt
-  lastSubmittedAt
   lineItems {
     edges {
       node {
@@ -84,4 +85,59 @@ export const BuyerFields = gql`
       }
     }
   }
+`
+
+export const SellerOrderFields = gql`
+  ${ParticipantFields}
+  ${RequestedFulfillmentFragment}
+  buyerPhoneNumber
+  buyerTotalCents
+  code
+  commissionFeeCents
+  commissionRate
+  createdAt
+  currencyCode
+  displayCommissionRate
+  id
+  itemsTotalCents
+  lastApprovedAt
+  lastSubmittedAt
+  mode
+  sellerTotalCents
+  shippingTotalCents
+  state
+  stateExpiresAt
+  stateReason
+  stateUpdatedAt
+  taxTotalCents
+  transactionFeeCents
+  updatedAt
+`
+
+export const AllOrderFields = gql`
+  id
+  mode
+  code
+  currencyCode
+  state
+  stateReason
+  ${ParticipantFields}
+  creditCardId
+  ${RequestedFulfillmentFragment}
+  itemsTotalCents
+  shippingTotalCents
+  taxTotalCents
+  commissionFeeCents
+  transactionFeeCents
+  buyerPhoneNumber
+  buyerTotalCents
+  sellerTotalCents
+  updatedAt
+  createdAt
+  stateUpdatedAt
+  stateExpiresAt
+  lastApprovedAt
+  lastSubmittedAt
+  commissionRate
+  displayCommissionRate
 `

@@ -3,11 +3,7 @@ import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
 import gql from "lib/gql"
-import {
-  PageInfo,
-  RequestedFulfillmentFragment,
-  BuyerSellerFields,
-} from "./query_helpers"
+import { PageInfo, AllOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { OrderModeEnum } from "./types/order_mode_enum"
 
@@ -61,30 +57,7 @@ export const Orders = {
           totalCount
           edges {
             node {
-              id
-              mode
-              code
-              currencyCode
-              state
-              stateReason
-              ${BuyerSellerFields}
-              updatedAt
-              createdAt
-              ${RequestedFulfillmentFragment}
-              itemsTotalCents
-              shippingTotalCents
-              taxTotalCents
-              commissionFeeCents
-              commissionRate
-              displayCommissionRate
-              transactionFeeCents
-              buyerPhoneNumber
-              buyerTotalCents
-              sellerTotalCents
-              stateUpdatedAt
-              stateExpiresAt
-              lastApprovedAt
-              lastSubmittedAt
+              ${AllOrderFields}
               lineItems {
                 ${PageInfo}
                 edges {
