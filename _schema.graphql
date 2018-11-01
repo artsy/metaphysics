@@ -1966,6 +1966,14 @@ enum CategoryType {
   INSTITUTION
 }
 
+type City {
+  slug: String
+  name: String
+  coordinates: LatLng
+  shows(size: Int, sort: PartnerShowSorts, status: EventStatus): [Show]
+  fairs(size: Int, sort: FairSorts, status: EventStatus): [Fair]
+}
+
 type Collection implements Node {
   # A globally unique ID.
   __id: ID!
@@ -2280,11 +2288,6 @@ type ConversationResponder {
   # An array of Impulse IDs that correspond to all email addresses that messages should be sent to
   reply_to_impulse_ids: [String]!
   initials(length: Int = 3): String
-}
-
-type coordinates {
-  lat: Float
-  lng: Float
 }
 
 input CreateBidderInput {
@@ -4101,6 +4104,11 @@ union Item = ArtistItem | ArtworkItem | FeaturedLinkItem | GeneItem
 # The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 scalar JSON
 
+type LatLng {
+  lat: Float
+  lng: Float
+}
+
 type Location {
   # A globally unique ID.
   __id: ID!
@@ -4112,7 +4120,7 @@ type Location {
   address_2: String
   city: String
   country: String
-  coordinates: coordinates
+  coordinates: LatLng
   day_schedules: [DaySchedule]
   display: String
   phone: String
@@ -5610,6 +5618,12 @@ type Query {
     # The id of the auction to participate in
     sale_id: String!
   ): String
+
+  # A city-based entry point for local discovery
+  city(
+    # A slug for the city, conforming to Gravity's city slug naming conventions
+    slug: String!
+  ): City
   collection(
     # The slug or ID of the Collection
     id: String!
@@ -7237,6 +7251,12 @@ type Viewer {
     # The id of the auction to participate in
     sale_id: String!
   ): String
+
+  # A city-based entry point for local discovery
+  city(
+    # A slug for the city, conforming to Gravity's city slug naming conventions
+    slug: String!
+  ): City
   collection(
     # The slug or ID of the Collection
     id: String!
