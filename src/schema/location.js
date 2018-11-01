@@ -9,6 +9,18 @@ import {
   GraphQLList,
 } from "graphql"
 
+export const LatLngType = new GraphQLObjectType({
+  name: "LatLng",
+  fields: {
+    lat: {
+      type: GraphQLFloat,
+    },
+    lng: {
+      type: GraphQLFloat,
+    },
+  },
+})
+
 export const LocationType = new GraphQLObjectType({
   name: "Location",
   fields: () => ({
@@ -28,17 +40,7 @@ export const LocationType = new GraphQLObjectType({
       type: GraphQLString,
     },
     coordinates: {
-      type: new GraphQLObjectType({
-        name: "coordinates",
-        fields: {
-          lat: {
-            type: GraphQLFloat,
-          },
-          lng: {
-            type: GraphQLFloat,
-          },
-        },
-      }),
+      type: LatLngType,
     },
     day_schedules: {
       type: new GraphQLList(DayScheduleType),
