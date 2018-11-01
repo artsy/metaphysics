@@ -2,7 +2,6 @@ import moment from "moment"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { isExisty, exclude, existyValue, parseRelayOptions } from "lib/helpers"
-import { find } from "lodash"
 import HTTPError from "lib/http_error"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
@@ -30,6 +29,7 @@ import {
 } from "graphql"
 import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
+import { find, assign } from "lodash"
 
 const kind = ({ artists, fair, artists_without_artworks, group }) => {
   if (isExisty(fair)) return "fair"
@@ -101,12 +101,18 @@ export const ShowType = new GraphQLObjectType({
         if (options.all) {
           fetch = allViaLoader(
             partnerShowArtworksLoader,
-            { partner_id: show.partner.id, show_id: show.id },
+            {
+              partner_id: show.partner.id,
+              show_id: show.id,
+            },
             options
           )
         } else {
           fetch = partnerShowArtworksLoader(
-            { partner_id: show.partner.id, show_id: show.id },
+            {
+              partner_id: show.partner.id,
+              show_id: show.id,
+            },
             options
           ).then(({ body }) => body)
         }
@@ -134,7 +140,9 @@ export const ShowType = new GraphQLObjectType({
           totalViaLoader(
             partnerShowArtworksLoader,
             loaderOptions,
-            Object.assign({}, gravityOptions, { size: 0 })
+            Object.assign({}, gravityOptions, {
+              size: 0,
+            })
           ),
           partnerShowArtworksLoader(loaderOptions, gravityOptions),
         ]).then(([count, { body }]) => {
@@ -170,12 +178,18 @@ export const ShowType = new GraphQLObjectType({
         { rootValue: { partnerShowArtworksLoader } }
       ) => {
         if (image_versions && image_versions.length && image_url) {
-          return Image.resolve({ image_versions, image_url })
+          return Image.resolve({
+            image_versions,
+            image_url,
+          })
         }
 
         if (partner) {
           return partnerShowArtworksLoader(
-            { partner_id: partner.id, show_id: id },
+            {
+              partner_id: partner.id,
+              show_id: id,
+            },
             {
               size: 1,
               published: true,
@@ -209,7 +223,10 @@ export const ShowType = new GraphQLObjectType({
             ) => {
               return totalViaLoader(
                 partnerShowArtworksLoader,
-                { partner_id: partner.id, show_id: id },
+                {
+                  partner_id: partner.id,
+                  show_id: id,
+                },
                 options
               )
             },
@@ -238,9 +255,10 @@ export const ShowType = new GraphQLObjectType({
         request,
         { rootValue: { partnerShowLoader } }
       ) =>
-        partnerShowLoader({ partner_id: partner.id, show_id: id }).then(
-          ({ events }) => events
-        ),
+        partnerShowLoader({
+          partner_id: partner.id,
+          show_id: id,
+        }).then(({ events }) => events),
     },
     exhibition_period: {
       type: GraphQLString,
@@ -345,13 +363,20 @@ export const ShowType = new GraphQLObjectType({
           })
         }
         return partnerShowArtworksLoader(
-          { partner_id: partner.id, show_id: id },
+          {
+            partner_id: partner.id,
+            show_id: id,
+          },
           {
             published: true,
           }
         ).then(({ body }) => {
           return Image.resolve(
-            getDefault(find(body, { can_share_image: true }))
+            getDefault(
+              find(body, {
+                can_share_image: true,
+              })
+            )
           )
         })
       },
@@ -406,6 +431,22 @@ export const ShowType = new GraphQLObjectType({
     type: {
       type: GraphQLString,
       resolve: ({ fair }) => (isExisty(fair) ? "Fair Booth" : "Show"),
+    },
+    nearby_shows: {
+      type: new GraphQLList(ShowType),
+      description: "A list of nearby shows",
+      resolve: (
+        { location },
+        options,
+        request,
+        { rootValue: { showsLoader } }
+      ) => {
+        const { lat, lng } = location.coordinates
+        const gravityOptions = assign(options, {
+          near: `${lat},${lng}`,
+        })
+        return showsLoader(gravityOptions)
+      },
     },
   }),
 })
