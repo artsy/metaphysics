@@ -18,7 +18,7 @@ describe("CreditCards", () => {
     const query = gql`
       {
         me {
-          creditCards(first: 1) {
+          creditCards(first: 1, limit: 1) {
             edges {
               node {
                 id

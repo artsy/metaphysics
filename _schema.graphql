@@ -2488,8 +2488,6 @@ type CreditCardConnection {
 
   # A list of edges.
   edges: [CreditCardEdge]
-  pageCursors: PageCursors
-  totalCount: Int
 }
 
 # An edge in a connection.
@@ -2513,6 +2511,7 @@ type CreditCardMutationFailure {
 
 type CreditCardMutationSuccess {
   creditCard: CreditCard
+  creditCardEdge: CreditCardEdge
 }
 
 union CreditCardMutationType =
@@ -4319,6 +4318,7 @@ type Me implements Node {
 
   # A list of the current user’s credit cards
   creditCards(
+    limit: Int
     after: String
     first: Int
     before: String
