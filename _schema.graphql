@@ -4054,6 +4054,20 @@ type Image {
   versions: [String]
 }
 
+input InitialOfferInput {
+  # BSON ID of artwork
+  orderId: ID!
+
+  # Offer amount in cents
+  amountCents: Int!
+  clientMutationId: String
+}
+
+type InitialOfferPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
 enum Intents {
   BUY_ART_AND_DESIGN
   SELL_ART_AND_DESIGN
@@ -4648,6 +4662,9 @@ type Mutation {
 
   # Submits an order
   ecommerceSubmitOrder(input: SubmitOrderInput!): SubmitOrderPayload
+
+  # Creates an order with an artwork
+  ecommerceInitialOffer(input: InitialOfferInput!): InitialOfferPayload
   recordArtworkView(input: RecordArtworkViewInput): RecordArtworkViewPayload
 }
 
@@ -4706,6 +4723,52 @@ enum NotificationsFeedItemStatus {
   UNREAD
 }
 
+type Offer {
+  # ID of the offer
+  id: ID
+  createdAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+
+  # Id of the user who created the order
+  creatorId: String
+
+  # The type of the party who made the offer
+  from: OrderParty
+
+  # Offer amount in cents
+  amountCents: Int
+
+  # The order on which the offer was made
+  order: Order
+
+  # The order on which the offer was made
+  respondsTo: Offer
+}
+
+# A connection to a list of items.
+type OfferConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [OfferEdge]
+}
+
+# An edge in a connection.
+type OfferEdge {
+  # The item at the end of the edge
+  node: Offer
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
 type Order {
   # ID of the order
   id: ID
@@ -4727,6 +4790,24 @@ type Order {
 
   # Order Requested Fulfillment
   requestedFulfillment: RequestedFulfillment
+
+  # Latest offer
+  lastOffer: Offer
+  offerTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  offerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # List of offers made on this order so far
+  offers: OfferConnection
 
   # Item total in cents
   itemsTotalCents: Int
