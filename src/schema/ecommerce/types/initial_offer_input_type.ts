@@ -9,7 +9,7 @@ export const InitialOfferInputType = new GraphQLInputObjectType({
   fields: {
     orderId: {
       type: new GraphQLNonNull(GraphQLID),
-      description: "BSON ID of artwork",
+      description: "ID of order",
     },
     amountCents: {
       type: new GraphQLNonNull(GraphQLInt),

@@ -4055,7 +4055,7 @@ type Image {
 }
 
 input InitialOfferInput {
-  # BSON ID of artwork
+  # ID of order
   orderId: ID!
 
   # Offer amount in cents
