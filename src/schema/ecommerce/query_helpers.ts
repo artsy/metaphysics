@@ -49,9 +49,40 @@ export const ParticipantFields = gql`
   }
 `
 
+export const OfferFields = gql`
+  id
+  createdAt
+  creatorId
+  amountCents
+  from {
+    __typename
+    ... on EcommerceUser {
+      id
+    }
+    ... on EcommercePartner{
+      id
+    }
+  }
+`
+
+export const OfferRelatedFields = gql`
+  lastOffer {
+    ${OfferFields}
+  }
+  offerTotalCents
+  offers {
+    edges {
+      node {
+        ${OfferFields}
+      }
+    }
+  }
+`
+
 export const BuyerOrderFields = gql`
   ${ParticipantFields}
   ${RequestedFulfillmentFragment}
+  ${OfferRelatedFields}
   buyerPhoneNumber
   buyerTotalCents
   code
@@ -90,6 +121,7 @@ export const BuyerOrderFields = gql`
 export const SellerOrderFields = gql`
   ${ParticipantFields}
   ${RequestedFulfillmentFragment}
+  ${OfferRelatedFields}
   buyerPhoneNumber
   buyerTotalCents
   code
@@ -121,6 +153,7 @@ export const AllOrderFields = gql`
   currencyCode
   state
   stateReason
+  ${OfferRelatedFields}
   ${ParticipantFields}
   creditCardId
   ${RequestedFulfillmentFragment}

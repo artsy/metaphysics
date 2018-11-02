@@ -4738,6 +4738,9 @@ type Offer {
   # Id of the user who created the order
   creatorId: String
 
+  # Creator of this order
+  creator: User
+
   # The type of the party who made the offer
   from: OrderParty
 
