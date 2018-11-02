@@ -150,7 +150,11 @@ export const OrderType = new GraphQLObjectType({
   }),
 })
 
-const resolveOrderParty = async (orderParty, userByIDLoader, partnerLoader) => {
+export const resolveOrderParty = async (
+  orderParty,
+  userByIDLoader,
+  partnerLoader
+) => {
   if (orderParty.id) {
     if (orderParty.__typename === "EcommerceUser") {
       const user = await userByIDLoader(orderParty.id)
