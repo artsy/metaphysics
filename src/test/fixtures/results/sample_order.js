@@ -86,12 +86,12 @@ function sampleLineItems(fulfillments = false) {
   }
 }
 
-export default function sampleResponse(
+export function sampleOrder({
   lineItems = true,
   fulfillments = false,
   includeCreditCard = false,
-  mode = "BUY"
-) {
+  mode = "BUY",
+} = {}) {
   let orderResponse = defaultResponse
 
   if (lineItems) {

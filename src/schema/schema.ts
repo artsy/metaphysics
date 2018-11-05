@@ -80,6 +80,7 @@ import ObjectIdentification from "./object_identification"
 import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
 import config from "config"
+import { InitialOfferMutation } from "./ecommerce/initial_offer_mutation"
 const { ENABLE_CONSIGNMENTS_STITCHING, ENABLE_ECOMMERCE_STITCHING } = config
 
 // TODO: Remove this any
@@ -186,6 +187,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
   stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
   stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
+  stitchedMutations.ecommerceInitialOffer = InitialOfferMutation
 }
 
 export default new GraphQLSchema({

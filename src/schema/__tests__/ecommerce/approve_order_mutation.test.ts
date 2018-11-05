@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
-import sampleOrder from "test/fixtures/results/sample_order"
+import { sampleOrder } from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import gql from "lib/gql"
@@ -43,9 +43,7 @@ describe("Approve Order Mutation", () => {
     `
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data!.approveOrder.orderOrError.order).toEqual(
-        sampleOrder(true, false)
-      )
+      expect(data!.approveOrder.orderOrError.order).toEqual(sampleOrder())
     })
   })
 })

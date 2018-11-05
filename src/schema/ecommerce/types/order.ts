@@ -14,6 +14,7 @@ import { OrderLineItemConnection } from "./order_line_item"
 import { RequestedFulfillmentUnionType } from "./requested_fulfillment_union_type"
 import { OrderPartyUnionType } from "./order_party_union"
 import { OrderModeEnum } from "./order_mode_enum"
+import { OfferConnection, OfferType } from "./offer"
 
 export const OrderType = new GraphQLObjectType({
   name: "Order",
@@ -45,6 +46,19 @@ export const OrderType = new GraphQLObjectType({
     requestedFulfillment: {
       type: RequestedFulfillmentUnionType,
       description: "Order Requested Fulfillment",
+    },
+    lastOffer: {
+      type: OfferType,
+      description: "Latest offer",
+    },
+    offerTotalCents: {
+      type: GraphQLInt,
+      descrtiption: "Total amount of latest offer",
+    },
+    offerTotal: amount(({ offerTotalCents }) => offerTotalCents),
+    offers: {
+      type: OfferConnection,
+      description: "List of offers made on this order so far",
     },
     itemsTotalCents: {
       type: GraphQLInt,
@@ -136,7 +150,11 @@ export const OrderType = new GraphQLObjectType({
   }),
 })
 
-const resolveOrderParty = async (orderParty, userByIDLoader, partnerLoader) => {
+export const resolveOrderParty = async (
+  orderParty,
+  userByIDLoader,
+  partnerLoader
+) => {
   if (orderParty.id) {
     if (orderParty.__typename === "EcommerceUser") {
       const user = await userByIDLoader(orderParty.id)
