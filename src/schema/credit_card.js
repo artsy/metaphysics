@@ -7,6 +7,10 @@ import {
 } from "graphql"
 import { GravityIDFields } from "schema/object_identification"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
+import {
+  connectionDefinitions,
+  cursorForObjectInConnection,
+} from "graphql-relay"
 
 const CreditCardMutationSuccessType = new GraphQLObjectType({
   name: "CreditCardMutationSuccess",
@@ -15,6 +19,15 @@ const CreditCardMutationSuccessType = new GraphQLObjectType({
     creditCard: {
       type: CreditCard.type,
       resolve: creditCard => creditCard,
+    },
+    creditCardEdge: {
+      type: CreditCardEdge,
+      resolve: creditCard => {
+        return {
+          cursor: cursorForObjectInConnection([creditCard], creditCard),
+          node: creditCard,
+        }
+      },
     },
   }),
 })
@@ -86,6 +99,13 @@ const CreditCardType = new GraphQLObjectType({
       description: "Billing address postal code",
     },
   }),
+})
+
+export const {
+  connectionType: CreditCardConnection,
+  edgeType: CreditCardEdge,
+} = connectionDefinitions({
+  nodeType: CreditCardType,
 })
 
 export const CreditCard = {
