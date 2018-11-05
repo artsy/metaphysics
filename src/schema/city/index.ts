@@ -14,6 +14,9 @@ import FairSorts from "schema/sorts/fair_sorts"
 import EventStatus from "schema/input_fields/event_status"
 
 import cityData from "./city_data.json"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
+import { pageable } from "relay-cursor-paging"
+import { connectionFromArray } from "graphql-relay"
 
 const LOCAL_DISCOVERY_RADIUS_KM = 75
 
@@ -44,8 +47,29 @@ const CityType = new GraphQLObjectType({
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
         }
 
-        // TODO: ensure non-artsy parnter shows are merged correctly
         return showsLoader(gravityOptions)
+      },
+    },
+    shows_connection: {
+      type: connectionWithCursorInfo(Show.type),
+      args: pageable({
+        size: {
+          type: GraphQLInt,
+        },
+        sort: PartnerShowSorts,
+        status: EventStatus,
+      }),
+      resolve: (city, args, _context, { rootValue: { showsLoader } }) => {
+        const gravityOptions = {
+          ...args,
+          displayable: true,
+          near: `${city.coordinates.lat},${city.coordinates.lng}`,
+          max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+        }
+
+        return showsLoader(gravityOptions).then(response => {
+          return connectionFromArray(response, args)
+        })
       },
     },
     fairs: {
