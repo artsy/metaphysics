@@ -5081,7 +5081,6 @@ type OrderLineItem {
 
   # Artwork that is being ordered
   artwork: Artwork
-    @deprecated(reason: "Prefer artworkVersion or your data can be out of date")
 
   # Artwork version that is being ordered
   artworkVersion: ArtworkVersion

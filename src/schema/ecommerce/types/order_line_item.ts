@@ -21,8 +21,6 @@ export const OrderLineItemType = new GraphQLObjectType({
     artwork: {
       type: Artwork.type,
       description: "Artwork that is being ordered",
-      deprecationReason:
-        "Prefer artworkVersion or your data can be out of date",
       resolve: (
         { artworkId },
         _args,
