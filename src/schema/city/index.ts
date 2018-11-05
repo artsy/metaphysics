@@ -7,14 +7,13 @@ import {
 } from "graphql"
 
 import { LatLngType } from "../location"
-import Show, { showConnection } from "schema/show"
+import { showConnection } from "schema/show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import Fair from "schema/fair"
 import FairSorts from "schema/sorts/fair_sorts"
 import EventStatus from "schema/input_fields/event_status"
 
 import cityData from "./city_data.json"
-import { connectionWithCursorInfo } from "schema/fields/pagination"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray } from "graphql-relay"
 
