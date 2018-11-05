@@ -10,7 +10,8 @@ describe("CreditCards", () => {
       { id: "6789", brand: "Mastercard" },
     ]
     rootValue = {
-      meCreditCardsLoader: () => Promise.resolve({ body: creditCards }),
+      meCreditCardsLoader: () =>
+        Promise.resolve({ body: creditCards, headers: { "x-total-count": 2 } }),
     }
   })
 
@@ -18,7 +19,7 @@ describe("CreditCards", () => {
     const query = gql`
       {
         me {
-          creditCards(first: 1, limit: 1) {
+          creditCards(first: 1) {
             edges {
               node {
                 id

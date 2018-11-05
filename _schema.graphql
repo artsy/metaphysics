@@ -4318,7 +4318,6 @@ type Me implements Node {
 
   # A list of the current user’s credit cards
   creditCards(
-    limit: Int
     after: String
     first: Int
     before: String
