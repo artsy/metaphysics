@@ -2,7 +2,7 @@
 
 import { runQuery } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
-import sampleOrder from "test/fixtures/results/sample_order"
+import { sampleOrder } from "test/fixtures/results/sample_order"
 import exchangeOrdersJSON from "test/fixtures/exchange/orders.json"
 import gql from "lib/gql"
 import { OrderSellerFields } from "./order_fields"
@@ -30,7 +30,7 @@ describe("Orders query", () => {
 
     return runQuery(query, rootValue).then(data => {
       expect(data!.orders.totalCount).toEqual(100)
-      expect(data!.orders.edges[0].node).toEqual(sampleOrder(true, false))
+      expect(data!.orders.edges[0].node).toEqual(sampleOrder())
     })
   })
 })

@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
-import sampleOrder from "test/fixtures/results/sample_order"
+import { sampleOrder } from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 import gql from "lib/gql"
 import { OrderSellerFields } from "./order_fields"
@@ -53,7 +53,7 @@ describe("Fulfill Order at Once Mutation", () => {
 
     return runQuery(mutation, rootValue).then(data => {
       expect(data!.fulfillOrderAtOnce.orderOrError.order).toEqual(
-        sampleOrder(true, true)
+        sampleOrder({ fulfillments: true })
       )
     })
   })
