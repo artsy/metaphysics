@@ -1,4 +1,5 @@
 import { runQuery } from "test/utils"
+import gql from "lib/gql"
 
 const mockCities = {
   "sacramende-ca-usa": {
@@ -14,7 +15,7 @@ beforeEach(() => {
 
 describe("City", () => {
   it("finds a city by its slug", () => {
-    const query = `
+    const query = gql`
       {
         city(slug: "sacramende-ca-usa") {
           name
@@ -31,7 +32,7 @@ describe("City", () => {
 
   it("returns a helpful error for unknown slugs", () => {
     expect.assertions(1)
-    const query = `
+    const query = gql`
       {
         city(slug: "sacramundo") {
           name
@@ -44,12 +45,16 @@ describe("City", () => {
   })
 
   it("resolves nearby shows", () => {
-    const query = `
+    const query = gql`
       {
         city(slug: "sacramende-ca-usa") {
           name
           shows {
-            id
+            edges {
+              node {
+                id
+              }
+            }
           }
         }
       }
@@ -66,7 +71,13 @@ describe("City", () => {
     return runQuery(query, rootValue).then(result => {
       expect(result!.city).toEqual({
         name: "Sacramende",
-        shows: mockShows,
+        shows: {
+          edges: [
+            {
+              node: mockShows[0],
+            },
+          ],
+        },
       })
 
       expect(mockShowsLoader).toHaveBeenCalledWith(
@@ -78,7 +89,7 @@ describe("City", () => {
   })
 
   it("resolves nearby fairs", () => {
-    const query = `
+    const query = gql`
       {
         city(slug: "sacramende-ca-usa") {
           name

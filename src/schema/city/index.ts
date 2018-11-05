@@ -7,7 +7,7 @@ import {
 } from "graphql"
 
 import { LatLngType } from "../location"
-import Show from "schema/show"
+import Show, { showConnection } from "schema/show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import Fair from "schema/fair"
 import FairSorts from "schema/sorts/fair_sorts"
@@ -33,25 +33,7 @@ const CityType = new GraphQLObjectType({
       type: LatLngType,
     },
     shows: {
-      type: new GraphQLList(Show.type),
-      args: {
-        size: { type: GraphQLInt },
-        sort: PartnerShowSorts,
-        status: EventStatus,
-      },
-      resolve: (obj, args, _context, { rootValue: { showsLoader } }) => {
-        const gravityOptions = {
-          ...args,
-          displayable: true,
-          near: `${obj.coordinates.lat},${obj.coordinates.lng}`,
-          max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-        }
-
-        return showsLoader(gravityOptions)
-      },
-    },
-    shows_connection: {
-      type: connectionWithCursorInfo(Show.type),
+      type: showConnection,
       args: pageable({
         size: {
           type: GraphQLInt,

@@ -35,60 +35,6 @@ describe("Show type", () => {
       partnerShowLoader: sinon.stub().returns(Promise.resolve(showData)),
     }
   })
-  it("returns a list of nearby shows", () => {
-    showData.location = {
-      coordinates: {
-        lat: 40.7135097,
-        lng: -73.9859414,
-      },
-    }
-    showData.nearby_shows = [
-      {
-        location: {
-          id: "4fe150547a4a170001001729",
-          coordinates: {
-            lat: 40.722558,
-            lng: -73.99282,
-          },
-        },
-      },
-    ]
-    rootValue.showsLoader = sinon.stub().returns(
-      Promise.resolve({
-        showData,
-      })
-    )
-    const query = `
-    {
-      show(id: "new-york-academy-of-art-2015-fellows-exhibition") {
-        nearby_shows {
-          location {
-            coordinates {
-              lat
-              lng
-            }
-          }
-         }
-      }
-    }    
-    `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          nearby_shows: [
-            {
-              location: {
-                coordinates: {
-                  lat: 40.7135097,
-                  lng: -73.9859414,
-                },
-              },
-            },
-          ],
-        },
-      })
-    })
-  })
   it("include true has_location flag for shows with location", () => {
     showData.location = "test location"
     const query = `

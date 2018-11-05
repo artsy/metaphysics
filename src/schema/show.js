@@ -432,23 +432,6 @@ export const ShowType = new GraphQLObjectType({
       type: GraphQLString,
       resolve: ({ fair }) => (isExisty(fair) ? "Fair Booth" : "Show"),
     },
-    nearby_shows: {
-      type: new GraphQLList(ShowType),
-      description: "A list of nearby shows",
-      resolve: (
-        { location },
-        options,
-        request,
-        { rootValue: { showsLoader } }
-      ) => {
-        const { lat, lng } = location.coordinates
-        const gravityOptions = assign(options, {
-          near: `${lat},${lng}`,
-        })
-
-        return showsLoader(gravityOptions)
-      },
-    },
   }),
 })
 const Show = {

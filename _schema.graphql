@@ -1970,7 +1970,15 @@ type City {
   slug: String
   name: String
   coordinates: LatLng
-  shows(size: Int, sort: PartnerShowSorts, status: EventStatus): [Show]
+  shows(
+    size: Int
+    sort: PartnerShowSorts
+    status: EventStatus
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ShowConnection
   fairs(size: Int, sort: FairSorts, status: EventStatus): [Fair]
 }
 
@@ -6871,9 +6879,6 @@ type Show implements Node {
     max_days: Int
   ): String
   type: String
-
-  # A list of nearby shows
-  nearby_shows: [Show]
 }
 
 # A connection to a list of items.
