@@ -1,6 +1,6 @@
 import { GraphQLEnumType } from "graphql"
 
-export default new GraphQLEnumType({
+const PartnerClassification = new GraphQLEnumType({
   name: "PartnerClassification",
   values: {
     AUCTION: {
@@ -29,3 +29,5 @@ export default new GraphQLEnumType({
     },
   },
 })
+
+export default PartnerClassification

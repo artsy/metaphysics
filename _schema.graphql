@@ -6861,6 +6861,15 @@ type Show implements Node {
 
   # The exhibition title
   name: String
+  nearbyShows(
+    size: Int
+    sort: PartnerShowSorts
+    status: EventStatus
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ShowConnection
   partner: PartnerTypes
   press_release(format: Format): String
   start_at(

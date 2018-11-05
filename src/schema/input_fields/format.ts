@@ -1,6 +1,6 @@
 import { GraphQLEnumType } from "graphql"
 
-export default {
+const Format = {
   type: new GraphQLEnumType({
     name: "Format",
     values: {
@@ -18,3 +18,5 @@ export default {
     },
   }),
 }
+
+export default Format

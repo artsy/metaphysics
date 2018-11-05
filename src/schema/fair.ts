@@ -16,9 +16,9 @@ import {
   GraphQLString,
   GraphQLBoolean,
   GraphQLNonNull,
-  GraphQLEnumType,
 } from "graphql"
 import { totalViaLoader } from "lib/total"
+import ShowSort from "./sorts/show_sort"
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",
@@ -30,54 +30,12 @@ const FairOrganizerType = new GraphQLObjectType({
       type: Profile.type,
       resolve: (
         { profile_id },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { profileLoader } }
       ) => {
         return profileLoader(profile_id).catch(() => null)
       },
-    },
-  },
-})
-
-export const ShowsSort = new GraphQLEnumType({
-  name: "ShowSort",
-  values: {
-    START_AT_ASC: {
-      value: "start_at",
-    },
-    START_AT_DESC: {
-      value: "-start_at",
-    },
-    END_AT_ASC: {
-      value: "end_at",
-    },
-    END_AT_DESC: {
-      value: "-end_at",
-    },
-    UPDATED_AT_ASC: {
-      value: "updated_at",
-    },
-    UPDATED_AT_DESC: {
-      value: "-updated_at",
-    },
-    NAME_ASC: {
-      value: "name",
-    },
-    NAME_DESC: {
-      value: "-name",
-    },
-    FEATURED_ASC: {
-      value: "featured",
-    },
-    FEATURED_DESC: {
-      value: "-featured",
-    },
-    SORTABLE_NAME_ASC: {
-      value: "sortable_name",
-    },
-    SORTABLE_NAME_DESC: {
-      value: "-sortable_name",
     },
   },
 })
@@ -135,7 +93,7 @@ const FairType = new GraphQLObjectType({
       resolve: (
         { id, location, published },
         options,
-        request,
+        _request,
         { rootValue: { fairLoader } }
       ) => {
         if (location) {
@@ -155,8 +113,8 @@ const FairType = new GraphQLObjectType({
       type: Profile.type,
       resolve: (
         { default_profile_id, organizer },
-        options,
-        request,
+        _options,
+        _request,
         { rootValue: { profileLoader } }
       ) => {
         const id = default_profile_id || (organizer && organizer.profile_id)
@@ -175,14 +133,14 @@ const FairType = new GraphQLObjectType({
           description: "Number of artworks to return",
         },
         sort: {
-          type: ShowsSort,
+          type: ShowSort,
           description: "Sorts for shows in a fair",
         },
       }),
       resolve: (
         { id },
         options,
-        request,
+        _request,
         { rootValue: { fairBoothsLoader } }
       ) => {
         const gravityOptions = omit(parseRelayOptions(options), ["page"])
@@ -223,7 +181,7 @@ const Fair = {
       description: "The slug or ID of the Fair",
     },
   },
-  resolve: (root, { id }, request, { rootValue: { fairLoader } }) => {
+  resolve: (_root, { id }, _request, { rootValue: { fairLoader } }) => {
     return fairLoader(id)
   },
 }

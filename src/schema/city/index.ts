@@ -16,8 +16,7 @@ import EventStatus from "schema/input_fields/event_status"
 import cityData from "./city_data.json"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray } from "graphql-relay"
-
-const LOCAL_DISCOVERY_RADIUS_KM = 75
+import { LOCAL_DISCOVERY_RADIUS_KM } from "./constants"
 
 const CityType = new GraphQLObjectType({
   name: "City",
