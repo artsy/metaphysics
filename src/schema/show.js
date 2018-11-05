@@ -445,6 +445,7 @@ export const ShowType = new GraphQLObjectType({
         const gravityOptions = assign(options, {
           near: `${lat},${lng}`,
         })
+
         return showsLoader(gravityOptions)
       },
     },

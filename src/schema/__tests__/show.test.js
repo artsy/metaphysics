@@ -35,7 +35,60 @@ describe("Show type", () => {
       partnerShowLoader: sinon.stub().returns(Promise.resolve(showData)),
     }
   })
-
+  it("returns a list of nearby shows", () => {
+    showData.location = {
+      coordinates: {
+        lat: 40.7135097,
+        lng: -73.9859414,
+      },
+    }
+    showData.nearby_shows = [
+      {
+        location: {
+          id: "4fe150547a4a170001001729",
+          coordinates: {
+            lat: 40.722558,
+            lng: -73.99282,
+          },
+        },
+      },
+    ]
+    rootValue.showsLoader = sinon.stub().returns(
+      Promise.resolve({
+        showData,
+      })
+    )
+    const query = `
+    {
+      show(id: "new-york-academy-of-art-2015-fellows-exhibition") {
+        nearby_shows {
+          location {
+            coordinates {
+              lat
+              lng
+            }
+          }
+         }
+      }
+    }    
+    `
+    return runQuery(query, rootValue).then(data => {
+      expect(data).toEqual({
+        show: {
+          nearby_shows: [
+            {
+              location: {
+                coordinates: {
+                  lat: 40.7135097,
+                  lng: -73.9859414,
+                },
+              },
+            },
+          ],
+        },
+      })
+    })
+  })
   it("include true has_location flag for shows with location", () => {
     showData.location = "test location"
     const query = `
@@ -161,7 +214,9 @@ describe("Show type", () => {
 
   describe("city", () => {
     it("returns the location city if one is set", () => {
-      showData.location = { city: "Quonochontaug" }
+      showData.location = {
+        city: "Quonochontaug",
+      }
       showData.partner_city = "Something Else"
       const query = `
         {
@@ -197,7 +252,11 @@ describe("Show type", () => {
       })
     })
     it("returns the fair city if one is set", () => {
-      showData.fair = { location: { city: "Quonochontaug" } }
+      showData.fair = {
+        location: {
+          city: "Quonochontaug",
+        },
+      }
       showData.partner_city = "Something Else"
       const query = `
         {
@@ -207,14 +266,20 @@ describe("Show type", () => {
         }
       `
       return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({ show: { city: "Quonochontaug" } })
+        expect(data).toEqual({
+          show: {
+            city: "Quonochontaug",
+          },
+        })
       })
     })
   })
 
   describe("kind", () => {
     it("returns fair when a fair booth", () => {
-      showData.fair = { id: "foo" }
+      showData.fair = {
+        id: "foo",
+      }
       const query = `
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -232,7 +297,11 @@ describe("Show type", () => {
     })
     it("returns solo when only one artist in a ref show", () => {
       showData.artists = []
-      showData.artists_without_artworks = [{ id: "foo" }]
+      showData.artists_without_artworks = [
+        {
+          id: "foo",
+        },
+      ]
       const query = `
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -250,7 +319,14 @@ describe("Show type", () => {
     })
     it("returns group when more than one artist in a ref show", () => {
       showData.artists = []
-      showData.artists_without_artworks = [{ id: "foo" }, { id: "bar" }]
+      showData.artists_without_artworks = [
+        {
+          id: "foo",
+        },
+        {
+          id: "bar",
+        },
+      ]
       const query = `
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -267,7 +343,11 @@ describe("Show type", () => {
       })
     })
     it("returns solo when only one artist", () => {
-      showData.artists = [{ id: "foo" }]
+      showData.artists = [
+        {
+          id: "foo",
+        },
+      ]
       showData.artists_without_artworks = null
       const query = `
         {
@@ -285,7 +365,14 @@ describe("Show type", () => {
       })
     })
     it("returns group when more than one artist in a regular show", () => {
-      showData.artists = [{ id: "foo" }, { id: "bar" }]
+      showData.artists = [
+        {
+          id: "foo",
+        },
+        {
+          id: "bar",
+        },
+      ]
       showData.artists_without_artworks = null
       const query = `
         {
@@ -303,7 +390,11 @@ describe("Show type", () => {
       })
     })
     it("returns group when only one artist but the show is flagged as group", () => {
-      showData.artists = [{ id: "foo" }]
+      showData.artists = [
+        {
+          id: "foo",
+        },
+      ]
       showData.artists_without_artworks = null
       showData.group = true
       const query = `
@@ -480,9 +571,13 @@ describe("Show type", () => {
     })
   })
   it("includes the total number of artworks", () => {
-    rootValue.partnerShowArtworksLoader = sinon
-      .stub()
-      .returns(Promise.resolve({ headers: { "x-total-count": 42 } }))
+    rootValue.partnerShowArtworksLoader = sinon.stub().returns(
+      Promise.resolve({
+        headers: {
+          "x-total-count": 42,
+        },
+      })
+    )
     const query = `
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -523,9 +618,13 @@ describe("Show type", () => {
     })
   })
   it("includes the number of artworks by a specific artist", () => {
-    rootValue.partnerShowArtworksLoader = sinon
-      .stub()
-      .returns(Promise.resolve({ headers: { "x-total-count": 2 } }))
+    rootValue.partnerShowArtworksLoader = sinon.stub().returns(
+      Promise.resolve({
+        headers: {
+          "x-total-count": 2,
+        },
+      })
+    )
     const query = `
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -546,9 +645,11 @@ describe("Show type", () => {
     })
   })
   it("does not return errors when there is no cover image", () => {
-    rootValue.partnerShowArtworksLoader = sinon
-      .stub()
-      .returns(Promise.resolve({ body: [] }))
+    rootValue.partnerShowArtworksLoader = sinon.stub().returns(
+      Promise.resolve({
+        body: [],
+      })
+    )
     const query = `
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
