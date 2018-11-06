@@ -809,6 +809,12 @@ type Artwork implements Node & Sellable {
   medium: String
   metric: String @deprecated(reason: "Prefer dimensions instead.")
   meta: ArtworkMeta
+
+  # [DO NOT USE] Weekly pageview data (static).
+  pageviews: Int
+    @deprecated(
+      reason: "Do not use! This is for an AB test and will be imminently deprecated."
+    )
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
@@ -1539,6 +1545,12 @@ type ArtworkItem implements Node & Sellable {
   medium: String
   metric: String @deprecated(reason: "Prefer dimensions instead.")
   meta: ArtworkMeta
+
+  # [DO NOT USE] Weekly pageview data (static).
+  pageviews: Int
+    @deprecated(
+      reason: "Do not use! This is for an AB test and will be imminently deprecated."
+    )
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
