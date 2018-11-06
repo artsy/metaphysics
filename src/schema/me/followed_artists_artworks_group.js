@@ -12,7 +12,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { omit, groupBy, map } from "lodash"
-import { parseRelayOptions } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 
 const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
@@ -76,7 +76,7 @@ const FollowedArtistsArtworksGroup = {
     if (!followedArtistsArtworksLoader) return null
 
     // Convert Relay-style pagination to the supported page/size style for the backend.
-    const gravityOptions = parseRelayOptions(options)
+    const gravityOptions = convertConnectionArgsToGravityArgs(options)
     gravityOptions.total_count = true
 
     return followedArtistsArtworksLoader(omit(gravityOptions, "offset")).then(
@@ -99,8 +99,8 @@ const FollowedArtistsArtworksGroup = {
               summary: `${groupedNodes.length} work${
                 groupedNodes.length === 1 ? "" : "s"
               } added`,
-              artworks: map(groupedNodes, groupped => {
-                return groupped.node
+              artworks: map(groupedNodes, grouped => {
+                return grouped.node
               }),
               id: groupedNodes[0].node._id,
               artists: groupedNodes[0].node.artist.name,

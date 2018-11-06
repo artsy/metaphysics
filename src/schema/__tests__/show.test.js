@@ -32,7 +32,11 @@ describe("Show type", () => {
 
     rootValue = {
       showLoader: sinon.stub().returns(Promise.resolve(showData)),
-      showsLoader: sinon.stub().returns(Promise.resolve([showData])),
+      showsWithHeadersLoader: sinon
+        .stub()
+        .returns(
+          Promise.resolve({ body: [showData], headers: { "x-total-count": 1 } })
+        ),
       galaxyGalleriesLoader: sinon.stub().returns(Promise.resolve(galaxyData)),
       partnerShowLoader: sinon.stub().returns(Promise.resolve(showData)),
     }
@@ -617,7 +621,7 @@ describe("Show type", () => {
       const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
-            nearbyShows {
+            nearbyShows(first: 1) {
               edges {
                 node {
                   id

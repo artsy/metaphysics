@@ -1971,7 +1971,6 @@ type City {
   name: String
   coordinates: LatLng
   shows(
-    size: Int
     sort: PartnerShowSorts
     status: EventStatus
     after: String
@@ -6900,7 +6899,6 @@ type Show implements Node {
 
   # Shows that are near (~75km) from this show
   nearbyShows(
-    size: Int
     sort: PartnerShowSorts
     status: EventStatus
     after: String

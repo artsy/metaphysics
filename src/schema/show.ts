@@ -1,7 +1,12 @@
 import moment from "moment"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
-import { isExisty, exclude, existyValue, parseRelayOptions } from "lib/helpers"
+import {
+  isExisty,
+  exclude,
+  existyValue,
+  convertConnectionArgsToGravityArgs,
+} from "lib/helpers"
 import HTTPError from "lib/http_error"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
@@ -141,7 +146,7 @@ export const ShowType = new GraphQLObjectType({
           partner_id: show.partner.id,
           show_id: show.id,
         }
-        const gravityOptions = parseRelayOptions(options)
+        const gravityOptions = convertConnectionArgsToGravityArgs(options)
         delete gravityOptions.page
 
         return Promise.all([
@@ -417,29 +422,43 @@ export const ShowType = new GraphQLObjectType({
       description: "Shows that are near (~75km) from this show",
       type: showConnection,
       args: pageable({
-        size: {
-          type: GraphQLInt,
-        },
         sort: PartnerShowSorts,
         status: EventStatus,
       }),
-      resolve: (show, args, _context, { rootValue: { showsLoader } }) => {
+      resolve: async (
+        show,
+        args,
+        _context,
+        { rootValue: { showsWithHeadersLoader } }
+      ) => {
         // Bail with an empty array if we can't get the lat/long for this show
         if (!show.location || !show.location.coordinates) {
           return connectionFromArray([], args)
         }
-        // OK, looks good
+
         const coordinates = show.location.coordinates
         const gravityOptions = {
-          ...args,
+          ...convertConnectionArgsToGravityArgs(args),
           displayable: true,
           near: `${coordinates.lat},${coordinates.lng}`,
-          max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-        }
 
-        return showsLoader(gravityOptions).then(response => {
-          return connectionFromArray(response, args)
+          max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+          total_count: true,
+        }
+        delete gravityOptions.page
+
+        const response = await showsWithHeadersLoader(gravityOptions)
+        const { headers, body: cities } = response
+
+        const results = connectionFromArraySlice(cities, args, {
+          arrayLength: headers["x-total-count"],
+          sliceStart: gravityOptions.offset,
         })
+
+        // This is in our schema, so might as well fill it
+        // @ts-ignore
+        results.totalCount = headers["x-total-count"]
+        return results
       },
     },
     partner: {

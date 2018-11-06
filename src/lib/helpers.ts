@@ -90,12 +90,14 @@ export const queriedForFieldsOtherThanBlacklisted = (
 export const queryContainsField = (fieldASTs, soughtField) => {
   return parseFieldASTsIntoArray(fieldASTs).includes(soughtField)
 }
-export const parseRelayOptions = options => {
+
+export const convertConnectionArgsToGravityArgs = options => {
   const { limit: size, offset } = getPagingParameters(options)
   const page = Math.round((size + offset) / size)
   const gravityArgs = omit(options, ["first", "after", "last", "before"])
   return Object.assign({}, { page, size, offset }, gravityArgs)
 }
+
 export const removeNulls = object => {
   Object.keys(object).forEach(key => object[key] == null && delete object[key]) // eslint-disable-line eqeqeq, no-param-reassign, max-len
 }

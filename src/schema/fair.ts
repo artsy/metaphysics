@@ -1,7 +1,7 @@
 import { omit } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
-import { parseRelayOptions } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import moment from "moment"
 import cached from "./fields/cached"
 import date from "./fields/date"
@@ -143,7 +143,10 @@ const FairType = new GraphQLObjectType({
         _request,
         { rootValue: { fairBoothsLoader } }
       ) => {
-        const gravityOptions = omit(parseRelayOptions(options), ["page"])
+        const gravityOptions = omit(
+          convertConnectionArgsToGravityArgs(options),
+          ["page"]
+        )
         gravityOptions.sort = gravityOptions.sort || "-featured"
 
         return Promise.all([

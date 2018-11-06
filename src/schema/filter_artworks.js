@@ -8,7 +8,7 @@ import { computeTotalPages, createPageCursors } from "./fields/pagination"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
 import {
-  parseRelayOptions,
+  convertConnectionArgsToGravityArgs,
   queriedForFieldsOtherThanBlacklisted,
   removeNulls,
 } from "lib/helpers"
@@ -99,7 +99,7 @@ export const FilterArtworksType = new GraphQLObjectType({
         request,
         { rootValue: { filterArtworksLoader } }
       ) => {
-        const relayOptions = parseRelayOptions(args)
+        const relayOptions = convertConnectionArgsToGravityArgs(args)
 
         return filterArtworksLoader(
           assign(gravityOptions, relayOptions, {})
