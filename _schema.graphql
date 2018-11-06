@@ -1644,6 +1644,26 @@ enum ArtworkSorts {
   TITLE_DESC
 }
 
+type ArtworkVersion {
+  # ID of the order line item
+  id: ID!
+
+  # Artwork title
+  title: String
+
+  # The Image id
+  defaultImageID: String
+
+  # The artists related to this Artwork Version
+  artists: String
+
+  # The names for the artists related to this Artwork Version
+  artistNames: String
+
+  # The image representing the Artwork Version
+  image: Image
+}
+
 # An asset which is assigned to a consignment submission
 type Asset {
   # Convection asset ID.
@@ -5068,6 +5088,9 @@ type OrderLineItem {
 
   # Artwork that is being ordered
   artwork: Artwork
+
+  # Artwork version that is being ordered
+  artworkVersion: ArtworkVersion
 
   # ID of the selected Edition set from the artwork
   editionSetId: String

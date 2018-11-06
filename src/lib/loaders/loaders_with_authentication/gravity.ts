@@ -12,6 +12,9 @@ export default (accessToken, userID, opts) => {
 
   return {
     authenticatedArtworkLoader: gravityLoader(id => `artwork/${id}`),
+    authenticatedArtworkVersionLoader: gravityLoader(
+      id => `artwork_version/${id}`
+    ),
     collectionLoader: gravityLoader(id => `collection/${id}`, {
       user_id: userID,
     }),
