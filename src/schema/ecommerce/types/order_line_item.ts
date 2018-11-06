@@ -9,6 +9,7 @@ import Artwork from "schema/artwork"
 import { OrderFulfillmentConnection } from "./order_fulfillment"
 import { amount } from "schema/fields/money"
 import date from "schema/fields/date"
+import { ArtworkVersion } from "../../artwork_version"
 
 export const OrderLineItemType = new GraphQLObjectType({
   name: "OrderLineItem",
@@ -26,6 +27,17 @@ export const OrderLineItemType = new GraphQLObjectType({
         _context,
         { rootValue: { authenticatedArtworkLoader } }
       ) => authenticatedArtworkLoader(artworkId),
+    },
+    artworkVersion: {
+      type: ArtworkVersion,
+      description: "Artwork version that is being ordered",
+
+      resolve: (
+        { artworkVersionId },
+        _args,
+        _context,
+        { rootValue: { authenticatedArtworkVersionLoader } }
+      ) => authenticatedArtworkVersionLoader(artworkVersionId),
     },
     editionSetId: {
       type: GraphQLString,

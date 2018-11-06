@@ -1644,6 +1644,26 @@ enum ArtworkSorts {
   TITLE_DESC
 }
 
+type ArtworkVersion {
+  # ID of the order line item
+  id: ID!
+
+  # Artwork title
+  title: String
+
+  # The Image id
+  defaultImageID: String
+
+  # The artists related to this Artwork Version
+  artists: String
+
+  # The names for the artists related to this Artwork Version
+  artistNames: String
+
+  # The image representing the Artwork Version
+  image: Image
+}
+
 # An asset which is assigned to a consignment submission
 type Asset {
   # Convection asset ID.
@@ -1970,7 +1990,15 @@ type City {
   slug: String
   name: String
   coordinates: LatLng
-  shows(size: Int, sort: PartnerShowSorts, status: EventStatus): [Show]
+  shows(
+    size: Int
+    sort: PartnerShowSorts
+    status: EventStatus
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ShowConnection
   fairs(size: Int, sort: FairSorts, status: EventStatus): [Fair]
 }
 
@@ -5061,6 +5089,9 @@ type OrderLineItem {
   # Artwork that is being ordered
   artwork: Artwork
 
+  # Artwork version that is being ordered
+  artworkVersion: ArtworkVersion
+
   # ID of the selected Edition set from the artwork
   editionSetId: String
 
@@ -6870,9 +6901,6 @@ type Show implements Node {
     max_days: Int
   ): String
   type: String
-
-  # A list of nearby shows
-  nearby_shows: [Show]
 }
 
 # A connection to a list of items.
