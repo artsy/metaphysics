@@ -3,7 +3,7 @@
 import { CreditCardConnection } from "schema/credit_card"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
-import { parseRelayOptions } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 export const CreditCards = {
   type: CreditCardConnection,
@@ -16,7 +16,7 @@ export const CreditCards = {
     { rootValue: { accessToken, meCreditCardsLoader } }
   ) => {
     if (!accessToken) return null
-    const { page, size, offset } = parseRelayOptions(options)
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
     const gravityArgs = { page, size, total_count: true }
 
     return meCreditCardsLoader(gravityArgs).then(({ body, headers }) => {
