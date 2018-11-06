@@ -1,0 +1,1 @@
+export const LOCAL_DISCOVERY_RADIUS_KM = 75

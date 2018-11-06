@@ -1,6 +1,6 @@
 import { GraphQLEnumType } from "graphql"
 
-export default {
+const EventStatus = {
   type: new GraphQLEnumType({
     name: "EventStatus",
     values: {
@@ -35,3 +35,5 @@ export default {
     },
   }),
 }
+
+export default EventStatus

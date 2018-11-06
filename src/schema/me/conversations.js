@@ -1,5 +1,5 @@
 import { pageable } from "relay-cursor-paging"
-import { parseRelayOptions } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { GraphQLInt } from "graphql"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { assign } from "lodash"
@@ -20,7 +20,7 @@ export default {
   args: pageable(),
   resolve: (root, options, request, { rootValue: { conversationsLoader } }) => {
     if (!conversationsLoader) return null
-    const { page, size, offset } = parseRelayOptions(options)
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
     const expand = ["total_unread_count"]
     return conversationsLoader({ page, size, expand }).then(
       ({ total_count, total_unread_count, conversations }) => {

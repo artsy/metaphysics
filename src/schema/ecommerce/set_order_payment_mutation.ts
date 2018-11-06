@@ -5,10 +5,7 @@ import {
   GraphQLNonNull,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import {
-  RequestedFulfillmentFragment,
-  BuyerSellerFields,
-} from "./query_helpers"
+import { BuyerOrderFields } from "./query_helpers"
 import gql from "lib/gql"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
@@ -54,40 +51,8 @@ export const SetOrderPaymentMutation = mutationWithClientMutationId({
             __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
-                id
-                ${BuyerSellerFields}
-                ${RequestedFulfillmentFragment}
-                buyerPhoneNumber
-                buyerTotalCents
-                code
-                commissionFeeCents
-                commissionRate
-                displayCommissionRate
-                createdAt
+                ${BuyerOrderFields}
                 creditCardId
-                currencyCode
-                itemsTotalCents
-                lastApprovedAt
-                lastSubmittedAt
-                sellerTotalCents
-                shippingTotalCents
-                state
-                stateExpiresAt
-                stateUpdatedAt
-                taxTotalCents
-                transactionFeeCents
-                updatedAt
-                lineItems{
-                  edges{
-                    node{
-                      id
-                      priceCents
-                      artworkId
-                      editionSetId
-                      quantity
-                    }
-                  }
-                }
               }
             }
             ... on EcommerceOrderWithMutationFailure {

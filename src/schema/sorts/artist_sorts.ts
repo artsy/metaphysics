@@ -1,6 +1,6 @@
 import { GraphQLEnumType } from "graphql"
 
-export default {
+const ArtistSorts = {
   type: new GraphQLEnumType({
     name: "ArtistSorts",
     values: {
@@ -28,3 +28,5 @@ export default {
     },
   }),
 }
+
+export default ArtistSorts

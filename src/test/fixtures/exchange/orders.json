@@ -11,14 +11,15 @@
       "node": {
         "id": "fooid123",
         "code": "1",
+        "mode": "BUY",
         "state": "PENDING",
         "stateReason": null,
         "currencyCode": "usd",
-        "seller":{
+        "seller": {
           "id": "111",
           "__typename": "Partner"
         },
-        "buyer":{
+        "buyer": {
           "id": "111",
           "__typename": "User"
         },

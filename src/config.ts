@@ -1,3 +1,5 @@
+import chalk from "chalk"
+
 require("dotenv").config({
   path: require("path").join(process.cwd(), ".env"),
 })
@@ -25,8 +27,7 @@ const {
   ENABLE_METRICS,
   ENABLE_QUERY_TRACING,
   ENABLE_REQUEST_LOGGING,
-  ENABLE_SCHEMA_STITCHING,
-  ENABLE_GRAVQL_ONLY_STITCHING,
+  DISABLE_SCHEMA_STITCHING,
   ENABLE_CONSIGNMENTS_STITCHING,
   ENABLE_ECOMMERCE_STITCHING,
   ENABLE_HEAPDUMPS,
@@ -91,11 +92,15 @@ const mustHave = {
   IMPULSE_APPLICATION_ID,
   POSITRON_API_BASE,
   EXCHANGE_API_BASE,
+  KAWS_API_BASE,
 }
 
 Object.keys(mustHave).forEach(key => {
   if (!mustHave[key]) {
-    throw new Error(`You need to have the ENV var ${key} set up.`)
+    const file = chalk.whiteBright(".env.example")
+    throw new Error(
+      `You need to have the ENV var ${key} set up - check out ${file}.`
+    )
   }
 })
 
@@ -126,8 +131,7 @@ export default {
   ENABLE_METRICS,
   ENABLE_QUERY_TRACING,
   ENABLE_REQUEST_LOGGING,
-  ENABLE_SCHEMA_STITCHING,
-  ENABLE_GRAVQL_ONLY_STITCHING,
+  DISABLE_SCHEMA_STITCHING,
   ENABLE_CONSIGNMENTS_STITCHING,
   ENABLE_ECOMMERCE_STITCHING,
   ENABLE_HEAPDUMPS,

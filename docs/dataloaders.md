@@ -37,24 +37,24 @@ artwork's artist - using the dataloader pattern that call would only happen once
 
 Our usage has a few moving parts:
 
-* The `api` object: for example [`/lib/apis/gravity.js`][api_grav] - it is a wrapper around [fetch][fetch] that
+- The `api` object: for example [`/lib/apis/gravity.js`][api_grav] - it is a wrapper around [fetch][fetch] that
   customizes the request to the service. The params tend to differ depending on the authentication method for that
   server.
 
-* The `loader factory` - there are three loader factories. They all end up exposing the same API, so your tests should
+- The `loader factory` - there are three loader factories. They all end up exposing the same API, so your tests should
   be the same shape regardless of the servers or types of calls you need to make.
 
   When an unauthenticated API call is made we take the result and store it in memcache, then the next time (potentially
   on another user's request) the cached result is passed back and we update memcache for the next request.
 
-  * [`loader_without_authentication_factory`][no_auth_loader] for API requests which can call the `api` directly and be
+  - [`loader_without_authentication_factory`][no_auth_loader] for API requests which can call the `api` directly and be
     safely cached in memcache.
-  * [`loader_with_authentication_factory`][auth_loader] for API requests that _could_ require a call for an
+  - [`loader_with_authentication_factory`][auth_loader] for API requests that _could_ require a call for an
     authentication token (like the examples in [Adding a New Microservice][new_micro].)
-  * [`loader_one_off_factory`][one_off_loader] for API requests which have custom auth schemes, or need to ignore cache
+  - [`loader_one_off_factory`][one_off_loader] for API requests which have custom auth schemes, or need to ignore cache
     completely.
 
-* The `loader` themselves. These are a set of functions which [are exposed][loaders] as properties on the root object
+- The `loader` themselves. These are a set of functions which [are exposed][loaders] as properties on the root object
   during the resolving stages of our graphQL implementation.
 
   ```js
@@ -92,17 +92,17 @@ Our usage has a few moving parts:
         },
       }),
 
-      resolve: (artist, options, request, { rootValue: { artistArtworksLoader } }) => {
+      resolve: async (artist, options, request, { rootValue: { artistArtworksLoader } }) => {
         const { limit: size, offset } = getPagingParameters(options)
         const { sort, filter, published } = options
 
         const gravityArgs = { size, offset, sort, filter, published }
-        return artistArtworksLoader(artist.id, gravityArgs).then(artworks =>
-          connectionFromArraySlice(artworks, options, {
-            arrayLength: artistArtworkArrayLength(artist, filter),
-            sliceStart: offset,
-          })
-        )
+        const artworks = await artistArtworksLoader(artist.id, gravityArgs)
+
+        return connectionFromArraySlice(artworks, options, {
+          arrayLength: artistArtworkArrayLength(artist, filter),
+          sliceStart: offset,
+        })
       },
     },
     // [...]

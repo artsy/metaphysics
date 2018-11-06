@@ -55,6 +55,47 @@ describe("Artwork type", () => {
     }
   })
 
+  describe("dimensions", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          width
+          height
+          metric
+        }
+      }
+    `
+
+    beforeEach(() => {
+      artwork = {
+        ...artwork,
+        width: "2",
+        height: "3",
+        metric: "cm",
+      }
+      rootValue = {
+        artworkLoader: sinon
+          .stub()
+          .withArgs(artwork.id)
+          .returns(Promise.resolve(artwork)),
+      }
+    })
+
+    it("returns width and height", () => {
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            width: "2",
+            height: "3",
+            metric: "cm",
+          },
+        })
+      })
+    })
+  })
+
   describe("#is_contactable", () => {
     const query = `
       {
@@ -1579,6 +1620,33 @@ describe("Artwork type", () => {
               details: "Very detailed description of condition",
             },
           },
+        })
+      })
+    })
+  })
+
+  describe("#pageviews", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          pageviews
+        }
+      }
+    `
+    it("returns the pageviews if found", () => {
+      artwork._id = "4d8b93ba4eb68a1b2c001c5b"
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: { pageviews: 18 },
+        })
+      })
+    })
+
+    it("returns null if not found", () => {
+      artwork._id = "invalid"
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: { pageviews: null },
         })
       })
     })

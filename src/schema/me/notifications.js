@@ -10,7 +10,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { omit } from "lodash"
-import { parseRelayOptions } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 
 const NotificationsFeedItemType = new GraphQLObjectType({
@@ -73,7 +73,7 @@ const Notifications = {
     { rootValue: { accessToken, notificationsFeedLoader } }
   ) => {
     if (!accessToken) return null
-    const gravityOptions = parseRelayOptions(options)
+    const gravityOptions = convertConnectionArgsToGravityArgs(options)
     return notificationsFeedLoader(omit(gravityOptions, "offset")).then(
       ({ feed, total }) =>
         connectionFromArraySlice(feed, options, {

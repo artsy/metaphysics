@@ -1,6 +1,6 @@
 import { GraphQLEnumType } from "graphql"
 
-export default {
+const CategoryType = {
   type: new GraphQLEnumType({
     name: "CategoryType",
     values: {
@@ -13,3 +13,5 @@ export default {
     },
   }),
 }
+
+export default CategoryType

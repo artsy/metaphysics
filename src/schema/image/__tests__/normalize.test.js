@@ -18,10 +18,11 @@ describe("grab", () => {
 describe("setVersion", () => {
   const image = {
     image_url: "https://xxx.cloudfront.net/xxx/:version.jpg", // JPG
-    image_versions: ["icon", "large"],
+    image_versions: ["icon", "large", "normalized"],
     image_urls: {
       icon: "https://xxx.cloudfront.net/xxx/icon.png", // PNG
       large: "https://xxx.cloudfront.net/xxx/large.jpg",
+      normalized: "https://xxx.cloudfront.net/xxx/normalized.jpg",
     },
   }
 
@@ -50,6 +51,10 @@ describe("setVersion", () => {
     expect(setVersion(image, ["garbage"])).toBe(
       "https://xxx.cloudfront.net/xxx/large.jpg"
     )
+  })
+
+  it("should not include normalized as a fallback", () => {
+    expect(setVersion(image)).toBe("https://xxx.cloudfront.net/xxx/large.jpg")
   })
 })
 

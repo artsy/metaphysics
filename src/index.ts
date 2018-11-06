@@ -131,8 +131,11 @@ async function startApp() {
       })
 
       // Share with e.g. the Convection ApolloLink in mergedSchema.
-      res.locals.dataLoaders = loaders // eslint-disable-line no-param-reassign
-      res.locals.accessToken = accessToken // eslint-disable-line no-param-reassign
+      res.locals.dataLoaders = loaders
+      res.locals.accessToken = accessToken
+
+      // Supply userAgent for analytics
+      res.locals.userAgent = userAgent
 
       return {
         schema,

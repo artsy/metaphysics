@@ -36,6 +36,7 @@ import attributionClasses from "../../lib/attributionClasses"
 import { LotStandingType } from "../me/lot_standing"
 import { amount } from "schema/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
+import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 
 const is_inquireable = ({ inquireable }) => {
   return inquireable
@@ -222,6 +223,11 @@ export const artworkFields = () => {
       ) => {
         return relatedFairsLoader({ artwork: [id], size: 1 }).then(_.first)
       },
+    },
+    height: {
+      type: GraphQLString,
+      // See note on `metric` field.
+      deprecationReason: "Prefer dimensions instead.",
     },
     highlights: {
       type: new GraphQLList(Highlight),
@@ -492,7 +498,19 @@ export const artworkFields = () => {
     ),
     manufacturer: markdown(),
     medium: { type: GraphQLString },
+    metric: {
+      type: GraphQLString,
+      // Used for Eigen compatibility, see converation at: https://github.com/artsy/metaphysics/pull/1350
+      deprecationReason: "Prefer dimensions instead.",
+    },
     meta: Meta,
+    pageviews: {
+      type: GraphQLInt,
+      description: "[DO NOT USE] Weekly pageview data (static).",
+      deprecationReason:
+        "Do not use! This is for an AB test and will be imminently deprecated.",
+      resolve: ({ _id }) => artworkPageviews[_id],
+    },
     partner: {
       type: Partner.type,
       args: {
@@ -765,6 +783,11 @@ export const artworkFields = () => {
       description:
         "If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS",
       resolve: artwork => (isEmbeddedVideo(artwork) ? null : artwork.website),
+    },
+    width: {
+      type: GraphQLString,
+      // See note on `metric` field.
+      deprecationReason: "Prefer dimensions instead.",
     },
     framed: {
       type: ArtworkInfoRowType,

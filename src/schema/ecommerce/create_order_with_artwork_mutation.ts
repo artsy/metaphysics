@@ -1,37 +1,11 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLNonNull,
-  GraphQLInt,
-  GraphQLString,
-  graphql,
-} from "graphql"
+import { graphql } from "graphql"
 
 import { mutationWithClientMutationId } from "graphql-relay"
 import { OrderOrFailureUnionType } from "schema/ecommerce/types/order_or_error_union"
 import gql from "lib/gql"
-import {
-  RequestedFulfillmentFragment,
-  BuyerSellerFields,
-} from "./query_helpers"
+import { BuyerOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
-
-const CreateOrderInputType = new GraphQLInputObjectType({
-  name: "CreateOrderInput",
-  fields: {
-    artworkId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "BSON ID of artwork",
-    },
-    editionSetId: {
-      type: GraphQLString,
-      description: "ID of artwork's edition set",
-    },
-    quantity: {
-      type: GraphQLInt,
-      description: "quantity of artwork",
-    },
-  },
-})
+import { CreateOrderInputType } from "./types/create_order_input_type"
 
 export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
   name: "CreateOrderWithArtwork",
@@ -68,40 +42,7 @@ export const CreateOrderWithArtworkMutation = mutationWithClientMutationId({
             __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
-                id
-                buyerTotalCents
-                buyerPhoneNumber
-                code
-                commissionFeeCents
-                commissionRate
-                displayCommissionRate
-                createdAt
-                currencyCode
-                itemsTotalCents
-                ${BuyerSellerFields}
-                sellerTotalCents
-                ${RequestedFulfillmentFragment}
-                shippingTotalCents
-                state
-                stateReason
-                stateExpiresAt
-                stateUpdatedAt
-                taxTotalCents
-                transactionFeeCents
-                updatedAt
-                lastApprovedAt
-                lastSubmittedAt
-                lineItems {
-                  edges {
-                    node {
-                      id
-                      priceCents
-                      artworkId
-                      editionSetId
-                      quantity
-                    }
-                  }
-                }
+                ${BuyerOrderFields}
               }
             }
             ... on EcommerceOrderWithMutationFailure {

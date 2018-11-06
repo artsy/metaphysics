@@ -15,9 +15,11 @@ import Genes from "./genes"
 import GeneFamilies from "./gene_families"
 import GeneFamily from "./gene_family"
 import HomePage from "./home"
+import { City } from "./city"
 import { Order } from "./ecommerce/order"
 import { Orders } from "./ecommerce/orders"
 import { CreateOrderWithArtworkMutation } from "./ecommerce/create_order_with_artwork_mutation"
+import { CreateOfferOrderWithArtworkMutation } from "./ecommerce/create_offer_order_with_artwork_mutation"
 import { SetOrderShippingMutation } from "./ecommerce/set_order_shipping_mutation"
 import { SetOrderPaymentMutation } from "./ecommerce/set_order_payment_mutation"
 import { SubmitOrderMutation } from "./ecommerce/submit_order_mutation"
@@ -67,7 +69,6 @@ import SaveArtworkMutation from "./me/save_artwork_mutation"
 import { endSaleMutation } from "./sale/end_sale_mutation"
 import CreateAssetRequestLoader from "./asset_uploads/create_asset_request_mutation"
 import CreateGeminiEntryForAsset from "./asset_uploads/finalize_asset_mutation"
-import { recordArtworkViewMutation } from "./me/recently_viewed_artworks"
 import UpdateMyUserProfileMutation from "./me/update_me_mutation"
 import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
@@ -79,11 +80,8 @@ import ObjectIdentification from "./object_identification"
 import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
 import config from "config"
-const {
-  ENABLE_CONSIGNMENTS_STITCHING,
-  ENABLE_GRAVQL_ONLY_STITCHING,
-  ENABLE_ECOMMERCE_STITCHING,
-} = config
+import { InitialOfferMutation } from "./ecommerce/initial_offer_mutation"
+const { ENABLE_CONSIGNMENTS_STITCHING, ENABLE_ECOMMERCE_STITCHING } = config
 
 // TODO: Remove this any
 const rootFields: any = {
@@ -94,6 +92,7 @@ const rootFields: any = {
   artist: Artist,
   artists: Artists,
   causality_jwt: CausalityJWT,
+  city: City,
   collection: Collection,
   credit_card: CreditCard,
   external_partner: ExternalPartner,
@@ -155,10 +154,6 @@ const stitchedRootFields: any = {}
 // which come from the stitching instead of our manual version
 const stitchedMutations: any = {}
 
-if (!ENABLE_GRAVQL_ONLY_STITCHING) {
-  stitchedMutations.recordArtworkView = recordArtworkViewMutation
-}
-
 if (!ENABLE_CONSIGNMENTS_STITCHING) {
   stitchedMutations.createConsignmentSubmission = CreateSubmissionMutation
   stitchedMutations.updateConsignmentSubmission = UpdateSubmissionMutation
@@ -184,6 +179,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.submitOrder = SubmitOrderMutation
 
   stitchedMutations.ecommerceCreateOrderWithArtwork = CreateOrderWithArtworkMutation
+  stitchedMutations.ecommerceCreateOfferOrderWithArtwork = CreateOfferOrderWithArtworkMutation
   stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
   stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
   stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
@@ -191,6 +187,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
   stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
   stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
+  stitchedMutations.ecommerceInitialOffer = InitialOfferMutation
 }
 
 export default new GraphQLSchema({

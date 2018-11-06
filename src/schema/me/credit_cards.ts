@@ -1,13 +1,13 @@
 // @ts-check
 
-import { CreditCard } from "schema/credit_card"
+import { CreditCardConnection } from "schema/credit_card"
 import { pageable } from "relay-cursor-paging"
-import { connectionWithCursorInfo } from "schema/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
+import { parseRelayOptions } from "lib/helpers"
 
 export const CreditCards = {
-  type: connectionWithCursorInfo(CreditCard.type),
-  args: pageable(),
+  type: CreditCardConnection,
+  args: pageable({}),
   description: "A list of the current user’s credit cards",
   resolve: (
     _root,
@@ -16,10 +16,13 @@ export const CreditCards = {
     { rootValue: { accessToken, meCreditCardsLoader } }
   ) => {
     if (!accessToken) return null
-    return meCreditCardsLoader().then(({ body }) => {
+    const { page, size, offset } = parseRelayOptions(options)
+    const gravityArgs = { page, size, total_count: true }
+
+    return meCreditCardsLoader(gravityArgs).then(({ body, headers }) => {
       return connectionFromArraySlice(body, options, {
-        arrayLength: body && body.length,
-        sliceStart: 0,
+        arrayLength: headers["x-total-count"],
+        sliceStart: offset,
       })
     })
   },

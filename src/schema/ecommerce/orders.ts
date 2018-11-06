@@ -3,12 +3,9 @@ import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
 import gql from "lib/gql"
-import {
-  PageInfo,
-  RequestedFulfillmentFragment,
-  BuyerSellerFields,
-} from "./query_helpers"
+import { PageInfo, AllOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
+import { OrderModeEnum } from "./types/order_mode_enum"
 
 export const Orders = {
   name: "Orders",
@@ -19,12 +16,13 @@ export const Orders = {
     buyerType: { type: GraphQLString },
     sellerId: { type: GraphQLString },
     sellerType: { type: GraphQLString },
+    mode: { type: OrderModeEnum },
     state: { type: GraphQLString },
     sort: { type: OrdersSortMethodTypeEnum },
   }),
   resolve: (
     _parent,
-    { sellerId, sellerType, buyerId, buyerType, state, sort },
+    { sellerId, sellerType, buyerId, buyerType, mode, state, sort },
     context,
     { rootValue: { exchangeSchema } }
   ) => {
@@ -35,6 +33,7 @@ export const Orders = {
         $sellerId: String
         $sellerType: String
         $state: EcommerceOrderStateEnum
+        $mode: EcommerceOrderModeEnum
         $sort: EcommerceOrderConnectionSortEnum
         $after: String
         $first: Int
@@ -46,6 +45,7 @@ export const Orders = {
           buyerType: $buyerType
           sellerId: $sellerId
           sellerType: $sellerType
+          mode: $mode
           state: $state
           sort: $sort
           after: $after
@@ -57,29 +57,7 @@ export const Orders = {
           totalCount
           edges {
             node {
-              id
-              code
-              currencyCode
-              state
-              stateReason
-              ${BuyerSellerFields}
-              updatedAt
-              createdAt
-              ${RequestedFulfillmentFragment}
-              itemsTotalCents
-              shippingTotalCents
-              taxTotalCents
-              commissionFeeCents
-              commissionRate
-              displayCommissionRate
-              transactionFeeCents
-              buyerPhoneNumber
-              buyerTotalCents
-              sellerTotalCents
-              stateUpdatedAt
-              stateExpiresAt
-              lastApprovedAt
-              lastSubmittedAt
+              ${AllOrderFields}
               lineItems {
                 ${PageInfo}
                 edges {
@@ -102,6 +80,7 @@ export const Orders = {
       buyerType,
       sellerId,
       sellerType,
+      mode,
       state,
       sort,
     }).then(extractEcommerceResponse("ecommerceOrders"))

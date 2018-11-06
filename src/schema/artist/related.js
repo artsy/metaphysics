@@ -3,7 +3,7 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
 import { artistConnection } from "schema/artist"
 import { geneConnection } from "schema/gene"
-import { parseRelayOptions } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { createPageCursors } from "schema/fields/pagination"
 import { assign } from "lodash"
 import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
@@ -60,7 +60,9 @@ export const Related = {
             },
           }
         ) => {
-          const { page, size, offset } = parseRelayOptions(args)
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
           const { kind, exclude_artists_without_artworks } = args
           const gravityArgs = {
             page,
