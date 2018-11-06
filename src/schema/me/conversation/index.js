@@ -13,7 +13,7 @@ import {
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
-import { parseRelayOptions } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { ArtworkType } from "schema/artwork"
 import { ShowType } from "schema/show"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
@@ -350,7 +350,7 @@ export const ConversationFields = {
       req,
       { rootValue: { conversationMessagesLoader } }
     ) => {
-      const { page, size, offset } = parseRelayOptions(options)
+      const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
       return conversationMessagesLoader({
         page,
         size,

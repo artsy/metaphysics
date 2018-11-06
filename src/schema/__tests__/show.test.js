@@ -1,5 +1,6 @@
 /* eslint-disable promise/always-return */
 import moment from "moment"
+import gql from "lib/gql"
 import { runQuery } from "test/utils"
 
 describe("Show type", () => {
@@ -31,116 +32,120 @@ describe("Show type", () => {
 
     rootValue = {
       showLoader: sinon.stub().returns(Promise.resolve(showData)),
+      showsWithHeadersLoader: sinon
+        .stub()
+        .returns(
+          Promise.resolve({ body: [showData], headers: { "x-total-count": 1 } })
+        ),
       galaxyGalleriesLoader: sinon.stub().returns(Promise.resolve(galaxyData)),
       partnerShowLoader: sinon.stub().returns(Promise.resolve(showData)),
     }
   })
-  it("include true has_location flag for shows with location", () => {
+
+  it("include true has_location flag for shows with location", async () => {
     showData.location = "test location"
-    const query = `
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           has_location
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          has_location: true,
-        },
-      })
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        has_location: true,
+      },
     })
   })
-  it("include true has_location flag for shows with fair_location", () => {
+
+  it("include true has_location flag for shows with fair_location", async () => {
     showData.fair = "test location"
-    const query = `
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           has_location
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          has_location: true,
-        },
-      })
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        has_location: true,
+      },
     })
   })
-  it("include true has_location flag for shows with partner_city", () => {
+
+  it("include true has_location flag for shows with partner_city", async () => {
     showData.partner_city = "test location"
-    const query = `
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           has_location
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          has_location: true,
-        },
-      })
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        has_location: true,
+      },
     })
   })
-  it("include false has_location flag for shows without any location", () => {
-    const query = `
+
+  it("include false has_location flag for shows without any location", async () => {
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           has_location
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          has_location: false,
-        },
-      })
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        has_location: false,
+      },
     })
   })
-  it("doesn't return a show that’s neither displayable nor a reference", () => {
+
+  it("doesn't return a show that’s neither displayable nor a reference", async () => {
     showData.displayable = false
     showData.is_reference = false
-    const query = `
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           name
         }
       }
     `
-    return runQuery(query, rootValue)
-      .then(() => {
-        throw new Error("Did not expect query to not throw an error")
-      })
-      .catch(error => {
-        expect(error.message).toEqual("Show Not Found")
-      })
+    try {
+      await runQuery(query, rootValue)
+      throw new Error("Did not expect query to not throw an error")
+    } catch (error) {
+      expect(error.message).toEqual("Show Not Found")
+    }
   })
 
   describe("name", () => {
-    it("strips whitespace from the name", () => {
-      const query = `
+    it("strips whitespace from the name", async () => {
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             name
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            name: "Whitespace Abounds",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          name: "Whitespace Abounds",
+        },
       })
     })
 
-    it("returns null when the name is null", () => {
-      const query = `
+    it("returns null when the name is null", async () => {
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             name
@@ -148,122 +153,120 @@ describe("Show type", () => {
         }
       `
       showData.name = null
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            name: null,
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          name: null,
+        },
       })
     })
   })
 
   describe("city", () => {
-    it("returns the location city if one is set", () => {
+    it("returns the location city if one is set", async () => {
       showData.location = {
         city: "Quonochontaug",
       }
       showData.partner_city = "Something Else"
-      const query = `
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             city
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            city: "Quonochontaug",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          city: "Quonochontaug",
+        },
       })
     })
-    it("returns the partner_city if one is set", () => {
+
+    it("returns the partner_city if one is set", async () => {
       showData.partner_city = "Quonochontaug"
       showData.location = null
-      const query = `
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             city
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            city: "Quonochontaug",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          city: "Quonochontaug",
+        },
       })
     })
-    it("returns the fair city if one is set", () => {
+
+    it("returns the fair city if one is set", async () => {
       showData.fair = {
         location: {
           city: "Quonochontaug",
         },
       }
       showData.partner_city = "Something Else"
-      const query = `
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             city
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            city: "Quonochontaug",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          city: "Quonochontaug",
+        },
       })
     })
   })
 
   describe("kind", () => {
-    it("returns fair when a fair booth", () => {
+    it("returns fair when a fair booth", async () => {
       showData.fair = {
         id: "foo",
       }
-      const query = `
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             kind
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            kind: "fair",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          kind: "fair",
+        },
       })
     })
-    it("returns solo when only one artist in a ref show", () => {
+
+    it("returns solo when only one artist in a ref show", async () => {
       showData.artists = []
       showData.artists_without_artworks = [
         {
           id: "foo",
         },
       ]
-      const query = `
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             kind
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            kind: "solo",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          kind: "solo",
+        },
       })
     })
-    it("returns group when more than one artist in a ref show", () => {
+
+    it("returns group when more than one artist in a ref show", async () => {
       showData.artists = []
       showData.artists_without_artworks = [
         {
@@ -273,44 +276,44 @@ describe("Show type", () => {
           id: "bar",
         },
       ]
-      const query = `
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             kind
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            kind: "group",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          kind: "group",
+        },
       })
     })
-    it("returns solo when only one artist", () => {
+
+    it("returns solo when only one artist", async () => {
       showData.artists = [
         {
           id: "foo",
         },
       ]
       showData.artists_without_artworks = null
-      const query = `
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             kind
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            kind: "solo",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          kind: "solo",
+        },
       })
     })
-    it("returns group when more than one artist in a regular show", () => {
+
+    it("returns group when more than one artist in a regular show", async () => {
       showData.artists = [
         {
           id: "foo",
@@ -320,22 +323,22 @@ describe("Show type", () => {
         },
       ]
       showData.artists_without_artworks = null
-      const query = `
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             kind
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            kind: "group",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          kind: "group",
+        },
       })
     })
-    it("returns group when only one artist but the show is flagged as group", () => {
+
+    it("returns group when only one artist but the show is flagged as group", async () => {
       showData.artists = [
         {
           id: "foo",
@@ -343,63 +346,61 @@ describe("Show type", () => {
       ]
       showData.artists_without_artworks = null
       showData.group = true
-      const query = `
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             kind
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            kind: "group",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          kind: "group",
+        },
       })
     })
   })
 
   describe("href", () => {
-    it("returns the href for a regular show", () => {
+    it("returns the href for a regular show", async () => {
       showData.is_reference = false
-      const query = `
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             href
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            href: "/show/new-museum-1-2015-triennial-surround-audience",
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          href: "/show/new-museum-1-2015-triennial-surround-audience",
+        },
       })
     })
-    it("returns null for a reference show", () => {
-      const query = `
+
+    it("returns null for a reference show", async () => {
+      const query = gql`
         {
           show(id: "new-museum-1-2015-triennial-surround-audience") {
             href
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
-        expect(data).toEqual({
-          show: {
-            href: null,
-          },
-        })
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          href: null,
+        },
       })
     })
   })
 
-  it("includes the galaxy partner information when galaxy_partner_id is present", () => {
+  it("includes the galaxy partner information when galaxy_partner_id is present", async () => {
     showData.galaxy_partner_id = "galaxy-partner"
     showData.partner = null
-    const query = `
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           partner {
@@ -410,21 +411,20 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          partner: {
-            name: "Galaxy Partner",
-          },
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        partner: {
+          name: "Galaxy Partner",
         },
-      })
+      },
     })
   })
 
-  it("doesnt crash when no partner info is present", () => {
+  it("doesnt crash when no partner info is present", async () => {
     showData.galaxy_partner_id = null
     showData.partner = null
-    const query = `
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           partner {
@@ -435,17 +435,16 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          partner: null,
-        },
-      })
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        partner: null,
+      },
     })
   })
 
-  it("includes a formattable start and end date", () => {
-    const query = `
+  it("includes a formattable start and end date", async () => {
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           id
@@ -455,19 +454,18 @@ describe("Show type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          id: "new-museum-1-2015-triennial-surround-audience",
-          start_at: "Wednesday, February 25th 2015, 12:00:00 pm",
-          end_at: "2015",
-        },
-      })
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        id: "new-museum-1-2015-triennial-surround-audience",
+        start_at: "Wednesday, February 25th 2015, 12:00:00 pm",
+        end_at: "2015",
+      },
     })
   })
 
-  it("includes a formatted exhibition period", () => {
-    const query = `
+  it("includes a formatted exhibition period", async () => {
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           exhibition_period
@@ -475,48 +473,48 @@ describe("Show type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          exhibition_period: "Feb 25 – May 24, 2015",
-        },
-      })
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        exhibition_period: "Feb 25 – May 24, 2015",
+      },
     })
   })
-  it("includes an update on upcoming status changes", () => {
+
+  it("includes an update on upcoming status changes", async () => {
     showData.end_at = moment().add(1, "d")
-    const query = `
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           status_update
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          status_update: "Closing tomorrow",
-        },
-      })
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        status_update: "Closing tomorrow",
+      },
     })
   })
-  it("includes the html version of markdown", () => {
-    const query = `
+
+  it("includes the html version of markdown", async () => {
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           press_release(format: markdown)
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
-        },
-      })
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
+      },
     })
   })
-  it("includes the total number of artworks", () => {
+
+  it("includes the total number of artworks", async () => {
     rootValue.partnerShowArtworksLoader = sinon.stub().returns(
       Promise.resolve({
         headers: {
@@ -524,7 +522,7 @@ describe("Show type", () => {
         },
       })
     )
-    const query = `
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           counts {
@@ -533,18 +531,18 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          counts: {
-            artworks: 42,
-          },
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        counts: {
+          artworks: 42,
         },
-      })
+      },
     })
   })
-  it("includes the total number of eligible artworks", () => {
-    const query = `
+
+  it("includes the total number of eligible artworks", async () => {
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           counts {
@@ -553,17 +551,17 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          counts: {
-            eligible_artworks: 8,
-          },
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        counts: {
+          eligible_artworks: 8,
         },
-      })
+      },
     })
   })
-  it("includes the number of artworks by a specific artist", () => {
+
+  it("includes the number of artworks by a specific artist", async () => {
     rootValue.partnerShowArtworksLoader = sinon.stub().returns(
       Promise.resolve({
         headers: {
@@ -571,7 +569,7 @@ describe("Show type", () => {
         },
       })
     )
-    const query = `
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           counts {
@@ -580,23 +578,23 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
-      expect(data).toEqual({
-        show: {
-          counts: {
-            artworks: 2,
-          },
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        counts: {
+          artworks: 2,
         },
-      })
+      },
     })
   })
+
   it("does not return errors when there is no cover image", () => {
     rootValue.partnerShowArtworksLoader = sinon.stub().returns(
       Promise.resolve({
         body: [],
       })
     )
-    const query = `
+    const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
           cover_image {
@@ -608,6 +606,64 @@ describe("Show type", () => {
     return runQuery(query, rootValue).then(({ show }) => {
       expect(show).toEqual({
         cover_image: null,
+      })
+    })
+  })
+
+  describe("nearby shows", () => {
+    it("provides a connection for nearby shows", async () => {
+      showData.location = {
+        coordinates: {
+          lat: 0.23,
+          long: 0.34,
+        },
+      }
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            nearbyShows(first: 1) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          nearbyShows: {
+            edges: [
+              { node: { id: "new-museum-1-2015-triennial-surround-audience" } },
+            ],
+          },
+        },
+      })
+    })
+
+    it("provides an empty connection for a show with no location", async () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            nearbyShows {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          nearbyShows: {
+            edges: [],
+          },
+        },
       })
     })
   })

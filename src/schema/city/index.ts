@@ -15,9 +15,9 @@ import EventStatus from "schema/input_fields/event_status"
 
 import cityData from "./city_data.json"
 import { pageable } from "relay-cursor-paging"
-import { connectionFromArray } from "graphql-relay"
-
-const LOCAL_DISCOVERY_RADIUS_KM = 75
+import { connectionFromArraySlice } from "graphql-relay"
+import { LOCAL_DISCOVERY_RADIUS_KM } from "./constants"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 
 const CityType = new GraphQLObjectType({
   name: "City",
@@ -34,23 +34,36 @@ const CityType = new GraphQLObjectType({
     shows: {
       type: showConnection,
       args: pageable({
-        size: {
-          type: GraphQLInt,
-        },
         sort: PartnerShowSorts,
         status: EventStatus,
       }),
-      resolve: (city, args, _context, { rootValue: { showsLoader } }) => {
+      resolve: async (
+        city,
+        args,
+        _c,
+        { rootValue: { showsWithHeadersLoader } }
+      ) => {
         const gravityOptions = {
-          ...args,
+          ...convertConnectionArgsToGravityArgs(args),
           displayable: true,
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+          total_count: true,
         }
+        delete gravityOptions.page
 
-        return showsLoader(gravityOptions).then(response => {
-          return connectionFromArray(response, args)
+        const response = await showsWithHeadersLoader(gravityOptions)
+        const { headers, body: cities } = response
+
+        const results = connectionFromArraySlice(cities, args, {
+          arrayLength: headers["x-total-count"],
+          sliceStart: gravityOptions.offset,
         })
+
+        // This is in our schema, so might as well fill it
+        // @ts-ignore
+        results.totalCount = headers["x-total-count"]
+        return results
       },
     },
     fairs: {

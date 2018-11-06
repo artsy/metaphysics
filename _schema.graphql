@@ -2003,7 +2003,6 @@ type City {
   name: String
   coordinates: LatLng
   shows(
-    size: Int
     sort: PartnerShowSorts
     status: EventStatus
     after: String
@@ -6824,7 +6823,11 @@ type Show implements Node {
   # A type-specific Gravity Mongo Document ID.
   _id: String!
   cached: Int
+
+  # The Artists presenting in this show
   artists: [Artist]
+
+  # The artworks featured in this show
   artworks(
     # Number of artworks to return
     size: Int = 25
@@ -6835,7 +6838,9 @@ type Show implements Node {
 
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
-  ): [Artwork]
+  ): [Artwork] @deprecated(reason: "Use artworks_connection instead")
+
+  # The artworks featured in the show
   artworks_connection(
     # Number of artworks to return
     size: Int = 25
@@ -6851,10 +6856,20 @@ type Show implements Node {
     before: String
     last: Int
   ): ArtworkConnection
+
+  # Artists inside the show who do not have artworks present
   artists_without_artworks: [Artist]
+
+  # The general city, derived from a fair location, a show location or a potential city
   city: String
+
+  # The image you should use to represent this show
   cover_image: Image
+
+  # An object that represents some of the numbers you might want to highlight
   counts: ShowCounts
+
+  # A description of the show
   description: String
   displayable: Boolean
     @deprecated(reason: "Prefix Boolean returning fields with `is_`")
@@ -6866,12 +6881,20 @@ type Show implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # Events from the partner that runs this show
   events: [PartnerShowEventType]
 
   # A formatted description of the start to end dates
   exhibition_period: String
+
+  # If the show is in a Fair, then that fair
   fair: Fair
+
+  # A path to the show on Artsy
   href: String
+
+  # Images that represent the show, you may be interested in meta_image or cover_image for a definitive thumbnail
   images(
     # Number of images to return
     size: Int
@@ -6886,17 +6909,45 @@ type Show implements Node {
 
   # Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.
   is_active: Boolean
+
+  # Is this something we can display to the front-end?
   is_displayable: Boolean
+
+  # Does the show exist as a fair booth?
   is_fair_booth: Boolean
+
+  # Is it a stubbed show?
   is_reference: Boolean
+
+  # Whether the show is in a fair, group or solo
   kind: String
+
+  # Where the show is located (Could also be a fair location)
   location: Location
+
+  # An image representing the show, or a sharable image from an artwork in the show
   meta_image: Image
 
   # The exhibition title
   name: String
+
+  # Shows that are near (~75km) from this show
+  nearbyShows(
+    sort: PartnerShowSorts
+    status: EventStatus
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ShowConnection
+
+  # The partner that represents this show, could be a non-Artsy partner
   partner: PartnerTypes
+
+  # The press release for this show
   press_release(format: Format): String
+
+  # When this show starts
   start_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -6905,6 +6956,8 @@ type Show implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # Is this show running, upcoming or closed?
   status: String
 
   # A formatted update on upcoming status changes
@@ -6912,6 +6965,8 @@ type Show implements Node {
     # Before this many days no update will be generated
     max_days: Int
   ): String
+
+  # Is it a fair booth or a show?
   type: String
 }
 

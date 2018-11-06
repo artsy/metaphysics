@@ -1,6 +1,6 @@
 import { GraphQLEnumType } from "graphql"
 
-export default new GraphQLEnumType({
+const CollectionSorts = new GraphQLEnumType({
   name: "CollectionSorts",
   values: {
     POSITION_ASC: {
@@ -11,3 +11,5 @@ export default new GraphQLEnumType({
     },
   },
 })
+
+export default CollectionSorts

@@ -4,8 +4,10 @@ import FormattedNumber from "schema/types/formatted_number"
 import { GraphQLString } from "graphql"
 
 const { pluralize, singularize } = inflect()
+type GetNumeral = (obj: any) => number
 
-export default fn => ({
+// This `any` isn'
+const numeralType = (fn: GetNumeral): any => ({
   type: FormattedNumber,
   args: {
     format: {
@@ -34,6 +36,8 @@ export default fn => ({
       value = `${value} ${count === 1 ? singularize(label) : pluralize(label)}`
     }
 
-    return value
+    return value as string
   },
 })
+
+export default numeralType

@@ -7,7 +7,7 @@ import CollectionSorts from "./sorts/collection_sorts"
 import { artworkConnection } from "./artwork"
 import {
   queriedForFieldsOtherThanBlacklisted,
-  parseRelayOptions,
+  convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import {
@@ -47,7 +47,7 @@ export const CollectionType = new GraphQLObjectType({
       ) => {
         const gravityOptions = Object.assign(
           { total_count: true },
-          parseRelayOptions(options)
+          convertConnectionArgsToGravityArgs(options)
         )
         // Adds a default case for the sort
         gravityOptions.sort = gravityOptions.sort || "-position"
