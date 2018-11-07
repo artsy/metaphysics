@@ -8,6 +8,6 @@ export const moneyFieldToUnit = (moneyField: MoneyField) => {
     case "USD":
       return moneyField.amount * 100
     default:
-      return moneyField.amount
+      throw new Error("Unknown currency, cannot process.")
   }
 }
