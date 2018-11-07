@@ -10,7 +10,7 @@ describe("InitialOffer Mutation", () => {
   const mutation = gql`
     mutation {
       ecommerceInitialOffer(
-        input: { orderId: "111", amountCents: 1 }
+        input: { orderId: "111", offerPrice: { amount: 1, currencyCode: "USD" } }
       ) {
         orderOrError {
           ... on OrderWithMutationSuccess {
