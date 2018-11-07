@@ -1,5 +1,5 @@
 import Format from "schema/input_fields/format"
-import { GraphQLString } from "graphql"
+import { GraphQLString, GraphQLFieldConfig } from "graphql"
 import { isExisty } from "lib/helpers"
 import marked from "marked"
 
@@ -21,7 +21,7 @@ export function formatMarkdownValue(value, format) {
   return value
 }
 
-export function markdown(fn?: any) {
+export function markdown(fn?: any): GraphQLFieldConfig<any, any> {
   return {
     type: GraphQLString,
     args: {

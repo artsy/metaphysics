@@ -49,7 +49,7 @@ import {
   GraphQLInt,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { parseRelayOptions } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { totalViaLoader } from "lib/total"
 
 // Manually curated list of artist id's who has verified auction lots that can be
@@ -94,7 +94,7 @@ export const ArtistType = new GraphQLObjectType({
           _request,
           { rootValue: { articlesLoader } }
         ) => {
-          const pageOptions = parseRelayOptions(args)
+          const pageOptions = convertConnectionArgsToGravityArgs(args)
           const { page, size, offset } = pageOptions
 
           const gravityArgs = omit(args, ["first", "after", "last", "before"])
@@ -242,7 +242,9 @@ export const ArtistType = new GraphQLObjectType({
           }
 
           // Convert `after` cursors to page params
-          const { page, size, offset } = parseRelayOptions(options)
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            options
+          )
           const diffusionArgs = {
             page,
             size,

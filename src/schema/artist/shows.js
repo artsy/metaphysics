@@ -3,7 +3,7 @@ import { GraphQLInt, GraphQLString, GraphQLBoolean } from "graphql"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import { merge, defaults, reject, includes, omit } from "lodash"
 import { createPageCursors } from "schema/fields/pagination"
-import { parseRelayOptions } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
 
 // TODO: Fix upstream, for now we remove shows from certain Partner types
@@ -75,7 +75,7 @@ export const ShowField = {
 export const ShowsConnectionField = {
   args: pageable(ShowArgs),
   resolve: ({ id }, args, _request, { rootValue: { relatedShowsLoader } }) => {
-    const pageOptions = parseRelayOptions(args)
+    const pageOptions = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = pageOptions
     const gravityArgs = omit(args, ["first", "after", "last", "before"])
     return relatedShowsLoader(

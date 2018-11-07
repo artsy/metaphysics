@@ -36,6 +36,7 @@ import attributionClasses from "../../lib/attributionClasses"
 import { LotStandingType } from "../me/lot_standing"
 import { amount } from "schema/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
+import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 
 const is_inquireable = ({ inquireable }) => {
   return inquireable
@@ -503,6 +504,13 @@ export const artworkFields = () => {
       deprecationReason: "Prefer dimensions instead.",
     },
     meta: Meta,
+    pageviews: {
+      type: GraphQLInt,
+      description: "[DO NOT USE] Weekly pageview data (static).",
+      deprecationReason:
+        "Do not use! This is for an AB test and will be imminently deprecated.",
+      resolve: ({ _id }) => artworkPageviews[_id],
+    },
     partner: {
       type: Partner.type,
       args: {

@@ -49,7 +49,7 @@ describe("City", () => {
       {
         city(slug: "sacramende-ca-usa") {
           name
-          shows {
+          shows(first: 1) {
             edges {
               node {
                 id
@@ -61,9 +61,11 @@ describe("City", () => {
     `
 
     const mockShows = [{ id: "first-show" }]
-    const mockShowsLoader = jest.fn(() => Promise.resolve(mockShows))
+    const mockShowsLoader = jest.fn(() =>
+      Promise.resolve({ body: mockShows, headers: { "x-total-count": 1 } })
+    )
     const rootValue = {
-      showsLoader: mockShowsLoader,
+      showsWithHeadersLoader: mockShowsLoader,
       accessToken: null,
       userID: null,
     }

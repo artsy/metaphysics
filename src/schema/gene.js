@@ -12,7 +12,7 @@ import filterArtworks, {
 } from "./filter_artworks"
 import {
   queriedForFieldsOtherThanBlacklisted,
-  parseRelayOptions,
+  convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import {
@@ -65,7 +65,10 @@ export const GeneType = new GraphQLObjectType({
           request,
           { rootValue: { geneArtistsLoader } }
         ) => {
-          const parsedOptions = _.omit(parseRelayOptions(options), "page")
+          const parsedOptions = _.omit(
+            convertConnectionArgsToGravityArgs(options),
+            "page"
+          )
           const gravityOptions = _.extend(parsedOptions, {
             exclude_artists_without_artworks: true,
           })
@@ -93,7 +96,7 @@ export const GeneType = new GraphQLObjectType({
           request,
           { rootValue: { filterArtworksLoader } }
         ) => {
-          const gravityOptions = parseRelayOptions(options)
+          const gravityOptions = convertConnectionArgsToGravityArgs(options)
           // Do some massaging of the options for ElasticSearch
           gravityOptions.aggregations = options.aggregations || []
           gravityOptions.aggregations.push("total")

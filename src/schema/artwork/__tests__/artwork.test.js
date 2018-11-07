@@ -1625,6 +1625,33 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#pageviews", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          pageviews
+        }
+      }
+    `
+    it("returns the pageviews if found", () => {
+      artwork._id = "4d8b93ba4eb68a1b2c001c5b"
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: { pageviews: 18 },
+        })
+      })
+    })
+
+    it("returns null if not found", () => {
+      artwork._id = "invalid"
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: { pageviews: null },
+        })
+      })
+    })
+  })
+
   describe("#certificateOfAuthenticity", () => {
     const query = `
       {
