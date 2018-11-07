@@ -4,10 +4,7 @@ interface MoneyField {
 }
 
 export const moneyFieldToUnit = (moneyField: MoneyField) => {
-  switch (moneyField.currencyCode) {
-    case "USD":
-      return moneyField.amount * 100
-    default:
-      throw new Error("Unknown currency, cannot process.")
-  }
+  // this currently only supports currencies with cents
+  // and multiply the major value to 100 to get cent value
+  return moneyField.amount * 100
 }
