@@ -80,8 +80,8 @@ export const MoneyInput = new GraphQLInputObjectType({
   name: "MoneyInput",
   fields: {
     amount: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: "amount",
+      type: new GraphQLNonNull(GraphQLFloat),
+      description: "amount in dollars or major unit",
     },
     currencyCode: {
       type: new GraphQLNonNull(GraphQLString),

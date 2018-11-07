@@ -10,7 +10,7 @@ export const InitialOfferInputType = new GraphQLInputObjectType({
     },
     offerAmount: {
       type: MoneyInput,
-      description: "Offer amount",
+      description: "Offer amount in dollars or major unit",
     },
   },
 })

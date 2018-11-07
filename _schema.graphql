@@ -4097,7 +4097,7 @@ input InitialOfferInput {
   # ID of order
   orderId: ID!
 
-  # Offer amount
+  # Offer amount in dollars or major unit
   offerAmount: MoneyInput
   clientMutationId: String
 }
@@ -4574,8 +4574,8 @@ type Metaphysics {
 }
 
 input MoneyInput {
-  # amount
-  amount: Int!
+  # amount in dollars or major unit
+  amount: Float!
 
   # ISO 4217 Currency code of the this amount, https://en.wikipedia.org/wiki/ISO_4217
   currencyCode: String!
