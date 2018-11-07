@@ -4097,8 +4097,8 @@ input InitialOfferInput {
   # ID of order
   orderId: ID!
 
-  # Offer amount in cents
-  offerAmount: OfferAmountInput
+  # Offer amount
+  offerAmount: MoneyInput
   clientMutationId: String
 }
 
@@ -4573,6 +4573,14 @@ type Metaphysics {
   environment: String!
 }
 
+input MoneyInput {
+  # amount
+  amount: Int!
+
+  # ISO 4217 Currency code of the this amount, https://en.wikipedia.org/wiki/ISO_4217
+  currencyCode: String!
+}
+
 type Mutation {
   # Create a bidder
   createBidder(input: CreateBidderInput!): CreateBidderPayload
@@ -4791,14 +4799,6 @@ type Offer {
 
   # The order on which the offer was made
   respondsTo: Offer
-}
-
-input OfferAmountInput {
-  # amount
-  amount: Int!
-
-  # ISO 4217 Currency code of the this amount, https://en.wikipedia.org/wiki/ISO_4217
-  currencyCode: String!
 }
 
 # A connection to a list of items.

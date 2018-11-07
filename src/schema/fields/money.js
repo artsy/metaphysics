@@ -5,6 +5,8 @@ import {
   GraphQLInt,
   GraphQLObjectType,
   GraphQLFloat,
+  GraphQLInputObjectType,
+  GraphQLNonNull,
 } from "graphql"
 
 export const amount = resolve => ({
@@ -72,6 +74,21 @@ const money = ({ name, resolve }) => ({
       },
     },
   }),
+})
+
+export const MoneyInput = new GraphQLInputObjectType({
+  name: "MoneyInput",
+  fields: {
+    amount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "amount",
+    },
+    currencyCode: {
+      type: new GraphQLNonNull(GraphQLString),
+      description:
+        "ISO 4217 Currency code of the this amount, https://en.wikipedia.org/wiki/ISO_4217",
+    },
+  },
 })
 
 export default money
