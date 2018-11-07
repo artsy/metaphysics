@@ -86,7 +86,7 @@ export const MoneyInput = new GraphQLInputObjectType({
     currencyCode: {
       type: new GraphQLNonNull(GraphQLString),
       description:
-        "ISO 4217 Currency code of the this amount, https://en.wikipedia.org/wiki/ISO_4217",
+        "The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217",
     },
   },
 })

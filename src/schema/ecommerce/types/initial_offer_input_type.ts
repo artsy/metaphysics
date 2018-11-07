@@ -8,9 +8,9 @@ export const InitialOfferInputType = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: "ID of order",
     },
-    offerAmount: {
+    offerPrice: {
       type: MoneyInput,
-      description: "Offer amount in dollars or major unit",
+      description: "Offer price",
     },
   },
 })

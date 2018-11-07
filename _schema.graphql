@@ -4097,8 +4097,8 @@ input InitialOfferInput {
   # ID of order
   orderId: ID!
 
-  # Offer amount in dollars or major unit
-  offerAmount: MoneyInput
+  # Offer price
+  offerPrice: MoneyInput
   clientMutationId: String
 }
 
@@ -4577,7 +4577,7 @@ input MoneyInput {
   # amount in dollars or major unit
   amount: Float!
 
-  # ISO 4217 Currency code of the this amount, https://en.wikipedia.org/wiki/ISO_4217
+  # The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
   currencyCode: String!
 }
 
