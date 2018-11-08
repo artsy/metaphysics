@@ -2589,8 +2589,6 @@ type CurrentEvent {
   href: String
 }
 
-scalar DateTime
-
 type DaySchedule {
   start_time: Int
   end_time: Int
@@ -4224,8 +4222,8 @@ type MarketingCollection {
 
   # Structured object used to build filtered artworks query
   query: MarketingCollectionQuery!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  createdAt: MarketingDateTime!
+  updatedAt: MarketingDateTime!
   artworks(
     acquireable: Boolean
     aggregation_partner_cities: [String]
@@ -4263,6 +4261,11 @@ type MarketingCollection {
   ): FilterArtworks
 }
 
+type MarketingCollectionCategory {
+  name: String!
+  collections: [MarketingCollection!]!
+}
+
 type MarketingCollectionQuery {
   id: ID
   acquireable: Boolean
@@ -4295,6 +4298,8 @@ type MarketingCollectionQuery {
   tag_id: String
   keyword: String
 }
+
+scalar MarketingDateTime
 
 type Me implements Node {
   # A globally unique ID.
@@ -6205,6 +6210,7 @@ type Query {
   # Find partners by ID
   _unused_gravity_partners(ids: [ID]!): [DoNotUseThisPartner]
   marketingCollections: [MarketingCollection!]!
+  marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
 }
 
