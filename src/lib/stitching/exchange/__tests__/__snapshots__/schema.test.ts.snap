@@ -192,7 +192,8 @@ type EcommerceLineItem {
     last: Int
   ): EcommerceFulfillmentConnection
   id: ID!
-  priceCents: Int!
+  listPriceCents: Int!
+  priceCents: Int! @deprecated(reason: \\"switch to use listPriceCents\\")
   quantity: Int!
   updatedAt: EcommerceDateTime!
 }
@@ -306,6 +307,7 @@ type EcommerceOrder {
   stateReason: String
   stateUpdatedAt: EcommerceDateTime
   taxTotalCents: Int
+  totalListPriceCents: Int!
   transactionFeeCents: Int
   updatedAt: EcommerceDateTime!
 }

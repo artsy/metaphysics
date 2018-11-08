@@ -191,7 +191,8 @@ type LineItem {
     last: Int
   ): FulfillmentConnection
   id: ID!
-  priceCents: Int!
+  listPriceCents: Int!
+  priceCents: Int! @deprecated(reason: "switch to use listPriceCents")
   quantity: Int!
   updatedAt: DateTime!
 }
@@ -324,6 +325,7 @@ type Order {
   stateReason: String
   stateUpdatedAt: DateTime
   taxTotalCents: Int
+  totalListPriceCents: Int!
   transactionFeeCents: Int
   updatedAt: DateTime!
 }
