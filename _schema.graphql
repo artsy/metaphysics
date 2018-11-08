@@ -4096,8 +4096,8 @@ input InitialOfferInput {
   # ID of order
   orderId: ID!
 
-  # Offer amount in cents
-  amountCents: Int!
+  # Offer price
+  offerPrice: MoneyInput
   clientMutationId: String
 }
 
@@ -4570,6 +4570,14 @@ type Metaphysics {
   stitchingGravity: Boolean!
   stitchingKaws: Boolean!
   environment: String!
+}
+
+input MoneyInput {
+  # amount in dollars or major unit
+  amount: Float!
+
+  # The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
+  currencyCode: String!
 }
 
 type Mutation {

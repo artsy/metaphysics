@@ -5,6 +5,7 @@ import gql from "lib/gql"
 import { BuyerOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { InitialOfferInputType } from "./types/initial_offer_input_type"
+import { moneyFieldToUnit } from "lib/moneyHelper"
 export const InitialOfferMutation = mutationWithClientMutationId({
   name: "InitialOffer",
   description: "Creates an order with an artwork",
@@ -15,7 +16,7 @@ export const InitialOfferMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { amountCents, orderId },
+    { offerPrice, orderId },
     context,
     { rootValue: { accessToken, exchangeSchema } }
   ) => {
@@ -52,7 +53,7 @@ export const InitialOfferMutation = mutationWithClientMutationId({
         }
       `
     return graphql(exchangeSchema, mutation, null, context, {
-      amountCents,
+      amountCents: moneyFieldToUnit(offerPrice),
       orderId,
     }).then(extractEcommerceResponse("ecommerceInitialOffer"))
   },

@@ -1,9 +1,6 @@
-import {
-  GraphQLInputObjectType,
-  GraphQLNonNull,
-  GraphQLInt,
-  GraphQLID,
-} from "graphql"
+import { GraphQLInputObjectType, GraphQLNonNull, GraphQLID } from "graphql"
+import { MoneyInput } from "schema/fields/money"
+
 export const InitialOfferInputType = new GraphQLInputObjectType({
   name: "InitialOfferOrderInput",
   fields: {
@@ -11,9 +8,9 @@ export const InitialOfferInputType = new GraphQLInputObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: "ID of order",
     },
-    amountCents: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description: "Offer amount in cents",
+    offerPrice: {
+      type: MoneyInput,
+      description: "Offer price",
     },
   },
 })
