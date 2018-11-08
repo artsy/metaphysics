@@ -4842,18 +4842,6 @@ type Order {
 
   # Latest offer
   lastOffer: Offer
-  offerTotalCents: Int
-
-  # A formatted price with various currency formatting options.
-  offerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
 
   # List of offers made on this order so far
   offers: OfferConnection

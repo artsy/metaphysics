@@ -264,6 +264,8 @@ type EcommerceOrder {
   currencyCode: String!
   displayCommissionRate: String
   id: ID!
+
+  # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int!
   lastApprovedAt: EcommerceDateTime
   lastOffer: EcommerceOffer
@@ -282,7 +284,6 @@ type EcommerceOrder {
     last: Int
   ): EcommerceLineItemConnection
   mode: EcommerceOrderModeEnum
-  offerTotalCents: Int
   offers(
     # Returns the elements in the list that come after the specified cursor.
     after: String

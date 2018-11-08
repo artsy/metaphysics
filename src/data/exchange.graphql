@@ -282,6 +282,8 @@ type Order {
   currencyCode: String!
   displayCommissionRate: String
   id: ID!
+
+  # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int!
   lastApprovedAt: DateTime
   lastOffer: Offer
@@ -300,7 +302,6 @@ type Order {
     last: Int
   ): LineItemConnection
   mode: OrderModeEnum
-  offerTotalCents: Int
   offers(
     # Returns the elements in the list that come after the specified cursor.
     after: String

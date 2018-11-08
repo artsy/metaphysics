@@ -69,7 +69,6 @@ export const OfferRelatedFields = gql`
   lastOffer {
     ${OfferFields}
   }
-  offerTotalCents
   offers {
     edges {
       node {

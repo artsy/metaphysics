@@ -51,11 +51,6 @@ export const OrderType = new GraphQLObjectType({
       type: OfferType,
       description: "Latest offer",
     },
-    offerTotalCents: {
-      type: GraphQLInt,
-      descrtiption: "Total amount of latest offer",
-    },
-    offerTotal: amount(({ offerTotalCents }) => offerTotalCents),
     offers: {
       type: OfferConnection,
       description: "List of offers made on this order so far",
