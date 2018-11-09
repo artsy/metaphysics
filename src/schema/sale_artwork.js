@@ -308,7 +308,7 @@ const SaleArtworkType = new GraphQLObjectType({
         type: GraphQLFloat,
         deprecationReason: "Favor `opening_bid`",
       },
-      position: { type: GraphQLInt },
+      position: { type: GraphQLFloat },
       reserve: money({
         name: "SaleArtworkReserve",
         resolve: ({ display_reserve_dollars, reserve_cents }) => ({
