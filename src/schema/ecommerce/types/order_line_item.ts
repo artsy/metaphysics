@@ -46,8 +46,14 @@ export const OrderLineItemType = new GraphQLObjectType({
     priceCents: {
       type: GraphQLInt,
       description: "Unit price in cents",
+      deprecationReason: "Switched to `listPriceCents`",
     },
     price: amount(({ priceCents }) => priceCents),
+    listPriceCents: {
+      type: GraphQLInt,
+      description: "Unit list price in cents",
+    },
+    listPrice: amount(({ listPriceCents }) => listPriceCents),
     updatedAt: date,
     createdAt: date,
     quantity: {

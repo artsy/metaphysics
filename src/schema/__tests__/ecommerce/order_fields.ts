@@ -25,6 +25,7 @@ export const OrderBuyerFields = gql`
     }
   }
   itemsTotalCents
+  totalListPriceCents
   shippingTotalCents
   taxTotalCents
   commissionFeeCents
@@ -32,6 +33,7 @@ export const OrderBuyerFields = gql`
   buyerTotalCents
   sellerTotalCents
   itemsTotal
+  totalListPrice
   shippingTotal
   taxTotal
   commissionFee
@@ -118,6 +120,7 @@ export const OrderSellerFields = gql`
     }
   }
   itemsTotalCents
+  totalListPriceCents
   shippingTotalCents
   taxTotalCents
   commissionFeeCents
@@ -125,6 +128,7 @@ export const OrderSellerFields = gql`
   buyerTotalCents
   sellerTotalCents
   itemsTotal
+  totalListPrice
   shippingTotal
   taxTotal
   commissionFee

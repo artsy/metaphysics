@@ -51,11 +51,6 @@ export const OrderType = new GraphQLObjectType({
       type: OfferType,
       description: "Latest offer",
     },
-    offerTotalCents: {
-      type: GraphQLInt,
-      descrtiption: "Total amount of latest offer",
-    },
-    offerTotal: amount(({ offerTotalCents }) => offerTotalCents),
     offers: {
       type: OfferConnection,
       description: "List of offers made on this order so far",
@@ -65,10 +60,22 @@ export const OrderType = new GraphQLObjectType({
       description: "Item total in cents",
     },
     itemsTotal: amount(({ itemsTotalCents }) => itemsTotalCents),
+    totalListPriceCents: {
+      type: GraphQLInt,
+      description: "Total list price in cents",
+    },
+    totalListPrice: amount(({ totalListPriceCents }) => totalListPriceCents),
     shippingTotalCents: {
       type: GraphQLInt,
       description: "Shipping total in cents",
     },
+    offerTotalCents: {
+      type: GraphQLInt,
+      description: "Total amount of latest offer",
+      deprecationReason: "Switch to ItemTotalCents",
+      resolve: ({ itemsTotalCents }) => itemsTotalCents,
+    },
+    offerTotal: amount(({ itemsTotalCents }) => itemsTotalCents),
     shippingTotal: amount(({ shippingTotalCents }) => shippingTotalCents),
     taxTotalCents: {
       type: GraphQLInt,

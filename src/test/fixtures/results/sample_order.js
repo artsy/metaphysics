@@ -16,6 +16,8 @@ const defaultResponse = {
   buyerPhoneNumber: "093929821",
   itemsTotalCents: 420000,
   itemsTotal: "$4,200",
+  totalListPriceCents: 421000,
+  totalListPrice: "$4,210",
   shippingTotalCents: 420100,
   shippingTotal: "$4,201",
   taxTotalCents: 420200,
