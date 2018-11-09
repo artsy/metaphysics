@@ -1032,6 +1032,7 @@ type ArtworkContextFair {
   has_homepage_section: Boolean
   has_large_banner: Boolean
   has_listing: Boolean
+  hours: String
   href: String
   image: Image
 
@@ -2787,6 +2788,7 @@ type Fair {
   has_homepage_section: Boolean
   has_large_banner: Boolean
   has_listing: Boolean
+  hours: String
   href: String
   image: Image
 
@@ -3758,6 +3760,7 @@ type HomePageModuleContextFair {
   has_homepage_section: Boolean
   has_large_banner: Boolean
   has_listing: Boolean
+  hours: String
   href: String
   image: Image
 
