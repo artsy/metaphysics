@@ -4877,6 +4877,20 @@ type Order {
   # Shipping total in cents
   shippingTotalCents: Int
 
+  # Total amount of latest offer
+  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
+
+  # A formatted price with various currency formatting options.
+  offerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
   # A formatted price with various currency formatting options.
   shippingTotal(
     decimal: String = "."

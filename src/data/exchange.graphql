@@ -302,6 +302,10 @@ type Order {
     last: Int
   ): LineItemConnection
   mode: OrderModeEnum
+  offerTotalCents: Int!
+    @deprecated(
+      reason: "itemsTotalCents reflects offer total for offer orders."
+    )
   offers(
     # Returns the elements in the list that come after the specified cursor.
     after: String

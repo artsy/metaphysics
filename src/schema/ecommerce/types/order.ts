@@ -69,6 +69,13 @@ export const OrderType = new GraphQLObjectType({
       type: GraphQLInt,
       description: "Shipping total in cents",
     },
+    offerTotalCents: {
+      type: GraphQLInt,
+      description: "Total amount of latest offer",
+      deprecationReason: "Switch to ItemTotalCents",
+      resolve: ({ itemsTotalCents }) => itemsTotalCents,
+    },
+    offerTotal: amount(({ itemsTotalCents }) => itemsTotalCents),
     shippingTotal: amount(({ shippingTotalCents }) => shippingTotalCents),
     taxTotalCents: {
       type: GraphQLInt,
