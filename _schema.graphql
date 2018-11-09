@@ -6481,7 +6481,7 @@ type SaleArtwork {
   minimum_next_bid_cents: Float @deprecated(reason: "Favor `minimum_next_bid`")
   opening_bid: SaleArtworkOpeningBid
   opening_bid_cents: Float @deprecated(reason: "Favor `opening_bid`")
-  position: Int
+  position: Float
   reserve: SaleArtworkReserve
   reserve_message: String
   reserve_status: String
