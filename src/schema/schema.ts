@@ -24,6 +24,7 @@ import { SetOrderShippingMutation } from "./ecommerce/set_order_shipping_mutatio
 import { SetOrderPaymentMutation } from "./ecommerce/set_order_payment_mutation"
 import { SubmitOrderMutation } from "./ecommerce/submit_order_mutation"
 import { ApproveOrderMutation } from "./ecommerce/approve_order_mutation"
+import { SellerAcceptOfferMutation } from "./ecommerce/seller_accept_offer_mutation"
 import { FulfillOrderAtOnceMutation } from "./ecommerce/fulfill_order_at_once_mutation"
 import { ConfirmPickupMutation } from "./ecommerce/confirm_pickup_mutation"
 import { RejectOrderMutation } from "./ecommerce/reject_order_mutation"
@@ -183,6 +184,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
   stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
   stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
+  stitchedMutations.ecommerceSellerAcceptOffer = SellerAcceptOfferMutation
   stitchedMutations.ecommerceConfirmPickup = ConfirmPickupMutation
   stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
   stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
