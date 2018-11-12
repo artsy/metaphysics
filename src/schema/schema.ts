@@ -23,6 +23,7 @@ import { CreateOfferOrderWithArtworkMutation } from "./ecommerce/create_offer_or
 import { SetOrderShippingMutation } from "./ecommerce/set_order_shipping_mutation"
 import { SetOrderPaymentMutation } from "./ecommerce/set_order_payment_mutation"
 import { SubmitOrderMutation } from "./ecommerce/submit_order_mutation"
+import { SubmitOrderWithOfferMutation } from "./ecommerce/submit_order_with_offer"
 import { ApproveOrderMutation } from "./ecommerce/approve_order_mutation"
 import { FulfillOrderAtOnceMutation } from "./ecommerce/fulfill_order_at_once_mutation"
 import { ConfirmPickupMutation } from "./ecommerce/confirm_pickup_mutation"
@@ -188,6 +189,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
   stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
   stitchedMutations.ecommerceInitialOffer = InitialOfferMutation
+  stitchedMutations.ecommerceSubmitOrderWithOffer = SubmitOrderWithOfferMutation
 }
 
 export default new GraphQLSchema({
