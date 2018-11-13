@@ -4719,6 +4719,11 @@ type Mutation {
 
   # Creates an order with an artwork
   ecommerceInitialOffer(input: InitialOfferInput!): InitialOfferPayload
+
+  # Submits an order with an offer
+  ecommerceSubmitOrderWithOffer(
+    input: SubmitOrderWithOfferInput!
+  ): SubmitOrderWithOfferPayload
   recordArtworkView(input: RecordArtworkViewInput): RecordArtworkViewPayload
 }
 
@@ -7118,6 +7123,17 @@ input SubmitOrderInput {
 }
 
 type SubmitOrderPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
+input SubmitOrderWithOfferInput {
+  # Offer ID
+  offerId: String!
+  clientMutationId: String
+}
+
+type SubmitOrderWithOfferPayload {
   orderOrError: OrderOrFailureUnionType
   clientMutationId: String
 }
