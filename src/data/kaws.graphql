@@ -29,6 +29,11 @@ type Collection {
   updatedAt: DateTime!
 }
 
+type CollectionCategory {
+  name: String!
+  collections: [Collection!]!
+}
+
 type CollectionQuery {
   id: ID
   acquireable: Boolean
@@ -67,5 +72,6 @@ scalar DateTime
 
 type Query {
   collections: [Collection!]!
+  categories: [CollectionCategory!]!
   collection(slug: String!): Collection
 }
