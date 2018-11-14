@@ -60,6 +60,9 @@ const FairType = new GraphQLObjectType({
     has_listing: {
       type: GraphQLBoolean,
     },
+    hours: {
+      type: GraphQLString,
+    },
     href: {
       type: GraphQLString,
       resolve: ({ default_profile_id, organizer }) => {

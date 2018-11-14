@@ -1,9 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`creates an SDL 1`] = `
-"scalar DateTime
-
-# Object representing a collection page
+"# Object representing a collection page
 type MarketingCollection {
   id: ID!
 
@@ -30,8 +28,13 @@ type MarketingCollection {
 
   # Structured object used to build filtered artworks query
   query: MarketingCollectionQuery!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  createdAt: MarketingDateTime!
+  updatedAt: MarketingDateTime!
+}
+
+type MarketingCollectionCategory {
+  name: String!
+  collections: [MarketingCollection!]!
 }
 
 type MarketingCollectionQuery {
@@ -67,8 +70,11 @@ type MarketingCollectionQuery {
   keyword: String
 }
 
+scalar MarketingDateTime
+
 type Query {
   marketingCollections: [MarketingCollection!]!
+  marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
 }
 "

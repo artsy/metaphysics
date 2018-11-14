@@ -17,19 +17,10 @@ export const executableKawsSchema = () => {
     link: kawsLink,
   })
 
-  // Remap the names of certain types from kaws to fit in the larger
-  // metaphysics ecosystem.
-  const remap = {
-    Collection: "MarketingCollection",
-    CollectionQuery: "MarketingCollectionQuery",
-    Image: "MarketingImage",
-  }
-
   // Return the new modified schema
   return transformSchema(schema, [
     new RenameTypes(name => {
-      const newName = remap[name] || name
-      return newName
+      return `Marketing${name}`
     }),
     new RenameRootFields(
       (_operation, name) =>

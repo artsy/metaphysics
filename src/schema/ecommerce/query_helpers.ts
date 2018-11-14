@@ -69,7 +69,6 @@ export const OfferRelatedFields = gql`
   lastOffer {
     ${OfferFields}
   }
-  offerTotalCents
   offers {
     edges {
       node {
@@ -103,6 +102,7 @@ export const BuyerOrderFields = gql`
   stateReason
   stateUpdatedAt
   taxTotalCents
+  totalListPriceCents
   transactionFeeCents
   updatedAt
   lineItems {
@@ -110,6 +110,7 @@ export const BuyerOrderFields = gql`
       node {
         id
         priceCents
+        listPriceCents
         artworkId
         editionSetId
         quantity
@@ -134,6 +135,17 @@ export const SellerOrderFields = gql`
   itemsTotalCents
   lastApprovedAt
   lastSubmittedAt
+  lineItems {
+    edges {
+      node {
+        id
+        priceCents
+        artworkId
+        editionSetId
+        quantity
+      }
+    }
+  }
   mode
   sellerTotalCents
   shippingTotalCents
@@ -142,6 +154,7 @@ export const SellerOrderFields = gql`
   stateReason
   stateUpdatedAt
   taxTotalCents
+  totalListPriceCents
   transactionFeeCents
   updatedAt
 `
@@ -160,6 +173,7 @@ export const AllOrderFields = gql`
   itemsTotalCents
   shippingTotalCents
   taxTotalCents
+  totalListPriceCents
   commissionFeeCents
   transactionFeeCents
   buyerPhoneNumber
