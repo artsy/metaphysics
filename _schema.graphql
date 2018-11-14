@@ -4703,6 +4703,11 @@ type Mutation {
   # Approves an order with payment
   ecommerceApproveOrder(input: ApproveOrderInput!): ApproveOrderPayload
 
+  # Approves an order with payment
+  ecommerceSellerAcceptOffer(
+    input: sellerAcceptOfferInput!
+  ): sellerAcceptOfferPayload
+
   # Confirms pickup for an ecommerce order
   ecommerceConfirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
 
@@ -6756,6 +6761,17 @@ interface Sellable {
   is_sold: Boolean
   price: String
   sale_message: String
+}
+
+input sellerAcceptOfferInput {
+  # Offer ID
+  offerId: String!
+  clientMutationId: String
+}
+
+type sellerAcceptOfferPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
 }
 
 input SendConversationMessageMutationInput {
