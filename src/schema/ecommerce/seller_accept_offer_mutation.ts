@@ -33,17 +33,6 @@ export const SellerAcceptOfferMutation = mutationWithClientMutationId({
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 ${SellerOrderFields}
-                lineItems {
-                  edges {
-                    node {
-                      id
-                      priceCents
-                      artworkId
-                      editionSetId
-                      quantity
-                    }
-                  }
-                }
               }
             }
             ... on EcommerceOrderWithMutationFailure {

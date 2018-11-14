@@ -135,6 +135,17 @@ export const SellerOrderFields = gql`
   itemsTotalCents
   lastApprovedAt
   lastSubmittedAt
+  lineItems {
+    edges {
+      node {
+        id
+        priceCents
+        artworkId
+        editionSetId
+        quantity
+      }
+    }
+  }
   mode
   sellerTotalCents
   shippingTotalCents
