@@ -602,4 +602,90 @@ describe("Sale type", () => {
       expect(data.sale.registrationStatus.qualified_for_bidding).toEqual(true)
     })
   })
+
+  describe("artworksConnection", async () => {
+    it("returns data from gravity", () => {
+      const query = `
+          {
+            sale(id: "foo-foo") {
+              artworksConnection(first: 10) {
+                pageInfo {
+                  hasNextPage
+                }
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        `
+
+      sale.eligible_sale_artworks_count = 20
+
+      const rootValue = {
+        saleLoader: () => Promise.resolve(sale),
+        saleArtworksLoader: () =>
+          Promise.resolve({
+            body: fill(Array(sale.eligible_sale_artworks_count), {
+              artwork: {
+                id: "some-id",
+              },
+            }),
+          }),
+      }
+
+      return runAuthenticatedQuery(query, rootValue).then(data => {
+        expect(data.sale.artworksConnection.pageInfo.hasNextPage).toBe(true)
+        expect(data).toMatchSnapshot()
+      })
+    })
+
+    it("excludes artworks", () => {
+      const query = `
+          {
+            sale(id: "foo-foo") {
+              artworksConnection(first: 3, exclude: ["exclude-me-1", "exclude-me-2"]) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        `
+
+      sale.eligible_sale_artworks_count = 3
+
+      const rootValue = {
+        saleLoader: () => Promise.resolve(sale),
+        saleArtworksLoader: () =>
+          Promise.resolve({
+            body: [
+              {
+                artwork: {
+                  id: "good-id",
+                },
+              },
+              {
+                artwork: {
+                  id: "exclude-me-1",
+                },
+              },
+              {
+                artwork: {
+                  id: "exclude-me-2",
+                },
+              },
+            ],
+          }),
+      }
+
+      return runAuthenticatedQuery(query, rootValue).then(data => {
+        expect(data.sale.artworksConnection.edges.length).toBe(1)
+      })
+    })
+  })
 })
