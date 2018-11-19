@@ -1,4 +1,4 @@
-import Artwork from "schema/artwork"
+import Artwork, { artworkConnection } from "schema/artwork"
 import Bidder from "schema/bidder"
 import Image from "schema/image/index"
 import Profile from "schema/profile"
@@ -11,7 +11,7 @@ import { GravityIDFields } from "schema/object_identification"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { amount } from "schema/fields/money"
-import { exclude } from "lib/helpers"
+import { exclude, convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map } from "lodash"
 import { NodeInterface } from "schema/object_identification"
 import { allViaLoader } from "../../lib/all"
@@ -99,6 +99,42 @@ export const SaleType = new GraphQLObjectType({
           }
 
           return fetch.then(invert).then(exclude(options.exclude, "id"))
+        },
+      },
+      artworksConnection: {
+        type: artworkConnection,
+        description: "Returns a connection of artworks for a sale.",
+        args: pageable({
+          exclude: {
+            type: new GraphQLList(GraphQLString),
+            description:
+              "List of artwork IDs to exclude from the response (irrespective of size)",
+          },
+        }),
+        resolve: (
+          { eligible_sale_artworks_count, id },
+          options,
+          _request,
+          { rootValue: { accessToken, saleArtworksLoader } }
+        ) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            options
+          )
+          const gravityArgs = { page, size }
+          const invert = saleArtworks => map(saleArtworks, "artwork")
+          return (
+            saleArtworksLoader(id, gravityArgs)
+              .then(({ body }) => body)
+              .then(invert)
+              // FIXME: Move this to Gravity: https://github.com/artsy/gravity/blob/7e135fc52178b174907bf540f16191af5bc58ca3/app/api/v1/sales_artworks_endpoint.rb#L83-L84
+              .then(exclude(options.exclude, "id"))
+              .then(body => {
+                return connectionFromArraySlice(body, options, {
+                  arrayLength: eligible_sale_artworks_count,
+                  sliceStart: offset,
+                })
+              })
+          )
         },
       },
       associated_sale: {

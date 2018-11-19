@@ -918,6 +918,16 @@ type ArtworkContextAuction implements Node {
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
   ): [Artwork]
+
+  # Returns a connection of artworks for a sale.
+  artworksConnection(
+    # List of artwork IDs to exclude from the response (irrespective of size)
+    exclude: [String]
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   associated_sale: Sale
   auction_state: String
     @deprecated(reason: "Favor `status` for consistency with other models")
@@ -1186,6 +1196,16 @@ type ArtworkContextSale implements Node {
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
   ): [Artwork]
+
+  # Returns a connection of artworks for a sale.
+  artworksConnection(
+    # List of artwork IDs to exclude from the response (irrespective of size)
+    exclude: [String]
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   associated_sale: Sale
   auction_state: String
     @deprecated(reason: "Favor `status` for consistency with other models")
@@ -3948,6 +3968,16 @@ type HomePageModuleContextSale implements Node {
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
   ): [Artwork]
+
+  # Returns a connection of artworks for a sale.
+  artworksConnection(
+    # List of artwork IDs to exclude from the response (irrespective of size)
+    exclude: [String]
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   associated_sale: Sale
   auction_state: String
     @deprecated(reason: "Favor `status` for consistency with other models")
@@ -6358,6 +6388,16 @@ type Sale implements Node {
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
   ): [Artwork]
+
+  # Returns a connection of artworks for a sale.
+  artworksConnection(
+    # List of artwork IDs to exclude from the response (irrespective of size)
+    exclude: [String]
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   associated_sale: Sale
   auction_state: String
     @deprecated(reason: "Favor `status` for consistency with other models")
