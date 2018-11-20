@@ -35,21 +35,19 @@ export const createExchangeLink = () => {
 
   const analyticsMiddleware = setContext((_request, context) => {
     const locals = context.graphqlContext && context.graphqlContext.res.locals
-    if (!locals) return context.graphqlContext
-    return {
-      ...context.graphqlContext,
-      headers: {
-        ...context.graphqlContext.headers,
-        "User-Agent": locals.userAgent
-          ? locals.userAgent + "; Metaphysics"
-          : "Metaphysics",
-      },
+    if (!locals) return context
+    const headers = {
+      ...context.headers,
+      "User-Agent": locals.userAgent
+        ? locals.userAgent + "; Metaphysics"
+        : "Metaphysics",
     }
+    return { headers }
   })
 
   return middlewareLink
-    .concat(analyticsMiddleware)
     .concat(authMiddleware)
+    .concat(analyticsMiddleware)
     .concat(responseLoggerLink("Exchange"))
     .concat(httpLink)
 }
