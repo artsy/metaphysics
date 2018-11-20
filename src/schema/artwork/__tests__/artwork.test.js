@@ -1286,6 +1286,24 @@ describe("Artwork type", () => {
       }
     `
 
+    beforeEach(() => {
+      artwork.acquireable = true
+    })
+
+    it("is null if artwork is not enrolled in in an e-commerce program", () => {
+      artwork.acquireable = false
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = null
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: null,
+          },
+        })
+      })
+    })
+
     it("is set to prompt string when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = null
       artwork.international_shipping_fee_cents = null
