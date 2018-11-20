@@ -641,51 +641,5 @@ describe("Sale type", () => {
         expect(data).toMatchSnapshot()
       })
     })
-
-    it("excludes artworks", () => {
-      const query = `
-          {
-            sale(id: "foo-foo") {
-              artworksConnection(first: 3, exclude: ["exclude-me-1", "exclude-me-2"]) {
-                edges {
-                  node {
-                    id
-                  }
-                }
-              }
-            }
-          }
-        `
-
-      sale.eligible_sale_artworks_count = 3
-
-      const rootValue = {
-        saleLoader: () => Promise.resolve(sale),
-        saleArtworksLoader: () =>
-          Promise.resolve({
-            body: [
-              {
-                artwork: {
-                  id: "good-id",
-                },
-              },
-              {
-                artwork: {
-                  id: "exclude-me-1",
-                },
-              },
-              {
-                artwork: {
-                  id: "exclude-me-2",
-                },
-              },
-            ],
-          }),
-      }
-
-      return runAuthenticatedQuery(query, rootValue).then(data => {
-        expect(data.sale.artworksConnection.edges.length).toBe(1)
-      })
-    })
   })
 })
