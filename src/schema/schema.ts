@@ -229,6 +229,6 @@ export default new GraphQLSchema({
   // These are for orphaned types which are types which should be in the schema,
   // but can’t be discovered by traversing the types and fields from query.
   //
-  // In this case,
+  // In this case, the interface "Offer" is exposed everywhere, but the underlaying type BuyOrder needs to exist 
   types: [BuyOrderType],
 })
