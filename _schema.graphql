@@ -2006,7 +2006,7 @@ type BuyersPremium {
   percent: Float
 }
 
-type BuyOrder implements OrderInterface {
+type BuyOrder implements Order {
   # ID of the order
   id: ID
 
@@ -5066,7 +5066,7 @@ type Offer {
   amountCents: Int
 
   # The order on which the offer was made
-  order: OrderInterface
+  order: Order
 
   # The order on which the offer was made
   respondsTo: Offer
@@ -5090,63 +5090,7 @@ type OfferEdge {
   cursor: String!
 }
 
-type OrderedSet {
-  # A globally unique ID.
-  __id: ID!
-
-  # A type-specific ID.
-  id: String!
-  cached: Int
-  description: String
-  key: String
-  item_type: String
-  items: [Item]
-  name: String
-}
-
-type OrderFulfillment {
-  # ID of the fulfillment
-  id: ID
-
-  # Fulfillment Courier
-  courier: String
-
-  # Courier's tracking id
-  trackingId: String
-  estimatedDelivery(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-}
-
-# A connection to a list of items.
-type OrderFulfillmentConnection {
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-
-  # A list of edges.
-  edges: [OrderFulfillmentEdge]
-}
-
-# An edge in a connection.
-type OrderFulfillmentEdge {
-  # The item at the end of the edge
-  node: OrderFulfillment
-
-  # A cursor for use in pagination
-  cursor: String!
-}
-
-enum OrderFulfillmentType {
-  SHIP
-  PICKUP
-}
-
-interface OrderInterface {
+interface Order {
   # ID of the order
   id: ID
 
@@ -5371,22 +5315,78 @@ interface OrderInterface {
 }
 
 # A connection to a list of items.
-type OrderInterfaceConnection {
+type OrderConnection {
   # Information to aid in pagination.
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [OrderInterfaceEdge]
+  edges: [OrderEdge]
   totalCount: Int
 }
 
 # An edge in a connection.
-type OrderInterfaceEdge {
+type OrderEdge {
   # The item at the end of the edge
-  node: OrderInterface
+  node: Order
 
   # A cursor for use in pagination
   cursor: String!
+}
+
+type OrderedSet {
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
+  id: String!
+  cached: Int
+  description: String
+  key: String
+  item_type: String
+  items: [Item]
+  name: String
+}
+
+type OrderFulfillment {
+  # ID of the fulfillment
+  id: ID
+
+  # Fulfillment Courier
+  courier: String
+
+  # Courier's tracking id
+  trackingId: String
+  estimatedDelivery(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+}
+
+# A connection to a list of items.
+type OrderFulfillmentConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [OrderFulfillmentEdge]
+}
+
+# An edge in a connection.
+type OrderFulfillmentEdge {
+  # The item at the end of the edge
+  node: OrderFulfillment
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+enum OrderFulfillmentType {
+  SHIP
+  PICKUP
 }
 
 type OrderLineItem {
@@ -5510,7 +5510,7 @@ type OrderWithMutationFailure {
 }
 
 type OrderWithMutationSuccess {
-  order: OrderInterface
+  order: Order
 }
 
 type organizer {
@@ -6458,7 +6458,7 @@ type Query {
   ): PopularArtists
 
   # Returns a single Order
-  order(id: String!): OrderInterface
+  order(id: String!): Order
 
   # Returns list of orders
   orders(
@@ -6473,10 +6473,10 @@ type Query {
     first: Int
     before: String
     last: Int
-  ): OrderInterfaceConnection
+  ): OrderConnection
 
   # Returns a single Order
-  ecommerceOrder(id: String!): OrderInterface
+  ecommerceOrder(id: String!): Order
 
   # Returns list of orders
   ecommerceOrders(
@@ -6491,7 +6491,7 @@ type Query {
     first: Int
     before: String
     last: Int
-  ): OrderInterfaceConnection
+  ): OrderConnection
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
