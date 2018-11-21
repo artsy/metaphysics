@@ -36,6 +36,11 @@ export const mockxchange = resolvers => {
         }
       },
     },
+    Order: {
+      __resolveType(obj, _context, _info) {
+        return "BuyOrder"
+      },
+    },
   }
 
   const schema = makeExecutableSchema({
