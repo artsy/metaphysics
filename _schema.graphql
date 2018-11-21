@@ -2022,7 +2022,7 @@ type BuyOrder implements Order {
   # Reason for current state
   stateReason: String
 
-  # Tracking code of the order
+  # Uniq user-friendly code of the order
   code: String
 
   # Order Requested Fulfillment
@@ -2031,7 +2031,7 @@ type BuyOrder implements Order {
   # Latest offer
   lastOffer: Offer
 
-  # List of offers made on this order so far
+  # List of submitted offers made on this order so far
   offers: OfferConnection
 
   # Item total in cents
@@ -5106,7 +5106,7 @@ interface Order {
   # Reason for current state
   stateReason: String
 
-  # Tracking code of the order
+  # Uniq user-friendly code of the order
   code: String
 
   # Order Requested Fulfillment
@@ -5115,7 +5115,7 @@ interface Order {
   # Latest offer
   lastOffer: Offer
 
-  # List of offers made on this order so far
+  # List of submitted offers made on this order so far
   offers: OfferConnection
 
   # Item total in cents

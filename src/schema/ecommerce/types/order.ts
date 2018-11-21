@@ -40,7 +40,7 @@ const orderFields = () => ({
   },
   code: {
     type: GraphQLString,
-    description: "Tracking code of the order",
+    description: "Uniq user-friendly code of the order",
   },
   requestedFulfillment: {
     type: RequestedFulfillmentUnionType,
@@ -52,7 +52,7 @@ const orderFields = () => ({
   },
   offers: {
     type: OfferConnection,
-    description: "List of offers made on this order so far",
+    description: "List of submitted offers made on this order so far",
   },
   itemsTotalCents: {
     type: GraphQLInt,
@@ -192,9 +192,6 @@ export const {
   connectionType: OrderConnection,
   edgeType: OrderEdge,
 } = connectionDefinitions({
-  // TODO: DO NOT MERGE WITHOUT VERIFYING THIS
-  // and maybe updating @types/graphql
-  // @ts-ignore
   nodeType: OrderInterface,
   connectionFields: {
     totalCount: {
