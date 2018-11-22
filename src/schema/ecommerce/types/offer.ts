@@ -7,7 +7,7 @@ import {
 import { connectionDefinitions } from "graphql-relay"
 import date from "schema/fields/date"
 import { OrderPartyUnionType } from "./order_party_union"
-import { OrderType, resolveOrderParty } from "./order"
+import { OrderInterface, resolveOrderParty } from "./order"
 import { UserType } from "schema/user"
 
 export const OfferType = new GraphQLObjectType({
@@ -52,7 +52,7 @@ export const OfferType = new GraphQLObjectType({
       description: "Offer amount in cents",
     },
     order: {
-      type: OrderType,
+      type: OrderInterface,
       description: "The order on which the offer was made",
     },
     respondsTo: {

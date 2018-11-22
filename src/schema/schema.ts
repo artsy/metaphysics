@@ -83,6 +83,7 @@ import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
 import config from "config"
 import { InitialOfferMutation } from "./ecommerce/initial_offer_mutation"
+import { BuyOrderType } from "./ecommerce/types/order"
 const { ENABLE_CONSIGNMENTS_STITCHING, ENABLE_ECOMMERCE_STITCHING } = config
 
 // TODO: Remove this any
@@ -225,4 +226,9 @@ export default new GraphQLSchema({
       viewer: Viewer,
     },
   }),
+  // These are for orphaned types which are types which should be in the schema,
+  // but can’t be discovered by traversing the types and fields from query.
+  //
+  // In this case, the interface "Offer" is exposed everywhere, but the underlaying type BuyOrder needs to exist 
+  types: [BuyOrderType],
 })

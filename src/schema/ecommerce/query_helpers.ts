@@ -82,6 +82,7 @@ export const BuyerOrderFields = gql`
   ${ParticipantFields}
   ${RequestedFulfillmentFragment}
   ${OfferRelatedFields}
+  __typename
   buyerPhoneNumber
   buyerTotalCents
   code
@@ -160,6 +161,7 @@ export const SellerOrderFields = gql`
 `
 
 export const AllOrderFields = gql`
+  __typename
   id
   mode
   code

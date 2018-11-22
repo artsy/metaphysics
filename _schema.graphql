@@ -2006,6 +2006,230 @@ type BuyersPremium {
   percent: Float
 }
 
+type BuyOrder implements Order {
+  # ID of the order
+  id: ID
+
+  # Order Mode
+  mode: OrderModeEnum
+
+  # Currency code of this order
+  currencyCode: String
+
+  # State of the order
+  state: String
+
+  # Reason for current state
+  stateReason: String
+
+  # Uniq user-friendly code of the order
+  code: String
+
+  # Order Requested Fulfillment
+  requestedFulfillment: RequestedFulfillment
+
+  # Latest offer
+  lastOffer: Offer
+
+  # List of submitted offers made on this order so far
+  offers: OfferConnection
+
+  # Item total in cents
+  itemsTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  itemsTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Total list price in cents
+  totalListPriceCents: Int
+
+  # A formatted price with various currency formatting options.
+  totalListPrice(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Shipping total in cents
+  shippingTotalCents: Int
+
+  # Total amount of latest offer
+  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
+
+  # A formatted price with various currency formatting options.
+  offerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # A formatted price with various currency formatting options.
+  shippingTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Tax total in cents
+  taxTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  taxTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Transaction fee in cents
+  transactionFeeCents: Int
+
+  # A formatted price with various currency formatting options.
+  transactionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Commission fee in cents
+  commissionFeeCents: Int
+
+  # A formatted price with various currency formatting options.
+  commissionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Partner commission rate used to calculate commission fee
+  commissionRate: Float
+
+  # Partner commission rate formatted into percentage
+  displayCommissionRate: String
+
+  # Buyer total in cents
+  buyerTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  buyerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Seller total in cents
+  sellerTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  sellerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # List of order line items
+  lineItems: OrderLineItemConnection
+
+  # Seller of this order
+  seller: OrderParty
+
+  # Buyer of this order
+  buyer: OrderParty
+
+  # Credit card on this order
+  creditCard: CreditCard
+  lastApprovedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  lastSubmittedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  updatedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  createdAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  stateUpdatedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  stateExpiresAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+
+  # Buyer phone number
+  buyerPhoneNumber: String
+}
+
 # Fields of partner category (currently from Gravity).
 type Category {
   id: String!
@@ -4866,7 +5090,7 @@ type OfferEdge {
   cursor: String!
 }
 
-type Order {
+interface Order {
   # ID of the order
   id: ID
 
@@ -4882,7 +5106,7 @@ type Order {
   # Reason for current state
   stateReason: String
 
-  # Tracking code of the order
+  # Uniq user-friendly code of the order
   code: String
 
   # Order Requested Fulfillment
@@ -4891,7 +5115,7 @@ type Order {
   # Latest offer
   lastOffer: Offer
 
-  # List of offers made on this order so far
+  # List of submitted offers made on this order so far
   offers: OfferConnection
 
   # Item total in cents
