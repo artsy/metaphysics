@@ -150,11 +150,14 @@ const orderFields = {
 
 export const OrderInterface = new GraphQLInterfaceType({
   name: "Order",
-  resolveType: () => BuyOrderType,
+  resolveType: ({ mode }) => {
+    if (mode === "BUY") return BuyOrderType
+    else if (mode === "OFFER") return OfferOrderType
+  },
   fields: () => orderFields,
 })
 
-export const OfferOrder = new GraphQLObjectType({
+export const OfferOrderType = new GraphQLObjectType({
   name: "OfferOrder",
   interfaces: () => [OrderInterface],
   fields: () => ({
