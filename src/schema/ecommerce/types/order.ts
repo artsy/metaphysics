@@ -47,14 +47,6 @@ const orderFields = {
     type: RequestedFulfillmentUnionType,
     description: "Order Requested Fulfillment",
   },
-  lastOffer: {
-    type: OfferType,
-    description: "Latest offer",
-  },
-  offers: {
-    type: OfferConnection,
-    description: "List of submitted offers made on this order so far",
-  },
   itemsTotalCents: {
     type: GraphQLInt,
     description: "Item total in cents",
@@ -174,6 +166,14 @@ export const OfferOrder = new GraphQLObjectType({
     awaitingResponseFrom: {
       type: OrderParticipantEnum,
       description: "Waiting for one participants response",
+    },
+    lastOffer: {
+      type: OfferType,
+      description: "Latest offer",
+    },
+    offers: {
+      type: OfferConnection,
+      description: "List of submitted offers made on this order so far",
     },
   }),
 })
