@@ -14,10 +14,11 @@ import { CreditCard } from "schema/credit_card"
 import { OrderLineItemConnection } from "./order_line_item"
 import { RequestedFulfillmentUnionType } from "./requested_fulfillment_union_type"
 import { OrderPartyUnionType } from "./order_party_union"
-import { OrderModeEnum } from "./order_mode_enum"
+import { OrderModeEnum } from "./enums/order_mode_enum"
 import { OfferConnection, OfferType } from "./offer"
+import { OrderParticipantEnum } from "./enums/offer_participant_enum"
 
-const orderFields = () => ({
+const orderFields = {
   id: {
     type: GraphQLID,
     description: "ID of the order",
@@ -153,12 +154,28 @@ const orderFields = () => ({
     type: GraphQLString,
     description: "Buyer phone number",
   },
-})
+}
 
 export const OrderInterface = new GraphQLInterfaceType({
   name: "Order",
   resolveType: () => BuyOrderType,
-  fields: orderFields,
+  fields: () => orderFields,
+})
+
+export const OfferOrder = new GraphQLObjectType({
+  name: "OfferOrder",
+  interfaces: () => [OrderInterface],
+  fields: () => ({
+    ...orderFields,
+    myLastOffer: {
+      type: OfferType,
+      description: "Current User's latest offer",
+    },
+    awaitingResponseFrom: {
+      type: OrderParticipantEnum,
+      description: "Waiting for one participants response",
+    },
+  }),
 })
 
 export const BuyOrderType = new GraphQLObjectType({

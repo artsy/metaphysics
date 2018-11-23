@@ -66,15 +66,21 @@ export const OfferFields = gql`
 `
 
 export const OfferRelatedFields = gql`
-  lastOffer {
-    ${OfferFields}
-  }
-  offers {
-    edges {
-      node {
-        ${OfferFields}
+  ... on EcommerceOfferOrder {
+    lastOffer {
+      ${OfferFields}
+    }
+    offers {
+      edges {
+        node {
+          ${OfferFields}
+        }
       }
     }
+    myLastOffer {
+      ${OfferFields}
+    }
+    awaitingResponseFrom
   }
 `
 
