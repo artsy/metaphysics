@@ -308,7 +308,9 @@ type EcommerceOffer {
   id: ID!
   order: EcommerceOrder!
   respondsTo: EcommerceOffer
+  shippingTotalCents: Int
   submittedAt: EcommerceDateTime
+  taxTotalCents: Int
 }
 
 # The connection type for Offer.

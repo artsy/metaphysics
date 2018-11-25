@@ -16,7 +16,7 @@ import { RequestedFulfillmentUnionType } from "./requested_fulfillment_union_typ
 import { OrderPartyUnionType } from "./order_party_union"
 import { OrderModeEnum } from "./enums/order_mode_enum"
 import { OfferConnection, OfferType } from "./offer"
-import { OrderParticipantEnum } from "./enums/offer_participant_enum"
+import { OrderParticipantEnum } from "./enums/order_participant_enum"
 
 const orderFields = {
   id: {
@@ -187,6 +187,7 @@ export const OfferOrderType = new GraphQLObjectType({
       description: "List of submitted offers made on this order so far",
     },
   }),
+  isTypeOf: () => true,
 })
 
 export const BuyOrderType = new GraphQLObjectType({

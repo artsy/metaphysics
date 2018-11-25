@@ -3,11 +3,11 @@ import { GraphQLEnumType } from "graphql"
 export const OrderParticipantEnum = new GraphQLEnumType({
   name: "OrderParticipantEnum",
   values: {
-    BUY: {
+    BUYER: {
       value: "BUYER",
       description: "Participant on the buyer side",
     },
-    OFFER: {
+    SELLER: {
       value: "SELLER",
       description: "Participant on the seller side",
     },

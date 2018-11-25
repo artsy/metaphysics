@@ -5754,10 +5754,10 @@ union OrderOrFailureUnionType =
 
 enum OrderParticipantEnum {
   # Participant on the buyer side
-  BUY
+  BUYER
 
   # Participant on the seller side
-  OFFER
+  SELLER
 }
 
 union OrderParty = Partner | User

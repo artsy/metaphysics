@@ -38,7 +38,7 @@ export const mockxchange = resolvers => {
     },
     Order: {
       __resolveType(obj, _context, _info) {
-        return "BuyOrder"
+        return obj.mode === "BUY" ? "BuyOrder" : "OfferOrder"
       },
     },
   }

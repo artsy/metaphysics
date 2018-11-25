@@ -337,7 +337,9 @@ type Offer {
   id: ID!
   order: Order!
   respondsTo: Offer
+  shippingTotalCents: Int
   submittedAt: DateTime
+  taxTotalCents: Int
 }
 
 # The connection type for Offer.
