@@ -146,6 +146,14 @@ const orderFields = {
     type: GraphQLString,
     description: "Buyer phone number",
   },
+  lastOffer: {
+    type: OfferType,
+    description: "Latest offer",
+  },
+  offers: {
+    type: OfferConnection,
+    description: "List of submitted offers made on this order so far",
+  },
 }
 
 export const OrderInterface = new GraphQLInterfaceType({

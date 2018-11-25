@@ -2222,6 +2222,12 @@ type BuyOrder implements Order {
 
   # Buyer phone number
   buyerPhoneNumber: String
+
+  # Latest offer
+  lastOffer: Offer
+
+  # List of submitted offers made on this order so far
+  offers: OfferConnection
 }
 
 # Fields of partner category (currently from Gravity).
@@ -5301,17 +5307,17 @@ type OfferOrder implements Order {
   # Buyer phone number
   buyerPhoneNumber: String
 
-  # Current User's latest offer
-  myLastOffer: Offer
-
-  # Waiting for one participants response
-  awaitingResponseFrom: OrderParticipantEnum
-
   # Latest offer
   lastOffer: Offer
 
   # List of submitted offers made on this order so far
   offers: OfferConnection
+
+  # Current User's latest offer
+  myLastOffer: Offer
+
+  # Waiting for one participants response
+  awaitingResponseFrom: OrderParticipantEnum
 }
 
 interface Order {
@@ -5530,6 +5536,12 @@ interface Order {
 
   # Buyer phone number
   buyerPhoneNumber: String
+
+  # Latest offer
+  lastOffer: Offer
+
+  # List of submitted offers made on this order so far
+  offers: OfferConnection
 }
 
 # A connection to a list of items.
