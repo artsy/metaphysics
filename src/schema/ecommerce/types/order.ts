@@ -61,13 +61,6 @@ const orderFields = {
     type: GraphQLInt,
     description: "Shipping total in cents",
   },
-  offerTotalCents: {
-    type: GraphQLInt,
-    description: "Total amount of latest offer",
-    deprecationReason: "Switch to ItemTotalCents",
-    resolve: ({ itemsTotalCents }) => itemsTotalCents,
-  },
-  offerTotal: amount(({ itemsTotalCents }) => itemsTotalCents),
   shippingTotal: amount(({ shippingTotalCents }) => shippingTotalCents),
   taxTotalCents: {
     type: GraphQLInt,
@@ -154,6 +147,13 @@ const orderFields = {
     type: OfferConnection,
     description: "List of submitted offers made on this order so far",
   },
+  offerTotalCents: {
+    type: GraphQLInt,
+    description: "Total amount of latest offer",
+    deprecationReason: "Switch to ItemTotalCents",
+    resolve: ({ itemsTotalCents }) => itemsTotalCents,
+  },
+  offerTotal: amount(({ itemsTotalCents }) => itemsTotalCents),
 }
 
 export const OrderInterface = new GraphQLInterfaceType({

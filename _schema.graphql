@@ -2059,20 +2059,6 @@ type BuyOrder implements Order {
   # Shipping total in cents
   shippingTotalCents: Int
 
-  # Total amount of latest offer
-  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
-
-  # A formatted price with various currency formatting options.
-  offerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-
   # A formatted price with various currency formatting options.
   shippingTotal(
     decimal: String = "."
@@ -2228,6 +2214,20 @@ type BuyOrder implements Order {
 
   # List of submitted offers made on this order so far
   offers: OfferConnection
+
+  # Total amount of latest offer
+  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
+
+  # A formatted price with various currency formatting options.
+  offerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
 }
 
 # Fields of partner category (currently from Gravity).
@@ -5065,6 +5065,45 @@ type Offer {
   # Offer amount in cents
   amountCents: Int
 
+  # A formatted price with various currency formatting options.
+  amount(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Shipping total based on this offer in cents
+  shippingTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  shippingTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Tax total based on this offer in cents
+  taxTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  taxTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
   # The order on which the offer was made
   order: Order
 
@@ -5143,20 +5182,6 @@ type OfferOrder implements Order {
   # Shipping total in cents
   shippingTotalCents: Int
 
-  # Total amount of latest offer
-  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
-
-  # A formatted price with various currency formatting options.
-  offerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-
   # A formatted price with various currency formatting options.
   shippingTotal(
     decimal: String = "."
@@ -5312,6 +5337,20 @@ type OfferOrder implements Order {
 
   # List of submitted offers made on this order so far
   offers: OfferConnection
+
+  # Total amount of latest offer
+  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
+
+  # A formatted price with various currency formatting options.
+  offerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
 
   # Current User's latest offer
   myLastOffer: Offer
@@ -5373,20 +5412,6 @@ interface Order {
   # Shipping total in cents
   shippingTotalCents: Int
 
-  # Total amount of latest offer
-  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
-
-  # A formatted price with various currency formatting options.
-  offerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-
   # A formatted price with various currency formatting options.
   shippingTotal(
     decimal: String = "."
@@ -5542,6 +5567,20 @@ interface Order {
 
   # List of submitted offers made on this order so far
   offers: OfferConnection
+
+  # Total amount of latest offer
+  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
+
+  # A formatted price with various currency formatting options.
+  offerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
 }
 
 # A connection to a list of items.
