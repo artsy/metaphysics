@@ -14,10 +14,11 @@ import { CreditCard } from "schema/credit_card"
 import { OrderLineItemConnection } from "./order_line_item"
 import { RequestedFulfillmentUnionType } from "./requested_fulfillment_union_type"
 import { OrderPartyUnionType } from "./order_party_union"
-import { OrderModeEnum } from "./order_mode_enum"
+import { OrderModeEnum } from "./enums/order_mode_enum"
 import { OfferConnection, OfferType } from "./offer"
+import { OrderParticipantEnum } from "./enums/order_participant_enum"
 
-const orderFields = () => ({
+const orderFields = {
   id: {
     type: GraphQLID,
     description: "ID of the order",
@@ -46,14 +47,6 @@ const orderFields = () => ({
     type: RequestedFulfillmentUnionType,
     description: "Order Requested Fulfillment",
   },
-  lastOffer: {
-    type: OfferType,
-    description: "Latest offer",
-  },
-  offers: {
-    type: OfferConnection,
-    description: "List of submitted offers made on this order so far",
-  },
   itemsTotalCents: {
     type: GraphQLInt,
     description: "Item total in cents",
@@ -68,13 +61,6 @@ const orderFields = () => ({
     type: GraphQLInt,
     description: "Shipping total in cents",
   },
-  offerTotalCents: {
-    type: GraphQLInt,
-    description: "Total amount of latest offer",
-    deprecationReason: "Switch to ItemTotalCents",
-    resolve: ({ itemsTotalCents }) => itemsTotalCents,
-  },
-  offerTotal: amount(({ itemsTotalCents }) => itemsTotalCents),
   shippingTotal: amount(({ shippingTotalCents }) => shippingTotalCents),
   taxTotalCents: {
     type: GraphQLInt,
@@ -153,12 +139,55 @@ const orderFields = () => ({
     type: GraphQLString,
     description: "Buyer phone number",
   },
-})
+  lastOffer: {
+    type: OfferType,
+    description: "Latest offer",
+  },
+  offers: {
+    type: OfferConnection,
+    description: "List of submitted offers made on this order so far",
+  },
+  offerTotalCents: {
+    type: GraphQLInt,
+    description: "Total amount of latest offer",
+    deprecationReason: "Switch to ItemTotalCents",
+    resolve: ({ itemsTotalCents }) => itemsTotalCents,
+  },
+  offerTotal: amount(({ itemsTotalCents }) => itemsTotalCents),
+}
 
 export const OrderInterface = new GraphQLInterfaceType({
   name: "Order",
-  resolveType: () => BuyOrderType,
-  fields: orderFields,
+  resolveType: ({ mode }) => {
+    if (mode === "BUY") return BuyOrderType
+    else if (mode === "OFFER") return OfferOrderType
+  },
+  fields: () => orderFields,
+})
+
+export const OfferOrderType = new GraphQLObjectType({
+  name: "OfferOrder",
+  interfaces: () => [OrderInterface],
+  fields: () => ({
+    ...orderFields,
+    myLastOffer: {
+      type: OfferType,
+      description: "Current User's latest offer",
+    },
+    awaitingResponseFrom: {
+      type: OrderParticipantEnum,
+      description: "Waiting for one participants response",
+    },
+    lastOffer: {
+      type: OfferType,
+      description: "Latest offer",
+    },
+    offers: {
+      type: OfferConnection,
+      description: "List of submitted offers made on this order so far",
+    },
+  }),
+  isTypeOf: () => true,
 })
 
 export const BuyOrderType = new GraphQLObjectType({

@@ -50,31 +50,41 @@ export const ParticipantFields = gql`
 `
 
 export const OfferFields = gql`
-  id
-  createdAt
-  creatorId
-  amountCents
-  from {
-    __typename
-    ... on EcommerceUser {
-      id
-    }
-    ... on EcommercePartner{
-      id
+  ... on EcommerceOffer {
+    id
+    createdAt
+    creatorId
+    amountCents
+    shippingTotalCents
+    taxTotalCents
+    from {
+      __typename
+      ... on EcommerceUser {
+        id
+      }
+      ... on EcommercePartner{
+        id
+      }
     }
   }
 `
 
 export const OfferRelatedFields = gql`
-  lastOffer {
-    ${OfferFields}
-  }
-  offers {
-    edges {
-      node {
-        ${OfferFields}
+  ... on EcommerceOfferOrder {
+    myLastOffer {
+      ${OfferFields}
+    }
+    lastOffer {
+      ${OfferFields}
+    }
+    offers {
+      edges {
+        node {
+          ${OfferFields}
+        }
       }
     }
+    awaitingResponseFrom
   }
 `
 

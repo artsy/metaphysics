@@ -5,7 +5,7 @@ import {
   GraphQLID,
 } from "graphql"
 
-import { OrderFulfillmentTypeEnum } from "./types/order_fulfillment_type_enum"
+import { OrderFulfillmentTypeEnum } from "./types/enums/order_fulfillment_type_enum"
 import { mutationWithClientMutationId } from "graphql-relay"
 import gql from "lib/gql"
 import { BuyerOrderFields } from "./query_helpers"
