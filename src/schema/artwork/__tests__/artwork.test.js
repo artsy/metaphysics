@@ -1286,13 +1286,31 @@ describe("Artwork type", () => {
       }
     `
 
-    it("is set to prompt string when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
+    beforeEach(() => {
+      artwork.acquireable = true
+    })
+
+    it("is null if artwork is not enrolled in in an e-commerce program", () => {
+      artwork.acquireable = false
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = null
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: null,
+          },
+        })
+      })
+    })
+
+    it("is null when domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = null
       artwork.international_shipping_fee_cents = null
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping, tax, and service quoted by seller",
+            shippingInfo: null,
           },
         })
       })
@@ -1449,8 +1467,35 @@ describe("Artwork type", () => {
       }
     `
 
+    beforeEach(() => {
+      artwork.acquireable = true
+    })
+
     it("is null when shipping_origin is null", () => {
       artwork.shipping_origin = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOrigin: null,
+          },
+        })
+      })
+    })
+
+    it("is null when artwork is not acquireable", () => {
+      artwork.acquireable = false
+      artwork.shipping_origin = ["Kharkov", "Ukraine"]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOrigin: null,
+          },
+        })
+      })
+    })
+
+    it("is null if shipping origin is not present", () => {
+      artwork.shipping_origin = []
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
