@@ -6,9 +6,10 @@ import { BuyerOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { InitialOfferInputType } from "./types/initial_offer_input_type"
 import { moneyFieldToUnit } from "lib/moneyHelper"
-export const InitialOfferMutation = mutationWithClientMutationId({
-  name: "InitialOffer",
-  description: "Deprecated. Use AddInitialOfferToOrder instead.",
+
+export const AddInitialOfferToOrderMutation = mutationWithClientMutationId({
+  name: "AddInitialOfferToOrder",
+  description: "Adds an offer to a pending order",
   inputFields: InitialOfferInputType.getFields(),
   outputFields: {
     orderOrError: {
@@ -24,37 +25,37 @@ export const InitialOfferMutation = mutationWithClientMutationId({
       return new Error("You need to be signed in to perform this action")
     }
     const mutation = gql`
-        mutation initialOffer(
-          $amountCents: Int!
-          $orderId: ID!
+      mutation addInitialOfferToOrder(
+        $amountCents: Int!
+        $orderId: ID!
+      ) {
+        ecommerceAddInitialOfferToOrder(
+          input: {
+            amountCents: $amountCents
+            orderId: $orderId
+          }
         ) {
-          ecommerceInitialOffer(
-            input: {
-              amountCents: $amountCents
-              orderId: $orderId
-            }
-          ) {
-            orderOrError {
-              __typename
-              ... on EcommerceOrderWithMutationSuccess {
-                order {
-                  ${BuyerOrderFields}
-                }
+          orderOrError {
+            __typename
+            ... on EcommerceOrderWithMutationSuccess {
+              order {
+                ${BuyerOrderFields}
               }
-              ... on EcommerceOrderWithMutationFailure {
-                error {
-                  type
-                  code
-                  data
-                }
+            }
+            ... on EcommerceOrderWithMutationFailure {
+              error {
+                type
+                code
+                data
               }
             }
           }
         }
-      `
+      }
+    `
     return graphql(exchangeSchema, mutation, null, context, {
       amountCents: moneyFieldToUnit(offerPrice),
       orderId,
-    }).then(extractEcommerceResponse("ecommerceInitialOffer"))
+    }).then(extractEcommerceResponse("ecommerceAddInitialOfferToOrder"))
   },
 })

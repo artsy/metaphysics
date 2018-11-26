@@ -79,7 +79,10 @@ type EcommerceBuyOrder implements EcommerceOrder {
     last: Int
   ): EcommerceLineItemConnection
   mode: EcommerceOrderModeEnum
+<<<<<<< HEAD
   offerTotalCents: Int! @deprecated(reason: \\"itemsTotalCents reflects offer total for offer orders.\\")
+=======
+>>>>>>> adds new name for initial offer mutation
   offers(
     # Returns the elements in the list that come after the specified cursor.
     after: String
@@ -370,7 +373,10 @@ type EcommerceOfferOrder implements EcommerceOrder {
   ): EcommerceLineItemConnection
   mode: EcommerceOrderModeEnum
   myLastOffer: EcommerceOffer
+<<<<<<< HEAD
   offerTotalCents: Int! @deprecated(reason: \\"itemsTotalCents reflects offer total for offer orders.\\")
+=======
+>>>>>>> adds new name for initial offer mutation
   offers(
     # Returns the elements in the list that come after the specified cursor.
     after: String
@@ -433,7 +439,10 @@ interface EcommerceOrder {
     last: Int
   ): EcommerceLineItemConnection
   mode: EcommerceOrderModeEnum
+<<<<<<< HEAD
   offerTotalCents: Int! @deprecated(reason: \\"itemsTotalCents reflects offer total for offer orders.\\")
+=======
+>>>>>>> adds new name for initial offer mutation
   offers(
     # Returns the elements in the list that come after the specified cursor.
     after: String

@@ -1,0 +1,65 @@
+/* eslint-disable promise/always-return */
+import { runQuery } from "test/utils"
+import { mockxchange } from "test/fixtures/exchange/mockxchange"
+import { sampleOrder } from "test/fixtures/results/sample_order"
+import exchangeOrderJSON from "test/fixtures/exchange/order.json"
+import gql from "lib/gql"
+import { OrderBuyerFields } from "./order_fields"
+let rootValue
+
+describe("AddInitialOfferToOrder Mutation", () => {
+  const mutation = gql`
+    mutation {
+      ecommerceAddInitialOfferToOrder(
+        input: { orderId: "111", offerPrice: { amount: 1, currencyCode: "USD" } }
+      ) {
+        orderOrError {
+          ... on OrderWithMutationSuccess {
+            order{
+              ${OrderBuyerFields}
+            }
+          }
+          ... on OrderWithMutationFailure {
+            error {
+              type
+              code
+              data
+            }
+          }
+        }
+      }
+    }
+  `
+  it("creates offer order and returns it", () => {
+    const resolvers = {
+      Mutation: {
+        addInitialOfferToOrder: () => ({
+          orderOrError: { order: exchangeOrderJSON },
+        }),
+      },
+    }
+    rootValue = mockxchange(resolvers)
+    return runQuery(mutation, rootValue).then(data => {
+      expect(data!.ecommerceAddInitialOfferToOrder.orderOrError.order).toEqual(
+        sampleOrder()
+      )
+    })
+  })
+  it("returns an error if there is one", () => {
+    const resolvers = {
+      Mutation: {
+        addInitialOfferToOrder: () => ({
+          orderOrError: { error: { type: "application_error", code: "404" } },
+        }),
+      },
+    }
+    rootValue = mockxchange(resolvers)
+    return runQuery(mutation, rootValue).then(data => {
+      expect(data!.ecommerceAddInitialOfferToOrder.orderOrError.error).toEqual({
+        type: "application_error",
+        code: "404",
+        data: null,
+      })
+    })
+  })
+})
