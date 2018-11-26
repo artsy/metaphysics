@@ -577,13 +577,13 @@ export const artworkFields = () => {
       description:
         "The string that describes domestic and international shipping.",
       resolve: artwork => {
-        if (!artwork.acquireable) return null
-
         if (
-          artwork.domestic_shipping_fee_cents == null &&
-          artwork.international_shipping_fee_cents == null
+          !artwork.acquireable ||
+          (artwork.domestic_shipping_fee_cents == null &&
+            artwork.international_shipping_fee_cents == null)
         )
-          return "Shipping, tax, and service quoted by seller"
+          return null
+
         if (
           artwork.domestic_shipping_fee_cents === 0 &&
           artwork.international_shipping_fee_cents == null

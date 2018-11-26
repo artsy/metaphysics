@@ -1304,13 +1304,13 @@ describe("Artwork type", () => {
       })
     })
 
-    it("is set to prompt string when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
+    it("is null when domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = null
       artwork.international_shipping_fee_cents = null
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping, tax, and service quoted by seller",
+            shippingInfo: null,
           },
         })
       })
