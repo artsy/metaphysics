@@ -21,6 +21,7 @@ export const kawsStitchingEnvironment = (
         include_artworks_by_followed_artists: Boolean
         include_medium_filter_in_aggregation: Boolean
         inquireable_only: Boolean
+        marketable: Boolean
         for_sale: Boolean
         gene_id: String
         gene_ids: [String]
@@ -70,6 +71,7 @@ export const kawsStitchingEnvironment = (
               gene_ids
               height
               width
+              marketable
               medium
               period
               periods
