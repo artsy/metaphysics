@@ -209,6 +209,9 @@ type Artist implements Node {
     height: String
     width: String
 
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
     # A string from the list of allocations, or * to denote all mediums
     medium: String
     period: String
@@ -517,6 +520,9 @@ type ArtistItem implements Node {
     gene_ids: [String]
     height: String
     width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
 
     # A string from the list of allocations, or * to denote all mediums
     medium: String
@@ -1353,6 +1359,9 @@ type ArtworkFilterGene implements Node {
     height: String
     width: String
 
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
     # A string from the list of allocations, or * to denote all mediums
     medium: String
     period: String
@@ -1406,6 +1415,9 @@ type ArtworkFilterTag implements Node {
     gene_ids: [String]
     height: String
     width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
 
     # A string from the list of allocations, or * to denote all mediums
     medium: String
@@ -3407,6 +3419,9 @@ type Gene implements Node {
     height: String
     width: String
 
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
     # A string from the list of allocations, or * to denote all mediums
     medium: String
     period: String
@@ -3449,6 +3464,9 @@ type Gene implements Node {
     gene_ids: [String]
     height: String
     width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
 
     # A string from the list of allocations, or * to denote all mediums
     medium: String
@@ -3585,6 +3603,9 @@ type GeneItem implements Node {
     height: String
     width: String
 
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
     # A string from the list of allocations, or * to denote all mediums
     medium: String
     period: String
@@ -3627,6 +3648,9 @@ type GeneItem implements Node {
     gene_ids: [String]
     height: String
     width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
 
     # A string from the list of allocations, or * to denote all mediums
     medium: String
@@ -4092,6 +4116,9 @@ type HomePageModuleContextGene implements Node {
     height: String
     width: String
 
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
     # A string from the list of allocations, or * to denote all mediums
     medium: String
     period: String
@@ -4134,6 +4161,9 @@ type HomePageModuleContextGene implements Node {
     gene_ids: [String]
     height: String
     width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
 
     # A string from the list of allocations, or * to denote all mediums
     medium: String
@@ -6156,6 +6186,9 @@ type Query {
     height: String
     width: String
 
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
     # A string from the list of allocations, or * to denote all mediums
     medium: String
     period: String
@@ -7475,6 +7508,9 @@ type Tag implements Node {
     height: String
     width: String
 
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
     # A string from the list of allocations, or * to denote all mediums
     medium: String
     period: String
@@ -7874,6 +7910,9 @@ type Viewer {
     gene_ids: [String]
     height: String
     width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
 
     # A string from the list of allocations, or * to denote all mediums
     medium: String
