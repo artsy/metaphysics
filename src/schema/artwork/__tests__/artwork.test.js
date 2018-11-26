@@ -1467,8 +1467,35 @@ describe("Artwork type", () => {
       }
     `
 
+    beforeEach(() => {
+      artwork.acquireable = true
+    })
+
     it("is null when shipping_origin is null", () => {
       artwork.shipping_origin = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOrigin: null,
+          },
+        })
+      })
+    })
+
+    it("is null when artwork is not acquireable", () => {
+      artwork.acquireable = false
+      artwork.shipping_origin = ["Kharkov", "Ukraine"]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOrigin: null,
+          },
+        })
+      })
+    })
+
+    it("is null if shipping origin is not present", () => {
+      artwork.shipping_origin = []
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {

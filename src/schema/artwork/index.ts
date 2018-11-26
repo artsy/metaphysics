@@ -626,7 +626,13 @@ export const artworkFields = () => {
       description:
         "Minimal location information describing from where artwork will be shipped.",
       resolve: artwork => {
-        return artwork.shipping_origin && artwork.shipping_origin.join(", ")
+        if (
+          !artwork.acquireable ||
+          !(artwork.shipping_origin && artwork.shipping_origin.length)
+        )
+          return null
+
+        return artwork.shipping_origin.join(", ")
       },
     },
     provenance: markdown(({ provenance }) =>
