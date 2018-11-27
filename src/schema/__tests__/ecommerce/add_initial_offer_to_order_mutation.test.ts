@@ -2,7 +2,7 @@
 import { runQuery } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { sampleOrder } from "test/fixtures/results/sample_order"
-import exchangeOrderJSON from "test/fixtures/exchange/order.json"
+import exchangeOrderJSON from "test/fixtures/exchange/offer_order.json"
 import gql from "lib/gql"
 import { OrderBuyerFields } from "./order_fields"
 let rootValue
@@ -41,7 +41,7 @@ describe("AddInitialOfferToOrder Mutation", () => {
     rootValue = mockxchange(resolvers)
     return runQuery(mutation, rootValue).then(data => {
       expect(data!.ecommerceAddInitialOfferToOrder.orderOrError.order).toEqual(
-        sampleOrder()
+        sampleOrder({ mode: "OFFER", includeOfferFields: true })
       )
     })
   })
