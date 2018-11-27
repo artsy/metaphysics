@@ -395,7 +395,10 @@ export const artworkFields = () => {
     is_inquireable: {
       type: GraphQLBoolean,
       description: "Do we want to encourage inquiries on this work?",
-      resolve: artwork => is_inquireable(artwork),
+      resolve: artwork => {
+        if (artwork.ecommerce) return false
+        return is_inquireable(artwork)
+      },
     },
     is_in_auction: {
       type: GraphQLBoolean,
