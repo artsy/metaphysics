@@ -1,27 +1,17 @@
----
-version: '2'
+version: "2"
 services:
   metaphysics:
     extends:
       file: common.yml
       service: metaphysics
     environment:
-    - MEMCACHED_URL=metaphysics-memcached:11211
+      - MEMCACHED_URL=metaphysics-memcached:11211
     env_file: ../.env
     ports:
-    - 5001:5001
+      - 5001:5001
     depends_on:
-    - metaphysics-memcached
+      - metaphysics-memcached
   metaphysics-memcached:
     image: memcached
     ports:
-    - 11211:11211
-  metaphysics-goreplay:
-    extends:
-      file: common.yml
-      service: metaphysics
-    environment:
-    - GOREPLAY_PORT=5001
-    - GOREPLAY_OUTPUT=stdout
-    command: ["./scripts/run-goreplay.sh"]
-    privileged: true
+      - 11211:11211
