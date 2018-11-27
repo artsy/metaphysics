@@ -5030,8 +5030,9 @@ type Mutation {
   # Submits an order
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
 
-  # Deprecated. Use AddInitialOfferToOrder instead.
+  # Deprecated.
   ecommerceInitialOffer(input: InitialOfferInput!): InitialOfferPayload
+    @deprecated(reason: "Use AddInitialOfferToOrder instead.")
   recordArtworkView(input: RecordArtworkViewInput): RecordArtworkViewPayload
 }
 
