@@ -4520,6 +4520,9 @@ type Location {
   country: String
   coordinates: LatLng
   day_schedules: [DaySchedule]
+
+  # Alternate free text representation of a location's opening hours
+  day_schedule_text: String
   displayDaySchedules: [FormattedDaySchedules]
   display: String
   phone: String
