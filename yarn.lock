@@ -778,6 +778,13 @@
   dependencies:
     "@types/graphql" "*"
 
+"@types/graphql-relay@^0.4.9":
+  version "0.4.9"
+  resolved "https://registry.yarnpkg.com/@types/graphql-relay/-/graphql-relay-0.4.9.tgz#0f34ee87a1bf1fc4c986eeefe0707318c7433212"
+  integrity sha512-SL0UXsnNozTBIXwSs0pGB1iTWKaQzxmfqBwx9m0NvDGg463sYaFw4f7rizTzL4OSaVobLkvGJWUPesbg66MfHw==
+  dependencies:
+    "@types/graphql" "*"
+
 "@types/graphql@*", "@types/graphql@0.12.6", "@types/graphql@^0.13.1":
   version "0.13.1"
   resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.13.1.tgz#7d39750355c9ecb921816d6f76c080405b5f6bea"
