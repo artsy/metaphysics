@@ -22,6 +22,20 @@ describe("Show type", () => {
       eligible_artworks_count: 8,
       is_reference: true,
       name: " Whitespace Abounds ",
+      artists: [
+        {
+          id: "henry-moore",
+          name: "Henry Moore",
+        },
+        {
+          id: "pierre-bonnard",
+          name: "Pierre Bonnard",
+        },
+        {
+          id: "pablo-picasso",
+          name: "Pablo Picasso",
+        },
+      ],
     }
 
     galaxyData = {
@@ -663,6 +677,92 @@ describe("Show type", () => {
           nearbyShows: {
             edges: [],
           },
+        },
+      })
+    })
+  })
+
+  describe("artists", () => {
+    it("include a list of artists", async () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            artists {
+              id
+              name
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          artists: [
+            {
+              id: "henry-moore",
+              name: "Henry Moore",
+            },
+            {
+              id: "pierre-bonnard",
+              name: "Pierre Bonnard",
+            },
+            {
+              id: "pablo-picasso",
+              name: "Pablo Picasso",
+            },
+          ],
+        },
+      })
+    })
+
+    it("includes a list of artists grouped by name", async () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            artists_grouped_by_name {
+              letter
+              items {
+                id
+                name
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          artists_grouped_by_name: [
+            {
+              letter: "B",
+              items: [
+                {
+                  id: "pierre-bonnard",
+                  name: "Pierre Bonnard",
+                },
+              ],
+            },
+            {
+              letter: "M",
+              items: [
+                {
+                  id: "henry-moore",
+                  name: "Henry Moore",
+                },
+              ],
+            },
+            {
+              letter: "P",
+              items: [
+                {
+                  id: "pablo-picasso",
+                  name: "Pablo Picasso",
+                },
+              ],
+            },
+          ],
         },
       })
     })
