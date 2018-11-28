@@ -31,7 +31,10 @@ describe("Show type", () => {
     }
 
     rootValue = {
-      showLoader: sinon.stub().returns(Promise.resolve(showData)),
+      // NOTE: Introducing an error here. With the `catch` in
+      // test/utils @ 42 a full codeframe will result, pointing
+      // to the correct file where the error was introduced.
+      showLoader_bad: sinon.stub().returns(Promise.resolve(showData)),
       showsWithHeadersLoader: sinon
         .stub()
         .returns(
@@ -93,7 +96,7 @@ describe("Show type", () => {
     })
   })
 
-  it("include false has_location flag for shows without any location", async () => {
+  it.only("include false has_location flag for shows without any location", async () => {
     const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {

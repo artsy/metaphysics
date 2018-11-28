@@ -30,14 +30,16 @@ export const runQuery = (
     xForwardedFor: "123.456.789",
   }
 
-  return graphql(schema, query, rootValue, context).then(result => {
-    if (result.errors) {
-      const error = result.errors[0]
-      throw error.originalError || error
-    } else {
-      return result.data
-    }
-  })
+  return graphql(schema, query, rootValue, context)
+    .then(result => {
+      if (result.errors) {
+        const error = result.errors[0]
+        throw error.originalError || error
+      } else {
+        return result.data
+      }
+    })
+    .catch(error => console.error(error))
 }
 
 /**
