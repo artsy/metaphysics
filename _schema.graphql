@@ -395,6 +395,14 @@ type ArtistEdge {
   cursor: String!
 }
 
+type ArtistGroup {
+  # Letter artists group belongs to
+  letter: String
+
+  # Artists sorted by last name
+  items: [Artist]
+}
+
 type ArtistHighlights {
   partners(
     represented_by: Boolean
@@ -6967,6 +6975,9 @@ type Show implements Node {
 
   # Artists inside the show who do not have artworks present
   artists_without_artworks: [Artist]
+
+  # Artists in the show grouped by last name
+  artists_grouped_by_name: [ArtistGroup]
 
   # The general city, derived from a fair location, a show location or a potential city
   city: String
