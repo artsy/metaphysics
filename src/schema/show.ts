@@ -95,7 +95,9 @@ export const ShowType = new GraphQLObjectType({
     artists: {
       description: "The Artists presenting in this show",
       type: new GraphQLList(Artist.type),
-      resolve: ({ artists }) => artists,
+      resolve: ({ artists }) => {
+        return artists
+      },
     },
     artworks: {
       description: "The artworks featured in this show",
@@ -170,6 +172,58 @@ export const ShowType = new GraphQLObjectType({
       description: "Artists inside the show who do not have artworks present",
       type: new GraphQLList(Artist.type),
       resolve: ({ artists_without_artworks }) => artists_without_artworks,
+    },
+    artists_grouped_by_name: {
+      description: "Artists in the show grouped by last name",
+      type: new GraphQLList(
+        new GraphQLObjectType({
+          name: "ArtistGroup",
+          fields: {
+            letter: {
+              type: GraphQLString,
+              description: "Letter artists group belongs to",
+            },
+            items: {
+              type: new GraphQLList(Artist.type),
+              description: "Artists sorted by last name",
+            },
+          },
+        })
+      ),
+      resolve: ({ artists }) => {
+        const groups: {
+          [letter: string]: { letter: string; items: [String] }
+        } = {}
+
+        const sortedArtists = artists.sort((a, b) => {
+          const aNames = a.name.split(" ")
+          const bNames = b.name.split(" ")
+          const aLastName = aNames[aNames.length - 1]
+          const bLastName = bNames[bNames.length - 1]
+
+          if (aLastName < bLastName) return -1
+          if (aLastName > bLastName) return 1
+
+          return 0
+        })
+
+        for (let artist of sortedArtists) {
+          const names = artist.name.split(" ")
+          const lastName = names[names.length - 1]
+          const letter = lastName.substring(0, 1).toUpperCase()
+
+          if (groups[letter] !== undefined) {
+            groups[letter].items.push(artist)
+          } else {
+            groups[letter] = {
+              letter,
+              items: [artist],
+            }
+          }
+        }
+
+        return Object.values(groups)
+      },
     },
     city: {
       description:
