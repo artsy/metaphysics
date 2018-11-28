@@ -964,6 +964,40 @@ describe("Artwork type", () => {
         })
       })
     })
+    describe("#is_inquireable", () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            id
+            is_inquireable
+          }
+        }
+      `
+
+      it("returns false for ecommerce works regardless of work inquireable status", () => {
+        artwork.inquireable = true
+        artwork.ecommerce = true
+        return runQuery(query, rootValue).then(data => {
+          expect(data.artwork.is_inquireable).toBe(false)
+        })
+      })
+
+      it("returns true for inquireable non ecommerce works", () => {
+        artwork.inquireable = true
+        artwork.ecommerce = false
+        return runQuery(query, rootValue).then(data => {
+          expect(data.artwork.is_inquireable).toBe(true)
+        })
+      })
+
+      it("returns false for non inquireable non ecommerce works", () => {
+        artwork.inquireable = false
+        artwork.ecommerce = false
+        return runQuery(query, rootValue).then(data => {
+          expect(data.artwork.is_inquireable).toBe(false)
+        })
+      })
+    })
   })
   describe("markdown fields", () => {
     describe("#signature", () => {
@@ -1286,13 +1320,31 @@ describe("Artwork type", () => {
       }
     `
 
-    it("is set to prompt string when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
+    beforeEach(() => {
+      artwork.acquireable = true
+    })
+
+    it("is null if artwork is not enrolled in in an e-commerce program", () => {
+      artwork.acquireable = false
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = null
+
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: null,
+          },
+        })
+      })
+    })
+
+    it("is null when domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = null
       artwork.international_shipping_fee_cents = null
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping, tax, and service quoted by seller",
+            shippingInfo: null,
           },
         })
       })
@@ -1449,8 +1501,35 @@ describe("Artwork type", () => {
       }
     `
 
+    beforeEach(() => {
+      artwork.acquireable = true
+    })
+
     it("is null when shipping_origin is null", () => {
       artwork.shipping_origin = null
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOrigin: null,
+          },
+        })
+      })
+    })
+
+    it("is null when artwork is not acquireable", () => {
+      artwork.acquireable = false
+      artwork.shipping_origin = ["Kharkov", "Ukraine"]
+      return runQuery(query, rootValue).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingOrigin: null,
+          },
+        })
+      })
+    })
+
+    it("is null if shipping origin is not present", () => {
+      artwork.shipping_origin = []
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
           artwork: {

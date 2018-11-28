@@ -83,6 +83,8 @@ import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
 import config from "config"
 import { InitialOfferMutation } from "./ecommerce/initial_offer_mutation"
+import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
+import { AddInitialOfferToOrderMutation } from "./ecommerce/add_initial_offer_to_order_mutation"
 const { ENABLE_CONSIGNMENTS_STITCHING, ENABLE_ECOMMERCE_STITCHING } = config
 
 // TODO: Remove this any
@@ -163,22 +165,8 @@ if (!ENABLE_CONSIGNMENTS_STITCHING) {
 }
 
 if (!ENABLE_ECOMMERCE_STITCHING) {
-  // Deprecated
-  stitchedRootFields.order = Order
-  stitchedRootFields.orders = Orders
-
   stitchedRootFields.ecommerceOrder = Order
   stitchedRootFields.ecommerceOrders = Orders
-
-  // Deprecated
-  stitchedMutations.createOrderWithArtwork = CreateOrderWithArtworkMutation
-  stitchedMutations.setOrderShipping = SetOrderShippingMutation
-  stitchedMutations.setOrderPayment = SetOrderPaymentMutation
-  stitchedMutations.approveOrder = ApproveOrderMutation
-  stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
-  // stitchedMutations.confirmPickup = ConfirmPickupMutation
-  stitchedMutations.rejectOrder = RejectOrderMutation
-  stitchedMutations.submitOrder = SubmitOrderMutation
 
   stitchedMutations.ecommerceCreateOrderWithArtwork = CreateOrderWithArtworkMutation
   stitchedMutations.ecommerceCreateOfferOrderWithArtwork = CreateOfferOrderWithArtworkMutation
@@ -190,8 +178,24 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
   stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
   stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
-  stitchedMutations.ecommerceInitialOffer = InitialOfferMutation
+  stitchedMutations.ecommerceAddInitialOfferToOrder = AddInitialOfferToOrderMutation
   stitchedMutations.ecommerceSubmitOrderWithOffer = SubmitOrderWithOfferMutation
+
+  // Deprecated
+  stitchedRootFields.order = Order
+  stitchedRootFields.orders = Orders
+
+  // Deprecated
+  stitchedMutations.createOrderWithArtwork = CreateOrderWithArtworkMutation
+  stitchedMutations.setOrderShipping = SetOrderShippingMutation
+  stitchedMutations.setOrderPayment = SetOrderPaymentMutation
+  stitchedMutations.approveOrder = ApproveOrderMutation
+  stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
+  stitchedMutations.rejectOrder = RejectOrderMutation
+  stitchedMutations.submitOrder = SubmitOrderMutation
+
+  // Deprecated
+  stitchedMutations.ecommerceInitialOffer = InitialOfferMutation
 }
 
 export default new GraphQLSchema({
@@ -225,4 +229,9 @@ export default new GraphQLSchema({
       viewer: Viewer,
     },
   }),
+  // These are for orphaned types which are types which should be in the schema,
+  // but can’t be discovered by traversing the types and fields from query.
+  //
+  // In this case, the interface "Offer" is exposed everywhere, but the underlaying type BuyOrder needs to exist
+  types: [BuyOrderType, OfferOrderType],
 })

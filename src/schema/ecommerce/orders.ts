@@ -1,11 +1,11 @@
 import { pageable } from "relay-cursor-paging"
 import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
-import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/orders_sort_method_enum"
+import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/enums/orders_sort_method_enum"
 import gql from "lib/gql"
 import { PageInfo, AllOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
-import { OrderModeEnum } from "./types/order_mode_enum"
+import { OrderModeEnum } from "./types/enums/order_mode_enum"
 
 export const Orders = {
   name: "Orders",

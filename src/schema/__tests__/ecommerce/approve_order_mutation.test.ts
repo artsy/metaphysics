@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
-import exchangeOrderJSON from "test/fixtures/exchange/order.json"
+import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import gql from "lib/gql"
 import { OrderSellerFields } from "./order_fields"

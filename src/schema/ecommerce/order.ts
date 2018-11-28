@@ -1,12 +1,12 @@
 import { graphql, GraphQLNonNull, GraphQLString } from "graphql"
-import { OrderType } from "schema/ecommerce/types/order"
+import { OrderInterface } from "schema/ecommerce/types/order"
 import { AllOrderFields } from "./query_helpers"
 import gql from "lib/gql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 
 export const Order = {
   name: "Order",
-  type: OrderType,
+  type: OrderInterface,
   description: "Returns a single Order",
   args: { id: { type: new GraphQLNonNull(GraphQLString) } },
   resolve: (_parent, { id }, context, { rootValue: { exchangeSchema } }) => {
@@ -17,6 +17,7 @@ export const Order = {
           lineItems{
             edges{
               node{
+                __typename
                 id
                 priceCents
                 artworkId

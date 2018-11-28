@@ -38,10 +38,6 @@ import { amount } from "schema/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 
-const is_inquireable = ({ inquireable }) => {
-  return inquireable
-}
-
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
 }
@@ -239,7 +235,11 @@ export const artworkFields = () => {
         { rootValue: { relatedShowsLoader, articlesLoader } }
       ) =>
         Promise.all([
-          relatedShowsLoader({ artwork: [id], size: 1, at_a_fair: false }),
+          relatedShowsLoader({
+            artwork: [id],
+            size: 1,
+            at_a_fair: false,
+          }),
           articlesLoader({
             artwork_id: _id,
             published: true,
@@ -395,7 +395,7 @@ export const artworkFields = () => {
     is_inquireable: {
       type: GraphQLBoolean,
       description: "Do we want to encourage inquiries on this work?",
-      resolve: artwork => is_inquireable(artwork),
+      resolve: ({ ecommerce, inquireable }) => !ecommerce && inquireable,
     },
     is_in_auction: {
       type: GraphQLBoolean,
@@ -578,10 +578,12 @@ export const artworkFields = () => {
         "The string that describes domestic and international shipping.",
       resolve: artwork => {
         if (
-          artwork.domestic_shipping_fee_cents == null &&
-          artwork.international_shipping_fee_cents == null
+          !artwork.acquireable ||
+          (artwork.domestic_shipping_fee_cents == null &&
+            artwork.international_shipping_fee_cents == null)
         )
-          return "Shipping, tax, and service quoted by seller"
+          return null
+
         if (
           artwork.domestic_shipping_fee_cents === 0 &&
           artwork.international_shipping_fee_cents == null
@@ -624,7 +626,13 @@ export const artworkFields = () => {
       description:
         "Minimal location information describing from where artwork will be shipped.",
       resolve: artwork => {
-        return artwork.shipping_origin && artwork.shipping_origin.join(", ")
+        if (
+          !artwork.acquireable ||
+          !(artwork.shipping_origin && artwork.shipping_origin.length)
+        )
+          return null
+
+        return artwork.shipping_origin.join(", ")
       },
     },
     provenance: markdown(({ provenance }) =>

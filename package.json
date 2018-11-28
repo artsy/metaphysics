@@ -113,6 +113,7 @@
     "@types/express-graphql": "^0.6.1",
     "@types/express-rate-limit": "^2.9.3",
     "@types/graphql": "^0.13.3",
+    "@types/graphql-relay": "^0.4.9",
     "@types/invariant": "^2.2.29",
     "@types/jest": "^23.3.2",
     "@types/lodash": "^4.14.74",

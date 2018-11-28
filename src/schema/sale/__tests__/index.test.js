@@ -433,10 +433,10 @@ describe("Sale type", () => {
       ],
       [
         {
-          live_start_at: moment().add(1, "minutes"),
+          live_start_at: moment().add(2, "minutes"),
           registration_ends_at: moment().subtract(2, "days"),
         },
-        "live in 1m",
+        "live in 2m",
       ],
       [
         {

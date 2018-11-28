@@ -5,12 +5,12 @@ import {
   GraphQLString,
 } from "graphql"
 
-import { OrderType } from "schema/ecommerce/types/order"
+import { OrderInterface } from "schema/ecommerce/types/order"
 
 export const OrderWithMutationSuccess = new GraphQLObjectType({
   name: "OrderWithMutationSuccess",
   fields: () => ({
-    order: { type: OrderType },
+    order: { type: OrderInterface },
   }),
 })
 

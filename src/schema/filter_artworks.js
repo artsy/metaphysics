@@ -244,6 +244,11 @@ export const filterArtworksArgs = {
   width: {
     type: GraphQLString,
   },
+  marketable: {
+    type: GraphQLBoolean,
+    description:
+      "When true, will only return `marketable` works (not nude or provocative).",
+  },
   medium: {
     type: GraphQLString,
     description:

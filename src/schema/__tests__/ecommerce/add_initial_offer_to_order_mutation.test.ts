@@ -2,15 +2,16 @@
 import { runQuery } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { sampleOrder } from "test/fixtures/results/sample_order"
-import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
+import exchangeOrderJSON from "test/fixtures/exchange/offer_order.json"
 import gql from "lib/gql"
 import { OrderBuyerFields } from "./order_fields"
 let rootValue
-describe("Submit Order With Offer Mutation", () => {
+
+describe("AddInitialOfferToOrder Mutation", () => {
   const mutation = gql`
     mutation {
-      ecommerceSubmitOrderWithOffer(
-        input: { offerId: "1111" }
+      ecommerceAddInitialOfferToOrder(
+        input: { orderId: "111", offerPrice: { amount: 1, currencyCode: "USD" } }
       ) {
         orderOrError {
           ... on OrderWithMutationSuccess {
@@ -29,37 +30,32 @@ describe("Submit Order With Offer Mutation", () => {
       }
     }
   `
-  it("Submits order with offer and returns it", () => {
+  it("creates offer order and returns it", () => {
     const resolvers = {
       Mutation: {
-        submitOrderWithOffer: () => ({
+        addInitialOfferToOrder: () => ({
           orderOrError: { order: exchangeOrderJSON },
         }),
       },
     }
     rootValue = mockxchange(resolvers)
     return runQuery(mutation, rootValue).then(data => {
-      expect(data!.ecommerceSubmitOrderWithOffer.orderOrError.order).toEqual(
-        sampleOrder()
+      expect(data!.ecommerceAddInitialOfferToOrder.orderOrError.order).toEqual(
+        sampleOrder({ mode: "OFFER", includeOfferFields: true })
       )
     })
   })
   it("returns an error if there is one", () => {
     const resolvers = {
       Mutation: {
-        submitOrderWithOffer: () => ({
-          orderOrError: {
-            error: {
-              type: "application_error",
-              code: "404",
-            },
-          },
+        addInitialOfferToOrder: () => ({
+          orderOrError: { error: { type: "application_error", code: "404" } },
         }),
       },
     }
     rootValue = mockxchange(resolvers)
     return runQuery(mutation, rootValue).then(data => {
-      expect(data!.ecommerceSubmitOrderWithOffer.orderOrError.error).toEqual({
+      expect(data!.ecommerceAddInitialOfferToOrder.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",
         data: null,
