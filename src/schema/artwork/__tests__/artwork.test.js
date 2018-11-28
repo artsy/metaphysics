@@ -964,6 +964,40 @@ describe("Artwork type", () => {
         })
       })
     })
+    describe("#is_inquireable", () => {
+      const query = `
+        {
+          artwork(id: "richard-prince-untitled-portrait") {
+            id
+            is_inquireable
+          }
+        }
+      `
+
+      it("returns false for ecommerce works regardless of work inquireable status", () => {
+        artwork.inquireable = true
+        artwork.ecommerce = true
+        return runQuery(query, rootValue).then(data => {
+          expect(data.artwork.is_inquireable).toBe(false)
+        })
+      })
+
+      it("returns true for inquireable non ecommerce works", () => {
+        artwork.inquireable = true
+        artwork.ecommerce = false
+        return runQuery(query, rootValue).then(data => {
+          expect(data.artwork.is_inquireable).toBe(true)
+        })
+      })
+
+      it("returns false for non inquireable non ecommerce works", () => {
+        artwork.inquireable = false
+        artwork.ecommerce = false
+        return runQuery(query, rootValue).then(data => {
+          expect(data.artwork.is_inquireable).toBe(false)
+        })
+      })
+    })
   })
   describe("markdown fields", () => {
     describe("#signature", () => {
