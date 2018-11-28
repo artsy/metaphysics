@@ -7,10 +7,10 @@ import exchangeOrderJSON from "test/fixtures/exchange/order.json"
 
 let rootValue
 
-describe("SellerAcceptOffer Mutation", () => {
+describe("SellerRejectOffer Mutation", () => {
   const mutation = gql`
     mutation {
-      ecommerceSellerAcceptOffer(input: { offerId: "111" }) {
+      ecommerceSellerRejectOffer(input: { offerId: "111", rejectReason: SELLER_REJECTED_OTHER }) {
         orderOrError {
           ... on OrderWithMutationSuccess {
             order {
@@ -29,10 +29,10 @@ describe("SellerAcceptOffer Mutation", () => {
     }
   `
 
-  it("approves the order of the offer", () => {
+  it("rejects the order of the offer", () => {
     const resolvers = {
       Mutation: {
-        sellerAcceptOffer: () => ({
+        sellerRejectOffer: () => ({
           orderOrError: { order: exchangeOrderJSON },
         }),
       },
@@ -41,7 +41,7 @@ describe("SellerAcceptOffer Mutation", () => {
     rootValue = mockxchange(resolvers)
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data!.ecommerceSellerAcceptOffer.orderOrError.order).toEqual(
+      expect(data!.ecommerceSellerRejectOffer.orderOrError.order).toEqual(
         sampleOrder()
       )
     })
@@ -50,7 +50,7 @@ describe("SellerAcceptOffer Mutation", () => {
   it("returns an error if there is one", () => {
     const resolvers = {
       Mutation: {
-        sellerAcceptOffer: () => ({
+        sellerRejectOffer: () => ({
           orderOrError: {
             error: {
               type: "application_error",
@@ -64,7 +64,7 @@ describe("SellerAcceptOffer Mutation", () => {
     rootValue = mockxchange(resolvers)
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(data!.ecommerceSellerAcceptOffer.orderOrError.error).toEqual({
+      expect(data!.ecommerceSellerRejectOffer.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",
         data: null,
