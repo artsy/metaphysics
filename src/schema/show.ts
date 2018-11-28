@@ -424,6 +424,10 @@ export const ShowType = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve: ({ is_reference }) => is_reference,
     },
+    is_local_discovery: {
+      description: "Is it an outsourced local discovery stub show?",
+      type: GraphQLBoolean,
+    },
     kind: {
       description: "Whether the show is in a fair, group or solo",
       type: GraphQLString,

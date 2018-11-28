@@ -7687,6 +7687,9 @@ type Show implements Node {
   # Is it a stubbed show?
   is_reference: Boolean
 
+  # Is it an outsourced local discovery stub show?
+  is_local_discovery: Boolean
+
   # Whether the show is in a fair, group or solo
   kind: String
 
