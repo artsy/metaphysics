@@ -38,10 +38,6 @@ import { amount } from "schema/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 
-const is_inquireable = ({ inquireable }) => {
-  return inquireable
-}
-
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
 }
@@ -239,7 +235,11 @@ export const artworkFields = () => {
         { rootValue: { relatedShowsLoader, articlesLoader } }
       ) =>
         Promise.all([
-          relatedShowsLoader({ artwork: [id], size: 1, at_a_fair: false }),
+          relatedShowsLoader({
+            artwork: [id],
+            size: 1,
+            at_a_fair: false,
+          }),
           articlesLoader({
             artwork_id: _id,
             published: true,
@@ -395,10 +395,7 @@ export const artworkFields = () => {
     is_inquireable: {
       type: GraphQLBoolean,
       description: "Do we want to encourage inquiries on this work?",
-      resolve: artwork => {
-        if (artwork.ecommerce) return false
-        return is_inquireable(artwork)
-      },
+      resolve: ({ ecommerce, inquireable }) => !ecommerce && inquireable,
     },
     is_in_auction: {
       type: GraphQLBoolean,

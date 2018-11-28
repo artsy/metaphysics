@@ -974,7 +974,7 @@ describe("Artwork type", () => {
         }
       `
 
-      it("returns false for ecommerce works", () => {
+      it("returns false for ecommerce works regardless of work inquireable status", () => {
         artwork.inquireable = true
         artwork.ecommerce = true
         return runQuery(query, rootValue).then(data => {
