@@ -94,6 +94,8 @@ const offerFields = {
     amountCents: 50000,
     taxTotalCents: 10000,
     shippingTotalCents: 20000,
+    buyerTotalCents: 80000,
+    fromParticipant: "BUYER",
   },
   lastOffer: null,
   offers: null,
