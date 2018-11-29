@@ -7538,28 +7538,23 @@ type Show implements Node {
 
   # The artworks featured in this show
   artworks(
-    # Number of artworks to return
-    size: Int = 25
-    published: Boolean = true
-    page: Int = 1
-    all: Boolean
-    for_sale: Boolean
-
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
+    for_sale: Boolean
+    published: Boolean = true
+    all: Boolean
+    page: Int = 1
+
+    # Number of artworks to return
+    size: Int = 25
   ): [Artwork] @deprecated(reason: "Use artworks_connection instead")
 
   # The artworks featured in the show
   artworks_connection(
-    # Number of artworks to return
-    size: Int = 25
-    published: Boolean = true
-    page: Int = 1
-    all: Boolean
-    for_sale: Boolean
-
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
+    for_sale: Boolean
+    published: Boolean = true
     after: String
     first: Int
     before: String

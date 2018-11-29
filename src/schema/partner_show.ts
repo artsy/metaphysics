@@ -56,7 +56,6 @@ const artworksArgs = {
 
 const PartnerShowType = new GraphQLObjectType({
   name: "PartnerShow",
-  // FIXME: Why is this field not in the type?
   // @ts-ignore
   deprecationReason: "Prefer to use Show schema",
   interfaces: [NodeInterface],

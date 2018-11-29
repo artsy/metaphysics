@@ -290,7 +290,6 @@ describe("PartnerShow type", () => {
             headers: { "x-total-count": artworksResponse.length },
           }),
         showLoader: () => Promise.resolve(showData),
-        totalViaLoader: () => Promise.resolve(artworksResponse.length),
       }
     })
 
