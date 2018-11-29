@@ -4521,7 +4521,7 @@ type Location {
   coordinates: LatLng
   day_schedules: [DaySchedule]
 
-  # Alternate free text representation of a location's opening hours
+  # Alternate Markdown-supporting free text representation of a location's opening hours
   day_schedule_text: String
   displayDaySchedules: [FormattedDaySchedules]
   display: String
