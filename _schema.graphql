@@ -5112,7 +5112,7 @@ type Offer {
   # The type of the party who made the offer
   from: OrderParty
 
-  # Offer is from which order participant
+  # the order participant who created the offer
   fromParticipant: OrderParticipantEnum
 
   # Offer amount in cents

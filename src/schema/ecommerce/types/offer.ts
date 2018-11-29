@@ -51,7 +51,7 @@ export const OfferType = new GraphQLObjectType({
     },
     fromParticipant: {
       type: OrderParticipantEnum,
-      description: "Offer is from which order participant",
+      description: "the order participant who created the offer",
     },
     amountCents: {
       type: GraphQLInt,
