@@ -40,7 +40,6 @@ const {
   SENTRY_PRIVATE_DSN,
 } = config
 
-const queryLimit = (QUERY_DEPTH_LIMIT && parseInt(QUERY_DEPTH_LIMIT, 10)) || 10 // Default to ten.
 const enableSentry = !!SENTRY_PRIVATE_DSN
 const enableRequestLogging = ENABLE_REQUEST_LOGGING === "true"
 const logQueryDetailsThreshold =
@@ -152,7 +151,9 @@ async function startApp() {
           variables: params && params.variables,
           query: params && params.query,
         }),
-        validationRules: [depthLimit(queryLimit)],
+        validationRules: QUERY_DEPTH_LIMIT
+          ? [depthLimit(QUERY_DEPTH_LIMIT)]
+          : null,
         extensions: enableRequestLogging
           ? fetchLoggerRequestDone(requestID)
           : undefined,
