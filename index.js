@@ -35,6 +35,11 @@ let server, isShuttingDown
 // This needs to happen as early as possible so the plugins can hook into the
 // modules we use before any other code gets a chance to use them.
 if (enableQueryTracing) {
+  if (isDevelopment) {
+    console.warn(
+      "[WARNING] You probably don't want ENABLE_QUERY_TRACING set to true in .env"
+    )
+  }
   console.warn("[FEATURE] Enabling query tracing")
   initTracer()
 }

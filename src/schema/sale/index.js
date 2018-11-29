@@ -1,4 +1,4 @@
-import Artwork from "schema/artwork"
+import Artwork, { artworkConnection } from "schema/artwork"
 import Bidder from "schema/bidder"
 import Image from "schema/image/index"
 import Profile from "schema/profile"
@@ -11,11 +11,12 @@ import { GravityIDFields } from "schema/object_identification"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { amount } from "schema/fields/money"
-import { exclude } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map } from "lodash"
 import { NodeInterface } from "schema/object_identification"
 import { allViaLoader } from "../../lib/all"
 import { isLiveOpen, displayTimelyAt } from "./display"
+import { flatten } from "lodash"
 
 import {
   GraphQLString,
@@ -90,15 +91,57 @@ export const SaleType = new GraphQLObjectType({
           request,
           { rootValue: { saleArtworksLoader } }
         ) => {
-          const invert = saleArtworks => map(saleArtworks, "artwork")
           let fetch = null
+
+          if (options.exclude) {
+            options.exclude_ids = flatten([options.exclude])
+            delete options.exclude
+          }
+
           if (options.all) {
             fetch = allViaLoader(saleArtworksLoader, id, options)
           } else {
             fetch = saleArtworksLoader(id, options).then(({ body }) => body)
           }
+          return fetch.then(saleArtworks => map(saleArtworks, "artwork"))
+        },
+      },
+      artworksConnection: {
+        type: artworkConnection,
+        description: "Returns a connection of artworks for a sale.",
+        args: pageable({
+          exclude: {
+            type: new GraphQLList(GraphQLString),
+            description:
+              "List of artwork IDs to exclude from the response (irrespective of size)",
+          },
+        }),
+        resolve: (
+          { eligible_sale_artworks_count, id },
+          options,
+          _request,
+          { rootValue: { accessToken, saleArtworksLoader } }
+        ) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            options
+          )
+          const gravityArgs = {
+            page,
+            size,
+          }
 
-          return fetch.then(invert).then(exclude(options.exclude, "id"))
+          if (options.exclude) {
+            gravityArgs.exclude_ids = flatten([options.exclude])
+          }
+
+          return saleArtworksLoader(id, gravityArgs)
+            .then(({ body }) => map(body, "artwork"))
+            .then(body => {
+              return connectionFromArraySlice(body, options, {
+                arrayLength: eligible_sale_artworks_count,
+                sliceStart: offset,
+              })
+            })
         },
       },
       associated_sale: {
