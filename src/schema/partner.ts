@@ -1,13 +1,14 @@
-import { assign, omit } from "lodash"
-import { exclude } from "lib/helpers"
+import { assign, flatten, omit } from "lodash"
+import { exclude, convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import Profile from "./profile"
 import Location from "./location"
 import { GravityIDFields, NodeInterface } from "./object_identification"
-import Artwork from "./artwork"
+import Artwork, { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
 import ArtworkSorts from "./sorts/artwork_sorts"
+import { pageable } from "relay-cursor-paging"
 
 import {
   GraphQLString,
@@ -17,6 +18,7 @@ import {
   GraphQLList,
   GraphQLBoolean,
 } from "graphql"
+import { connectionFromArraySlice } from "graphql-relay"
 
 const PartnerCategoryType = new GraphQLObjectType({
   name: "Category",
@@ -37,10 +39,20 @@ const PartnerCategoryType = new GraphQLObjectType({
   },
 })
 
+const artworksArgs = {
+  for_sale: {
+    type: GraphQLBoolean,
+  },
+  sort: ArtworkSorts,
+  exclude: {
+    type: new GraphQLList(GraphQLString),
+  },
+}
+
 const PartnerType = new GraphQLObjectType({
   name: "Partner",
   interfaces: [NodeInterface],
-  fields: () => {
+  fields: (): any => {
     // Prevent circular dependency
     const PartnerShows = require("./partner_shows").default
 
@@ -50,21 +62,15 @@ const PartnerType = new GraphQLObjectType({
       artworks: {
         type: new GraphQLList(Artwork.type),
         args: {
+          ...artworksArgs,
           size: {
             type: GraphQLInt,
-          },
-          for_sale: {
-            type: GraphQLBoolean,
-          },
-          sort: ArtworkSorts,
-          exclude: {
-            type: new GraphQLList(GraphQLString),
           },
         },
         resolve: (
           { id },
           options,
-          request,
+          _request,
           { rootValue: { partnerArtworksLoader } }
         ) => {
           return partnerArtworksLoader(
@@ -72,7 +78,52 @@ const PartnerType = new GraphQLObjectType({
             assign({}, options, {
               published: true,
             })
-          ).then(exclude(options.exclude, "id"))
+          )
+            .then(({ body }) => body)
+            .then(exclude(options.exclude, "id"))
+        },
+      },
+      artworksConnection: {
+        description: "A connection of artworks from a Partner.",
+        type: artworkConnection,
+        args: pageable(artworksArgs),
+        resolve: (
+          { id },
+          options,
+          _request,
+          { rootValue: { partnerArtworksLoader } }
+        ) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            options
+          )
+
+          interface GravityArgs {
+            exclude_ids?: string[]
+            page: number
+            published: boolean
+            size: number
+            total_count: boolean
+          }
+
+          const gravityArgs: GravityArgs = {
+            published: true,
+            total_count: true,
+            page,
+            size,
+          }
+
+          if (options.exclude) {
+            gravityArgs.exclude_ids = flatten([options.exclude])
+          }
+
+          return partnerArtworksLoader(id, gravityArgs).then(
+            ({ body, headers }) => {
+              return connectionFromArraySlice(body, options, {
+                arrayLength: headers["x-total-count"],
+                sliceStart: offset,
+              })
+            }
+          )
         },
       },
       categories: {
@@ -182,7 +233,7 @@ const PartnerType = new GraphQLObjectType({
         resolve: (
           { id },
           options,
-          request,
+          _request,
           { rootValue: { partnerLocationsLoader } }
         ) => partnerLocationsLoader(id, options),
       },
@@ -194,8 +245,8 @@ const PartnerType = new GraphQLObjectType({
         type: Profile.type,
         resolve: (
           { default_profile_id },
-          options,
-          request,
+          _options,
+          _request,
           { rootValue: { profileLoader } }
         ) => profileLoader(default_profile_id).catch(() => null),
       },
@@ -236,7 +287,7 @@ const Partner = {
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (root, { id }, _request, { rootValue: { partnerLoader } }) =>
+  resolve: (_root, { id }, _request, { rootValue: { partnerLoader } }) =>
     partnerLoader(id),
 }
 

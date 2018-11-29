@@ -5946,11 +5946,22 @@ type Partner implements Node {
   _id: String!
   cached: Int
   artworks(
-    size: Int
     for_sale: Boolean
     sort: ArtworkSorts
     exclude: [String]
+    size: Int
   ): [Artwork]
+
+  # A connection of artworks from a Partner.
+  artworksConnection(
+    for_sale: Boolean
+    sort: ArtworkSorts
+    exclude: [String]
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   categories: [Category]
   collecting_institution: String
   contact_message: String
