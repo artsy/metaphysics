@@ -3,11 +3,11 @@ import { runQuery } from "test/utils"
 import gql from "lib/gql"
 
 describe("Partner type", () => {
-  let partner = null
+  let partnerData = null
   let rootValue = null
 
   beforeEach(() => {
-    partner = {
+    partnerData = {
       id: "catty-partner",
       _id: "catty-partner",
       name: "Catty Partner",
@@ -24,8 +24,8 @@ describe("Partner type", () => {
     rootValue = {
       partnerLoader: sinon
         .stub()
-        .withArgs(partner.id)
-        .returns(Promise.resolve(partner)),
+        .withArgs(partnerData.id)
+        .returns(Promise.resolve(partnerData)),
     }
   })
 
@@ -54,6 +54,128 @@ describe("Partner type", () => {
               name: "Blue Chip",
             },
           ],
+        },
+      })
+    })
+  })
+
+  describe("#artworksConnection", () => {
+    let artworksResponse
+
+    beforeEach(() => {
+      artworksResponse = [
+        {
+          id: "cara-barer-iceberg",
+        },
+        {
+          id: "david-leventi-rezzonico",
+        },
+        {
+          id: "virginia-mak-hidden-nature-08",
+        },
+      ]
+      rootValue = {
+        partnerArtworksLoader: () =>
+          Promise.resolve({
+            body: artworksResponse,
+            headers: {
+              "x-total-count": artworksResponse.length,
+            },
+          }),
+        partnerLoader: () => Promise.resolve(partnerData),
+      }
+    })
+
+    it("returns artworks", async () => {
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            artworksConnection(first:3) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+
+      expect(data).toEqual({
+        partner: {
+          artworksConnection: {
+            edges: [
+              {
+                node: {
+                  id: "cara-barer-iceberg",
+                },
+              },
+              {
+                node: {
+                  id: "david-leventi-rezzonico",
+                },
+              },
+              {
+                node: {
+                  id: "virginia-mak-hidden-nature-08",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=true when first is below total", async () => {
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            artworksConnection(first:1) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+
+      expect(data).toEqual({
+        partner: {
+          artworksConnection: {
+            pageInfo: {
+              hasNextPage: true,
+            },
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=false when first is above total", async () => {
+      const query = `
+        {
+          partner(id:"bau-xi-gallery") {
+            artworksConnection(first:3) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+
+      expect(data).toEqual({
+        partner: {
+          artworksConnection: {
+            pageInfo: {
+              hasNextPage: false,
+            },
+          },
         },
       })
     })

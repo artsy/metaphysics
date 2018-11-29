@@ -9,6 +9,7 @@ import { moneyFieldToUnit } from "lib/moneyHelper"
 
 export const InitialOfferMutation = mutationWithClientMutationId({
   name: "InitialOffer",
+  // @ts-ignore
   deprecationReason: "Use AddInitialOfferToOrder instead.",
   description: "Deprecated.",
   inputFields: InitialOfferInputType.getFields(),
