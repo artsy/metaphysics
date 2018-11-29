@@ -5112,6 +5112,9 @@ type Offer {
   # The type of the party who made the offer
   from: OrderParty
 
+  # Offer is from which order participant
+  fromParticipant: OrderParticipantEnum
+
   # Offer amount in cents
   amountCents: Int
 
@@ -5156,6 +5159,20 @@ type Offer {
 
   # The order on which the offer was made
   order: Order
+
+  # Offer amount in cents
+  buyerTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  buyerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
 
   # The order on which the offer was made
   respondsTo: Offer

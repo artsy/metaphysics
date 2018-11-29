@@ -73,12 +73,14 @@
     "amountCents": 50000,
     "taxTotalCents": 10000,
     "shippingTotalCents": 20000,
+    "buyerTotalCents": 80000,
     "creatorId": "111",
     "createdAt": "2018-07-03 17:57:47 UTC",
     "from": {
       "__typename": "USER",
       "id": "111"
-    }
+    },
+    "fromParticipant": "BUYER"
   },
   "lastOffer": null,
   "offers": null,
