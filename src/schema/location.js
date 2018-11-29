@@ -1,6 +1,7 @@
 import { existyValue } from "lib/helpers"
 import cached from "./fields/cached"
 import DayScheduleType from "./day_schedule"
+import { FormattedDaySchedules } from "./types/formattedDaySchedules"
 import { IDFields } from "./object_identification"
 import {
   GraphQLString,
@@ -45,6 +46,11 @@ export const LocationType = new GraphQLObjectType({
     day_schedules: {
       type: new GraphQLList(DayScheduleType),
       resolve: ({ day_schedules }) => day_schedules,
+    },
+    displayDaySchedules: {
+      type: new GraphQLList(FormattedDaySchedules.type),
+      resolve: ({ day_schedules }) =>
+        FormattedDaySchedules.resolve(day_schedules),
     },
     display: {
       type: GraphQLString,
