@@ -1,5 +1,3 @@
-// @ts-check
-
 import { GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"
 import Gene from "schema/gene"
 

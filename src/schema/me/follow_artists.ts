@@ -25,6 +25,8 @@ const FollowArtistsType = new GraphQLObjectType({
               _request,
               { rootValue: { followedArtistsLoader } }
             ) => {
+              // FIXME: Expected 2-3 arguments, but got 1.
+              // @ts-ignore
               return totalViaLoader(followedArtistsLoader)
             },
           },
