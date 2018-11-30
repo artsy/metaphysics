@@ -22,6 +22,20 @@ describe("Show type", () => {
       eligible_artworks_count: 8,
       is_reference: true,
       name: " Whitespace Abounds ",
+      artists: [
+        {
+          id: "henry-moore",
+          name: "Henry Moore",
+        },
+        {
+          id: "pierre-bonnard",
+          name: "Pierre Bonnard",
+        },
+        {
+          id: "pablo-picasso",
+          name: "Pablo Picasso",
+        },
+      ],
     }
 
     galaxyData = {
@@ -662,6 +676,212 @@ describe("Show type", () => {
         show: {
           nearbyShows: {
             edges: [],
+          },
+        },
+      })
+    })
+  })
+
+  describe("artists", () => {
+    it("include a list of artists", async () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            artists {
+              id
+              name
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          artists: [
+            {
+              id: "henry-moore",
+              name: "Henry Moore",
+            },
+            {
+              id: "pierre-bonnard",
+              name: "Pierre Bonnard",
+            },
+            {
+              id: "pablo-picasso",
+              name: "Pablo Picasso",
+            },
+          ],
+        },
+      })
+    })
+
+    it("includes a list of artists grouped by name", async () => {
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            artists_grouped_by_name {
+              letter
+              items {
+                id
+                name
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+      expect(data).toEqual({
+        show: {
+          artists_grouped_by_name: [
+            {
+              letter: "B",
+              items: [
+                {
+                  id: "pierre-bonnard",
+                  name: "Pierre Bonnard",
+                },
+              ],
+            },
+            {
+              letter: "M",
+              items: [
+                {
+                  id: "henry-moore",
+                  name: "Henry Moore",
+                },
+              ],
+            },
+            {
+              letter: "P",
+              items: [
+                {
+                  id: "pablo-picasso",
+                  name: "Pablo Picasso",
+                },
+              ],
+            },
+          ],
+        },
+      })
+    })
+  })
+
+  describe("#artworks_connection", () => {
+    let artworksResponse
+
+    beforeEach(() => {
+      artworksResponse = [
+        {
+          id: "michelangelo-pistoletto-untitled-12",
+        },
+        {
+          id: "lucio-fontana-concetto-spaziale-attese-139",
+        },
+        {
+          id: "pier-paolo-calzolari-untitled-146",
+        },
+      ]
+      rootValue = {
+        partnerShowArtworksLoader: () =>
+          Promise.resolve({
+            body: artworksResponse,
+            headers: { "x-total-count": artworksResponse.length },
+          }),
+        showLoader: () => Promise.resolve(showData),
+      }
+    })
+
+    it("returns artworks", async () => {
+      const query = `
+        {
+          show(id:"cardi-gallery-cardi-gallery-at-art-basel-miami-beach-2018") {
+            artworks_connection(first: 3) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+
+      expect(data).toEqual({
+        show: {
+          artworks_connection: {
+            edges: [
+              {
+                node: {
+                  id: "michelangelo-pistoletto-untitled-12",
+                },
+              },
+              {
+                node: {
+                  id: "lucio-fontana-concetto-spaziale-attese-139",
+                },
+              },
+              {
+                node: {
+                  id: "pier-paolo-calzolari-untitled-146",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=true when first is below total", async () => {
+      const query = `
+        {
+          show(id:"cardi-gallery-cardi-gallery-at-art-basel-miami-beach-2018") {
+            artworks_connection(first: 1) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+
+      expect(data).toEqual({
+        show: {
+          artworks_connection: {
+            pageInfo: {
+              hasNextPage: true,
+            },
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=false when first is above total", async () => {
+      const query = `
+        {
+          show(id:"cardi-gallery-cardi-gallery-at-art-basel-miami-beach-2018") {
+            artworks_connection(first: 3) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+
+      expect(data).toEqual({
+        show: {
+          artworks_connection: {
+            pageInfo: {
+              hasNextPage: false,
+            },
           },
         },
       })

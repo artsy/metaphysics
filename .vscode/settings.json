@@ -20,6 +20,7 @@
     "schema": "${workspaceRoot}/schema",
     "test": "${workspaceRoot}/test"
   },
+  "typescript.tsdk": "./node_modules/typescript/lib",
   "cSpell.words": [
     "Ecommerce",
     "Refetch",

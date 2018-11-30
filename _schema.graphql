@@ -15,6 +15,20 @@ type AddAssetToConsignmentSubmissionPayload {
   clientMutationId: String
 }
 
+input AddInitialOfferToOrderInput {
+  # ID of order
+  orderId: ID!
+
+  # Offer price
+  offerPrice: MoneyInput
+  clientMutationId: String
+}
+
+type AddInitialOfferToOrderPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
 # One item in an aggregation
 type AggregationCount {
   # A globally unique ID.
@@ -396,6 +410,14 @@ type ArtistEdge {
 
   # A cursor for use in pagination
   cursor: String!
+}
+
+type ArtistGroup {
+  # Letter artists group belongs to
+  letter: String
+
+  # Artists sorted by last name
+  items: [Artist]
 }
 
 type ArtistHighlights {
@@ -1103,18 +1125,31 @@ type ArtworkContextPartnerShow implements Node {
   _id: String!
   cached: Int
   artists: [Artist]
-  artworks(
-    all: Boolean
 
+  # The artworks featured in the show
+  artworks(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
     for_sale: Boolean
     published: Boolean = true
+    all: Boolean
     page: Int = 1
 
     # Number of artworks to return
     size: Int = 25
   ): [Artwork]
+
+  # A connection of artworks featured in the show
+  artworksConnection(
+    # List of artwork IDs to exclude from the response (irrespective of size)
+    exclude: [String]
+    for_sale: Boolean
+    published: Boolean = true
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   counts: PartnerShowCounts
   cover_image: Image
   created_at(
@@ -2040,12 +2075,6 @@ type BuyOrder implements Order {
   # Order Requested Fulfillment
   requestedFulfillment: RequestedFulfillment
 
-  # Latest offer
-  lastOffer: Offer
-
-  # List of submitted offers made on this order so far
-  offers: OfferConnection
-
   # Item total in cents
   itemsTotalCents: Int
 
@@ -2076,20 +2105,6 @@ type BuyOrder implements Order {
 
   # Shipping total in cents
   shippingTotalCents: Int
-
-  # Total amount of latest offer
-  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
-
-  # A formatted price with various currency formatting options.
-  offerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
 
   # A formatted price with various currency formatting options.
   shippingTotal(
@@ -2240,6 +2255,26 @@ type BuyOrder implements Order {
 
   # Buyer phone number
   buyerPhoneNumber: String
+
+  # Latest offer
+  lastOffer: Offer
+
+  # List of submitted offers made on this order so far
+  offers: OfferConnection
+
+  # Total amount of latest offer
+  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
+
+  # A formatted price with various currency formatting options.
+  offerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
 }
 
 # Fields of partner category (currently from Gravity).
@@ -3347,6 +3382,11 @@ enum Format {
   markdown @deprecated(reason: "deprecated")
 }
 
+type FormattedDaySchedules {
+  days: String
+  hours: String
+}
+
 # The `FormattedNumber` type represents a number that can optionally be returnedas
 # a formatted String. It does not try to coerce the type.
 scalar FormattedNumber
@@ -3774,18 +3814,31 @@ type HighlightedShow implements Node {
   _id: String!
   cached: Int
   artists: [Artist]
-  artworks(
-    all: Boolean
 
+  # The artworks featured in the show
+  artworks(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
     for_sale: Boolean
     published: Boolean = true
+    all: Boolean
     page: Int = 1
 
     # Number of artworks to return
     size: Int = 25
   ): [Artwork]
+
+  # A connection of artworks featured in the show
+  artworksConnection(
+    # List of artwork IDs to exclude from the response (irrespective of size)
+    exclude: [String]
+    for_sale: Boolean
+    published: Boolean = true
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   counts: PartnerShowCounts
   cover_image: Image
   created_at(
@@ -4459,6 +4512,7 @@ type Location {
   country: String
   coordinates: LatLng
   day_schedules: [DaySchedule]
+  displayDaySchedules: [FormattedDaySchedules]
   display: String
   phone: String
   postal_code: String
@@ -4944,29 +4998,6 @@ type Mutation {
   ): AddAssetToConsignmentSubmissionPayload
 
   # Creates an order with an artwork
-  createOrderWithArtwork(
-    input: CreateOrderWithArtworkInput!
-  ): CreateOrderWithArtworkPayload
-
-  # Sets shipping information for an order
-  setOrderShipping(input: SetOrderShippingInput!): SetOrderShippingPayload
-
-  # Sets payment information on an order
-  setOrderPayment(input: SetOrderPaymentInput!): SetOrderPaymentPayload
-
-  # Approves an order with payment
-  approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
-
-  # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
-  fulfillOrderAtOnce(input: FulfillOrderAtOnceInput!): FulfillOrderAtOncePayload
-
-  # Rejects an order
-  rejectOrder(input: RejectOrderInput!): RejectOrderPayload
-
-  # Submits an order
-  submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
-
-  # Creates an order with an artwork
   ecommerceCreateOrderWithArtwork(
     input: CreateOrderWithArtworkInput!
   ): CreateOrderWithArtworkPayload
@@ -5006,13 +5037,42 @@ type Mutation {
   # Submits an order
   ecommerceSubmitOrder(input: SubmitOrderInput!): SubmitOrderPayload
 
-  # Creates an order with an artwork
-  ecommerceInitialOffer(input: InitialOfferInput!): InitialOfferPayload
+  # Adds an offer to a pending order
+  ecommerceAddInitialOfferToOrder(
+    input: AddInitialOfferToOrderInput!
+  ): AddInitialOfferToOrderPayload
 
   # Submits an order with an offer
   ecommerceSubmitOrderWithOffer(
     input: SubmitOrderWithOfferInput!
   ): SubmitOrderWithOfferPayload
+
+  # Creates an order with an artwork
+  createOrderWithArtwork(
+    input: CreateOrderWithArtworkInput!
+  ): CreateOrderWithArtworkPayload
+
+  # Sets shipping information for an order
+  setOrderShipping(input: SetOrderShippingInput!): SetOrderShippingPayload
+
+  # Sets payment information on an order
+  setOrderPayment(input: SetOrderPaymentInput!): SetOrderPaymentPayload
+
+  # Approves an order with payment
+  approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
+
+  # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
+  fulfillOrderAtOnce(input: FulfillOrderAtOnceInput!): FulfillOrderAtOncePayload
+
+  # Rejects an order
+  rejectOrder(input: RejectOrderInput!): RejectOrderPayload
+
+  # Submits an order
+  submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
+
+  # Deprecated.
+  ecommerceInitialOffer(input: InitialOfferInput!): InitialOfferPayload
+    @deprecated(reason: "Use AddInitialOfferToOrder instead.")
   recordArtworkView(input: RecordArtworkViewInput): RecordArtworkViewPayload
 }
 
@@ -5092,11 +5152,67 @@ type Offer {
   # The type of the party who made the offer
   from: OrderParty
 
+  # the order participant who created the offer
+  fromParticipant: OrderParticipantEnum
+
   # Offer amount in cents
   amountCents: Int
 
+  # A formatted price with various currency formatting options.
+  amount(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Shipping total based on this offer in cents
+  shippingTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  shippingTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Tax total based on this offer in cents
+  taxTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  taxTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
   # The order on which the offer was made
   order: Order
+
+  # Total of amount, shipping and tax in cents
+  buyerTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  buyerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
 
   # The order on which the offer was made
   respondsTo: Offer
@@ -5120,7 +5236,7 @@ type OfferEdge {
   cursor: String!
 }
 
-interface Order {
+type OfferOrder implements Order {
   # ID of the order
   id: ID
 
@@ -5141,12 +5257,6 @@ interface Order {
 
   # Order Requested Fulfillment
   requestedFulfillment: RequestedFulfillment
-
-  # Latest offer
-  lastOffer: Offer
-
-  # List of submitted offers made on this order so far
-  offers: OfferConnection
 
   # Item total in cents
   itemsTotalCents: Int
@@ -5178,20 +5288,6 @@ interface Order {
 
   # Shipping total in cents
   shippingTotalCents: Int
-
-  # Total amount of latest offer
-  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
-
-  # A formatted price with various currency formatting options.
-  offerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
 
   # A formatted price with various currency formatting options.
   shippingTotal(
@@ -5342,6 +5438,256 @@ interface Order {
 
   # Buyer phone number
   buyerPhoneNumber: String
+
+  # Latest offer
+  lastOffer: Offer
+
+  # List of submitted offers made on this order so far
+  offers: OfferConnection
+
+  # Total amount of latest offer
+  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
+
+  # A formatted price with various currency formatting options.
+  offerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Current User's latest offer
+  myLastOffer: Offer
+
+  # Waiting for one participants response
+  awaitingResponseFrom: OrderParticipantEnum
+}
+
+interface Order {
+  # ID of the order
+  id: ID
+
+  # Order Mode
+  mode: OrderModeEnum
+
+  # Currency code of this order
+  currencyCode: String
+
+  # State of the order
+  state: String
+
+  # Reason for current state
+  stateReason: String
+
+  # Uniq user-friendly code of the order
+  code: String
+
+  # Order Requested Fulfillment
+  requestedFulfillment: RequestedFulfillment
+
+  # Item total in cents
+  itemsTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  itemsTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Total list price in cents
+  totalListPriceCents: Int
+
+  # A formatted price with various currency formatting options.
+  totalListPrice(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Shipping total in cents
+  shippingTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  shippingTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Tax total in cents
+  taxTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  taxTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Transaction fee in cents
+  transactionFeeCents: Int
+
+  # A formatted price with various currency formatting options.
+  transactionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Commission fee in cents
+  commissionFeeCents: Int
+
+  # A formatted price with various currency formatting options.
+  commissionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Partner commission rate used to calculate commission fee
+  commissionRate: Float
+
+  # Partner commission rate formatted into percentage
+  displayCommissionRate: String
+
+  # Buyer total in cents
+  buyerTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  buyerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # Seller total in cents
+  sellerTotalCents: Int
+
+  # A formatted price with various currency formatting options.
+  sellerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # List of order line items
+  lineItems: OrderLineItemConnection
+
+  # Seller of this order
+  seller: OrderParty
+
+  # Buyer of this order
+  buyer: OrderParty
+
+  # Credit card on this order
+  creditCard: CreditCard
+  lastApprovedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  lastSubmittedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  updatedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  createdAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  stateUpdatedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  stateExpiresAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+
+  # Buyer phone number
+  buyerPhoneNumber: String
+
+  # Latest offer
+  lastOffer: Offer
+
+  # List of submitted offers made on this order so far
+  offers: OfferConnection
+
+  # Total amount of latest offer
+  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
+
+  # A formatted price with various currency formatting options.
+  offerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
 }
 
 # A connection to a list of items.
@@ -5513,6 +5859,14 @@ union OrderOrFailureUnionType =
     OrderWithMutationSuccess
   | OrderWithMutationFailure
 
+enum OrderParticipantEnum {
+  # Participant on the buyer side
+  BUYER
+
+  # Participant on the seller side
+  SELLER
+}
+
 union OrderParty = Partner | User
 
 enum OrdersSortMethodType {
@@ -5592,11 +5946,22 @@ type Partner implements Node {
   _id: String!
   cached: Int
   artworks(
-    size: Int
     for_sale: Boolean
     sort: ArtworkSorts
     exclude: [String]
+    size: Int
   ): [Artwork]
+
+  # A connection of artworks from a Partner.
+  artworksConnection(
+    for_sale: Boolean
+    sort: ArtworkSorts
+    exclude: [String]
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   categories: [Category]
   collecting_institution: String
   contact_message: String
@@ -5832,18 +6197,31 @@ type PartnerShow implements Node {
   _id: String!
   cached: Int
   artists: [Artist]
-  artworks(
-    all: Boolean
 
+  # The artworks featured in the show
+  artworks(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
     for_sale: Boolean
     published: Boolean = true
+    all: Boolean
     page: Int = 1
 
     # Number of artworks to return
     size: Int = 25
   ): [Artwork]
+
+  # A connection of artworks featured in the show
+  artworksConnection(
+    # List of artwork IDs to exclude from the response (irrespective of size)
+    exclude: [String]
+    for_sale: Boolean
+    published: Boolean = true
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   counts: PartnerShowCounts
   cover_image: Image
   created_at(
@@ -6491,10 +6869,10 @@ type Query {
   ): PopularArtists
 
   # Returns a single Order
-  order(id: String!): Order
+  ecommerceOrder(id: String!): Order
 
   # Returns list of orders
-  orders(
+  ecommerceOrders(
     buyerId: String
     buyerType: String
     sellerId: String
@@ -6509,10 +6887,10 @@ type Query {
   ): OrderConnection
 
   # Returns a single Order
-  ecommerceOrder(id: String!): Order
+  order(id: String!): Order
 
   # Returns list of orders
-  ecommerceOrders(
+  orders(
     buyerId: String
     buyerType: String
     sellerId: String
@@ -7194,28 +7572,23 @@ type Show implements Node {
 
   # The artworks featured in this show
   artworks(
-    # Number of artworks to return
-    size: Int = 25
-    published: Boolean = true
-    page: Int = 1
-    all: Boolean
-    for_sale: Boolean
-
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
+    for_sale: Boolean
+    published: Boolean = true
+    all: Boolean
+    page: Int = 1
+
+    # Number of artworks to return
+    size: Int = 25
   ): [Artwork] @deprecated(reason: "Use artworks_connection instead")
 
   # The artworks featured in the show
   artworks_connection(
-    # Number of artworks to return
-    size: Int = 25
-    published: Boolean = true
-    page: Int = 1
-    all: Boolean
-    for_sale: Boolean
-
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
+    for_sale: Boolean
+    published: Boolean = true
     after: String
     first: Int
     before: String
@@ -7224,6 +7597,9 @@ type Show implements Node {
 
   # Artists inside the show who do not have artworks present
   artists_without_artworks: [Artist]
+
+  # Artists in the show grouped by last name
+  artists_grouped_by_name: [ArtistGroup]
 
   # The general city, derived from a fair location, a show location or a potential city
   city: String

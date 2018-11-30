@@ -34,7 +34,7 @@ import {
 } from "graphql"
 import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
-import { find } from "lodash"
+import { find, flatten } from "lodash"
 
 import PartnerShowSorts from "./sorts/partner_show_sorts"
 import EventStatus from "./input_fields/event_status"
@@ -58,31 +58,18 @@ const kind = ({ artists, fair, artists_without_artworks, group }) => {
 }
 
 const artworksArgs = {
-  size: {
-    type: GraphQLInt,
-    description: "Number of artworks to return",
-    defaultValue: 25,
-  },
-  published: {
-    type: GraphQLBoolean,
-    defaultValue: true,
-  },
-  page: {
-    type: GraphQLInt,
-    defaultValue: 1,
-  },
-  all: {
-    type: GraphQLBoolean,
-    default: false,
+  exclude: {
+    type: new GraphQLList(GraphQLString),
+    description:
+      "List of artwork IDs to exclude from the response (irrespective of size)",
   },
   for_sale: {
     type: GraphQLBoolean,
     default: false,
   },
-  exclude: {
-    type: new GraphQLList(GraphQLString),
-    description:
-      "List of artwork IDs to exclude from the response (irrespective of size)",
+  published: {
+    type: GraphQLBoolean,
+    defaultValue: true,
   },
 }
 
@@ -95,13 +82,30 @@ export const ShowType = new GraphQLObjectType({
     artists: {
       description: "The Artists presenting in this show",
       type: new GraphQLList(Artist.type),
-      resolve: ({ artists }) => artists,
+      resolve: ({ artists }) => {
+        return artists
+      },
     },
     artworks: {
       description: "The artworks featured in this show",
       deprecationReason: "Use artworks_connection instead",
       type: new GraphQLList(Artwork.type),
-      args: artworksArgs,
+      args: {
+        ...artworksArgs,
+        all: {
+          type: GraphQLBoolean,
+          default: false,
+        },
+        page: {
+          type: GraphQLInt,
+          defaultValue: 1,
+        },
+        size: {
+          type: GraphQLInt,
+          description: "Number of artworks to return",
+          defaultValue: 25,
+        },
+      },
       resolve: (
         show,
         options,
@@ -146,30 +150,93 @@ export const ShowType = new GraphQLObjectType({
           partner_id: show.partner.id,
           show_id: show.id,
         }
-        const gravityOptions = convertConnectionArgsToGravityArgs(options)
-        delete gravityOptions.page
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(
+          options
+        )
 
-        return Promise.all([
-          totalViaLoader(
-            partnerShowArtworksLoader,
-            loaderOptions,
-            Object.assign({}, gravityOptions, {
-              size: 0,
+        interface GravityArgs {
+          exclude_ids?: string[]
+          page: number
+          size: number
+          total_count: boolean
+        }
+
+        const gravityArgs: GravityArgs = {
+          page,
+          size,
+          total_count: true,
+        }
+
+        if (options.exclude) {
+          gravityArgs.exclude_ids = flatten([options.exclude])
+        }
+
+        return partnerShowArtworksLoader(loaderOptions, gravityArgs).then(
+          ({ body, headers }) => {
+            return connectionFromArraySlice(body, options, {
+              arrayLength: headers["x-total-count"],
+              sliceStart: offset,
             })
-          ),
-          partnerShowArtworksLoader(loaderOptions, gravityOptions),
-        ]).then(([count, { body }]) => {
-          return connectionFromArraySlice(body, options, {
-            arrayLength: count,
-            sliceStart: gravityOptions.offset,
-          })
-        })
+          }
+        )
       },
     },
     artists_without_artworks: {
       description: "Artists inside the show who do not have artworks present",
       type: new GraphQLList(Artist.type),
       resolve: ({ artists_without_artworks }) => artists_without_artworks,
+    },
+    artists_grouped_by_name: {
+      description: "Artists in the show grouped by last name",
+      type: new GraphQLList(
+        new GraphQLObjectType({
+          name: "ArtistGroup",
+          fields: {
+            letter: {
+              type: GraphQLString,
+              description: "Letter artists group belongs to",
+            },
+            items: {
+              type: new GraphQLList(Artist.type),
+              description: "Artists sorted by last name",
+            },
+          },
+        })
+      ),
+      resolve: ({ artists }) => {
+        const groups: {
+          [letter: string]: { letter: string; items: [String] }
+        } = {}
+
+        const sortedArtists = artists.sort((a, b) => {
+          const aNames = a.name.split(" ")
+          const bNames = b.name.split(" ")
+          const aLastName = aNames[aNames.length - 1]
+          const bLastName = bNames[bNames.length - 1]
+
+          if (aLastName < bLastName) return -1
+          if (aLastName > bLastName) return 1
+
+          return 0
+        })
+
+        for (let artist of sortedArtists) {
+          const names = artist.name.split(" ")
+          const lastName = names[names.length - 1]
+          const letter = lastName.substring(0, 1).toUpperCase()
+
+          if (groups[letter] !== undefined) {
+            groups[letter].items.push(artist)
+          } else {
+            groups[letter] = {
+              letter,
+              items: [artist],
+            }
+          }
+        }
+
+        return Object.values(groups)
+      },
     },
     city: {
       description:

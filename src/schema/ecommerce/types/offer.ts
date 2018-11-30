@@ -9,6 +9,8 @@ import date from "schema/fields/date"
 import { OrderPartyUnionType } from "./order_party_union"
 import { OrderInterface, resolveOrderParty } from "./order"
 import { UserType } from "schema/user"
+import { amount } from "schema/fields/money"
+import { OrderParticipantEnum } from "./enums/order_participant_enum"
 
 export const OfferType = new GraphQLObjectType({
   name: "Offer",
@@ -47,14 +49,34 @@ export const OfferType = new GraphQLObjectType({
         { rootValue: { userByIDLoader, partnerLoader } }
       ) => resolveOrderParty(from, userByIDLoader, partnerLoader),
     },
+    fromParticipant: {
+      type: OrderParticipantEnum,
+      description: "the order participant who created the offer",
+    },
     amountCents: {
       type: GraphQLInt,
       description: "Offer amount in cents",
     },
+    amount: amount(({ amountCents }) => amountCents),
+    shippingTotalCents: {
+      type: GraphQLInt,
+      description: "Shipping total based on this offer in cents",
+    },
+    shippingTotal: amount(({ shippingTotalCents }) => shippingTotalCents),
+    taxTotalCents: {
+      type: GraphQLInt,
+      description: "Tax total based on this offer in cents",
+    },
+    taxTotal: amount(({ taxTotalCents }) => taxTotalCents),
     order: {
       type: OrderInterface,
       description: "The order on which the offer was made",
     },
+    buyerTotalCents: {
+      type: GraphQLInt,
+      description: "Total of amount, shipping and tax in cents",
+    },
+    buyerTotal: amount(({ buyerTotalCents }) => buyerTotalCents),
     respondsTo: {
       type: OfferType,
       description: "The order on which the offer was made",

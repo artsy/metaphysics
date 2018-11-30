@@ -1,6 +1,6 @@
 // Please do not add schema imports here while stitching is an ENV flag
 //
-import { graphql } from "graphql"
+import { graphql, GraphQLError } from "graphql"
 
 /**
  * Performs a GraphQL query against our schema.
@@ -32,13 +32,40 @@ export const runQuery = (
 
   return graphql(schema, query, rootValue, context).then(result => {
     if (result.errors) {
-      const error = result.errors[0]
-      throw error.originalError || error
+      const errors = result.errors.reduce(
+        (acc, gqlError) => {
+          const error = unpackGraphQLError(gqlError) as Error | CombinedError
+          return isCombinedError(error)
+            ? [...acc, ...error.errors.map(unpackGraphQLError)]
+            : [...acc, error]
+        },
+        [] as Error[]
+      )
+      if (errors.length === 1) {
+        throw errors[0]
+      } else {
+        const combinedError = new Error("Multiple errors occurred.")
+        combinedError.stack = errors
+          .map(e => `${e.message}:\n${e.stack}`)
+          .join("\n")
+        throw combinedError
+      }
     } else {
       return result.data
     }
   })
 }
+
+// This is an error class defined in https://github.com/apollographql/graphql-tools/blob/3f87d907af2ac97a32b5ab375bb97198ebfe9e2c/src/stitching/errors.ts#L87-L93
+declare class CombinedError extends Error {
+  public errors: ReadonlyArray<GraphQLError>
+}
+
+const isCombinedError = (
+  error: Error | CombinedError
+): error is CombinedError => error.hasOwnProperty("errors")
+
+const unpackGraphQLError = (error: GraphQLError) => error.originalError || error
 
 /**
  * Same as `runQuery` except it provides a `rootValue` that’s required for authenticated queries.

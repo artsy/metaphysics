@@ -3,7 +3,7 @@ import { sampleOrder } from "test/fixtures/results/sample_order"
 import gql from "lib/gql"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { OrderSellerFields } from "./order_fields"
-import exchangeOrderJSON from "test/fixtures/exchange/order.json"
+import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
 
 let rootValue
 

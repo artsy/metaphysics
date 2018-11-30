@@ -88,11 +88,26 @@ function sampleLineItems(fulfillments = false) {
   }
 }
 
+const offerFields = {
+  myLastOffer: {
+    id: "off-1",
+    amountCents: 50000,
+    taxTotalCents: 10000,
+    shippingTotalCents: 20000,
+    buyerTotalCents: 80000,
+    fromParticipant: "BUYER",
+  },
+  lastOffer: null,
+  offers: null,
+  awaitingResponseFrom: "BUYER",
+}
+
 export function sampleOrder({
   lineItems = true,
   fulfillments = false,
   includeCreditCard = false,
   mode = "BUY",
+  includeOfferFields = false,
 } = {}) {
   let orderResponse = defaultResponse
 
@@ -106,6 +121,10 @@ export function sampleOrder({
 
   if (includeCreditCard) {
     orderResponse = { ...orderResponse, creditCard }
+  }
+
+  if (includeOfferFields) {
+    orderResponse = { ...orderResponse, ...offerFields }
   }
 
   return orderResponse

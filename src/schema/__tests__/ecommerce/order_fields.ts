@@ -92,6 +92,37 @@ export const OrderBuyerFields = gql`
       }
     }
   }
+  ... on OfferOrder {
+    myLastOffer {
+      id
+      taxTotalCents
+      shippingTotalCents
+      amountCents
+      buyerTotalCents
+      fromParticipant
+    }
+    lastOffer {
+      id
+      amountCents
+      taxTotalCents
+      shippingTotalCents
+      buyerTotalCents
+      fromParticipant
+    }
+    offers {
+      edges {
+        node {
+          id
+          amountCents
+          taxTotalCents
+          shippingTotalCents
+          buyerTotalCents
+          fromParticipant
+        }
+      }
+    }
+    awaitingResponseFrom
+  }
 }
 `
 

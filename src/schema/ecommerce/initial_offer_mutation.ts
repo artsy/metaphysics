@@ -6,9 +6,12 @@ import { BuyerOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { InitialOfferInputType } from "./types/initial_offer_input_type"
 import { moneyFieldToUnit } from "lib/moneyHelper"
+
 export const InitialOfferMutation = mutationWithClientMutationId({
   name: "InitialOffer",
-  description: "Creates an order with an artwork",
+  // @ts-ignore
+  deprecationReason: "Use AddInitialOfferToOrder instead.",
+  description: "Deprecated.",
   inputFields: InitialOfferInputType.getFields(),
   outputFields: {
     orderOrError: {
