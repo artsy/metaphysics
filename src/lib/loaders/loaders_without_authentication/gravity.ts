@@ -46,7 +46,7 @@ export default opts => {
     relatedContemporaryArtistsLoader: gravityLoader("related/layer/contemporary/artists", {}, { headers: true }),
     relatedFairsLoader: gravityLoader("related/fairs"),
     relatedGenesLoader: gravityLoader("related/genes"),
-    relatedLayerArtworksLoader: gravityLoader(({ type, id }) => `related/layer/${type}/${id}/artworks`),
+    relatedLayerArtworksLoader: gravityLoader(({ type, id }) => `related/layer/${type}/${id}/artworks`, {}, { headers: true }),
     relatedLayersLoader: gravityLoader("related/layers"),
     relatedMainArtistsLoader: gravityLoader("related/layer/main/artists", {}, { headers: true }),
     relatedSalesLoader: gravityLoader("related/sales"),

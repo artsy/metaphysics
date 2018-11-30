@@ -1682,6 +1682,14 @@ type ArtworkLayer {
   # A type-specific ID.
   id: String!
   artworks: [Artwork]
+
+  # A connection of artworks from a Layer.
+  artworksConnection(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
   description: String
   href: String
   name: String
