@@ -2277,6 +2277,14 @@ type BuyOrder implements Order {
   ): String
 }
 
+enum CancelReasonType {
+  SELLER_LAPSED
+  SELLER_REJECTED_OFFER_TOO_LOW
+  SELLER_REJECTED_SHIPPING_UNAVAILABLE
+  SELLER_REJECTED_ARTWORK_UNAVAILABLE
+  SELLER_REJECTED_OTHER
+}
+
 # Fields of partner category (currently from Gravity).
 type Category {
   id: String!
@@ -5023,6 +5031,11 @@ type Mutation {
     input: sellerAcceptOfferInput!
   ): sellerAcceptOfferPayload
 
+  # Rejects an offer
+  ecommerceSellerRejectOffer(
+    input: sellerRejectOfferInput!
+  ): sellerRejectOfferPayload
+
   # Confirms pickup for an ecommerce order
   ecommerceConfirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
 
@@ -7445,6 +7458,20 @@ input sellerAcceptOfferInput {
 }
 
 type sellerAcceptOfferPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
+input sellerRejectOfferInput {
+  # Offer ID
+  offerId: String!
+
+  # Reason for rejecting offer
+  rejectReason: CancelReasonType
+  clientMutationId: String
+}
+
+type sellerRejectOfferPayload {
   orderOrError: OrderOrFailureUnionType
   clientMutationId: String
 }

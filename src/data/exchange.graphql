@@ -315,31 +315,22 @@ type LineItemEdge {
 }
 
 type Mutation {
-  addInitialOfferToOrder(
-    input: AddInitialOfferToOrderInput!
-  ): AddInitialOfferToOrderPayload
+  addInitialOfferToOrder(input: AddInitialOfferToOrderInput!): AddInitialOfferToOrderPayload
   approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
   confirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
-  createOfferOrderWithArtwork(
-    input: CreateOfferOrderWithArtworkInput!
-  ): CreateOfferOrderWithArtworkPayload
-  createOrderWithArtwork(
-    input: CreateOrderWithArtworkInput!
-  ): CreateOrderWithArtworkPayload
+  createOfferOrderWithArtwork(input: CreateOfferOrderWithArtworkInput!): CreateOfferOrderWithArtworkPayload
+  createOrderWithArtwork(input: CreateOrderWithArtworkInput!): CreateOrderWithArtworkPayload
 
   # Fulfill an order with one Fulfillment, it sets this fulfillment to each line item in order
   fulfillAtOnce(input: FulfillAtOnceInput!): FulfillAtOncePayload
-  initialOffer(input: InitialOfferInput!): InitialOfferPayload
-    @deprecated(reason: "Switch to addInitialOfferToOrder.")
+  initialOffer(input: InitialOfferInput!): InitialOfferPayload @deprecated(reason: "Switch to addInitialOfferToOrder.")
   rejectOrder(input: RejectOrderInput!): RejectOrderPayload
   sellerAcceptOffer(input: SellerAcceptOfferInput!): SellerAcceptOfferPayload
   sellerRejectOffer(input: SellerRejectOfferInput!): SellerRejectOfferPayload
   setPayment(input: SetPaymentInput!): SetPaymentPayload
   setShipping(input: SetShippingInput!): SetShippingPayload
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
-  submitOrderWithOffer(
-    input: SubmitOrderWithOfferInput!
-  ): SubmitOrderWithOfferPayload
+  submitOrderWithOffer(input: SubmitOrderWithOfferInput!): SubmitOrderWithOfferPayload
 }
 
 # An Offer
