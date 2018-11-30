@@ -4,7 +4,7 @@ import {
   GraphQLString,
   GraphQLNonNull,
 } from "graphql"
-import { artistNames } from "./artwork/meta.js"
+import { artistNames } from "./artwork/meta"
 import Image from "./image"
 
 export const ArtworkVersion = new GraphQLObjectType({
