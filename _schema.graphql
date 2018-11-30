@@ -5200,7 +5200,7 @@ type Offer {
   # The order on which the offer was made
   order: Order
 
-  # Offer amount in cents
+  # Total of amount, shipping and tax in cents
   buyerTotalCents: Int
 
   # A formatted price with various currency formatting options.

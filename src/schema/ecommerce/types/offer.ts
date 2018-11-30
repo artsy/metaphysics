@@ -74,9 +74,9 @@ export const OfferType = new GraphQLObjectType({
     },
     buyerTotalCents: {
       type: GraphQLInt,
-      description: "Offer amount in cents",
+      description: "Total of amount, shipping and tax in cents",
     },
-    buyerTotal: amount(({ amountCents }) => amountCents),
+    buyerTotal: amount(({ buyerTotalCents }) => buyerTotalCents),
     respondsTo: {
       type: OfferType,
       description: "The order on which the offer was made",
