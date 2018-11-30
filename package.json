@@ -23,7 +23,6 @@
     "fix": "eslint . --fix",
     "lint": "eslint .",
     "prepare": "patch-package",
-    "prepush": "yarn run type-check",
     "prettier-project": "prettier --write 'src/**/*.{js,ts,tsx,md,graphql}'",
     "start": "yarn run dev",
     "test:validQueries": "babel-node --extensions '.ts,.js' src/__tests__/runStoredQueryTests.ts",
@@ -187,7 +186,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged; yarn dump-schema _schema.graphql; git add _schema.graphql"
+      "pre-commit": "lint-staged; yarn dump-schema _schema.graphql; git add _schema.graphql",
+      "pre-push": "yarn run type-check"
     }
   }
 }
