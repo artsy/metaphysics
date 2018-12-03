@@ -1112,6 +1112,9 @@ type ArtworkContextFair {
   published: Boolean
     @deprecated(reason: "Prefix Boolean returning fields with `is_`")
   tagline: String
+
+  # The exhibitors with booths in this fair.
+  exhibitors_grouped_by_name: [FairExhibitorsGroup]
 }
 
 type ArtworkContextPartnerShow implements Node {
@@ -3138,6 +3141,17 @@ type Fair {
   published: Boolean
     @deprecated(reason: "Prefix Boolean returning fields with `is_`")
   tagline: String
+
+  # The exhibitors with booths in this fair.
+  exhibitors_grouped_by_name: [FairExhibitorsGroup]
+}
+
+type FairExhibitorsGroup {
+  # Letter exhibitors group belongs to
+  letter: String
+
+  # Exhibitors sorted by name
+  exhibitors: [String]
 }
 
 enum FairSorts {
@@ -4140,6 +4154,9 @@ type HomePageModuleContextFair {
   published: Boolean
     @deprecated(reason: "Prefix Boolean returning fields with `is_`")
   tagline: String
+
+  # The exhibitors with booths in this fair.
+  exhibitors_grouped_by_name: [FairExhibitorsGroup]
 }
 
 type HomePageModuleContextFollowArtists {

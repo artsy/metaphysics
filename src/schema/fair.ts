@@ -16,6 +16,7 @@ import {
   GraphQLString,
   GraphQLBoolean,
   GraphQLNonNull,
+  GraphQLList,
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
@@ -174,6 +175,65 @@ const FairType = new GraphQLObjectType({
     },
     tagline: {
       type: GraphQLString,
+    },
+    exhibitors_grouped_by_name: {
+      description: "The exhibitors with booths in this fair.",
+      type: new GraphQLList(
+        new GraphQLObjectType({
+          name: "FairExhibitorsGroup",
+          fields: {
+            letter: {
+              type: GraphQLString,
+              description: "Letter exhibitors group belongs to",
+            },
+            exhibitors: {
+              type: new GraphQLList(GraphQLString),
+              description: "Exhibitors sorted by name",
+            },
+          },
+        })
+      ),
+      resolve: (
+        root,
+        _options,
+        _request,
+        { rootValue: { fairBoothsLoader } }
+      ) => {
+        if (!root._id) {
+          return []
+        }
+        const exhibitor_groups: {
+          [letter: string]: { letter: string; exhibitors: [String] }
+        } = {}
+
+        return fairBoothsLoader(root._id).then(result => {
+          const fairBooths = result.body.results.sort((a, b) => {
+            const asc = a.partner.name.toLowerCase()
+            const desc = b.partner.name.toLowerCase()
+
+            if (asc < desc) return -1
+            if (asc > desc) return 1
+
+            return 0
+          })
+
+          for (let fairBooth of fairBooths) {
+            const names = fairBooth.partner.name.split(" ")
+            const firstName = names[0]
+            const letter = firstName.charAt(0).toUpperCase()
+
+            if (exhibitor_groups[letter]) {
+              exhibitor_groups[letter].exhibitors.push(fairBooth.partner.name)
+            } else {
+              exhibitor_groups[letter] = {
+                letter,
+                exhibitors: [fairBooth.partner.name],
+              }
+            }
+          }
+          return Object.values(exhibitor_groups)
+        })
+      },
     },
   }),
 })
