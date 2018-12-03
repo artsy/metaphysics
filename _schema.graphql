@@ -4438,20 +4438,6 @@ type Image {
   versions: [String]
 }
 
-input InitialOfferInput {
-  # ID of order
-  orderId: ID!
-
-  # Offer price
-  offerPrice: MoneyInput
-  clientMutationId: String
-}
-
-type InitialOfferPayload {
-  orderOrError: OrderOrFailureUnionType
-  clientMutationId: String
-}
-
 enum Intents {
   BUY_ART_AND_DESIGN
   SELL_ART_AND_DESIGN
@@ -5082,10 +5068,6 @@ type Mutation {
 
   # Submits an order
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
-
-  # Deprecated.
-  ecommerceInitialOffer(input: InitialOfferInput!): InitialOfferPayload
-    @deprecated(reason: "Use AddInitialOfferToOrder instead.")
   recordArtworkView(input: RecordArtworkViewInput): RecordArtworkViewPayload
 }
 

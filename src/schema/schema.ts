@@ -83,7 +83,6 @@ import ObjectIdentification from "./object_identification"
 import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
 import config from "config"
-import { InitialOfferMutation } from "./ecommerce/initial_offer_mutation"
 import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
 import { AddInitialOfferToOrderMutation } from "./ecommerce/add_initial_offer_to_order_mutation"
 const { ENABLE_CONSIGNMENTS_STITCHING, ENABLE_ECOMMERCE_STITCHING } = config
@@ -199,7 +198,6 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.submitOrder = SubmitOrderMutation
 
   // Deprecated
-  stitchedMutations.ecommerceInitialOffer = InitialOfferMutation
 }
 
 export default new GraphQLSchema({
