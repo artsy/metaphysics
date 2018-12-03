@@ -4506,6 +4506,9 @@ type Location {
   country: String
   coordinates: LatLng
   day_schedules: [DaySchedule]
+
+  # Alternate Markdown-supporting free text representation of a location's opening hours
+  day_schedule_text: String
   displayDaySchedules: [FormattedDaySchedules]
   display: String
   phone: String
@@ -7668,6 +7671,9 @@ type Show implements Node {
 
   # Is it a stubbed show?
   is_reference: Boolean
+
+  # Is it an outsourced local discovery stub show?
+  is_local_discovery: Boolean
 
   # Whether the show is in a fair, group or solo
   kind: String

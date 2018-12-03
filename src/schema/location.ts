@@ -47,6 +47,11 @@ export const LocationType = new GraphQLObjectType({
       type: new GraphQLList(DayScheduleType),
       resolve: ({ day_schedules }) => day_schedules,
     },
+    day_schedule_text: {
+      description:
+        "Alternate Markdown-supporting free text representation of a location's opening hours",
+      type: GraphQLString,
+    },
     displayDaySchedules: {
       type: new GraphQLList(FormattedDaySchedules.type),
       resolve: ({ day_schedules }) =>
