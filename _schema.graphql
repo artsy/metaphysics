@@ -2029,6 +2029,17 @@ type BidIncrementsFormatted {
   display: String
 }
 
+input buyerAcceptOfferInput {
+  # Offer ID
+  offerId: String!
+  clientMutationId: String
+}
+
+type buyerAcceptOfferPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
 type BuyersPremium {
   # A globally unique ID.
   __id: ID!
@@ -5014,6 +5025,11 @@ type Mutation {
 
   # Approves an order with payment
   ecommerceApproveOrder(input: ApproveOrderInput!): ApproveOrderPayload
+
+  # Buyer accepts a submitted offer from seller
+  ecommerceBuyerAcceptOffer(
+    input: buyerAcceptOfferInput!
+  ): buyerAcceptOfferPayload
 
   # Approves an order with payment
   ecommerceSellerAcceptOffer(
