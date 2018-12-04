@@ -297,6 +297,41 @@ export const filterArtworksArgs = {
   },
 }
 
+const filterArtworksTypeFactory = mapRootToFilterParams => ({
+  type: FilterArtworksType,
+  description: "Artworks Elastic Search results",
+  args: filterArtworksArgs,
+  resolve: (
+    root,
+    options,
+    _request,
+    { fieldNodes, rootValue: { filterArtworksLoader } }
+  ) => {
+    const gravityOptions = Object.assign(
+      {},
+      options,
+      mapRootToFilterParams(root)
+    )
+
+    // Support queries that show all mediums using the medium param.
+    // If you specify "*" it results in metaphysics removing the query option
+    // making the graphQL queries between all and a subset of mediums the same shape.
+    if (gravityOptions.medium === "*" || !gravityOptions.medium) {
+      delete gravityOptions.medium
+    }
+
+    removeNulls(gravityOptions)
+
+    const blacklistedFields = ["artworks_connection", "__id"]
+    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+      return filterArtworksLoader(gravityOptions).then(response =>
+        assign({}, response, { options: gravityOptions })
+      )
+    }
+    return { hits: null, aggregations: null, options: gravityOptions }
+  },
+})
+
 // Support passing in your own primary key
 // so that you can nest this function into another.
 
@@ -304,40 +339,12 @@ export const filterArtworksArgs = {
 // value out of the parent payload and moves it into
 // the query itself
 
-function filterArtworks(primaryKey) {
-  return {
-    type: FilterArtworksType,
-    description: "Artworks Elastic Search results",
-    args: filterArtworksArgs,
-    resolve: (
-      root,
-      options,
-      _request,
-      { fieldNodes, rootValue: { filterArtworksLoader } }
-    ) => {
-      const gravityOptions = Object.assign({}, options)
-      if (primaryKey) {
-        gravityOptions[primaryKey] = root.id
-      }
-
-      // Support queries that show all mediums using the medium param.
-      // If you specify "*" it results in metaphysics removing the query option
-      // making the graphQL queries between all and a subset of mediums the same shape.
-      if (gravityOptions.medium === "*" || !gravityOptions.medium) {
-        delete gravityOptions.medium
-      }
-
-      removeNulls(gravityOptions)
-
-      const blacklistedFields = ["artworks_connection", "__id"]
-      if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-        return filterArtworksLoader(gravityOptions).then(response =>
-          assign({}, response, { options: gravityOptions })
-        )
-      }
-      return { hits: null, aggregations: null, options: gravityOptions }
-    },
-  }
+export default function filterArtworks(primaryKey: string) {
+  return filterArtworksTypeFactory(
+    primaryKey ? ({ id }) => ({ [primaryKey]: id }) : () => ({})
+  )
 }
 
-export default filterArtworks
+export function filterArtworksWithParams(mapRootToFilterParams) {
+  return filterArtworksTypeFactory(mapRootToFilterParams)
+}

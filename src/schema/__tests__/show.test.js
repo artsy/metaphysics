@@ -887,4 +887,61 @@ describe("Show type", () => {
       })
     })
   })
+  describe("#filteredArtworks", () => {
+    it("fetches FilterArtworks using the show id and partner id", async () => {
+      rootValue = {
+        ...rootValue,
+        filterArtworksLoader: jest.fn().mockReturnValue(
+          Promise.resolve({
+            hits: [
+              { id: "1", title: "foo-artwork" },
+              { id: "2", title: "bar-artwork" },
+            ],
+            aggregations: {
+              total: {
+                value: 303,
+              },
+            },
+          })
+        ),
+      }
+
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            filteredArtworks(aggregations: [TOTAL]) {
+              artworks_connection(first: 1) {
+                edges {
+                  node {
+                    id
+                    title
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, rootValue)
+      expect(rootValue.filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          show_id: "new-museum-1-2015-triennial-surround-audience",
+          partner_id: "new-museum",
+        })
+      )
+      expect(data).toEqual({
+        show: {
+          filteredArtworks: {
+            artworks_connection: {
+              edges: [
+                {
+                  node: { id: "1", title: "foo-artwork" },
+                },
+              ],
+            },
+          },
+        },
+      })
+    })
+  })
 })
