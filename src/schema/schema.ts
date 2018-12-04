@@ -104,8 +104,6 @@ const rootFields: any = {
   fair: Fair,
   fairs: Fairs,
   filter_partners: FilterPartners,
-  // FIXME: Expected 1 arguments, but got 0
-  // @ts-ignore
   filter_artworks: filterArtworks(),
   filter_sale_artworks: FilterSaleArtworks,
   gene: Gene,
