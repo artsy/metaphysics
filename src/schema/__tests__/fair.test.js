@@ -155,7 +155,7 @@ describe("Fair", () => {
   })
 
   describe("fair", () => {
-    it("includes fair details", async () => {
+    it("includes fair exhibitor details", async () => {
       const query = gql`
         {
           fair(id: "aqua-art-miami-2018") {
