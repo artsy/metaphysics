@@ -34,7 +34,7 @@ import {
 } from "graphql"
 import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
-import { find } from "lodash"
+import { find, flatten } from "lodash"
 
 import PartnerShowSorts from "./sorts/partner_show_sorts"
 import EventStatus from "./input_fields/event_status"
@@ -58,31 +58,18 @@ const kind = ({ artists, fair, artists_without_artworks, group }) => {
 }
 
 const artworksArgs = {
-  size: {
-    type: GraphQLInt,
-    description: "Number of artworks to return",
-    defaultValue: 25,
-  },
-  published: {
-    type: GraphQLBoolean,
-    defaultValue: true,
-  },
-  page: {
-    type: GraphQLInt,
-    defaultValue: 1,
-  },
-  all: {
-    type: GraphQLBoolean,
-    default: false,
+  exclude: {
+    type: new GraphQLList(GraphQLString),
+    description:
+      "List of artwork IDs to exclude from the response (irrespective of size)",
   },
   for_sale: {
     type: GraphQLBoolean,
     default: false,
   },
-  exclude: {
-    type: new GraphQLList(GraphQLString),
-    description:
-      "List of artwork IDs to exclude from the response (irrespective of size)",
+  published: {
+    type: GraphQLBoolean,
+    defaultValue: true,
   },
 }
 
@@ -103,7 +90,22 @@ export const ShowType = new GraphQLObjectType({
       description: "The artworks featured in this show",
       deprecationReason: "Use artworks_connection instead",
       type: new GraphQLList(Artwork.type),
-      args: artworksArgs,
+      args: {
+        ...artworksArgs,
+        all: {
+          type: GraphQLBoolean,
+          default: false,
+        },
+        page: {
+          type: GraphQLInt,
+          defaultValue: 1,
+        },
+        size: {
+          type: GraphQLInt,
+          description: "Number of artworks to return",
+          defaultValue: 25,
+        },
+      },
       resolve: (
         show,
         options,
@@ -148,24 +150,35 @@ export const ShowType = new GraphQLObjectType({
           partner_id: show.partner.id,
           show_id: show.id,
         }
-        const gravityOptions = convertConnectionArgsToGravityArgs(options)
-        delete gravityOptions.page
+        const { page, size, offset } = convertConnectionArgsToGravityArgs(
+          options
+        )
 
-        return Promise.all([
-          totalViaLoader(
-            partnerShowArtworksLoader,
-            loaderOptions,
-            Object.assign({}, gravityOptions, {
-              size: 0,
+        interface GravityArgs {
+          exclude_ids?: string[]
+          page: number
+          size: number
+          total_count: boolean
+        }
+
+        const gravityArgs: GravityArgs = {
+          page,
+          size,
+          total_count: true,
+        }
+
+        if (options.exclude) {
+          gravityArgs.exclude_ids = flatten([options.exclude])
+        }
+
+        return partnerShowArtworksLoader(loaderOptions, gravityArgs).then(
+          ({ body, headers }) => {
+            return connectionFromArraySlice(body, options, {
+              arrayLength: headers["x-total-count"],
+              sliceStart: offset,
             })
-          ),
-          partnerShowArtworksLoader(loaderOptions, gravityOptions),
-        ]).then(([count, { body }]) => {
-          return connectionFromArraySlice(body, options, {
-            arrayLength: count,
-            sliceStart: gravityOptions.offset,
-          })
-        })
+          }
+        )
       },
     },
     artists_without_artworks: {
@@ -410,6 +423,10 @@ export const ShowType = new GraphQLObjectType({
       description: "Is it a stubbed show?",
       type: GraphQLBoolean,
       resolve: ({ is_reference }) => is_reference,
+    },
+    is_local_discovery: {
+      description: "Is it an outsourced local discovery stub show?",
+      type: GraphQLBoolean,
     },
     kind: {
       description: "Whether the show is in a fair, group or solo",

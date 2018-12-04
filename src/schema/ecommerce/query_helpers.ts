@@ -57,6 +57,8 @@ export const OfferFields = gql`
     amountCents
     shippingTotalCents
     taxTotalCents
+    buyerTotalCents
+    fromParticipant
     from {
       __typename
       ... on EcommerceUser {

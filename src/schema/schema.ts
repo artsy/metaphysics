@@ -25,7 +25,9 @@ import { SetOrderPaymentMutation } from "./ecommerce/set_order_payment_mutation"
 import { SubmitOrderMutation } from "./ecommerce/submit_order_mutation"
 import { SubmitOrderWithOfferMutation } from "./ecommerce/submit_order_with_offer"
 import { ApproveOrderMutation } from "./ecommerce/approve_order_mutation"
+import { BuyerAcceptOfferMutation } from "./ecommerce/buyer_accept_offer_mutation"
 import { SellerAcceptOfferMutation } from "./ecommerce/seller_accept_offer_mutation"
+import { SellerRejectOfferMutation } from "./ecommerce/seller_reject_offer_mutation"
 import { FulfillOrderAtOnceMutation } from "./ecommerce/fulfill_order_at_once_mutation"
 import { ConfirmPickupMutation } from "./ecommerce/confirm_pickup_mutation"
 import { RejectOrderMutation } from "./ecommerce/reject_order_mutation"
@@ -82,7 +84,6 @@ import ObjectIdentification from "./object_identification"
 import { GraphQLSchema, GraphQLObjectType } from "graphql"
 
 import config from "config"
-import { InitialOfferMutation } from "./ecommerce/initial_offer_mutation"
 import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
 import { AddInitialOfferToOrderMutation } from "./ecommerce/add_initial_offer_to_order_mutation"
 const { ENABLE_CONSIGNMENTS_STITCHING, ENABLE_ECOMMERCE_STITCHING } = config
@@ -103,6 +104,8 @@ const rootFields: any = {
   fair: Fair,
   fairs: Fairs,
   filter_partners: FilterPartners,
+  // FIXME: Expected 1 arguments, but got 0
+  // @ts-ignore
   filter_artworks: filterArtworks(),
   filter_sale_artworks: FilterSaleArtworks,
   gene: Gene,
@@ -173,7 +176,9 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
   stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
   stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
+  stitchedMutations.ecommerceBuyerAcceptOffer = BuyerAcceptOfferMutation
   stitchedMutations.ecommerceSellerAcceptOffer = SellerAcceptOfferMutation
+  stitchedMutations.ecommerceSellerRejectOffer = SellerRejectOfferMutation
   stitchedMutations.ecommerceConfirmPickup = ConfirmPickupMutation
   stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
   stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
@@ -195,7 +200,6 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.submitOrder = SubmitOrderMutation
 
   // Deprecated
-  stitchedMutations.ecommerceInitialOffer = InitialOfferMutation
 }
 
 export default new GraphQLSchema({

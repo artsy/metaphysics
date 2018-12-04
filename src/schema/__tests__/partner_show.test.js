@@ -267,4 +267,124 @@ describe("PartnerShow type", () => {
       })
     })
   })
+
+  describe("#artworksConnection", () => {
+    let artworksResponse
+
+    beforeEach(() => {
+      artworksResponse = [
+        {
+          id: "michelangelo-pistoletto-untitled-12",
+        },
+        {
+          id: "lucio-fontana-concetto-spaziale-attese-139",
+        },
+        {
+          id: "pier-paolo-calzolari-untitled-146",
+        },
+      ]
+      rootValue = {
+        partnerShowArtworksLoader: () =>
+          Promise.resolve({
+            body: artworksResponse,
+            headers: { "x-total-count": artworksResponse.length },
+          }),
+        showLoader: () => Promise.resolve(showData),
+      }
+    })
+
+    it("returns artworks", async () => {
+      const query = `
+        {
+          partner_show(id: "cardi-gallery-cardi-gallery-at-art-basel-miami-beach-2018") {
+            artworksConnection(first: 3) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+
+      expect(data).toEqual({
+        partner_show: {
+          artworksConnection: {
+            edges: [
+              {
+                node: {
+                  id: "michelangelo-pistoletto-untitled-12",
+                },
+              },
+              {
+                node: {
+                  id: "lucio-fontana-concetto-spaziale-attese-139",
+                },
+              },
+              {
+                node: {
+                  id: "pier-paolo-calzolari-untitled-146",
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=true when first is below total", async () => {
+      const query = `
+        {
+          partner_show(id: "cardi-gallery-cardi-gallery-at-art-basel-miami-beach-2018") {
+            artworksConnection(first: 1) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+
+      expect(data).toEqual({
+        partner_show: {
+          artworksConnection: {
+            pageInfo: {
+              hasNextPage: true,
+            },
+          },
+        },
+      })
+    })
+
+    it("returns hasNextPage=false when first is above total", async () => {
+      const query = `
+        {
+          partner_show(id: "cardi-gallery-cardi-gallery-at-art-basel-miami-beach-2018") {
+            artworksConnection(first: 3) {
+              pageInfo {
+                hasNextPage
+              }
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+
+      expect(data).toEqual({
+        partner_show: {
+          artworksConnection: {
+            pageInfo: {
+              hasNextPage: false,
+            },
+          },
+        },
+      })
+    })
+  })
 })
