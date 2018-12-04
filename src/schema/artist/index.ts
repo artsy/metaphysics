@@ -1,5 +1,14 @@
 import { pageable, getPagingParameters } from "relay-cursor-paging"
-import { assign, compact, defaults, first, omit, includes, merge } from "lodash"
+import {
+  assign,
+  compact,
+  defaults,
+  first,
+  flatten,
+  omit,
+  includes,
+  merge,
+} from "lodash"
 import { exclude } from "lib/helpers"
 import cached from "schema/fields/cached"
 import initials from "schema/fields/initials"
@@ -211,7 +220,27 @@ export const ArtistType = new GraphQLObjectType({
           const { limit: size, offset } = getPagingParameters(options)
           // Construct an object of all the params gravity will listen to
           const { sort, filter, published } = options
-          const gravityArgs = { size, offset, sort, filter, published }
+
+          interface GravityArgs {
+            exclude_ids?: string[]
+            filter: string
+            offset: number
+            published: boolean
+            size: number
+            sort: string
+          }
+          const gravityArgs: GravityArgs = {
+            size,
+            offset,
+            sort,
+            filter,
+            published,
+          }
+
+          if (options.exclude) {
+            gravityArgs.exclude_ids = flatten([options.exclude])
+          }
+
           return artistArtworksLoader(artist.id, gravityArgs).then(artworks =>
             connectionFromArraySlice(artworks, options, {
               arrayLength: artistArtworkArrayLength(artist, filter),
