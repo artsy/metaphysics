@@ -122,21 +122,35 @@ describe("Fair type", () => {
 
 describe("Fair", () => {
   let rootValue = null
-
   beforeEach(() => {
-    const fair = {
-      id: "aqua-art-miami-2018",
-      name: "Aqua Art Miami 2018",
-      "exhibitors-grouped-by-name": [
-        {
-          letter: "A",
-          exhibitors: ["ArtHelix Gallery"],
-        },
-      ],
+    const data = {
+      fair: {
+        _id: 123,
+        id: "aqua-art-miami-2018",
+        name: "Aqua Art Miami 2018",
+        exhibitors_grouped_by_name: [
+          {
+            letter: "A",
+            exhibitors: ["ArtHelix Gallery"],
+          },
+        ],
+      },
     }
-
     rootValue = {
-      fairLoader: sinon.stub().returns(Promise.resolve(fair)),
+      fairLoader: sinon.stub().returns(Promise.resolve(data.fair)),
+      fairBoothsLoader: sinon.stub().returns(
+        Promise.resolve({
+          body: {
+            results: [
+              {
+                partner: {
+                  name: "ArtHelix Gallery",
+                },
+              },
+            ],
+          },
+        })
+      ),
     }
   })
 
@@ -161,7 +175,7 @@ describe("Fair", () => {
         fair: {
           id: "aqua-art-miami-2018",
           name: "Aqua Art Miami 2018",
-          "exhibitors-grouped-by-name": [
+          exhibitors_grouped_by_name: [
             {
               letter: "A",
               exhibitors: ["ArtHelix Gallery"],
