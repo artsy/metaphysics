@@ -18,13 +18,9 @@ describe("Layer type", () => {
     ]
 
     rootValue = {
-      relatedLayerArtworksLoader: () =>
-        Promise.resolve({
-          body: artworksResponse,
-          headers: {
-            "x-total-count": artworksResponse.length,
-          },
-        }),
+      relatedLayerArtworksLoader: () => Promise.resolve(artworksResponse),
+      artworkLoader: () => Promise.resolve({ id: "artwork" }),
+      relatedLayersLoader: () => Promise.resolve([{ id: "main" }]),
     }
   })
 
@@ -33,18 +29,22 @@ describe("Layer type", () => {
       {
         artwork(id:"lucio-fontana-concetto-spaziale-attese-139") {
           layers {
+            artworks {
+              id
+            }
           }
         }
       }
     `
 
     const data = await runQuery(query, rootValue)
-
     expect(data).toEqual({
       artwork: {
-        layers: {
-          artworks: artworksResponse,
-        },
+        layers: [
+          {
+            artworks: artworksResponse,
+          },
+        ],
       },
     })
   })
@@ -71,27 +71,29 @@ describe("Layer type", () => {
 
       expect(data).toEqual({
         artwork: {
-          layers: {
-            artworksConnection: {
-              edges: [
-                {
-                  node: {
-                    id: "leonor-fini-les-aveugles",
+          layers: [
+            {
+              artworksConnection: {
+                edges: [
+                  {
+                    node: {
+                      id: "leonor-fini-les-aveugles",
+                    },
                   },
-                },
-                {
-                  node: {
-                    id: "gregorio-vardanega-cereles-metaphorique",
+                  {
+                    node: {
+                      id: "gregorio-vardanega-cereles-metaphorique",
+                    },
                   },
-                },
-                {
-                  node: {
-                    id: "joaquin-torres-garcia-grafismo-del-hombre-y-barco",
+                  {
+                    node: {
+                      id: "joaquin-torres-garcia-grafismo-del-hombre-y-barco",
+                    },
                   },
-                },
-              ],
+                ],
+              },
             },
-          },
+          ],
         },
       })
     })
@@ -115,18 +117,20 @@ describe("Layer type", () => {
 
       expect(data).toEqual({
         artwork: {
-          layers: {
-            artworksConnection: {
-              pageInfo: {
-                hasNextPage: true,
+          layers: [
+            {
+              artworksConnection: {
+                pageInfo: {
+                  hasNextPage: true,
+                },
               },
             },
-          },
+          ],
         },
       })
     })
 
-    it("returns hasNextPage=false when first is above total", async () => {
+    it("returns hasNextPage=false always", async () => {
       const query = `
         {
           artwork(id:"lucio-fontana-concetto-spaziale-attese-139") {
@@ -145,13 +149,15 @@ describe("Layer type", () => {
 
       expect(data).toEqual({
         artwork: {
-          layers: {
-            artworksConnection: {
-              pageInfo: {
-                hasNextPage: false,
+          layers: [
+            {
+              artworksConnection: {
+                pageInfo: {
+                  hasNextPage: false,
+                },
               },
             },
-          },
+          ],
         },
       })
     })

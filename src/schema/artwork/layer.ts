@@ -3,7 +3,6 @@ import { IDFields } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLList } from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { flatten } from "lodash"
 import { connectionFromArraySlice } from "graphql-relay"
 
 const ArtworkLayerType = new GraphQLObjectType({
@@ -23,9 +22,13 @@ const ArtworkLayerType = new GraphQLObjectType({
           {
             artwork: [artwork_id],
           }
-        ).then(({ body }) => body)
+        )
       },
     },
+    // NOTE: pagination is not truly supported here.
+    // The GraphQL connection spec is observed, but only
+    // the number of items to return is respected.
+    // hasNextPage is always false.
     artworksConnection: {
       description: "A connection of artworks from a Layer.",
       type: artworkConnection,
@@ -36,34 +39,23 @@ const ArtworkLayerType = new GraphQLObjectType({
         _request,
         { rootValue: { relatedLayerArtworksLoader } }
       ) => {
-        const { page, size, offset } = convertConnectionArgsToGravityArgs(
-          options
-        )
+        const { size } = convertConnectionArgsToGravityArgs(options)
 
         interface GravityArgs {
           artwork: string[]
-          exclude_ids?: string[]
-          page: number
           size: number
-          total_count: boolean
         }
 
         const gravityArgs: GravityArgs = {
           artwork: [artwork_id],
-          total_count: true,
-          page,
           size,
         }
 
-        if (options.exclude) {
-          gravityArgs.exclude_ids = flatten([options.exclude])
-        }
-
         return relatedLayerArtworksLoader({ id, type }, gravityArgs).then(
-          ({ body, headers }) => {
+          body => {
             return connectionFromArraySlice(body, options, {
-              arrayLength: headers["x-total-count"],
-              sliceStart: offset,
+              arrayLength: body && body.length,
+              sliceStart: 0,
             })
           }
         )
