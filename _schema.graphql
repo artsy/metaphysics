@@ -3265,8 +3265,6 @@ type FilterArtworks implements Node {
 
   # Returns aggregation counts for the given filter query.
   aggregations: [ArtworksAggregationResults]
-
-  # This has been deprecated. Favour artwork connections that take filter arguments.
   artworks_connection(
     sort: String
     after: String
@@ -3274,6 +3272,9 @@ type FilterArtworks implements Node {
     before: String
     last: Int
   ): ArtworkConnection
+    @deprecated(
+      reason: "Use only for filtering over ElasticSearch-backed fields, otherwise favor artwork connections that take filter arguments."
+    )
   counts: FilterArtworksCounts
   followed_artists_total: Int
     @deprecated(reason: "Favor `favor counts.followed_artists`")
