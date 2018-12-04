@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
-
+import gql from "lib/gql"
 describe("Fair type", () => {
   const fair = {
     id: "the-armory-show-2017",
@@ -114,6 +114,73 @@ describe("Fair type", () => {
           mobile_image: {
             image_url: "circle-image.jpg",
           },
+        },
+      })
+    })
+  })
+})
+
+describe("Fair", () => {
+  let rootValue = null
+  beforeEach(() => {
+    const data = {
+      fair: {
+        _id: 123,
+        id: "aqua-art-miami-2018",
+        name: "Aqua Art Miami 2018",
+        exhibitors_grouped_by_name: [
+          {
+            letter: "A",
+            exhibitors: ["ArtHelix Gallery"],
+          },
+        ],
+      },
+    }
+    rootValue = {
+      fairLoader: sinon.stub().returns(Promise.resolve(data.fair)),
+      fairBoothsLoader: sinon.stub().returns(
+        Promise.resolve({
+          body: {
+            results: [
+              {
+                partner: {
+                  name: "ArtHelix Gallery",
+                },
+              },
+            ],
+          },
+        })
+      ),
+    }
+  })
+
+  describe("fair", () => {
+    it("includes fair exhibitor details", async () => {
+      const query = gql`
+        {
+          fair(id: "aqua-art-miami-2018") {
+            id
+            name
+            exhibitors_grouped_by_name {
+              letter
+              exhibitors
+            }
+          }
+        }
+      `
+
+      const data = await runQuery(query, rootValue)
+
+      expect(data).toEqual({
+        fair: {
+          id: "aqua-art-miami-2018",
+          name: "Aqua Art Miami 2018",
+          exhibitors_grouped_by_name: [
+            {
+              letter: "A",
+              exhibitors: ["ArtHelix Gallery"],
+            },
+          ],
         },
       })
     })
