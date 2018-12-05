@@ -507,8 +507,10 @@ export const artworkFields = () => {
     pageviews: {
       type: GraphQLInt,
       description: "[DO NOT USE] Weekly pageview data (static).",
-      deprecationReason:
-        "Do not use! This is for an AB test and will be imminently deprecated.",
+      // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
+      // has been addressed.
+      // deprecationReason:
+      //   "Do not use! This is for an AB test and will be imminently deprecated.",
       resolve: ({ _id }) => artworkPageviews[_id],
     },
     partner: {
