@@ -152,9 +152,11 @@ type Artist implements Node {
     exclude: [String]
   ): [Artwork]
   artworks_connection(
-    sort: ArtworkSorts
+    # List of artwork IDs to exclude from the response.
+    exclude: [String]
     filter: [ArtistArtworksFilters]
     published: Boolean = true
+    sort: ArtworkSorts
     after: String
     first: Int
     before: String
@@ -472,9 +474,11 @@ type ArtistItem implements Node {
     exclude: [String]
   ): [Artwork]
   artworks_connection(
-    sort: ArtworkSorts
+    # List of artwork IDs to exclude from the response.
+    exclude: [String]
     filter: [ArtistArtworksFilters]
     published: Boolean = true
+    sort: ArtworkSorts
     after: String
     first: Int
     before: String
