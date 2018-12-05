@@ -45,7 +45,7 @@ const CityType = new GraphQLObjectType({
       ) => {
         const gravityOptions = {
           ...convertConnectionArgsToGravityArgs(args),
-          displayable: true,
+          discoverable: true,
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
           total_count: true,

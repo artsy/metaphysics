@@ -85,6 +85,7 @@ describe("City", () => {
       expect(mockShowsLoader).toHaveBeenCalledWith(
         expect.objectContaining({
           near: "38.5,-121.8",
+          discoverable: true,
         })
       )
     })
