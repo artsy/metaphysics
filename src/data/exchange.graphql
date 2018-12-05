@@ -337,19 +337,13 @@ type LineItemEdge {
 }
 
 type Mutation {
-  addInitialOfferToOrder(
-    input: AddInitialOfferToOrderInput!
-  ): AddInitialOfferToOrderPayload
+  addInitialOfferToOrder(input: AddInitialOfferToOrderInput!): AddInitialOfferToOrderPayload
   approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
   buyerAcceptOffer(input: BuyerAcceptOfferInput!): BuyerAcceptOfferPayload
   buyerRejectOffer(input: BuyerRejectOfferInput!): BuyerRejectOfferPayload
   confirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
-  createOfferOrderWithArtwork(
-    input: CreateOfferOrderWithArtworkInput!
-  ): CreateOfferOrderWithArtworkPayload
-  createOrderWithArtwork(
-    input: CreateOrderWithArtworkInput!
-  ): CreateOrderWithArtworkPayload
+  createOfferOrderWithArtwork(input: CreateOfferOrderWithArtworkInput!): CreateOfferOrderWithArtworkPayload
+  createOrderWithArtwork(input: CreateOrderWithArtworkInput!): CreateOrderWithArtworkPayload
 
   # Fulfill an order with one Fulfillment, it sets this fulfillment to each line item in order
   fulfillAtOnce(input: FulfillAtOnceInput!): FulfillAtOncePayload
@@ -360,9 +354,7 @@ type Mutation {
   setPayment(input: SetPaymentInput!): SetPaymentPayload
   setShipping(input: SetShippingInput!): SetShippingPayload
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
-  submitOrderWithOffer(
-    input: SubmitOrderWithOfferInput!
-  ): SubmitOrderWithOfferPayload
+  submitOrderWithOffer(input: SubmitOrderWithOfferInput!): SubmitOrderWithOfferPayload
 }
 
 # An Offer
