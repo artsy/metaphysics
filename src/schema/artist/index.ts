@@ -201,7 +201,10 @@ export const ArtistType = new GraphQLObjectType({
       artworks_connection: {
         type: artworkConnection,
         args: pageable({
-          sort: ArtworkSorts,
+          exclude: {
+            type: new GraphQLList(GraphQLString),
+            description: "List of artwork IDs to exclude from the response.",
+          },
           filter: {
             type: new GraphQLList(ArtistArtworksFilters),
           },
@@ -209,6 +212,7 @@ export const ArtistType = new GraphQLObjectType({
             type: GraphQLBoolean,
             defaultValue: true,
           },
+          sort: ArtworkSorts,
         }),
         resolve: (
           artist,
