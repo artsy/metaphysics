@@ -86,8 +86,13 @@ export const FilterArtworksType = new GraphQLObjectType({
     aggregations: ArtworkFilterAggregations,
     artworks_connection: {
       type: artworkConnection,
-      deprecationReason:
-        "Favour artwork connections that take filter arguments.",
+      description:
+        "This has been deprecated. Favour artwork connections that take filter arguments.",
+
+      // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
+      // has been addressed.
+      // deprecationReason:
+      //   "Favour artwork connections that take filter arguments.",
       args: pageable({
         sort: {
           type: GraphQLString,

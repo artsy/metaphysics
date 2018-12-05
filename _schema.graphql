@@ -844,9 +844,6 @@ type Artwork implements Node & Sellable {
 
   # [DO NOT USE] Weekly pageview data (static).
   pageviews: Int
-    @deprecated(
-      reason: "Do not use! This is for an AB test and will be imminently deprecated."
-    )
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
@@ -1623,9 +1620,6 @@ type ArtworkItem implements Node & Sellable {
 
   # [DO NOT USE] Weekly pageview data (static).
   pageviews: Int
-    @deprecated(
-      reason: "Do not use! This is for an AB test and will be imminently deprecated."
-    )
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
@@ -3191,6 +3185,8 @@ type FilterArtworks implements Node {
 
   # Returns aggregation counts for the given filter query.
   aggregations: [ArtworksAggregationResults]
+
+  # This has been deprecated. Favour artwork connections that take filter arguments.
   artworks_connection(
     sort: String
     after: String
@@ -3198,9 +3194,6 @@ type FilterArtworks implements Node {
     before: String
     last: Int
   ): ArtworkConnection
-    @deprecated(
-      reason: "Favour artwork connections that take filter arguments."
-    )
   counts: FilterArtworksCounts
   followed_artists_total: Int
     @deprecated(reason: "Favor `favor counts.followed_artists`")
