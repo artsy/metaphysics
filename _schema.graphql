@@ -2325,6 +2325,12 @@ type City {
   shows(
     sort: PartnerShowSorts
     status: EventStatus
+
+    # Whether to include only displayable shows
+    displayable: Boolean = true
+
+    # Whether to include local discovery stubs as well as displayable shows
+    discoverable: Boolean
     after: String
     first: Int
     before: String

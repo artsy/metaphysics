@@ -1,4 +1,5 @@
 import {
+  GraphQLBoolean,
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
@@ -36,6 +37,16 @@ const CityType = new GraphQLObjectType({
       args: pageable({
         sort: PartnerShowSorts,
         status: EventStatus,
+        displayable: {
+          type: GraphQLBoolean,
+          defaultValue: true,
+          description: "Whether to include only displayable shows",
+        },
+        discoverable: {
+          type: GraphQLBoolean,
+          description:
+            "Whether to include local discovery stubs as well as displayable shows",
+        },
       }),
       resolve: async (
         city,
@@ -45,12 +56,16 @@ const CityType = new GraphQLObjectType({
       ) => {
         const gravityOptions = {
           ...convertConnectionArgsToGravityArgs(args),
-          discoverable: true,
+          displayable: args.displayable,
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
           total_count: true,
         }
         delete gravityOptions.page
+
+        if (args.discoverable) {
+          delete gravityOptions.displayable
+        }
 
         const response = await showsWithHeadersLoader(gravityOptions)
         const { headers, body: cities } = response
