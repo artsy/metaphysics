@@ -10,6 +10,7 @@ import Image from "./image"
 import { showConnection } from "./show"
 import Location from "./location"
 import { GravityIDFields } from "./object_identification"
+import filterArtworks from "./filter_artworks"
 import {
   GraphQLObjectType,
   GraphQLID,
@@ -235,6 +236,7 @@ const FairType = new GraphQLObjectType({
         })
       },
     },
+    filteredArtworks: filterArtworks("fair_id"),
   }),
 })
 
