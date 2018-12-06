@@ -3272,9 +3272,6 @@ type FilterArtworks implements Node {
     before: String
     last: Int
   ): ArtworkConnection
-    @deprecated(
-      reason: "Use only for filtering over ElasticSearch-backed fields, otherwise favor artwork connections that take filter arguments."
-    )
   counts: FilterArtworksCounts
   followed_artists_total: Int
     @deprecated(reason: "Favor `favor counts.followed_artists`")

@@ -88,8 +88,8 @@ export const FilterArtworksType = new GraphQLObjectType({
       type: artworkConnection,
       // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
       // has been addressed.
-      deprecationReason:
-        "Use only for filtering over ElasticSearch-backed fields, otherwise favor artwork connections that take filter arguments.",
+      //deprecationReason:
+      //  "Use only for filtering over ElasticSearch-backed fields, otherwise favor artwork connections that take filter arguments.",
       args: pageable({
         sort: {
           type: GraphQLString,
