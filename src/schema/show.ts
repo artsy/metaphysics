@@ -495,11 +495,6 @@ export const ShowType = new GraphQLObjectType({
       args: pageable({
         sort: PartnerShowSorts,
         status: EventStatus,
-        displayable: {
-          type: GraphQLBoolean,
-          defaultValue: true,
-          description: "Whether to include only displayable shows",
-        },
         discoverable: {
           type: GraphQLBoolean,
           description:
@@ -520,7 +515,7 @@ export const ShowType = new GraphQLObjectType({
         const coordinates = show.location.coordinates
         const gravityOptions = {
           ...convertConnectionArgsToGravityArgs(args),
-          displayable: args.displayable,
+          displayable: true,
           near: `${coordinates.lat},${coordinates.lng}`,
 
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
