@@ -22,6 +22,7 @@ import Location from "./location"
 import Image, { getDefault } from "./image"
 import PartnerShowEventType from "./partner_show_event"
 import { connectionWithCursorInfo } from "schema/fields/pagination"
+import { filterArtworksWithParams } from "schema/filter_artworks"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -358,6 +359,10 @@ export const ShowType = new GraphQLObjectType({
       type: Fair.type,
       resolve: ({ fair }) => fair,
     },
+    filteredArtworks: filterArtworksWithParams(({ id, partner }) => ({
+      show_id: id,
+      partner_id: partner.id,
+    })),
     href: {
       description: "A path to the show on Artsy",
       type: GraphQLString,
@@ -495,6 +500,11 @@ export const ShowType = new GraphQLObjectType({
       args: pageable({
         sort: PartnerShowSorts,
         status: EventStatus,
+        discoverable: {
+          type: GraphQLBoolean,
+          description:
+            "Whether to include local discovery stubs as well as displayable shows",
+        },
       }),
       resolve: async (
         show,
@@ -517,6 +527,10 @@ export const ShowType = new GraphQLObjectType({
           total_count: true,
         }
         delete gravityOptions.page
+
+        if (args.discoverable) {
+          delete gravityOptions.displayable
+        }
 
         const response = await showsWithHeadersLoader(gravityOptions)
         const { headers, body: cities } = response

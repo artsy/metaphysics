@@ -629,7 +629,7 @@ describe("Show type", () => {
       showData.location = {
         coordinates: {
           lat: 0.23,
-          long: 0.34,
+          lng: 0.34,
         },
       }
       const query = gql`
@@ -679,6 +679,60 @@ describe("Show type", () => {
           },
         },
       })
+    })
+
+    it("requests displayable shows, by default", async () => {
+      showData.location = {
+        coordinates: {
+          lat: 0.23,
+          lng: 0.34,
+        },
+      }
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            nearbyShows(first: 1) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, rootValue)
+      const gravityOptions = rootValue.showsWithHeadersLoader.args[0][0]
+
+      expect(gravityOptions).toMatchObject({ displayable: true })
+      expect(gravityOptions).not.toHaveProperty("discoverable")
+    })
+
+    it("can request all discoverable shows, optionally", async () => {
+      showData.location = {
+        coordinates: {
+          lat: 0.23,
+          lng: 0.34,
+        },
+      }
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            nearbyShows(first: 1, discoverable: true) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, rootValue)
+      const gravityOptions = rootValue.showsWithHeadersLoader.args[0][0]
+
+      expect(gravityOptions).toMatchObject({ discoverable: true })
+      expect(gravityOptions).not.toHaveProperty("displayable")
     })
   })
 
@@ -881,6 +935,63 @@ describe("Show type", () => {
           artworks_connection: {
             pageInfo: {
               hasNextPage: false,
+            },
+          },
+        },
+      })
+    })
+  })
+  describe("#filteredArtworks", () => {
+    it("fetches FilterArtworks using the show id and partner id", async () => {
+      rootValue = {
+        ...rootValue,
+        filterArtworksLoader: jest.fn().mockReturnValue(
+          Promise.resolve({
+            hits: [
+              { id: "1", title: "foo-artwork" },
+              { id: "2", title: "bar-artwork" },
+            ],
+            aggregations: {
+              total: {
+                value: 303,
+              },
+            },
+          })
+        ),
+      }
+
+      const query = gql`
+        {
+          show(id: "new-museum-1-2015-triennial-surround-audience") {
+            filteredArtworks(aggregations: [TOTAL]) {
+              artworks_connection(first: 1) {
+                edges {
+                  node {
+                    id
+                    title
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, rootValue)
+      expect(rootValue.filterArtworksLoader).toHaveBeenCalledWith(
+        expect.objectContaining({
+          show_id: "new-museum-1-2015-triennial-surround-audience",
+          partner_id: "new-museum",
+        })
+      )
+      expect(data).toEqual({
+        show: {
+          filteredArtworks: {
+            artworks_connection: {
+              edges: [
+                {
+                  node: { id: "1", title: "foo-artwork" },
+                },
+              ],
             },
           },
         },

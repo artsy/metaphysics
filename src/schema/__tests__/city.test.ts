@@ -44,49 +44,85 @@ describe("City", () => {
     )
   })
 
-  it("resolves nearby shows", () => {
-    const query = gql`
-      {
-        city(slug: "sacramende-ca-usa") {
-          name
-          shows(first: 1) {
-            edges {
-              node {
-                id
+  describe("shows", () => {
+    let query, rootValue, mockShows, mockShowsLoader
+
+    beforeEach(() => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            shows(first: 1) {
+              edges {
+                node {
+                  id
+                }
               }
             }
           }
         }
-      }
-    `
+      `
 
-    const mockShows = [{ id: "first-show" }]
-    const mockShowsLoader = jest.fn(() =>
-      Promise.resolve({ body: mockShows, headers: { "x-total-count": 1 } })
-    )
-    const rootValue = {
-      showsWithHeadersLoader: mockShowsLoader,
-      accessToken: null,
-      userID: null,
-    }
-
-    return runQuery(query, rootValue).then(result => {
-      expect(result!.city).toEqual({
-        name: "Sacramende",
-        shows: {
-          edges: [
-            {
-              node: mockShows[0],
-            },
-          ],
-        },
-      })
-
-      expect(mockShowsLoader).toHaveBeenCalledWith(
-        expect.objectContaining({
-          near: "38.5,-121.8",
-        })
+      mockShows = [{ id: "first-show" }]
+      mockShowsLoader = jest.fn(() =>
+        Promise.resolve({ body: mockShows, headers: { "x-total-count": 1 } })
       )
+      rootValue = {
+        showsWithHeadersLoader: mockShowsLoader,
+        accessToken: null,
+        userID: null,
+      }
+    })
+
+    it("resolves nearby shows", () => {
+      return runQuery(query, rootValue).then(result => {
+        expect(result!.city).toEqual({
+          name: "Sacramende",
+          shows: {
+            edges: [
+              {
+                node: mockShows[0],
+              },
+            ],
+          },
+        })
+
+        expect(mockShowsLoader).toHaveBeenCalledWith(
+          expect.objectContaining({
+            near: "38.5,-121.8",
+          })
+        )
+      })
+    })
+
+    it("requests displayable shows, by default", async () => {
+      await runQuery(query, rootValue)
+      const gravityOptions = rootValue.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({ displayable: true })
+      expect(gravityOptions).not.toHaveProperty("discoverable")
+    })
+
+    it("can request all discoverable shows, optionally", async () => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            shows(first: 1, discoverable: true) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, rootValue)
+      const gravityOptions = rootValue.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({ discoverable: true })
+      expect(gravityOptions).not.toHaveProperty("displayable")
     })
   })
 
