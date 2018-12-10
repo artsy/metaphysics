@@ -21,6 +21,8 @@ import {
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
+import PartnerSort from "./sorts/partner_sort"
+import { allViaLoader } from "lib/all"
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",
@@ -194,11 +196,49 @@ const FairType = new GraphQLObjectType({
           },
         })
       ),
+      args: pageable({
+        section: {
+          type: GraphQLString,
+          description: "Number of exhibitors to return",
+        },
+        sort: {
+          type: PartnerSort,
+          description: "Sorts for exhibitors in a fair",
+        },
+      }),
+      resolve: (
+        root,
+        options,
+        _request,
+        { rootValue: { fairPartnersLoader } }
+      ) => {
+        console.log("​root", root)
+
+        const gravityOptions = omit(
+          convertConnectionArgsToGravityArgs(options),
+          ["page"]
+        )
+        gravityOptions.sort = gravityOptions.sort || "-sortable_id"
+
+        return Promise.all([
+          totalViaLoader(fairPartnersLoader, root._id, gravityOptions),
+          fairPartnersLoader(root._id, gravityOptions),
+        ]).then(([count, { body: { results } }]) => {
+          console.log("​results", results)
+
+          return connectionFromArraySlice(results, options, {
+            arrayLength: count,
+            sliceStart: gravityOptions.offset,
+          })
+        })
+      },
+    },
+    /*
       resolve: (
         root,
         _options,
         _request,
-        { rootValue: { fairBoothsLoader } }
+        { rootValue: { fairPartnersLoader } }
       ) => {
         if (!root._id) {
           return []
@@ -206,36 +246,33 @@ const FairType = new GraphQLObjectType({
         const exhibitor_groups: {
           [letter: string]: { letter: string; exhibitors: [String] }
         } = {}
+        const fetch = allViaLoader(fairPartnersLoader, root._id)
 
-        return fairBoothsLoader(root._id).then(result => {
-          const fairBooths = result.body.results.sort((a, b) => {
-            const asc = a.partner.name.toLowerCase()
-            const desc = b.partner.name.toLowerCase()
-
-            if (asc < desc) return -1
-            if (asc > desc) return 1
-
-            return 0
-          })
-
-          for (let fairBooth of fairBooths) {
-            const names = fairBooth.partner.name.split(" ")
-            const firstName = names[0]
-            const letter = firstName.charAt(0).toUpperCase()
-
-            if (exhibitor_groups[letter]) {
-              exhibitor_groups[letter].exhibitors.push(fairBooth.partner.name)
-            } else {
-              exhibitor_groups[letter] = {
-                letter,
-                exhibitors: [fairBooth.partner.name],
-              }
-            }
-          }
-          return Object.values(exhibitor_groups)
+        return fetch.then(result => {
+          // const fairBooths = result.body.results.sort((a, b) => {
+          //   const asc = a.partner.name.toLowerCase()
+          //   const desc = b.partner.name.toLowerCase()
+          //   if (asc < desc) return -1
+          //   if (asc > desc) return 1
+          //   return 0
+          // })
+          // for (let fairBooth of fairBooths) {
+          //   const names = fairBooth.partner.name.split(" ")
+          //   const firstName = names[0]
+          //   const letter = firstName.charAt(0).toUpperCase()
+          //   if (exhibitor_groups[letter]) {
+          //     exhibitor_groups[letter].exhibitors.push(fairBooth.partner.name)
+          //   } else {
+          //     exhibitor_groups[letter] = {
+          //       letter,
+          //       exhibitors: [fairBooth.partner.name],
+          //     }
+          //   }
+          // }
+          // return Object.values(exhibitor_groups)
         })
       },
-    },
+    }, */
     filteredArtworks: filterArtworks("fair_id"),
   }),
 })
