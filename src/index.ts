@@ -146,10 +146,11 @@ async function startApp() {
           exchangeSchema,
           ...loaders,
         },
-        formatError: graphqlErrorHandler(req, {
-          enableSentry,
+        formatError: graphqlErrorHandler(enableSentry, {
+          req,
+          // Why the checking on params? Do we reach this code if params is falsy?
           variables: params && params.variables,
-          query: params && params.query,
+          query: (params && params.query)!,
         }),
         validationRules: QUERY_DEPTH_LIMIT
           ? [depthLimit(QUERY_DEPTH_LIMIT)]
