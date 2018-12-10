@@ -17,6 +17,7 @@ export default opts => {
     artworkLoader: gravityLoader(id => `artwork/${id}`),
     artworksLoader: gravityLoader("artworks"),
     fairBoothsLoader: gravityLoader(id => `fair/${id}/shows`, {}, { headers: true }),
+    fairPartnersLoader: gravityLoader(id => `fair/${id}/partners`, {}, { headers: true }),
     fairLoader: gravityLoader(id => `fair/${id}`),
     fairsLoader: gravityLoader("fairs"),
     filterArtworksLoader: gravityLoader("filter/artworks"),
