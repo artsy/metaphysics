@@ -1065,6 +1065,14 @@ type ArtworkContextFair {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
+  artists(
+    # Sorts for artists in a fair
+    sort: FairArtistSorts
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtistConnection
   cached: Int
   banner_size: String
   has_full_feature: Boolean
@@ -3160,6 +3168,14 @@ type Fair {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
+  artists(
+    # Sorts for artists in a fair
+    sort: FairArtistSorts
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtistConnection
   cached: Int
   banner_size: String
   has_full_feature: Boolean
@@ -3251,6 +3267,11 @@ type Fair {
     tag_id: String
     keyword: String
   ): FilterArtworks
+}
+
+enum FairArtistSorts {
+  NAME_ASC
+  NAME_DESC
 }
 
 type FairExhibitorsGroup {
@@ -4210,6 +4231,14 @@ type HomePageModuleContextFair {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
+  artists(
+    # Sorts for artists in a fair
+    sort: FairArtistSorts
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtistConnection
   cached: Int
   banner_size: String
   has_full_feature: Boolean

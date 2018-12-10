@@ -1,7 +1,8 @@
-import { omit } from "lodash"
+import { omit, map } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { artistConnection } from "./artist"
 import moment from "moment"
 import cached from "./fields/cached"
 import date from "./fields/date"
@@ -22,6 +23,7 @@ import {
 import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
 import { allViaLoader } from "lib/all"
+import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",
@@ -47,6 +49,41 @@ const FairType = new GraphQLObjectType({
   name: "Fair",
   fields: () => ({
     ...GravityIDFields,
+    artists: {
+      type: artistConnection,
+      args: pageable({
+        sort: {
+          type: FairArtistSortsType,
+          description: "Sorts for artists in a fair",
+        },
+      }),
+      resolve: (
+        { id },
+        options,
+        _request,
+        { rootValue: { fairArtistsLoader, artistsLoader } }
+      ) => {
+        const gravityOptions = omit(
+          convertConnectionArgsToGravityArgs(options),
+          ["page"]
+        )
+
+        gravityOptions.total_count = true
+
+        return fairArtistsLoader(id, gravityOptions).then(
+          ({ body, headers }) => {
+            return artistsLoader({ ids: map(body, "artist_id") }).then(
+              artists => {
+                return connectionFromArraySlice(artists, options, {
+                  arrayLength: headers["x-total-count"],
+                  sliceStart: gravityOptions.offset,
+                })
+              }
+            )
+          }
+        )
+      },
+    },
     cached,
     banner_size: {
       type: GraphQLString,
