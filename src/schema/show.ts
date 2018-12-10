@@ -500,6 +500,11 @@ export const ShowType = new GraphQLObjectType({
       args: pageable({
         sort: PartnerShowSorts,
         status: EventStatus,
+        discoverable: {
+          type: GraphQLBoolean,
+          description:
+            "Whether to include local discovery stubs as well as displayable shows",
+        },
       }),
       resolve: async (
         show,
@@ -522,6 +527,10 @@ export const ShowType = new GraphQLObjectType({
           total_count: true,
         }
         delete gravityOptions.page
+
+        if (args.discoverable) {
+          delete gravityOptions.displayable
+        }
 
         const response = await showsWithHeadersLoader(gravityOptions)
         const { headers, body: cities } = response
