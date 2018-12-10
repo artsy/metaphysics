@@ -1,7 +1,7 @@
 import { assign, clone, get, defaults, compact } from "lodash"
 import request from "request"
 import config from "config"
-import HTTPError from "lib/http_error"
+import { HTTPError } from "lib/HTTPError"
 
 // TODO: This `any` is a shame, but
 // the type seems to be a bit of a mix of the original
@@ -36,7 +36,7 @@ export default (url, options = {}) => {
           response.body,
         ]).join(" - ")
         return reject(
-          new HTTPError(message, response.statusCode, response.body)
+          new HTTPError(message, response.statusCode || 500, response.body)
         )
       }
 

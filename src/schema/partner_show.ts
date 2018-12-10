@@ -5,7 +5,7 @@ import {
   convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
 import { find, flatten } from "lodash"
-import HTTPError from "lib/http_error"
+import { HTTPError } from "lib/HTTPError"
 import numeral from "./fields/numeral"
 import { exhibitionPeriod, exhibitionStatus } from "lib/date"
 import cached from "./fields/cached"
