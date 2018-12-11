@@ -138,16 +138,13 @@ describe("Fair", () => {
     }
     rootValue = {
       fairLoader: sinon.stub().returns(Promise.resolve(data.fair)),
-      fairBoothsLoader: sinon.stub().returns(
+      fairPartnersLoader: sinon.stub().returns(
         Promise.resolve({
           body: {
-            results: [
-              {
-                partner: {
-                  name: "ArtHelix Gallery",
-                },
-              },
-            ],
+            name: "ArtHelix Gallery",
+          },
+          headers: {
+            "x-total-count": 1,
           },
         })
       ),
@@ -155,7 +152,7 @@ describe("Fair", () => {
   })
 
   describe("fair", () => {
-    it("includes fair exhibitor details", async () => {
+    it("includes returns fair exhibitors grouped alphanumerically", async () => {
       const query = gql`
         {
           fair(id: "aqua-art-miami-2018") {

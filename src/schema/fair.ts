@@ -21,6 +21,7 @@ import {
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
+import { allViaLoader } from "lib/all"
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",
@@ -198,7 +199,7 @@ const FairType = new GraphQLObjectType({
         root,
         _options,
         _request,
-        { rootValue: { fairBoothsLoader } }
+        { rootValue: { fairPartnersLoader } }
       ) => {
         if (!root._id) {
           return []
@@ -206,29 +207,26 @@ const FairType = new GraphQLObjectType({
         const exhibitor_groups: {
           [letter: string]: { letter: string; exhibitors: [String] }
         } = {}
+        const fetch = allViaLoader(fairPartnersLoader, root._id)
 
-        return fairBoothsLoader(root._id).then(result => {
-          const fairBooths = result.body.results.sort((a, b) => {
-            const asc = a.partner.name.toLowerCase()
-            const desc = b.partner.name.toLowerCase()
-
+        return fetch.then(result => {
+          const fairExhibitors = result.sort((a, b) => {
+            const asc = a.name.toLowerCase()
+            const desc = b.name.toLowerCase()
             if (asc < desc) return -1
             if (asc > desc) return 1
-
             return 0
           })
-
-          for (let fairBooth of fairBooths) {
-            const names = fairBooth.partner.name.split(" ")
+          for (let fairExhibitor of fairExhibitors) {
+            const names = fairExhibitor.name.split(" ")
             const firstName = names[0]
             const letter = firstName.charAt(0).toUpperCase()
-
             if (exhibitor_groups[letter]) {
-              exhibitor_groups[letter].exhibitors.push(fairBooth.partner.name)
+              exhibitor_groups[letter].exhibitors.push(fairExhibitor.name)
             } else {
               exhibitor_groups[letter] = {
                 letter,
-                exhibitors: [fairBooth.partner.name],
+                exhibitors: [fairExhibitor.name],
               }
             }
           }
