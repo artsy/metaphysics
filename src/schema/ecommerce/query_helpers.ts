@@ -57,6 +57,16 @@ export const OfferFields = gql`
     amountCents
     shippingTotalCents
     taxTotalCents
+    respondsTo {
+      id
+      createdAt
+      creatorId
+      amountCents
+      shippingTotalCents
+      taxTotalCents
+      buyerTotalCents
+      fromParticipant
+    }
     buyerTotalCents
     fromParticipant
     from {
