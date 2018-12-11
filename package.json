@@ -87,7 +87,6 @@
     "moment": "^2.14.1",
     "moment-timezone": "^0.5.5",
     "node-fetch": "^1.7.3",
-    "node-gyp": "3.8",
     "numeral": "^1.5.3",
     "opentracing": "^0.14.1",
     "patch-package": "^5.0.0",
