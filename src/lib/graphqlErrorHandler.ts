@@ -75,15 +75,17 @@ export const graphqlErrorHandler = (
         | Error
         | CombinedError
 
-      if (originalTopLevelError && isCombinedError(originalTopLevelError)) {
-        originalTopLevelError.errors.forEach(error => {
-          if (shouldReportParentError(error.originalError)) {
+      if (originalTopLevelError) {
+        if (isCombinedError(originalTopLevelError)) {
+          originalTopLevelError.errors.forEach(error => {
+            if (shouldReportParentError(error.originalError)) {
+              reportErrorToSentry(error, queryContext)
+            }
+          })
+        } else {
+          if (shouldReportParentError(originalTopLevelError)) {
             reportErrorToSentry(error, queryContext)
           }
-        })
-      } else if (originalTopLevelError) {
-        if (shouldReportParentError(originalTopLevelError)) {
-          reportErrorToSentry(error, queryContext)
         }
       } else {
         reportErrorToSentry(error, queryContext)
