@@ -39,9 +39,6 @@ const ShowSort = new GraphQLEnumType({
     SORTABLE_NAME_DESC: {
       value: "-sortable_name",
     },
-    SORTABLE_NAME_ASCE: {
-      value: "sortable_id",
-    },
   },
 })
 
