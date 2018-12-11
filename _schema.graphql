@@ -5184,6 +5184,11 @@ type Mutation {
     input: sellerRejectOfferInput!
   ): sellerRejectOfferPayload
 
+  # Seller counters buyers offer
+  ecommerceSellerCounterOffer(
+    input: sellerCounterOfferInput!
+  ): sellerCounterOfferPayload
+
   # Confirms pickup for an ecommerce order
   ecommerceConfirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
 
@@ -7602,6 +7607,20 @@ input sellerAcceptOfferInput {
 }
 
 type sellerAcceptOfferPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
+input sellerCounterOfferInput {
+  # The ID of the offer to counter
+  offerId: String!
+
+  # Offer price
+  offerPrice: MoneyInput
+  clientMutationId: String
+}
+
+type sellerCounterOfferPayload {
   orderOrError: OrderOrFailureUnionType
   clientMutationId: String
 }
