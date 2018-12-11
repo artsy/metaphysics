@@ -125,6 +125,7 @@ export const BuyerOrderFields = gql`
         priceCents
         listPriceCents
         artworkId
+        artworkVersionId
         editionSetId
         quantity
       }
