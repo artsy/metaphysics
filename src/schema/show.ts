@@ -546,7 +546,7 @@ export const ShowType = new GraphQLObjectType({
         return results
       },
     },
-    opening_reception_text: {
+    openingReceptionText: {
       type: GraphQLString,
       description:
         "Alternate Markdown-supporting free text representation of the opening reception event’s date/time",
