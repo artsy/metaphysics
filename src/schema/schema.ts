@@ -27,9 +27,10 @@ import { SubmitOrderWithOfferMutation } from "./ecommerce/submit_order_with_offe
 import { ApproveOrderMutation } from "./ecommerce/approve_order_mutation"
 import { BuyerAcceptOfferMutation } from "./ecommerce/buyer_accept_offer_mutation"
 import { SellerAcceptOfferMutation } from "./ecommerce/seller_accept_offer_mutation"
-import { SellerRejectOfferMutation } from "./ecommerce/seller_reject_offer_mutation"
-import { SellerCounterOfferMutation } from "./ecommerce/seller_counter_offer_mutation"
 import { BuyerCounterOfferMutation } from "./ecommerce/buyer_counter_offer_mutation"
+import { SellerCounterOfferMutation } from "./ecommerce/seller_counter_offer_mutation"
+import { BuyerRejectOfferMutation } from "./ecommerce/buyer_reject_offer_mutation"
+import { SellerRejectOfferMutation } from "./ecommerce/seller_reject_offer_mutation"
 import { FulfillOrderAtOnceMutation } from "./ecommerce/fulfill_order_at_once_mutation"
 import { ConfirmPickupMutation } from "./ecommerce/confirm_pickup_mutation"
 import { RejectOrderMutation } from "./ecommerce/reject_order_mutation"
@@ -180,9 +181,10 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
   stitchedMutations.ecommerceBuyerAcceptOffer = BuyerAcceptOfferMutation
   stitchedMutations.ecommerceSellerAcceptOffer = SellerAcceptOfferMutation
-  stitchedMutations.ecommerceSellerRejectOffer = SellerRejectOfferMutation
-  stitchedMutations.ecommerceSellerCounterOffer = SellerCounterOfferMutation
   stitchedMutations.ecommerceBuyerCounterOffer = BuyerCounterOfferMutation
+  stitchedMutations.ecommerceSellerCounterOffer = SellerCounterOfferMutation
+  stitchedMutations.ecommerceBuyerRejectOffer = BuyerRejectOfferMutation
+  stitchedMutations.ecommerceSellerRejectOffer = SellerRejectOfferMutation
   stitchedMutations.ecommerceConfirmPickup = ConfirmPickupMutation
   stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
   stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
