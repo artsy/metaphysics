@@ -2103,6 +2103,20 @@ type buyerCounterOfferPayload {
   clientMutationId: String
 }
 
+input buyerRejectOfferInput {
+  # Offer ID
+  offerId: String!
+
+  # Reason for rejecting offer
+  rejectReason: CancelReasonType
+  clientMutationId: String
+}
+
+type buyerRejectOfferPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
 type BuyersPremium {
   # A globally unique ID.
   __id: ID!
@@ -2352,7 +2366,9 @@ type BuyOrder implements Order {
 }
 
 enum CancelReasonType {
+  BUYER_REJECTED
   SELLER_LAPSED
+  SELLER_REJECTED
   SELLER_REJECTED_OFFER_TOO_LOW
   SELLER_REJECTED_SHIPPING_UNAVAILABLE
   SELLER_REJECTED_ARTWORK_UNAVAILABLE
@@ -5197,20 +5213,25 @@ type Mutation {
     input: sellerAcceptOfferInput!
   ): sellerAcceptOfferPayload
 
-  # Rejects an offer
-  ecommerceSellerRejectOffer(
-    input: sellerRejectOfferInput!
-  ): sellerRejectOfferPayload
+  # Buyer counters sellers offer
+  ecommerceBuyerCounterOffer(
+    input: buyerCounterOfferInput!
+  ): buyerCounterOfferPayload
 
   # Seller counters buyers offer
   ecommerceSellerCounterOffer(
     input: sellerCounterOfferInput!
   ): sellerCounterOfferPayload
 
-  # Buyer counters sellers offer
-  ecommerceBuyerCounterOffer(
-    input: buyerCounterOfferInput!
-  ): buyerCounterOfferPayload
+  # Buyer rejects a submitted offer from seller
+  ecommerceBuyerRejectOffer(
+    input: buyerRejectOfferInput!
+  ): buyerRejectOfferPayload
+
+  # Rejects an offer
+  ecommerceSellerRejectOffer(
+    input: sellerRejectOfferInput!
+  ): sellerRejectOfferPayload
 
   # Confirms pickup for an ecommerce order
   ecommerceConfirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload

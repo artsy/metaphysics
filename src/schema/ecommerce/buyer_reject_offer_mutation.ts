@@ -1,14 +1,14 @@
-import { graphql } from "graphql"
-import { mutationWithClientMutationId } from "graphql-relay"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
-import { SellerOrderFields } from "./query_helpers"
+import { mutationWithClientMutationId } from "graphql-relay"
 import gql from "lib/gql"
+import { BuyerOrderFields } from "./query_helpers"
+import { graphql } from "graphql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { RejectOfferMutationInputType } from "./types/reject_offer_mutation_input_type"
 
-export const SellerRejectOfferMutation = mutationWithClientMutationId({
-  name: "sellerRejectOffer",
-  description: "Rejects an offer",
+export const BuyerRejectOfferMutation = mutationWithClientMutationId({
+  name: "buyerRejectOffer",
+  description: "Buyer rejects a submitted offer from seller",
   inputFields: RejectOfferMutationInputType.getFields(),
   outputFields: {
     orderOrError: {
@@ -24,16 +24,13 @@ export const SellerRejectOfferMutation = mutationWithClientMutationId({
       return new Error("You need to be signed in to perform this action")
     }
     const mutation = gql`
-      mutation sellerRejectOffer($offerId: ID!, $rejectReason: EcommerceCancelReasonTypeEnum!) {
-        ecommerceSellerRejectOffer(input: {
-          offerId: $offerId,
-          rejectReason: $rejectReason,
-        }) {
+      mutation buyerRejectOffer($offerId: ID!, $rejectReason: EcommerceCancelReasonTypeEnum) {
+        ecommerceBuyerRejectOffer(input: { offerId: $offerId, rejectReason: $rejectReason, }) {
           orderOrError {
             __typename
             ... on EcommerceOrderWithMutationSuccess {
               order {
-                ${SellerOrderFields}
+                ${BuyerOrderFields}
               }
             }
             ... on EcommerceOrderWithMutationFailure {
@@ -50,6 +47,6 @@ export const SellerRejectOfferMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       offerId,
       rejectReason,
-    }).then(extractEcommerceResponse("ecommerceSellerRejectOffer"))
+    }).then(extractEcommerceResponse("ecommerceBuyerRejectOffer"))
   },
 })
