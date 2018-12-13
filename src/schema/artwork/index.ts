@@ -17,7 +17,7 @@ import Context from "./context"
 import Meta, { artistNames } from "./meta"
 import Highlight from "./highlight"
 import Dimensions from "schema/dimensions"
-import EditionSet from "schema/edition_set"
+import EditionSet, { EditionSetSorts } from "schema/edition_set"
 import { Sellable } from "schema/sellable"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
@@ -206,7 +206,26 @@ export const artworkFields = () => {
     },
     edition_sets: {
       type: new GraphQLList(EditionSet.type),
-      resolve: ({ edition_sets }) => edition_sets,
+      args: {
+        sort: EditionSetSorts,
+      },
+      resolve: ({ edition_sets }, { sort }) => {
+        if (sort) {
+          // Only ascending price sort supported currently.
+          return edition_sets.sort(
+            ({ price_cents: aPrice }, { price_cents: bPrice }) => {
+              if (!aPrice || aPrice.length === 0) {
+                return 1
+              } else if (!bPrice || bPrice.length === 0) {
+                return -1
+              } else {
+                return aPrice[0] - bPrice[0]
+              }
+            }
+          )
+        }
+        return edition_sets
+      },
     },
     exhibition_history: markdown(),
     fair: {

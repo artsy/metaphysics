@@ -1,9 +1,25 @@
 import { isEmpty, includes } from "lodash"
 import { IDFields } from "./object_identification"
 import Dimensions from "./dimensions"
-import { GraphQLString, GraphQLBoolean, GraphQLObjectType } from "graphql"
+import {
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLObjectType,
+  GraphQLEnumType,
+} from "graphql"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import { Sellable } from "./sellable"
+
+export const EditionSetSorts = {
+  type: new GraphQLEnumType({
+    name: "EditionSetSorts",
+    values: {
+      PRICE_ASC: {
+        value: "price",
+      },
+    },
+  }),
+}
 
 const EditionSetAvailabilities = [
   "sold",
