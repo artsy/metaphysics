@@ -2106,6 +2106,9 @@ type buyerCounterOfferPayload {
 input buyerRejectOfferInput {
   # Offer ID
   offerId: String!
+
+  # Reason for rejecting offer
+  rejectReason: CancelReasonType
   clientMutationId: String
 }
 
@@ -2363,7 +2366,9 @@ type BuyOrder implements Order {
 }
 
 enum CancelReasonType {
+  BUYER_REJECTED
   SELLER_LAPSED
+  SELLER_REJECTED
   SELLER_REJECTED_OFFER_TOO_LOW
   SELLER_REJECTED_SHIPPING_UNAVAILABLE
   SELLER_REJECTED_ARTWORK_UNAVAILABLE

@@ -1,34 +1,15 @@
-import {
-  graphql,
-  GraphQLInputObjectType,
-  GraphQLNonNull,
-  GraphQLString,
-} from "graphql"
+import { graphql } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 import { SellerOrderFields } from "./query_helpers"
 import gql from "lib/gql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
-import { CancelReasonTypeEnum } from "./types/cancel_reason_type_enum"
-
-const SellerRejectOfferMutationInputType = new GraphQLInputObjectType({
-  name: "OfferMutationInput",
-  fields: {
-    offerId: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "Offer ID",
-    },
-    rejectReason: {
-      type: CancelReasonTypeEnum,
-      description: "Reason for rejecting offer",
-    },
-  },
-})
+import { RejectOfferMutationInputType } from "./types/reject_offer_mutation_input_type"
 
 export const SellerRejectOfferMutation = mutationWithClientMutationId({
   name: "sellerRejectOffer",
   description: "Rejects an offer",
-  inputFields: SellerRejectOfferMutationInputType.getFields(),
+  inputFields: RejectOfferMutationInputType.getFields(),
   outputFields: {
     orderOrError: {
       type: OrderOrFailureUnionType,
