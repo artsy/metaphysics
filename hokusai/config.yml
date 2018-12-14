@@ -2,3 +2,4 @@
 aws-account-id: '585031190124'
 aws-ecr-region: us-east-1
 project-name: metaphysics
+git-remote: git@github.com:artsy/metaphysics.git
