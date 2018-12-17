@@ -81,6 +81,7 @@ export const OfferType = new GraphQLObjectType({
       type: OfferType,
       description: "The order on which the offer was made",
     },
+    submittedAt: date,
   }),
 })
 

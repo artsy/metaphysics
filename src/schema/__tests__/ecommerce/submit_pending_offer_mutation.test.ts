@@ -29,7 +29,7 @@ describe("SubmitPendingOffer Mutation", () => {
     }
   `
 
-  it("counters sellers offer", () => {
+  it("submits offer", () => {
     const resolvers = {
       Mutation: {
         submitPendingOffer: () => ({
