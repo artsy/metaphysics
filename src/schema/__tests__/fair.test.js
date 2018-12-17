@@ -138,6 +138,22 @@ describe("Fair", () => {
     }
     rootValue = {
       fairLoader: sinon.stub().returns(Promise.resolve(data.fair)),
+      fairArtistsLoader: jest.fn().mockReturnValue(
+        Promise.resolve({
+          body: [{ id: "1", name: "Foo Artist" }],
+          headers: {
+            "x-total-count": 1,
+          },
+        })
+      ),
+      artistsLoader: jest.fn().mockReturnValue(
+        Promise.resolve([
+          {
+            name: "Foo Artist",
+            id: "1",
+          },
+        ])
+      ),
       fairPartnersLoader: sinon.stub().returns(
         Promise.resolve({
           body: {
@@ -151,35 +167,64 @@ describe("Fair", () => {
     }
   })
 
-  describe("fair", () => {
-    it("includes returns fair exhibitors grouped alphanumerically", async () => {
-      const query = gql`
-        {
-          fair(id: "aqua-art-miami-2018") {
-            id
-            name
-            exhibitors_grouped_by_name {
-              letter
-              exhibitors
+  it("includes returns fair exhibitors grouped alphanumerically", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          id
+          name
+          exhibitors_grouped_by_name {
+            letter
+            exhibitors
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, rootValue)
+
+    expect(data).toEqual({
+      fair: {
+        id: "aqua-art-miami-2018",
+        name: "Aqua Art Miami 2018",
+        exhibitors_grouped_by_name: [
+          {
+            letter: "A",
+            exhibitors: ["ArtHelix Gallery"],
+          },
+        ],
+      },
+    })
+  })
+
+  it("includes artists associated with the fair", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          artists(first: 1) {
+            edges {
+              node {
+                id
+                name
+              }
             }
           }
         }
-      `
+      }
+    `
 
-      const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, rootValue)
 
-      expect(data).toEqual({
-        fair: {
-          id: "aqua-art-miami-2018",
-          name: "Aqua Art Miami 2018",
-          exhibitors_grouped_by_name: [
+    expect(data).toEqual({
+      fair: {
+        artists: {
+          edges: [
             {
-              letter: "A",
-              exhibitors: ["ArtHelix Gallery"],
+              node: { id: "1", name: "Foo Artist" },
             },
           ],
         },
-      })
+      },
     })
   })
 })
