@@ -5218,6 +5218,11 @@ type Mutation {
     input: buyerCounterOfferInput!
   ): buyerCounterOfferPayload
 
+  # Submit pending offer
+  ecommerceSubmitPendingOffer(
+    input: submitPendingOfferInput!
+  ): submitPendingOfferPayload
+
   # Seller counters buyers offer
   ecommerceSellerCounterOffer(
     input: sellerCounterOfferInput!
@@ -8106,6 +8111,17 @@ input SubmitOrderWithOfferInput {
 }
 
 type SubmitOrderWithOfferPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
+input submitPendingOfferInput {
+  # The ID of the pending offer you want to submit
+  offerId: String!
+  clientMutationId: String
+}
+
+type submitPendingOfferPayload {
   orderOrError: OrderOrFailureUnionType
   clientMutationId: String
 }

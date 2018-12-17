@@ -28,6 +28,7 @@ import { ApproveOrderMutation } from "./ecommerce/approve_order_mutation"
 import { BuyerAcceptOfferMutation } from "./ecommerce/buyer_accept_offer_mutation"
 import { SellerAcceptOfferMutation } from "./ecommerce/seller_accept_offer_mutation"
 import { BuyerCounterOfferMutation } from "./ecommerce/buyer_counter_offer_mutation"
+import { SubmitPendingOfferMutation } from "./ecommerce/submit_pending_offer_mutation"
 import { SellerCounterOfferMutation } from "./ecommerce/seller_counter_offer_mutation"
 import { BuyerRejectOfferMutation } from "./ecommerce/buyer_reject_offer_mutation"
 import { SellerRejectOfferMutation } from "./ecommerce/seller_reject_offer_mutation"
@@ -182,6 +183,7 @@ if (!ENABLE_ECOMMERCE_STITCHING) {
   stitchedMutations.ecommerceBuyerAcceptOffer = BuyerAcceptOfferMutation
   stitchedMutations.ecommerceSellerAcceptOffer = SellerAcceptOfferMutation
   stitchedMutations.ecommerceBuyerCounterOffer = BuyerCounterOfferMutation
+  stitchedMutations.ecommerceSubmitPendingOffer = SubmitPendingOfferMutation
   stitchedMutations.ecommerceSellerCounterOffer = SellerCounterOfferMutation
   stitchedMutations.ecommerceBuyerRejectOffer = BuyerRejectOfferMutation
   stitchedMutations.ecommerceSellerRejectOffer = SellerRejectOfferMutation
