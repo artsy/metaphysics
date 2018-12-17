@@ -42,6 +42,8 @@ export default (accessToken, userID, opts) => {
         "is_followed",
         "profile"
       ),
+    followShowLoader: gravityLoader("follow_shows", {}, { method: "POST" }),
+    followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
     homepageModulesLoader: gravityLoader("me/modules"),
     homepageSuggestedArtworksLoader: gravityLoader("me/suggested/artworks/homepage"),
     inquiryRequestsLoader: gravityLoader("me/inquiry_requests", {}, { headers: true }),
