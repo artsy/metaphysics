@@ -19,6 +19,7 @@ import {
   GraphQLBoolean,
   GraphQLNonNull,
   GraphQLList,
+  GraphQLInt,
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
@@ -50,7 +51,7 @@ const FairType = new GraphQLObjectType({
   fields: () => ({
     ...GravityIDFields,
     artists_count: {
-      type: GraphQLString,
+      type: GraphQLInt,
       resolve: root => {
         return root.artists_count
       },
