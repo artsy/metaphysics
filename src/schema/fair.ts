@@ -49,6 +49,12 @@ const FairType = new GraphQLObjectType({
   name: "Fair",
   fields: () => ({
     ...GravityIDFields,
+    artists_count: {
+      type: GraphQLString,
+      resolve: root => {
+        return root.artists_count
+      },
+    },
     artists: {
       type: artistConnection,
       args: pageable({
