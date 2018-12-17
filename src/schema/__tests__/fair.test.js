@@ -127,6 +127,7 @@ describe("Fair", () => {
       fair: {
         _id: 123,
         id: "aqua-art-miami-2018",
+        artists_count: 1,
         name: "Aqua Art Miami 2018",
         exhibitors_grouped_by_name: [
           {
@@ -140,7 +141,12 @@ describe("Fair", () => {
       fairLoader: sinon.stub().returns(Promise.resolve(data.fair)),
       fairArtistsLoader: jest.fn().mockReturnValue(
         Promise.resolve({
-          body: [{ id: "1", name: "Foo Artist" }],
+          body: [
+            {
+              id: "1",
+              name: "Foo Artist",
+            },
+          ],
           headers: {
             "x-total-count": 1,
           },
@@ -220,10 +226,31 @@ describe("Fair", () => {
         artists: {
           edges: [
             {
-              node: { id: "1", name: "Foo Artist" },
+              node: {
+                id: "1",
+                name: "Foo Artist",
+              },
             },
           ],
         },
+      },
+    })
+  })
+
+  it("includes returns the total number of artists in the fair", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          artists_count
+        }
+      }
+    `
+
+    const data = await runQuery(query, rootValue)
+
+    expect(data).toEqual({
+      fair: {
+        artists_count: 1,
       },
     })
   })
