@@ -127,7 +127,7 @@ describe("Fair", () => {
       fair: {
         _id: 123,
         id: "aqua-art-miami-2018",
-        artists_count: "1",
+        artists_count: 1,
         name: "Aqua Art Miami 2018",
         exhibitors_grouped_by_name: [
           {
@@ -250,7 +250,7 @@ describe("Fair", () => {
 
     expect(data).toEqual({
       fair: {
-        artists_count: "1",
+        artists_count: 1,
       },
     })
   })
