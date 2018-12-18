@@ -17,7 +17,7 @@ describe("FollowShow", () => {
     const rootValue = {
       followShowLoader: () =>
         Promise.resolve({
-          show: {
+          partner_show: {
             id: "pop-art-show",
             name: "Pop Art Show",
           },
