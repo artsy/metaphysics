@@ -25,6 +25,7 @@ import FollowArtists from "./follow_artists"
 import FollowedArtistsArtworkGroups from "./followed_artists_artworks_group"
 import FollowedArtists from "./followed_artists"
 import FollowedGenes from "./followed_genes"
+import FollowedShows from "./followed_shows"
 import Invoice from "./conversation/invoice"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
@@ -65,6 +66,7 @@ const Me = new GraphQLObjectType({
     follow_artists: FollowArtists,
     followed_artists_connection: FollowedArtists,
     followed_genes: FollowedGenes,
+    followed_shows: FollowedShows,
     followsAndSaves: {
       type: new GraphQLObjectType({
         name: "FollowsAndSaves",

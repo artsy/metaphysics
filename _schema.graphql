@@ -3552,6 +3552,34 @@ type FollowsAndSaves {
   ): FollowedArtistsArtworksGroupConnection
 }
 
+type FollowShow {
+  partner_show: Show
+
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
+  id: String!
+}
+
+# A connection to a list of items.
+type FollowShowConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [FollowShowEdge]
+}
+
+# An edge in a connection.
+type FollowShowEdge {
+  # The item at the end of the edge
+  node: FollowShow
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
 input FollowShowInput {
   partner_show_id: String
   clientMutationId: String
@@ -4969,6 +4997,14 @@ type Me implements Node {
     before: String
     last: Int
   ): FollowGeneConnection
+
+  # A list of the current user’s currently followed shows
+  followed_shows(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FollowShowConnection
   followsAndSaves: FollowsAndSaves
   has_credit_cards: Boolean
   has_qualified_credit_cards: Boolean
