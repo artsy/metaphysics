@@ -3552,6 +3552,16 @@ type FollowsAndSaves {
   ): FollowedArtistsArtworksGroupConnection
 }
 
+input FollowShowInput {
+  partner_show_id: String
+  clientMutationId: String
+}
+
+type FollowShowPayload {
+  show: Show
+  clientMutationId: String
+}
+
 enum Format {
   HTML
   PLAIN
@@ -5164,6 +5174,9 @@ type Mutation {
 
   # Follow (or unfollow) an gene
   followGene(input: FollowGeneInput!): FollowGenePayload
+
+  # Follow (or unfollow) an show
+  followShow(input: FollowShowInput!): FollowShowPayload
 
   # Updating a collector profile (loyalty applicant status).
   updateCollectorProfile(
