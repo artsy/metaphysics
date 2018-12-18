@@ -321,6 +321,24 @@ export const ShowType = new GraphQLObjectType({
           eligible_artworks: numeral(
             ({ eligible_artworks_count }) => eligible_artworks_count
           ),
+          artists: {
+            type: GraphQLInt,
+            resolve: (
+              { id, partner },
+              options,
+              _request,
+              { rootValue: { partnerShowArtistsLoader } }
+            ) => {
+              return totalViaLoader(
+                partnerShowArtistsLoader,
+                {
+                  partner_id: partner.id,
+                  show_id: id,
+                },
+                options
+              )
+            },
+          },
         },
       }),
       resolve: partner_show => partner_show,

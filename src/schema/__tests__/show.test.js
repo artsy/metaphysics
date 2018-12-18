@@ -536,6 +536,13 @@ describe("Show type", () => {
         },
       })
     )
+    rootValue.partnerShowArtistsLoader = jest.fn(() =>
+      Promise.resolve({
+        headers: {
+          "x-total-count": 21,
+        },
+      })
+    )
     const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -550,6 +557,33 @@ describe("Show type", () => {
       show: {
         counts: {
           artworks: 42,
+        },
+      },
+    })
+  })
+
+  it("includes the total number of artists", async () => {
+    rootValue.partnerShowArtistsLoader = jest.fn(() =>
+      Promise.resolve({
+        headers: {
+          "x-total-count": 21,
+        },
+      })
+    )
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          counts {
+            artists
+          }
+        }
+      }
+    `
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      show: {
+        counts: {
+          artists: 21,
         },
       },
     })

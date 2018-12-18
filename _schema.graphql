@@ -8060,6 +8060,7 @@ type ShowCounts {
     format: String
     label: String
   ): FormattedNumber
+  artists: Int
 }
 
 # An edge in a connection.
