@@ -3491,6 +3491,34 @@ type FollowedArtistsArtworksGroupEdge {
   cursor: String!
 }
 
+type FollowedShow {
+  partner_show: Show
+
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
+  id: String!
+}
+
+# A connection to a list of items.
+type FollowedShowConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [FollowedShowEdge]
+}
+
+# An edge in a connection.
+type FollowedShowEdge {
+  # The item at the end of the edge
+  node: FollowedShow
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
 type FollowGene {
   gene: Gene
 
@@ -3550,34 +3578,6 @@ type FollowsAndSaves {
     before: String
     last: Int
   ): FollowedArtistsArtworksGroupConnection
-}
-
-type FollowShow {
-  partner_show: Show
-
-  # A globally unique ID.
-  __id: ID!
-
-  # A type-specific ID.
-  id: String!
-}
-
-# A connection to a list of items.
-type FollowShowConnection {
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-
-  # A list of edges.
-  edges: [FollowShowEdge]
-}
-
-# An edge in a connection.
-type FollowShowEdge {
-  # The item at the end of the edge
-  node: FollowShow
-
-  # A cursor for use in pagination
-  cursor: String!
 }
 
 input FollowShowInput {
@@ -5004,7 +5004,7 @@ type Me implements Node {
     first: Int
     before: String
     last: Int
-  ): FollowShowConnection
+  ): FollowedShowConnection
   followsAndSaves: FollowsAndSaves
   has_credit_cards: Boolean
   has_qualified_credit_cards: Boolean

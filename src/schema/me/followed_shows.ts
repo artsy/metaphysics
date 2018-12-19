@@ -5,8 +5,8 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLObjectType } from "graphql"
 
-export const FollowShowType = new GraphQLObjectType({
-  name: "FollowShow",
+export const FollowedShowType = new GraphQLObjectType({
+  name: "FollowedShow",
   fields: {
     partner_show: {
       type: ShowType,
@@ -16,7 +16,7 @@ export const FollowShowType = new GraphQLObjectType({
 })
 
 export default {
-  type: connectionDefinitions({ nodeType: FollowShowType }).connectionType,
+  type: connectionDefinitions({ nodeType: FollowedShowType }).connectionType,
   args: pageable({}),
   description: "A list of the current user’s currently followed shows",
   resolve: (
