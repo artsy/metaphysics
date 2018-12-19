@@ -258,6 +258,7 @@ type Artist implements Node {
   hometown: String
   image: Image
   initials(length: Int = 3): String
+  insights: [ArtistInsight]
   is_consignable: Boolean
 
   # Only specific Artists should show a link to auction results.
@@ -435,6 +436,17 @@ type ArtistHighlights {
   ): PartnerArtistConnection
 }
 
+type ArtistInsight {
+  # The type of insight.
+  type: String
+
+  # Label to use when displaying the insight.
+  label: String
+
+  # List of entities relevant to the insight.
+  entities: [String]
+}
+
 type ArtistItem implements Node {
   # A globally unique ID.
   __id: ID!
@@ -581,6 +593,7 @@ type ArtistItem implements Node {
   hometown: String
   image: Image
   initials(length: Int = 3): String
+  insights: [ArtistInsight]
   is_consignable: Boolean
 
   # Only specific Artists should show a link to auction results.
