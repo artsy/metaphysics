@@ -1065,7 +1065,6 @@ type ArtworkContextFair {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
-  artists_count: Int
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -1076,6 +1075,7 @@ type ArtworkContextFair {
   ): ArtistConnection
   cached: Int
   banner_size: String
+  counts: FairCounts
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
@@ -3185,7 +3185,6 @@ type Fair {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
-  artists_count: Int
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -3196,6 +3195,7 @@ type Fair {
   ): ArtistConnection
   cached: Int
   banner_size: String
+  counts: FairCounts
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
@@ -3290,6 +3290,29 @@ type Fair {
 enum FairArtistSorts {
   NAME_ASC
   NAME_DESC
+}
+
+type FairCounts {
+  artists(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
+  artworks(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
+  partners(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
+  partner_shows(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
 }
 
 type FairExhibitorsGroup {
@@ -4249,7 +4272,6 @@ type HomePageModuleContextFair {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
-  artists_count: Int
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -4260,6 +4282,7 @@ type HomePageModuleContextFair {
   ): ArtistConnection
   cached: Int
   banner_size: String
+  counts: FairCounts
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean

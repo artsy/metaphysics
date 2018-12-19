@@ -128,6 +128,9 @@ describe("Fair", () => {
         _id: 123,
         id: "aqua-art-miami-2018",
         artists_count: 1,
+        artworks_count: 2,
+        partners_count: 3,
+        partner_shows_count: 4,
         name: "Aqua Art Miami 2018",
         exhibitors_grouped_by_name: [
           {
@@ -237,21 +240,49 @@ describe("Fair", () => {
     })
   })
 
-  it("includes returns the total number of artists in the fair", async () => {
-    const query = gql`
-      {
-        fair(id: "aqua-art-miami-2018") {
-          artists_count
+  describe("fair counts", () => {
+    let counts
+
+    beforeEach(async () => {
+      const query = gql`
+        {
+          fair(id: "aqua-art-miami-2018") {
+            counts {
+              artists
+              artworks
+              partner_shows
+              partners
+            }
+          }
         }
-      }
-    `
+      `
 
-    const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, rootValue)
+      counts = data.fair.counts
+    })
 
-    expect(data).toEqual({
-      fair: {
-        artists_count: 1,
-      },
+    it("includes the total number of artists", () => {
+      expect(counts).toMatchObject({
+        artists: 1,
+      })
+    })
+
+    it("includes the total number of artworks", () => {
+      expect(counts).toMatchObject({
+        artworks: 2,
+      })
+    })
+
+    it("includes the total number of partners", () => {
+      expect(counts).toMatchObject({
+        partners: 3,
+      })
+    })
+
+    it("includes the total number of partner_shows", () => {
+      expect(counts).toMatchObject({
+        partner_shows: 4,
+      })
     })
   })
 })
