@@ -13,6 +13,12 @@ describe("FollowShow", () => {
         }
       }
     `
+    interface Props {
+      followShow: {
+        id: String
+        name: String
+      }
+    }
 
     const rootValue = {
       followShowLoader: () =>
@@ -37,7 +43,8 @@ describe("FollowShow", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(({ followShow }) => {
+    return runAuthenticatedQuery(mutation, rootValue).then(value => {
+      const { followShow } = value as Props
       expect(followShow).toEqual(expectedShowData)
     })
   })
