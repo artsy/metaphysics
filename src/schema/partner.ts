@@ -103,6 +103,8 @@ const PartnerType = new GraphQLObjectType({
             published: boolean
             size: number
             total_count: boolean
+            sort: string
+            for_sale: boolean
           }
 
           const gravityArgs: GravityArgs = {
@@ -110,6 +112,8 @@ const PartnerType = new GraphQLObjectType({
             total_count: true,
             page,
             size,
+            sort: options.sort,
+            for_sale: options.for_sale,
           }
 
           if (options.exclude) {
