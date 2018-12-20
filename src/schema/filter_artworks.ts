@@ -195,6 +195,9 @@ export const filterArtworksArgs = {
   acquireable: {
     type: GraphQLBoolean,
   },
+  offerable: {
+    type: GraphQLBoolean,
+  },
   aggregation_partner_cities: {
     type: new GraphQLList(GraphQLString),
   },
