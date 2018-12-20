@@ -493,6 +493,10 @@ export const ArtistType = new GraphQLObjectType({
             ecommerce_artworks: numeral(
               ({ ecommerce_artworks_count }) => ecommerce_artworks_count
             ),
+            has_make_offer_artworks: {
+              type: GraphQLBoolean,
+              resolve: ({ has_make_offer_artworks }) => has_make_offer_artworks,
+            },
             auction_artworks: numeral(
               ({ auction_artworks_count }) => auction_artworks_count
             ),

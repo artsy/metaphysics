@@ -398,6 +398,7 @@ type ArtistCounts {
     format: String
     label: String
   ): FormattedNumber
+  has_make_offer_artworks: Boolean
   auction_artworks(
     # Returns a `String` when format is specified. e.g.`'0,0.0000''`
     format: String
