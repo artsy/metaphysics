@@ -35,13 +35,7 @@ export default {
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {
-      // `body` holds an array of Shows, but this is expecting an
-      // array of FollowedShowConnections where the show lives on a
-      // `partner_show` field. This is ugly but I am just going to
-      // tweak the shape, here.
-      const payload = body.map(item => ({ partner_show: item }))
-
-      return connectionFromArraySlice(payload, options, {
+      return connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
       })
