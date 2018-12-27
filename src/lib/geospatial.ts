@@ -1,5 +1,11 @@
+/**
+ * Represents a latitude/longitude coordinate pair
+ */
 interface LatLng {
+  /** Latitude in decimal degrees */
   lat: number
+
+  /** Longitude in decimal degrees */
   lng: number
 }
 
@@ -15,16 +21,12 @@ const toRadians = (degrees: number): number => degrees * (Math.PI / 180)
 
 /**
  * Calculates the haversine (spherical) distance between two geographic points.
- * Arguments are supplied as `LatLng` objects, with coordinates specified
- * as `lat` and `lng` properties in decimal degrees.
  *
  * See:
  * https://en.wikipedia.org/wiki/Haversine_formula
  * https://www.movable-type.co.uk/scripts/latlong.html
  *
- * @param {LatLng} point1 - an object with `lat` and `lng` properties
- * @param {LatLng} point2 - an object with `lat` and `lng` properties
- * @returns {number} Distance between point1 and point2, in meters
+ * @returns Distance between point1 and point2, in meters
  */
 const haversineDistance = (point1: LatLng, point2: LatLng): number => {
   const φ1 = toRadians(point1.lat)
