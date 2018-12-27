@@ -6766,7 +6766,10 @@ type Query {
   # A city-based entry point for local discovery
   city(
     # A slug for the city, conforming to Gravity's city slug naming conventions
-    slug: String!
+    slug: String
+
+    # A point which will be used to locate the nearest local discovery city within a threshold
+    near: Near
   ): City
   collection(
     # The slug or ID of the Collection
@@ -8581,7 +8584,10 @@ type Viewer {
   # A city-based entry point for local discovery
   city(
     # A slug for the city, conforming to Gravity's city slug naming conventions
-    slug: String!
+    slug: String
+
+    # A point which will be used to locate the nearest local discovery city within a threshold
+    near: Near
   ): City
   collection(
     # The slug or ID of the Collection

@@ -7,6 +7,11 @@ const mockCities = {
     name: "Sacramende",
     coordinates: { lat: 38.5, lng: -121.8 },
   },
+  "smallville-usa": {
+    slug: "smallvile-usa",
+    name: "Smallville",
+    coordinates: { lat: 39.78, lng: -100.45 },
+  },
 }
 
 beforeEach(() => {
@@ -42,6 +47,38 @@ describe("City", () => {
     return runQuery(query).catch(e =>
       expect(e.message).toMatch(/City sacramundo not found in:/)
     )
+  })
+
+  it("finds the city nearest to a supplied point", () => {
+    const pointNearSmallville = "{ lat: 40, lng: -100 }"
+    const query = `
+      {
+        city(near: ${pointNearSmallville}) {
+          name
+        }
+      }
+    `
+
+    return runQuery(query).then(result => {
+      expect(result!.city).toEqual({
+        name: "Smallville",
+      })
+    })
+  })
+
+  it("returns null if no cities are within a defined threshold", () => {
+    const veryRemotePoint = "{ lat: 90, lng: 0 }"
+    const query = gql`
+      {
+        city(near: ${veryRemotePoint}) {
+          name
+        }
+      }
+    `
+
+    return runQuery(query).then(result => {
+      expect(result!.city).toBeNull()
+    })
   })
 
   describe("shows", () => {

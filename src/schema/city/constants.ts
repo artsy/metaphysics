@@ -1,1 +1,2 @@
 export const LOCAL_DISCOVERY_RADIUS_KM = 75
+export const NEAREST_CITY_THRESHOLD_KM = 150

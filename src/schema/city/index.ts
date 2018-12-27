@@ -2,7 +2,6 @@ import {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLList,
-  GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
@@ -17,8 +16,13 @@ import EventStatus from "schema/input_fields/event_status"
 import cityData from "./city_data.json"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
-import { LOCAL_DISCOVERY_RADIUS_KM } from "./constants"
+import {
+  LOCAL_DISCOVERY_RADIUS_KM,
+  NEAREST_CITY_THRESHOLD_KM,
+} from "./constants"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import Near from "schema/input_fields/near"
+import { distance } from "lib/geospatial"
 
 const CityType = new GraphQLObjectType({
   name: "City",
@@ -100,13 +104,29 @@ export const City = {
   description: "A city-based entry point for local discovery",
   args: {
     slug: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
       description:
         "A slug for the city, conforming to Gravity's city slug naming conventions",
     },
+    near: {
+      type: Near,
+      description:
+        "A point which will be used to locate the nearest local discovery city within a threshold",
+    },
   },
-  resolve: (_obj, args) => {
-    return lookupCity(args.slug)
+  resolve: (_obj, { slug, near }) => {
+    if (slug && near) {
+      throw new Error('The "slug" and "near" arguments are mutually exclusive.')
+    }
+    if (!slug && !near) {
+      throw new Error('One of the arguments "slug" or "near" is required.')
+    }
+    if (slug) {
+      return lookupCity(slug)
+    }
+    if (near) {
+      return nearestCityOrNull(near)
+    }
   },
 }
 
@@ -117,4 +137,28 @@ const lookupCity = slug => {
     )
   }
   return cityData[slug]
+}
+
+const nearestCityOrNull = latLng => {
+  const orderedCities = citiesOrderedByDistance(latLng)
+  const closestCity = orderedCities[0]
+
+  if (isCloseEnough(latLng, closestCity)) {
+    return closestCity
+  }
+  return null
+}
+
+const citiesOrderedByDistance = latLng => {
+  let cities = Object.values(cityData)
+  cities.sort((a: any, b: any) => {
+    const distanceA = distance(latLng, a.coordinates)
+    const distanceB = distance(latLng, b.coordinates)
+    return distanceA - distanceB
+  })
+  return cities
+}
+
+const isCloseEnough = (latLng, city) => {
+  return distance(latLng, city.coordinates) < NEAREST_CITY_THRESHOLD_KM * 1000
 }
