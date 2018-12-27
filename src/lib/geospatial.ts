@@ -1,12 +1,19 @@
 /**
  * Represents a latitude/longitude coordinate pair
  */
-interface LatLng {
+export interface LatLng {
   /** Latitude in decimal degrees */
   lat: number
 
   /** Longitude in decimal degrees */
   lng: number
+}
+
+/**
+ * Represents a geospatial point feature
+ */
+export interface Point {
+  coordinates: LatLng
 }
 
 const EARTH_RADIUS_IN_METERS = 6371e3 // https://en.wikipedia.org/wiki/Earth_radius#Mean_radius

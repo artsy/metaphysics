@@ -22,7 +22,7 @@ import {
 } from "./constants"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import Near from "schema/input_fields/near"
-import { distance } from "lib/geospatial"
+import { LatLng, Point, distance } from "lib/geospatial"
 
 const CityType = new GraphQLObjectType({
   name: "City",
@@ -125,12 +125,12 @@ export const City = {
       return lookupCity(slug)
     }
     if (near) {
-      return nearestCityOrNull(near)
+      return nearestCity(near)
     }
   },
 }
 
-const lookupCity = slug => {
+const lookupCity = (slug: string) => {
   if (!cityData.hasOwnProperty(slug)) {
     throw new Error(
       `City ${slug} not found in: ${Object.keys(cityData).join(", ")}`
@@ -139,9 +139,9 @@ const lookupCity = slug => {
   return cityData[slug]
 }
 
-const nearestCityOrNull = latLng => {
-  const orderedCities = citiesOrderedByDistance(latLng)
-  const closestCity = orderedCities[0]
+const nearestCity = (latLng: LatLng) => {
+  const orderedCities: Point[] = citiesOrderedByDistance(latLng)
+  const closestCity: Point = orderedCities[0]
 
   if (isCloseEnough(latLng, closestCity)) {
     return closestCity
@@ -149,9 +149,9 @@ const nearestCityOrNull = latLng => {
   return null
 }
 
-const citiesOrderedByDistance = latLng => {
-  let cities = Object.values(cityData)
-  cities.sort((a: any, b: any) => {
+const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
+  let cities: Point[] = Object.values(cityData)
+  cities.sort((a: Point, b: Point) => {
     const distanceA = distance(latLng, a.coordinates)
     const distanceB = distance(latLng, b.coordinates)
     return distanceA - distanceB
@@ -159,6 +159,6 @@ const citiesOrderedByDistance = latLng => {
   return cities
 }
 
-const isCloseEnough = (latLng, city) => {
+const isCloseEnough = (latLng: LatLng, city: Point) => {
   return distance(latLng, city.coordinates) < NEAREST_CITY_THRESHOLD_KM * 1000
 }
