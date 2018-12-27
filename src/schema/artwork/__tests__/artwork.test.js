@@ -1729,7 +1729,7 @@ describe("Artwork type", () => {
       artwork._id = "4d8b93ba4eb68a1b2c001c5b"
       return runQuery(query, rootValue).then(data => {
         expect(data).toEqual({
-          artwork: { pageviews: 17 },
+          artwork: { pageviews: 7 },
         })
       })
     })
