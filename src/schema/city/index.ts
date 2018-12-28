@@ -140,8 +140,8 @@ const lookupCity = (slug: string) => {
 }
 
 const nearestCity = (latLng: LatLng) => {
-  const orderedCities: Point[] = citiesOrderedByDistance(latLng)
-  const closestCity: Point = orderedCities[0]
+  const orderedCities = citiesOrderedByDistance(latLng)
+  const closestCity = orderedCities[0]
 
   if (isCloseEnough(latLng, closestCity)) {
     return closestCity
@@ -151,7 +151,7 @@ const nearestCity = (latLng: LatLng) => {
 
 const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
   let cities: Point[] = Object.values(cityData)
-  cities.sort((a: Point, b: Point) => {
+  cities.sort((a, b) => {
     const distanceA = distance(latLng, a.coordinates)
     const distanceB = distance(latLng, b.coordinates)
     return distanceA - distanceB
@@ -159,6 +159,5 @@ const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
   return cities
 }
 
-const isCloseEnough = (latLng: LatLng, city: Point) => {
-  return distance(latLng, city.coordinates) < NEAREST_CITY_THRESHOLD_KM * 1000
-}
+const isCloseEnough = (latLng: LatLng, city: Point) =>
+  distance(latLng, city.coordinates) < NEAREST_CITY_THRESHOLD_KM * 1000
