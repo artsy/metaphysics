@@ -113,19 +113,7 @@ export const artworkFields = () => {
         }).then(({ results }) => results),
     },
     availability: { type: GraphQLString },
-    myLotStanding: {
-      type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
-      args: { live: { type: GraphQLBoolean, defaultValue: null } },
-      resolve: (
-        { id },
-        { live },
-        _request,
-        { rootValue: { lotStandingLoader } }
-      ) => {
-        if (!lotStandingLoader) return null
-        return lotStandingLoader({ artwork_id: id, live })
-      },
-    },
+
     can_share_image: {
       type: GraphQLBoolean,
       deprecationReason: "Favor `is_`-prefixed boolean attributes",
@@ -523,6 +511,19 @@ export const artworkFields = () => {
       deprecationReason: "Prefer dimensions instead.",
     },
     meta: Meta,
+    myLotStanding: {
+      type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
+      args: { live: { type: GraphQLBoolean, defaultValue: null } },
+      resolve: (
+        { id },
+        { live },
+        _request,
+        { rootValue: { lotStandingLoader } }
+      ) => {
+        if (!lotStandingLoader) return null
+        return lotStandingLoader({ artwork_id: id, live })
+      },
+    },
     pageviews: {
       type: GraphQLInt,
       description: "[DO NOT USE] Weekly pageview data (static).",

@@ -769,7 +769,6 @@ type Artwork implements Node & Sellable {
   artist_names: String
   articles(size: Int): [Article]
   availability: String
-  myLotStanding(live: Boolean = null): [LotStanding!]
   can_share_image: Boolean
     @deprecated(reason: "Favor `is_`-prefixed boolean attributes")
   category: String
@@ -857,6 +856,7 @@ type Artwork implements Node & Sellable {
   medium: String
   metric: String @deprecated(reason: "Prefer dimensions instead.")
   meta: ArtworkMeta
+  myLotStanding(live: Boolean = null): [LotStanding!]
 
   # [DO NOT USE] Weekly pageview data (static).
   pageviews: Int
@@ -1597,7 +1597,6 @@ type ArtworkItem implements Node & Sellable {
   artist_names: String
   articles(size: Int): [Article]
   availability: String
-  myLotStanding(live: Boolean = null): [LotStanding!]
   can_share_image: Boolean
     @deprecated(reason: "Favor `is_`-prefixed boolean attributes")
   category: String
@@ -1685,6 +1684,7 @@ type ArtworkItem implements Node & Sellable {
   medium: String
   metric: String @deprecated(reason: "Prefer dimensions instead.")
   meta: ArtworkMeta
+  myLotStanding(live: Boolean = null): [LotStanding!]
 
   # [DO NOT USE] Weekly pageview data (static).
   pageviews: Int
@@ -1765,6 +1765,7 @@ type ArtworkLayer {
 type ArtworkMeta {
   description(limit: Int = 155): String
   image: String
+  share: String
   title: String
 }
 
