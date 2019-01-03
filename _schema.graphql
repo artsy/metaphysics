@@ -3180,9 +3180,17 @@ enum EventStatus {
   current @deprecated(reason: "use capital enums")
   running @deprecated(reason: "use capital enums")
   upcoming @deprecated(reason: "use capital enums")
+
+  # End date is in the past
   CLOSED
+
+  # Start date or end date is in the future
   CURRENT
+
+  # Start date is in the past and end date is in the future
   RUNNING
+
+  # Start date is in the future
   UPCOMING
 }
 
