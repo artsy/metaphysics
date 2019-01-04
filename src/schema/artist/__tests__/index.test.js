@@ -882,6 +882,16 @@ describe("Artist type", () => {
             {
               id: "foo-bar",
               name: "Catty Art Show",
+              partner: {
+                type: "Gallery",
+              },
+            },
+            {
+              id: "oops",
+              name: "Private Dealer Art Show",
+              partner: {
+                type: "Private Dealer",
+              },
             },
           ],
           headers: { "x-total-count": 35 },
@@ -939,6 +949,8 @@ describe("Artist type", () => {
           for (index = 0; index < 4; index++) {
             expect(around[index].page).toBe(index + 1)
           }
+          // Check that blacklisted shows are not included
+          expect(edges).toHaveLength(1)
           // Check show data included in edges.
           expect(edges[0].node.name).toEqual("Catty Art Show")
           // Check that there is a previous and next page.
