@@ -65,6 +65,7 @@ export const Orders = {
                     id
                     priceCents
                     artworkId
+                    artworkVersionId
                     editionSetId
                     quantity
                   }
