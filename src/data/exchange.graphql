@@ -157,6 +157,9 @@ type BuyerRejectOfferPayload {
 }
 
 enum CancelReasonTypeEnum {
+  # cancelation reason is: buyer_lapsed
+  BUYER_LAPSED
+
   # cancelation reason is: buyer_rejected
   BUYER_REJECTED
 
@@ -206,6 +209,11 @@ input CreateOfferOrderWithArtworkInput {
   # EditionSet Id
   editionSetId: String
 
+  # When set to true, we will not reuse existing pending/submitted order.
+  # Otherwise if current user has pending/submitted orders on same artwork/edition
+  # with same quantity, we will return that
+  findActiveOrCreate: Boolean = true
+
   # Number of items in the line item, default is 1
   quantity: Int
 }
@@ -215,7 +223,9 @@ type CreateOfferOrderWithArtworkPayload {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
 
-  # A union of success/failure
+  # A union of success/failure. If find_active_or_create is not false, it will
+  # return existing pending/submitted order for current user if exists, otherwise
+  # it will return newly created order
   orderOrError: OrderOrFailureUnion!
 }
 

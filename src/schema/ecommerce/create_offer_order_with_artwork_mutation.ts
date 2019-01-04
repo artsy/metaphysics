@@ -5,20 +5,20 @@ import { OrderOrFailureUnionType } from "schema/ecommerce/types/order_or_error_u
 import gql from "lib/gql"
 import { BuyerOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
-import { CreateOrderInputType } from "./types/create_order_input_type"
+import { CreateOfferOrderInputType } from "./types/create_order_input_type"
 
 export const CreateOfferOrderWithArtworkMutation = mutationWithClientMutationId(
   {
     name: "CreateOfferOrderWithArtwork",
     description: "Creates an order with an artwork",
-    inputFields: CreateOrderInputType.getFields(),
+    inputFields: CreateOfferOrderInputType.getFields(),
     outputFields: {
       orderOrError: {
         type: OrderOrFailureUnionType,
       },
     },
     mutateAndGetPayload: (
-      { artworkId, editionSetId, quantity },
+      { artworkId, editionSetId, quantity, findActiveOrCreate },
       context,
       { rootValue: { accessToken, exchangeSchema } }
     ) => {
@@ -31,12 +31,14 @@ export const CreateOfferOrderWithArtworkMutation = mutationWithClientMutationId(
           $artworkId: String!
           $editionSetId: String
           $quantity: Int
+          $findActiveOrCreate: Boolean
         ) {
           ecommerceCreateOfferOrderWithArtwork(
             input: {
               artworkId: $artworkId
               editionSetId: $editionSetId
               quantity: $quantity
+              findActiveOrCreate: $findActiveOrCreate
             }
           ) {
             orderOrError {
@@ -62,6 +64,7 @@ export const CreateOfferOrderWithArtworkMutation = mutationWithClientMutationId(
         artworkId,
         editionSetId,
         quantity,
+        findActiveOrCreate,
       }).then(extractEcommerceResponse("ecommerceCreateOfferOrderWithArtwork"))
     },
   }
