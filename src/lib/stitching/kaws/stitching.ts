@@ -9,6 +9,7 @@ export const kawsStitchingEnvironment = (
     extend type MarketingCollection {
       artworks(
         acquireable: Boolean
+        offerable: Boolean
         aggregation_partner_cities: [String]
         aggregations: [ArtworkAggregation]
         artist_id: String
@@ -55,6 +56,7 @@ export const kawsStitchingEnvironment = (
           fragment MarketingCollectionQuery on MarketingCollection { 
             query {
               acquireable
+              offerable
               aggregations
               artist_ids
               artist_id

@@ -33,6 +33,7 @@ import SaleSorts from "schema/sale/sorts"
 import ArtistCarousel from "./carousel"
 import ArtistStatuses from "./statuses"
 import ArtistHighlights from "./highlights"
+import { ArtistInsights } from "./insights"
 import { CurrentEvent } from "./current"
 import {
   auctionResultConnection,
@@ -493,6 +494,10 @@ export const ArtistType = new GraphQLObjectType({
             ecommerce_artworks: numeral(
               ({ ecommerce_artworks_count }) => ecommerce_artworks_count
             ),
+            has_make_offer_artworks: {
+              type: GraphQLBoolean,
+              resolve: ({ has_make_offer_artworks }) => has_make_offer_artworks,
+            },
             auction_artworks: numeral(
               ({ auction_artworks_count }) => auction_artworks_count
             ),
@@ -599,6 +604,7 @@ export const ArtistType = new GraphQLObjectType({
       hometown: { type: GraphQLString },
       image: Image,
       initials: initials("name"),
+      insights: ArtistInsights,
       is_consignable: {
         type: GraphQLBoolean,
         resolve: ({ consignable }) => consignable,

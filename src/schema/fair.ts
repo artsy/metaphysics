@@ -6,6 +6,7 @@ import { artistConnection } from "./artist"
 import moment from "moment"
 import cached from "./fields/cached"
 import date from "./fields/date"
+import numeral from "./fields/numeral"
 import Profile from "./profile"
 import Image from "./image"
 import { showConnection } from "./show"
@@ -19,7 +20,6 @@ import {
   GraphQLBoolean,
   GraphQLNonNull,
   GraphQLList,
-  GraphQLInt,
 } from "graphql"
 import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
@@ -50,12 +50,6 @@ const FairType = new GraphQLObjectType({
   name: "Fair",
   fields: () => ({
     ...GravityIDFields,
-    artists_count: {
-      type: GraphQLInt,
-      resolve: root => {
-        return root.artists_count
-      },
-    },
     artists: {
       type: artistConnection,
       args: pageable({
@@ -94,6 +88,20 @@ const FairType = new GraphQLObjectType({
     cached,
     banner_size: {
       type: GraphQLString,
+    },
+    counts: {
+      type: new GraphQLObjectType({
+        name: "FairCounts",
+        fields: {
+          artists: numeral(({ artists_count }) => artists_count),
+          artworks: numeral(({ artworks_count }) => artworks_count),
+          partners: numeral(({ partners_count }) => partners_count),
+          partner_shows: numeral(
+            ({ partner_shows_count }) => partner_shows_count
+          ),
+        },
+      }),
+      resolve: fair => fair,
     },
     has_full_feature: {
       type: GraphQLBoolean,

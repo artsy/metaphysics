@@ -207,6 +207,7 @@ type Artist implements Node {
   # Artworks Elastic Search results
   filtered_artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -258,6 +259,7 @@ type Artist implements Node {
   hometown: String
   image: Image
   initials(length: Int = 3): String
+  insights: [ArtistInsight]
   is_consignable: Boolean
 
   # Only specific Artists should show a link to auction results.
@@ -398,6 +400,7 @@ type ArtistCounts {
     format: String
     label: String
   ): FormattedNumber
+  has_make_offer_artworks: Boolean
   auction_artworks(
     # Returns a `String` when format is specified. e.g.`'0,0.0000''`
     format: String
@@ -432,6 +435,17 @@ type ArtistHighlights {
     before: String
     last: Int
   ): PartnerArtistConnection
+}
+
+type ArtistInsight {
+  # The type of insight.
+  type: String
+
+  # Label to use when displaying the insight.
+  label: String
+
+  # List of entities relevant to the insight.
+  entities: [String]
 }
 
 type ArtistItem implements Node {
@@ -529,6 +543,7 @@ type ArtistItem implements Node {
   # Artworks Elastic Search results
   filtered_artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -580,6 +595,7 @@ type ArtistItem implements Node {
   hometown: String
   image: Image
   initials(length: Int = 3): String
+  insights: [ArtistInsight]
   is_consignable: Boolean
 
   # Only specific Artists should show a link to auction results.
@@ -753,7 +769,6 @@ type Artwork implements Node & Sellable {
   artist_names: String
   articles(size: Int): [Article]
   availability: String
-  myLotStanding(live: Boolean = null): [LotStanding!]
   can_share_image: Boolean
     @deprecated(reason: "Favor `is_`-prefixed boolean attributes")
   category: String
@@ -841,6 +856,7 @@ type Artwork implements Node & Sellable {
   medium: String
   metric: String @deprecated(reason: "Prefer dimensions instead.")
   meta: ArtworkMeta
+  myLotStanding(live: Boolean = null): [LotStanding!]
 
   # [DO NOT USE] Weekly pageview data (static).
   pageviews: Int
@@ -1065,7 +1081,6 @@ type ArtworkContextFair {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
-  artists_count: Int
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -1076,6 +1091,7 @@ type ArtworkContextFair {
   ): ArtistConnection
   cached: Int
   banner_size: String
+  counts: FairCounts
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
@@ -1129,6 +1145,7 @@ type ArtworkContextFair {
   # Artworks Elastic Search results
   filteredArtworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -1429,6 +1446,7 @@ type ArtworkFilterGene implements Node {
   # Artworks Elastic Search results
   filtered_artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -1486,6 +1504,7 @@ type ArtworkFilterTag implements Node {
   # Artworks Elastic Search results
   filtered_artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -1578,7 +1597,6 @@ type ArtworkItem implements Node & Sellable {
   artist_names: String
   articles(size: Int): [Article]
   availability: String
-  myLotStanding(live: Boolean = null): [LotStanding!]
   can_share_image: Boolean
     @deprecated(reason: "Favor `is_`-prefixed boolean attributes")
   category: String
@@ -1666,6 +1684,7 @@ type ArtworkItem implements Node & Sellable {
   medium: String
   metric: String @deprecated(reason: "Prefer dimensions instead.")
   meta: ArtworkMeta
+  myLotStanding(live: Boolean = null): [LotStanding!]
 
   # [DO NOT USE] Weekly pageview data (static).
   pageviews: Int
@@ -1746,6 +1765,7 @@ type ArtworkLayer {
 type ArtworkMeta {
   description(limit: Int = 155): String
   image: String
+  share: String
   title: String
 }
 
@@ -3160,9 +3180,17 @@ enum EventStatus {
   current @deprecated(reason: "use capital enums")
   running @deprecated(reason: "use capital enums")
   upcoming @deprecated(reason: "use capital enums")
+
+  # End date is in the past
   CLOSED
+
+  # Start date or end date is in the future
   CURRENT
+
+  # Start date is in the past and end date is in the future
   RUNNING
+
+  # Start date is in the future
   UPCOMING
 }
 
@@ -3185,7 +3213,6 @@ type Fair {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
-  artists_count: Int
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -3196,6 +3223,7 @@ type Fair {
   ): ArtistConnection
   cached: Int
   banner_size: String
+  counts: FairCounts
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
@@ -3249,6 +3277,7 @@ type Fair {
   # Artworks Elastic Search results
   filteredArtworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -3290,6 +3319,29 @@ type Fair {
 enum FairArtistSorts {
   NAME_ASC
   NAME_DESC
+}
+
+type FairCounts {
+  artists(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
+  artworks(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
+  partners(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
+  partner_shows(
+    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
+    format: String
+    label: String
+  ): FormattedNumber
 }
 
 type FairExhibitorsGroup {
@@ -3680,6 +3732,7 @@ type Gene implements Node {
   ): ArtistConnection
   artworks_connection(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -3726,6 +3779,7 @@ type Gene implements Node {
   # Artworks Elastic Search results
   filtered_artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -3864,6 +3918,7 @@ type GeneItem implements Node {
   ): ArtistConnection
   artworks_connection(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -3910,6 +3965,7 @@ type GeneItem implements Node {
   # Artworks Elastic Search results
   filtered_artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -4312,7 +4368,6 @@ type HomePageModuleContextFair {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
-  artists_count: Int
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -4323,6 +4378,7 @@ type HomePageModuleContextFair {
   ): ArtistConnection
   cached: Int
   banner_size: String
+  counts: FairCounts
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
@@ -4376,6 +4432,7 @@ type HomePageModuleContextFair {
   # Artworks Elastic Search results
   filteredArtworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -4442,6 +4499,7 @@ type HomePageModuleContextGene implements Node {
   ): ArtistConnection
   artworks_connection(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -4488,6 +4546,7 @@ type HomePageModuleContextGene implements Node {
   # Artworks Elastic Search results
   filtered_artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -4847,6 +4906,7 @@ type MarketingCollection {
   updatedAt: MarketingDateTime!
   artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -6782,7 +6842,10 @@ type Query {
   # A city-based entry point for local discovery
   city(
     # A slug for the city, conforming to Gravity's city slug naming conventions
-    slug: String!
+    slug: String
+
+    # A point which will be used to locate the nearest local discovery city within a threshold
+    near: Near
   ): City
   collection(
     # The slug or ID of the Collection
@@ -6863,6 +6926,7 @@ type Query {
   # Artworks Elastic Search results
   filter_artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -7980,6 +8044,7 @@ type Show implements Node {
   # Artworks Elastic Search results
   filteredArtworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -8126,6 +8191,7 @@ type ShowCounts {
     format: String
     label: String
   ): FormattedNumber
+  artists: Int
 }
 
 # An edge in a connection.
@@ -8271,6 +8337,7 @@ type Tag implements Node {
   # Artworks Elastic Search results
   filtered_artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
@@ -8593,7 +8660,10 @@ type Viewer {
   # A city-based entry point for local discovery
   city(
     # A slug for the city, conforming to Gravity's city slug naming conventions
-    slug: String!
+    slug: String
+
+    # A point which will be used to locate the nearest local discovery city within a threshold
+    near: Near
   ): City
   collection(
     # The slug or ID of the Collection
@@ -8674,6 +8744,7 @@ type Viewer {
   # Artworks Elastic Search results
   filter_artworks(
     acquireable: Boolean
+    offerable: Boolean
     aggregation_partner_cities: [String]
     aggregations: [ArtworkAggregation]
     artist_id: String
