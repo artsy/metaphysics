@@ -106,6 +106,7 @@ export default (accessToken, userID, opts) => {
       "is_followed",
       "profile"
     ),
+    followedFairsLoader: gravityLoader("me/follow/profiles", {}, { headers: true }),
     followShowLoader: gravityLoader("follow_shows", {}, { method: "POST" }),
     followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
     homepageModulesLoader: gravityLoader("me/modules"),

@@ -44,12 +44,11 @@ export default {
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {
-      console.log("followed shows:")
-      const payload = body.map(item => item.partner_show)
-      console.dir(payload)
-      return connectionFromArraySlice(payload, options, {
+      return connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
+        // @ts-ignore
+        resolveNode: follow_show => follow_show.partner_show,
       })
     })
   },

@@ -3492,6 +3492,24 @@ type FollowedArtistsArtworksGroupEdge {
 }
 
 # A connection to a list of items.
+type FollowedFairConnectionConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [FollowedFairConnectionEdge]
+}
+
+# An edge in a connection.
+type FollowedFairConnectionEdge {
+  # The item at the end of the edge
+  node: Fair
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A connection to a list of items.
 type FollowedShowConnectionConnection {
   # Information to aid in pagination.
   pageInfo: PageInfo!
@@ -3576,6 +3594,14 @@ type FollowsAndSaves {
     before: String
     last: Int
   ): FollowedShowConnectionConnection
+
+  # A list of the current user’s currently followed profiles
+  followed_fairs(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FollowedFairConnectionConnection
 }
 
 input FollowShowInput {
