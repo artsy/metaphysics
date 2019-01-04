@@ -1,12 +1,13 @@
 import { ShowType } from "schema/show"
+import { UserType } from "schema/user"
 import { IDFields } from "schema/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLObjectType } from "graphql"
 
-export const FollowedShowType = new GraphQLObjectType({
-  name: "FollowedShow",
+const FollowedShowEdge = new GraphQLObjectType({
+  name: "FollowedShowEdge",
   fields: {
     partner_show: {
       type: ShowType,
@@ -15,8 +16,16 @@ export const FollowedShowType = new GraphQLObjectType({
   },
 })
 
+export const FollowedShowConnection = connectionDefinitions({
+  name: "FollowedShowConnection",
+  // FIXME: 'edgeType' does not exist in type 'ConnectionConfig'
+  // @ts-ignore
+  edgeType: FollowedShowEdge,
+  nodeType: ShowType,
+})
+
 export default {
-  type: connectionDefinitions({ nodeType: FollowedShowType }).connectionType,
+  type: FollowedShowConnection.connectionType,
   args: pageable({}),
   description: "A list of the current user’s currently followed shows",
   resolve: (
@@ -35,7 +44,10 @@ export default {
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {
-      return connectionFromArraySlice(body, options, {
+      console.log("followed shows:")
+      const payload = body.map(item => item.partner_show)
+      console.dir(payload)
+      return connectionFromArraySlice(payload, options, {
         arrayLength: headers["x-total-count"],
         sliceStart: offset,
       })

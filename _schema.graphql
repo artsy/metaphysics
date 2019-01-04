@@ -3491,29 +3491,19 @@ type FollowedArtistsArtworksGroupEdge {
   cursor: String!
 }
 
-type FollowedShow {
-  partner_show: Show
-
-  # A globally unique ID.
-  __id: ID!
-
-  # A type-specific ID.
-  id: String!
-}
-
 # A connection to a list of items.
-type FollowedShowConnection {
+type FollowedShowConnectionConnection {
   # Information to aid in pagination.
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [FollowedShowEdge]
+  edges: [FollowedShowConnectionEdge]
 }
 
 # An edge in a connection.
-type FollowedShowEdge {
+type FollowedShowConnectionEdge {
   # The item at the end of the edge
-  node: FollowedShow
+  node: Show
 
   # A cursor for use in pagination
   cursor: String!
@@ -3585,7 +3575,7 @@ type FollowsAndSaves {
     first: Int
     before: String
     last: Int
-  ): FollowedShowConnection
+  ): FollowedShowConnectionConnection
 }
 
 input FollowShowInput {
