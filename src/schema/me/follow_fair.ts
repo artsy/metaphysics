@@ -1,18 +1,12 @@
-import { GraphQLString, GraphQLBoolean } from "graphql"
+import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ShowType } from "../show"
 
 export default mutationWithClientMutationId({
-  name: "FollowShow",
+  name: "FollowFair",
   description: "Follow (or unfollow) an show",
   inputFields: {
-    partner_show_id: {
-      type: GraphQLString,
-    },
-    unfollow: {
-      type: GraphQLBoolean,
-      defaultValue: false,
-    },
+    partner_show_id: { type: GraphQLString },
   },
   outputFields: {
     show: {

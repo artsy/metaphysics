@@ -3578,10 +3578,19 @@ type FollowsAndSaves {
     before: String
     last: Int
   ): FollowedArtistsArtworksGroupConnection
+
+  # A list of the current user’s currently followed shows
+  followed_shows(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FollowedShowConnection
 }
 
 input FollowShowInput {
   partner_show_id: String
+  unfollow: Boolean = false
   clientMutationId: String
 }
 
@@ -4997,14 +5006,6 @@ type Me implements Node {
     before: String
     last: Int
   ): FollowGeneConnection
-
-  # A list of the current user’s currently followed shows
-  followed_shows(
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): FollowedShowConnection
   followsAndSaves: FollowsAndSaves
   has_credit_cards: Boolean
   has_qualified_credit_cards: Boolean

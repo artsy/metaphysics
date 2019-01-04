@@ -66,12 +66,12 @@ const Me = new GraphQLObjectType({
     follow_artists: FollowArtists,
     followed_artists_connection: FollowedArtists,
     followed_genes: FollowedGenes,
-    followed_shows: FollowedShows,
     followsAndSaves: {
       type: new GraphQLObjectType({
         name: "FollowsAndSaves",
         fields: {
           bundledArtworksByArtist: FollowedArtistsArtworkGroups,
+          followed_shows: FollowedShows,
         },
       }),
       resolve: () => ({}),
