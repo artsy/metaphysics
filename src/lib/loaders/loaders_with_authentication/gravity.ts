@@ -73,11 +73,11 @@ export default (accessToken, userID, opts) => {
       "is_followed",
       "artist"
     ),
-    // followFairLoader: gravityLoader(
-    //   "me/follow/profiles",
-    //   {},
-    //   "POST"
-    // ),
+    followFairLoader: gravityLoader(
+      "me/follow/profiles",
+      {},
+      "POST"
+    ),
     followedGeneLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/genes"),
       "genes",

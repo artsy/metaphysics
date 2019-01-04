@@ -1,32 +1,32 @@
 import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ShowType } from "../show"
+import Profile from "schema/profile"
 
 export default mutationWithClientMutationId({
   name: "FollowFair",
   description: "Follow (or unfollow) a fair",
   inputFields: {
-    partner_show_id: { type: GraphQLString },
+    profile_id: { type: GraphQLString },
   },
   outputFields: {
-    show: {
-      type: ShowType,
+    profile: {
+      type: Profile.type,
       resolve: (
-        { partner_show },
+        { profile },
         _options,
         _request,
-        { rootValue: { showLoader } }
-      ) => showLoader(partner_show.id),
+        { rootValue: { profileLoader } }
+      ) => profileLoader(profile.id),
     },
   },
   mutateAndGetPayload: (
     options,
     _request,
-    { rootValue: { followShowLoader } }
+    { rootValue: { followProfileLoader } }
   ) => {
-    if (!followShowLoader) {
-      throw new Error("Missing Follow Show Loader. Check your access token.")
+    if (!followProfileLoader) {
+      throw new Error("Missing FollowProfile Loader. Check your access token.")
     }
-    return followShowLoader(options)
+    return followProfileLoader(options)
   },
 })
