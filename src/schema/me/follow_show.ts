@@ -26,13 +26,18 @@ export default mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    options,
+    { partner_show_id, unfollow },
     _request,
-    { rootValue: { followShowLoader } }
+    { rootValue: { followShowLoader, unfollowShowLoader } }
   ) => {
     if (!followShowLoader) {
       throw new Error("Missing Follow Show Loader. Check your access token.")
     }
-    return followShowLoader(options)
+
+    let performAction = unfollow
+      ? unfollowShowLoader({ partner_show_id })
+      : followShowLoader({ partner_show_id })
+
+    return performAction.then(returnValue => returnValue)
   },
 })

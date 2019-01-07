@@ -1,5 +1,4 @@
 import { ShowType } from "schema/show"
-import { UserType } from "schema/user"
 import { IDFields } from "schema/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
