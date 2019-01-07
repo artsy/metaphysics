@@ -72,8 +72,8 @@ const Me = new GraphQLObjectType({
         name: "FollowsAndSaves",
         fields: {
           bundledArtworksByArtist: FollowedArtistsArtworkGroups,
-          followed_shows: FollowedShows,
-          followed_fairs: FollowedFairs,
+          shows: FollowedShows,
+          fairs: FollowedFairs,
         },
       }),
       resolve: () => ({}),

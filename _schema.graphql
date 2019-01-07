@@ -3640,7 +3640,7 @@ type FollowsAndSaves {
   ): FollowedArtistsArtworksGroupConnection
 
   # A list of the current user’s currently followed shows
-  followed_shows(
+  shows(
     after: String
     first: Int
     before: String
@@ -3648,7 +3648,7 @@ type FollowsAndSaves {
   ): FollowedShowConnectionConnection
 
   # A list of the current user’s currently followed profiles
-  followed_fairs(
+  fairs(
     after: String
     first: Int
     before: String
