@@ -21,6 +21,7 @@ export const Order = {
                 id
                 priceCents
                 artworkId
+                artworkVersionId
                 editionSetId
                 quantity
                 fulfillments{
