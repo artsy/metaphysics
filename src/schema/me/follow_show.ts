@@ -4,7 +4,7 @@ import { ShowType } from "../show"
 
 export default mutationWithClientMutationId({
   name: "FollowShow",
-  description: "Follow (or unfollow) an show",
+  description: "Follow (or unfollow) a show",
   inputFields: {
     partner_show_id: {
       type: GraphQLString,

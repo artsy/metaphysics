@@ -16,12 +16,8 @@ const FollowedProfileEdge = new GraphQLObjectType({
   },
 })
 
-// the challenge is that FollowedProfile doesn't directly connect to Fair.
-// we need to go from FollowedProfile to Profile to Owner in order to get the
-// reference to the fair object - how do I tell graphQL how to do that?
-// Is it just manually down in my resolver below?
 export const FollowedFairConnection = connectionDefinitions({
-  name: "FollowedFairConnection",
+  name: "FollowedFair",
   // FIXME: 'edgeType' does not exist in type 'ConnectionConfig'
   // @ts-ignore
   edgeType: FollowedProfileEdge,
@@ -31,7 +27,7 @@ export const FollowedFairConnection = connectionDefinitions({
 export default {
   type: FollowedFairConnection.connectionType,
   args: pageable({}),
-  description: "A list of the current user’s currently followed profiles",
+  description: "A list of the current user’s currently followed fair profiles",
   resolve: (
     _root,
     options,

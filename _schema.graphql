@@ -3544,16 +3544,16 @@ type FollowedArtistsArtworksGroupEdge {
 }
 
 # A connection to a list of items.
-type FollowedFairConnectionConnection {
+type FollowedFairConnection {
   # Information to aid in pagination.
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [FollowedFairConnectionEdge]
+  edges: [FollowedFairEdge]
 }
 
 # An edge in a connection.
-type FollowedFairConnectionEdge {
+type FollowedFairEdge {
   # The item at the end of the edge
   node: Fair
 
@@ -3647,13 +3647,13 @@ type FollowsAndSaves {
     last: Int
   ): FollowedShowConnectionConnection
 
-  # A list of the current user’s currently followed profiles
+  # A list of the current user’s currently followed fair profiles
   fairs(
     after: String
     first: Int
     before: String
     last: Int
-  ): FollowedFairConnectionConnection
+  ): FollowedFairConnection
 }
 
 input FollowShowInput {
@@ -5288,7 +5288,7 @@ type Mutation {
   # Follow (or unfollow) an gene
   followGene(input: FollowGeneInput!): FollowGenePayload
 
-  # Follow (or unfollow) an show
+  # Follow (or unfollow) a show
   followShow(input: FollowShowInput!): FollowShowPayload
 
   # Updating a collector profile (loyalty applicant status).
