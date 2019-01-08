@@ -3350,6 +3350,9 @@ type FairExhibitorsGroup {
 
   # Exhibitors sorted by name
   exhibitors: [String]
+
+  # Partner/Exhibitor default profile id
+  profile_ids: [String]
 }
 
 enum FairSorts {
