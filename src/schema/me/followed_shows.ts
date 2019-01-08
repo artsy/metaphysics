@@ -15,8 +15,8 @@ const FollowedShowEdge = new GraphQLObjectType({
   },
 })
 
-export const FollowedShow = connectionDefinitions({
-  name: "FollowedShowConnection",
+export const FollowedShowConnection = connectionDefinitions({
+  name: "FollowedShow",
   // FIXME: 'edgeType' does not exist in type 'ConnectionConfig'
   // @ts-ignore
   edgeType: FollowedShowEdge,
@@ -24,7 +24,7 @@ export const FollowedShow = connectionDefinitions({
 })
 
 export default {
-  type: FollowedShow.connectionType,
+  type: FollowedShowConnection.connectionType,
   args: pageable({}),
   description: "A list of the current user’s currently followed shows",
   resolve: (

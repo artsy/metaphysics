@@ -3562,16 +3562,16 @@ type FollowedFairEdge {
 }
 
 # A connection to a list of items.
-type FollowedShowConnectionConnection {
+type FollowedShowConnection {
   # Information to aid in pagination.
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [FollowedShowConnectionEdge]
+  edges: [FollowedShowEdge]
 }
 
 # An edge in a connection.
-type FollowedShowConnectionEdge {
+type FollowedShowEdge {
   # The item at the end of the edge
   node: Show
 
@@ -3645,7 +3645,7 @@ type FollowsAndSaves {
     first: Int
     before: String
     last: Int
-  ): FollowedShowConnectionConnection
+  ): FollowedShowConnection
 
   # A list of the current user’s currently followed fair profiles
   fairs(
