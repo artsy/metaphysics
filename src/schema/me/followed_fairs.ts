@@ -44,8 +44,6 @@ export default {
       ownerType: "FAIR",
     }
 
-    console.dir(gravityArgs)
-
     return followedFairsLoader(gravityArgs).then(({ body, headers }) => {
       return connectionFromArraySlice(body, options, {
         arrayLength: headers["x-total-count"],
