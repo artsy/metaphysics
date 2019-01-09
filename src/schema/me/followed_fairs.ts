@@ -6,12 +6,9 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLObjectType } from "graphql"
 
-const FollowedProfileEdge = new GraphQLObjectType({
+const FollowedFairEdge = new GraphQLObjectType({
   name: "FollowedProfileEdge",
   fields: {
-    profile: {
-      type: ProfileType,
-    },
     ...IDFields,
   },
 })
@@ -20,7 +17,7 @@ export const FollowedFairConnection = connectionDefinitions({
   name: "FollowedFair",
   // FIXME: 'edgeType' does not exist in type 'ConnectionConfig'
   // @ts-ignore
-  edgeType: FollowedProfileEdge,
+  edgeType: FollowedFairEdge,
   nodeType: Fair.type,
 })
 
