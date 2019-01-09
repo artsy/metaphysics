@@ -1,4 +1,3 @@
-import { ProfileType } from "schema/profile"
 import Fair from "schema/fair"
 import { IDFields } from "schema/object_identification"
 
