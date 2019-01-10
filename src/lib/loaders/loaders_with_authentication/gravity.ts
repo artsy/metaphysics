@@ -27,10 +27,10 @@ export default (accessToken, userID, opts) => {
     followedArtistsLoader: gravityLoader("me/follow/artists", {}, { headers: true }),
     followedArtistLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/artists"),
-        "artists",
-        "is_followed",
-        "artist"
-      ),
+      "artists",
+      "is_followed",
+      "artist"
+    ),
     followedGeneLoader: trackedEntityLoaderFactory(gravityLoader("me/follow/genes"), "genes", "is_followed", "gene"),
     followedGenesLoader: gravityLoader("me/follow/genes", {}, { headers: true }),
     followedProfilesArtworksLoader: gravityLoader("me/follow/profiles/artworks", {}, { headers: true }),
@@ -38,10 +38,14 @@ export default (accessToken, userID, opts) => {
     followProfileLoader: gravityLoader("me/follow/profile", {}, { method: "POST" }),
     followedProfileLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/profiles"),
-        "profiles",
-        "is_followed",
-        "profile"
-      ),
+      "profiles",
+      "is_followed",
+      "profile"
+    ),
+    followShowLoader: gravityLoader("follow_shows", {}, { method: "POST" }),
+    unfollowShowLoader: gravityLoader("follow_shows", {}, { method: "DELETE" }),
+    followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
+    followedFairsLoader: gravityLoader("/me/follow/profiles", {}, { headers: true }),
     homepageModulesLoader: gravityLoader("me/modules"),
     homepageSuggestedArtworksLoader: gravityLoader("me/suggested/artworks/homepage"),
     inquiryRequestsLoader: gravityLoader("me/inquiry_requests", {}, { headers: true }),
@@ -64,9 +68,9 @@ export default (accessToken, userID, opts) => {
         user_id: userID,
         private: true,
       }),
-        "artworks",
-        "is_saved"
-      ),
+      "artworks",
+      "is_saved"
+    ),
     savedArtworksLoader: gravityLoader("collection/saved-artwork/artworks", { user_id: userID, private: true }),
     suggestedArtistsLoader: gravityLoader("me/suggested/artists", {}, { headers: true }),
     suggestedSimilarArtistsLoader: gravityLoader(`user/${userID}/suggested/similar/artists`, {}, { headers: true }),

@@ -3546,6 +3546,42 @@ type FollowedArtistsArtworksGroupEdge {
   cursor: String!
 }
 
+# A connection to a list of items.
+type FollowedFairConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [FollowedFairEdge]
+}
+
+# An edge in a connection.
+type FollowedFairEdge {
+  # The item at the end of the edge
+  node: Fair
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+# A connection to a list of items.
+type FollowedShowConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [FollowedShowEdge]
+}
+
+# An edge in a connection.
+type FollowedShowEdge {
+  # The item at the end of the edge
+  node: Show
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
 type FollowGene {
   gene: Gene
 
@@ -3605,6 +3641,33 @@ type FollowsAndSaves {
     before: String
     last: Int
   ): FollowedArtistsArtworksGroupConnection
+
+  # A list of the current user’s currently followed shows
+  shows(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FollowedShowConnection
+
+  # A list of the current user’s currently followed fair profiles
+  fairs(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FollowedFairConnection
+}
+
+input FollowShowInput {
+  partner_show_id: String
+  unfollow: Boolean = false
+  clientMutationId: String
+}
+
+type FollowShowPayload {
+  show: Show
+  clientMutationId: String
 }
 
 enum Format {
@@ -5227,6 +5290,9 @@ type Mutation {
 
   # Follow (or unfollow) an gene
   followGene(input: FollowGeneInput!): FollowGenePayload
+
+  # Follow (or unfollow) a show
+  followShow(input: FollowShowInput!): FollowShowPayload
 
   # Updating a collector profile (loyalty applicant status).
   updateCollectorProfile(
