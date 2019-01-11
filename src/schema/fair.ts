@@ -50,6 +50,9 @@ const FairType = new GraphQLObjectType({
   name: "Fair",
   fields: () => ({
     ...GravityIDFields,
+    about: {
+      type: GraphQLString,
+    },
     artists: {
       type: artistConnection,
       args: pageable({
@@ -134,6 +137,9 @@ const FairType = new GraphQLObjectType({
         const end = moment.utc(end_at).add(14, "days")
         return moment.utc().isBetween(start, end)
       },
+    },
+    links: {
+      type: GraphQLString,
     },
     mobile_image: {
       /**
@@ -229,6 +235,10 @@ const FairType = new GraphQLObjectType({
     },
     tagline: {
       type: GraphQLString,
+    },
+    ticketsLink: {
+      type: GraphQLString,
+      resolve: ({ tickets_link }) => tickets_link,
     },
     exhibitors_grouped_by_name: {
       description: "The exhibitors with booths in this fair.",
