@@ -7229,6 +7229,9 @@ type Query {
   user(
     # Email to search for user by
     email: String
+
+    # ID of the user
+    id: String
   ): User
 
   # A list of Users
@@ -9109,6 +9112,9 @@ type Viewer {
   user(
     # Email to search for user by
     email: String
+
+    # ID of the user
+    id: String
   ): User
 
   # A list of Users

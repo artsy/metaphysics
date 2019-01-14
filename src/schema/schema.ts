@@ -64,7 +64,7 @@ import System from "./system"
 import Tag from "./tag"
 import TrendingArtists from "./artists/trending"
 import Users from "./users"
-import { UserByEmail } from "./user"
+import { User } from "./user"
 import MatchArtist from "./match/artist"
 import MatchGene from "./match/gene"
 import Me from "./me"
@@ -145,7 +145,7 @@ const rootFields: any = {
   system: System,
   tag: Tag,
   trending_artists: TrendingArtists,
-  user: UserByEmail,
+  user: User,
   users: Users,
   popular_artists: PopularArtists,
 }

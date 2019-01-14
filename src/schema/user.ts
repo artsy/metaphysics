@@ -51,39 +51,28 @@ export const UserType = new GraphQLObjectType({
   }),
 })
 
-export const UserByEmail = {
+export const User = {
   type: UserType,
-  name: "User by Email",
   args: {
     email: {
       type: GraphQLString,
       description: "Email to search for user by",
     },
-  },
-  resolve: (_root, option, _request, { rootValue: { userByEmailLoader } }) => {
-    return userByEmailLoader(option)
-      .then(result => {
-        return result
-      })
-      .catch(err => {
-        if (err.statusCode === 404) {
-          return false
-        }
-      })
-  },
-}
-
-export const UserByID = {
-  type: UserType,
-  name: "User by ID",
-  args: {
     id: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: "user id",
+      type: GraphQLString,
+      description: "ID of the user",
     },
   },
-  resolve: (_root, option, _request, { rootValue: { userByIDLoader } }) => {
-    return userByIDLoader(option)
+  resolve: (
+    _root,
+    option,
+    _request,
+    { rootValue: { userByEmailLoader, userByIDLoader } }
+  ) => {
+    const promise = option.id
+      ? userByIDLoader(option.id)
+      : userByEmailLoader(option)
+    return promise
       .then(result => {
         return result
       })
