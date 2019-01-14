@@ -6289,6 +6289,7 @@ type OrderWithMutationSuccess {
 type organizer {
   profile_id: ID
   profile: Profile
+  website: String
 }
 
 type PageCursor {
