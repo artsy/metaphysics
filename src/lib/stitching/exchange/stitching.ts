@@ -1,5 +1,6 @@
 import { GraphQLSchema } from "graphql"
 import { amountSDL, amount } from "schema/fields/money"
+import gql from "lib/gql"
 
 export const exchangeStitchingEnvironment = (
   localSchema: GraphQLSchema,
@@ -14,6 +15,79 @@ export const exchangeStitchingEnvironment = (
     "transactionFee",
   ]
   const totalsSDL = totals.map(amountSDL)
+
+  const aliasedPartyFragment = (field, alias) => {
+    return gql`
+    ... on CommerceOrder {
+      ${alias}: ${field} {
+        __typename
+        ... on CommerceUser {
+          __typename
+          id
+        }
+        ... on CommercePartner {
+          __typename
+          id
+        }
+      }
+    }`
+  }
+
+  const buyerParty = {
+    // bit of a magic in next line, when adding fragment, it seems
+    // all second level fields are ignored, so __typename and id
+    // couldn't be added, so the hack was to alias the fragment field
+    // and that gets the current fields
+    fragment: aliasedPartyFragment("buyer", "buyerParty"),
+    resolve: (parent, _args, context, info) => {
+      const typename = parent.buyerParty.__typename
+      const id = parent.buyerParty.id
+      return info.mergeInfo
+        .delegateToSchema({
+          schema: localSchema,
+          operation: "query",
+          fieldName: typename === "CommerceUser" ? "user" : "partner",
+          args: {
+            id,
+          },
+          context,
+          info,
+          transforms: (exchangeSchema as any).transforms,
+        })
+        .then(response => {
+          // Response coming from resolver is in "CommerceUser" type
+          // but we expect "User", we have to manually replace it
+          response.__typename = response.__typename.replace("Commerce", "")
+          return response
+        })
+    },
+  }
+
+  const sellerParty = {
+    fragment: aliasedPartyFragment("seller", "sellerParty"),
+    resolve: (parent, _args, context, info) => {
+      const typename = parent.sellerParty.__typename
+      const id = parent.sellerParty.id
+      return info.mergeInfo
+        .delegateToSchema({
+          schema: localSchema,
+          operation: "query",
+          fieldName: typename === "CommerceUser" ? "user" : "partner",
+          args: {
+            id,
+          },
+          context,
+          info,
+          transforms: (exchangeSchema as any).transforms,
+        })
+        .then(response => {
+          // Response coming from resolver is in "CommerceUser" type
+          // but we expect "User", we have to manually replace it
+          response.__typename = response.__typename.replace("Commerce", "")
+          return response
+        })
+    },
+  }
 
   // Map the totals to a set of resolvers that call the amount function
   // the type param is only used for the fragment name
@@ -63,84 +137,13 @@ export const exchangeStitchingEnvironment = (
       CommerceBuyOrder: {
         // The money helper resolvers
         ...reduceToResolvers(totalsResolvers("CommerceBuyOrder")),
-        buyerParty: {
-          // Grab the __typename so we can handle the resolving differences, and
-          // then the id on the objects we know about to resolve with.
-          // We re-use the existing MP union type
-          fragment: `fragment CommerceOrderBuyer on CommerceOrder {
-            buyer {
-              __typename
-              ... on User {
-                id
-              }
-              ... on Partner {
-                id
-              }
-            }
-          }`,
-          resolve: (parent, _args, context, info) => {
-            const typename = parent.buyer.__typename
-            const id = parent.buyer.id
-            return info.mergeInfo.delegateToSchema({
-              schema: localSchema,
-              operation: "query",
-              fieldName: typename === "CommerceUser" ? "user" : "partner",
-              args: {
-                id,
-              },
-              context,
-              info,
-              transforms: (exchangeSchema as any).transforms,
-            })
-          },
-        },
+        buyerParty: buyerParty,
+        sellerParty: sellerParty,
       },
       CommerceOfferOrder: {
         ...reduceToResolvers(totalsResolvers("CommerceOfferOrder")),
-        buyerParty: {
-          // bit of a magic in next line, when adding fragment, it seems
-          // all second level fields are ignored, so __typename and id
-          // couldn't be added, so the hack was to alias the fragment field
-          // and that gets the current fields
-          fragment: `... on CommerceOrder {
-            buyerParty: buyer {
-              __typename
-              ... on CommerceUser {
-                __typename
-                id
-              }
-              ... on CommercePartner {
-                __typename
-                id
-              }
-            }
-          }`,
-          resolve: (parent, _args, context, info) => {
-            const typename = parent.buyer.__typename
-            const id = parent.buyerParty.id
-            return info.mergeInfo
-              .delegateToSchema({
-                schema: localSchema,
-                operation: "query",
-                fieldName: typename === "CommerceUser" ? "user" : "partner",
-                args: {
-                  id,
-                },
-                context,
-                info,
-                transforms: (exchangeSchema as any).transforms,
-              })
-              .then(response => {
-                // Response coming from resolver is in "CommerceUser" type
-                // but we expect "User", we have to manually replace it
-                response.__typename = response.__typename.replace(
-                  "Commerce",
-                  ""
-                )
-                return response
-              })
-          },
-        },
+        buyerParty: buyerParty,
+        sellerParty: sellerParty,
       },
       CommerceLineItem: {
         artwork: {
