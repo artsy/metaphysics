@@ -18,7 +18,7 @@ const mapEnvBooleans = {
   heapDumps: !!config.ENABLE_HEAPDUMPS,
   stitching: !config.DISABLE_SCHEMA_STITCHING,
   stitchingConvection: !!config.ENABLE_CONSIGNMENTS_STITCHING,
-  stitchingExchange: !!config.ENABLE_ECOMMERCE_STITCHING,
+  stitchingExchange: !!config.ENABLE_COMMERCE_STITCHING,
   stitchingGravity: true,
   stitchingKaws: true,
 }

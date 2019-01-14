@@ -24,11 +24,11 @@ export const executableExchangeSchema = () => {
 export const transformsForExchange = [
   // Apply a prefix to all the typenames
   new RenameTypes(name => {
-    return `Ecommerce${name}`
+    return `Commerce${name}`
   }),
   // Rename all the root fields to be camelCased
   new RenameRootFields(
     (_operation, name) =>
-      `ecommerce${name.charAt(0).toUpperCase() + name.slice(1)}`
+      `commerce${name.charAt(0).toUpperCase() + name.slice(1)}`
   ),
 ]
