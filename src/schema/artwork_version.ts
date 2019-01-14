@@ -34,7 +34,7 @@ export const ArtworkVersion = new GraphQLObjectType({
         _options,
         _request,
         { rootValue: { artistsLoader } }
-      ) => artistsLoader({ id: version.artist_ids }),
+      ) => artistsLoader({ ids: version.artist_ids }),
     },
 
     artistNames: {
@@ -46,7 +46,7 @@ export const ArtworkVersion = new GraphQLObjectType({
         _request,
         { rootValue: { artistsLoader } }
       ) => {
-        const artists = await artistsLoader({ id: version.artist_ids })
+        const artists = await artistsLoader({ ids: version.artist_ids })
         return artistNames(artists)
       },
     },
