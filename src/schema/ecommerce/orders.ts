@@ -1,5 +1,5 @@
 import { pageable } from "relay-cursor-paging"
-import { graphql, GraphQLString, GraphQLInt, GraphQLEnumType } from "graphql"
+import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/enums/orders_sort_method_enum"
 import gql from "lib/gql"
