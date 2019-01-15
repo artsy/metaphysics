@@ -93,7 +93,7 @@ import config from "config"
 import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
 import { AddInitialOfferToOrderMutation } from "./ecommerce/add_initial_offer_to_order_mutation"
 import { SearchableItem } from "./searchableItem"
-const { ENABLE_CONSIGNMENTS_STITCHING, ENABLE_COMMERCE_STITCHING } = config
+const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
 // TODO: Remove this any
 const rootFields: any = {
@@ -175,44 +175,40 @@ if (!ENABLE_CONSIGNMENTS_STITCHING) {
   stitchedMutations.addAssetToConsignmentSubmission = AddAssetToConsignmentSubmission
 }
 
-if (!ENABLE_COMMERCE_STITCHING) {
-  stitchedRootFields.ecommerceOrder = Order
-  stitchedRootFields.ecommerceOrders = Orders
+stitchedRootFields.ecommerceOrder = Order
+stitchedRootFields.ecommerceOrders = Orders
 
-  stitchedMutations.ecommerceCreateOrderWithArtwork = CreateOrderWithArtworkMutation
-  stitchedMutations.ecommerceCreateOfferOrderWithArtwork = CreateOfferOrderWithArtworkMutation
-  stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
-  stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
-  stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
-  stitchedMutations.ecommerceBuyerAcceptOffer = BuyerAcceptOfferMutation
-  stitchedMutations.ecommerceSellerAcceptOffer = SellerAcceptOfferMutation
-  stitchedMutations.ecommerceBuyerCounterOffer = BuyerCounterOfferMutation
-  stitchedMutations.ecommerceSubmitPendingOffer = SubmitPendingOfferMutation
-  stitchedMutations.ecommerceSellerCounterOffer = SellerCounterOfferMutation
-  stitchedMutations.ecommerceBuyerRejectOffer = BuyerRejectOfferMutation
-  stitchedMutations.ecommerceSellerRejectOffer = SellerRejectOfferMutation
-  stitchedMutations.ecommerceConfirmPickup = ConfirmPickupMutation
-  stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
-  stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
-  stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
-  stitchedMutations.ecommerceAddInitialOfferToOrder = AddInitialOfferToOrderMutation
-  stitchedMutations.ecommerceSubmitOrderWithOffer = SubmitOrderWithOfferMutation
+stitchedMutations.ecommerceCreateOrderWithArtwork = CreateOrderWithArtworkMutation
+stitchedMutations.ecommerceCreateOfferOrderWithArtwork = CreateOfferOrderWithArtworkMutation
+stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
+stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
+stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
+stitchedMutations.ecommerceBuyerAcceptOffer = BuyerAcceptOfferMutation
+stitchedMutations.ecommerceSellerAcceptOffer = SellerAcceptOfferMutation
+stitchedMutations.ecommerceBuyerCounterOffer = BuyerCounterOfferMutation
+stitchedMutations.ecommerceSubmitPendingOffer = SubmitPendingOfferMutation
+stitchedMutations.ecommerceSellerCounterOffer = SellerCounterOfferMutation
+stitchedMutations.ecommerceBuyerRejectOffer = BuyerRejectOfferMutation
+stitchedMutations.ecommerceSellerRejectOffer = SellerRejectOfferMutation
+stitchedMutations.ecommerceConfirmPickup = ConfirmPickupMutation
+stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
+stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
+stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
+stitchedMutations.ecommerceAddInitialOfferToOrder = AddInitialOfferToOrderMutation
+stitchedMutations.ecommerceSubmitOrderWithOffer = SubmitOrderWithOfferMutation
 
-  // Deprecated
-  stitchedRootFields.order = Order
-  stitchedRootFields.orders = Orders
+// Deprecated
+stitchedRootFields.order = Order
+stitchedRootFields.orders = Orders
 
-  // Deprecated
-  stitchedMutations.createOrderWithArtwork = CreateOrderWithArtworkMutation
-  stitchedMutations.setOrderShipping = SetOrderShippingMutation
-  stitchedMutations.setOrderPayment = SetOrderPaymentMutation
-  stitchedMutations.approveOrder = ApproveOrderMutation
-  stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
-  stitchedMutations.rejectOrder = RejectOrderMutation
-  stitchedMutations.submitOrder = SubmitOrderMutation
-
-  // Deprecated
-}
+// Deprecated
+stitchedMutations.createOrderWithArtwork = CreateOrderWithArtworkMutation
+stitchedMutations.setOrderShipping = SetOrderShippingMutation
+stitchedMutations.setOrderPayment = SetOrderPaymentMutation
+stitchedMutations.approveOrder = ApproveOrderMutation
+stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
+stitchedMutations.rejectOrder = RejectOrderMutation
+stitchedMutations.submitOrder = SubmitOrderMutation
 
 export default new GraphQLSchema({
   allowedLegacyNames: ["__id"],

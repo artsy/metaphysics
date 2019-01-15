@@ -7,7 +7,7 @@ import {
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
-export const executableExchangeSchema = () => {
+export const executableExchangeSchema = transforms => {
   const exchangeSDL = readFileSync("src/data/exchange.graphql", "utf8")
   const exchangeLink = createExchangeLink()
 
@@ -17,7 +17,7 @@ export const executableExchangeSchema = () => {
   })
 
   // Return the new modified schema
-  return transformSchema(schema, transformsForExchange)
+  return transformSchema(schema, transforms)
   // Note that changes in this will need to be
 }
 
@@ -30,5 +30,18 @@ export const transformsForExchange = [
   new RenameRootFields(
     (_operation, name) =>
       `commerce${name.charAt(0).toUpperCase() + name.slice(1)}`
+  ),
+]
+
+export const legacyTransformsForExchange = [
+  // Apply a prefix to all the typenames
+  // for Legacy merged schema approach
+  new RenameTypes(name => {
+    return `Ecommerce${name}`
+  }),
+  // Rename all the root fields to be camelCased
+  new RenameRootFields(
+    (_operation, name) =>
+      `ecommerce${name.charAt(0).toUpperCase() + name.slice(1)}`
   ),
 ]

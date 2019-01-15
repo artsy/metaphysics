@@ -2,7 +2,10 @@ import { mergeSchemas as _mergeSchemas } from "graphql-tools"
 import { executableGravitySchema } from "lib/stitching/gravity/schema"
 import { executableConvectionSchema } from "lib/stitching/convection/schema"
 import { consignmentStitchingEnvironment } from "lib/stitching/convection/stitching"
-import { executableExchangeSchema } from "lib/stitching/exchange/schema"
+import {
+  executableExchangeSchema,
+  transformsForExchange,
+} from "lib/stitching/exchange/schema"
 import { executableKawsSchema } from "lib/stitching/kaws/schema"
 import { kawsStitchingEnvironment } from "lib/stitching/kaws/stitching"
 import config from "config"
@@ -30,7 +33,7 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
   schemas.push(gravitySchema)
 
   if (ENABLE_COMMERCE_STITCHING) {
-    const exchangeSchema = executableExchangeSchema()
+    const exchangeSchema = executableExchangeSchema(transformsForExchange)
     schemas.push(exchangeSchema)
 
     const { extensionSchema, resolvers } = exchangeStitchingEnvironment(
