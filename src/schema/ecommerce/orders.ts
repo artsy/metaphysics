@@ -32,6 +32,8 @@ export const Orders = {
       sort,
       first,
       after,
+      last,
+      before,
     },
     context,
     { rootValue: { exchangeSchema } }
@@ -97,6 +99,8 @@ export const Orders = {
       sort,
       first,
       after,
+      last,
+      before,
     }).then(extractEcommerceResponse("ecommerceOrders"))
   },
 }
