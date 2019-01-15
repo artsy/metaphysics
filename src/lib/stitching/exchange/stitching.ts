@@ -6,7 +6,7 @@ export const exchangeStitchingEnvironment = (
   localSchema: GraphQLSchema,
   exchangeSchema: GraphQLSchema
 ) => {
-  const totals = [
+  const orderTotals = [
     "itemsTotal",
     "sellerTotal",
     "buyerTotal",
@@ -14,7 +14,10 @@ export const exchangeStitchingEnvironment = (
     "shippingTotal",
     "transactionFee",
   ]
-  const totalsSDL = totals.map(amountSDL)
+  const orderTotalsSDL = orderTotals.map(amountSDL)
+
+  const lineItemTotals = ["shippingTotal", "listPrice", "commissionFee"]
+  const lineItemTotalsSDL = lineItemTotals.map(amountSDL)
 
   const aliasedPartyFragment = (field, alias) => {
     return gql`
@@ -91,8 +94,8 @@ export const exchangeStitchingEnvironment = (
 
   // Map the totals to a set of resolvers that call the amount function
   // the type param is only used for the fragment name
-  const totalsResolvers = type =>
-    totals.map(name => ({
+  const totalsResolvers = (type, totalSDLS) =>
+    totalSDLS.map(name => ({
       [name]: {
         fragment: `fragment ${type}_${name} on ${type} { ${name} }`,
         resolve: (parent, args, _context, _info) =>
@@ -107,20 +110,21 @@ export const exchangeStitchingEnvironment = (
     extensionSchema: `
     extend type CommerceLineItem {
       artwork: Artwork
+      ${lineItemTotalsSDL.join("\n")}
     }
 
     extend type CommerceBuyOrder {
       buyerParty: OrderParty
       sellerParty: OrderParty
 
-      ${totalsSDL.join("\n")}
+      ${orderTotalsSDL.join("\n")}
     }
 
     extend type CommerceOfferOrder {
       buyerParty: OrderParty
       sellerParty: OrderParty
 
-      ${totalsSDL.join("\n")}
+      ${orderTotalsSDL.join("\n")}
       ${amountSDL("offerTotal")}
     }
 
@@ -128,7 +132,7 @@ export const exchangeStitchingEnvironment = (
       buyerParty: OrderParty
       sellerParty: OrderParty
 
-      ${totalsSDL.join("\n")}
+      ${orderTotalsSDL.join("\n")}
     }
   `,
 
@@ -136,12 +140,14 @@ export const exchangeStitchingEnvironment = (
     resolvers: {
       CommerceBuyOrder: {
         // The money helper resolvers
-        ...reduceToResolvers(totalsResolvers("CommerceBuyOrder")),
+        ...reduceToResolvers(totalsResolvers("CommerceBuyOrder", orderTotals)),
         buyerParty: buyerParty,
         sellerParty: sellerParty,
       },
       CommerceOfferOrder: {
-        ...reduceToResolvers(totalsResolvers("CommerceOfferOrder")),
+        ...reduceToResolvers(
+          totalsResolvers("CommerceOfferOrder", orderTotals)
+        ),
         buyerParty: buyerParty,
         sellerParty: sellerParty,
       },
@@ -164,6 +170,9 @@ export const exchangeStitchingEnvironment = (
             })
           },
         },
+        ...reduceToResolvers(
+          totalsResolvers("CommerceLineItem", lineItemTotals)
+        ),
       },
     },
   }
