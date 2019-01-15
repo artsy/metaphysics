@@ -1,5 +1,5 @@
 import { pageable } from "relay-cursor-paging"
-import { graphql, GraphQLString } from "graphql"
+import { graphql, GraphQLString, GraphQLInt, GraphQLEnumType } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/enums/orders_sort_method_enum"
 import gql from "lib/gql"
@@ -22,7 +22,17 @@ export const Orders = {
   }),
   resolve: (
     _parent,
-    { sellerId, sellerType, buyerId, buyerType, mode, state, sort },
+    {
+      sellerId,
+      sellerType,
+      buyerId,
+      buyerType,
+      mode,
+      state,
+      sort,
+      first,
+      after,
+    },
     context,
     { rootValue: { exchangeSchema } }
   ) => {
@@ -56,6 +66,7 @@ export const Orders = {
           ${PageInfo}
           totalCount
           edges {
+            cursor
             node {
               ${AllOrderFields}
               lineItems {
@@ -84,6 +95,8 @@ export const Orders = {
       mode,
       state,
       sort,
+      first,
+      after,
     }).then(extractEcommerceResponse("ecommerceOrders"))
   },
 }
