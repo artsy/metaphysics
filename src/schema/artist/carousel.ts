@@ -48,7 +48,7 @@ const ArtistCarousel = {
               ([show, images]: any) => {
                 return _.assign(
                   { href: `/show/${show.id}`, title: show.name },
-                  _.first(images)
+                  _.find(images, i => i.is_default)
                 )
               }
             )
@@ -58,7 +58,7 @@ const ArtistCarousel = {
               artworks.map(artwork => {
                 return _.assign(
                   { href: `/artwork/${artwork.id}`, title: artwork.title },
-                  _.first(artwork.images)
+                  _.find(artwork.images, i => i.is_default)
                 )
               })
             )
