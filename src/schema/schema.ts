@@ -2,6 +2,7 @@ import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
 import Artwork from "./artwork"
+import { ArtworkVersionResolver } from "./artwork_version"
 import Artworks from "./artworks"
 import Artist from "./artist"
 import Artists from "./artists"
@@ -100,6 +101,7 @@ const rootFields: any = {
   article: Article,
   articles: Articles,
   artwork: Artwork,
+  artworkVersion: ArtworkVersionResolver,
   artworks: Artworks,
   artist: Artist,
   artists: Artists,

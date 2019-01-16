@@ -6,6 +6,11 @@ import {
 } from "lib/stitching/lib/getTypesFromSchema"
 import { printSchema } from "graphql"
 
+// let cachedSchema: GraphQLSchema = null
+// const getTransformedSchema = async () => {
+//   cachedSchema = await executableExchangeSchema(transformsForExchange)
+// }
+
 it("Does not include generic type names", async () => {
   const exchangeSchema = await executableExchangeSchema(transformsForExchange)
   const exchangeTypes = await getTypesFromSchema(exchangeSchema)
