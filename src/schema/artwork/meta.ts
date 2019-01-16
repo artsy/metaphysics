@@ -15,10 +15,12 @@ const forSaleIndication = artwork =>
 
 const dimensions = artwork => artwork.dimensions[artwork.metric]
 
-const partnerDescription = ({ partner, forsale }) => {
+const partnerDescription = ({ partner, forsale }, expanded = true) => {
   const name = partner && partner.name
   if (isEmpty(name)) return undefined
-  return forsale ? `Available for sale from ${name}` : `From ${name}`
+  return forsale && expanded
+    ? `Available for sale from ${name}`
+    : `From ${name}`
 }
 
 const ArtworkMetaType = new GraphQLObjectType({
@@ -32,32 +34,45 @@ const ArtworkMetaType = new GraphQLObjectType({
           defaultValue: 155,
         },
       },
-      resolve: (artwork, { limit }) =>
-        truncate(
-          join(", ", [
-            partnerDescription(artwork),
-            artistNames(artwork),
-            titleWithDate(artwork),
-            artwork.medium,
-            dimensions(artwork),
-          ]),
-          limit
-        ),
+      resolve: (artwork, { limit }) => {
+        const fields = [
+          partnerDescription(artwork),
+          artistNames(artwork),
+          titleWithDate(artwork),
+          artwork.medium,
+          dimensions(artwork),
+        ]
+
+        const description = truncate(join(", ", fields), limit)
+        return description
+      },
     },
     image: {
       type: GraphQLString,
-      resolve: ({ images }) =>
-        setVersion(getDefault(images), ["large", "medium", "tall"]),
+      resolve: ({ images }) => {
+        return setVersion(getDefault(images), ["large", "medium", "tall"])
+      },
+    },
+    share: {
+      type: GraphQLString,
+      resolve: artwork => {
+        return join(", ", [
+          "Check out " + artistNames(artwork),
+          titleWithDate(artwork),
+          partnerDescription(artwork, false),
+        ])
+      },
     },
     title: {
       type: GraphQLString,
-      resolve: artwork =>
-        join(" | ", [
+      resolve: artwork => {
+        return join(" | ", [
           artistNames(artwork),
           titleWithDate(artwork),
           forSaleIndication(artwork),
           "Artsy",
-        ]),
+        ])
+      },
     },
   },
 })

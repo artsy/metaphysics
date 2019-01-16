@@ -46,6 +46,7 @@ import FilterSaleArtworks from "./filter_sale_artworks"
 import FollowArtist from "./me/follow_artist"
 import FollowProfile from "./me/follow_profile"
 import FollowGene from "./me/follow_gene"
+import FollowShow from "./me/follow_show"
 import PartnerCategory from "./partner_category"
 import PartnerCategories from "./partner_categories"
 import PartnerShow from "./partner_show"
@@ -222,6 +223,7 @@ export default new GraphQLSchema({
       followArtist: FollowArtist,
       followProfile: FollowProfile,
       followGene: FollowGene,
+      followShow: FollowShow,
       updateCollectorProfile: UpdateCollectorProfile,
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,

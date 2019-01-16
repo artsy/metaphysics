@@ -22,15 +22,19 @@ const EventStatus = {
       },
       CLOSED: {
         value: "closed",
+        description: "End date is in the past",
       },
       CURRENT: {
         value: "current",
+        description: "Start date or end date is in the future",
       },
       RUNNING: {
         value: "running",
+        description: "Start date is in the past and end date is in the future",
       },
       UPCOMING: {
         value: "upcoming",
+        description: "Start date is in the future",
       },
     },
   }),

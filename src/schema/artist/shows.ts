@@ -84,26 +84,31 @@ export const ShowsConnectionField = {
         sort: "-end_at",
         total_count: true,
       })
-    ).then(({ body, headers }) => {
-      const totalCount = headers["x-total-count"]
-      const totalPages = Math.ceil(totalCount / size)
+    )
+      .then(({ body, headers }) => {
+        const whitelistedShows = showsWithBLacklistedPartnersRemoved(body)
+        return { body: whitelistedShows, headers }
+      })
+      .then(({ body, headers }) => {
+        const totalCount = headers["x-total-count"]
+        const totalPages = Math.ceil(totalCount / size)
 
-      return merge(
-        {
-          pageCursors: createPageCursors(pageOptions, totalCount),
-          totalCount,
-        },
-        connectionFromArraySlice(body, args, {
-          arrayLength: totalCount,
-          sliceStart: offset,
-        }),
-        {
-          pageInfo: {
-            hasPreviousPage: page > 1,
-            hasNextPage: page < totalPages,
+        return merge(
+          {
+            pageCursors: createPageCursors(pageOptions, totalCount),
+            totalCount,
           },
-        }
-      )
-    })
+          connectionFromArraySlice(body, args, {
+            arrayLength: totalCount,
+            sliceStart: offset,
+          }),
+          {
+            pageInfo: {
+              hasPreviousPage: page > 1,
+              hasNextPage: page < totalPages,
+            },
+          }
+        )
+      })
   },
 }

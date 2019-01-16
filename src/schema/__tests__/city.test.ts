@@ -7,6 +7,11 @@ const mockCities = {
     name: "Sacramende",
     coordinates: { lat: 38.5, lng: -121.8 },
   },
+  "smallville-usa": {
+    slug: "smallvile-usa",
+    name: "Smallville",
+    coordinates: { lat: 39.78, lng: -100.45 },
+  },
 }
 
 beforeEach(() => {
@@ -14,34 +19,70 @@ beforeEach(() => {
 })
 
 describe("City", () => {
-  it("finds a city by its slug", () => {
-    const query = gql`
-      {
-        city(slug: "sacramende-ca-usa") {
-          name
+  describe("finding by slug", () => {
+    it("finds a city by its slug", () => {
+      const query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+          }
         }
-      }
-    `
+      `
 
-    return runQuery(query).then(result => {
-      expect(result!.city).toEqual({
-        name: "Sacramende",
+      return runQuery(query).then(result => {
+        expect(result!.city).toEqual({
+          name: "Sacramende",
+        })
       })
+    })
+
+    it("returns a helpful error for unknown slugs", () => {
+      expect.assertions(1)
+      const query = gql`
+        {
+          city(slug: "sacramundo") {
+            name
+          }
+        }
+      `
+      return runQuery(query).catch(e =>
+        expect(e.message).toMatch(/City sacramundo not found in:/)
+      )
     })
   })
 
-  it("returns a helpful error for unknown slugs", () => {
-    expect.assertions(1)
-    const query = gql`
-      {
-        city(slug: "sacramundo") {
-          name
+  describe("finding by lat/lng", () => {
+    it("finds the city nearest to a supplied point", () => {
+      const pointNearSmallville = "{ lat: 40, lng: -100 }"
+      const query = `
+        {
+          city(near: ${pointNearSmallville}) {
+            name
+          }
         }
-      }
-    `
-    return runQuery(query).catch(e =>
-      expect(e.message).toMatch(/City sacramundo not found in:/)
-    )
+      `
+
+      return runQuery(query).then(result => {
+        expect(result!.city).toEqual({
+          name: "Smallville",
+        })
+      })
+    })
+
+    it("returns null if no cities are within a defined threshold", () => {
+      const veryRemotePoint = "{ lat: 90, lng: 0 }"
+      const query = gql`
+        {
+          city(near: ${veryRemotePoint}) {
+            name
+          }
+        }
+      `
+
+      return runQuery(query).then(result => {
+        expect(result!.city).toBeNull()
+      })
+    })
   })
 
   describe("shows", () => {
@@ -126,37 +167,39 @@ describe("City", () => {
     })
   })
 
-  it("resolves nearby fairs", () => {
-    const query = gql`
-      {
-        city(slug: "sacramende-ca-usa") {
-          name
-          fairs {
-            id
+  describe("fairs", () => {
+    it("resolves nearby fairs", () => {
+      const query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            fairs {
+              id
+            }
           }
         }
+      `
+
+      const mockFairs = [{ id: "first-fair" }]
+      const mockFairsLoader = jest.fn(() => Promise.resolve(mockFairs))
+      const rootValue = {
+        fairsLoader: mockFairsLoader,
+        accessToken: null,
+        userID: null,
       }
-    `
 
-    const mockFairs = [{ id: "first-fair" }]
-    const mockFairsLoader = jest.fn(() => Promise.resolve(mockFairs))
-    const rootValue = {
-      fairsLoader: mockFairsLoader,
-      accessToken: null,
-      userID: null,
-    }
-
-    return runQuery(query, rootValue).then(result => {
-      expect(result!.city).toEqual({
-        name: "Sacramende",
-        fairs: mockFairs,
-      })
-
-      expect(mockFairsLoader).toHaveBeenCalledWith(
-        expect.objectContaining({
-          near: "38.5,-121.8",
+      return runQuery(query, rootValue).then(result => {
+        expect(result!.city).toEqual({
+          name: "Sacramende",
+          fairs: mockFairs,
         })
-      )
+
+        expect(mockFairsLoader).toHaveBeenCalledWith(
+          expect.objectContaining({
+            near: "38.5,-121.8",
+          })
+        )
+      })
     })
   })
 })

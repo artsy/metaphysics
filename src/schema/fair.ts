@@ -43,6 +43,9 @@ const FairOrganizerType = new GraphQLObjectType({
         return profileLoader(profile_id).catch(() => null)
       },
     },
+    website: {
+      type: GraphQLString,
+    },
   },
 })
 
@@ -50,6 +53,9 @@ const FairType = new GraphQLObjectType({
   name: "Fair",
   fields: () => ({
     ...GravityIDFields,
+    about: {
+      type: GraphQLString,
+    },
     artists: {
       type: artistConnection,
       args: pageable({
@@ -134,6 +140,9 @@ const FairType = new GraphQLObjectType({
         const end = moment.utc(end_at).add(14, "days")
         return moment.utc().isBetween(start, end)
       },
+    },
+    links: {
+      type: GraphQLString,
     },
     mobile_image: {
       /**
@@ -230,6 +239,10 @@ const FairType = new GraphQLObjectType({
     tagline: {
       type: GraphQLString,
     },
+    ticketsLink: {
+      type: GraphQLString,
+      resolve: ({ tickets_link }) => tickets_link,
+    },
     exhibitors_grouped_by_name: {
       description: "The exhibitors with booths in this fair.",
       type: new GraphQLList(
@@ -244,6 +257,10 @@ const FairType = new GraphQLObjectType({
               type: new GraphQLList(GraphQLString),
               description: "Exhibitors sorted by name",
             },
+            profile_ids: {
+              type: new GraphQLList(GraphQLString),
+              description: "Partner/Exhibitor default profile id",
+            },
           },
         })
       ),
@@ -257,7 +274,11 @@ const FairType = new GraphQLObjectType({
           return []
         }
         const exhibitor_groups: {
-          [letter: string]: { letter: string; exhibitors: [String] }
+          [letter: string]: {
+            letter: string
+            exhibitors: [String]
+            profile_ids: [String]
+          }
         } = {}
         const fetch = allViaLoader(fairPartnersLoader, root._id)
 
@@ -275,10 +296,14 @@ const FairType = new GraphQLObjectType({
             const letter = firstName.charAt(0).toUpperCase()
             if (exhibitor_groups[letter]) {
               exhibitor_groups[letter].exhibitors.push(fairExhibitor.name)
+              exhibitor_groups[letter].profile_ids.push(
+                fairExhibitor.default_profile_id
+              )
             } else {
               exhibitor_groups[letter] = {
                 letter,
                 exhibitors: [fairExhibitor.name],
+                profile_ids: [fairExhibitor.default_profile_id],
               }
             }
           }

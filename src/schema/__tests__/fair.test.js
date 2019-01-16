@@ -136,6 +136,7 @@ describe("Fair", () => {
           {
             letter: "A",
             exhibitors: ["ArtHelix Gallery"],
+            profile_ids: ["arthelix-gallery"],
           },
         ],
       },
@@ -167,6 +168,7 @@ describe("Fair", () => {
         Promise.resolve({
           body: {
             name: "ArtHelix Gallery",
+            default_profile_id: "arthelix-gallery",
           },
           headers: {
             "x-total-count": 1,
@@ -185,6 +187,7 @@ describe("Fair", () => {
           exhibitors_grouped_by_name {
             letter
             exhibitors
+            profile_ids
           }
         }
       }
@@ -200,6 +203,7 @@ describe("Fair", () => {
           {
             letter: "A",
             exhibitors: ["ArtHelix Gallery"],
+            profile_ids: ["arthelix-gallery"],
           },
         ],
       },
