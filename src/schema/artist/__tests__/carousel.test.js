@@ -46,6 +46,7 @@ describe("ArtistCarousel type", () => {
                   original_width: 3500,
                   image_url: "https://xxx.cloudfront.net/xxx/:version.jpg",
                   image_versions: ["large"],
+                  is_default: true,
                 },
               ],
             },
