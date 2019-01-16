@@ -1014,6 +1014,7 @@ type ArtworkContextAuction implements Node {
   href: String
   name: String
   is_auction: Boolean
+  is_benefit: Boolean
   is_auction_promo: Boolean
   is_closed: Boolean
   is_open: Boolean
@@ -1361,6 +1362,7 @@ type ArtworkContextSale implements Node {
   href: String
   name: String
   is_auction: Boolean
+  is_benefit: Boolean
   is_auction_promo: Boolean
   is_closed: Boolean
   is_open: Boolean
@@ -4693,6 +4695,7 @@ type HomePageModuleContextSale implements Node {
   href: String
   name: String
   is_auction: Boolean
+  is_benefit: Boolean
   is_auction_promo: Boolean
   is_closed: Boolean
   is_open: Boolean
@@ -7473,6 +7476,7 @@ type Sale implements Node {
   href: String
   name: String
   is_auction: Boolean
+  is_benefit: Boolean
   is_auction_promo: Boolean
   is_closed: Boolean
   is_open: Boolean
