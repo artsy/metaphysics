@@ -1,5 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
+import { removeReproductionsFromArtworks } from "../carousel"
 
 describe("ArtistCarousel type", () => {
   let artist = null
@@ -90,4 +91,36 @@ describe("ArtistCarousel type", () => {
       })
     })
   })
+})
+
+it("filters artworks with an attribution class other than what we want", () => {
+  const before = [
+    {
+      title: "No attribution class",
+      attribution_class: undefined,
+    },
+    {
+      title: "Wanted attribution class",
+      attribution_class: "unique",
+    },
+    {
+      title: "Skipped attribution class",
+      attribution_class: "ephemera",
+    },
+  ]
+  const filtered = removeReproductionsFromArtworks(before)
+
+  expect(filtered).toHaveLength(2)
+  expect(filtered).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "attribution_class": undefined,
+    "title": "No attribution class",
+  },
+  Object {
+    "attribution_class": "unique",
+    "title": "Wanted attribution class",
+  },
+]
+`)
 })
