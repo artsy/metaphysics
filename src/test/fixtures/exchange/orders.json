@@ -8,6 +8,7 @@
   "totalCount": 100,
   "edges": [
     {
+      "cursor": "Mq==",
       "node": {
         "id": "fooid123",
         "code": "1",
