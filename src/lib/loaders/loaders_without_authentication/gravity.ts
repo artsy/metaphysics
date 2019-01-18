@@ -23,11 +23,12 @@ export default opts => {
 
     let groupedKeys = Object.values(groupBy(keys, renderParams)).map(keys => {
       if (typeof keys[0] === "string") {
-        return { id: keys }
+        return { id: keys, size: keys.length }
       }
       return {
         ...keys[0],
-        id: keys.map(k => k.id)
+        id: keys.map(k => k.id),
+        size: keys.length
       }
     })
 
