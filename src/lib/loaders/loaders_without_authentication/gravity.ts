@@ -2,11 +2,61 @@
 import factories from "../api"
 import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_factory"
 import gravity from "lib/apis/gravity"
+import DataLoader from "dataloader"
+import { groupBy, flatten } from 'lodash'
 
 export default opts => {
   const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
   const gravityUncachedLoader = uncachedLoaderFactory(gravity, "gravity")
+
+  const renderParams = (key) => {
+    if (typeof key === "string") {
+      return ""
+    }
+    const { id: [id], ...params} = key;
+    return Object.entries(params).map(entry => entry.join('=')).sort().join('&')
+  }
+
+  const batchLoader = (singleLoader, multipleLoader, defaultResult: any = null) => {
+    const dl = new DataLoader(keys => {
+
+    let groupedKeys = Object.values(groupBy(keys, renderParams)).map(keys => {
+      if (typeof keys[0] === "string") {
+        return { id: keys }
+      }
+      return {
+        ...keys[0],
+        id: keys.map(k => k.id)
+      }
+    })
+
+    return Promise.all(
+      groupedKeys
+      .map(keys => {
+        console.log(keys.id)
+      if (keys.id.length === 1) {
+        return singleLoader(keys)
+      } else {
+        return multipleLoader(keys).then(results => console.log('RESULT', results.length) || results)
+      }
+    })).then(data => {
+      const normalizedResults = data.map((queriedGroup, groupIndex) => {
+        return groupedKeys[groupIndex].id.map(id => 
+          queriedGroup.find(r => 
+            r._id === id
+            ) || defaultResult
+        )
+      })
+      return flatten(normalizedResults)
+    })
+  })
+
+  return (key) => dl.load(key)
+}
+
+  const batchSaleLoader = batchLoader(gravityLoader(id => `sale/${id}`), gravityLoader("sales"))
+  const batchSalesLoader = batchLoader(gravityLoader(id => `sale/${id}`), gravityLoader("sales"), [])
 
   return {
     artistArtworksLoader: gravityLoader(id => `artist/${id}/artworks`),
@@ -58,8 +108,10 @@ export default opts => {
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`, {}, { headers: true }),
     saleArtworkLoader: gravityUncachedLoader(({ saleId, saleArtworkId }) => `sale/${saleId}/sale_artwork/${saleArtworkId}`, null),
-    saleLoader: gravityLoader(id => `sale/${id}`),
-    salesLoader: gravityLoader("sales"),
+    // saleLoader: gravityLoader(id => `sale/${id}`),
+    // salesLoader: gravityLoader("sales"),
+    saleLoader: batchSaleLoader,
+    salesLoader: batchSalesLoader,
     setItemsLoader: gravityLoader(id => `set/${id}/items`),
     setLoader: gravityLoader(id => `set/${id}`),
     setsLoader: gravityLoader("sets"),
