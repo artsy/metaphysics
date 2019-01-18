@@ -14,7 +14,7 @@ export default opts => {
     if (typeof key === "string") {
       return ""
     }
-    const { id: [id], ...params} = key;
+    const { id, ...params} = key;
     return Object.entries(params).map(entry => entry.join('=')).sort().join('&')
   }
 
