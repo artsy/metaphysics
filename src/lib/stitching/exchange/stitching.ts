@@ -5,6 +5,8 @@ import gql from "lib/gql"
 const orderTotals = [
   "itemsTotal",
   "sellerTotal",
+  "commissionFee",
+  "totalListPrice",
   "buyerTotal",
   "taxTotal",
   "shippingTotal",

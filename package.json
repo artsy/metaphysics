@@ -25,7 +25,7 @@
     "prepare": "patch-package",
     "prettier-project": "prettier --write 'src/**/*.{js,ts,tsx,md,graphql}'",
     "start": "yarn run dev",
-    "test:validQueries": "babel-node --extensions '.ts,.js' src/__tests__/runStoredQueryTests.ts",
+    "test:validQueries": "babel-node --extensions '.ts,.js' src/integration/__tests__/runStoredQueryTests.ts",
     "test": "yarn type-check && yarn lint && jest",
     "type-check": "tsc --noEmit --pretty",
     "verbose-dev": "DEBUG=verbose,info,error nf start --procfile Procfile.dev",
