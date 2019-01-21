@@ -23,23 +23,6 @@ export const exchangeStitchingEnvironment = (
   localSchema: GraphQLSchema,
   exchangeSchema: GraphQLSchema
 ) => {
-  const aliasedPartyFragment = (field, alias) => {
-    return gql`
-    ... on CommerceOrder {
-      ${alias}: ${field} {
-        __typename
-        ... on CommerceUser {
-          __typename
-          id
-        }
-        ... on CommercePartner {
-          __typename
-          id
-        }
-      }
-    }`
-  }
-
   type DetailsFactoryInput = { from: string; to: string }
 
   /**
@@ -49,6 +32,28 @@ export const exchangeStitchingEnvironment = (
    * You pass in the field to get the details from, and and the new fieldName
    */
   const partyUnionToDetailsFactory = ({ from, to }: DetailsFactoryInput) => {
+    // We abuse the query alias feature to make sure that all
+    // the data we need to generate the full object from
+    // is included.
+
+    // It's possible that this working around a bug.
+    const aliasedPartyFragment = (field, alias) => {
+      return gql`
+      ... on CommerceOrder {
+        ${alias}: ${field} {
+          __typename
+          ... on CommerceUser {
+            __typename
+            id
+          }
+          ... on CommercePartner {
+            __typename
+            id
+          }
+        }
+      }`
+    }
+
     return {
       // Bit of a magic in next line, when adding fragment, it seems
       // all second level fields are ignored, so __typename and id
