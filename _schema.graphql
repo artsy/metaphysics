@@ -8166,6 +8166,9 @@ type Show implements Node {
   # The partner that represents this show, could be a non-Artsy partner
   partner: PartnerTypes
 
+  # The website of the partners in the show
+  partner_url: String
+
   # The press release for this show
   press_release(format: Format): String
 

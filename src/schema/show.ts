@@ -597,6 +597,13 @@ export const ShowType = new GraphQLObjectType({
         }
       },
     },
+    partner_url: {
+      description: "The website of the partners in the show",
+      type: GraphQLString,
+      resolve: (show, _options, _request) => {
+        if (show.partner) return show.partner.website || ""
+      },
+    },
     press_release: {
       description: "The press release for this show",
       ...markdown(),
