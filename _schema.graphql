@@ -2378,12 +2378,6 @@ type BuyOrder implements Order {
   # Buyer phone number
   buyerPhoneNumber: String
 
-  # Latest offer
-  lastOffer: Offer
-
-  # List of submitted offers made on this order so far
-  offers: OfferConnection
-
   # Total amount of latest offer
   offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
 
@@ -5836,12 +5830,6 @@ type OfferOrder implements Order {
   # Buyer phone number
   buyerPhoneNumber: String
 
-  # Latest offer
-  lastOffer: Offer
-
-  # List of submitted offers made on this order so far
-  offers: OfferConnection
-
   # Total amount of latest offer
   offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
 
@@ -5861,6 +5849,12 @@ type OfferOrder implements Order {
 
   # Waiting for one participants response
   awaitingResponseFrom: OrderParticipantEnum
+
+  # Latest offer
+  lastOffer: Offer
+
+  # List of submitted offers made on this order so far
+  offers: OfferConnection
 }
 
 interface Order {
@@ -6065,12 +6059,6 @@ interface Order {
 
   # Buyer phone number
   buyerPhoneNumber: String
-
-  # Latest offer
-  lastOffer: Offer
-
-  # List of submitted offers made on this order so far
-  offers: OfferConnection
 
   # Total amount of latest offer
   offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
