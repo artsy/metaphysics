@@ -283,7 +283,7 @@ const PartnerType = new GraphQLObjectType({
         type: GraphQLString,
         resolve: root => {
           if (root.website) {
-            return root.website || ""
+            return root.website
           }
         },
       },
