@@ -6398,6 +6398,9 @@ type Partner implements Node {
     status: EventStatus
   ): [PartnerShow]
   type: String
+
+  # The gallery partner's web address
+  website: String
 }
 
 type PartnerArtist {

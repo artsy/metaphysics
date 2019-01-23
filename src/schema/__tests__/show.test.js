@@ -46,11 +46,14 @@ describe("Show type", () => {
 
     rootValue = {
       showLoader: sinon.stub().returns(Promise.resolve(showData)),
-      showsWithHeadersLoader: sinon
-        .stub()
-        .returns(
-          Promise.resolve({ body: [showData], headers: { "x-total-count": 1 } })
-        ),
+      showsWithHeadersLoader: sinon.stub().returns(
+        Promise.resolve({
+          body: [showData],
+          headers: {
+            "x-total-count": 1,
+          },
+        })
+      ),
       galaxyGalleriesLoader: sinon.stub().returns(Promise.resolve(galaxyData)),
       partnerShowLoader: sinon.stub().returns(Promise.resolve(showData)),
     }
@@ -684,7 +687,11 @@ describe("Show type", () => {
         show: {
           nearbyShows: {
             edges: [
-              { node: { id: "new-museum-1-2015-triennial-surround-audience" } },
+              {
+                node: {
+                  id: "new-museum-1-2015-triennial-surround-audience",
+                },
+              },
             ],
           },
         },
@@ -738,7 +745,9 @@ describe("Show type", () => {
       await runQuery(query, rootValue)
       const gravityOptions = rootValue.showsWithHeadersLoader.args[0][0]
 
-      expect(gravityOptions).toMatchObject({ displayable: true })
+      expect(gravityOptions).toMatchObject({
+        displayable: true,
+      })
       expect(gravityOptions).not.toHaveProperty("discoverable")
     })
 
@@ -765,7 +774,9 @@ describe("Show type", () => {
       await runQuery(query, rootValue)
       const gravityOptions = rootValue.showsWithHeadersLoader.args[0][0]
 
-      expect(gravityOptions).toMatchObject({ discoverable: true })
+      expect(gravityOptions).toMatchObject({
+        discoverable: true,
+      })
       expect(gravityOptions).not.toHaveProperty("displayable")
     })
   })
@@ -875,7 +886,9 @@ describe("Show type", () => {
         partnerShowArtworksLoader: () =>
           Promise.resolve({
             body: artworksResponse,
-            headers: { "x-total-count": artworksResponse.length },
+            headers: {
+              "x-total-count": artworksResponse.length,
+            },
           }),
         showLoader: () => Promise.resolve(showData),
       }
@@ -982,8 +995,14 @@ describe("Show type", () => {
         filterArtworksLoader: jest.fn().mockReturnValue(
           Promise.resolve({
             hits: [
-              { id: "1", title: "foo-artwork" },
-              { id: "2", title: "bar-artwork" },
+              {
+                id: "1",
+                title: "foo-artwork",
+              },
+              {
+                id: "2",
+                title: "bar-artwork",
+              },
             ],
             aggregations: {
               total: {
@@ -1023,7 +1042,10 @@ describe("Show type", () => {
             artworks_connection: {
               edges: [
                 {
-                  node: { id: "1", title: "foo-artwork" },
+                  node: {
+                    id: "1",
+                    title: "foo-artwork",
+                  },
                 },
               ],
             },
