@@ -278,6 +278,15 @@ const PartnerType = new GraphQLObjectType({
           return exceptions[type] || type
         },
       },
+      website: {
+        description: "The gallery partner's web address",
+        type: GraphQLString,
+        resolve: root => {
+          if (root.website) {
+            return root.website || ""
+          }
+        },
+      },
     }
   },
 })

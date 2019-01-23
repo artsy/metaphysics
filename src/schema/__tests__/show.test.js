@@ -18,7 +18,6 @@ describe("Show type", () => {
       partner: {
         id: "new-museum",
       },
-      partner_url: "https://www.newmuseum.org/",
       display_on_partner_profile: true,
       eligible_artworks_count: 8,
       is_reference: true,
@@ -58,26 +57,6 @@ describe("Show type", () => {
       galaxyGalleriesLoader: sinon.stub().returns(Promise.resolve(galaxyData)),
       partnerShowLoader: sinon.stub().returns(Promise.resolve(showData)),
     }
-  })
-
-  it("includes the gallery website address in shows", async () => {
-    showData.partner = {
-      website: "https://www.newmuseum.org/",
-    }
-    const query = gql`
-      {
-        show(id: "new-museum-1-2015-triennial-surround-audience") {
-          partner_url
-        }
-      }
-    `
-    const data = await runQuery(query, rootValue)
-
-    expect(data).toEqual({
-      show: {
-        partner_url: "https://www.newmuseum.org/",
-      },
-    })
   })
 
   it("include true has_location flag for shows with location", async () => {
