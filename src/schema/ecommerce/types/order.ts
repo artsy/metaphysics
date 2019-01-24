@@ -139,13 +139,6 @@ const orderFields = {
     type: GraphQLString,
     description: "Buyer phone number",
   },
-  offerTotalCents: {
-    type: GraphQLInt,
-    description: "Total amount of latest offer",
-    deprecationReason: "Switch to ItemTotalCents",
-    resolve: ({ itemsTotalCents }) => itemsTotalCents,
-  },
-  offerTotal: amount(({ itemsTotalCents }) => itemsTotalCents),
 }
 
 export const OrderInterface = new GraphQLInterfaceType({
