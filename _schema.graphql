@@ -1083,6 +1083,7 @@ type ArtworkContextFair {
   # A type-specific Gravity Mongo Document ID.
   _id: String!
   about: String
+  followed_content: followed_fair_content
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -3204,6 +3205,7 @@ type Fair {
   # A type-specific Gravity Mongo Document ID.
   _id: String!
   about: String
+  followed_content: followed_fair_content
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -3493,6 +3495,11 @@ type FollowArtistPayload {
 type FollowArtists {
   artists: [Artist]
   counts: FollowArtistCounts
+}
+
+type followed_fair_content {
+  artists: [Artist]
+  partners: [Partner]
 }
 
 type FollowedArtistsArtworksGroup implements Node {
@@ -4365,6 +4372,7 @@ type HomePageModuleContextFair {
   # A type-specific Gravity Mongo Document ID.
   _id: String!
   about: String
+  followed_content: followed_fair_content
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts

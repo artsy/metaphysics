@@ -9,6 +9,8 @@ import date from "./fields/date"
 import numeral from "./fields/numeral"
 import Profile from "./profile"
 import Image from "./image"
+import Artist from "./artist"
+import Partner from "./partner"
 import { showConnection } from "./show"
 import Location from "./location"
 import { GravityIDFields } from "./object_identification"
@@ -25,6 +27,25 @@ import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
+
+const FollowedContentType = () =>
+  new GraphQLObjectType({
+    name: "followed_fair_content",
+    fields: {
+      artists: {
+        type: new GraphQLList(Artist.type),
+        resolve: () => {
+          return {}
+        },
+      },
+      partners: {
+        type: new GraphQLList(Partner.type),
+        resolve: () => {
+          return {}
+        },
+      },
+    },
+  })
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",
@@ -55,6 +76,9 @@ const FairType = new GraphQLObjectType({
     ...GravityIDFields,
     about: {
       type: GraphQLString,
+    },
+    followed_content: {
+      type: FollowedContentType(),
     },
     artists: {
       type: artistConnection,
