@@ -41,7 +41,7 @@ const addFollowedGenes = (
       })
       const copy = modules.slice(0)
       const args = [followedGeneIndex, 1].concat(genes)
-      Array.prototype.splice.apply(copy, args)
+      Array.prototype.splice.apply(copy, args as any)
       return copy
     })
   }
