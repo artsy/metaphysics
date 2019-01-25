@@ -30,5 +30,6 @@
     "urljoin",
     "kaws"
   ],
-  "debug.node.autoAttach": "on"
+  "debug.node.autoAttach": "on",
+  "eslint.validate": ["typescript"]
 }

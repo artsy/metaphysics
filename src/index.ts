@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-
 import { graphqlTimeoutMiddleware } from "lib/graphqlTimeoutMiddleware"
 import { applyMiddleware as applyGraphQLMiddleware } from "graphql-middleware"
 

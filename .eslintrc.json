@@ -6,9 +6,9 @@
     "jasmine": true,
     "es6": true
   },
-  "plugins": ["promise"],
+  "plugins": ["promise", "@typescript-eslint/eslint-plugin"],
   "extends": ["react-app", "plugin:promise/recommended"],
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "rules": {
     "import/first": 0,
     "no-useless-escape": 0,
