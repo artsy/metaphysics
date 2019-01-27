@@ -17,6 +17,7 @@ import { OrderPartyUnionType } from "./order_party_union"
 import { OrderModeEnum } from "./enums/order_mode_enum"
 import { OfferConnection, OfferType } from "./offer"
 import { OrderParticipantEnum } from "./enums/order_participant_enum"
+import { PageCursorsType } from "schema/fields/pagination"
 
 const orderFields = {
   id: {
@@ -225,6 +226,13 @@ export const {
   connectionFields: {
     totalCount: {
       type: GraphQLInt,
+    },
+    totalPages: {
+      type: GraphQLInt,
+    },
+    pageCursors: {
+      type: PageCursorsType,
+      resolve: ({ pageCursors }) => pageCursors,
     },
   },
 })

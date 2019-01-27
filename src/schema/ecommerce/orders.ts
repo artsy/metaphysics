@@ -66,6 +66,7 @@ export const Orders = {
           last: $last
         ) {
           ${PageInfo}
+          totalPages
           totalCount
           edges {
             cursor
@@ -84,6 +85,28 @@ export const Orders = {
                   }
                 }
               }
+            }
+          }
+          pageCursors {
+            first {
+              cursor
+              isCurrent
+              page
+            }
+            last {
+              cursor
+              isCurrent
+              page
+            }
+            around {
+              cursor
+              isCurrent
+              page
+            }
+            previous {
+              cursor
+              isCurrent
+              page
             }
           }
         }
