@@ -55,6 +55,7 @@ export const graphqlTimeoutMiddleware = (defaultTimeoutInMS: number) => {
       timeoutForField(fieldFromResolveInfo(info)) || defaultTimeoutInMS
     let timeoutID
     return Promise.race([
+      // eslint-disable-next-line promise/param-names
       new Promise((_resolve, reject) => {
         timeoutID = setTimeout(() => {
           const field = `${info.parentType}.${info.fieldName}`

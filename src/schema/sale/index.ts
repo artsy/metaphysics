@@ -226,6 +226,7 @@ export const SaleType = new GraphQLObjectType({
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
       name: { type: GraphQLString },
       is_auction: { type: GraphQLBoolean },
+      is_benefit: { type: GraphQLBoolean },
       is_auction_promo: {
         type: GraphQLBoolean,
         resolve: ({ sale_type }) => sale_type === "auction promo",
