@@ -18,10 +18,33 @@ describe("Orders query", () => {
     const query = gql`
       {
         orders(sellerId: "581b45e4cd530e658b000124") {
+          totalPages
           totalCount
           edges {
             node {
               ${OrderSellerFields}
+            }
+          }
+          pageCursors {
+            first {
+              cursor
+              isCurrent
+              page
+            }
+            last {
+              cursor
+              isCurrent
+              page
+            }
+            around {
+              cursor
+              isCurrent
+              page
+            }
+            previous {
+              cursor
+              isCurrent
+              page
             }
           }
         }
@@ -30,6 +53,13 @@ describe("Orders query", () => {
 
     return runQuery(query, rootValue).then(data => {
       expect(data!.orders.totalCount).toEqual(100)
+      expect(data!.orders.totalPages).toEqual(10)
+      expect(data!.orders.pageCursors).not.toBeNull
+      expect(data!.orders.pageCursors.first.page).toEqual(1)
+      expect(data!.orders.pageCursors.last.page).toEqual(10)
+      expect(data!.orders.pageCursors.around.length).toEqual(3)
+      expect(data!.orders.pageCursors.previous.page).toEqual(4)
+      expect(data!.orders.totalPages).toEqual(10)
       expect(data!.orders.edges[0].node).toEqual(sampleOrder())
     })
   })

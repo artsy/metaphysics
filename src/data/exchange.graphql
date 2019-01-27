@@ -60,7 +60,6 @@ type BuyOrder implements Order {
   # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int
   lastApprovedAt: DateTime
-  lastOffer: Offer @deprecated(reason: "Switch to OfferOrder lastOffer")
   lastSubmittedAt: DateTime
   lineItems(
     # Returns the elements in the list that come after the specified cursor.
@@ -76,21 +75,6 @@ type BuyOrder implements Order {
     last: Int
   ): LineItemConnection
   mode: OrderModeEnum
-  offers(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-    fromId: String
-    fromType: String
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): OfferConnection @deprecated(reason: "Switch to OfferOrder offers")
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
   sellerTotalCents: Int
@@ -515,7 +499,6 @@ interface Order {
   # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int
   lastApprovedAt: DateTime
-  lastOffer: Offer @deprecated(reason: "Switch to OfferOrder lastOffer")
   lastSubmittedAt: DateTime
   lineItems(
     # Returns the elements in the list that come after the specified cursor.
@@ -531,21 +514,6 @@ interface Order {
     last: Int
   ): LineItemConnection
   mode: OrderModeEnum
-  offers(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-    fromId: String
-    fromType: String
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): OfferConnection @deprecated(reason: "Switch to OfferOrder offers")
   requestedFulfillment: RequestedFulfillmentUnion
   seller: OrderPartyUnion!
   sellerTotalCents: Int
@@ -592,8 +560,8 @@ type OrderConnectionWithTotalCount {
 
   # Information to aid in pagination.
   pageInfo: PageInfo!
-  totalCount: Int!
-  totalPages: Int!
+  totalCount: Int
+  totalPages: Int
 }
 
 # An edge in a connection.

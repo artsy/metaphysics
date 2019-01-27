@@ -6,6 +6,7 @@
     "endCursor": 0
   },
   "totalCount": 100,
+  "totalPages": 10,
   "edges": [
     {
       "cursor": "Mq==",
@@ -85,5 +86,39 @@
         }
       }
     }
-  ]
+  ],
+  "pageCursors": {
+    "first": {
+      "isCurrent": false,
+      "page": 1,
+      "cursor": "a"
+    },
+    "last": {
+      "isCurrent": false,
+      "page": 10,
+      "cursor": "j"
+    },
+    "around": [
+      {
+        "isCurrent": false,
+        "page": 4,
+        "cursor": "d"
+      },
+      {
+        "isCurrent": false,
+        "page": 5,
+        "cursor": "e"
+      },
+      {
+        "isCurrent": false,
+        "page": 6,
+        "cursor": "f"
+      }
+    ],
+    "previous": {
+      "isCurrent": false,
+      "page": 4,
+      "cursor": "d"
+    }
+  }
 }
