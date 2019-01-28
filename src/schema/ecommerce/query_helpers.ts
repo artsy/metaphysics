@@ -28,6 +28,32 @@ export const PageInfo = gql`
   }
 `
 
+export const PaginationFields = gql`
+  totalPages
+  pageCursors {
+    first {
+      cursor
+      isCurrent
+      page
+    }
+    last {
+      cursor
+      isCurrent
+      page
+    }
+    around {
+      cursor
+      isCurrent
+      page
+    }
+    previous {
+      cursor
+      isCurrent
+      page
+    }
+  }
+`
+
 export const ParticipantFields = gql`
   seller {
     __typename

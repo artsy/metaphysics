@@ -3,7 +3,7 @@ import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/enums/orders_sort_method_enum"
 import gql from "lib/gql"
-import { PageInfo, AllOrderFields } from "./query_helpers"
+import { PageInfo, PaginationFields, AllOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { OrderModeEnum } from "./types/enums/order_mode_enum"
 
@@ -66,7 +66,6 @@ export const Orders = {
           last: $last
         ) {
           ${PageInfo}
-          totalPages
           totalCount
           edges {
             cursor
@@ -87,28 +86,7 @@ export const Orders = {
               }
             }
           }
-          pageCursors {
-            first {
-              cursor
-              isCurrent
-              page
-            }
-            last {
-              cursor
-              isCurrent
-              page
-            }
-            around {
-              cursor
-              isCurrent
-              page
-            }
-            previous {
-              cursor
-              isCurrent
-              page
-            }
-          }
+          ${PaginationFields}
         }
       }
     `
