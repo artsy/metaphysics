@@ -114,7 +114,6 @@ type EcommerceBuyOrder implements EcommerceOrder {
   # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int
   lastApprovedAt: EcommerceDateTime
-  lastOffer: EcommerceOffer @deprecated(reason: \\"Switch to OfferOrder lastOffer\\")
   lastSubmittedAt: EcommerceDateTime
   lineItems(
     # Returns the elements in the list that come after the specified cursor.
@@ -130,21 +129,6 @@ type EcommerceBuyOrder implements EcommerceOrder {
     last: Int
   ): EcommerceLineItemConnection
   mode: EcommerceOrderModeEnum
-  offers(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-    fromId: String
-    fromType: String
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): EcommerceOfferConnection @deprecated(reason: \\"Switch to OfferOrder offers\\")
   requestedFulfillment: EcommerceRequestedFulfillmentUnion
   seller: EcommerceOrderPartyUnion!
   sellerTotalCents: Int
@@ -338,8 +322,10 @@ type EcommerceLineItem {
   ): EcommerceFulfillmentConnection
   id: ID!
   listPriceCents: Int!
+  order: EcommerceOrder!
   priceCents: Int! @deprecated(reason: \\"switch to use listPriceCents\\")
   quantity: Int!
+  shippingTotalCents: Int
   updatedAt: EcommerceDateTime!
 }
 
@@ -483,7 +469,6 @@ interface EcommerceOrder {
   # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int
   lastApprovedAt: EcommerceDateTime
-  lastOffer: EcommerceOffer @deprecated(reason: \\"Switch to OfferOrder lastOffer\\")
   lastSubmittedAt: EcommerceDateTime
   lineItems(
     # Returns the elements in the list that come after the specified cursor.
@@ -499,21 +484,6 @@ interface EcommerceOrder {
     last: Int
   ): EcommerceLineItemConnection
   mode: EcommerceOrderModeEnum
-  offers(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-    fromId: String
-    fromType: String
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): EcommerceOfferConnection @deprecated(reason: \\"Switch to OfferOrder offers\\")
   requestedFulfillment: EcommerceRequestedFulfillmentUnion
   seller: EcommerceOrderPartyUnion!
   sellerTotalCents: Int
@@ -556,10 +526,12 @@ type EcommerceOrderConnectionWithTotalCount {
 
   # A list of nodes.
   nodes: [EcommerceOrder]
+  pageCursors: EcommercePageCursors
 
   # Information to aid in pagination.
   pageInfo: EcommercePageInfo!
-  totalCount: Int!
+  totalCount: Int
+  totalPages: Int
 }
 
 # An edge in a connection.
@@ -632,6 +604,28 @@ type EcommerceOrderWithMutationFailure {
 # A successfully returned order type
 type EcommerceOrderWithMutationSuccess {
   order: EcommerceOrder!
+}
+
+type EcommercePageCursor {
+  # first cursor on the page
+  cursor: String!
+
+  # is this the current page?
+  isCurrent: Boolean!
+
+  # page number out of totalPages
+  page: Int!
+}
+
+type EcommercePageCursors {
+  around: [EcommercePageCursor!]!
+
+  # optional, may be included in field around
+  first: EcommercePageCursor
+
+  # optional, may be included in field around
+  last: EcommercePageCursor
+  previous: EcommercePageCursor
 }
 
 # Information about pagination in a connection.
@@ -862,6 +856,23 @@ type Mutation {
 }
 
 type Query {
+  ecommerceLineItems(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+    artworkId: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+    editionSetId: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    orderStates: [EcommerceOrderStateEnum!]
+  ): EcommerceLineItemConnection
+
   # Find an order by ID
   ecommerceOrder(code: String, id: ID): EcommerceOrder
 

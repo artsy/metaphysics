@@ -908,7 +908,7 @@
     "@typescript-eslint/parser" "1.1.0"
     requireindex "^1.2.0"
 
-"@typescript-eslint/parser@1.1.0", "@typescript-eslint/parser@^1.1.0":
+"@typescript-eslint/parser@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-1.1.0.tgz#cce0e0951e6543d6ab7ef87a3e020335bf8c5999"
   integrity sha512-Cs8ZPIcJBFmwSTXS+Qk7wiOC2i2jmj8Nuutk3/l7kqzYeQwDKYo4n0XHpodvUOqFnEcQt+SVfdUg90BfjuQdbg==
