@@ -7170,6 +7170,13 @@ type Query {
     sort: SaleSorts
   ): [Sale]
 
+  # Global search
+  search(
+    term: String
+    indexes: [SearchIndexes]
+    type: SearchType
+  ): [SearchResult]
+
   # The schema for difference micro-service settings
   services: Services
 
@@ -7774,6 +7781,30 @@ input SaveArtworkInput {
 type SaveArtworkPayload {
   artwork: Artwork
   clientMutationId: String
+}
+
+enum SearchIndexes {
+  ARTWORK
+  ARTIST
+}
+
+# Result from search query
+type SearchResult {
+  # Image
+  image: Image
+
+  # Display text
+  display: String
+
+  # Object associated with search result
+  item: [SearchResultItemType]
+}
+
+union SearchResultItemType = Artist | Artwork
+
+enum SearchType {
+  SITE
+  AUTOSUGGEST
 }
 
 # A piece that can be sold
@@ -8988,6 +9019,13 @@ type Viewer {
     size: Int
     sort: SaleSorts
   ): [Sale]
+
+  # Global search
+  search(
+    term: String
+    indexes: [SearchIndexes]
+    type: SearchType
+  ): [SearchResult]
 
   # The schema for difference micro-service settings
   services: Services
