@@ -34,15 +34,9 @@ const FollowedContentType = () =>
     fields: {
       artists: {
         type: new GraphQLList(Artist.type),
-        resolve: () => {
-          return {}
-        },
       },
       partners: {
         type: new GraphQLList(Partner.type),
-        resolve: () => {
-          return {}
-        },
       },
     },
   })
@@ -79,6 +73,24 @@ const FairType = new GraphQLObjectType({
     },
     followed_content: {
       type: FollowedContentType(),
+      resolve: (
+        fair,
+        options,
+        _request,
+        { rootValue: { followedArtistsLoader } }
+      ) => {
+        const fair_id = fair._id
+        console.log("Fair ID:", fair_id)
+
+        return {
+          artists: followedArtistsLoader({ ...options, fair_id }).then(
+            followed_artists => {
+              return followed_artists
+            }
+          ),
+          partners: [{ name: "Sam Spade" }],
+        }
+      },
     },
     artists: {
       type: artistConnection,
