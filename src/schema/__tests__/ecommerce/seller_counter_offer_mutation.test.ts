@@ -3,14 +3,14 @@ import { sampleOrder } from "test/fixtures/results/sample_order"
 import gql from "lib/gql"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { OrderSellerFields } from "./order_fields"
-import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
+import exchangeOrderJSON from "test/fixtures/exchange/offer_order.json"
 
 let rootValue
 
 describe("SellerCounterOffer Mutation", () => {
   const mutation = gql`
     mutation {
-      ecommerceSellerCounterOffer(input: { offerId: "111", offerPrice: { amount: 1, currencyCode: "USD" } }) {
+      ecommerceSellerCounterOffer(input: {offerId: "111", offerPrice: { amount: 1, currencyCode: "USD" }, note: "A minor" } ) {
         orderOrError {
           ... on OrderWithMutationSuccess {
             order {
@@ -41,9 +41,9 @@ describe("SellerCounterOffer Mutation", () => {
     rootValue = mockxchange(resolvers)
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(
-        data!.ecommerceSellerCounterOffer.orderOrError.order
-      ).toEqual(sampleOrder())
+      expect(data!.ecommerceSellerCounterOffer.orderOrError.order).toEqual(
+        sampleOrder({ mode: "OFFER", includeOfferFields: true })
+      )
     })
   })
 
@@ -64,9 +64,7 @@ describe("SellerCounterOffer Mutation", () => {
     rootValue = mockxchange(resolvers)
 
     return runQuery(mutation, rootValue).then(data => {
-      expect(
-        data!.ecommerceSellerCounterOffer.orderOrError.error
-      ).toEqual({
+      expect(data!.ecommerceSellerCounterOffer.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",
         data: null,
