@@ -4,6 +4,7 @@ input AddInitialOfferToOrderInput {
 
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
+  note: String
   orderId: ID!
 }
 
@@ -111,6 +112,7 @@ input BuyerCounterOfferInput {
 
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
+  note: String
   offerId: ID!
 }
 
@@ -350,20 +352,14 @@ type LineItemEdge {
 }
 
 type Mutation {
-  addInitialOfferToOrder(
-    input: AddInitialOfferToOrderInput!
-  ): AddInitialOfferToOrderPayload
+  addInitialOfferToOrder(input: AddInitialOfferToOrderInput!): AddInitialOfferToOrderPayload
   approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
   buyerAcceptOffer(input: BuyerAcceptOfferInput!): BuyerAcceptOfferPayload
   buyerCounterOffer(input: BuyerCounterOfferInput!): BuyerCounterOfferPayload
   buyerRejectOffer(input: BuyerRejectOfferInput!): BuyerRejectOfferPayload
   confirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
-  createOfferOrderWithArtwork(
-    input: CreateOfferOrderWithArtworkInput!
-  ): CreateOfferOrderWithArtworkPayload
-  createOrderWithArtwork(
-    input: CreateOrderWithArtworkInput!
-  ): CreateOrderWithArtworkPayload
+  createOfferOrderWithArtwork(input: CreateOfferOrderWithArtworkInput!): CreateOfferOrderWithArtworkPayload
+  createOrderWithArtwork(input: CreateOrderWithArtworkInput!): CreateOrderWithArtworkPayload
 
   # Fulfill an order with one Fulfillment, it sets this fulfillment to each line item in order
   fulfillAtOnce(input: FulfillAtOnceInput!): FulfillAtOncePayload
@@ -374,9 +370,7 @@ type Mutation {
   setPayment(input: SetPaymentInput!): SetPaymentPayload
   setShipping(input: SetShippingInput!): SetShippingPayload
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
-  submitOrderWithOffer(
-    input: SubmitOrderWithOfferInput!
-  ): SubmitOrderWithOfferPayload
+  submitOrderWithOffer(input: SubmitOrderWithOfferInput!): SubmitOrderWithOfferPayload
   submitPendingOffer(input: SubmitPendingOfferInput!): SubmitPendingOfferPayload
 }
 
@@ -389,6 +383,7 @@ type Offer {
   from: OrderPartyUnion!
   fromParticipant: OrderParticipantEnum
   id: ID!
+  note: String
   order: Order!
   respondsTo: Offer
   shippingTotalCents: Int
@@ -683,6 +678,21 @@ type Pickup {
 }
 
 type Query {
+  # Find list of competing orders
+  competingOrders(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    orderId: ID!
+  ): OrderConnectionWithTotalCount
   lineItems(
     # Returns the elements in the list that come after the specified cursor.
     after: String
@@ -767,6 +777,7 @@ input SellerCounterOfferInput {
 
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
+  note: String
   offerId: ID!
 }
 
