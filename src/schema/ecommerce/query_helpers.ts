@@ -81,6 +81,7 @@ export const OfferFields = gql`
     createdAt
     creatorId
     amountCents
+    note
     shippingTotalCents
     taxTotalCents
     respondsTo {
@@ -88,6 +89,7 @@ export const OfferFields = gql`
       createdAt
       creatorId
       amountCents
+      note
       shippingTotalCents
       taxTotalCents
       buyerTotalCents

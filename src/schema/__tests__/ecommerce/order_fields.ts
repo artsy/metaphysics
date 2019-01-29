@@ -100,6 +100,7 @@ export const OrderBuyerFields = gql`
       amountCents
       buyerTotalCents
       fromParticipant
+      note
     }
     lastOffer {
       id
@@ -108,6 +109,7 @@ export const OrderBuyerFields = gql`
       shippingTotalCents
       buyerTotalCents
       fromParticipant
+      note
     }
     offers {
       edges {

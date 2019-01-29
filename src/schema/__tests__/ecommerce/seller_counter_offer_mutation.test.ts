@@ -10,7 +10,7 @@ let rootValue
 describe("SellerCounterOffer Mutation", () => {
   const mutation = gql`
     mutation {
-      ecommerceSellerCounterOffer(input: {offerId: "111", offerPrice: { amount: 1, currencyCode: "USD" }, note: "A minor" } ) {
+      ecommerceSellerCounterOffer(input: {offerId: "111", offerPrice: { amount: 1, currencyCode: "USD" }} ) {
         orderOrError {
           ... on OrderWithMutationSuccess {
             order {
