@@ -15,7 +15,12 @@ const renderParams = key => {
     .join("&")
 }
 
-const groupKeys = (requestedKeys: string | { id }) =>
+interface GroupKeysResult {
+  id: string | string[]
+  size: number
+  [key: string]: any
+}
+const groupKeys = (requestedKeys: string | { id }): GroupKeysResult[] =>
   chain(requestedKeys)
     .groupBy(renderParams)
     .values()
