@@ -1,4 +1,3 @@
-// @ts-check
 import factories from "../api"
 import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_factory"
 import gravity from "lib/apis/gravity"
@@ -66,8 +65,6 @@ export default opts => {
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`, {}, { headers: true }),
     saleArtworkLoader: gravityUncachedLoader(({ saleId, saleArtworkId }) => `sale/${saleId}/sale_artwork/${saleArtworkId}`, null),
-    // saleLoader: gravityLoader(id => `sale/${id}`),
-    // salesLoader: gravityLoader("sales"),
     saleLoader: batchSaleLoader,
     salesLoader: batchSalesLoader,
     setItemsLoader: gravityLoader(id => `set/${id}/items`),

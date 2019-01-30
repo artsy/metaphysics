@@ -1,5 +1,5 @@
 import DataLoader from "dataloader"
-import { groupBy, flatten } from "lodash"
+import { chain, groupBy, flatten, chunk } from "lodash"
 import config from "config"
 
 const { ENABLE_RESOLVER_BATCHING } = config
@@ -14,6 +14,25 @@ const renderParams = key => {
     .sort()
     .join("&")
 }
+
+const groupKeys = (requestedKeys: string | { id }) =>
+  chain(requestedKeys)
+    .groupBy(renderParams)
+    .values()
+    .map(values => chunk(values, 20))
+    .flatten()
+    .map((keys: string[] | { id }[]) => {
+      if (typeof keys[0] === "string") {
+        return { id: keys, size: keys.length }
+      }
+      return {
+        // @ts-ignore
+        ...keys[0],
+        id: keys.map(k => k.id),
+        size: keys.length,
+      }
+    })
+    .value()
 
 interface BatchLoaderArgs {
   /**
@@ -36,16 +55,7 @@ export const batchLoader = ({
     return singleLoader ? singleLoader : multipleLoader
   }
   const dl = new DataLoader(keys => {
-    let groupedKeys = Object.values(groupBy(keys, renderParams)).map(keys => {
-      if (typeof keys[0] === "string") {
-        return { id: keys, size: keys.length }
-      }
-      return {
-        ...keys[0],
-        id: keys.map(k => k.id),
-        size: keys.length,
-      }
-    })
+    let groupedKeys = groupKeys(keys as any)
 
     return Promise.all(
       groupedKeys.map(keys => {
