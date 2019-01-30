@@ -2,21 +2,18 @@
 import factories from "../api"
 import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_factory"
 import gravity from "lib/apis/gravity"
-import { batchLoader } from "../batchLoader"
+import { createBatchLoaders } from "../batchLoader"
 
 export default opts => {
   const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
   const gravityUncachedLoader = uncachedLoaderFactory(gravity, "gravity")
 
-  const batchSaleLoader = batchLoader({
+  const [ batchSaleLoader, batchSalesLoader ] = createBatchLoaders({ 
     singleLoader: gravityLoader(id => `sale/${id}`), 
-    multipleLoader: gravityLoader("sales"),
-  })
-
-  const batchSalesLoader = batchLoader({
-    multipleLoader: gravityLoader("sales"), 
-    defaultResult: []
+    multipleLoader: gravityLoader('sales'), 
+    singleDefault: null, 
+    multipleDefault: [] 
   })
 
   return {

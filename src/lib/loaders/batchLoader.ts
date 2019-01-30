@@ -70,3 +70,25 @@ export const batchLoader = ({
 
   return key => dl.load(key)
 }
+
+/**
+ * @returns a tuple of a single batch loader and a multiple batch loader
+ */
+export const createBatchLoaders = ({
+  singleLoader,
+  multipleLoader,
+  singleDefault,
+  multipleDefault,
+}) => {
+  return [
+    batchLoader({
+      singleLoader,
+      multipleLoader,
+      defaultResult: singleDefault,
+    }),
+    batchLoader({
+      multipleLoader,
+      defaultResult: multipleDefault,
+    }),
+  ]
+}
