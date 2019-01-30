@@ -1,5 +1,5 @@
 import DataLoader from "dataloader"
-import { chain, groupBy, flatten, chunk } from "lodash"
+import { chain, flatten, chunk } from "lodash"
 import config from "config"
 
 const { ENABLE_RESOLVER_BATCHING } = config
@@ -16,12 +16,12 @@ const renderParams = key => {
 }
 
 interface GroupKeysResult {
-  id: string | string[]
+  id: string[]
   size: number
   [key: string]: any
 }
 const groupKeys = (requestedKeys: string | { id }): GroupKeysResult[] =>
-  chain(requestedKeys)
+  (chain(requestedKeys)
     .groupBy(renderParams)
     .values()
     .map(values => chunk(values, 20))
@@ -37,7 +37,7 @@ const groupKeys = (requestedKeys: string | { id }): GroupKeysResult[] =>
         size: keys.length,
       }
     })
-    .value()
+    .value() as unknown) as GroupKeysResult[]
 
 interface BatchLoaderArgs {
   /**
