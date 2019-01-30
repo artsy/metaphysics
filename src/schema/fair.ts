@@ -75,7 +75,7 @@ const FairType = new GraphQLObjectType({
       type: FollowedContentType(),
       resolve: (
         fair,
-        options,
+        _options,
         _request,
         { rootValue: { followedArtistsLoader, followedPartnersLoader } }
       ) => {
