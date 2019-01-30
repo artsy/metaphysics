@@ -77,18 +77,20 @@ const FairType = new GraphQLObjectType({
         fair,
         options,
         _request,
-        { rootValue: { followedArtistsLoader } }
+        { rootValue: { followedArtistsLoader, followedPartnersLoader } }
       ) => {
-        const fair_id = fair._id
-        console.log("Fair ID:", fair_id)
+        const fair_id = fair.id
 
         return {
-          artists: followedArtistsLoader({ ...options, fair_id }).then(
-            followed_artists => {
-              return followed_artists
-            }
-          ),
-          partners: [{ name: "Sam Spade" }],
+          artists: followedArtistsLoader({ fair_id }).then(({ body }) => {
+            return body.map(artist_follow => artist_follow.artist)
+          }),
+          partners: followedPartnersLoader({
+            fair_id,
+            owner_types: ["PartnerGallery"],
+          }).then(({ body }) => {
+            return body.map(profile_follow => profile_follow.profile.owner)
+          }),
         }
       },
     },
