@@ -35,7 +35,7 @@ const FollowedContentType = () =>
       artists: {
         type: new GraphQLList(Artist.type),
       },
-      partners: {
+      galleries: {
         type: new GraphQLList(Partner.type),
       },
     },

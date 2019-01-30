@@ -3499,7 +3499,7 @@ type FollowArtists {
 
 type followed_fair_content {
   artists: [Artist]
-  partners: [Partner]
+  galleries: [Partner]
 }
 
 type FollowedArtistsArtworksGroup implements Node {
