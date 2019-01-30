@@ -2,62 +2,22 @@
 import factories from "../api"
 import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_factory"
 import gravity from "lib/apis/gravity"
-import DataLoader from "dataloader"
-import { groupBy, flatten } from 'lodash'
+import { batchLoader } from "../batchLoader"
 
 export default opts => {
   const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
   const gravityUncachedLoader = uncachedLoaderFactory(gravity, "gravity")
 
-  const renderParams = (key) => {
-    if (typeof key === "string") {
-      return ""
-    }
-    const { id, ...params} = key;
-    return Object.entries(params).map(entry => entry.join('=')).sort().join('&')
-  }
-
-  const batchLoader = (singleLoader, multipleLoader, defaultResult: any = null) => {
-    const dl = new DataLoader(keys => {
-
-    let groupedKeys = Object.values(groupBy(keys, renderParams)).map(keys => {
-      if (typeof keys[0] === "string") {
-        return { id: keys, size: keys.length }
-      }
-      return {
-        ...keys[0],
-        id: keys.map(k => k.id),
-        size: keys.length
-      }
-    })
-
-    return Promise.all(
-      groupedKeys
-      .map(keys => {
-        console.log(keys.id)
-      if (keys.id.length === 1) {
-        return singleLoader(keys)
-      } else {
-        return multipleLoader(keys).then(results => console.log('RESULT', results.length) || results)
-      }
-    })).then(data => {
-      const normalizedResults = data.map((queriedGroup, groupIndex) => {
-        return groupedKeys[groupIndex].id.map(id => 
-          queriedGroup.find(r => 
-            r._id === id
-            ) || defaultResult
-        )
-      })
-      return flatten(normalizedResults)
-    })
+  const batchSaleLoader = batchLoader({
+    singleLoader: gravityLoader(id => `sale/${id}`), 
+    multipleLoader: gravityLoader("sales"),
   })
 
-  return (key) => dl.load(key)
-}
-
-  const batchSaleLoader = batchLoader(gravityLoader(id => `sale/${id}`), gravityLoader("sales"))
-  const batchSalesLoader = batchLoader(gravityLoader(id => `sale/${id}`), gravityLoader("sales"), [])
+  const batchSalesLoader = batchLoader({
+    multipleLoader: gravityLoader("sales"), 
+    defaultResult: []
+  })
 
   return {
     artistArtworksLoader: gravityLoader(id => `artist/${id}/artworks`),
