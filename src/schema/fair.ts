@@ -28,18 +28,17 @@ import ShowSort from "./sorts/show_sort"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 
-const FollowedContentType = () =>
-  new GraphQLObjectType({
-    name: "followed_fair_content",
-    fields: {
-      artists: {
-        type: new GraphQLList(Artist.type),
-      },
-      galleries: {
-        type: new GraphQLList(Partner.type),
-      },
+const FollowedContentType = new GraphQLObjectType({
+  name: "followed_fair_content",
+  fields: () => ({
+    artists: {
+      type: new GraphQLList(Artist.type),
     },
-  })
+    galleries: {
+      type: new GraphQLList(Partner.type),
+    },
+  }),
+})
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",
@@ -72,7 +71,7 @@ const FairType = new GraphQLObjectType({
       type: GraphQLString,
     },
     followed_content: {
-      type: FollowedContentType(),
+      type: FollowedContentType,
       resolve: (
         fair,
         _options,
