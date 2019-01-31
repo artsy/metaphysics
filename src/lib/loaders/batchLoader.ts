@@ -25,7 +25,7 @@ interface GroupKeysResult {
   size: number
   [key: string]: any
 }
-const groupKeys = (requestedKeys: string | { id }): GroupKeysResult[] =>
+export const groupKeys = (requestedKeys: string | { id }): GroupKeysResult[] =>
   (chain(requestedKeys)
     .groupBy(renderParams)
     .values()
@@ -61,7 +61,7 @@ export const batchLoader = ({
   multipleLoader,
   defaultResult = null,
 }: BatchLoaderArgs) => {
-  if (ENABLE_RESOLVER_BATCHING !== "true") {
+  if (!ENABLE_RESOLVER_BATCHING) {
     return singleLoader ? singleLoader : multipleLoader
   }
   const dl = new DataLoader(keys => {
@@ -69,9 +69,8 @@ export const batchLoader = ({
 
     return Promise.all(
       groupedKeys.map(keys => {
-        console.log(keys.id)
         if (keys.id.length === 1 && singleLoader) {
-          return singleLoader(keys)
+          return singleLoader(keys.id[0])
         } else {
           return multipleLoader(keys)
         }
