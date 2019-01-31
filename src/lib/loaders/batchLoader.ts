@@ -4,6 +4,11 @@ import config from "config"
 
 const { ENABLE_RESOLVER_BATCHING } = config
 
+/**
+ * This is just used to compare options sent into the dataloader.
+ * If the options are an object this stingifies the object in a way
+ * that they can be grouped as similar.
+ */
 const renderParams = key => {
   if (typeof key === "string") {
     return ""
@@ -56,7 +61,7 @@ export const batchLoader = ({
   multipleLoader,
   defaultResult = null,
 }: BatchLoaderArgs) => {
-  if (!ENABLE_RESOLVER_BATCHING) {
+  if (ENABLE_RESOLVER_BATCHING !== "true") {
     return singleLoader ? singleLoader : multipleLoader
   }
   const dl = new DataLoader(keys => {
@@ -68,9 +73,7 @@ export const batchLoader = ({
         if (keys.id.length === 1 && singleLoader) {
           return singleLoader(keys)
         } else {
-          return multipleLoader(keys).then(
-            results => console.log("RESULT", results.length) || results
-          )
+          return multipleLoader(keys)
         }
       })
     ).then(data => {
