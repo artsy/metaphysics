@@ -29,7 +29,7 @@ import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 
 const FollowedContentType = new GraphQLObjectType({
-  name: "followed_fair_content",
+  name: "followed_content",
   fields: () => ({
     artists: {
       type: new GraphQLList(Artist.type),
