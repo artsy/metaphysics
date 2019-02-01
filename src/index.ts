@@ -31,6 +31,7 @@ import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
+import { RootValue } from "types/graphql"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -109,8 +110,8 @@ async function startApp() {
     fetchPersistedQuery,
     crunchInterceptor,
     graphqlHTTP((req, res, params) => {
-      const accessToken = req.headers["x-access-token"]
-      const userID = req.headers["x-user-id"]
+      const accessToken = req.headers["x-access-token"] as string | undefined
+      const userID = req.headers["x-user-id"] as string | undefined
       const timezone = req.headers["x-timezone"] as string | undefined
       const userAgent = req.headers["user-agent"]
 
@@ -140,16 +141,18 @@ async function startApp() {
       // Supply userAgent for analytics
       res.locals.userAgent = userAgent
 
+      const rootValue: RootValue = {
+        accessToken,
+        userID,
+        defaultTimezone,
+        exchangeSchema,
+        ...loaders,
+      }
+
       return {
         schema,
         graphiql: true,
-        rootValue: {
-          accessToken,
-          userID,
-          defaultTimezone,
-          exchangeSchema,
-          ...loaders,
-        },
+        rootValue,
         formatError: graphqlErrorHandler(enableSentry, {
           req,
           // Why the checking on params? Do we reach this code if params is falsy?

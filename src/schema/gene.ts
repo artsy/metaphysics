@@ -22,6 +22,7 @@ import {
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
+  GraphQLResolveInfo,
 } from "graphql"
 
 const SUBJECT_MATTER_MATCHES = [

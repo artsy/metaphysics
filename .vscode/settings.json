@@ -27,6 +27,7 @@
     "Refetch",
     "Reloadable",
     "consignable",
+    "dataloader",
     "kaws",
     "mockxchange",
     "orderable",

@@ -51,7 +51,7 @@ export const searchArgs = pageable({
   },
   mode: {
     type: SearchMode,
-    description: "Mode of search to exceute. Default: SITE.",
+    description: "Mode of search to execute. Default: SITE.",
   },
 })
 
@@ -140,9 +140,9 @@ export const Search: GraphQLFieldConfig<any, any, any> = {
         body.map(searchResultItem =>
           processSearchResultItem(searchResultItem, info, source)
         )
-      ).then(procesedSearchResults => {
+      ).then(processedSearchResults => {
         const connection = connectionFromArraySlice(
-          procesedSearchResults,
+          processedSearchResults,
           args,
           {
             arrayLength: totalCount,
