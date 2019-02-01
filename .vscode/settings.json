@@ -26,9 +26,11 @@
     "Refetch",
     "Reloadable",
     "consignable",
+    "kaws",
     "mockxchange",
-    "urljoin",
-    "kaws"
+    "orderable",
+    "orderables",
+    "urljoin"
   ],
   "debug.node.autoAttach": "on",
   "eslint.validate": ["typescript"]

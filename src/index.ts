@@ -22,7 +22,10 @@ import {
 } from "lib/loaders/api/logger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
-import { executableExchangeSchema } from "./lib/stitching/exchange/schema"
+import {
+  executableExchangeSchema,
+  legacyTransformsForExchange,
+} from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/nameOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
@@ -67,7 +70,9 @@ async function startApp() {
 
   let schema = localSchema
 
-  const exchangeSchema = await executableExchangeSchema()
+  const exchangeSchema = await executableExchangeSchema(
+    legacyTransformsForExchange
+  )
 
   if (RESOLVER_TIMEOUT_MS > 0) {
     console.warn("[FEATURE] Enabling resolver timeouts")

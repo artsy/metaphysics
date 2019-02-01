@@ -23,7 +23,7 @@ export const getTypesFromSchema = async (schema: GraphQLSchema) => {
   }
 
   // Return the real data
-  return response.data!.__schema.types.map(t => t.name)
+  return response.data!.__schema.types.map(t => t.name) as string[]
 }
 
 /**
@@ -52,7 +52,35 @@ export const getRootFieldsFromSchema = async (schema: GraphQLSchema) => {
   }
 
   // Return the real data
-  return response.data!.__schema.queryType.fields.map(t => t.name)
+  return response.data!.__schema.queryType.fields.map(t => t.name) as string[]
+}
+
+/**
+ * An introspection query that pulls out the fields for a type you provide
+ */
+export const getFieldsForTypeFromSchema = async (
+  type: string,
+  schema: GraphQLSchema
+) => {
+  const q = gql`
+    query {
+      __type(name: "${type}") {
+        fields {
+          name
+        }
+      }
+    }
+  `
+  const response = await graphql(schema, q, null, null)
+  // Throw an error to make it easy to read in the failing test
+  if (response.errors) {
+    throw new Error(
+      `Got errors from GQL: ${JSON.stringify(response.errors, null, "  ")}`
+    )
+  }
+
+  // Return the real data
+  return response.data!.__type.fields.map(t => t.name) as string[]
 }
 
 /**
@@ -79,5 +107,7 @@ export const getMutationFieldsFromSchema = async (schema: GraphQLSchema) => {
   }
 
   // Return the real data
-  return response.data!.__schema.mutationType.fields.map(t => t.name)
+  return response.data!.__schema.mutationType.fields.map(
+    t => t.name
+  ) as string[]
 }

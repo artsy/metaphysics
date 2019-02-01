@@ -9,7 +9,19 @@ import {
   GraphQLNonNull,
 } from "graphql"
 
-export const amount = resolve => ({
+export const amountSDL = name => `
+  ${name}(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+`
+
+export const amount = centsResolver => ({
   type: GraphQLString,
   description: "A formatted price with various currency formatting options.",
   args: {
@@ -36,7 +48,7 @@ export const amount = resolve => ({
     },
   },
   resolve: (obj, options) => {
-    const cents = resolve(obj)
+    const cents = centsResolver(obj)
     if (!cents) return null
     const symbol = options.symbol || obj.symbol
     return formatMoney(

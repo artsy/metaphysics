@@ -6785,6 +6785,12 @@ type Query {
     id: String!
   ): Artwork
 
+  # A subset of the metadata for an artwork at a specific time
+  artworkVersion(
+    # The ID of the ArtworkVersion
+    id: String!
+  ): ArtworkVersion
+
   # A list of Artworks
   artworks(ids: [String]): [Artwork]
 
@@ -7229,6 +7235,9 @@ type Query {
   user(
     # Email to search for user by
     email: String
+
+    # ID of the user
+    id: String
   ): User
 
   # A list of Users
@@ -8665,6 +8674,12 @@ type Viewer {
     id: String!
   ): Artwork
 
+  # A subset of the metadata for an artwork at a specific time
+  artworkVersion(
+    # The ID of the ArtworkVersion
+    id: String!
+  ): ArtworkVersion
+
   # A list of Artworks
   artworks(ids: [String]): [Artwork]
 
@@ -9109,6 +9124,9 @@ type Viewer {
   user(
     # Email to search for user by
     email: String
+
+    # ID of the user
+    id: String
   ): User
 
   # A list of Users

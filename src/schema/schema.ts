@@ -2,6 +2,7 @@ import Status from "./status"
 import Article from "./article"
 import Articles from "./articles"
 import Artwork from "./artwork"
+import { ArtworkVersionResolver } from "./artwork_version"
 import Artworks from "./artworks"
 import Artist from "./artist"
 import Artists from "./artists"
@@ -64,7 +65,7 @@ import System from "./system"
 import Tag from "./tag"
 import TrendingArtists from "./artists/trending"
 import Users from "./users"
-import { UserByEmail } from "./user"
+import { User } from "./user"
 import MatchArtist from "./match/artist"
 import MatchGene from "./match/gene"
 import Me from "./me"
@@ -93,13 +94,14 @@ import config from "config"
 import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
 import { AddInitialOfferToOrderMutation } from "./ecommerce/add_initial_offer_to_order_mutation"
 import { SearchableItem } from "./searchableItem"
-const { ENABLE_CONSIGNMENTS_STITCHING, ENABLE_ECOMMERCE_STITCHING } = config
+const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
 // TODO: Remove this any
 const rootFields: any = {
   article: Article,
   articles: Articles,
   artwork: Artwork,
+  artworkVersion: ArtworkVersionResolver,
   artworks: Artworks,
   artist: Artist,
   artists: Artists,
@@ -145,7 +147,7 @@ const rootFields: any = {
   system: System,
   tag: Tag,
   trending_artists: TrendingArtists,
-  user: UserByEmail,
+  user: User,
   users: Users,
   popular_artists: PopularArtists,
 }
@@ -175,44 +177,40 @@ if (!ENABLE_CONSIGNMENTS_STITCHING) {
   stitchedMutations.addAssetToConsignmentSubmission = AddAssetToConsignmentSubmission
 }
 
-if (!ENABLE_ECOMMERCE_STITCHING) {
-  stitchedRootFields.ecommerceOrder = Order
-  stitchedRootFields.ecommerceOrders = Orders
+stitchedRootFields.ecommerceOrder = Order
+stitchedRootFields.ecommerceOrders = Orders
 
-  stitchedMutations.ecommerceCreateOrderWithArtwork = CreateOrderWithArtworkMutation
-  stitchedMutations.ecommerceCreateOfferOrderWithArtwork = CreateOfferOrderWithArtworkMutation
-  stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
-  stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
-  stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
-  stitchedMutations.ecommerceBuyerAcceptOffer = BuyerAcceptOfferMutation
-  stitchedMutations.ecommerceSellerAcceptOffer = SellerAcceptOfferMutation
-  stitchedMutations.ecommerceBuyerCounterOffer = BuyerCounterOfferMutation
-  stitchedMutations.ecommerceSubmitPendingOffer = SubmitPendingOfferMutation
-  stitchedMutations.ecommerceSellerCounterOffer = SellerCounterOfferMutation
-  stitchedMutations.ecommerceBuyerRejectOffer = BuyerRejectOfferMutation
-  stitchedMutations.ecommerceSellerRejectOffer = SellerRejectOfferMutation
-  stitchedMutations.ecommerceConfirmPickup = ConfirmPickupMutation
-  stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
-  stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
-  stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
-  stitchedMutations.ecommerceAddInitialOfferToOrder = AddInitialOfferToOrderMutation
-  stitchedMutations.ecommerceSubmitOrderWithOffer = SubmitOrderWithOfferMutation
+stitchedMutations.ecommerceCreateOrderWithArtwork = CreateOrderWithArtworkMutation
+stitchedMutations.ecommerceCreateOfferOrderWithArtwork = CreateOfferOrderWithArtworkMutation
+stitchedMutations.ecommerceSetOrderShipping = SetOrderShippingMutation
+stitchedMutations.ecommerceSetOrderPayment = SetOrderPaymentMutation
+stitchedMutations.ecommerceApproveOrder = ApproveOrderMutation
+stitchedMutations.ecommerceBuyerAcceptOffer = BuyerAcceptOfferMutation
+stitchedMutations.ecommerceSellerAcceptOffer = SellerAcceptOfferMutation
+stitchedMutations.ecommerceBuyerCounterOffer = BuyerCounterOfferMutation
+stitchedMutations.ecommerceSubmitPendingOffer = SubmitPendingOfferMutation
+stitchedMutations.ecommerceSellerCounterOffer = SellerCounterOfferMutation
+stitchedMutations.ecommerceBuyerRejectOffer = BuyerRejectOfferMutation
+stitchedMutations.ecommerceSellerRejectOffer = SellerRejectOfferMutation
+stitchedMutations.ecommerceConfirmPickup = ConfirmPickupMutation
+stitchedMutations.ecommerceFulfillOrderAtOnce = FulfillOrderAtOnceMutation
+stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
+stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
+stitchedMutations.ecommerceAddInitialOfferToOrder = AddInitialOfferToOrderMutation
+stitchedMutations.ecommerceSubmitOrderWithOffer = SubmitOrderWithOfferMutation
 
-  // Deprecated
-  stitchedRootFields.order = Order
-  stitchedRootFields.orders = Orders
+// Deprecated
+stitchedRootFields.order = Order
+stitchedRootFields.orders = Orders
 
-  // Deprecated
-  stitchedMutations.createOrderWithArtwork = CreateOrderWithArtworkMutation
-  stitchedMutations.setOrderShipping = SetOrderShippingMutation
-  stitchedMutations.setOrderPayment = SetOrderPaymentMutation
-  stitchedMutations.approveOrder = ApproveOrderMutation
-  stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
-  stitchedMutations.rejectOrder = RejectOrderMutation
-  stitchedMutations.submitOrder = SubmitOrderMutation
-
-  // Deprecated
-}
+// Deprecated
+stitchedMutations.createOrderWithArtwork = CreateOrderWithArtworkMutation
+stitchedMutations.setOrderShipping = SetOrderShippingMutation
+stitchedMutations.setOrderPayment = SetOrderPaymentMutation
+stitchedMutations.approveOrder = ApproveOrderMutation
+stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
+stitchedMutations.rejectOrder = RejectOrderMutation
+stitchedMutations.submitOrder = SubmitOrderMutation
 
 export default new GraphQLSchema({
   allowedLegacyNames: ["__id"],

@@ -67,3 +67,20 @@ export const ArtworkVersion = new GraphQLObjectType({
     },
   }),
 })
+
+export const ArtworkVersionResolver = {
+  type: ArtworkVersion,
+  description: "A subset of the metadata for an artwork at a specific time",
+  args: {
+    id: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: "The ID of the ArtworkVersion",
+    },
+  },
+  resolve: (
+    _root,
+    { id },
+    _request,
+    { rootValue: { authenticatedArtworkVersionLoader } }
+  ) => authenticatedArtworkVersionLoader(id),
+}
