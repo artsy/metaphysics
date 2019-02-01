@@ -5,6 +5,7 @@ import { loaderInterface } from "./loader_interface"
 import timer from "lib/timer"
 import { verbose, warn } from "lib/loggers"
 import logger from "lib/loaders/api/logger"
+import { LoaderFactory } from "./index"
 
 /**
  * This returns a function that takes an access token to create a data loader factory for the given `api`.
@@ -25,7 +26,7 @@ export const apiLoaderWithAuthenticationFactory = (
   globalAPIOptions: any
 ) => {
   return accessTokenLoader => {
-    return (path, globalParams = {}, pathAPIOptions = {}) => {
+    const apiLoaderFactory = (path, globalParams = {}, pathAPIOptions = {}) => {
       const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
       const loader = new DataLoader(
         (keys: string[]) => {
@@ -67,5 +68,6 @@ export const apiLoaderWithAuthenticationFactory = (
       )
       return loaderInterface(loader, path, globalParams)
     }
+    return apiLoaderFactory as LoaderFactory
   }
 }

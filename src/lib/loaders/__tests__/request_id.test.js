@@ -3,11 +3,12 @@ import createLoaders from "../../../lib/loaders"
 import gql from "lib/gql"
 import { resolveIPv4 } from "../../../lib/requestIDs"
 
-jest.mock("../../apis/gravity", () => jest.fn(() => Promise.resolve({})))
+jest.mock("../../apis/gravity", () => jest.fn())
 import gravity from "../../apis/gravity"
 
 describe("requestID (with the real data loaders)", () => {
   it("resolves to add the initial request ID to a gravity header", async () => {
+    gravity.mockImplementation(() => Promise.resolve({ body: {} }))
     const query = gql`
       {
         artist(id: "andy-warhol") {
@@ -28,6 +29,7 @@ describe("requestID (with the real data loaders)", () => {
   })
 
   it("(authenticated request) resolves to add the initial request ID to a gravity header", async () => {
+    gravity.mockImplementation(() => Promise.resolve({ body: [] }))
     const query = gql`
       {
         me {

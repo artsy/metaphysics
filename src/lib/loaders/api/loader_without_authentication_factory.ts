@@ -1,13 +1,13 @@
 import DataLoader from "dataloader"
-import { pick } from "lodash"
 
 import { loaderInterface } from "./loader_interface"
 import cache from "lib/cache"
 import timer from "lib/timer"
-import { throttled } from "lib/throttle"
+import { throttled as deferThrottled } from "lib/throttle"
 import { verbose, warn } from "lib/loggers"
 import logger from "lib/loaders/api/logger"
 import config from "config"
+import { LoaderFactory, API } from "./index"
 
 const { CACHE_DISABLED } = config
 
@@ -17,6 +17,13 @@ const { CACHE_DISABLED } = config
 // type apiLoaderWithAuthenticationFactoryType = (accessTokenLoader: () => Promise<string>) =>
 //                                                 (path: string, apiOptions?: Object, globalParams?: Object) =>
 //                                                   Promise<{ body: Object }>
+
+function tap(cb) {
+  return data => {
+    cb(data)
+    return data
+  }
+}
 
 /**
  * This returns a data loader factory for the given `api`.
@@ -28,119 +35,112 @@ const { CACHE_DISABLED } = config
  * @param {string} apiName The API service name
  * @param {any} globalAPIOptions options that need to be passed to any API loader created with this factory
  */
-export const apiLoaderWithoutAuthenticationFactory = (
-  api: (path: string, token: string | null, apiOptions: any) => Promise<any>,
+export const apiLoaderWithoutAuthenticationFactory = <T = any>(
+  api: API,
   apiName: string,
   globalAPIOptions: any = {}
 ) => {
-  return (path, globalParams = {}, pathAPIOptions = {}) => {
+  const apiLoaderFactory = (path, globalParams = {}, pathAPIOptions = {}) => {
     const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
-    const loader = new DataLoader(
+    const loader = new DataLoader<string, T | { body: T; headers: any }>(
       (keys: string[]) =>
-        Promise.all(
+        // Promise.all<T | { body: T; headers: any } | Error>(
+        Promise.all<any>(
           keys.map(key => {
             const clock = timer(key)
             clock.start()
-            return new Promise((resolve, reject) => {
-              if (!CACHE_DISABLED) {
-                return cache.get(key).then(
-                  // Cache hit
-                  data => {
-                    // Return cached data first
-                    if (apiOptions.headers) {
-                      resolve(pick(data, ["body", "headers"]))
-                    } else {
-                      resolve(data)
-                    }
-                    verbose(`Cached: ${key}`)
 
-                    const time = clock.end()
-                    logger(
-                      globalAPIOptions.requestIDs.requestID,
-                      apiName,
-                      key,
-                      {
-                        time,
-                        cache: true,
-                      }
-                    )
+            const finish = ({
+              message,
+              cached,
+            }: {
+              message: string
+              cached?: boolean
+            }) => {
+              return tap(() => {
+                verbose(message)
+                const time = clock.end()
+                if (
+                  cached !== undefined &&
+                  // TODO: Should these be required and enforced through types?
+                  globalAPIOptions.requestIDs &&
+                  globalAPIOptions.requestIDs.requestID
+                ) {
+                  logger(globalAPIOptions.requestIDs.requestID, apiName, key, {
+                    time,
+                    cache: cached,
+                  })
+                }
+              })
+            }
 
-                    // Then refresh cache
-                    return throttled(
-                      key,
-                      () => {
-                        api(key, null, apiOptions)
-                          .then(({ body, headers }) => {
-                            verbose(`Refreshing: ${key}`)
-
-                            if (apiOptions.headers) {
-                              return cache.set(key, { body, headers })
-                            } else {
-                              return cache.set(key, body)
-                            }
-                          })
-                          .catch(err => {
-                            if (err.statusCode === 404) {
-                              // Unpublished
-                              cache.delete(key)
-                            }
-                          })
-                      },
-                      { requestThrottleMs: apiOptions.requestThrottleMs }
-                    )
-                  },
-                  // Cache miss
-                  () => {
-                    api(key, null, apiOptions)
-                      .then(({ body, headers }) => {
-                        if (apiOptions.headers) {
-                          resolve({ body, headers })
-                        } else {
-                          resolve(body)
-                        }
-                        verbose(`Requested (Uncached): ${key}`)
-                        const time = clock.end()
-                        logger(
-                          globalAPIOptions.requestIDs.requestID,
-                          apiName,
-                          key,
-                          { time, cache: false }
-                        )
-                        if (apiOptions.headers) {
-                          return cache.set(key, { body, headers })
-                        } else {
-                          return cache.set(key, body)
-                        }
-                      })
-                      .catch(err => {
-                        warn(key, err)
-                        reject(err)
-                      })
-                  }
+            const callApi = () =>
+              api(key, null, apiOptions)
+                .then(
+                  ({ body, headers }) =>
+                    apiOptions.headers ? { body, headers } : body
                 )
-              } else {
-                return api(key, null, apiOptions)
-                  .then(({ body, headers }) => {
-                    if (apiOptions.headers) {
-                      resolve({ body, headers })
-                    } else {
-                      resolve(body)
-                    }
-                    verbose(`Requested (Uncached): ${key}`)
-                    const time = clock.end()
-                    return logger(
-                      globalAPIOptions.requestIDs.requestID,
-                      apiName,
-                      key,
-                      { time, cache: false }
-                    )
-                  })
-                  .catch(err => {
-                    warn(key, err)
-                    reject(err)
-                  })
-              }
+                .catch(err => {
+                  warn(key, err)
+                  throw err
+                })
+
+            const cacheData = tap(data => {
+              cache.set(key, data).catch(err => warn(key, err))
             })
+
+            if (CACHE_DISABLED) {
+              return callApi().then(
+                finish({
+                  message: `Requested (Uncached): ${key}`,
+                  cached: false,
+                })
+              )
+            } else {
+              // No need to pluck the right data from a cache hit, because we
+              // only ever cache the already plucked data.
+              return (
+                cache
+                  .get(key)
+                  // Cache hit
+                  .then(
+                    finish({
+                      message: `Cached: ${key}`,
+                      cached: true,
+                    })
+                  )
+                  // Trigger a cache update after returning the data.
+                  .then(
+                    tap(() =>
+                      deferThrottled(
+                        key,
+                        () =>
+                          callApi()
+                            .then(finish({ message: `Refreshing: ${key}` }))
+                            .then(cacheData)
+                            .catch(err => {
+                              if (err.statusCode === 404) {
+                                // Unpublished
+                                cache.delete(key)
+                              }
+                            }),
+                        { requestThrottleMs: apiOptions.requestThrottleMs }
+                      )
+                    )
+                  )
+                  // Cache miss
+                  .catch(() =>
+                    callApi()
+                      .then(
+                        finish({
+                          message: `Requested (Uncached): ${key}`,
+                          cached: false,
+                        })
+                      )
+                      .then(cacheData)
+                  )
+              )
+            }
           })
         ),
       {
@@ -150,4 +150,5 @@ export const apiLoaderWithoutAuthenticationFactory = (
     )
     return loaderInterface(loader, path, globalParams)
   }
+  return apiLoaderFactory as LoaderFactory
 }

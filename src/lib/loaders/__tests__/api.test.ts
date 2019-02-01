@@ -3,14 +3,16 @@ import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
 
 import cache from "lib/cache"
+import { StaticPathLoader } from "../api/loader_interface"
+import { API, LoaderFactory } from "../api"
 
 describe("API loaders", () => {
-  let api = null
-  let apiLoader = null
-  let loader = null
+  let api: jest.Mock<API>
+  let apiLoader: LoaderFactory
+  let loader: StaticPathLoader<any>
 
   beforeEach(() => {
-    api = jest.fn((path, accessToken, options) =>
+    api = jest.fn<API>((path, accessToken, options) =>
       Promise.resolve({ body: { path, accessToken, options } })
     )
   })
@@ -24,8 +26,8 @@ describe("API loaders", () => {
       })
 
       it("yields a given ID to the loader", () => {
-        loader = apiLoader(id => `some/path/with/id/${id}`)
-        return loader(42).then(({ path }) => {
+        const dynamicLoader = apiLoader(id => `some/path/with/id/${id}`)
+        return dynamicLoader("42").then(({ path }) => {
           expect(path).toEqual("some/path/with/id/42?")
         })
       })
@@ -85,7 +87,7 @@ describe("API loaders", () => {
       return cache
         .get("some/unauthenticated/memcached/path?")
         .then(() => {
-          throw new Error("Did not expect to be cached yet!")
+          throw new Error("Did not expect to be cached yet")
         })
         .catch(() => {
           loader = apiLoader("some/unauthenticated/memcached/path")
@@ -121,7 +123,7 @@ describe("API loaders", () => {
         return cache
           .get("some/authenticated/memcached/path?")
           .then(() => {
-            throw new Error("Did not expect response to be cached!")
+            throw new Error("Did not expect response to be cached")
           })
           .catch(() => {
             // swallow the error, because this is the expected code-path
