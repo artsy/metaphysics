@@ -6,6 +6,9 @@ export const kawsStitchingEnvironment = (
 ) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: `
+    extend type Artist {
+      marketingCollections: [MarketingCollection]
+    }
     extend type MarketingCollection {
       artworks(
         acquireable: Boolean
@@ -50,6 +53,27 @@ export const kawsStitchingEnvironment = (
   // from KAWS into filter_artworks to allow end users to dynamically
   // modify query filters using an admin tool
   resolvers: {
+    Artist: {
+      marketingCollections: {
+        fragment: `
+          ... on Artist {
+            _id
+          }
+        `,
+        resolve: ({ _id: artistID }, _args, context, info) => {
+          return info.mergeInfo.delegateToSchema({
+            schema: kawsSchema,
+            operation: "query",
+            fieldName: "marketingCollections",
+            args: {
+              artistID,
+            },
+            context,
+            info,
+          })
+        },
+      },
+    },
     MarketingCollection: {
       artworks: {
         fragment: `
