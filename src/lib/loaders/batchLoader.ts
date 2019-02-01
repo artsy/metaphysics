@@ -25,7 +25,9 @@ interface GroupKeysResult {
   size: number
   [key: string]: any
 }
-const groupKeys = (requestedKeys: string | { id }): GroupKeysResult[] => {
+export const groupKeys = (
+  requestedKeys: string | { id }
+): GroupKeysResult[] => {
   const grouped = chain(requestedKeys)
     .groupBy(renderParams)
     .values()
