@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("SuggestedArtists", () => {
-    const rootValue = {
+    const context = {
       suggestedArtistsLoader: () =>
         Promise.resolve({
           body: [
@@ -28,7 +28,7 @@ describe("Me", () => {
         }
       `
 
-      return runAuthenticatedQuery(query, rootValue).then(
+      return runAuthenticatedQuery(query, context).then(
         ({ me: conversation }) => {
           expect(conversation).toMatchSnapshot()
         }

@@ -1,12 +1,13 @@
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { GraphQLInt } from "graphql"
+import { GraphQLInt, GraphQLFieldConfig } from "graphql"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { assign } from "lodash"
 
 import { ConversationType } from "./conversation"
+import { ResolverContext } from "types/graphql"
 
-export default {
+const Conversations: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionDefinitions({
     nodeType: ConversationType,
     connectionFields: {
@@ -18,12 +19,7 @@ export default {
   }).connectionType,
   description: "Conversations, usually between a user and partner.",
   args: pageable(),
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { conversationsLoader } }
-  ) => {
+  resolve: (_root, options, { conversationsLoader }) => {
     if (!conversationsLoader) return null
     const { page, size, offset } = convertConnectionArgsToGravityArgs(options)
     const expand = ["total_unread_count"]
@@ -40,3 +36,5 @@ export default {
     )
   },
 }
+
+export default Conversations

@@ -5,7 +5,9 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLList,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export const CollectorProfileFields = {
   ...IDFields,
@@ -30,21 +32,18 @@ export const CollectorProfileFields = {
   },
 }
 
-export const CollectorProfileType = new GraphQLObjectType({
-  name: "CollectorProfileType",
-  fields: CollectorProfileFields,
-})
+export const CollectorProfileType = new GraphQLObjectType<any, ResolverContext>(
+  {
+    name: "CollectorProfileType",
+    fields: CollectorProfileFields,
+  }
+)
 
-export default {
+const CollectorProfile: GraphQLFieldConfig<void, ResolverContext> = {
   type: CollectorProfileType,
   description: "A collector profile.",
-  resolve: (
-    _root,
-    _option,
-    _request,
-    { rootValue: { accessToken, collectorProfileLoader } }
-  ) => {
-    if (!accessToken) return null
-    return collectorProfileLoader()
-  },
+  resolve: (_root, _option, { collectorProfileLoader }) =>
+    !collectorProfileLoader ? null : collectorProfileLoader(),
 }
+
+export default CollectorProfile

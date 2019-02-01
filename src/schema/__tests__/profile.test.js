@@ -3,7 +3,7 @@ import { runQuery } from "test/utils"
 
 describe("Profile type", () => {
   let profileData = null
-  let rootValue = null
+  let context = null
 
   beforeEach(() => {
     profileData = {
@@ -12,7 +12,7 @@ describe("Profile type", () => {
       private: false,
     }
 
-    rootValue = {
+    context = {
       profileLoader: sinon.stub().returns(Promise.resolve(profileData)),
     }
   })
@@ -27,7 +27,7 @@ describe("Profile type", () => {
   `
 
   it("is_publically_visible returns true when profile is published", () => {
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         profile: {
           id: "the-armory-show",
@@ -39,7 +39,7 @@ describe("Profile type", () => {
 
   it("is_publically_visible returns false when profile is private", () => {
     profileData.private = true
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         profile: {
           id: "the-armory-show",

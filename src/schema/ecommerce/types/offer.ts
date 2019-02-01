@@ -11,8 +11,9 @@ import { OrderInterface, resolveOrderParty } from "./order"
 import { UserType } from "schema/user"
 import { amount } from "schema/fields/money"
 import { OrderParticipantEnum } from "./enums/order_participant_enum"
+import { ResolverContext } from "types/graphql"
 
-export const OfferType = new GraphQLObjectType({
+export const OfferType = new GraphQLObjectType<any, ResolverContext>({
   name: "Offer",
   fields: () => ({
     id: {
@@ -27,12 +28,7 @@ export const OfferType = new GraphQLObjectType({
     creator: {
       type: UserType,
       description: "Creator of this order",
-      resolve: (
-        { creatorId },
-        _args,
-        _context,
-        { rootValue: { userByIDLoader } }
-      ) =>
+      resolve: ({ creatorId }, _args, { userByIDLoader }) =>
         userByIDLoader(creatorId).catch(err => {
           if (err.statusCode === 404) {
             return false
@@ -42,12 +38,8 @@ export const OfferType = new GraphQLObjectType({
     from: {
       type: OrderPartyUnionType,
       description: "The type of the party who made the offer",
-      resolve: (
-        { from },
-        _args,
-        _context,
-        { rootValue: { userByIDLoader, partnerLoader } }
-      ) => resolveOrderParty(from, userByIDLoader, partnerLoader),
+      resolve: ({ from }, _args, { userByIDLoader, partnerLoader }) =>
+        resolveOrderParty(from, userByIDLoader, partnerLoader),
     },
     fromParticipant: {
       type: OrderParticipantEnum,

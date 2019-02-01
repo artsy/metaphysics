@@ -3,7 +3,7 @@ import { runQuery } from "test/utils"
 
 describe("Artist type", () => {
   let artist = null
-  let rootValue = null
+  let context = null
 
   beforeEach(() => {
     artist = {
@@ -39,7 +39,7 @@ describe("Artist type", () => {
       },
     }
 
-    rootValue = {
+    context = {
       artistLoader: sinon
         .stub()
         .withArgs(artist.id)
@@ -82,7 +82,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           auctionResults: {
@@ -142,7 +142,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(
+    return runQuery(query, context).then(
       ({
         artist: {
           auctionResults: { pageCursors, edges },
@@ -182,7 +182,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(
+    return runQuery(query, context).then(
       ({
         artist: {
           auctionResults: {
@@ -211,7 +211,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(
+    return runQuery(query, context).then(
       ({
         artist: {
           auctionResults: { totalCount },

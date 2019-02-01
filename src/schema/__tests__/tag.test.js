@@ -9,7 +9,7 @@ describe("Tag", () => {
     // request to gravity.
 
     it("returns filtered artworks", () => {
-      const rootValue = {
+      const context = {
         filterArtworksLoader: sinon
           .stub()
           .withArgs("filter/artworks", {
@@ -41,7 +41,7 @@ describe("Tag", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           tag: {
             filtered_artworks: { hits },

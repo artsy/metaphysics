@@ -7,6 +7,7 @@ import urljoin from "url-join"
 
 import { middlewareLink } from "../lib/middlewareLink"
 import { responseLoggerLink } from "../logLinkMiddleware"
+import { ResolverContext } from "types/graphql"
 
 const { EXCHANGE_API_BASE } = config
 
@@ -16,34 +17,39 @@ export const createExchangeLink = () => {
     uri: urljoin(EXCHANGE_API_BASE, "graphql"),
   })
 
-  const authMiddleware = setContext((_request, context) => {
-    const locals = context.graphqlContext && context.graphqlContext.res.locals
-    const tokenLoader = locals && locals.dataLoaders.exchangeTokenLoader
-    const headers = { ...(locals && requestIDHeaders(locals.requestIDs)) }
-    // If a token loader exists for Exchange (i.e. this is an authenticated request), use that token to make
-    // authenticated requests to Exchange.
-    if (tokenLoader) {
-      return tokenLoader().then(({ token }) => {
-        return {
-          headers: Object.assign(headers, { Authorization: `Bearer ${token}` }),
-        }
-      })
+  const authMiddleware = setContext(
+    (_request, { graphqlContext }: { graphqlContext: ResolverContext }) => {
+      const tokenLoader = graphqlContext && graphqlContext.exchangeTokenLoader
+      const headers = {
+        ...(graphqlContext && requestIDHeaders(graphqlContext.requestIDs)),
+      }
+      // If a token loader exists for Exchange (i.e. this is an authenticated request), use that token to make
+      // authenticated requests to Exchange.
+      if (tokenLoader) {
+        return tokenLoader().then(({ token }) => {
+          return {
+            headers: Object.assign(headers, {
+              Authorization: `Bearer ${token}`,
+            }),
+          }
+        })
+      }
+      // Exchange uses no authentication for now
+      return { headers }
     }
-    // Exchange uses no authentication for now
-    return { headers }
-  })
+  )
 
-  const analyticsMiddleware = setContext((_request, context) => {
-    const locals = context.graphqlContext && context.graphqlContext.res.locals
-    if (!locals) return context
-    const headers = {
-      ...context.headers,
-      "User-Agent": locals.userAgent
-        ? locals.userAgent + "; Metaphysics"
-        : "Metaphysics",
+  const analyticsMiddleware = setContext(
+    (_request, context: { headers: {}; graphqlContext: ResolverContext }) => {
+      if (!context.graphqlContext) return context
+      const userAgent = context.graphqlContext.userAgent
+      const headers = {
+        ...context.headers,
+        "User-Agent": userAgent ? userAgent + "; Metaphysics" : "Metaphysics",
+      }
+      return { headers }
     }
-    return { headers }
-  })
+  )
 
   return middlewareLink
     .concat(authMiddleware)

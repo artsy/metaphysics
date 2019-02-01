@@ -32,7 +32,7 @@ describe("Delete card mutation", () => {
   }
   `
 
-  const rootValue = {
+  const context = {
     deleteCreditCardLoader: () => Promise.resolve(creditCard),
   }
 
@@ -71,7 +71,7 @@ describe("Delete card mutation", () => {
   })
 
   it("deletes a credit card successfully", async () => {
-    const data = await runAuthenticatedQuery(query, rootValue)
+    const data = await runAuthenticatedQuery(query, context)
     expect(data).toEqual({
       deleteCreditCard: {
         creditCardOrError: { creditCard: { id: "foo-foo" } },

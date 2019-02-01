@@ -5,8 +5,13 @@ import { BuyerOrderFields } from "./query_helpers"
 import { graphql } from "graphql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { RejectOfferMutationInputType } from "./types/reject_offer_mutation_input_type"
+import { ResolverContext } from "types/graphql"
 
-export const BuyerRejectOfferMutation = mutationWithClientMutationId({
+export const BuyerRejectOfferMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
   name: "buyerRejectOffer",
   description: "Buyer rejects a submitted offer from seller",
   inputFields: RejectOfferMutationInputType.getFields(),
@@ -15,11 +20,8 @@ export const BuyerRejectOfferMutation = mutationWithClientMutationId({
       type: OrderOrFailureUnionType,
     },
   },
-  mutateAndGetPayload: (
-    { offerId, rejectReason },
-    context,
-    { rootValue: { accessToken, exchangeSchema } }
-  ) => {
+  mutateAndGetPayload: ({ offerId, rejectReason }, context) => {
+    const { accessToken, exchangeSchema } = context
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }

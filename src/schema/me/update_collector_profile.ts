@@ -6,6 +6,7 @@ import {
   GraphQLEnumType,
 } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { ResolverContext } from "types/graphql"
 
 export const IntentsType = new GraphQLEnumType({
   name: "Intents",
@@ -31,7 +32,7 @@ export const IntentsType = new GraphQLEnumType({
   },
 })
 
-export default mutationWithClientMutationId({
+export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "UpdateCollectorProfile",
   description: "Updating a collector profile (loyalty applicant status).",
   inputFields: {
@@ -49,11 +50,7 @@ export default mutationWithClientMutationId({
     },
   },
   outputFields: CollectorProfileFields,
-  mutateAndGetPayload: (
-    options,
-    _request,
-    { rootValue: { updateCollectorProfileLoader } }
-  ) => {
+  mutateAndGetPayload: (options, { updateCollectorProfileLoader }) => {
     if (!updateCollectorProfileLoader) {
       throw new Error(
         "Missing Update Collector Profile Loader. Check your access token."

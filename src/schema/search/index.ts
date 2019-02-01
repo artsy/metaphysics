@@ -6,6 +6,7 @@ import {
   GraphQLFieldConfig,
   visit,
   BREAK,
+  GraphQLResolveInfo,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
@@ -16,6 +17,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { SearchableItem } from "schema/searchableItem"
 import { Searchable } from "schema/searchable"
 import { SearchEntity } from "./SearchEntity"
+import { ResolverContext } from "types/graphql"
 
 export const SearchMode = new GraphQLEnumType({
   name: "SearchMode",
@@ -40,14 +42,17 @@ export const searchArgs = pageable({
   },
   mode: {
     type: SearchMode,
-    description: "Mode of search to exceute. Default: SITE.",
+    description: "Mode of search to execute. Default: SITE.",
   },
 })
 
-const fetch = (searchResultItem, root) => {
+const fetch = (
+  searchResultItem,
+  { artistLoader, artworkLoader }: ResolverContext
+) => {
   const loaderMapping = {
-    Artist: root.artistLoader,
-    Artwork: root.artworkLoader,
+    Artist: artistLoader,
+    Artwork: artworkLoader,
   }
 
   const loader = loaderMapping[searchResultItem.label]
@@ -59,7 +64,7 @@ const fetch = (searchResultItem, root) => {
 
 // Fetch the full object if the GraphQL query includes any inline fragments
 // referencing the search result item's type (like Artist or Artwork)
-const shouldFetch = (searchResultItem, info) => {
+const shouldFetch = (searchResultItem, info: GraphQLResolveInfo) => {
   let fetch = false
 
   visit(info.fieldNodes[0], {
@@ -92,9 +97,13 @@ const shouldFetch = (searchResultItem, info) => {
 
 const SearchConnection = connectionWithCursorInfo(Searchable)
 
-const processSearchResultItem = (searchResultItem, info, source) => {
+const processSearchResultItem = (
+  searchResultItem,
+  info: GraphQLResolveInfo,
+  context: ResolverContext
+) => {
   if (shouldFetch(searchResultItem, info)) {
-    return fetch(searchResultItem, source).then(response => {
+    return fetch(searchResultItem, context).then(response => {
       return {
         ...response,
         __typename: searchResultItem.label,
@@ -108,11 +117,11 @@ const processSearchResultItem = (searchResultItem, info, source) => {
   }
 }
 
-export const Search: GraphQLFieldConfig<any, any, any> = {
+export const Search: GraphQLFieldConfig<void, ResolverContext> = {
   type: SearchConnection,
   description: "Global search",
   args: searchArgs,
-  resolve: (source, args, _request, info) => {
+  resolve: (_source, args, context, info) => {
     const pageOptions = convertConnectionArgsToGravityArgs(args)
 
     const gravityArgs = {
@@ -121,17 +130,17 @@ export const Search: GraphQLFieldConfig<any, any, any> = {
       total_count: true,
     }
 
-    return source.searchLoader(gravityArgs).then(({ body, headers }) => {
+    return context.searchLoader(gravityArgs).then(({ body, headers }) => {
       const totalCount = parseInt(headers["x-total-count"])
       const pageCursors = createPageCursors(pageOptions, totalCount)
 
       return Promise.all(
         body.map(searchResultItem =>
-          processSearchResultItem(searchResultItem, info, source)
+          processSearchResultItem(searchResultItem, info, context)
         )
-      ).then(procesedSearchResults => {
+      ).then(processedSearchResults => {
         const connection = connectionFromArraySlice(
-          procesedSearchResults,
+          processedSearchResults,
           args,
           {
             arrayLength: totalCount,

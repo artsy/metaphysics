@@ -1,7 +1,8 @@
 import Bidder from "schema/bidder"
-import { GraphQLList, GraphQLString } from "graphql"
+import { GraphQLList, GraphQLString, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-export default {
+const Bidders: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Bidder.type),
   description: "A list of the current user’s bidder registrations",
   args: {
@@ -10,8 +11,10 @@ export default {
       description: "The slug or ID of a Sale",
     },
   },
-  resolve: (_root, options, _request, { rootValue: { meBiddersLoader } }) => {
+  resolve: (_root, options, { meBiddersLoader }) => {
     if (!meBiddersLoader) return null
     return meBiddersLoader(options)
   },
 }
+
+export default Bidders

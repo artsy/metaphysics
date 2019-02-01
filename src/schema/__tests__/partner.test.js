@@ -4,7 +4,7 @@ import gql from "lib/gql"
 
 describe("Partner type", () => {
   let partnerData = null
-  let rootValue = null
+  let context = null
 
   beforeEach(() => {
     partnerData = {
@@ -22,7 +22,7 @@ describe("Partner type", () => {
       website: "https://www.newmuseum.org/",
     }
 
-    rootValue = {
+    context = {
       partnerLoader: sinon
         .stub()
         .withArgs(partnerData.id)
@@ -41,7 +41,7 @@ describe("Partner type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
 
     expect(data).toEqual({
       partner: {
@@ -64,7 +64,7 @@ describe("Partner type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner: {
           name: "Catty Partner",
@@ -95,7 +95,7 @@ describe("Partner type", () => {
           id: "virginia-mak-hidden-nature-08",
         },
       ]
-      rootValue = {
+      context = {
         partnerArtworksLoader: () =>
           Promise.resolve({
             body: artworksResponse,
@@ -122,7 +122,7 @@ describe("Partner type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         partner: {
@@ -162,7 +162,7 @@ describe("Partner type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         partner: {
@@ -188,7 +188,7 @@ describe("Partner type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         partner: {

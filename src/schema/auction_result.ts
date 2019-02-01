@@ -10,7 +10,8 @@ import {
 } from "graphql"
 import { indexOf } from "lodash"
 import { connectionWithCursorInfo } from "schema/fields/pagination"
-import Image from "schema/image"
+import Image, { normalizeImageData } from "schema/image"
+import { ResolverContext } from "types/graphql"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
 const currencyCodes = require("../lib/currency_codes.json")
@@ -33,7 +34,7 @@ export const AuctionResultSorts = {
   }),
 }
 
-const AuctionResultType = new GraphQLObjectType({
+const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
   name: "AuctionResult",
   interfaces: [NodeInterface],
   fields: () => ({
@@ -58,7 +59,7 @@ const AuctionResultType = new GraphQLObjectType({
       type: GraphQLString,
     },
     dimensions: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "AuctionLotDimensions",
         description: "In centimeters.",
         fields: {
@@ -101,7 +102,7 @@ const AuctionResultType = new GraphQLObjectType({
       type: GraphQLString,
     },
     images: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "AuctionLotImages",
         fields: {
           larger: {
@@ -117,13 +118,13 @@ const AuctionResultType = new GraphQLObjectType({
           return null
         }
         return {
-          larger: Image.resolve(images[0].larger),
-          thumbnail: Image.resolve(images[0].thumbnail),
+          larger: normalizeImageData(images[0].larger),
+          thumbnail: normalizeImageData(images[0].thumbnail),
         }
       },
     },
     estimate: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "AuctionLotEstimate",
         fields: {
           low: {
@@ -176,7 +177,7 @@ const AuctionResultType = new GraphQLObjectType({
       resolve: lot => lot,
     },
     price_realized: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "AuctionResultPriceRealized",
         fields: {
           cents: {

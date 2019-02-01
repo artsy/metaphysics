@@ -1,10 +1,16 @@
 import jwt from "jwt-simple"
-import { GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLEnumType,
+  GraphQLFieldConfig,
+} from "graphql"
 import config from "config"
+import { ResolverContext } from "types/graphql"
 
 const { HMAC_SECRET } = config
 
-export default {
+const CausalityJWT: GraphQLFieldConfig<void, ResolverContext> = {
   type: GraphQLString,
   description: "Creates, and authorizes, a JWT custom for Causality",
   args: {
@@ -26,19 +32,10 @@ export default {
   resolve: (
     _root,
     options,
-    _request,
-    {
-      rootValue: {
-        accessToken,
-        meLoader,
-        meBiddersLoader,
-        mePartnersLoader,
-        saleLoader,
-      },
-    }
+    { meLoader, meBiddersLoader, mePartnersLoader, saleLoader }
   ) => {
     // Observer role for logged out users
-    if (!accessToken) {
+    if (!meLoader || !meBiddersLoader || !mePartnersLoader) {
       return saleLoader(options.sale_id).then(sale =>
         jwt.encode(
           {
@@ -126,3 +123,5 @@ export default {
     }
   },
 }
+
+export default CausalityJWT

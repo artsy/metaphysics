@@ -1,8 +1,9 @@
 import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import Conversation from "schema/me/conversation"
+import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId({
+export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "UpdateConversationMutation",
   description: "Update a conversation.",
   inputFields: {
@@ -23,8 +24,7 @@ export default mutationWithClientMutationId({
   },
   mutateAndGetPayload: (
     { conversationId, fromLastViewedMessageId },
-    _request,
-    { rootValue: { conversationUpdateLoader } }
+    { conversationUpdateLoader }
   ) => {
     if (!conversationUpdateLoader) return null
     return conversationUpdateLoader(conversationId, {

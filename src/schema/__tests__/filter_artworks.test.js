@@ -3,12 +3,12 @@ import { runQuery } from "test/utils"
 import { toGlobalId } from "graphql-relay"
 
 describe("Filter Artworks", () => {
-  let rootValue = null
+  let context = null
   describe(`Does not pass along the medium param if it is "*"`, () => {
     beforeEach(() => {
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
 
-      rootValue = {
+      context = {
         filterArtworksLoader: sinon
           .stub()
           .withArgs("filter/artworks", {
@@ -47,7 +47,7 @@ describe("Filter Artworks", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           gene: {
             filtered_artworks: { hits },
@@ -78,7 +78,7 @@ describe("Filter Artworks", () => {
         "FilterArtworks",
         JSON.stringify(filterOptions)
       )
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           gene: {
             filtered_artworks: { __id },
@@ -107,7 +107,7 @@ describe("Filter Artworks", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(({ node: { __id } }) => {
+      return runQuery(query, context).then(({ node: { __id } }) => {
         expect(__id).toEqual(generatedId)
       })
     })
@@ -115,7 +115,7 @@ describe("Filter Artworks", () => {
 
   describe(`Pagination for the last page`, () => {
     beforeEach(() => {
-      rootValue = {
+      context = {
         filterArtworksLoader: sinon
           .stub()
           .withArgs("filter/artworks")
@@ -164,7 +164,7 @@ describe("Filter Artworks", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(({ filter_artworks }) => {
+      return runQuery(query, context).then(({ filter_artworks }) => {
         expect(filter_artworks.artworks_connection.pageInfo).toEqual({
           hasNextPage: false,
         })

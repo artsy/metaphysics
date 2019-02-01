@@ -90,6 +90,7 @@ import { BidderPositionMutation } from "./me/bidder_position_mutation"
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
 import { GraphQLSchema, GraphQLObjectType } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 import config from "config"
 import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
@@ -153,7 +154,7 @@ const rootFields: any = {
   popular_artists: PopularArtists,
 }
 
-const ViewerType = new GraphQLObjectType({
+const ViewerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Viewer",
   description: "A wildcard used to support complex root queries in Relay",
   fields: rootFields,
@@ -216,7 +217,7 @@ stitchedMutations.submitOrder = SubmitOrderMutation
 
 export default new GraphQLSchema({
   allowedLegacyNames: ["__id"],
-  mutation: new GraphQLObjectType({
+  mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
     fields: {
       createBidder: createBidderMutation,
@@ -238,7 +239,7 @@ export default new GraphQLSchema({
       ...stitchedMutations,
     },
   }),
-  query: new GraphQLObjectType({
+  query: new GraphQLObjectType<any, ResolverContext>({
     name: "Query",
     fields: {
       ...rootFields,

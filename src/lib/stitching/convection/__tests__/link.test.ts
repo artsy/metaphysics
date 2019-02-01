@@ -26,13 +26,8 @@ xdescribe("convection link", () => {
     const link = createConvectionLink()
     const defaultContext = {
       graphqlContext: {
-        res: {
-          locals: {
-            requestIDs: {
-              requestID: "req123",
-            },
-            dataLoaders: {},
-          },
+        requestIDs: {
+          requestID: "req123",
         },
       },
     }
@@ -63,17 +58,10 @@ xdescribe("convection link", () => {
       const link = createConvectionLink()
       const defaultContext = {
         graphqlContext: {
-          res: {
-            locals: {
-              requestIDs: {
-                requestID: "req123",
-              },
-              dataLoaders: {
-                convectionTokenLoader: () =>
-                  Promise.resolve({ token: "token_123" }),
-              },
-            },
+          requestIDs: {
+            requestID: "req123",
           },
+          convectionTokenLoader: () => Promise.resolve({ token: "token_123" }),
         },
       }
 

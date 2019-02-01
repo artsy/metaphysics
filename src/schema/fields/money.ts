@@ -8,6 +8,7 @@ import {
   GraphQLInputObjectType,
   GraphQLNonNull,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export const amountSDL = name => `
   ${name}(
@@ -62,7 +63,7 @@ export const amount = centsResolver => ({
 
 const money = ({ name, resolve }) => ({
   resolve: x => x,
-  type: new GraphQLObjectType({
+  type: new GraphQLObjectType<any, ResolverContext>({
     name,
     fields: {
       amount: amount(obj => resolve(obj).cents),

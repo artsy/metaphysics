@@ -28,11 +28,11 @@ describe("SaleArtwork type", () => {
   const execute = async (
     query,
     gravityResponse = saleArtwork,
-    rootValue = {}
+    context = {}
   ) => {
     return await runQuery(query, {
       saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
-      ...rootValue,
+      ...context,
     })
   }
 
@@ -105,13 +105,13 @@ describe("SaleArtwork type", () => {
         minimum_next_bid_cents: 2400000000,
       }
 
-      const rootValue = {
+      const context = {
         saleLoader: () => Promise.resolve({ missing_increment_strategy: true }),
         incrementsLoader: () => Promise.resolve(),
       }
 
       await expect(
-        execute(query, gravityResponse, rootValue)
+        execute(query, gravityResponse, context)
       ).rejects.toHaveProperty(
         "message",
         "schema/sale_artwork - Missing increment strategy"
@@ -132,7 +132,7 @@ describe("SaleArtwork type", () => {
         minimum_next_bid_cents: 2400000000,
       }
 
-      const rootValue = {
+      const context = {
         saleLoader: () => {
           return Promise.resolve({
             minimum_next_bid_cents: 2400000000,
@@ -155,7 +155,7 @@ describe("SaleArtwork type", () => {
         },
       }
 
-      const data = await execute(query, gravityResponse, rootValue)
+      const data = await execute(query, gravityResponse, context)
       expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
         2400000000,
         2400001000,
@@ -189,7 +189,7 @@ describe("SaleArtwork type", () => {
         }
       `
 
-      const rootValue = {
+      const context = {
         saleLoader: () => {
           return Promise.resolve({
             increment_strategy: "default",
@@ -216,7 +216,7 @@ describe("SaleArtwork type", () => {
         },
       }
 
-      const data = await execute(query, saleArtwork, rootValue)
+      const data = await execute(query, saleArtwork, context)
       expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
         351000,
         355000,
@@ -253,7 +253,7 @@ describe("SaleArtwork type", () => {
         }
       `
 
-      const rootValue = {
+      const context = {
         saleLoader: () => {
           return Promise.resolve({
             increment_strategy: "default",
@@ -280,7 +280,7 @@ describe("SaleArtwork type", () => {
         },
       }
 
-      const data = await execute(query, saleArtwork, rootValue)
+      const data = await execute(query, saleArtwork, context)
       expect(data.sale_artwork.increments.slice(0, 2)).toEqual([
         {
           cents: 351000,
@@ -295,11 +295,11 @@ describe("SaleArtwork type", () => {
   })
 
   describe("my_increments", () => {
-    let rootValue
+    let context
     let query
 
     beforeEach(() => {
-      rootValue = {
+      context = {
         saleLoader: () => {
           return Promise.resolve({ increment_strategy: "default" })
         },
@@ -339,7 +339,7 @@ describe("SaleArtwork type", () => {
     })
 
     it("returns increments from the minimum next bid cents if the user has no lot standings", async () => {
-      const data = await runAuthenticatedQuery(query, rootValue)
+      const data = await runAuthenticatedQuery(query, context)
       expect(data.sale_artwork.increments.slice(0, 5)).toEqual([
         {
           cents: 351000,
@@ -375,7 +375,7 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, saleArtwork, {
-        ...rootValue,
+        ...context,
         lotStandingLoader: lotStandingLoader,
       })
       expect(data.sale_artwork.increments.slice(0, 5)).toEqual([
@@ -413,7 +413,7 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, saleArtwork, {
-        ...rootValue,
+        ...context,
         lotStandingLoader: lotStandingLoader,
       })
       expect(data.sale_artwork.increments.slice(0, 5)).toEqual([

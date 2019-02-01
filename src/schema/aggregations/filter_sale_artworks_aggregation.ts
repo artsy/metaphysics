@@ -1,6 +1,7 @@
 import { map, orderBy } from "lodash"
 import AggregationCount from "./aggregation_count"
 import { GraphQLObjectType, GraphQLEnumType, GraphQLList } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export const SaleArtworksAggregation = new GraphQLEnumType({
   name: "SaleArtworkAggregation",
@@ -25,7 +26,10 @@ const sorts = {
   artist: counts => orderBy(counts, ["sortable_id", "count"], ["asc", "desc"]),
 }
 
-export const SaleArtworksAggregationResultsType = new GraphQLObjectType({
+export const SaleArtworksAggregationResultsType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "SaleArtworksAggregationResults",
   description: "The results for one of the requested aggregations",
   fields: () => ({

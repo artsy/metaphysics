@@ -14,10 +14,10 @@ describe("Sale type", () => {
     increment_strategy: "default",
   }
 
-  const execute = async (query, gravityResponse = sale, rootValue = {}) => {
+  const execute = async (query, gravityResponse = sale, context = {}) => {
     return await runQuery(query, {
       saleLoader: () => Promise.resolve(gravityResponse),
-      ...rootValue,
+      ...context,
     })
   }
 
@@ -195,7 +195,7 @@ describe("Sale type", () => {
       `
       sale.eligible_sale_artworks_count = 20
 
-      const rootValue = {
+      const context = {
         saleLoader: () => Promise.resolve(sale),
         saleArtworksLoader: sinon.stub().returns(
           Promise.resolve({
@@ -206,7 +206,7 @@ describe("Sale type", () => {
         ),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(data => {
+      return runAuthenticatedQuery(query, context).then(data => {
         expect(data).toMatchSnapshot()
       })
     })
@@ -237,7 +237,7 @@ describe("Sale type", () => {
         }
       `
 
-      const rootValue = {
+      const context = {
         saleLoader: () => Promise.resolve(sale),
         saleArtworksLoader: sinon
           .stub()
@@ -263,7 +263,7 @@ describe("Sale type", () => {
         },
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(data => {
+      return runAuthenticatedQuery(query, context).then(data => {
         expect(data.sale.sale_artworks[0].bid_increments.slice(0, 5)).toEqual([
           400000,
           410000,
@@ -572,12 +572,12 @@ describe("Sale type", () => {
           }
         }
       `
-      const rootValue = {
+      const context = {
         saleLoader: () => Promise.resolve(sale),
         meBiddersLoader: () => Promise.resolve([]),
       }
 
-      const data = await runAuthenticatedQuery(query, rootValue)
+      const data = await runAuthenticatedQuery(query, context)
       expect(data.sale.registrationStatus).toEqual(null)
     })
 
@@ -591,14 +591,14 @@ describe("Sale type", () => {
           }
         }
       `
-      const rootValue = {
+      const context = {
         saleLoader: () => Promise.resolve(sale),
         meBiddersLoader: params =>
           _.isEqual(params, { sale_id: "foo-foo" }) &&
           Promise.resolve([{ qualified_for_bidding: true }]),
       }
 
-      const data = await runAuthenticatedQuery(query, rootValue)
+      const data = await runAuthenticatedQuery(query, context)
       expect(data.sale.registrationStatus.qualified_for_bidding).toEqual(true)
     })
   })
@@ -624,7 +624,7 @@ describe("Sale type", () => {
 
       sale.eligible_sale_artworks_count = 20
 
-      const rootValue = {
+      const context = {
         saleLoader: () => Promise.resolve(sale),
         saleArtworksLoader: () =>
           Promise.resolve({
@@ -636,7 +636,7 @@ describe("Sale type", () => {
           }),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(data => {
+      return runAuthenticatedQuery(query, context).then(data => {
         expect(data.sale.artworksConnection.pageInfo.hasNextPage).toBe(true)
         expect(data).toMatchSnapshot()
       })

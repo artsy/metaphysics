@@ -5,16 +5,18 @@ import {
   connectionFromPromisedArray,
 } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 const { connectionType: GeneFamilyConnection } = connectionDefinitions({
   nodeType: GeneFamily.type,
 })
 
-const GeneFamilies = {
+const GeneFamilies: GraphQLFieldConfig<void, ResolverContext> = {
   type: GeneFamilyConnection,
   description: "A list of Gene Families",
   args: pageable(),
-  resolve: (_root, options, _request, { rootValue }) => {
+  resolve: (_root, options, { geneFamiliesLoader }) => {
     const gravityOptions = Object.assign(
       {},
       convertConnectionArgsToGravityArgs(options),
@@ -23,7 +25,7 @@ const GeneFamilies = {
       }
     )
     return connectionFromPromisedArray(
-      rootValue.geneFamiliesLoader(gravityOptions),
+      geneFamiliesLoader(gravityOptions),
       // FIXME: Need to type properly
       // @ts-ignore
       gravityOptions

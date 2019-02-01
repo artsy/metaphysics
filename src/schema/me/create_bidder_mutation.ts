@@ -1,8 +1,9 @@
 import { GraphQLNonNull, GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import Bidder from "schema/bidder"
+import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId({
+export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "CreateBidder",
   description: "Create a bidder",
   inputFields: {
@@ -16,12 +17,8 @@ export default mutationWithClientMutationId({
       resolve: bidder => bidder,
     },
   },
-  mutateAndGetPayload: (
-    { sale_id },
-    _request,
-    { rootValue: { accessToken, createBidderLoader } }
-  ) => {
-    if (!accessToken) {
+  mutateAndGetPayload: ({ sale_id }, { createBidderLoader }) => {
+    if (!createBidderLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 

@@ -12,11 +12,16 @@ import {
   GraphQLBoolean,
   GraphQLID,
   GraphQLNonNull,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 let possibleArgs
 
-export const HomePageArtworkModuleType = new GraphQLObjectType({
+export const HomePageArtworkModuleType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "HomePageArtworkModule",
   interfaces: [NodeInterface],
   fields: () => ({
@@ -51,7 +56,7 @@ export const HomePageArtworkModuleType = new GraphQLObjectType({
   }),
 })
 
-const HomePageArtworkModule = {
+const HomePageArtworkModule: GraphQLFieldConfig<void, ResolverContext> = {
   type: HomePageArtworkModuleType,
   description: "Single artwork module to show on the home screen",
   args: {
@@ -61,8 +66,8 @@ const HomePageArtworkModule = {
     },
     generic_gene_id: {
       type: GraphQLString,
-      description: "ID of generic gene rail to target",
-      deprecationReason: "Favor more specific `generic_gene_id`",
+      description:
+        "[DEPRECATED: Favor more specific `generic_gene_id`] ID of generic gene rail to target",
     },
     id: {
       type: GraphQLString,
@@ -80,8 +85,7 @@ const HomePageArtworkModule = {
   resolve: (
     _root,
     { key, id, followed_artist_id, related_artist_id },
-    _request,
-    { rootValue: { geneLoader } }
+    { geneLoader }
   ) => {
     // TODO Really not entirely sure what this `display` param is about.
     const display = true
@@ -106,6 +110,6 @@ const HomePageArtworkModule = {
   },
 }
 
-possibleArgs = Object.keys(HomePageArtworkModule.args).sort()
+possibleArgs = Object.keys(HomePageArtworkModule.args!).sort()
 
 export default HomePageArtworkModule

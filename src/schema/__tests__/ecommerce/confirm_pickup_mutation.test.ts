@@ -6,7 +6,7 @@ import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import gql from "lib/gql"
 import { OrderSellerFields } from "./order_fields"
 
-let rootValue
+let context
 
 describe("Confirm Pickup Mutation", () => {
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe("Confirm Pickup Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
   })
   it("confirms pickup on an order and returns order", () => {
     const mutation = gql`
@@ -42,7 +42,7 @@ describe("Confirm Pickup Mutation", () => {
       }
     `
 
-    return runQuery(mutation, rootValue).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceConfirmPickup.orderOrError.order).toEqual(
         sampleOrder()
       )

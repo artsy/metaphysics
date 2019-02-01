@@ -1,6 +1,6 @@
 import DataLoader from "dataloader"
 import { loaderInterface } from "./loader_interface"
-import { LoaderFactory } from "."
+import { LoaderFactory } from "../index"
 
 /**
  * This factory provides a short-cut system for our data loader system, it provides

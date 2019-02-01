@@ -14,7 +14,7 @@ describe("Popular Artists", () => {
       }
     `
 
-    const rootValue = {
+    const context = {
       popularArtistsLoader: () =>
         Promise.resolve([
           { birthday: "1900", artworks_count: 100, id: "ortina" },
@@ -23,7 +23,7 @@ describe("Popular Artists", () => {
     }
 
     expect.assertions(1)
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toMatchSnapshot()
     })
   })

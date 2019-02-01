@@ -24,7 +24,7 @@ describe("Artist type", () => {
     .mockReturnValue(Promise.resolve(mainArtistsResponse))
 
   const artistLoader = () => Promise.resolve(artist)
-  const rootValue = {
+  const context = {
     relatedContemporaryArtistsLoader,
     relatedMainArtistsLoader,
     artistLoader,
@@ -59,7 +59,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(
+    return runQuery(query, context).then(
       ({
         artist: {
           related: {
@@ -110,7 +110,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(
+    return runQuery(query, context).then(
       ({
         artist: {
           related: {
@@ -150,7 +150,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(
+    return runQuery(query, context).then(
       ({
         artist: {
           related: {

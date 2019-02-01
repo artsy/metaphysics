@@ -31,7 +31,7 @@ describe("Fair type", () => {
     }
   `
 
-  const rootValue = {
+  const context = {
     fairLoader: sinon.stub().returns(Promise.resolve(fair)),
   }
 
@@ -42,9 +42,9 @@ describe("Fair type", () => {
       private: false,
     }
 
-    rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
+    context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -70,9 +70,9 @@ describe("Fair type", () => {
       private: false,
     }
 
-    rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
+    context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -98,9 +98,9 @@ describe("Fair type", () => {
       private: false,
     }
 
-    rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
+    context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -121,7 +121,7 @@ describe("Fair type", () => {
 })
 
 describe("Fair", () => {
-  let rootValue = null
+  let context = null
   beforeEach(() => {
     const data = {
       fair: {
@@ -147,7 +147,7 @@ describe("Fair", () => {
         ],
       },
     }
-    rootValue = {
+    context = {
       fairLoader: sinon.stub().returns(Promise.resolve(data.fair)),
       fairArtistsLoader: jest.fn().mockReturnValue(
         Promise.resolve({
@@ -205,7 +205,7 @@ describe("Fair", () => {
       }
     `
 
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
 
     expect(data).toEqual({
       fair: {
@@ -244,7 +244,7 @@ describe("Fair", () => {
       }
     `
 
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
 
     expect(data).toEqual({
       fair: {
@@ -279,7 +279,7 @@ describe("Fair", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       counts = data.fair.counts
     })
 

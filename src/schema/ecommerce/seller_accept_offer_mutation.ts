@@ -5,8 +5,13 @@ import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 import { SellerOrderFields } from "./query_helpers"
 import gql from "lib/gql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
+import { ResolverContext } from "types/graphql"
 
-export const SellerAcceptOfferMutation = mutationWithClientMutationId({
+export const SellerAcceptOfferMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
   name: "sellerAcceptOffer",
   description: "Approves an order with payment",
   inputFields: OfferMutationInputType.getFields(),
@@ -15,11 +20,8 @@ export const SellerAcceptOfferMutation = mutationWithClientMutationId({
       type: OrderOrFailureUnionType,
     },
   },
-  mutateAndGetPayload: (
-    { offerId },
-    context,
-    { rootValue: { accessToken, exchangeSchema } }
-  ) => {
+  mutateAndGetPayload: ({ offerId }, context) => {
+    const { accessToken, exchangeSchema } = context
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }

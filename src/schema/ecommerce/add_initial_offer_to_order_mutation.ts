@@ -6,8 +6,13 @@ import { BuyerOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { InitialOfferInputType } from "./types/initial_offer_input_type"
 import { moneyFieldToUnit } from "lib/moneyHelper"
+import { ResolverContext } from "types/graphql"
 
-export const AddInitialOfferToOrderMutation = mutationWithClientMutationId({
+export const AddInitialOfferToOrderMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
   name: "AddInitialOfferToOrder",
   description: "Adds an offer to a pending order",
   inputFields: InitialOfferInputType.getFields(),
@@ -16,11 +21,8 @@ export const AddInitialOfferToOrderMutation = mutationWithClientMutationId({
       type: OrderOrFailureUnionType,
     },
   },
-  mutateAndGetPayload: (
-    { offerPrice, orderId, note },
-    context,
-    { rootValue: { accessToken, exchangeSchema } }
-  ) => {
+  mutateAndGetPayload: ({ offerPrice, orderId, note }, context) => {
+    const { accessToken, exchangeSchema } = context
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }

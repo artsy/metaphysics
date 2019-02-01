@@ -1,8 +1,9 @@
 import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ShowType } from "../show"
+import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId({
+export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "FollowShow",
   description: "Follow (or unfollow) a show",
   inputFields: {
@@ -17,20 +18,15 @@ export default mutationWithClientMutationId({
   outputFields: {
     show: {
       type: ShowType,
-      resolve: (
-        { partner_show },
-        _options,
-        _request,
-        { rootValue: { showLoader } }
-      ) => showLoader(partner_show.id),
+      resolve: ({ partner_show }, _options, { showLoader }) =>
+        showLoader(partner_show.id),
     },
   },
   mutateAndGetPayload: (
     { partner_show_id, unfollow },
-    _request,
-    { rootValue: { followShowLoader, unfollowShowLoader } }
+    { followShowLoader, unfollowShowLoader }
   ) => {
-    if (!followShowLoader) {
+    if (!followShowLoader || !unfollowShowLoader) {
       throw new Error("Missing Follow Show Loader. Check your access token.")
     }
 

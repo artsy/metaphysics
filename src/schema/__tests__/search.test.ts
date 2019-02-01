@@ -3,7 +3,7 @@ import { runQuery } from "test/utils"
 
 describe("Search", () => {
   let searchResults: any
-  let rootValue: any
+  let context: any
 
   beforeEach(() => {
     searchResults = [
@@ -58,7 +58,7 @@ describe("Search", () => {
       },
     ]
 
-    rootValue = {
+    context = {
       searchLoader: () =>
         Promise.resolve({
           body: searchResults,
@@ -91,7 +91,7 @@ describe("Search", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       const artistSearchableItemNode = data!.search.edges[0].node
 
       expect(artistSearchableItemNode.__typename).toBe("SearchableItem")
@@ -157,7 +157,7 @@ describe("Search", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       const artistNode = data!.search.edges[0].node
 
       expect(artistNode.__typename).toBe("Artist")
@@ -182,7 +182,7 @@ describe("Search", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       const artworkNode = data!.search.edges[1].node
 
       expect(artworkNode.__typename).toBe("Artwork")

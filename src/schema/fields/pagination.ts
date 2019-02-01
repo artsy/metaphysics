@@ -8,6 +8,7 @@ import {
 } from "graphql"
 import { connectionDefinitions, toGlobalId } from "graphql-relay"
 import { warn } from "lib/loggers"
+import { ResolverContext } from "types/graphql"
 
 const PREFIX = "arrayconnection"
 
@@ -20,7 +21,7 @@ const PREFIX = "arrayconnection"
 //
 const PAGE_NUMBER_CAP = 100
 
-const PageCursor = new GraphQLObjectType({
+const PageCursor = new GraphQLObjectType<any, ResolverContext>({
   name: "PageCursor",
   fields: () => ({
     cursor: {
@@ -35,7 +36,7 @@ const PageCursor = new GraphQLObjectType({
   }),
 })
 
-export const PageCursorsType = new GraphQLObjectType({
+export const PageCursorsType = new GraphQLObjectType<any, ResolverContext>({
   name: "PageCursors",
   fields: () => ({
     first: {

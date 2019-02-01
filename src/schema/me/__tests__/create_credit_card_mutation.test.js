@@ -45,12 +45,12 @@ describe("Credit card mutation", () => {
   }
   `
 
-  const rootValue = {
+  const context = {
     createCreditCardLoader: () => Promise.resolve(creditCard),
   }
 
   it("creates a credit card with the old-style query", async () => {
-    const data = await runAuthenticatedQuery(oldQuery, rootValue)
+    const data = await runAuthenticatedQuery(oldQuery, context)
     expect(data).toEqual({
       createCreditCard: {
         credit_card: {
@@ -90,7 +90,7 @@ describe("Credit card mutation", () => {
       }
     }
     `
-    const data = await runAuthenticatedQuery(edgeQuery, rootValue)
+    const data = await runAuthenticatedQuery(edgeQuery, context)
     expect(data).toEqual({
       createCreditCard: {
         creditCardOrError: {
@@ -143,7 +143,7 @@ describe("Credit card mutation", () => {
   })
 
   it("creates a credit card successfully with the new-style query", async () => {
-    const data = await runAuthenticatedQuery(newQuery, rootValue)
+    const data = await runAuthenticatedQuery(newQuery, context)
     expect(data).toEqual({
       createCreditCard: {
         creditCardOrError: { creditCard: { id: "foo-foo" } },

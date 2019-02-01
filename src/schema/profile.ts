@@ -1,18 +1,20 @@
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import numeral from "./fields/numeral"
-import Image from "./image"
+import Image, { normalizeImageData } from "./image"
 import { GravityIDFields } from "./object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLBoolean,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-export const ProfileType = new GraphQLObjectType({
+export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
   name: "Profile",
-  fields: (): any => ({
+  fields: () => ({
     ...GravityIDFields,
     cached,
     bio: {
@@ -20,7 +22,7 @@ export const ProfileType = new GraphQLObjectType({
     },
     counts: {
       resolve: profile => profile,
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "ProfileCounts",
         fields: {
           follows: numeral(({ follows_count }) => follows_count),
@@ -33,21 +35,16 @@ export const ProfileType = new GraphQLObjectType({
     },
     icon: {
       type: Image.type,
-      resolve: ({ icon }) => Image.resolve(icon),
+      resolve: ({ icon }) => normalizeImageData(icon),
     },
     image: {
       type: Image.type,
-      resolve: ({ cover_image }) => Image.resolve(cover_image),
+      resolve: ({ cover_image }) => normalizeImageData(cover_image),
     },
     initials: initials("owner.name"),
     is_followed: {
       type: GraphQLBoolean,
-      resolve: (
-        { id },
-        {},
-        _request,
-        { rootValue: { followedProfileLoader } }
-      ) => {
+      resolve: ({ id }, {}, { followedProfileLoader }) => {
         if (!followedProfileLoader) return false
         return followedProfileLoader(id).then(({ is_followed }) => is_followed)
       },
@@ -67,7 +64,7 @@ export const ProfileType = new GraphQLObjectType({
   }),
 })
 
-const Profile = {
+const Profile: GraphQLFieldConfig<void, ResolverContext> = {
   type: ProfileType,
   description: "A Profile",
   args: {
@@ -76,8 +73,7 @@ const Profile = {
       description: "The slug or ID of the Profile",
     },
   },
-  resolve: (_root, { id }, _request, { rootValue: { profileLoader } }) =>
-    profileLoader(id),
+  resolve: (_root, { id }, { profileLoader }) => profileLoader(id),
 }
 
 export default Profile

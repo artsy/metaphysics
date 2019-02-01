@@ -5,7 +5,7 @@ import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { OrderSellerFields } from "./order_fields"
 import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
 
-let rootValue
+let context
 
 describe("BuyerAcceptOffer Mutation", () => {
   const mutation = gql`
@@ -38,9 +38,9 @@ describe("BuyerAcceptOffer Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
 
-    return runQuery(mutation, rootValue).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceBuyerAcceptOffer.orderOrError.order).toEqual(
         sampleOrder()
       )
@@ -61,9 +61,9 @@ describe("BuyerAcceptOffer Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
 
-    return runQuery(mutation, rootValue).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceBuyerAcceptOffer.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

@@ -4,11 +4,16 @@ import { mutationWithClientMutationId } from "graphql-relay"
 import { BidderPositionResultType } from "../types/bidder_position_result"
 import { BiddingMessages } from "./bidder_position_messages"
 import config from "config"
+import { ResolverContext } from "types/graphql"
 
 const { PREDICTION_ENDPOINT } = config
 
 // @ts-ignore
-export const BidderPositionMutation = mutationWithClientMutationId({
+export const BidderPositionMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
   name: "BidderPosition",
   description: "Creates a bidder position",
   inputFields: {
@@ -30,10 +35,9 @@ export const BidderPositionMutation = mutationWithClientMutationId({
   },
   mutateAndGetPayload: (
     { sale_id, artwork_id, max_bid_amount_cents },
-    _request,
-    { rootValue: { accessToken, createBidderPositionLoader } }
+    { createBidderPositionLoader }
   ) => {
-    if (!accessToken) {
+    if (!createBidderPositionLoader) {
       return new Error("You need to be signed in to perform this action")
     }
     return createBidderPositionLoader({

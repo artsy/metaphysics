@@ -4,8 +4,9 @@ import {
   cursorForObjectInConnection,
 } from "graphql-relay"
 import { ConversationType, MessageEdge } from "./index"
+import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId({
+export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "SendConversationMessageMutation",
   description: "Appending a message to a conversation thread",
   inputFields: {
@@ -45,16 +46,9 @@ export default mutationWithClientMutationId({
   },
   mutateAndGetPayload: (
     { id, from, body_text, reply_to_message_id },
-    _request,
-    {
-      rootValue: {
-        conversationLoader,
-        conversationCreateMessageLoader,
-        userID,
-      },
-    }
+    { conversationLoader, conversationCreateMessageLoader, userID }
   ) => {
-    if (!conversationCreateMessageLoader) return null
+    if (!conversationCreateMessageLoader || !conversationLoader) return null
     return conversationCreateMessageLoader(id, {
       from,
       reply_to_message_id,

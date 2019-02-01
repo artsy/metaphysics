@@ -4,7 +4,8 @@ import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_wi
 
 import cache from "lib/cache"
 import { StaticPathLoader } from "../api/loader_interface"
-import { API, LoaderFactory } from "../api"
+import { API } from "../api"
+import { LoaderFactory } from "../index"
 
 describe("API loaders", () => {
   let api: jest.Mock<API>

@@ -3,7 +3,7 @@ import { runQuery } from "test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
 describe("Gene", () => {
-  let rootValue
+  let context
   describe("For just querying the gene artworks", () => {
     // If this test fails because it's making a gravity request to /gene/x, it's
     // because the AST checks to find out which nodes we're requesting
@@ -11,7 +11,7 @@ describe("Gene", () => {
     // request to gravity.
 
     beforeEach(() => {
-      rootValue = {
+      context = {
         filterArtworksLoader: sinon
           .stub()
           .withArgs("filter/artworks", {
@@ -46,7 +46,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           gene: {
             filtered_artworks: { hits },
@@ -61,7 +61,7 @@ describe("Gene", () => {
   describe("artworks_connection", () => {
     beforeEach(() => {
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
-      rootValue = {
+      context = {
         geneLoader: sinon.stub().returns(Promise.resolve(gene)),
         filterArtworksLoader: sinon.stub().returns(
           Promise.resolve({
@@ -93,7 +93,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -119,7 +119,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -153,7 +153,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -193,7 +193,7 @@ describe("Gene", () => {
         counts: { artists: 20 },
       }
 
-      rootValue = {
+      context = {
         geneLoader: sinon.stub().returns(Promise.resolve(gene)),
         geneArtistsLoader: sinon.stub().returns(Promise.resolve(Array(20))),
       }
@@ -212,7 +212,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             artists_connection: {
@@ -238,7 +238,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             artists_connection: {
@@ -261,7 +261,7 @@ describe("Gene", () => {
         counts: { artists: 20 },
       }
 
-      rootValue = {
+      context = {
         geneLoader: sinon.stub().returns(Promise.resolve(gene)),
       }
     })
@@ -285,7 +285,7 @@ describe("Gene", () => {
         }
       `
 
-      rootValue.similarGenesLoader = sinon.stub().returns(
+      context.similarGenesLoader = sinon.stub().returns(
         Promise.resolve({
           body: [
             {
@@ -302,7 +302,7 @@ describe("Gene", () => {
         })
       )
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             similar: {
@@ -332,7 +332,7 @@ describe("Gene", () => {
   describe("For querying the gene artworks + gene metadata", () => {
     beforeEach(() => {
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
-      rootValue = {
+      context = {
         filterArtworksLoader: sinon
           .stub()
           .withArgs("filter/artworks", {
@@ -369,7 +369,7 @@ describe("Gene", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           gene: {
             filtered_artworks: { hits },

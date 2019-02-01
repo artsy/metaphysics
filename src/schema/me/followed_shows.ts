@@ -3,9 +3,10 @@ import { IDFields } from "schema/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import { GraphQLObjectType } from "graphql"
+import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const FollowedShowEdge = new GraphQLObjectType({
+const FollowedShowEdge = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedShowEdge",
   fields: {
     partner_show: {
@@ -23,16 +24,11 @@ export const FollowedShowConnection = connectionDefinitions({
   nodeType: ShowType,
 })
 
-export default {
+const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
   type: FollowedShowConnection.connectionType,
   args: pageable({}),
   description: "A list of the current user’s currently followed shows",
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { followedShowsLoader } }
-  ) => {
+  resolve: (_root, options, { followedShowsLoader }) => {
     if (!followedShowsLoader) return null
 
     const { limit: size, offset } = getPagingParameters(options)
@@ -52,3 +48,5 @@ export default {
     })
   },
 }
+
+export default FollowedShows

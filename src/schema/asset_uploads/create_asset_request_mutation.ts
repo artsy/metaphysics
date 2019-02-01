@@ -1,7 +1,11 @@
 import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
+import { ResolverContext } from "types/graphql"
 
-export const S3PolicyConditionsType = new GraphQLObjectType({
+export const S3PolicyConditionsType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "S3PolicyConditionsType",
   description: "The conditions for uploading assets to media.artsy.net",
   fields: {
@@ -24,30 +28,32 @@ export const S3PolicyConditionsType = new GraphQLObjectType({
   },
 })
 
-export const S3PolicyDocumentType = new GraphQLObjectType({
-  name: "S3PolicyDocumentType",
-  description: "An policy for uploading assets to media.artsy.net",
-  fields: {
-    expiration: {
-      description: "An expiration date string.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    conditions: {
-      description: "The details for the upload",
-      type: new GraphQLNonNull(S3PolicyConditionsType),
-      resolve: ({ conditions }) => {
-        return {
-          bucket: conditions[0].bucket,
-          acl: conditions[2].acl,
-          success_action_status: conditions[3].success_action_status,
-          gemini_key: conditions[1][2],
-        }
+export const S3PolicyDocumentType = new GraphQLObjectType<any, ResolverContext>(
+  {
+    name: "S3PolicyDocumentType",
+    description: "An policy for uploading assets to media.artsy.net",
+    fields: {
+      expiration: {
+        description: "An expiration date string.",
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      conditions: {
+        description: "The details for the upload",
+        type: new GraphQLNonNull(S3PolicyConditionsType),
+        resolve: ({ conditions }) => {
+          return {
+            bucket: conditions[0].bucket,
+            acl: conditions[2].acl,
+            success_action_status: conditions[3].success_action_status,
+            gemini_key: conditions[1][2],
+          }
+        },
       },
     },
-  },
-})
+  }
+)
 
-export const CredentialsType = new GraphQLObjectType({
+export const CredentialsType = new GraphQLObjectType<any, ResolverContext>({
   name: "Credentials",
   description: "An asset which is assigned to a consignment submission",
   fields: {
@@ -70,7 +76,7 @@ export const CredentialsType = new GraphQLObjectType({
   },
 })
 
-export default mutationWithClientMutationId({
+export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "RequestCredentialsForAssetUpload",
   description: "Attach an gemini asset to a consignment submission",
   inputFields: {
@@ -89,11 +95,7 @@ export default mutationWithClientMutationId({
       resolve: asset => asset,
     },
   },
-  mutateAndGetPayload: (
-    { name, acl },
-    _request,
-    { rootValue: { createNewGeminiAssetLoader } }
-  ) => {
+  mutateAndGetPayload: ({ name, acl }, { createNewGeminiAssetLoader }) => {
     if (!createNewGeminiAssetLoader) return null
     return createNewGeminiAssetLoader({ name, acl })()
   },

@@ -7,6 +7,7 @@ import {
 import { mutationWithClientMutationId } from "graphql-relay"
 
 import { UserType } from "../user"
+import { ResolverContext } from "types/graphql"
 
 export const EditableLocationFields = new GraphQLInputObjectType({
   name: "EditableLocation",
@@ -46,7 +47,7 @@ export const EditableLocationFields = new GraphQLInputObjectType({
   },
 })
 
-export default mutationWithClientMutationId({
+export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "UpdateMyProfile",
   description: "Update the current logged in user.",
   inputFields: {
@@ -85,7 +86,7 @@ export default mutationWithClientMutationId({
       resolve: user => user,
     },
   },
-  mutateAndGetPayload: (user, _request, { rootValue: { updateMeLoader } }) => {
+  mutateAndGetPayload: (user, { updateMeLoader }) => {
     if (!updateMeLoader) {
       throw new Error("No updateMeLoader loader found in root values")
     }

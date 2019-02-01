@@ -11,6 +11,7 @@ import gql from "lib/gql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { MoneyInput } from "schema/fields/money"
 import { moneyFieldToUnit } from "lib/moneyHelper"
+import { ResolverContext } from "types/graphql"
 
 const BuyerCounterOfferMutationInputType = new GraphQLInputObjectType({
   name: "OfferMutationInput",
@@ -30,7 +31,11 @@ const BuyerCounterOfferMutationInputType = new GraphQLInputObjectType({
   },
 })
 
-export const BuyerCounterOfferMutation = mutationWithClientMutationId({
+export const BuyerCounterOfferMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
   name: "buyerCounterOffer",
   description: "Buyer counters sellers offer",
   inputFields: BuyerCounterOfferMutationInputType.getFields(),
@@ -39,11 +44,8 @@ export const BuyerCounterOfferMutation = mutationWithClientMutationId({
       type: OrderOrFailureUnionType,
     },
   },
-  mutateAndGetPayload: (
-    { offerId, offerPrice, note },
-    context,
-    { rootValue: { accessToken, exchangeSchema } }
-  ) => {
+  mutateAndGetPayload: ({ offerId, offerPrice, note }, context) => {
+    const { accessToken, exchangeSchema } = context
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }

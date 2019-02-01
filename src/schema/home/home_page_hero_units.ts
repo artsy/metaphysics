@@ -7,9 +7,11 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLBoolean,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const HomePageHeroUnitType = new GraphQLObjectType({
+const HomePageHeroUnitType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomePageHeroUnit",
   fields: {
     ...GravityIDFields,
@@ -114,7 +116,7 @@ const HomePageHeroUnitType = new GraphQLObjectType({
   },
 })
 
-const HomePageHeroUnits = {
+const HomePageHeroUnits: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(HomePageHeroUnitType),
   description: "A list of enabled hero units to show on the requested platform",
   args: {
@@ -137,7 +139,7 @@ const HomePageHeroUnits = {
       ),
     },
   },
-  resolve: (_, { platform }, _request, { rootValue: { heroUnitsLoader } }) => {
+  resolve: (_, { platform }, { heroUnitsLoader }) => {
     const params = { enabled: true }
     params[platform] = true
     return heroUnitsLoader(params).then(units => {

@@ -1,0 +1,35 @@
+patch-package
+--- a/node_modules/@types/graphql/type/definition.d.ts
++++ b/node_modules/@types/graphql/type/definition.d.ts
+@@ -319,15 +319,15 @@ export interface GraphQLScalarTypeConfig<TInternal, TExternal> {
+  *     });
+  *
+  */
+-export class GraphQLObjectType {
++export class GraphQLObjectType<TSource, TContext> {
+     name: string;
+     description: Maybe<string>;
+     astNode: Maybe<ObjectTypeDefinitionNode>;
+     extensionASTNodes: Maybe<ReadonlyArray<ObjectTypeExtensionNode>>;
+-    isTypeOf: Maybe<GraphQLIsTypeOfFn<any, any>>;
++    isTypeOf: Maybe<GraphQLIsTypeOfFn<TSource, TContext>>;
+ 
+-    constructor(config: GraphQLObjectTypeConfig<any, any>);
+-    getFields(): GraphQLFieldMap<any, any>;
++    constructor(config: GraphQLObjectTypeConfig<TSource, TContext>);
++    getFields(): GraphQLFieldMap<TSource, TContext>;
+     getInterfaces(): GraphQLInterfaceType[];
+     toString(): string;
+     toJSON(): string;
+@@ -371,7 +371,10 @@ export interface GraphQLResolveInfo {
+     readonly path: ResponsePath;
+     readonly schema: GraphQLSchema;
+     readonly fragments: { [key: string]: FragmentDefinitionNode };
+-    readonly rootValue: any;
++    // Check out ./src/types/graphql.d.ts for the replacement
++    // which uses our types instead.
++    //
++    // readonly rootValue: any;
+     readonly operation: OperationDefinitionNode;
+     readonly variableValues: { [variableName: string]: any };
+ }

@@ -6,7 +6,7 @@ import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
 import { OrderBuyerFields } from "./order_fields"
 import gql from "lib/gql"
 
-let rootValue
+let context
 
 describe("Submit Order Mutation", () => {
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe("Submit Order Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
   })
   it("submits order and returns it", () => {
     const mutation = gql`
@@ -44,7 +44,7 @@ describe("Submit Order Mutation", () => {
       }
     `
 
-    return runQuery(mutation, rootValue).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.submitOrder.orderOrError.order).toEqual(sampleOrder())
     })
   })

@@ -39,7 +39,7 @@ describe("Artist type", () => {
     .fn()
     .mockReturnValue(Promise.resolve(salesResponse))
 
-  const rootValue = { artistLoader, relatedSalesLoader, relatedShowsLoader }
+  const context = { artistLoader, relatedSalesLoader, relatedShowsLoader }
 
   describe("with a current sale", () => {
     it("returns a live sale", () => {
@@ -62,7 +62,7 @@ describe("Artist type", () => {
       }
     `
 
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           artist: {
             currentEvent: { status, partner, details, name, href, event },
@@ -96,7 +96,7 @@ describe("Artist type", () => {
         }
       }
     `
-      rootValue.relatedSalesLoader = () =>
+      context.relatedSalesLoader = () =>
         Promise.resolve([
           {
             end_at: "2018-12-31T12:00:00+00:00",
@@ -104,7 +104,7 @@ describe("Artist type", () => {
             name: "Catty Sale",
           },
         ])
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           artist: {
             currentEvent: { status, partner, details, name, href, event },
@@ -121,7 +121,7 @@ describe("Artist type", () => {
   })
 
   it("returns a current show", () => {
-    rootValue.relatedSalesLoader = () => Promise.resolve([])
+    context.relatedSalesLoader = () => Promise.resolve([])
     const query = `
       {
 
@@ -143,7 +143,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(
+    return runQuery(query, context).then(
       ({
         artist: {
           currentEvent: { name, status, details, href, partner, event },
@@ -160,8 +160,8 @@ describe("Artist type", () => {
   })
 
   it("returns null when there is no current event", () => {
-    rootValue.relatedSalesLoader = () => Promise.resolve([])
-    rootValue.relatedShowsLoader = () => Promise.resolve({ body: [] })
+    context.relatedSalesLoader = () => Promise.resolve([])
+    context.relatedShowsLoader = () => Promise.resolve({ body: [] })
     const query = `
       {
         artist(id: "percy-z") {
@@ -172,7 +172,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(({ artist: { currentEvent } }) => {
+    return runQuery(query, context).then(({ artist: { currentEvent } }) => {
       expect(currentEvent).toBeNull()
     })
   })

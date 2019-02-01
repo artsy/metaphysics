@@ -17,10 +17,12 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLBoolean,
+  GraphQLFieldConfig,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
+import { ResolverContext } from "types/graphql"
 
-const PartnerCategoryType = new GraphQLObjectType({
+const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "Category",
   description: "Fields of partner category (currently from Gravity).",
   fields: {
@@ -49,10 +51,10 @@ const artworksArgs = {
   },
 }
 
-const PartnerType = new GraphQLObjectType({
+const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
-  fields: (): any => {
+  fields: () => {
     // Prevent circular dependency
     const PartnerShows = require("./partner_shows").default
 
@@ -67,12 +69,7 @@ const PartnerType = new GraphQLObjectType({
             type: GraphQLInt,
           },
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { partnerArtworksLoader } }
-        ) => {
+        resolve: ({ id }, options, { partnerArtworksLoader }) => {
           return partnerArtworksLoader(
             id,
             assign({}, options, {
@@ -87,12 +84,7 @@ const PartnerType = new GraphQLObjectType({
         description: "A connection of artworks from a Partner.",
         type: artworkConnection,
         args: pageable(artworksArgs),
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { partnerArtworksLoader } }
-        ) => {
+        resolve: ({ id }, options, { partnerArtworksLoader }) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             options
           )
@@ -155,7 +147,7 @@ const PartnerType = new GraphQLObjectType({
         },
       },
       counts: {
-        type: new GraphQLObjectType({
+        type: new GraphQLObjectType<any, ResolverContext>({
           name: "PartnerCounts",
           fields: {
             artworks: numeral(({ artworks_count }) => artworks_count),
@@ -234,12 +226,8 @@ const PartnerType = new GraphQLObjectType({
             defaultValue: 25,
           },
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { partnerLocationsLoader } }
-        ) => partnerLocationsLoader(id, options),
+        resolve: ({ id }, options, { partnerLocationsLoader }) =>
+          partnerLocationsLoader(id, options),
       },
       name: {
         type: GraphQLString,
@@ -247,12 +235,8 @@ const PartnerType = new GraphQLObjectType({
       },
       profile: {
         type: Profile.type,
-        resolve: (
-          { default_profile_id },
-          _options,
-          _request,
-          { rootValue: { profileLoader } }
-        ) => profileLoader(default_profile_id).catch(() => null),
+        resolve: ({ default_profile_id }, _options, { profileLoader }) =>
+          profileLoader(default_profile_id).catch(() => null),
       },
       shows: {
         type: PartnerShows.type,
@@ -291,7 +275,7 @@ const PartnerType = new GraphQLObjectType({
   },
 })
 
-const Partner = {
+const Partner: GraphQLFieldConfig<void, ResolverContext> = {
   type: PartnerType,
   description: "A Partner",
   args: {
@@ -300,8 +284,7 @@ const Partner = {
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (_root, { id }, _request, { rootValue: { partnerLoader } }) =>
-    partnerLoader(id),
+  resolve: (_root, { id }, { partnerLoader }) => partnerLoader(id),
 }
 
 export default Partner

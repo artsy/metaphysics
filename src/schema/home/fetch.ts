@@ -10,6 +10,7 @@ import {
   sortBy,
 } from "lodash"
 import blacklist from "lib/artist_blacklist"
+import { LoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
 
 export const featuredFair = fairsLoader => {
   return fairsLoader({
@@ -55,7 +56,10 @@ export const featuredAuction = salesLoader => {
   })
 }
 
-export const followedGenes = (followedGenesLoader, size) => {
+export const followedGenes = (
+  followedGenesLoader: LoadersWithAuthentication["followedGenesLoader"],
+  size: number
+) => {
   return followedGenesLoader({ size }).then(({ body }) => body)
 }
 

@@ -8,9 +8,11 @@ import {
   GraphQLObjectType,
   GraphQLFloat,
   GraphQLList,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-export const LatLngType = new GraphQLObjectType({
+export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
   name: "LatLng",
   fields: {
     lat: {
@@ -22,7 +24,7 @@ export const LatLngType = new GraphQLObjectType({
   },
 })
 
-export const LocationType = new GraphQLObjectType({
+export const LocationType = new GraphQLObjectType<any, ResolverContext>({
   name: "Location",
   fields: () => ({
     ...IDFields,
@@ -76,7 +78,7 @@ export const LocationType = new GraphQLObjectType({
   }),
 })
 
-const Location = {
+const Location: GraphQLFieldConfig<void, ResolverContext> = {
   type: LocationType,
   description: "A Location",
 }

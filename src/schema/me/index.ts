@@ -4,6 +4,8 @@ import {
   GraphQLList,
   GraphQLString,
   GraphQLObjectType,
+  GraphQLFieldConfig,
+  GraphQLFieldConfigMap,
 } from "graphql"
 
 import { IDFields, NodeInterface } from "schema/object_identification"
@@ -37,15 +39,19 @@ import SavedArtworks from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
 import Submissions from "./consignments/submissions"
 import config from "config"
+import { ResolverContext } from "types/graphql"
 
 // @ts-ignore
 const { ENABLE_CONVECTION_STITCHING } = config
 
-const mySubmissions = !!ENABLE_CONVECTION_STITCHING
+const mySubmissions: GraphQLFieldConfigMap<
+  void,
+  ResolverContext
+> = !!ENABLE_CONVECTION_STITCHING
   ? {}
   : { consignment_submissions: Submissions }
 
-const Me = new GraphQLObjectType({
+const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
   interfaces: [NodeInterface],
   fields: {
@@ -68,7 +74,7 @@ const Me = new GraphQLObjectType({
     followed_artists_connection: FollowedArtists,
     followed_genes: FollowedGenes,
     followsAndSaves: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "FollowsAndSaves",
         fields: {
           bundledArtworksByArtist: FollowedArtistsArtworkGroups,
@@ -80,12 +86,8 @@ const Me = new GraphQLObjectType({
     },
     has_credit_cards: {
       type: GraphQLBoolean,
-      resolve: (
-        _root,
-        _options,
-        _request,
-        { rootValue: { meCreditCardsLoader } }
-      ) => {
+      resolve: (_root, _options, { meCreditCardsLoader }) => {
+        if (!meCreditCardsLoader) return null
         return meCreditCardsLoader().then(({ body }) => {
           return body && body.length > 0
         })
@@ -93,12 +95,8 @@ const Me = new GraphQLObjectType({
     },
     has_qualified_credit_cards: {
       type: GraphQLBoolean,
-      resolve: (
-        _root,
-        _options,
-        _request,
-        { rootValue: { meCreditCardsLoader } }
-      ) => {
+      resolve: (_root, _options, { meCreditCardsLoader }) => {
+        if (!meCreditCardsLoader) return null
         return meCreditCardsLoader({ qualified_for_bidding: true }).then(
           ({ body }) => {
             return body && body.length > 0
@@ -128,18 +126,13 @@ const Me = new GraphQLObjectType({
     type: {
       type: GraphQLString,
     },
-  } as any,
+  },
 })
 
-export default {
+const MeField: GraphQLFieldConfig<void, ResolverContext> = {
   type: Me,
-  resolve: (
-    _root,
-    _options,
-    _request,
-    { rootValue: { accessToken, userID, meLoader }, fieldNodes }
-  ) => {
-    if (!accessToken) return null
+  resolve: (_root, _options, { userID, meLoader }, { fieldNodes }) => {
+    if (!meLoader) return null
     const blacklistedFields = [
       "id",
       "__id",
@@ -174,3 +167,5 @@ export default {
     return { id: userID, email: null, is_collector: null }
   },
 }
+
+export default MeField

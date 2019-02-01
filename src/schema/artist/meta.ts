@@ -1,14 +1,15 @@
 import descriptions from "./maps/artist_meta_descriptions"
 import { stripTags, truncate, markdownToText } from "lib/helpers"
 import { compact } from "lodash"
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export const metaName = artist => {
   if (artist.name) return stripTags(artist.name)
   return "Unnamed Artist"
 }
 
-const ArtistMetaType = new GraphQLObjectType({
+const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistMeta",
   fields: {
     description: {
@@ -39,7 +40,9 @@ const ArtistMetaType = new GraphQLObjectType({
   },
 })
 
-export default {
+const Meta: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArtistMetaType,
   resolve: x => x,
 }
+
+export default Meta

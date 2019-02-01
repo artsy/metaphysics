@@ -9,11 +9,11 @@ export default opts => {
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
   const gravityUncachedLoader = uncachedLoaderFactory(gravity, "gravity")
 
-  const [ batchSaleLoader, batchSalesLoader ] = createBatchLoaders({ 
-    singleLoader: gravityLoader(id => `sale/${id}`), 
-    multipleLoader: gravityLoader('sales'), 
-    singleDefault: null, 
-    multipleDefault: [] 
+  const [batchSaleLoader, batchSalesLoader] = createBatchLoaders({
+    singleLoader: gravityLoader(id => `sale/${id}`),
+    multipleLoader: gravityLoader<{ id: string, is_auction: boolean }[]>('sales'),
+    singleDefault: null,
+    multipleDefault: []
   })
 
   return {
@@ -55,7 +55,7 @@ export default opts => {
     profileLoader: gravityLoader(id => `profile/${id}`),
     relatedArtworksLoader: gravityLoader("related/artworks"),
     relatedContemporaryArtistsLoader: gravityLoader("related/layer/contemporary/artists", {}, { headers: true }),
-    relatedFairsLoader: gravityLoader("related/fairs"),
+    relatedFairsLoader: gravityLoader<{ has_full_feature: boolean }[]>("related/fairs"),
     relatedGenesLoader: gravityLoader("related/genes"),
     relatedLayerArtworksLoader: gravityLoader<any, { id: string, type: string }>(({ type, id }) => `related/layer/${type}/${id}/artworks`),
     relatedLayersLoader: gravityLoader("related/layers"),

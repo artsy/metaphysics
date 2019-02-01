@@ -1,18 +1,22 @@
-import { find, first, isArray } from "lodash"
-import VersionedUrl from "./versioned"
-import CroppedUrl from "./cropped"
-import ResizedUrl from "./resized"
-import DeepZoom, { isZoomable } from "./deep_zoom"
-import normalize from "./normalize"
 import {
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLList,
+  GraphQLFieldConfig,
+  GraphQLBoolean,
   GraphQLFloat,
   GraphQLInt,
-  GraphQLBoolean,
+  GraphQLList,
   GraphQLNonNull,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
+import { find, first, isArray } from "lodash"
+import { ResolverContext } from "types/graphql"
+import CroppedUrl from "./cropped"
+import DeepZoom, { isZoomable } from "./deep_zoom"
+import { ImageData, normalize } from "./normalize"
+import ResizedUrl from "./resized"
+import VersionedUrl from "./versioned"
+
+export { normalize as normalizeImageData } from "./normalize"
 
 export const getDefault = images => {
   if (isArray(images)) {
@@ -21,7 +25,7 @@ export const getDefault = images => {
   return images
 }
 
-const ImageType = new GraphQLObjectType({
+const ImageType = new GraphQLObjectType<any, ResolverContext>({
   name: "Image",
   fields: (): any => ({
     aspect_ratio: {
@@ -113,7 +117,9 @@ const ImageType = new GraphQLObjectType({
   }),
 })
 
-export default {
+const Image: GraphQLFieldConfig<ImageData, ResolverContext> = {
   type: ImageType,
   resolve: normalize,
 }
+
+export default Image
