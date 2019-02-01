@@ -56,6 +56,7 @@ import Sale from "./sale/index"
 import Sales from "./sales"
 import SaleArtwork from "./sale_artwork"
 import SaleArtworks from "./sale_artworks"
+import { Search } from "./search"
 import Services from "./services"
 import Show from "./show"
 import SuggestedGenes from "./suggested_genes"
@@ -91,6 +92,7 @@ import { GraphQLSchema, GraphQLObjectType } from "graphql"
 import config from "config"
 import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
 import { AddInitialOfferToOrderMutation } from "./ecommerce/add_initial_offer_to_order_mutation"
+import { SearchableItem } from "./searchableItem"
 const { ENABLE_CONSIGNMENTS_STITCHING, ENABLE_ECOMMERCE_STITCHING } = config
 
 // TODO: Remove this any
@@ -136,6 +138,7 @@ const rootFields: any = {
   sale_artwork: SaleArtwork,
   sale_artworks: SaleArtworks,
   sales: Sales,
+  search: Search,
   services: Services,
   show: Show,
   status: Status,
@@ -247,5 +250,5 @@ export default new GraphQLSchema({
   // but can’t be discovered by traversing the types and fields from query.
   //
   // In this case, the interface "Offer" is exposed everywhere, but the underlaying type BuyOrder needs to exist
-  types: [BuyOrderType, OfferOrderType],
+  types: [BuyOrderType, OfferOrderType, SearchableItem],
 })
