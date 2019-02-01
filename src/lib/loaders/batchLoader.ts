@@ -44,7 +44,7 @@ const groupKeys = (requestedKeys: string | { id }): GroupKeysResult[] => {
     })
     .value()
 
-  return grouped
+  return (grouped as unknown) as GroupKeysResult[]
 }
 
 interface BatchLoaderArgs {
