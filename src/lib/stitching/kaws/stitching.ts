@@ -2,7 +2,7 @@ import { GraphQLSchema } from "graphql"
 
 export const kawsStitchingEnvironment = (
   localSchema: GraphQLSchema,
-  kawsSchema: GraphQLSchema
+  kawsSchema: GraphQLSchema & { transforms: any }
 ) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: `
@@ -124,7 +124,7 @@ export const kawsStitchingEnvironment = (
             },
             context,
             info,
-            transforms: (kawsSchema as any).transforms,
+            transforms: kawsSchema.transforms,
           })
         },
       },

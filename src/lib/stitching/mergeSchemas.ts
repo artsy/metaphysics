@@ -82,8 +82,9 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
   })
 
   // Because __allowedLegacyNames isn't in the public API
-  const anyMergedSchema = mergedSchema as any
-  anyMergedSchema.__allowedLegacyNames = ["__id"]
+  Object.defineProperty(mergedSchema, "__allowedLegacyNames", {
+    value: ["__id"],
+  })
 
   return mergedSchema
 }

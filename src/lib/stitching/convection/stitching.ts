@@ -2,7 +2,7 @@ import { GraphQLSchema } from "graphql"
 
 export const consignmentStitchingEnvironment = (
   localSchema: GraphQLSchema,
-  convectionSchema: GraphQLSchema
+  convectionSchema: GraphQLSchema & { transforms: any }
 ) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: `
@@ -27,7 +27,7 @@ export const consignmentStitchingEnvironment = (
             },
             context,
             info,
-            transforms: (convectionSchema as any).transforms,
+            transforms: convectionSchema.transforms,
           })
         },
       },

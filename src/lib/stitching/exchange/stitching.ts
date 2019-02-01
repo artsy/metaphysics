@@ -21,7 +21,7 @@ const offerAmountFields = ["amount", "taxTotal", "shippingTotal", "buyerTotal"]
 const offerAmountFieldsSDL = offerAmountFields.map(amountSDL)
 export const exchangeStitchingEnvironment = (
   localSchema: GraphQLSchema,
-  exchangeSchema: GraphQLSchema
+  exchangeSchema: GraphQLSchema & { transforms: any }
 ) => {
   type DetailsFactoryInput = { from: string; to: string }
 
@@ -35,8 +35,9 @@ export const exchangeStitchingEnvironment = (
     // We abuse the query alias feature to make sure that all
     // the data we need to generate the full object from
     // is included.
-
-    // It's possible that this working around a bug.
+    //
+    // It's possible that this working around a bug in how the fragment is put
+    // together by graphql-tools.
     const aliasedPartyFragment = (field, alias) => {
       return gql`
       ... on CommerceOrder {
@@ -56,9 +57,9 @@ export const exchangeStitchingEnvironment = (
 
     return {
       // Bit of a magic in next line, when adding fragment, it seems
-      // all second level fields are ignored, so __typename and id
-      // couldn't be added, so the hack was to alias the fragment field
-      // and that gets the current fields
+      // all second level fields (e.g. b in this query { a { b } }) are
+      // ignored, so __typename and id couldn't be added, so the hack
+      // was to alias the fragment field and that gets the current fields
       fragment: aliasedPartyFragment(from, to),
       resolve: (parent, _args, context, info) => {
         const typename = parent[to].__typename
@@ -77,7 +78,7 @@ export const exchangeStitchingEnvironment = (
               },
               context,
               info,
-              transforms: (exchangeSchema as any).transforms,
+              transforms: exchangeSchema.transforms,
             })
             // Re-jigger the type systems back into place, as right now
             // it is considered a CommerceUser and clients will reject it.
@@ -107,13 +108,15 @@ export const exchangeStitchingEnvironment = (
   // Map the totals array to a set of resolvers that call the amount function
   // the type param is only used for the fragment name
   const totalsResolvers = (type, totalSDLS) =>
-    totalSDLS.map(name => ({
-      [name]: {
-        fragment: `fragment ${type}_${name} on ${type} { ${name}Cents }`,
-        resolve: (parent, args, _context, _info) =>
-          amount(_ => parent[name + "Cents"]).resolve({}, args),
-      },
-    }))
+    reduceToResolvers(
+      totalSDLS.map(name => ({
+        [name]: {
+          fragment: `fragment ${type}_${name} on ${type} { ${name}Cents }`,
+          resolve: (parent, args, _context, _info) =>
+            amount(_ => parent[name + "Cents"]).resolve({}, args),
+        },
+      }))
+    )
 
   // Used to convert an array of `key: resolvers` to a single obj
   const reduceToResolvers = arr => arr.reduce((a, b) => ({ ...a, ...b }))
@@ -159,20 +162,17 @@ export const exchangeStitchingEnvironment = (
     resolvers: {
       CommerceBuyOrder: {
         // The money helper resolvers
-        ...reduceToResolvers(totalsResolvers("CommerceBuyOrder", orderTotals)),
+        ...totalsResolvers("CommerceBuyOrder", orderTotals),
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
       },
       CommerceOfferOrder: {
-        ...reduceToResolvers(
-          totalsResolvers("CommerceOfferOrder", orderTotals)
-        ),
+        ...totalsResolvers("CommerceOfferOrder", orderTotals),
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
       },
       CommerceLineItem: {
         artwork: {
-          // Todo: in the future we may want to use the `artworkVersionId` also
           fragment: `fragment CommerceLineItemArtwork on CommerceLineItem { artworkId }`,
           resolve: (parent, _args, context, info) => {
             const id = parent.artworkId
@@ -185,12 +185,11 @@ export const exchangeStitchingEnvironment = (
               },
               context,
               info,
-              transforms: (exchangeSchema as any).transforms,
+              transforms: exchangeSchema.transforms,
             })
           },
         },
         artworkVersion: {
-          // Todo: in the future we may want to use the `artworkVersionId` also
           fragment: `fragment CommerceLineItemArtwork on CommerceLineItem { artworkVersionId }`,
           resolve: (parent, _args, context, info) => {
             const id = parent.artworkVersionId
@@ -203,18 +202,14 @@ export const exchangeStitchingEnvironment = (
               },
               context,
               info,
-              transforms: (exchangeSchema as any).transforms,
+              transforms: exchangeSchema.transforms,
             })
           },
         },
-        ...reduceToResolvers(
-          totalsResolvers("CommerceLineItem", lineItemTotals)
-        ),
+        ...totalsResolvers("CommerceLineItem", lineItemTotals),
       },
       CommerceOffer: {
-        ...reduceToResolvers(
-          totalsResolvers("CommerceOffer", offerAmountFields)
-        ),
+        ...totalsResolvers("CommerceOffer", offerAmountFields),
         fromDetails: fromDetailsResolver,
       },
     },

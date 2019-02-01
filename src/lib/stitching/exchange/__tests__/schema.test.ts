@@ -16,7 +16,7 @@ it("does not include generic type names", async () => {
   expect(exchangeTypes).toContain("CommerceOrder")
 })
 
-it("makes exceptions for Types used in Eigen's queries", async () => {
+it("makes exceptions for types used in Eigen's queries", async () => {
   // We want to make sure that old Eigen queries don't break
   //
   // See: https://github.com/artsy/eigen/blob/master/Artsy/Networking/create_offer.graphql
