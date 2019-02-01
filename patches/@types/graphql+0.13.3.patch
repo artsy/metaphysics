@@ -1,0 +1,15 @@
+patch-package
+--- a/node_modules/@types/graphql/type/definition.d.ts
++++ b/node_modules/@types/graphql/type/definition.d.ts
+@@ -371,7 +371,10 @@ export interface GraphQLResolveInfo {
+     readonly path: ResponsePath;
+     readonly schema: GraphQLSchema;
+     readonly fragments: { [key: string]: FragmentDefinitionNode };
+-    readonly rootValue: any;
++    // Check out ./src/types/graphql.d.ts for the replacement
++    // which uses our types instead.
++    //
++    // readonly rootValue: any;
+     readonly operation: OperationDefinitionNode;
+     readonly variableValues: { [variableName: string]: any };
+ }

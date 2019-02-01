@@ -7193,7 +7193,7 @@ type Query {
     # Entities to include in search. Default: [ARTIST, ARTWORK].
     entities: [SearchEntity]
 
-    # Mode of search to exceute. Default: SITE.
+    # Mode of search to execute. Default: SITE.
     mode: SearchMode
     after: String
     first: Int
@@ -9082,7 +9082,7 @@ type Viewer {
     # Entities to include in search. Default: [ARTIST, ARTWORK].
     entities: [SearchEntity]
 
-    # Mode of search to exceute. Default: SITE.
+    # Mode of search to execute. Default: SITE.
     mode: SearchMode
     after: String
     first: Int
