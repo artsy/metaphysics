@@ -25,8 +25,8 @@ interface GroupKeysResult {
   size: number
   [key: string]: any
 }
-export const groupKeys = (requestedKeys: string | { id }): GroupKeysResult[] =>
-  (chain(requestedKeys)
+const groupKeys = (requestedKeys: string | { id }): GroupKeysResult[] => {
+  const grouped = chain(requestedKeys)
     .groupBy(renderParams)
     .values()
     .map(values => chunk(values, 20))
@@ -42,7 +42,10 @@ export const groupKeys = (requestedKeys: string | { id }): GroupKeysResult[] =>
         size: keys.length,
       }
     })
-    .value() as unknown) as GroupKeysResult[]
+    .value()
+
+  return grouped
+}
 
 interface BatchLoaderArgs {
   /**
