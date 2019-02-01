@@ -3,7 +3,7 @@ import { graphql, GraphQLString } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/enums/orders_sort_method_enum"
 import gql from "lib/gql"
-import { PageInfo, AllOrderFields } from "./query_helpers"
+import { PageInfo, PaginationFields, AllOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { OrderModeEnum } from "./types/enums/order_mode_enum"
 
@@ -22,7 +22,19 @@ export const Orders = {
   }),
   resolve: (
     _parent,
-    { sellerId, sellerType, buyerId, buyerType, mode, state, sort },
+    {
+      sellerId,
+      sellerType,
+      buyerId,
+      buyerType,
+      mode,
+      state,
+      sort,
+      first,
+      after,
+      last,
+      before,
+    },
     context,
     { rootValue: { exchangeSchema } }
   ) => {
@@ -56,6 +68,7 @@ export const Orders = {
           ${PageInfo}
           totalCount
           edges {
+            cursor
             node {
               ${AllOrderFields}
               lineItems {
@@ -73,6 +86,7 @@ export const Orders = {
               }
             }
           }
+          ${PaginationFields}
         }
       }
     `
@@ -84,6 +98,10 @@ export const Orders = {
       mode,
       state,
       sort,
+      first,
+      after,
+      last,
+      before,
     }).then(extractEcommerceResponse("ecommerceOrders"))
   },
 }

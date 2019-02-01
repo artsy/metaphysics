@@ -6,7 +6,6 @@ const { DISABLE_SCHEMA_STITCHING } = config
 
 // Default to the existing metaphysics schema
 let exportedSchema = localSchema
-
 // If DISABLE_SCHEMA_STITCHING is set in the env
 // then don't stitch
 const enableSchemaStitching = !DISABLE_SCHEMA_STITCHING

@@ -14,7 +14,8 @@ import cached from "schema/fields/cached"
 import initials from "schema/fields/initials"
 import { markdown, formatMarkdownValue } from "schema/fields/markdown"
 import numeral from "schema/fields/numeral"
-import Image from "schema/image"
+import Image, { getDefault } from "schema/image"
+import { setVersion } from "schema/image/normalize"
 import Article, { articleConnection } from "schema/article"
 import Artwork, { artworkConnection } from "schema/artwork"
 import PartnerArtist from "schema/partner_artist"
@@ -40,6 +41,7 @@ import {
   AuctionResultSorts,
 } from "schema/auction_result"
 import ArtistArtworksFilters from "./artwork_filters"
+import { Searchable } from "schema/searchable"
 import filterArtworks from "schema/filter_artworks"
 import { connectionWithCursorInfo } from "schema/fields/pagination"
 import { Related } from "./related"
@@ -81,7 +83,7 @@ const artistArtworkArrayLength = (artist, filter) => {
 
 export const ArtistType = new GraphQLObjectType({
   name: "Artist",
-  interfaces: [NodeInterface],
+  interfaces: [NodeInterface, Searchable],
   fields: (): any => {
     return {
       ...GravityIDFields,
@@ -603,6 +605,18 @@ export const ArtistType = new GraphQLObjectType({
       },
       hometown: { type: GraphQLString },
       image: Image,
+      imageUrl: {
+        type: GraphQLString,
+        resolve: ({ image_versions, image_url, image_urls }) =>
+          setVersion(
+            getDefault({
+              image_url: image_url,
+              images_urls: image_urls,
+              image_versions: image_versions,
+            }),
+            ["square"]
+          ),
+      },
       initials: initials("name"),
       insights: ArtistInsights,
       is_consignable: {
@@ -632,6 +646,7 @@ export const ArtistType = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: artist => artist.published_artworks_count > 0,
       },
+      displayLabel: { type: GraphQLString, resolve: ({ name }) => name },
       location: { type: GraphQLString },
       meta: Meta,
       nationality: { type: GraphQLString },

@@ -17,6 +17,7 @@ import { OrderPartyUnionType } from "./order_party_union"
 import { OrderModeEnum } from "./enums/order_mode_enum"
 import { OfferConnection, OfferType } from "./offer"
 import { OrderParticipantEnum } from "./enums/order_participant_enum"
+import { PageCursorsType } from "schema/fields/pagination"
 
 const orderFields = {
   id: {
@@ -139,21 +140,6 @@ const orderFields = {
     type: GraphQLString,
     description: "Buyer phone number",
   },
-  lastOffer: {
-    type: OfferType,
-    description: "Latest offer",
-  },
-  offers: {
-    type: OfferConnection,
-    description: "List of submitted offers made on this order so far",
-  },
-  offerTotalCents: {
-    type: GraphQLInt,
-    description: "Total amount of latest offer",
-    deprecationReason: "Switch to ItemTotalCents",
-    resolve: ({ itemsTotalCents }) => itemsTotalCents,
-  },
-  offerTotal: amount(({ itemsTotalCents }) => itemsTotalCents),
 }
 
 export const OrderInterface = new GraphQLInterfaceType({
@@ -225,6 +211,13 @@ export const {
   connectionFields: {
     totalCount: {
       type: GraphQLInt,
+    },
+    totalPages: {
+      type: GraphQLInt,
+    },
+    pageCursors: {
+      type: PageCursorsType,
+      resolve: ({ pageCursors }) => pageCursors,
     },
   },
 })
