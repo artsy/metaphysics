@@ -19,6 +19,7 @@ describe("Partner type", () => {
           name: "Blue Chip",
         },
       ],
+      website: "https://www.newmuseum.org/",
     }
 
     rootValue = {
@@ -27,6 +28,26 @@ describe("Partner type", () => {
         .withArgs(partnerData.id)
         .returns(Promise.resolve(partnerData)),
     }
+  })
+
+  it("includes the gallery website address in shows", async () => {
+    partnerData.partner = {
+      website: "https://www.newmuseum.org/",
+    }
+    const query = gql`
+      {
+        partner(id: "new-museum-1-2015-triennial-surround-audience") {
+          website
+        }
+      }
+    `
+    const data = await runQuery(query, rootValue)
+
+    expect(data).toEqual({
+      partner: {
+        website: "https://www.newmuseum.org/",
+      },
+    })
   })
 
   it("returns a partner and categories", () => {

@@ -128,7 +128,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
                     }
                     verbose(`Requested (Uncached): ${key}`)
                     const time = clock.end()
-                    logger(
+                    return logger(
                       globalAPIOptions.requestIDs.requestID,
                       apiName,
                       key,

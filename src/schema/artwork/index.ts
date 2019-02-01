@@ -6,6 +6,7 @@ import { markdown } from "schema/fields/markdown"
 import Article from "schema/article"
 import Artist from "schema/artist"
 import Image, { getDefault } from "schema/image"
+import { setVersion } from "schema/image/normalize"
 import Fair from "schema/fair"
 import Sale from "schema/sale"
 import SaleArtwork from "schema/sale_artwork"
@@ -19,6 +20,7 @@ import Highlight from "./highlight"
 import Dimensions from "schema/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/edition_set"
 import { Sellable } from "schema/sellable"
+import { Searchable } from "schema/searchable"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
@@ -267,6 +269,10 @@ export const artworkFields = () => {
         return Image.resolve(getDefault(images))
       },
     },
+    imageUrl: {
+      type: GraphQLString,
+      resolve: ({ images }) => setVersion(getDefault(images), ["square"]),
+    },
     image_rights: { type: GraphQLString },
     image_title: {
       type: GraphQLString,
@@ -478,6 +484,7 @@ export const artworkFields = () => {
     },
     is_sold: { type: GraphQLBoolean, resolve: ({ sold }) => sold },
     is_unique: { type: GraphQLBoolean, resolve: ({ unique }) => unique },
+    displayLabel: { type: GraphQLString, resolve: ({ title }) => title },
     layer: {
       type: ArtworkLayer.type,
       args: { id: { type: GraphQLString } },
@@ -877,7 +884,7 @@ export const artworkFields = () => {
 
 export const ArtworkType = new GraphQLObjectType({
   name: "Artwork",
-  interfaces: [NodeInterface, Sellable],
+  interfaces: [NodeInterface, Searchable, Sellable],
   fields: () => {
     return {
       ...artworkFields(),

@@ -38,8 +38,8 @@ spec:
         - containerPort: 3000
         resources:
           requests:
-            cpu: 500m
-            memory: 1Gi
+            cpu: '1'
+            memory: 1536Mi
           limits:
             memory: 1536Mi
         readinessProbe:
@@ -66,14 +66,6 @@ spec:
                 values:
                 - api
                 - foreground
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-              - key: tier
-                operator: In
-                values:
-                - api
 
 ---
 apiVersion: autoscaling/v1

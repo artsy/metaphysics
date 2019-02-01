@@ -43,6 +43,9 @@ const FairOrganizerType = new GraphQLObjectType({
         return profileLoader(profile_id).catch(() => null)
       },
     },
+    website: {
+      type: GraphQLString,
+    },
   },
 })
 

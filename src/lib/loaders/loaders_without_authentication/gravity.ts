@@ -2,6 +2,7 @@ import factories from "../api"
 import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_factory"
 import gravity from "lib/apis/gravity"
 import { createBatchLoaders } from "../batchLoader"
+import { searchLoader } from "../searchLoader"
 
 export default opts => {
   const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
@@ -67,6 +68,7 @@ export default opts => {
     saleArtworkLoader: gravityUncachedLoader(({ saleId, saleArtworkId }) => `sale/${saleId}/sale_artwork/${saleArtworkId}`, null),
     saleLoader: batchSaleLoader,
     salesLoader: batchSalesLoader,
+    searchLoader: searchLoader(gravityLoader),
     setItemsLoader: gravityLoader(id => `set/${id}/items`),
     setLoader: gravityLoader(id => `set/${id}`),
     setsLoader: gravityLoader("sets"),

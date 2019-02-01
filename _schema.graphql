@@ -112,7 +112,7 @@ enum ArticleSorts {
   PUBLISHED_AT_DESC
 }
 
-type Artist implements Node {
+type Artist implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -258,6 +258,7 @@ type Artist implements Node {
   has_metadata: Boolean
   hometown: String
   image: Image
+  imageUrl: String
   initials(length: Int = 3): String
   insights: [ArtistInsight]
   is_consignable: Boolean
@@ -267,6 +268,7 @@ type Artist implements Node {
   is_followed: Boolean
   is_public: Boolean
   is_shareable: Boolean
+  displayLabel: String
   location: String
   meta: ArtistMeta
   nationality: String
@@ -342,6 +344,7 @@ type Artist implements Node {
   statuses: ArtistStatuses
   highlights: ArtistHighlights
   years: String
+  marketingCollections: [MarketingCollection]
 }
 
 enum ArtistArtworksFilters {
@@ -448,7 +451,7 @@ type ArtistInsight {
   entities: [String]
 }
 
-type ArtistItem implements Node {
+type ArtistItem implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -594,6 +597,7 @@ type ArtistItem implements Node {
   has_metadata: Boolean
   hometown: String
   image: Image
+  imageUrl: String
   initials(length: Int = 3): String
   insights: [ArtistInsight]
   is_consignable: Boolean
@@ -603,6 +607,7 @@ type ArtistItem implements Node {
   is_followed: Boolean
   is_public: Boolean
   is_shareable: Boolean
+  displayLabel: String
   location: String
   meta: ArtistMeta
   nationality: String
@@ -748,7 +753,7 @@ type ArtistStatuses {
   shows: Boolean
 }
 
-type Artwork implements Node & Sellable {
+type Artwork implements Node & Searchable & Sellable {
   # A globally unique ID.
   __id: ID!
 
@@ -800,6 +805,7 @@ type Artwork implements Node & Sellable {
   highlights: [Highlighted]
   href: String
   image: Image
+  imageUrl: String
   image_rights: String
   image_title: String
   images(size: Int): [Image]
@@ -849,6 +855,7 @@ type Artwork implements Node & Sellable {
   is_shareable: Boolean
   is_sold: Boolean
   is_unique: Boolean
+  displayLabel: String
   layer(id: String): ArtworkLayer
   layers: [ArtworkLayer]
   literature(format: Format): String
@@ -1014,6 +1021,7 @@ type ArtworkContextAuction implements Node {
   href: String
   name: String
   is_auction: Boolean
+  is_benefit: Boolean
   is_auction_promo: Boolean
   is_closed: Boolean
   is_open: Boolean
@@ -1361,6 +1369,7 @@ type ArtworkContextSale implements Node {
   href: String
   name: String
   is_auction: Boolean
+  is_benefit: Boolean
   is_auction_promo: Boolean
   is_closed: Boolean
   is_open: Boolean
@@ -1579,7 +1588,7 @@ type ArtworkInquiryEdge {
   cursor: String!
 }
 
-type ArtworkItem implements Node & Sellable {
+type ArtworkItem implements Node & Searchable & Sellable {
   # A globally unique ID.
   __id: ID!
 
@@ -1631,6 +1640,7 @@ type ArtworkItem implements Node & Sellable {
   highlights: [Highlighted]
   href: String
   image: Image
+  imageUrl: String
   image_rights: String
   image_title: String
   images(size: Int): [Image]
@@ -1680,6 +1690,7 @@ type ArtworkItem implements Node & Sellable {
   is_shareable: Boolean
   is_sold: Boolean
   is_unique: Boolean
+  displayLabel: String
   layer(id: String): ArtworkLayer
   layers: [ArtworkLayer]
   literature(format: Format): String
@@ -2375,26 +2386,6 @@ type BuyOrder implements Order {
 
   # Buyer phone number
   buyerPhoneNumber: String
-
-  # Latest offer
-  lastOffer: Offer
-
-  # List of submitted offers made on this order so far
-  offers: OfferConnection
-
-  # Total amount of latest offer
-  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
-
-  # A formatted price with various currency formatting options.
-  offerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
 }
 
 enum CancelReasonType {
@@ -2793,6 +2784,11 @@ input CreateOfferOrderWithArtworkInput {
 
   # quantity of artwork
   quantity: Int
+
+  # When set to true, we will not reuse existing pending/submitted order.
+  # Otherwise if current user has pending/submitted orders on same artwork/edition
+  # with same quantity, we will return that
+  find_active_or_create: Boolean
   clientMutationId: String
 }
 
@@ -4688,6 +4684,7 @@ type HomePageModuleContextSale implements Node {
   href: String
   name: String
   is_auction: Boolean
+  is_benefit: Boolean
   is_auction_promo: Boolean
   is_closed: Boolean
   is_open: Boolean
@@ -5828,31 +5825,17 @@ type OfferOrder implements Order {
   # Buyer phone number
   buyerPhoneNumber: String
 
-  # Latest offer
-  lastOffer: Offer
-
-  # List of submitted offers made on this order so far
-  offers: OfferConnection
-
-  # Total amount of latest offer
-  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
-
-  # A formatted price with various currency formatting options.
-  offerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-
   # Current User's latest offer
   myLastOffer: Offer
 
   # Waiting for one participants response
   awaitingResponseFrom: OrderParticipantEnum
+
+  # Latest offer
+  lastOffer: Offer
+
+  # List of submitted offers made on this order so far
+  offers: OfferConnection
 }
 
 interface Order {
@@ -6057,26 +6040,6 @@ interface Order {
 
   # Buyer phone number
   buyerPhoneNumber: String
-
-  # Latest offer
-  lastOffer: Offer
-
-  # List of submitted offers made on this order so far
-  offers: OfferConnection
-
-  # Total amount of latest offer
-  offerTotalCents: Int @deprecated(reason: "Switch to ItemTotalCents")
-
-  # A formatted price with various currency formatting options.
-  offerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
 }
 
 # A connection to a list of items.
@@ -6087,6 +6050,8 @@ type OrderConnection {
   # A list of edges.
   edges: [OrderEdge]
   totalCount: Int
+  totalPages: Int
+  pageCursors: PageCursors
 }
 
 # An edge in a connection.
@@ -6289,6 +6254,7 @@ type OrderWithMutationSuccess {
 type organizer {
   profile_id: ID
   profile: Profile
+  website: String
 }
 
 type PageCursor {
@@ -6389,6 +6355,9 @@ type Partner implements Node {
     status: EventStatus
   ): [PartnerShow]
   type: String
+
+  # The gallery partner's web address
+  website: String
 }
 
 type PartnerArtist {
@@ -7210,6 +7179,22 @@ type Query {
     sort: SaleSorts
   ): [Sale]
 
+  # Global search
+  search(
+    # Search query to perform. Required.
+    query: String!
+
+    # Entities to include in search. Default: [ARTIST, ARTWORK].
+    entities: [SearchEntity]
+
+    # Mode of search to exceute. Default: SITE.
+    mode: SearchMode
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): SearchableConnection
+
   # The schema for difference micro-service settings
   services: Services
 
@@ -7310,7 +7295,7 @@ type Query {
 
   # Find partners by ID
   _unused_gravity_partners(ids: [ID]!): [DoNotUseThisPartner]
-  marketingCollections: [MarketingCollection!]!
+  marketingCollections(artistID: String): [MarketingCollection!]!
   marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
 }
@@ -7467,6 +7452,7 @@ type Sale implements Node {
   href: String
   name: String
   is_auction: Boolean
+  is_benefit: Boolean
   is_auction_promo: Boolean
   is_closed: Boolean
   is_open: Boolean
@@ -7813,6 +7799,51 @@ input SaveArtworkInput {
 type SaveArtworkPayload {
   artwork: Artwork
   clientMutationId: String
+}
+
+# An object that may be searched for
+interface Searchable {
+  displayLabel: String
+  imageUrl: String
+  href: String
+}
+
+# A connection to a list of items.
+type SearchableConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [SearchableEdge]
+  pageCursors: PageCursors
+  totalCount: Int
+}
+
+# An edge in a connection.
+type SearchableEdge {
+  # The item at the end of the edge
+  node: Searchable
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+type SearchableItem implements Node & Searchable {
+  __id: ID!
+  displayLabel: String
+  imageUrl: String
+  href: String
+  searchableType: String
+}
+
+enum SearchEntity {
+  ARTWORK
+  ARTIST
+}
+
+enum SearchMode {
+  AUTOSUGGEST
+  SITE
 }
 
 # A piece that can be sold
@@ -9027,6 +9058,22 @@ type Viewer {
     size: Int
     sort: SaleSorts
   ): [Sale]
+
+  # Global search
+  search(
+    # Search query to perform. Required.
+    query: String!
+
+    # Entities to include in search. Default: [ARTIST, ARTWORK].
+    entities: [SearchEntity]
+
+    # Mode of search to exceute. Default: SITE.
+    mode: SearchMode
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): SearchableConnection
 
   # The schema for difference micro-service settings
   services: Services
