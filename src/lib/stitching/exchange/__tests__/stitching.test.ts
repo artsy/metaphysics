@@ -101,21 +101,7 @@ it("delegates to the local schema for an LineItem's artwork", async () => {
   expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
     args: { id: "ARTWORK-ID" },
     fieldName: "artwork",
-    ...restOfResolveArgs,
-  })
-})
-
-it("delegates to the right schema when ", async () => {
-  const { resolvers } = await getExchangeStitchedSchema()
-  const artworkResolver = resolvers.CommerceLineItem.artwork.resolve
-  const mergeInfo = { delegateToSchema: jest.fn() }
-
-  artworkResolver({ artworkId: "ARTWORK-ID" }, {}, {}, { mergeInfo })
-
-  expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
-    args: { id: "ARTWORK-ID" },
     operation: "query",
-    fieldName: "artwork",
     ...restOfResolveArgs,
   })
 })

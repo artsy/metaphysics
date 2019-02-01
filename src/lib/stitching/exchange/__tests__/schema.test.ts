@@ -5,7 +5,7 @@ import {
 } from "lib/stitching/lib/getTypesFromSchema"
 import { getExchangeTransformedSchema } from "./testingUtils"
 
-it("Does not include generic type names", async () => {
+it("does not include generic type names", async () => {
   const exchangeSchema = await getExchangeTransformedSchema()
   const exchangeTypes = await getTypesFromSchema(exchangeSchema)
 
@@ -16,7 +16,7 @@ it("Does not include generic type names", async () => {
   expect(exchangeTypes).toContain("CommerceOrder")
 })
 
-it("Makes exceptions for Types used by in Eigen queries", async () => {
+it("makes exceptions for Types used in Eigen's queries", async () => {
   // We want to make sure that old Eigen queries don't break
   //
   // See: https://github.com/artsy/eigen/blob/master/Artsy/Networking/create_offer.graphql
@@ -49,7 +49,7 @@ it("has all our root fields", async () => {
   expect(rootFields).toContain("commerceOrder")
 })
 
-it("Includes prefixed mutations", async () => {
+it("includes prefixed mutations", async () => {
   const exchangeSchema = await getExchangeTransformedSchema()
   const mutations = await getMutationFieldsFromSchema(exchangeSchema)
 
