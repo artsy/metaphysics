@@ -1,5 +1,6 @@
 import DataLoader from "dataloader"
-import { loaderInterface, FuncToString } from "./loader_interface"
+import { loaderInterface } from "./loader_interface"
+import { LoaderFactory } from "."
 
 /**
  * This factory provides a short-cut system for our data loader system, it provides
@@ -12,13 +13,15 @@ import { loaderInterface, FuncToString } from "./loader_interface"
 export const uncachedLoaderFactory = (
   api: (route: string, params) => Promise<any>,
   _apiName: string
-) => (path: string | FuncToString, options: any | null) => {
-  // If you use gravity as the api here, then options will get interpreted as
-  // an accessToken, so you have to explicitly pass null
-  const loader = new DataLoader<string, Promise<string>>(
-    ([route]) => Promise.resolve([api(route, options).then(r => r.body)]),
-    { cache: false, batch: false }
-  )
-  return loaderInterface(loader, path, options)
+) => {
+  const apiLoaderFactory = (path, options: any | null) => {
+    // If you use gravity as the api here, then options will get interpreted as
+    // an accessToken, so you have to explicitly pass null
+    const loader = new DataLoader<string, Promise<string>>(
+      ([route]) => Promise.resolve([api(route, options).then(r => r.body)]),
+      { cache: false, batch: false }
+    )
+    return loaderInterface(loader, path, options)
+  }
+  return apiLoaderFactory as LoaderFactory
 }
-//

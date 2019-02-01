@@ -2,11 +2,12 @@ import { runAuthenticatedQuery, runQuery } from "test/utils"
 import createLoaders from "../../../lib/loaders"
 import gql from "lib/gql"
 
-jest.mock("../../apis/gravity", () => jest.fn(() => Promise.resolve({})))
+jest.mock("../../apis/gravity", () => jest.fn())
 import gravity from "../../apis/gravity"
 
 describe("User-Agent (with the real data loaders)", () => {
   it("resolves to add the initial user agent to a gravity header", async () => {
+    gravity.mockImplementation(() => Promise.resolve({ body: {} }))
     const query = gql`
       {
         artist(id: "andy-warhol") {
@@ -28,6 +29,7 @@ describe("User-Agent (with the real data loaders)", () => {
   })
 
   it("(authenticated request) resolves to add the initial request ID to a gravity header", async () => {
+    gravity.mockImplementation(() => Promise.resolve({ body: [] }))
     const query = gql`
       {
         me {
