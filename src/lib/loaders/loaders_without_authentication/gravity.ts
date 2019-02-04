@@ -1,13 +1,20 @@
-// @ts-check
 import factories from "../api"
 import { uncachedLoaderFactory } from "lib/loaders/api/loader_without_cache_factory"
 import gravity from "lib/apis/gravity"
+import { createBatchLoaders } from "../batchLoader"
 import { searchLoader } from "../searchLoader"
 
 export default opts => {
   const { gravityLoaderWithoutAuthenticationFactory } = factories(opts)
   const gravityLoader = gravityLoaderWithoutAuthenticationFactory
   const gravityUncachedLoader = uncachedLoaderFactory(gravity, "gravity")
+
+  const [ batchSaleLoader, batchSalesLoader ] = createBatchLoaders({ 
+    singleLoader: gravityLoader(id => `sale/${id}`), 
+    multipleLoader: gravityLoader('sales'), 
+    singleDefault: null, 
+    multipleDefault: [] 
+  })
 
   return {
     artistArtworksLoader: gravityLoader(id => `artist/${id}/artworks`),
@@ -59,8 +66,8 @@ export default opts => {
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`, {}, { headers: true }),
     saleArtworkLoader: gravityUncachedLoader(({ saleId, saleArtworkId }) => `sale/${saleId}/sale_artwork/${saleArtworkId}`, null),
-    saleLoader: gravityLoader(id => `sale/${id}`),
-    salesLoader: gravityLoader("sales"),
+    saleLoader: batchSaleLoader,
+    salesLoader: batchSalesLoader,
     searchLoader: searchLoader(gravityLoader),
     setItemsLoader: gravityLoader(id => `set/${id}/items`),
     setLoader: gravityLoader(id => `set/${id}`),

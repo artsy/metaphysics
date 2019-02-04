@@ -5,11 +5,16 @@ import DataLoader from "dataloader"
 
 export type FuncToString = (data?: any) => string
 
-const encodeStaticPath = (path, globalParams, params) => {
+const encodeStaticPath = (path: string, globalParams, params) => {
   return toKey(path, Object.assign({}, globalParams, params))
 }
 
-const encodeDynamicPath = (pathGenerator, globalParams, id, params) => {
+const encodeDynamicPath = (
+  pathGenerator: (id: string) => string,
+  globalParams,
+  id,
+  params
+) => {
   return encodeStaticPath(pathGenerator(id), globalParams, params)
 }
 
