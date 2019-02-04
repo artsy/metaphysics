@@ -34,6 +34,18 @@ interface QueryContext {
   query: string
 }
 
+// Not comprehensive, built only to gate out things
+// we definitely know we don't want to report
+export const shouldReportError = (
+  err: null | undefined | Error | HTTPError | GraphQLError
+) => {
+  // Don't send syntax errors to sentry
+  if (err instanceof GraphQLError && err.message.startsWith("Syntax Error")) {
+    return false
+  }
+  return true
+}
+
 export const shouldReportParentError = (
   error: null | undefined | Error | HTTPError
 ) => {
@@ -113,7 +125,7 @@ export const graphqlErrorHandler = (
     const flattenedErrors = flattenErrors(topLevelError)
     if (enableSentry) {
       flattenedErrors.forEach(e => {
-        if (shouldReportParentError(e.originalError)) {
+        if (shouldReportError(e) || shouldReportParentError(e.originalError)) {
           reportErrorToSentry(e, queryContext)
         }
       })

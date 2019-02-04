@@ -1,12 +1,39 @@
 import {
   formattedGraphQLError,
   shouldReportParentError,
+  shouldReportError,
 } from "../graphqlErrorHandler"
 import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
 import { HTTPError } from "lib/HTTPError"
 import { GraphQLError } from "graphql"
 
 describe("graphqlErrorHandler", () => {
+  describe(shouldReportError, () => {
+    it("passes on null-y errors", () => {
+      expect(shouldReportError(null)).toBeTruthy()
+      expect(shouldReportError(undefined)).toBeTruthy()
+    })
+
+    it("passes on non-HTTP errors", () => {
+      expect(shouldReportError(new Error())).toBeTruthy()
+    })
+
+    it("passes on non-GraphQL errors", () => {
+      expect(shouldReportError(new GraphQLTimeoutError("oh noes"))).toBeTruthy()
+    })
+
+    it("passes general GraphQL errors", () => {
+      expect(shouldReportError(new GraphQLError("Wrong Args"))).toBeTruthy()
+    })
+
+    it("denies general GraphQL syntax errors", () => {
+      expect(
+        shouldReportError(
+          new GraphQLError("Syntax Error: Unexpected Name 'danger'")
+        )
+      ).toBeFalsy()
+    })
+  })
   describe(shouldReportParentError, () => {
     it("reports when the error is null", () => {
       expect(shouldReportParentError(null)).toBeTruthy()
