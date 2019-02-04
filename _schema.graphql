@@ -2141,6 +2141,9 @@ input buyerCounterOfferInput {
 
   # Offer price
   offerPrice: MoneyInput
+
+  # Offer note
+  note: String
   clientMutationId: String
 }
 

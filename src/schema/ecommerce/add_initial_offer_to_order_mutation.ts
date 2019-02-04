@@ -17,7 +17,7 @@ export const AddInitialOfferToOrderMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { offerPrice, orderId },
+    { offerPrice, orderId, note },
     context,
     { rootValue: { accessToken, exchangeSchema } }
   ) => {
@@ -28,11 +28,13 @@ export const AddInitialOfferToOrderMutation = mutationWithClientMutationId({
       mutation addInitialOfferToOrder(
         $amountCents: Int!
         $orderId: ID!
+        $note: String
       ) {
         ecommerceAddInitialOfferToOrder(
           input: {
             amountCents: $amountCents
             orderId: $orderId
+            note: $note
           }
         ) {
           orderOrError {
@@ -56,6 +58,7 @@ export const AddInitialOfferToOrderMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       amountCents: moneyFieldToUnit(offerPrice),
       orderId,
+      note,
     }).then(extractEcommerceResponse("ecommerceAddInitialOfferToOrder"))
   },
 })
