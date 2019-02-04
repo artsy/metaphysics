@@ -1,4 +1,9 @@
-import { GraphQLInputObjectType, GraphQLNonNull, GraphQLID } from "graphql"
+import {
+  GraphQLInputObjectType,
+  GraphQLNonNull,
+  GraphQLID,
+  GraphQLString,
+} from "graphql"
 import { MoneyInput } from "schema/fields/money"
 
 export const InitialOfferInputType = new GraphQLInputObjectType({
@@ -11,6 +16,10 @@ export const InitialOfferInputType = new GraphQLInputObjectType({
     offerPrice: {
       type: MoneyInput,
       description: "Offer price",
+    },
+    note: {
+      type: GraphQLString,
+      description: "Offer note",
     },
   },
 })

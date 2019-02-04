@@ -96,6 +96,7 @@ const offerFields = {
     shippingTotalCents: 20000,
     buyerTotalCents: 80000,
     fromParticipant: "BUYER",
+    note: "C sharp",
   },
   lastOffer: null,
   offers: null,

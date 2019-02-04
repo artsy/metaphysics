@@ -81,7 +81,8 @@
       "__typename": "USER",
       "id": "111"
     },
-    "fromParticipant": "BUYER"
+    "fromParticipant": "BUYER",
+    "note": "C sharp"
   },
   "lastOffer": null,
   "offers": null,

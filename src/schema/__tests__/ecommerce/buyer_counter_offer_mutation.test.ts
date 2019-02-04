@@ -2,7 +2,7 @@ import { runQuery } from "test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import gql from "lib/gql"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
-import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
+import exchangeOrderJSON from "test/fixtures/exchange/offer_order.json"
 import { OrderBuyerFields } from "./order_fields"
 
 let rootValue
@@ -42,7 +42,7 @@ describe("BuyerCounterOffer Mutation", () => {
 
     return runQuery(mutation, rootValue).then(data => {
       expect(data!.ecommerceBuyerCounterOffer.orderOrError.order).toEqual(
-        sampleOrder()
+        sampleOrder({ mode: "OFFER", includeOfferFields: true })
       )
     })
   })

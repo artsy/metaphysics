@@ -21,6 +21,9 @@ input AddInitialOfferToOrderInput {
 
   # Offer price
   offerPrice: MoneyInput
+
+  # Offer note
+  note: String
   clientMutationId: String
 }
 
@@ -5602,6 +5605,9 @@ type Offer {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # Offer note
+  note: String
 }
 
 # A connection to a list of items.
@@ -7888,6 +7894,9 @@ input sellerCounterOfferInput {
 
   # Offer price
   offerPrice: MoneyInput
+
+  # Offer note
+  note: String
   clientMutationId: String
 }
 

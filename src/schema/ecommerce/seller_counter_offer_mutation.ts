@@ -23,6 +23,10 @@ const SellerCounterOfferMutationInputType = new GraphQLInputObjectType({
       type: MoneyInput,
       description: "Offer price",
     },
+    note: {
+      type: GraphQLString,
+      description: "Offer note",
+    },
   },
 })
 
