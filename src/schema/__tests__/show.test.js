@@ -144,6 +144,49 @@ describe("Show type", () => {
     }
   })
 
+  describe.only("is_followed", () => {
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          is_followed
+        }
+      }
+    `
+
+    it("returns false if user is not following show", () => {
+      rootValue.followedShowsLoader = () =>
+        Promise.resolve({
+          body: [],
+        })
+
+      return runQuery(query, rootValue).then(({ show }) => {
+        expect(show).toEqual({
+          is_followed: false,
+        })
+      })
+    })
+
+    it("returns true if user is following show", () => {
+      rootValue.followedShowsLoader = () =>
+        Promise.resolve({
+          body: [
+            {
+              partner_show: {
+                id: "new-museum-1-2015-triennial-surround-audience",
+                _id: "54ef55f57261694bbf7f2500",
+              },
+            },
+          ],
+        })
+
+      return runQuery(query, rootValue).then(({ show }) => {
+        expect(show).toEqual({
+          is_followed: true,
+        })
+      })
+    })
+  })
+
   describe("name", () => {
     it("strips whitespace from the name", async () => {
       const query = gql`
