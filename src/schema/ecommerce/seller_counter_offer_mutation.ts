@@ -40,7 +40,7 @@ export const SellerCounterOfferMutation = mutationWithClientMutationId({
     },
   },
   mutateAndGetPayload: (
-    { offerId, offerPrice },
+    { offerId, offerPrice, note },
     context,
     { rootValue: { accessToken, exchangeSchema } }
   ) => {
@@ -48,10 +48,11 @@ export const SellerCounterOfferMutation = mutationWithClientMutationId({
       return new Error("You need to be signed in to perform this action")
     }
     const mutation = gql`
-      mutation sellerCounterOffer($offerId: ID!, $amountCents: Int!) {
+      mutation sellerCounterOffer($offerId: ID!, $amountCents: Int!, $note: String) {
         ecommerceSellerCounterOffer(input: {
           offerId: $offerId,
-          amountCents: $amountCents
+          amountCents: $amountCents,
+          note: $note
         }) {
           orderOrError {
             __typename
@@ -74,6 +75,7 @@ export const SellerCounterOfferMutation = mutationWithClientMutationId({
     return graphql(exchangeSchema, mutation, null, context, {
       offerId,
       amountCents: moneyFieldToUnit(offerPrice),
+      note,
     }).then(extractEcommerceResponse("ecommerceSellerCounterOffer"))
   },
 })
