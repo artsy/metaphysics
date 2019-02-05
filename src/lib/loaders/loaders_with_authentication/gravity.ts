@@ -50,7 +50,7 @@ export default (accessToken, userID, opts) => {
     homepageSuggestedArtworksLoader: gravityLoader("me/suggested/artworks/homepage"),
     inquiryRequestsLoader: gravityLoader("me/inquiry_requests", {}, { headers: true }),
     lotStandingLoader: gravityLoader("me/lot_standings"),
-    meBidderPositionLoader: gravityLoader<any, { id: string }>(({ id }) => `me/bidder_position/${id}/`, {}, { headers: true }),
+    meBidderPositionLoader: gravityLoader(id => `me/bidder_position/${id}/`, {}, { headers: true }),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBiddersLoader: gravityLoader("me/bidders"),
     meCreditCardsLoader: gravityLoader("me/credit_cards", {}, { headers: true }),

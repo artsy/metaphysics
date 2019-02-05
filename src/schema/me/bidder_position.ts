@@ -24,9 +24,7 @@ export const BidderPosition = {
     _request,
     { rootValue: { meBidderPositionLoader } }
   ) =>
-    meBidderPositionLoader({
-      id,
-    }).then(response => {
+    meBidderPositionLoader(id).then(response => {
       const position = response.body
       let status
       if (anyReserveMet(position) && position.processed_at && position.active) {
