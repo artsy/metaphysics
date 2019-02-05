@@ -70,6 +70,7 @@ export const batchLoader = ({
     return singleLoader ? singleLoader : multipleLoader
   }
   const dl = new DataLoader(keys => {
+    console.log(keys)
     let groupedKeys = groupKeys(keys as any)
 
     return Promise.all(
@@ -83,7 +84,7 @@ export const batchLoader = ({
     ).then(data => {
       const normalizedResults = data.map((queriedGroup, groupIndex) => {
         return groupedKeys[groupIndex].id.map(
-          id => queriedGroup.find(r => r._id === id) || defaultResult
+          id => [].concat(queriedGroup).find(r => r._id === id) || defaultResult
         )
       })
       return flatten(normalizedResults)
