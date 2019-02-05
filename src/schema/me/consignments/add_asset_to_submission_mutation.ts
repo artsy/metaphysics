@@ -1,5 +1,3 @@
-// @ts-check
-
 import { GraphQLString, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { AssetType } from "./asset"

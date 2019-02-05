@@ -1,5 +1,3 @@
-// @ts-check
-
 import { map, omit } from "lodash"
 import Partner from "schema/partner"
 import AggregationCount from "./aggregation_count"

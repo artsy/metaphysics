@@ -1,5 +1,3 @@
-// @ts-check
-
 import { toKey } from "lib/helpers"
 import DataLoader from "dataloader"
 

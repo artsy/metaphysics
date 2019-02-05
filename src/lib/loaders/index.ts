@@ -1,5 +1,3 @@
-// @ts-check
-
 import loadersWithAuthentication from "./loaders_with_authentication"
 import loadersWithoutAuthentication from "./loaders_without_authentication"
 

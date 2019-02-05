@@ -1,5 +1,3 @@
-// @ts-check
-
 import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 

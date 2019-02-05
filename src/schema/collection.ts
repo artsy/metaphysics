@@ -1,4 +1,3 @@
-// @ts-check
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { warn } from "lib/loggers"
