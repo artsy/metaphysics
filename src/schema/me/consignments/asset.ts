@@ -1,5 +1,3 @@
-// @ts-check
-
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 
 export const AssetType = new GraphQLObjectType({

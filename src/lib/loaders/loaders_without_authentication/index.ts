@@ -1,5 +1,3 @@
-// @ts-check
-
 import deltaLoaders from "./delta"
 import diffusionLoaders from "./diffusion"
 import galaxyLoaders from "./galaxy"

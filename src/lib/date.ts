@@ -1,5 +1,3 @@
-// @ts-check
-
 import moment from "moment"
 
 export function exhibitionPeriod(startAt, endAt) {
