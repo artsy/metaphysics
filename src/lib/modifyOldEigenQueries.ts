@@ -53,12 +53,14 @@ export const rewriteEcommerceMutations = (query: string) => {
     "... on OrderWithMutationFailure",
     "ecommerceCreateOfferOrderWithArtwork",
     "ecommerceCreateOrderWithArtwork",
+    "CreateOrderWithArtworkInput",
   ]
   const afters = [
     "... on CommerceOrderWithMutationSuccess",
     "... on CommerceOrderWithMutationFailure",
     "commerceCreateOfferOrderWithArtwork",
     "commerceCreateOrderWithArtwork",
+    "CommerceCreateOrderWithArtworkInput",
   ]
 
   befores.forEach(before => {

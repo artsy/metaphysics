@@ -98,7 +98,7 @@ describe(nameOldEigenQueries, () => {
 
   it("renames Exchange create order", () => {
     const after = gql`
-      mutation createOrder($input: CreateOrderWithArtworkInput!) {
+      mutation createOrder($input: CommerceCreateOrderWithArtworkInput!) {
         commerceCreateOrderWithArtwork(input: $input) {
           orderOrError {
             ... on CommerceOrderWithMutationSuccess {
