@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 
-const Dimensions = new GraphQLObjectType({
+const Dimensions = new GraphQLObjectType<ResolverContext>({
   name: "dimensions",
   fields: {
     in: {

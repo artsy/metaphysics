@@ -26,9 +26,11 @@ import {
   GraphQLID,
   GraphQLUnionType,
   GraphQLNonNull,
+  GraphQLFieldConfig,
 } from "graphql"
 
 import { NodeInterface } from "schema/object_identification"
+import { ResolverContext } from "types/graphql"
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",
@@ -45,7 +47,10 @@ export const ArtworkFilterFacetType = new GraphQLUnionType({
   types: [ArtworkFilterTagType, ArtworkFilterGeneType],
 })
 
-export const ArtworkFilterAggregations = {
+export const ArtworkFilterAggregations: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
   description: "Returns aggregation counts for the given filter query.",
   type: new GraphQLList(ArtworksAggregationResultsType),
   resolve: ({ aggregations }) => {
@@ -61,7 +66,7 @@ export const ArtworkFilterAggregations = {
 }
 
 export const FilterArtworksCounts = {
-  type: new GraphQLObjectType({
+  type: new GraphQLObjectType<ResolverContext>({
     name: "FilterArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
@@ -73,7 +78,7 @@ export const FilterArtworksCounts = {
   resolve: data => data,
 }
 
-export const FilterArtworksType = new GraphQLObjectType({
+export const FilterArtworksType = new GraphQLObjectType<ResolverContext>({
   name: "FilterArtworks",
   interfaces: [NodeInterface],
   fields: () => ({
@@ -98,8 +103,7 @@ export const FilterArtworksType = new GraphQLObjectType({
       resolve: (
         { options: gravityOptions },
         args,
-        _request,
-        { rootValue: { filterArtworksLoader } }
+        { filterArtworksLoader }
       ) => {
         const relayOptions = convertConnectionArgsToGravityArgs(args)
 
@@ -147,12 +151,7 @@ export const FilterArtworksType = new GraphQLObjectType({
       type: new GraphQLList(Artist.type),
       description:
         "Returns a list of merchandisable artists sorted by merch score.",
-      resolve: (
-        { aggregations },
-        _options,
-        _request,
-        { rootValue: { artistsLoader } }
-      ) => {
+      resolve: ({ aggregations }, _options, { artistsLoader }) => {
         if (!isExisty(aggregations.merchandisable_artists)) {
           return null
         }
@@ -168,12 +167,7 @@ export const FilterArtworksType = new GraphQLObjectType({
     },
     facet: {
       type: ArtworkFilterFacetType,
-      resolve: (
-        { options },
-        _options,
-        _request,
-        { rootValue: { geneLoader, tagLoader } }
-      ) => {
+      resolve: ({ options }, _options, { geneLoader, tagLoader }) => {
         const { tag_id, gene_id } = options
         if (tag_id) {
           return tagLoader(tag_id).then(tag =>
@@ -297,16 +291,13 @@ export const filterArtworksArgs = {
   },
 }
 
-const filterArtworksTypeFactory = mapRootToFilterParams => ({
+const filterArtworksTypeFactory = (
+  mapRootToFilterParams
+): GraphQLFieldConfig<any, ResolverContext> => ({
   type: FilterArtworksType,
   description: "Artworks Elastic Search results",
   args: filterArtworksArgs,
-  resolve: (
-    root,
-    options,
-    _request,
-    { fieldNodes, rootValue: { filterArtworksLoader } }
-  ) => {
+  resolve: (root, options, { filterArtworksLoader }, { fieldNodes }) => {
     const gravityOptions = Object.assign(
       {},
       options,

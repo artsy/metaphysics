@@ -13,7 +13,7 @@ import { omit } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 
-const NotificationsFeedItemType = new GraphQLObjectType({
+const NotificationsFeedItemType = new GraphQLObjectType<ResolverContext>({
   name: "NotificationsFeedItem",
   interfaces: [NodeInterface],
   fields: () => ({

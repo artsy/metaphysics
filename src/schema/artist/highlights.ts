@@ -7,7 +7,7 @@ import {
 import { PartnerArtistConnection, partnersForArtist } from "../partner_artist"
 import { pageable } from "relay-cursor-paging"
 
-const ArtistHighlightsType = new GraphQLObjectType({
+const ArtistHighlightsType = new GraphQLObjectType<ResolverContext>({
   name: "ArtistHighlights",
   fields: {
     partners: {

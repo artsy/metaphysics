@@ -29,7 +29,7 @@ const mapEnvStrings = {
   environment: config.NODE_ENV,
 }
 
-const MetaphysicsSchema = new GraphQLObjectType({
+const MetaphysicsSchema = new GraphQLObjectType<ResolverContext>({
   name: "Metaphysics",
   fields: () => {
     const fields = {}

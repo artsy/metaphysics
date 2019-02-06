@@ -81,7 +81,7 @@ const artistArtworkArrayLength = (artist, filter) => {
   return length
 }
 
-export const ArtistType = new GraphQLObjectType({
+export const ArtistType = new GraphQLObjectType<ResolverContext>({
   name: "Artist",
   interfaces: [NodeInterface, Searchable],
   fields: (): any => {
@@ -355,7 +355,7 @@ export const ArtistType = new GraphQLObjectType({
           },
           markdown().args
         ),
-        type: new GraphQLObjectType({
+        type: new GraphQLObjectType<ResolverContext>({
           name: "ArtistBlurb",
           fields: {
             credit: {
@@ -448,7 +448,7 @@ export const ArtistType = new GraphQLObjectType({
         deprecationReason: "Favor `is_`-prefixed boolean attributes",
       },
       counts: {
-        type: new GraphQLObjectType({
+        type: new GraphQLObjectType<ResolverContext>({
           name: "ArtistCounts",
           fields: {
             artworks: numeral(

@@ -32,7 +32,7 @@ import config from "config"
 
 const { PREDICTION_ENDPOINT } = config
 
-const BidIncrement = new GraphQLObjectType({
+const BidIncrement = new GraphQLObjectType<ResolverContext>({
   name: "BidIncrement",
   fields: {
     amount: {
@@ -47,7 +47,7 @@ const BidIncrement = new GraphQLObjectType({
   },
 })
 
-const BuyersPremium = new GraphQLObjectType({
+const BuyersPremium = new GraphQLObjectType<ResolverContext>({
   name: "BuyersPremium",
   fields: {
     ...GravityIDFields,
@@ -66,7 +66,7 @@ const saleArtworkConnection = connectionDefinitions({
   nodeType: SaleArtwork.type,
 }).connectionType
 
-export const SaleType = new GraphQLObjectType({
+export const SaleType = new GraphQLObjectType<ResolverContext>({
   name: "Sale",
   interfaces: [NodeInterface],
   fields: () => {

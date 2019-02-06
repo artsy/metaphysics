@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 import date from "../../fields/date"
 
-export const DeliveryType = new GraphQLObjectType({
+export const DeliveryType = new GraphQLObjectType<ResolverContext>({
   name: "Delivery",
   description: "Fields of a delivery (currently from Radiation)",
   fields: {

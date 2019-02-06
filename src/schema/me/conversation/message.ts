@@ -12,7 +12,7 @@ import { DeliveryType } from "./delivery"
 import { InvoiceType } from "./invoice"
 import { isExisty } from "lib/helpers"
 
-const MessageInitiatorType = new GraphQLObjectType({
+const MessageInitiatorType = new GraphQLObjectType<ResolverContext>({
   name: "MessageInitiator",
   description: "The participant who sent the message.",
   fields: {
@@ -29,7 +29,7 @@ const isInvoiceMessage = metadata => {
   return !!metadata && isExisty(metadata.lewitt_invoice_id)
 }
 
-export const MessageType = new GraphQLObjectType({
+export const MessageType = new GraphQLObjectType<ResolverContext>({
   name: "Message",
   description: "A message in a conversation.",
   interfaces: [NodeInterface],

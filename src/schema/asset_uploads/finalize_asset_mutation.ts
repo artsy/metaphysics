@@ -2,7 +2,7 @@ import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import GraphQLJSON from "graphql-type-json"
 
-export const GeminiEntryType = new GraphQLObjectType({
+export const GeminiEntryType = new GraphQLObjectType<ResolverContext>({
   name: "GeminiEntry",
   description: "An entry from gemini",
   fields: {

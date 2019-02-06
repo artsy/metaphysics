@@ -70,7 +70,7 @@ export const SaleArtworkAggregations = {
 }
 
 export const SaleArtworkCounts = {
-  type: new GraphQLObjectType({
+  type: new GraphQLObjectType<ResolverContext>({
     name: "FilterSaleArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
@@ -82,7 +82,7 @@ export const SaleArtworkCounts = {
   resolve: artist => artist,
 }
 
-export const FilterSaleArtworksType = new GraphQLObjectType({
+export const FilterSaleArtworksType = new GraphQLObjectType<ResolverContext>({
   name: "FilterSaleArtworks",
   fields: () => ({
     aggregations: SaleArtworkAggregations,

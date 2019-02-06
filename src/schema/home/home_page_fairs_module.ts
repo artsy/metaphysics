@@ -1,7 +1,7 @@
 import Fair from "schema/fair"
 import { GraphQLList, GraphQLObjectType, GraphQLNonNull } from "graphql"
 
-export const HomePageFairsModuleType = new GraphQLObjectType({
+export const HomePageFairsModuleType = new GraphQLObjectType<ResolverContext>({
   name: "HomePageFairsModule",
   fields: {
     results: {

@@ -12,7 +12,7 @@ import {
   GraphQLNonNull,
 } from "graphql"
 
-const ArticleType = new GraphQLObjectType({
+const ArticleType = new GraphQLObjectType<ResolverContext>({
   name: "Article",
   interfaces: [NodeInterface],
   fields: () => ({

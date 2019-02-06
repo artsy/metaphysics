@@ -45,7 +45,7 @@ const mySubmissions = !!ENABLE_CONVECTION_STITCHING
   ? {}
   : { consignment_submissions: Submissions }
 
-const Me = new GraphQLObjectType({
+const Me = new GraphQLObjectType<ResolverContext>({
   name: "Me",
   interfaces: [NodeInterface],
   fields: {
@@ -68,7 +68,7 @@ const Me = new GraphQLObjectType({
     followed_artists_connection: FollowedArtists,
     followed_genes: FollowedGenes,
     followsAndSaves: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "FollowsAndSaves",
         fields: {
           bundledArtworksByArtist: FollowedArtistsArtworkGroups,

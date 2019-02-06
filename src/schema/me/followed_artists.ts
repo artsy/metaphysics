@@ -5,7 +5,7 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLObjectType, GraphQLBoolean } from "graphql"
 
-export const FollowArtistType = new GraphQLObjectType({
+export const FollowArtistType = new GraphQLObjectType<ResolverContext>({
   name: "FollowArtist",
   fields: {
     artist: {

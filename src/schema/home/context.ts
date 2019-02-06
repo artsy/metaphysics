@@ -41,7 +41,9 @@ export const HomePageModuleContextFollowArtistsType = create(
   }
 )
 
-export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
+export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType<
+  ResolverContext
+>({
   name: "HomePageModuleContextRelatedArtist",
   fields: () => ({
     artist: {
@@ -54,7 +56,9 @@ export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
   isTypeOf: ({ context_type }) => context_type === "RelatedArtist",
 })
 
-export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType({
+export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType<
+  ResolverContext
+>({
   name: "HomePageModuleContextFollowedArtist",
   fields: () => ({
     artist: {

@@ -43,7 +43,7 @@ export const resizedImageUrl = (image, options) => {
   }
 }
 
-const ResizedImageUrlType = new GraphQLObjectType({
+const ResizedImageUrlType = new GraphQLObjectType<ResolverContext>({
   name: "ResizedImageUrl",
   fields: {
     factor: {

@@ -12,7 +12,7 @@ import { UserType } from "schema/user"
 import { amount } from "schema/fields/money"
 import { OrderParticipantEnum } from "./enums/order_participant_enum"
 
-export const OfferType = new GraphQLObjectType({
+export const OfferType = new GraphQLObjectType<ResolverContext>({
   name: "Offer",
   fields: () => ({
     id: {

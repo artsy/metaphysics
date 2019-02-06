@@ -3,7 +3,7 @@ import { GraphQLObjectType, GraphQLNonNull } from "graphql"
 import Convection from "./convection"
 import Metaphysics from "./metaphysics"
 
-const ServicesSchema = new GraphQLObjectType({
+const ServicesSchema = new GraphQLObjectType<ResolverContext>({
   name: "Services",
   fields: () => ({
     convection: {

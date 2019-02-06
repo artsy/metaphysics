@@ -5,7 +5,7 @@ import {
   GraphQLObjectType,
 } from "graphql"
 
-const SystemTimeType = new GraphQLObjectType({
+const SystemTimeType = new GraphQLObjectType<ResolverContext>({
   name: "SystemTime",
   fields: () => {
     return {

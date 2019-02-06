@@ -54,7 +54,7 @@ export const HomePageArtistModuleTypes = {
   },
 }
 
-export const HomePageArtistModuleType = new GraphQLObjectType({
+export const HomePageArtistModuleType = new GraphQLObjectType<ResolverContext>({
   name: "HomePageArtistModule",
   interfaces: [NodeInterface],
   fields: {

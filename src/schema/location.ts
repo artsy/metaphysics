@@ -10,7 +10,7 @@ import {
   GraphQLList,
 } from "graphql"
 
-export const LatLngType = new GraphQLObjectType({
+export const LatLngType = new GraphQLObjectType<ResolverContext>({
   name: "LatLng",
   fields: {
     lat: {
@@ -22,7 +22,7 @@ export const LatLngType = new GraphQLObjectType({
   },
 })
 
-export const LocationType = new GraphQLObjectType({
+export const LocationType = new GraphQLObjectType<ResolverContext>({
   name: "Location",
   fields: () => ({
     ...IDFields,

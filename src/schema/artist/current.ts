@@ -17,7 +17,7 @@ const UnderlyingCurrentEventType = new GraphQLUnionType({
   resolveType: ({ __type }) => __type,
 })
 
-const CurrentEventType = new GraphQLObjectType({
+const CurrentEventType = new GraphQLObjectType<ResolverContext>({
   name: "CurrentEvent",
   fields: {
     event: {

@@ -5,7 +5,7 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLObjectType } from "graphql"
 
-const FollowedShowEdge = new GraphQLObjectType({
+const FollowedShowEdge = new GraphQLObjectType<ResolverContext>({
   name: "FollowedShowEdge",
   fields: {
     partner_show: {

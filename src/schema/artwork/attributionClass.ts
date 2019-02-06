@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 
-const AttributionClass = new GraphQLObjectType({
+const AttributionClass = new GraphQLObjectType<ResolverContext>({
   name: "AttributionClass",
   description: "Collection of fields that describe attribution class",
   fields: {

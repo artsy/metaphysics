@@ -91,7 +91,7 @@ export const SubmissionStateAggregation = new GraphQLEnumType({
   },
 })
 
-export const SubmissionType = new GraphQLObjectType({
+export const SubmissionType = new GraphQLObjectType<ResolverContext>({
   name: "ConsignmentSubmission",
   description: "A work to be consigned to the user",
   interfaces: [NodeInterface],

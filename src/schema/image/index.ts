@@ -21,7 +21,7 @@ export const getDefault = images => {
   return images
 }
 
-const ImageType = new GraphQLObjectType({
+const ImageType = new GraphQLObjectType<ResolverContext>({
   name: "Image",
   fields: (): any => ({
     aspect_ratio: {

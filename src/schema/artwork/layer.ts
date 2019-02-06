@@ -5,7 +5,7 @@ import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
 
-const ArtworkLayerType = new GraphQLObjectType({
+const ArtworkLayerType = new GraphQLObjectType<ResolverContext>({
   name: "ArtworkLayer",
   fields: () => ({
     ...IDFields,

@@ -7,7 +7,7 @@ import HomePageFairsModule from "./home_page_fairs_module"
 
 import { GraphQLObjectType } from "graphql"
 
-const HomePageType = new GraphQLObjectType({
+const HomePageType = new GraphQLObjectType<ResolverContext>({
   name: "HomePage",
   fields: {
     artist_module: HomePageArtistModule,

@@ -1,7 +1,7 @@
 import { IDFields } from "./object_identification"
 import { GraphQLString, GraphQLObjectType } from "graphql"
 
-const AuthorType = new GraphQLObjectType({
+const AuthorType = new GraphQLObjectType<ResolverContext>({
   name: "Author",
   fields: {
     ...IDFields,

@@ -26,7 +26,7 @@ import ShowSort from "./sorts/show_sort"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 
-const FairOrganizerType = new GraphQLObjectType({
+const FairOrganizerType = new GraphQLObjectType<ResolverContext>({
   name: "organizer",
   fields: {
     profile_id: {
@@ -49,7 +49,7 @@ const FairOrganizerType = new GraphQLObjectType({
   },
 })
 
-const FairType = new GraphQLObjectType({
+const FairType = new GraphQLObjectType<ResolverContext>({
   name: "Fair",
   fields: () => ({
     ...GravityIDFields,
@@ -96,7 +96,7 @@ const FairType = new GraphQLObjectType({
       type: GraphQLString,
     },
     counts: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "FairCounts",
         fields: {
           artists: numeral(({ artists_count }) => artists_count),
@@ -246,7 +246,7 @@ const FairType = new GraphQLObjectType({
     exhibitors_grouped_by_name: {
       description: "The exhibitors with booths in this fair.",
       type: new GraphQLList(
-        new GraphQLObjectType({
+        new GraphQLObjectType<ResolverContext>({
           name: "FairExhibitorsGroup",
           fields: {
             letter: {

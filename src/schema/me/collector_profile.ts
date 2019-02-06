@@ -30,7 +30,7 @@ export const CollectorProfileFields = {
   },
 }
 
-export const CollectorProfileType = new GraphQLObjectType({
+export const CollectorProfileType = new GraphQLObjectType<ResolverContext>({
   name: "CollectorProfileType",
   fields: CollectorProfileFields,
 })

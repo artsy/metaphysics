@@ -506,7 +506,7 @@ export const ArtworkType = new GraphQLObjectType<ResolverContext>({
       pickup_available: { type: GraphQLBoolean },
       price: { type: GraphQLString },
       priceCents: {
-        type: new GraphQLObjectType({
+        type: new GraphQLObjectType<ResolverContext>({
           name: "PriceCents",
           fields: {
             min: {
@@ -816,7 +816,7 @@ export const ArtworkType = new GraphQLObjectType<ResolverContext>({
   },
 })
 
-const ArtworkInfoRowType = new GraphQLObjectType({
+const ArtworkInfoRowType = new GraphQLObjectType<ResolverContext>({
   name: "ArtworkInfoRow",
   fields: {
     label: {

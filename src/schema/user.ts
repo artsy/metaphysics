@@ -8,7 +8,7 @@ import cached from "./fields/cached"
 import { GravityIDFields } from "./object_identification"
 import { LocationType } from "schema/location"
 
-export const UserType = new GraphQLObjectType({
+export const UserType = new GraphQLObjectType<ResolverContext>({
   name: "User",
   fields: () => ({
     ...GravityIDFields,

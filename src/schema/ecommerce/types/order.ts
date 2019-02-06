@@ -151,7 +151,7 @@ export const OrderInterface = new GraphQLInterfaceType({
   fields: () => orderFields,
 })
 
-export const OfferOrderType = new GraphQLObjectType({
+export const OfferOrderType = new GraphQLObjectType<ResolverContext>({
   name: "OfferOrder",
   interfaces: () => [OrderInterface],
   fields: () => ({
@@ -176,7 +176,7 @@ export const OfferOrderType = new GraphQLObjectType({
   isTypeOf: () => true,
 })
 
-export const BuyOrderType = new GraphQLObjectType({
+export const BuyOrderType = new GraphQLObjectType<ResolverContext>({
   name: "BuyOrder",
   interfaces: () => [OrderInterface],
   fields: orderFields,

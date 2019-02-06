@@ -2,7 +2,7 @@ import { IDFields } from "./object_identification"
 
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
 
-const ExternalPartnerType = new GraphQLObjectType({
+const ExternalPartnerType = new GraphQLObjectType<ResolverContext>({
   name: "ExternalPartner",
   fields: () => {
     return {

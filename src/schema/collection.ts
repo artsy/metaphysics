@@ -20,7 +20,7 @@ import {
 // of all artwork saves, so you will need to add some each week in order to have data
 // to work with.
 
-export const CollectionType = new GraphQLObjectType({
+export const CollectionType = new GraphQLObjectType<ResolverContext>({
   name: "Collection",
   interfaces: [NodeInterface],
   fields: {

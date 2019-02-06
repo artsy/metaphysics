@@ -4,7 +4,7 @@ import Sales from "schema/sales"
 import Bidder from "schema/bidder"
 import { GraphQLList, GraphQLBoolean, GraphQLObjectType } from "graphql"
 
-export const SaleRegistrationType = new GraphQLObjectType({
+export const SaleRegistrationType = new GraphQLObjectType<ResolverContext>({
   name: "SaleRegistration",
   fields: () => ({
     bidder: {

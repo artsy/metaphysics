@@ -5,7 +5,7 @@ import {
   GraphQLString,
 } from "graphql"
 
-export const Ship = new GraphQLObjectType({
+export const Ship = new GraphQLObjectType<ResolverContext>({
   name: "Ship",
   fields: {
     name: {
@@ -43,7 +43,7 @@ export const Ship = new GraphQLObjectType({
   },
 })
 
-export const Pickup = new GraphQLObjectType({
+export const Pickup = new GraphQLObjectType<ResolverContext>({
   name: "Pickup",
   fields: {
     fulfillmentType: {

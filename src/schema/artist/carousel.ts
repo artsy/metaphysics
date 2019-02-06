@@ -4,7 +4,7 @@ import { error } from "lib/loggers"
 import { GraphQLObjectType, GraphQLList } from "graphql"
 import { GravityArtwork } from "types/gravity/artworkResponse"
 
-const ArtistCarouselType = new GraphQLObjectType({
+const ArtistCarouselType = new GraphQLObjectType<ResolverContext>({
   name: "ArtistCarousel",
   fields: {
     images: {

@@ -3,7 +3,7 @@ import { totalViaLoader } from "lib/total"
 import Artist from "schema/artist"
 import { GraphQLInt, GraphQLList, GraphQLObjectType } from "graphql"
 
-const FollowArtistsType = new GraphQLObjectType({
+const FollowArtistsType = new GraphQLObjectType<ResolverContext>({
   name: "FollowArtists",
   fields: {
     artists: {
@@ -14,7 +14,7 @@ const FollowArtistsType = new GraphQLObjectType({
       },
     },
     counts: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "FollowArtistCounts",
         fields: {
           artists: {

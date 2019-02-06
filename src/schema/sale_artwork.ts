@@ -60,7 +60,7 @@ const bid_increments_calculator = async ({
 }
 
 // We're not using money() for this because it is a function, and we need a list.
-const BidIncrementsFormatted = new GraphQLObjectType({
+const BidIncrementsFormatted = new GraphQLObjectType<ResolverContext>({
   name: "BidIncrementsFormatted",
   fields: {
     cents: {
@@ -72,7 +72,7 @@ const BidIncrementsFormatted = new GraphQLObjectType({
   },
 })
 
-const SaleArtworkType = new GraphQLObjectType({
+const SaleArtworkType = new GraphQLObjectType<ResolverContext>({
   name: "SaleArtwork",
   fields: () => {
     return {
@@ -102,7 +102,7 @@ const SaleArtworkType = new GraphQLObjectType({
       },
       counts: {
         resolve: x => x,
-        type: new GraphQLObjectType({
+        type: new GraphQLObjectType<ResolverContext>({
           name: "SaleArtworkCounts",
           fields: {
             bidder_positions: numeral(
@@ -157,7 +157,7 @@ const SaleArtworkType = new GraphQLObjectType({
         deprecationReason: "Favor `high_estimate",
       },
       highest_bid: {
-        type: new GraphQLObjectType({
+        type: new GraphQLObjectType<ResolverContext>({
           name: "SaleArtworkHighestBid",
           fields: {
             id: {

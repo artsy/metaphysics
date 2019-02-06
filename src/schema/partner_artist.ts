@@ -12,7 +12,7 @@ import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters } from "relay-cursor-paging"
 
 const counts = {
-  type: new GraphQLObjectType({
+  type: new GraphQLObjectType<ResolverContext>({
     name: "PartnerArtistCounts",
     fields: {
       artworks: numeral(
@@ -57,7 +57,7 @@ const fields = () => {
   }
 }
 
-export const PartnerArtistType = new GraphQLObjectType({
+export const PartnerArtistType = new GraphQLObjectType<ResolverContext>({
   name: "PartnerArtist",
   fields,
 })

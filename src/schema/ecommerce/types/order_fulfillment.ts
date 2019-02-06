@@ -2,7 +2,7 @@ import { GraphQLID, GraphQLObjectType, GraphQLString } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 import date from "schema/fields/date"
 
-export const OrderFulfillmentType = new GraphQLObjectType({
+export const OrderFulfillmentType = new GraphQLObjectType<ResolverContext>({
   name: "OrderFulfillment",
   fields: () => ({
     id: {

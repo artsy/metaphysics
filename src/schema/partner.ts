@@ -20,7 +20,7 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 
-const PartnerCategoryType = new GraphQLObjectType({
+const PartnerCategoryType = new GraphQLObjectType<ResolverContext>({
   name: "Category",
   description: "Fields of partner category (currently from Gravity).",
   fields: {
@@ -49,7 +49,7 @@ const artworksArgs = {
   },
 }
 
-const PartnerType = new GraphQLObjectType({
+const PartnerType = new GraphQLObjectType<ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
   fields: (): any => {
@@ -155,7 +155,7 @@ const PartnerType = new GraphQLObjectType({
         },
       },
       counts: {
-        type: new GraphQLObjectType({
+        type: new GraphQLObjectType<ResolverContext>({
           name: "PartnerCounts",
           fields: {
             artworks: numeral(({ artworks_count }) => artworks_count),

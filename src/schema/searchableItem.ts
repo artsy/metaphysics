@@ -8,7 +8,7 @@ import { toGlobalId } from "graphql-relay"
 import { Searchable } from "schema/searchable"
 import { NodeInterface } from "schema/object_identification"
 
-export const SearchableItem = new GraphQLObjectType({
+export const SearchableItem = new GraphQLObjectType<ResolverContext>({
   name: "SearchableItem",
   interfaces: [NodeInterface, Searchable],
   fields: {

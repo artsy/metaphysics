@@ -91,7 +91,7 @@ export function formatDaySchedules(daySchedules: Array<DaySchedule>) {
     .value()
 }
 
-const FormattedDaySchedulesType = new GraphQLObjectType({
+const FormattedDaySchedulesType = new GraphQLObjectType<ResolverContext>({
   name: "FormattedDaySchedules",
   fields: () => ({
     days: {

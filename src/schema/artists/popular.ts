@@ -7,7 +7,7 @@ import {
   GraphQLString,
 } from "graphql"
 
-const PopularArtistsType = new GraphQLObjectType({
+const PopularArtistsType = new GraphQLObjectType<ResolverContext>({
   name: "PopularArtists",
   fields: () => ({
     artists: {

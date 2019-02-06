@@ -52,7 +52,9 @@ const sorts = {
   institution: counts => orderBy(counts, ["count", "name"], ["desc", "asc"]),
 }
 
-export const ArtworksAggregationResultsType = new GraphQLObjectType({
+export const ArtworksAggregationResultsType = new GraphQLObjectType<
+  ResolverContext
+>({
   name: "ArtworksAggregationResults",
   description: "The results for one of the requested aggregations",
   fields: () => ({

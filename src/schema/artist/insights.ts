@@ -65,7 +65,7 @@ const buildInsights = artist => {
   )
 }
 
-const ArtistInsight = new GraphQLObjectType({
+const ArtistInsight = new GraphQLObjectType<ResolverContext>({
   name: "ArtistInsight",
   fields: {
     type: {

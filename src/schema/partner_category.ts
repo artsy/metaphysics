@@ -5,7 +5,7 @@ import CategoryType from "./input_fields/category_type"
 import { IDFields } from "./object_identification"
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
 
-const PartnerCategoryType = new GraphQLObjectType({
+const PartnerCategoryType = new GraphQLObjectType<ResolverContext>({
   name: "PartnerCategory",
   fields: () => ({
     ...IDFields,

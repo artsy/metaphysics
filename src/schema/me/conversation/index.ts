@@ -46,53 +46,57 @@ export const BuyerOutcomeTypes = new GraphQLEnumType({
   },
 })
 
-export const ConversationInitiatorType = new GraphQLObjectType({
-  name: "ConversationInitiator",
-  description:
-    "The participant who started the conversation, currently always a User",
-  fields: {
-    id: {
-      description: "Impulse id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    type: {
-      description: "The type of participant, e.g. Partner or User",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    email: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    initials: initials("name"),
-  } as any,
-})
+export const ConversationInitiatorType = new GraphQLObjectType<ResolverContext>(
+  {
+    name: "ConversationInitiator",
+    description:
+      "The participant who started the conversation, currently always a User",
+    fields: {
+      id: {
+        description: "Impulse id.",
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      type: {
+        description: "The type of participant, e.g. Partner or User",
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      name: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      email: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      initials: initials("name"),
+    } as any,
+  }
+)
 
-export const ConversationResponderType = new GraphQLObjectType({
-  name: "ConversationResponder",
-  description:
-    "The participant responding to the conversation, currently always a Partner",
-  fields: {
-    id: {
-      description: "Impulse id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    type: {
-      description: "The type of participant, e.g. Partner or User",
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    reply_to_impulse_ids: {
-      type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
-      description:
-        "An array of Impulse IDs that correspond to all email addresses that messages should be sent to",
-    },
-    initials: initials("name"),
-  } as any,
-})
+export const ConversationResponderType = new GraphQLObjectType<ResolverContext>(
+  {
+    name: "ConversationResponder",
+    description:
+      "The participant responding to the conversation, currently always a Partner",
+    fields: {
+      id: {
+        description: "Impulse id.",
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      type: {
+        description: "The type of participant, e.g. Partner or User",
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      name: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      reply_to_impulse_ids: {
+        type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
+        description:
+          "An array of Impulse IDs that correspond to all email addresses that messages should be sent to",
+      },
+      initials: initials("name"),
+    } as any,
+  }
+)
 
 const ConversationItemType = new GraphQLUnionType({
   name: "ConversationItemType",
@@ -109,7 +113,7 @@ const ConversationItemType = new GraphQLUnionType({
   },
 })
 
-const ConversationItem = new GraphQLObjectType({
+const ConversationItem = new GraphQLObjectType<ResolverContext>({
   name: "ConversationItem",
   fields: {
     item: {
@@ -397,7 +401,7 @@ export const ConversationFields = {
   },
 }
 
-export const ConversationType = new GraphQLObjectType({
+export const ConversationType = new GraphQLObjectType<ResolverContext>({
   name: "Conversation",
   description: "A conversation.",
   interfaces: [NodeInterface],

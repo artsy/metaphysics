@@ -5,7 +5,7 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLObjectType } from "graphql"
 
-export const FollowGeneType = new GraphQLObjectType({
+export const FollowGeneType = new GraphQLObjectType<ResolverContext>({
   name: "FollowGene",
   fields: {
     gene: {

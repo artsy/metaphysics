@@ -23,7 +23,7 @@ const partnerDescription = ({ partner, forsale }, expanded = true) => {
     : `From ${name}`
 }
 
-const ArtworkMetaType = new GraphQLObjectType({
+const ArtworkMetaType = new GraphQLObjectType<ResolverContext>({
   name: "ArtworkMeta",
   fields: {
     description: {

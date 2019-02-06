@@ -10,7 +10,7 @@ import {
 import filterArtworks from "./filter_artworks"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 
-const TagType = new GraphQLObjectType({
+const TagType = new GraphQLObjectType<ResolverContext>({
   name: "Tag",
   interfaces: [NodeInterface],
   fields: () => {

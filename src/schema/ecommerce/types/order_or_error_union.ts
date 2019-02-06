@@ -7,14 +7,14 @@ import {
 
 import { OrderInterface } from "schema/ecommerce/types/order"
 
-export const OrderWithMutationSuccess = new GraphQLObjectType({
+export const OrderWithMutationSuccess = new GraphQLObjectType<ResolverContext>({
   name: "OrderWithMutationSuccess",
   fields: () => ({
     order: { type: OrderInterface },
   }),
 })
 
-export const EcommerceError = new GraphQLObjectType({
+export const EcommerceError = new GraphQLObjectType<ResolverContext>({
   name: "EcommerceError",
   fields: {
     type: {
@@ -33,7 +33,7 @@ export const EcommerceError = new GraphQLObjectType({
   },
 })
 
-export const OrderWithMutationFailure = new GraphQLObjectType({
+export const OrderWithMutationFailure = new GraphQLObjectType<ResolverContext>({
   name: "OrderWithMutationFailure",
   fields: {
     error: { type: EcommerceError },

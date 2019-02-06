@@ -54,7 +54,7 @@ const artworksArgs = {
   },
 }
 
-const PartnerShowType = new GraphQLObjectType({
+const PartnerShowType = new GraphQLObjectType<ResolverContext>({
   name: "PartnerShow",
   // @ts-ignore
   deprecationReason: "Prefer to use Show schema",
@@ -156,7 +156,7 @@ const PartnerShowType = new GraphQLObjectType({
       },
     },
     counts: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "PartnerShowCounts",
         fields: {
           artworks: {

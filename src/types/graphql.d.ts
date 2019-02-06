@@ -17,7 +17,7 @@ export interface ResolverContextValues {
  * The root values we pass into the GraphQL query resolver,
  * contains optional user information, and all of our data-loaders.
  * */
-export type RootValue = never
+export type RootValue = void
 
 export type ResolverContext = ResolverContextValues &
   ReturnType<typeof createLoaders>

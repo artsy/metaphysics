@@ -6,7 +6,7 @@ import {
 } from "graphql"
 import Gene from "./gene"
 
-const GeneFamilyType = new GraphQLObjectType({
+const GeneFamilyType = new GraphQLObjectType<ResolverContext>({
   name: "GeneFamily",
   fields: {
     id: {

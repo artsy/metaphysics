@@ -152,7 +152,7 @@ const rootFields: any = {
   popular_artists: PopularArtists,
 }
 
-const ViewerType = new GraphQLObjectType({
+const ViewerType = new GraphQLObjectType<ResolverContext>({
   name: "Viewer",
   description: "A wildcard used to support complex root queries in Relay",
   fields: rootFields,
@@ -214,7 +214,7 @@ stitchedMutations.submitOrder = SubmitOrderMutation
 
 export default new GraphQLSchema({
   allowedLegacyNames: ["__id"],
-  mutation: new GraphQLObjectType({
+  mutation: new GraphQLObjectType<ResolverContext>({
     name: "Mutation",
     fields: {
       createBidder: createBidderMutation,
@@ -236,7 +236,7 @@ export default new GraphQLSchema({
       ...stitchedMutations,
     },
   }),
-  query: new GraphQLObjectType({
+  query: new GraphQLObjectType<ResolverContext>({
     name: "Query",
     fields: {
       ...rootFields,

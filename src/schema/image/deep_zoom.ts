@@ -13,12 +13,12 @@ export function isZoomable(image) {
 
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
 
-const DeepZoomType = new GraphQLObjectType({
+const DeepZoomType = new GraphQLObjectType<ResolverContext>({
   name: "DeepZoom",
   fields: {
     Image: {
       resolve: image => image,
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "DeepZoomImage",
         fields: {
           Format: {
@@ -31,7 +31,7 @@ const DeepZoomType = new GraphQLObjectType({
           },
           Size: {
             resolve: image => image,
-            type: new GraphQLObjectType({
+            type: new GraphQLObjectType<ResolverContext>({
               name: "DeepZoomImageSize",
               fields: {
                 Width: {

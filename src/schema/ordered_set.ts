@@ -8,7 +8,7 @@ import {
   GraphQLList,
 } from "graphql"
 
-const OrderedSetType = new GraphQLObjectType({
+const OrderedSetType = new GraphQLObjectType<ResolverContext>({
   name: "OrderedSet",
   fields: () => ({
     ...IDFields,

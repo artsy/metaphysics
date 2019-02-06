@@ -1,7 +1,7 @@
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
 import BidderPosition from "schema/bidder_position"
 
-export const BidderPositionResultType = new GraphQLObjectType({
+export const BidderPositionResultType = new GraphQLObjectType<ResolverContext>({
   name: "BidderPositionResult",
   fields: () => ({
     status: {

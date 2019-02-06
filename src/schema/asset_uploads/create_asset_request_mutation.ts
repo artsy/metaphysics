@@ -1,7 +1,7 @@
 import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 
-export const S3PolicyConditionsType = new GraphQLObjectType({
+export const S3PolicyConditionsType = new GraphQLObjectType<ResolverContext>({
   name: "S3PolicyConditionsType",
   description: "The conditions for uploading assets to media.artsy.net",
   fields: {
@@ -24,7 +24,7 @@ export const S3PolicyConditionsType = new GraphQLObjectType({
   },
 })
 
-export const S3PolicyDocumentType = new GraphQLObjectType({
+export const S3PolicyDocumentType = new GraphQLObjectType<ResolverContext>({
   name: "S3PolicyDocumentType",
   description: "An policy for uploading assets to media.artsy.net",
   fields: {
@@ -47,7 +47,7 @@ export const S3PolicyDocumentType = new GraphQLObjectType({
   },
 })
 
-export const CredentialsType = new GraphQLObjectType({
+export const CredentialsType = new GraphQLObjectType<ResolverContext>({
   name: "Credentials",
   description: "An asset which is assigned to a consignment submission",
   fields: {

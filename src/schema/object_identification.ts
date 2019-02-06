@@ -14,7 +14,7 @@
  *   NodeInterface,
  * } from './object_identification';
  *
- * const ArtworkType = new GraphQLObjectType({
+ * const ArtworkType = new GraphQLObjectType<ResolverContext>({
  *   ...
  *   interfaces: [NodeInterface],
  *   fields: () => ({

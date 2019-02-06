@@ -62,7 +62,7 @@ export const amount = centsResolver => ({
 
 const money = ({ name, resolve }) => ({
   resolve: x => x,
-  type: new GraphQLObjectType({
+  type: new GraphQLObjectType<ResolverContext>({
     name,
     fields: {
       amount: amount(obj => resolve(obj).cents),

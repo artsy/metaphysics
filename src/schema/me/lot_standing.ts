@@ -13,7 +13,7 @@ export const isHighestBidder = lotStanding =>
   isLeadingBidder(lotStanding) &&
   lotStanding.sale_artwork.reserve_status !== "reserve_not_met"
 
-export const LotStandingType = new GraphQLObjectType({
+export const LotStandingType = new GraphQLObjectType<ResolverContext>({
   name: "LotStanding",
   fields: () => ({
     active_bid: {

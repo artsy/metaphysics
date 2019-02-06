@@ -10,7 +10,7 @@ import {
   GraphQLBoolean,
 } from "graphql"
 
-const TrendingArtistsType = new GraphQLObjectType({
+const TrendingArtistsType = new GraphQLObjectType<ResolverContext>({
   name: "TrendingArtists",
   fields: () => ({
     artists: {

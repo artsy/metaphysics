@@ -7,7 +7,7 @@ import {
 import { artistNames } from "./artwork/meta"
 import Image from "./image"
 
-export const ArtworkVersion = new GraphQLObjectType({
+export const ArtworkVersion = new GraphQLObjectType<ResolverContext>({
   name: "ArtworkVersion",
   fields: () => ({
     id: {

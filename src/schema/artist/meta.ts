@@ -8,7 +8,7 @@ export const metaName = artist => {
   return "Unnamed Artist"
 }
 
-const ArtistMetaType = new GraphQLObjectType({
+const ArtistMetaType = new GraphQLObjectType<ResolverContext>({
   name: "ArtistMeta",
   fields: {
     description: {

@@ -25,7 +25,7 @@ const InvoiceState = new GraphQLEnumType({
   },
 })
 
-export const InvoiceType = new GraphQLObjectType({
+export const InvoiceType = new GraphQLObjectType<ResolverContext>({
   name: "Invoice",
   description: "Fields of an invoice (currently from Lewitt)",
   interfaces: [NodeInterface],

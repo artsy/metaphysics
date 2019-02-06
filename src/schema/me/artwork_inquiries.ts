@@ -8,7 +8,7 @@ import {
   GraphQLString,
 } from "graphql"
 
-export const ArtworkInquiryType = new GraphQLObjectType({
+export const ArtworkInquiryType = new GraphQLObjectType<ResolverContext>({
   name: "ArtworkInquiry",
   description: "An inquiry on an Artwork",
   fields: () => ({

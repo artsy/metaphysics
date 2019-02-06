@@ -1,7 +1,28 @@
 patch-package
 --- a/node_modules/@types/graphql/type/definition.d.ts
 +++ b/node_modules/@types/graphql/type/definition.d.ts
-@@ -371,7 +371,10 @@ export interface GraphQLResolveInfo {
+@@ -319,15 +319,16 @@ export interface GraphQLScalarTypeConfig<TInternal, TExternal> {
+  *     });
+  *
+  */
+-export class GraphQLObjectType {
++// TODO: export class GraphQLObjectType<TSource = any, TContext = any> {
++export class GraphQLObjectType<TContext> {
+     name: string;
+     description: Maybe<string>;
+     astNode: Maybe<ObjectTypeDefinitionNode>;
+     extensionASTNodes: Maybe<ReadonlyArray<ObjectTypeExtensionNode>>;
+-    isTypeOf: Maybe<GraphQLIsTypeOfFn<any, any>>;
++    isTypeOf: Maybe<GraphQLIsTypeOfFn<any, TContext>>;
+ 
+-    constructor(config: GraphQLObjectTypeConfig<any, any>);
+-    getFields(): GraphQLFieldMap<any, any>;
++    constructor(config: GraphQLObjectTypeConfig<any, TContext>);
++    getFields(): GraphQLFieldMap<any, TContext>;
+     getInterfaces(): GraphQLInterfaceType[];
+     toString(): string;
+     toJSON(): string;
+@@ -371,7 +372,10 @@ export interface GraphQLResolveInfo {
      readonly path: ResponsePath;
      readonly schema: GraphQLSchema;
      readonly fragments: { [key: string]: FragmentDefinitionNode };

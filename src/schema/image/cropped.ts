@@ -27,7 +27,7 @@ export const croppedImageUrl = (image, options) => {
   }
 }
 
-const CroppedImageUrlType = new GraphQLObjectType({
+const CroppedImageUrlType = new GraphQLObjectType<ResolverContext>({
   name: "CroppedImageUrl",
   fields: {
     width: {

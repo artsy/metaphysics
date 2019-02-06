@@ -10,7 +10,7 @@ import {
   GraphQLObjectType,
 } from "graphql"
 
-const BidderPositionType = new GraphQLObjectType({
+const BidderPositionType = new GraphQLObjectType<ResolverContext>({
   name: "BidderPosition",
   fields: () => ({
     ...IDFields,
@@ -26,7 +26,7 @@ const BidderPositionType = new GraphQLObjectType({
       deprecationReason: "Favor `suggested_next_bid`",
     },
     highest_bid: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "HighestBid",
         fields: {
           ...IDFields,

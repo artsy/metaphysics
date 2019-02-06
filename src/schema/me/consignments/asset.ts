@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 
-export const AssetType = new GraphQLObjectType({
+export const AssetType = new GraphQLObjectType<ResolverContext>({
   name: "Asset",
   description: "An asset which is assigned to a consignment submission",
   fields: {

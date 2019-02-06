@@ -28,7 +28,7 @@ const EditionSetAvailabilities = [
   "permanent collection",
 ]
 
-const EditionSetType = new GraphQLObjectType({
+const EditionSetType = new GraphQLObjectType<ResolverContext>({
   name: "EditionSet",
   interfaces: [Sellable],
   fields: {

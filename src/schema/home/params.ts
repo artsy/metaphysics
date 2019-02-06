@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLID, GraphQLString } from "graphql"
 
-const HomePageModuleParams = new GraphQLObjectType({
+const HomePageModuleParams = new GraphQLObjectType<ResolverContext>({
   name: "HomePageModulesParams",
   fields: {
     followed_artist_id: {

@@ -1,6 +1,6 @@
 import { GraphQLString, GraphQLObjectType } from "graphql"
 
-export const GravityMutationErrorType = new GraphQLObjectType({
+export const GravityMutationErrorType = new GraphQLObjectType<ResolverContext>({
   name: "GravityMutationError",
   fields: () => ({
     type: {

@@ -24,7 +24,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import Near from "schema/input_fields/near"
 import { LatLng, Point, distance } from "lib/geospatial"
 
-const CityType = new GraphQLObjectType({
+const CityType = new GraphQLObjectType<ResolverContext>({
   name: "City",
   fields: {
     slug: {

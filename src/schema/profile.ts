@@ -10,7 +10,7 @@ import {
   GraphQLBoolean,
 } from "graphql"
 
-export const ProfileType = new GraphQLObjectType({
+export const ProfileType = new GraphQLObjectType<ResolverContext>({
   name: "Profile",
   fields: (): any => ({
     ...GravityIDFields,
@@ -20,7 +20,7 @@ export const ProfileType = new GraphQLObjectType({
     },
     counts: {
       resolve: profile => profile,
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "ProfileCounts",
         fields: {
           follows: numeral(({ follows_count }) => follows_count),

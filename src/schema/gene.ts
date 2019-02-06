@@ -23,7 +23,9 @@ import {
   GraphQLInt,
   GraphQLBoolean,
   GraphQLResolveInfo,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -37,7 +39,7 @@ const SUBJECT_MATTER_MATCHES = [
 
 const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 
-export const GeneType = new GraphQLObjectType({
+export const GeneType = new GraphQLObjectType<ResolverContext>({
   name: "Gene",
   interfaces: [NodeInterface],
   fields: () => {
@@ -46,12 +48,7 @@ export const GeneType = new GraphQLObjectType({
       cached,
       artists: {
         type: new GraphQLList(Artist.type),
-        resolve: (
-          { id },
-          _options,
-          _request,
-          { rootValue: { geneArtistsLoader } }
-        ) => {
+        resolve: ({ id }, _options, { geneArtistsLoader }) => {
           return geneArtistsLoader(id, {
             exclude_artists_without_artworks: true,
           })
@@ -60,12 +57,7 @@ export const GeneType = new GraphQLObjectType({
       artists_connection: {
         type: artistConnection,
         args: pageable(),
-        resolve: (
-          { id, counts },
-          options,
-          _request,
-          { rootValue: { geneArtistsLoader } }
-        ) => {
+        resolve: ({ id, counts }, options, { geneArtistsLoader }) => {
           const parsedOptions = _.omit(
             convertConnectionArgsToGravityArgs(options),
             "page"
@@ -91,12 +83,7 @@ export const GeneType = new GraphQLObjectType({
           },
         }).connectionType,
         args: pageable(filterArtworksArgs),
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { filterArtworksLoader } }
-        ) => {
+        resolve: ({ id }, options, { filterArtworksLoader }) => {
           const gravityOptions = convertConnectionArgsToGravityArgs(options)
           // Do some massaging of the options for ElasticSearch
           gravityOptions.aggregations = options.aggregations || []
@@ -144,12 +131,7 @@ export const GeneType = new GraphQLObjectType({
       },
       is_followed: {
         type: GraphQLBoolean,
-        resolve: (
-          { id },
-          {},
-          _request,
-          { rootValue: { followedGeneLoader } }
-        ) => {
+        resolve: ({ id }, _args, { followedGeneLoader }) => {
           if (!followedGeneLoader) return false
           return followedGeneLoader(id).then(({ is_followed }) => is_followed)
         },
@@ -175,12 +157,7 @@ export const GeneType = new GraphQLObjectType({
           },
         }),
         description: "A list of genes similar to the specified gene",
-        resolve: (
-          gene,
-          options,
-          _request,
-          { rootValue: { similarGenesLoader } }
-        ) => {
+        resolve: (gene, options, { similarGenesLoader }) => {
           const { limit: size, offset } = getPagingParameters(options)
           const gravityArgs = {
             size,
@@ -209,12 +186,7 @@ export const GeneType = new GraphQLObjectType({
             type: GraphQLInt,
           },
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { trendingArtistsLoader } }
-        ) => {
+        resolve: ({ id }, options, { trendingArtistsLoader }) => {
           return trendingArtistsLoader({
             gene: id,
           }).then(artists => {
@@ -229,7 +201,7 @@ export const GeneType = new GraphQLObjectType({
   },
 })
 
-const Gene = {
+const Gene: GraphQLFieldConfig<never, ResolverContext> = {
   type: GeneType,
   args: {
     id: {
@@ -237,12 +209,7 @@ const Gene = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (
-    _root,
-    { id },
-    _request,
-    { fieldNodes, rootValue: { geneLoader } }
-  ) => {
+  resolve: (_root, { id }, { geneLoader }, { fieldNodes }) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ["filtered_artworks", "id", "__id"]

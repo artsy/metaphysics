@@ -1,6 +1,7 @@
 import moment from "moment"
 import "moment-timezone"
 import { GraphQLString, GraphQLBoolean, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export function date(rawDate, format, timezone) {
   if (timezone) {
@@ -19,7 +20,7 @@ export function date(rawDate, format, timezone) {
 
 const dateField: GraphQLFieldConfig<
   { format: string; timezone: string },
-  any
+  ResolverContext
 > = {
   type: GraphQLString,
   args: {
@@ -38,12 +39,7 @@ const dateField: GraphQLFieldConfig<
         "A tz database time zone, otherwise falls back to `X-TIMEZONE` header",
     },
   },
-  resolve: (
-    obj,
-    { format, timezone },
-    _request,
-    { fieldName, rootValue: { defaultTimezone } }
-  ) => {
+  resolve: (obj, { format, timezone }, { defaultTimezone }, { fieldName }) => {
     const rawDate = obj[fieldName]
     const timezoneString = timezone ? timezone : defaultTimezone
     return date(rawDate, format, timezoneString)

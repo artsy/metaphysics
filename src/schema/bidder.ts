@@ -3,7 +3,7 @@ import Sale from "./sale/index"
 import { IDFields } from "./object_identification"
 import { GraphQLString, GraphQLObjectType, GraphQLBoolean } from "graphql"
 
-const BidderType = new GraphQLObjectType({
+const BidderType = new GraphQLObjectType<ResolverContext>({
   name: "Bidder",
   fields: () => ({
     ...IDFields,

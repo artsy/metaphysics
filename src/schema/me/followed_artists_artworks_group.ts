@@ -15,48 +15,50 @@ import { omit, groupBy, map } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 
-const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
-  name: "FollowedArtistsArtworksGroup",
-  interfaces: [NodeInterface],
-  fields: () => ({
-    __id: GlobalIDField,
-    href: {
-      type: GraphQLString,
-      resolve: ({ artistSlug }) => `/artist/${artistSlug}`,
-    },
-    artworks: {
-      type: new GraphQLList(Artwork.type),
-      description: "List of artworks in this group.",
-    },
-    artworksConnection: {
-      type: artworkConnection,
-      args: pageable({}),
-      resolve: ({ artworks }, args) => {
-        return connectionFromArraySlice(artworks, args, {
-          arrayLength: artworks.length,
-          sliceStart: 0,
-        })
+const FollowedArtistsArtworksGroupType = new GraphQLObjectType<ResolverContext>(
+  {
+    name: "FollowedArtistsArtworksGroup",
+    interfaces: [NodeInterface],
+    fields: () => ({
+      __id: GlobalIDField,
+      href: {
+        type: GraphQLString,
+        resolve: ({ artistSlug }) => `/artist/${artistSlug}`,
       },
-    },
-    artists: {
-      type: GraphQLString,
-    },
-    summary: {
-      type: GraphQLString,
-    },
-    image: {
-      type: Image.type,
-      resolve: ({ artworks }) => {
-        return (
-          artworks.length > 0 &&
-          artworks[0].artists.length > 0 &&
-          Image.resolve(artworks[0].artists[0])
-        )
+      artworks: {
+        type: new GraphQLList(Artwork.type),
+        description: "List of artworks in this group.",
       },
-    },
-    published_at: date,
-  }),
-})
+      artworksConnection: {
+        type: artworkConnection,
+        args: pageable({}),
+        resolve: ({ artworks }, args) => {
+          return connectionFromArraySlice(artworks, args, {
+            arrayLength: artworks.length,
+            sliceStart: 0,
+          })
+        },
+      },
+      artists: {
+        type: GraphQLString,
+      },
+      summary: {
+        type: GraphQLString,
+      },
+      image: {
+        type: Image.type,
+        resolve: ({ artworks }) => {
+          return (
+            artworks.length > 0 &&
+            artworks[0].artists.length > 0 &&
+            Image.resolve(artworks[0].artists[0])
+          )
+        },
+      },
+      published_at: date,
+    }),
+  }
+)
 
 const FollowedArtistsArtworksGroup = {
   type: connectionDefinitions({ nodeType: FollowedArtistsArtworksGroupType })

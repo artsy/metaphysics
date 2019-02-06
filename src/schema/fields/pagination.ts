@@ -20,7 +20,7 @@ const PREFIX = "arrayconnection"
 //
 const PAGE_NUMBER_CAP = 100
 
-const PageCursor = new GraphQLObjectType({
+const PageCursor = new GraphQLObjectType<ResolverContext>({
   name: "PageCursor",
   fields: () => ({
     cursor: {
@@ -35,7 +35,7 @@ const PageCursor = new GraphQLObjectType({
   }),
 })
 
-export const PageCursorsType = new GraphQLObjectType({
+export const PageCursorsType = new GraphQLObjectType<ResolverContext>({
   name: "PageCursors",
   fields: () => ({
     first: {

@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLBoolean, GraphQLInt } from "graphql"
 import { totalViaLoader } from "lib/total"
 
-const ArtistStatusesType = new GraphQLObjectType({
+const ArtistStatusesType = new GraphQLObjectType<ResolverContext>({
   name: "ArtistStatuses",
   fields: {
     artists: {

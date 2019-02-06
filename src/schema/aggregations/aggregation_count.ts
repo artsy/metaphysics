@@ -1,7 +1,7 @@
 import { IDFields } from "schema/object_identification"
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
 
-export const AggregationCountType = new GraphQLObjectType({
+export const AggregationCountType = new GraphQLObjectType<ResolverContext>({
   name: "AggregationCount",
   description: "One item in an aggregation",
   fields: {

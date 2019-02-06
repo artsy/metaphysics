@@ -33,7 +33,7 @@ export const AuctionResultSorts = {
   }),
 }
 
-const AuctionResultType = new GraphQLObjectType({
+const AuctionResultType = new GraphQLObjectType<ResolverContext>({
   name: "AuctionResult",
   interfaces: [NodeInterface],
   fields: () => ({
@@ -58,7 +58,7 @@ const AuctionResultType = new GraphQLObjectType({
       type: GraphQLString,
     },
     dimensions: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "AuctionLotDimensions",
         description: "In centimeters.",
         fields: {
@@ -101,7 +101,7 @@ const AuctionResultType = new GraphQLObjectType({
       type: GraphQLString,
     },
     images: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "AuctionLotImages",
         fields: {
           larger: {
@@ -123,7 +123,7 @@ const AuctionResultType = new GraphQLObjectType({
       },
     },
     estimate: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "AuctionLotEstimate",
         fields: {
           low: {
@@ -176,7 +176,7 @@ const AuctionResultType = new GraphQLObjectType({
       resolve: lot => lot,
     },
     price_realized: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<ResolverContext>({
         name: "AuctionResultPriceRealized",
         fields: {
           cents: {

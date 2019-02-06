@@ -25,7 +25,9 @@ const sorts = {
   artist: counts => orderBy(counts, ["sortable_id", "count"], ["asc", "desc"]),
 }
 
-export const SaleArtworksAggregationResultsType = new GraphQLObjectType({
+export const SaleArtworksAggregationResultsType = new GraphQLObjectType<
+  ResolverContext
+>({
   name: "SaleArtworksAggregationResults",
   description: "The results for one of the requested aggregations",
   fields: () => ({

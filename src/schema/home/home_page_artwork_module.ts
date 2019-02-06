@@ -16,40 +16,42 @@ import {
 
 let possibleArgs
 
-export const HomePageArtworkModuleType = new GraphQLObjectType({
-  name: "HomePageArtworkModule",
-  interfaces: [NodeInterface],
-  fields: () => ({
-    __id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: "A globally unique ID.",
-      resolve: ({ key, params }) => {
-        // Compose this ID from params that `resolve` uses to identify a rail later on.
-        const payload = chain(params)
-          .pick(possibleArgs)
-          .set("key", key)
-          .value()
-        return toGlobalId("HomePageArtworkModule", JSON.stringify(payload))
+export const HomePageArtworkModuleType = new GraphQLObjectType<ResolverContext>(
+  {
+    name: "HomePageArtworkModule",
+    interfaces: [NodeInterface],
+    fields: () => ({
+      __id: {
+        type: new GraphQLNonNull(GraphQLID),
+        description: "A globally unique ID.",
+        resolve: ({ key, params }) => {
+          // Compose this ID from params that `resolve` uses to identify a rail later on.
+          const payload = chain(params)
+            .pick(possibleArgs)
+            .set("key", key)
+            .value()
+          return toGlobalId("HomePageArtworkModule", JSON.stringify(payload))
+        },
       },
-    },
-    context: Context,
-    display: {
-      type: GraphQLString,
-      deprecationReason:
-        "Favor `is_`-prefixed Booleans (*and* this should be a Boolean)",
-    },
-    is_displayable: {
-      type: GraphQLBoolean,
-      resolve: ({ display }) => display,
-    },
-    key: {
-      type: GraphQLString,
-    },
-    params: Params,
-    results: Results,
-    title: Title,
-  }),
-})
+      context: Context,
+      display: {
+        type: GraphQLString,
+        deprecationReason:
+          "Favor `is_`-prefixed Booleans (*and* this should be a Boolean)",
+      },
+      is_displayable: {
+        type: GraphQLBoolean,
+        resolve: ({ display }) => display,
+      },
+      key: {
+        type: GraphQLString,
+      },
+      params: Params,
+      results: Results,
+      title: Title,
+    }),
+  }
+)
 
 const HomePageArtworkModule = {
   type: HomePageArtworkModuleType,

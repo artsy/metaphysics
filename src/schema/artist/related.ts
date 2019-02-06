@@ -23,7 +23,7 @@ const RelatedArtistsKind = {
 }
 
 export const Related = {
-  type: new GraphQLObjectType({
+  type: new GraphQLObjectType<ResolverContext>({
     name: "ArtistRelatedData",
     fields: () => ({
       genes: {

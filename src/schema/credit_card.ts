@@ -12,7 +12,7 @@ import {
   cursorForObjectInConnection,
 } from "graphql-relay"
 
-const CreditCardMutationSuccessType = new GraphQLObjectType({
+const CreditCardMutationSuccessType = new GraphQLObjectType<ResolverContext>({
   name: "CreditCardMutationSuccess",
   isTypeOf: data => data.id,
   fields: () => ({
@@ -32,7 +32,7 @@ const CreditCardMutationSuccessType = new GraphQLObjectType({
   }),
 })
 
-const CreditCardMutationFailureType = new GraphQLObjectType({
+const CreditCardMutationFailureType = new GraphQLObjectType<ResolverContext>({
   name: "CreditCardMutationFailure",
   isTypeOf: data => {
     return data._type === "GravityMutationError"
@@ -50,7 +50,7 @@ export const CreditCardMutationType = new GraphQLUnionType({
   types: [CreditCardMutationSuccessType, CreditCardMutationFailureType],
 })
 
-const CreditCardType = new GraphQLObjectType({
+const CreditCardType = new GraphQLObjectType<ResolverContext>({
   name: "CreditCard",
   fields: () => ({
     ...GravityIDFields,

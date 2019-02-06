@@ -2,7 +2,7 @@ import initials from "./fields/initials"
 import Image from "./image"
 import { GraphQLString, GraphQLObjectType } from "graphql"
 
-const FeaturedLinkType = new GraphQLObjectType({
+const FeaturedLinkType = new GraphQLObjectType<ResolverContext>({
   name: "FeaturedLink",
   fields: {
     id: {

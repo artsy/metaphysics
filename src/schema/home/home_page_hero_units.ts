@@ -9,7 +9,7 @@ import {
   GraphQLBoolean,
 } from "graphql"
 
-const HomePageHeroUnitType = new GraphQLObjectType({
+const HomePageHeroUnitType = new GraphQLObjectType<ResolverContext>({
   name: "HomePageHeroUnit",
   fields: {
     ...GravityIDFields,

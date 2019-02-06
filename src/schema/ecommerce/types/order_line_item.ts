@@ -11,7 +11,7 @@ import { amount } from "schema/fields/money"
 import date from "schema/fields/date"
 import { ArtworkVersion } from "../../artwork_version"
 
-export const OrderLineItemType = new GraphQLObjectType({
+export const OrderLineItemType = new GraphQLObjectType<ResolverContext>({
   name: "OrderLineItem",
   fields: () => ({
     id: {
