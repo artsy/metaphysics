@@ -37,7 +37,7 @@ export interface LoaderFactory {
     path: PathGenerator<P>,
     globalParams?: any,
     pathAPIOptions?: APIOptions
-  ): DynamicPathLoader<T>
+  ): DynamicPathLoader<T, P>
   <T = any>(
     path: string,
     globalParams: any,
@@ -47,7 +47,7 @@ export interface LoaderFactory {
     path: PathGenerator<P>,
     globalParams: any,
     pathAPIOptions: { headers: false } & APIOptions
-  ): DynamicPathLoader<T>
+  ): DynamicPathLoader<T, P>
   <T = any>(
     path: string,
     globalParams: any,
@@ -57,7 +57,7 @@ export interface LoaderFactory {
     path: PathGenerator<P>,
     globalParams: any,
     pathAPIOptions: { headers: true } & APIOptions
-  ): DynamicPathLoader<{ body: T; headers: any }>
+  ): DynamicPathLoader<{ body: T; headers: any }, P>
 }
 
 export default opts => ({
