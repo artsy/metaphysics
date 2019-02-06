@@ -2,11 +2,26 @@ import {
   nameOldEigenQueries,
   rewriteEcommerceMutations,
   shouldRewriteEcommerceMutations,
+  shouldAddQueryToMutations,
 } from "lib/modifyOldEigenQueries"
 import gql from "lib/gql"
 
 let beforeOffer: string
 let beforeOrder: string
+let savedArtworksQuery = gql`
+  {
+    me {
+      saved_artworks {
+        artworks_connection(private: true) {
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+    }
+  }
+`
 
 describe(nameOldEigenQueries, () => {
   beforeAll(() => {
@@ -83,7 +98,7 @@ describe(nameOldEigenQueries, () => {
 
   it("renames Exchange create order", () => {
     const after = gql`
-      mutation createOrder($input: CreateOrderWithArtworkInput!) {
+      mutation createOrder($input: CommerceCreateOrderWithArtworkInput!) {
         commerceCreateOrderWithArtwork(input: $input) {
           orderOrError {
             ... on CommerceOrderWithMutationSuccess {
@@ -118,5 +133,14 @@ describe(shouldRewriteEcommerceMutations, () => {
         beforeOffer
       )
     ).toBeTruthy()
+  })
+})
+
+describe(shouldAddQueryToMutations, () => {
+  it("doesn't do it on an offer mutation", () => {
+    expect(shouldAddQueryToMutations(beforeOffer)).toBeFalsy()
+  })
+  it("does modify with eigen's saved_artworks query", () => {
+    expect(shouldAddQueryToMutations(savedArtworksQuery)).toBeTruthy()
   })
 })

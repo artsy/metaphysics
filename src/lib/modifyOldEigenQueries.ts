@@ -24,8 +24,8 @@ export const nameOldEigenQueries: RequestHandler = (req, _res, next) => {
   next()
 }
 
-const shouldAddQueryToMutations = (query: string) =>
-  !query.startsWith("query ") || !query.startsWith("mutation")
+export const shouldAddQueryToMutations = (query: string) =>
+  !query.trim().startsWith("query ") && !query.trim().startsWith("mutation")
 
 export const addQueryToMutations = (query: string) => {
   if (query.includes("saved_artworks")) {
@@ -53,12 +53,14 @@ export const rewriteEcommerceMutations = (query: string) => {
     "... on OrderWithMutationFailure",
     "ecommerceCreateOfferOrderWithArtwork",
     "ecommerceCreateOrderWithArtwork",
+    "CreateOrderWithArtworkInput",
   ]
   const afters = [
     "... on CommerceOrderWithMutationSuccess",
     "... on CommerceOrderWithMutationFailure",
     "commerceCreateOfferOrderWithArtwork",
     "commerceCreateOrderWithArtwork",
+    "CommerceCreateOrderWithArtworkInput",
   ]
 
   befores.forEach(before => {
