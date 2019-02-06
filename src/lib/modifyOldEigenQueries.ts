@@ -24,8 +24,8 @@ export const nameOldEigenQueries: RequestHandler = (req, _res, next) => {
   next()
 }
 
-const shouldAddQueryToMutations = (query: string) =>
-  !query.startsWith("query ") || !query.startsWith("mutation")
+export const shouldAddQueryToMutations = (query: string) =>
+  !query.trim().startsWith("query ") && !query.trim().startsWith("mutation")
 
 export const addQueryToMutations = (query: string) => {
   if (query.includes("saved_artworks")) {
