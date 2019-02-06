@@ -1,5 +1,6 @@
 import { error } from "./loggers"
 import { RequestHandler } from "express"
+import config from "config"
 
 export const nameOldEigenQueries: RequestHandler = (req, _res, next) => {
   const agent = req.headers["user-agent"]
@@ -15,7 +16,7 @@ export const nameOldEigenQueries: RequestHandler = (req, _res, next) => {
       }
     }
 
-    if (shouldRewriteEcommerceMutations(query)) {
+    if (shouldRewriteEcommerceMutations(config, query)) {
       req.body.query = rewriteEcommerceMutations(query)
     }
   }
@@ -41,9 +42,10 @@ export const addQueryToMutations = (query: string) => {
   return undefined
 }
 
-export const shouldRewriteEcommerceMutations = (query: string) =>
-  query.includes("ecommerceCreateOrderWithArtwork") ||
-  query.includes("ecommerceCreateOfferOrderWithArtwork")
+export const shouldRewriteEcommerceMutations = (config: any, query: string) =>
+  config.ENABLE_COMMERCE_STITCHING &&
+  (query.includes("ecommerceCreateOrderWithArtwork") ||
+    query.includes("ecommerceCreateOfferOrderWithArtwork"))
 
 export const rewriteEcommerceMutations = (query: string) => {
   const befores = [
