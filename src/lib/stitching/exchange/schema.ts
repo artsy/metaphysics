@@ -21,19 +21,9 @@ export const executableExchangeSchema = transforms => {
   // Note that changes in this will need to be
 }
 
-const eigenWhitelist = [
-  "OrderWithMutationSuccess",
-  "OrderWithMutationFailure",
-  "CreateOrderWithArtworkInput",
-  "OrderWithMutationSuccess",
-]
-
 export const transformsForExchange = [
   // Apply a prefix to all the typenames
   new RenameTypes(name => {
-    if (eigenWhitelist.includes(name)) {
-      return name
-    }
     return `Commerce${name}`
   }),
   // Rename all the root fields to be camelCased

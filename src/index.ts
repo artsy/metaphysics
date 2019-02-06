@@ -27,7 +27,7 @@ import {
   legacyTransformsForExchange,
 } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
-import { nameOldEigenQueries } from "./lib/nameOldEigenQueries"
+import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
