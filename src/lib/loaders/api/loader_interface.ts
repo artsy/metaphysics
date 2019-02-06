@@ -5,13 +5,16 @@ import DataLoader from "dataloader"
 
 export type PathGenerator<T> = (data: T) => string
 
+// TODO: This should be more specific to take types that are serializeable.
+type ParamValue = any
+
 export type StaticPathLoader<T> = (
-  params?: { [key: string]: string }
+  params?: { [key: string]: ParamValue }
 ) => Promise<T>
 
-export type DynamicPathLoader<T> = (
-  id: string,
-  params?: { [key: string]: string }
+export type DynamicPathLoader<T, P = string> = (
+  id: P,
+  params?: { [key: string]: ParamValue }
 ) => Promise<T>
 
 const encodeStaticPath = (path: string, globalParams, params) => {
