@@ -51,16 +51,19 @@ export const rewriteEcommerceMutations = (query: string) => {
   const befores = [
     "... on OrderWithMutationSuccess",
     "... on OrderWithMutationFailure",
-    "ecommerceCreateOfferOrderWithArtwork",
-    "ecommerceCreateOrderWithArtwork",
     "CreateOrderWithArtworkInput",
+    "ecommerceCreateOfferOrderWithArtwork(",
+    "ecommerceCreateOrderWithArtwork(",
   ]
   const afters = [
+    // Different type names
     "... on CommerceOrderWithMutationSuccess",
     "... on CommerceOrderWithMutationFailure",
-    "commerceCreateOfferOrderWithArtwork",
-    "commerceCreateOrderWithArtwork",
     "CommerceCreateOrderWithArtworkInput",
+    // Different root fields, but we need to ensure they get the
+    // same response shape.
+    "ecommerceCreateOfferOrderWithArtwork: commerceCreateOfferOrderWithArtwork(",
+    "ecommerceCreateOrderWithArtwork: commerceCreateOrderWithArtwork(",
   ]
 
   befores.forEach(before => {
