@@ -70,9 +70,10 @@ describe(nameOldEigenQueries, () => {
   })
 
   it("renames Exchange create offer", () => {
-    const after = gql`
+    expect(rewriteEcommerceMutations(beforeOffer)).toMatchInlineSnapshot(`
+"
       mutation createOfferOrder($artworkId: String!, $quantity: Int) {
-        commerceCreateOfferOrderWithArtwork(
+        ecommerceCreateOfferOrderWithArtwork: commerceCreateOfferOrderWithArtwork(
           input: { artworkId: $artworkId, quantity: $quantity }
         ) {
           orderOrError {
@@ -91,15 +92,15 @@ describe(nameOldEigenQueries, () => {
           }
         }
       }
-    `
-
-    expect(rewriteEcommerceMutations(beforeOffer)).toEqual(after)
+    "
+`)
   })
 
   it("renames Exchange create order", () => {
-    const after = gql`
+    expect(rewriteEcommerceMutations(beforeOrder)).toMatchInlineSnapshot(`
+"
       mutation createOrder($input: CommerceCreateOrderWithArtworkInput!) {
-        commerceCreateOrderWithArtwork(input: $input) {
+        ecommerceCreateOrderWithArtwork: commerceCreateOrderWithArtwork(input: $input) {
           orderOrError {
             ... on CommerceOrderWithMutationSuccess {
               order {
@@ -116,9 +117,8 @@ describe(nameOldEigenQueries, () => {
           }
         }
       }
-    `
-
-    expect(rewriteEcommerceMutations(beforeOrder)).toEqual(after)
+    "
+`)
   })
 })
 
