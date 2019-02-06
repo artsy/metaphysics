@@ -8,7 +8,12 @@ import loadersWithoutAuthentication from "./loaders_without_authentication"
  * Only if credentials are provided will the set include authenticated loaders, so before using an authenticated loader
  * it would be wise to check if the loader is not in fact `undefined`.
  */
-export default (accessToken, userID, opts) => {
+export default (
+  accessToken,
+  userID,
+  opts
+): ReturnType<typeof loadersWithoutAuthentication> &
+  Partial<ReturnType<typeof loadersWithAuthentication>> => {
   const loaders = loadersWithoutAuthentication(opts)
   if (accessToken) {
     return Object.assign(

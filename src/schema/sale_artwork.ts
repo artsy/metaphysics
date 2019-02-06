@@ -17,8 +17,10 @@ import {
   GraphQLInt,
   GraphQLBoolean,
   GraphQLList,
+  GraphQLFieldConfig,
 } from "graphql"
 import config from "config"
+import { ResolverContext } from "types/graphql"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -356,7 +358,7 @@ const SaleArtworkType = new GraphQLObjectType({
   },
 })
 
-const SaleArtwork = {
+const SaleArtwork: GraphQLFieldConfig<never, ResolverContext> = {
   type: SaleArtworkType,
   description: "A Sale Artwork",
   args: {
@@ -365,12 +367,7 @@ const SaleArtwork = {
       description: "The slug or ID of the SaleArtwork",
     },
   },
-  resolve: async (
-    _root,
-    { id },
-    _request,
-    { rootValue: { saleArtworkRootLoader } }
-  ) => {
+  resolve: async (_root, { id }, { saleArtworkRootLoader }) => {
     const data = await saleArtworkRootLoader(id)
     return data
   },

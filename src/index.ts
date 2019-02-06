@@ -31,7 +31,7 @@ import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
-import { RootValue } from "types/graphql"
+import { ResolverContext } from "types/graphql"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -141,7 +141,7 @@ async function startApp() {
       // Supply userAgent for analytics
       res.locals.userAgent = userAgent
 
-      const rootValue: RootValue = {
+      const context: ResolverContext = {
         accessToken,
         userID,
         defaultTimezone,
@@ -152,7 +152,7 @@ async function startApp() {
       return {
         schema,
         graphiql: true,
-        rootValue,
+        context,
         formatError: graphqlErrorHandler(enableSentry, {
           req,
           // Why the checking on params? Do we reach this code if params is falsy?

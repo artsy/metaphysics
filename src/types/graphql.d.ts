@@ -1,12 +1,13 @@
+import { GraphQLSchema } from "graphql/type"
 import createLoaders from "../lib/loaders"
 
-export interface RootValues {
+export interface ResolverContextValues {
   /** Optionally you can include an access token for a logged in user */
-  accessToken: string | undefined
+  accessToken?: string
   /** Optionally you can include a user token for a logged in user */
-  userID: string | undefined
+  userID?: string
   /** Optionally you should include a timezone for the user */
-  defaultTimezone: string | undefined
+  defaultTimezone?: string
 
   /** The schema used by the internal exchange graphql engine */
   exchangeSchema: GraphQLSchema
@@ -16,7 +17,10 @@ export interface RootValues {
  * The root values we pass into the GraphQL query resolver,
  * contains optional user information, and all of our data-loaders.
  * */
-export type RootValue = RootValues & ReturnType<typeof createLoaders>
+export type RootValue = never
+
+export type ResolverContext = ResolverContextValues &
+  ReturnType<typeof createLoaders>
 
 declare module "graphql/type" {
   interface GraphQLResolveInfo {

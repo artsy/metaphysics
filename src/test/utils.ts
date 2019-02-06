@@ -1,6 +1,7 @@
 // Please do not add schema imports here while stitching is an ENV flag
 //
 import { graphql, GraphQLError } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 /**
  * Performs a GraphQL query against our schema.
@@ -17,20 +18,23 @@ import { graphql, GraphQLError } from "graphql"
  */
 export const runQuery = (
   query,
-  rootValue = { accessToken: null, userID: null },
-  context: any = {}
+  context: Partial<ResolverContext> = {
+    accessToken: undefined,
+    userID: undefined,
+  }
 ) => {
   const schema = require("schema").default
 
+  // TODO: fix this
   // Set up some of the default state when a request is made
-  context.res = context.res || {}
-  context.res.locals = context.res.locals || {}
-  context.res.locals.requestIDs = context.res.locals.requestIDs || {
-    requestID: "123456789",
-    xForwardedFor: "123.456.789",
-  }
+  // context.res = context.res || {}
+  // context.res.locals = context.res.locals || {}
+  // context.res.locals.requestIDs = context.res.locals.requestIDs || {
+  //   requestID: "123456789",
+  //   xForwardedFor: "123.456.789",
+  // }
 
-  return graphql(schema, query, rootValue, context).then(result => {
+  return graphql(schema, query, null, context).then(result => {
     if (result.errors) {
       const errors = result.errors.reduce(
         (acc, gqlError) => {
@@ -76,14 +80,13 @@ const unpackGraphQLError = (error: GraphQLError) => error.originalError || error
  */
 export const runAuthenticatedQuery = (
   query,
-  rootValue: any = {},
-  context = {}
+  context: Partial<ResolverContext> = {}
 ) => {
-  return runQuery(
-    query,
-    Object.assign({ accessToken: "secret", userID: "user-42" }, rootValue),
-    context
-  )
+  return runQuery(query, {
+    accessToken: "secret",
+    userID: "user-42",
+    ...context,
+  })
 }
 
 let mergedSchema
