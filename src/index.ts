@@ -19,7 +19,7 @@ import crunchInterceptor from "./lib/crunchInterceptor"
 import {
   fetchLoggerSetup,
   fetchLoggerRequestDone,
-} from "lib/loaders/api/logger"
+} from "lib/loaders/api/extensionsLogger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
 import {

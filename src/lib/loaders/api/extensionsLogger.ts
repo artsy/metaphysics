@@ -1,7 +1,22 @@
-// Edits global saying where
-
-// Looks a like:
-// { '518330f0-ce2a-11e7-a26e-f992b926b95f': { gravity: { requests: [...], count: 1 } } }
+// Takes info from different dataloaders and combines them to say how many
+// requests were made to a system, and how long did each take.
+//
+// Extends the response for a GraphQL using the official spec's extensions API
+// which looks something like:
+//
+// {
+//   "requests": {
+//     "gravity": {
+//       "requests": {
+//         "artwork/steve-mcpherson-metaphorms-novel-mutability-1": {
+//           "time": "0s 399.494ms",
+//           "cache": false
+//         }
+//       }
+//     }
+//   },
+//   "requestID": "78e11560-2af2-11e9-bf97-5f29efe19541"
+//  }
 
 const requests = {}
 
@@ -13,7 +28,12 @@ const requests = {}
  * @param key {string} basically query string for the call
  * @param metadata {any} any additional details to go along
  */
-const logger = (requestID, host, key, metadata) => {
+const extensionsLogger = (
+  requestID: string,
+  host: string,
+  key: string,
+  metadata: any
+) => {
   if (requests[requestID]) {
     const cache = requests[requestID]
 
@@ -47,4 +67,4 @@ export const fetchLoggerRequestDone = requestID => () => {
   }
 }
 
-export default logger
+export default extensionsLogger

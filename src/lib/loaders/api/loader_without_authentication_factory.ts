@@ -6,7 +6,7 @@ import cache from "lib/cache"
 import timer from "lib/timer"
 import { throttled } from "lib/throttle"
 import { verbose, warn } from "lib/loggers"
-import logger from "lib/loaders/api/logger"
+import extensionsLogger from "lib/loaders/api/extensionsLogger"
 import config from "config"
 
 const { CACHE_DISABLED } = config
@@ -55,7 +55,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
                     verbose(`Cached: ${key}`)
 
                     const time = clock.end()
-                    logger(
+                    extensionsLogger(
                       globalAPIOptions.requestIDs.requestID,
                       apiName,
                       key,
@@ -100,7 +100,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
                         }
                         verbose(`Requested (Uncached): ${key}`)
                         const time = clock.end()
-                        logger(
+                        extensionsLogger(
                           globalAPIOptions.requestIDs.requestID,
                           apiName,
                           key,
@@ -128,7 +128,7 @@ export const apiLoaderWithoutAuthenticationFactory = (
                     }
                     verbose(`Requested (Uncached): ${key}`)
                     const time = clock.end()
-                    return logger(
+                    return extensionsLogger(
                       globalAPIOptions.requestIDs.requestID,
                       apiName,
                       key,
