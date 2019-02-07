@@ -507,6 +507,19 @@ export const ShowType = new GraphQLObjectType({
         })
       },
     },
+    is_followed: {
+      type: GraphQLBoolean,
+      description: "Is the user following this show",
+      resolve: async (
+        { _id },
+        _args,
+        _context,
+        { rootValue: { followedShowLoader } }
+      ) => {
+        if (!followedShowLoader) return null
+        return followedShowLoader(_id).then(({ is_followed }) => is_followed)
+      },
+    },
     name: {
       type: GraphQLString,
       description: "The exhibition title",

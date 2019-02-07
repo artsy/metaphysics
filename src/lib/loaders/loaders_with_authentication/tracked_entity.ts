@@ -9,19 +9,23 @@ import { map, find, extend } from "lodash"
  * @param {string} paramKey the key that’s to be used for the list of IDs param that’s sent with the API request
  * @param {string} trackingKey the key that’s to be used for this entity, e.g. `is_followed` or `is_saved`.
  * @param {string} [entityKeyPath] an optional path to a nested entity
+ * @param {string} [entityIDKeyPath] an optional path to the IDs used to compare entities (defaults to `id`, but `_id` is sometimes useful).
  */
 const trackedEntityLoaderFactory = (
   dataLoader: (id: any) => Promise<any>,
   paramKey: string,
   trackingKey: string,
-  entityKeyPath?: string
+  entityKeyPath?: string,
+  entityIDKeyPath: string = "id"
 ) => {
   const trackedEntityLoader = new DataLoader(
     ids => {
       return dataLoader({ [paramKey]: ids }).then(body => {
         const parsedResults = map(ids, id => {
           const match = find(body, [
-            entityKeyPath ? `${entityKeyPath}.id` : "id",
+            entityKeyPath
+              ? `${entityKeyPath}.${entityIDKeyPath}`
+              : entityIDKeyPath,
             id,
           ])
           if (match) {
