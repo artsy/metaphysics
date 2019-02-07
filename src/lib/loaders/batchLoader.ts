@@ -1,5 +1,5 @@
 import DataLoader from "dataloader"
-import { chain, flatten, chunk, groupBy } from "lodash"
+import { chain } from "lodash"
 import config from "config"
 
 const { ENABLE_RESOLVER_BATCHING } = config
