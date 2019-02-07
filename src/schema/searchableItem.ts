@@ -6,12 +6,13 @@ import {
 } from "graphql"
 import { toGlobalId } from "graphql-relay"
 import { Searchable } from "schema/searchable"
-import { NodeInterface } from "schema/object_identification"
+import { NodeInterface, GravityIDFields } from "schema/object_identification"
 
 export const SearchableItem = new GraphQLObjectType({
   name: "SearchableItem",
   interfaces: [NodeInterface, Searchable],
   fields: {
+    ...GravityIDFields,
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       resolve: item => toGlobalId("SearchableItem", item._id),

@@ -45,6 +45,7 @@ describe("AddInitialOfferToOrder Mutation", () => {
       )
     })
   })
+
   it("returns an error if there is one", () => {
     const resolvers = {
       Mutation: {

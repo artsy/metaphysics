@@ -47,6 +47,8 @@ describe("Search", () => {
 
               ... on SearchableItem {
                 searchableType
+                id
+                _id
               }
             }
           }
@@ -64,6 +66,8 @@ describe("Search", () => {
         "https://example.com/artist.jpg"
       )
       expect(artistSearchableItemNode.href).toBe("/artist/david-bowie")
+      expect(artistSearchableItemNode.id).toBe("david-bowie")
+      expect(artistSearchableItemNode._id).toBe("artistId")
 
       const artworkSearchableItemNode = data!.search.edges[1].node
 
@@ -76,6 +80,9 @@ describe("Search", () => {
       expect(artworkSearchableItemNode.href).toBe(
         "/artwork/david-bowie-self-portrait"
       )
+
+      expect(artworkSearchableItemNode.id).toBe("david-bowie-self-portrait")
+      expect(artworkSearchableItemNode._id).toBe("artworkId")
     })
   })
 

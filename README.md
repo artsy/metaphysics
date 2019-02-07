@@ -117,7 +117,8 @@ If any of these queries fail, it's probable that you misconfigured your
 ### Docs
 
 - [How we use DataLoaders](docs/dataloaders.md)
-- [Adding a microservice to Metaphysics](docs/adding_a_new_microservice.md)
+- [Adding a GraphQL micro-service to Metaphysics](docs/adding_a_new_graphql_microservice.md)
+- [Adding a rest micro-service to Metaphysics](docs/adding_a_new_rest_microservice.md)
 - [Debugging with VS Code](docs/debugging_with_vscode.md)
 
 ### Docker and Kubernetes setup

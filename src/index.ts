@@ -19,7 +19,7 @@ import crunchInterceptor from "./lib/crunchInterceptor"
 import {
   fetchLoggerSetup,
   fetchLoggerRequestDone,
-} from "lib/loaders/api/logger"
+} from "lib/loaders/api/extensionsLogger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
 import {
@@ -27,7 +27,7 @@ import {
   legacyTransformsForExchange,
 } from "./lib/stitching/exchange/schema"
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
-import { nameOldEigenQueries } from "./lib/nameOldEigenQueries"
+import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
 
 import { logQueryDetails } from "./lib/logQueryDetails"

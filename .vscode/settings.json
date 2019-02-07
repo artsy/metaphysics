@@ -23,6 +23,8 @@
   "typescript.tsdk": "./node_modules/typescript/lib",
   "cSpell.words": [
     "Ecommerce",
+    "Eigen",
+    "Kubernetes",
     "Refetch",
     "Reloadable",
     "consignable",
