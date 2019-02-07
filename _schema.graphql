@@ -7861,8 +7861,17 @@ type SearchableItem implements Node & Searchable {
 }
 
 enum SearchEntity {
-  ARTWORK
   ARTIST
+  ARTWORK
+  ARTICLE
+  CITY
+  COLLECTION
+  FAIR
+  FEATURE
+  GENE
+  PROFILE
+  SALE
+  TAG
 }
 
 enum SearchMode {
