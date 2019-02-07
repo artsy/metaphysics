@@ -71,7 +71,7 @@ export const groupKeys = (requestedKeys): [KeyGroupList, NormalKey[][]] => {
     .groupBy(getKeyGroup)
     .entries()
     .thru(entries => {
-      let result: [KeyGroupList, NormalKey[][]] = [[], []]
+      const result: [KeyGroupList, NormalKey[][]] = [[], []]
       for (let i = 0; i < entries.length; ++i) {
         result[0].push(entries[i][0])
         result[1].push(entries[i][1])
