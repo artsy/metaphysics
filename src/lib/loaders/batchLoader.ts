@@ -48,7 +48,7 @@ export const normalizeKeys = (keys: Key[]) =>
 
 /**
  * This is just used to compare options sent into the dataloader.
- * If the options are an object this stingifies the object in a way
+ * If the options are an object this stringifies the object in a way
  * that they can be grouped as similar.
  */
 export const getKeyGroup = key => {
