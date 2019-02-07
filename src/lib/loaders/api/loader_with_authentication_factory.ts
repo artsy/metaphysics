@@ -4,7 +4,7 @@ import { pick } from "lodash"
 import { loaderInterface } from "./loader_interface"
 import timer from "lib/timer"
 import { verbose, warn } from "lib/loggers"
-import logger from "lib/loaders/api/logger"
+import extensionsLogger from "lib/loaders/api/extensionsLogger"
 
 /**
  * This returns a function that takes an access token to create a data loader factory for the given `api`.
@@ -44,7 +44,7 @@ export const apiLoaderWithAuthenticationFactory = (
                         resolve(response.body)
                       }
                       const time = clock.end()
-                      return logger(
+                      return extensionsLogger(
                         globalAPIOptions.requestIDs.requestID,
                         apiName,
                         key,
