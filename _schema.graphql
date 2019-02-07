@@ -765,7 +765,6 @@ type Artwork implements Node & Searchable & Sellable {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
-  cached: Int
   additional_information(format: Format): String
   artist(
     # Use whatever is in the original response instead of making a request
@@ -921,6 +920,7 @@ type Artwork implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
   certificateOfAuthenticity: ArtworkInfoRow
+  cached: Int
 }
 
 enum ArtworkAggregation {
@@ -1600,7 +1600,6 @@ type ArtworkItem implements Node & Searchable & Sellable {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
-  cached: Int
   additional_information(format: Format): String
   artist(
     # Use whatever is in the original response instead of making a request
@@ -1756,6 +1755,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
   certificateOfAuthenticity: ArtworkInfoRow
+  cached: Int
 }
 
 type ArtworkLayer {
