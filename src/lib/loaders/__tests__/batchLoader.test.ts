@@ -1,3 +1,5 @@
+import { cacheKey } from "lib/cache"
+
 describe("batchLoader", () => {
   beforeEach(() => {
     jest.resetModules()
@@ -62,7 +64,6 @@ describe("batchLoader", () => {
       expect(multipleLoader).toBeCalledWith({
         id: ["foo"],
         param: "bar",
-        size: 1,
       })
     })
 
@@ -105,29 +106,47 @@ describe("batchLoader", () => {
 
       expect(multipleLoader).toBeCalledWith({
         id: ["123", "456", "789"],
-        size: 3,
       })
     })
   })
 })
 
-const { groupKeys } = require("../batchLoader")
 describe("groupKeys", () => {
+  const { groupKeys } = require("../batchLoader")
   it("should handle a single key", () => {
-    expect(groupKeys(["a"])).toEqual([
-      {
-        id: ["a"],
-        size: 1,
-      },
+    expect(groupKeys([{ id: "a" }])).toEqual([
+      [""],
+      [
+        [
+          {
+            id: "a",
+          },
+        ],
+      ],
     ])
   })
 
   it("should group single keys together", () => {
-    expect(groupKeys(["a", "b", "c"])).toEqual([
+    const keys = [
       {
-        id: ["a", "b", "c"],
-        size: 3,
+        id: "a",
       },
+      {
+        id: "b",
+      },
+    ]
+    expect(groupKeys(keys)).toEqual([
+      [""],
+      [
+        [
+          {
+            id: "a",
+          },
+          {
+            id: "b",
+          },
+        ],
+      ],
     ])
   })
 
@@ -143,37 +162,94 @@ describe("groupKeys", () => {
       },
     ]
     expect(groupKeys(keys)).toEqual([
-      {
-        id: ["a", "b"],
-        foo: "bar",
-        size: 2,
-      },
+      ["foo=bar"],
+      [
+        [
+          {
+            id: "a",
+            foo: "bar",
+          },
+
+          {
+            id: "b",
+            foo: "bar",
+          },
+        ],
+      ],
     ])
   })
 
   it("should separate keys with different parameters", () => {
     const keys = [
-      "a",
+      { id: "a" },
       { id: "b", foo: "bar" },
       { id: "c", foo: "bar", boo: "baz" },
     ]
 
     expect(groupKeys(keys)).toEqual([
-      {
-        id: ["a"],
-        size: 1,
-      },
-      {
-        id: ["b"],
-        foo: "bar",
-        size: 1,
-      },
-      {
-        id: ["c"],
-        foo: "bar",
-        boo: "baz",
-        size: 1,
-      },
+      ["", "foo=bar", "boo=baz&foo=bar"],
+      [
+        [
+          {
+            id: "a",
+          },
+        ],
+        [
+          {
+            id: "b",
+            foo: "bar",
+          },
+        ],
+        [
+          {
+            id: "c",
+            foo: "bar",
+            boo: "baz",
+          },
+        ],
+      ],
     ])
+  })
+})
+
+describe("cacheKeyFn", () => {
+  const { cacheKeyFn } = require("../batchLoader")
+  it("should treat strings and ids no params the same", () => {
+    expect(cacheKeyFn("123")).toEqual(cacheKeyFn({ id: "123" }))
+  })
+
+  it("should treat strings and objects with params as different", () => {
+    expect(cacheKeyFn("123")).not.toEqual(cacheKeyFn({ id: "123", foo: "bar" }))
+  })
+
+  it("should not treat two objects with the same id but different params as different", () => {
+    expect(cacheKey({ id: "123" })).not.toEqual(
+      cacheKey({ id: "123", foo: "bar" })
+    )
+  })
+
+  it("should treat two objects with the same params and id as equal", () => {
+    expect(cacheKey({ id: "123", foo: "bar" })).toEqual(
+      cacheKey({ id: "123", foo: "bar" })
+    )
+  })
+
+  it("should treat two objects with different ids as different", () => {
+    expect(cacheKey({ id: "456", foo: "bar" })).not.toEqual({
+      id: "567",
+      foo: "bar",
+    })
+  })
+})
+
+describe("normalizeKeys", () => {
+  const { normalizeKeys } = require("../batchLoader")
+
+  it("should turn a stinrg into an object with an id", () => {
+    expect(normalizeKeys(["123"])).toEqual([{ id: "123" }])
+  })
+  it("should preserve an object with an id", () => {
+    const keys = [{ id: "123", foo: "bar" }]
+    expect(normalizeKeys(keys)).toEqual(keys)
   })
 })

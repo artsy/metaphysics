@@ -1,15 +1,57 @@
 import DataLoader from "dataloader"
-import { chain, flatten, chunk } from "lodash"
+import { chain, flatten, chunk, groupBy } from "lodash"
 import config from "config"
 
 const { ENABLE_RESOLVER_BATCHING } = config
+
+interface NormalKey {
+  id: string
+  [key: string]: any
+}
+
+type Key = string | NormalKey
+
+type KeyGroupList = string[]
+
+interface CompactedKey {
+  id: string[]
+  [key: string]: any
+}
+
+interface GravityResult {
+  _id: string
+  _slug: string
+  [key: string]: any
+}
+
+/**
+ *  This function is used by the dataloader to determine the uniqueness of keys.
+ *  Because keys can be objects, it's important to be able to differentiate between
+ *  their contents. If an object is empty except for an id field, we just use id.
+ *  Otherwise we stringify the object so it can be compared via strict comparison.
+ */
+export const cacheKeyFn = (key: Key): string => {
+  if (typeof key === "object" && key !== null) {
+    if (Object.keys(key).length === 1 && key.id) {
+      return key.id
+    }
+    return JSON.stringify(key)
+  }
+  return key
+}
+
+/**
+ * This coerces all keys to an object structure for consistent processing
+ */
+export const normalizeKeys = (keys: Key[]) =>
+  keys.map(key => (typeof key === "string" ? { id: key } : key))
 
 /**
  * This is just used to compare options sent into the dataloader.
  * If the options are an object this stingifies the object in a way
  * that they can be grouped as similar.
  */
-const renderParams = key => {
+export const getKeyGroup = key => {
   if (typeof key === "string") {
     return ""
   }
@@ -20,34 +62,34 @@ const renderParams = key => {
     .join("&")
 }
 
-interface GroupKeysResult {
-  id: string[]
-  size: number
-  [key: string]: any
-}
-export const groupKeys = (
-  requestedKeys: string | { id }
-): GroupKeysResult[] => {
-  const grouped = chain(requestedKeys)
-    .groupBy(renderParams)
-    .values()
-    .map(values => chunk(values, 20))
-    .flatten()
-    .map((keys: string[] | { id }[]) => {
-      if (typeof keys[0] === "string") {
-        return { id: keys, size: keys.length }
+/**
+ * Takes an array of normalized keys and groups them based on their parameters.
+ * @returns a tuple of an array of group strings and an array of grouped keys
+ */
+export const groupKeys = (requestedKeys): [KeyGroupList, NormalKey[][]] => {
+  const [keyGroupList, groupedKeys] = chain(requestedKeys)
+    .groupBy(getKeyGroup)
+    .entries()
+    .thru(entries => {
+      let result: [KeyGroupList, NormalKey[][]] = [[], []]
+      for (let i = 0; i < entries.length; ++i) {
+        result[0].push(entries[i][0])
+        result[1].push(entries[i][1])
       }
-      return {
-        // @ts-ignore
-        ...keys[0],
-        id: keys.map(k => k.id),
-        size: keys.length,
-      }
+      return result
     })
     .value()
 
-  return (grouped as unknown) as GroupKeysResult[]
+  return [keyGroupList, groupedKeys]
 }
+
+/**
+ * Collects all the params into one object to be passed to gravity loader
+ */
+export const compactKeyForRequest = (keys: NormalKey[]): CompactedKey => ({
+  ...keys[0],
+  id: keys.map(key => key.id),
+})
 
 interface BatchLoaderArgs {
   /**
@@ -69,27 +111,40 @@ export const batchLoader = ({
   if (!ENABLE_RESOLVER_BATCHING) {
     return singleLoader ? singleLoader : multipleLoader
   }
-  const dl = new DataLoader(keys => {
-    console.log(keys)
-    let groupedKeys = groupKeys(keys as any)
+  const dl = new DataLoader(
+    (keys: Key[]) => {
+      const normalKeys = normalizeKeys(keys)
+      const [keyGroups, groupedKeys] = groupKeys(normalKeys)
 
-    return Promise.all(
-      groupedKeys.map(keys => {
-        if (keys.id.length === 1 && singleLoader) {
-          return singleLoader(keys.id[0])
-        } else {
-          return multipleLoader(keys)
-        }
-      })
-    ).then(data => {
-      const normalizedResults = data.map((queriedGroup, groupIndex) => {
-        return groupedKeys[groupIndex].id.map(
-          id => [].concat(queriedGroup).find(r => r._id === id) || defaultResult
+      return Promise.all(
+        groupedKeys.map(compactKeyForRequest).map(keys => {
+          if (keys.id.length === 1 && singleLoader) {
+            return singleLoader(keys.id[0])
+          } else {
+            return multipleLoader(keys)
+          }
+        })
+      ).then((data: Array<GravityResult | GravityResult[]>) => {
+        const normalizedData = data.map(
+          datum => (Array.isArray(datum) ? datum : [datum])
         )
+
+        return normalKeys.map(key => {
+          const group = getKeyGroup(key)
+          const groupIndex = keyGroups.indexOf(group)
+          return (
+            normalizedData[groupIndex].find(
+              ({ _id, _slug }) => key.id === _id || key.id === _slug
+            ) || defaultResult
+          )
+        })
       })
-      return flatten(normalizedResults)
-    })
-  })
+    },
+    {
+      maxBatchSize: 20,
+      cacheKeyFn,
+    }
+  )
 
   return key => dl.load(key)
 }
