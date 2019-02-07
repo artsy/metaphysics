@@ -58,4 +58,22 @@ describe("trackedEntityLoader", () => {
       })
     })
   })
+  it("marks is_followed as true for custom ID key paths", () => {
+    const gravityLoader = jest.fn(() =>
+      Promise.resolve([{ id: "queens-ship", _id: "abcdefg123456" }])
+    )
+    const savedArtworksLoader = trackedEntityLoaderFactory(
+      gravityLoader,
+      "artworks",
+      "is_saved",
+      null,
+      "_id"
+    )
+    return savedArtworksLoader("abcdefg123456").then(queens_ship => {
+      expect(queens_ship.is_saved).toEqual(true)
+      return savedArtworksLoader("zyxwvut987654").then(kings_ship => {
+        expect(kings_ship.is_saved).toEqual(false)
+      })
+    })
+  })
 })

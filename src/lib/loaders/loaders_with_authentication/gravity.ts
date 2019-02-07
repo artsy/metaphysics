@@ -49,7 +49,8 @@ export default (accessToken, userID, opts) => {
       gravityLoader("follow_shows"),
       "show_ids",
       "is_followed",
-      "partner_show"
+      "partner_show",
+      "_id",
     ),
     followedFairsLoader: gravityLoader("/me/follow/profiles", {}, { headers: true }),
     homepageModulesLoader: gravityLoader("me/modules"),
