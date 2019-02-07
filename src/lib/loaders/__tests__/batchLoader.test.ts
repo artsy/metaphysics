@@ -212,7 +212,7 @@ describe("groupKeys", () => {
 
 describe("cacheKeyFn", () => {
   const { cacheKeyFn } = require("../batchLoader")
-  it("should treat strings and ids no params the same", () => {
+  it("should treat strings and objects with only an id key the same", () => {
     expect(cacheKeyFn("123")).toEqual(cacheKeyFn({ id: "123" }))
   })
 
