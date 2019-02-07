@@ -7848,6 +7848,12 @@ type SearchableEdge {
 
 type SearchableItem implements Node & Searchable {
   __id: ID!
+
+  # A type-specific ID.
+  id: String!
+
+  # A type-specific Gravity Mongo Document ID.
+  _id: String!
   displayLabel: String
   imageUrl: String
   href: String
