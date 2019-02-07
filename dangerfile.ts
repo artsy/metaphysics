@@ -8,6 +8,9 @@ import * as jsdiff from "diff"
 const jsAppFiles = danger.git.created_files.filter(
   f => f.startsWith("src/") && f.endsWith(".js")
 )
+const testFiles = danger.git.created_files
+  .concat(danger.git.modified_files)
+  .filter(f => f.includes(".test.ts") || f.includes(".test.js"))
 
 if (jsAppFiles.length) {
   const listed = danger.github.utils.fileLinks(jsAppFiles)
@@ -23,10 +26,10 @@ const schemaText = printSchema(schema as any, { commentDescriptions: true })
 const prettySchema = prettier.format(schemaText, { parser: "graphql" })
 const localGQL = readFileSync("_schema.graphql", "utf8")
 if (prettySchema !== localGQL) {
-  fail(`Please update the schema in the root of the app via: 
-  
+  fail(`Please update the schema in the root of the app via:
+
 \`yarn dump-schema _schema.graphql\`
-  
+
 Note: This script uses your current \`.env\` variables.
 `)
   const diff = jsdiff.createPatch(
@@ -38,3 +41,14 @@ Note: This script uses your current \`.env\` variables.
   )
   markdown("The changes to the Schema:\n\n```diff\n" + diff + "```")
 }
+
+// Make sure we don't leave in any testing shortcuts (ex: `it.only`)
+const testingShortcuts = ["it.only", "describe.only"]
+testFiles.forEach(file => {
+  const content = readFileSync(file, "utf8")
+  testingShortcuts.forEach(shortcut => {
+    if (content.includes(shortcut)) {
+      fail(`Found a testing shortcut ${shortcut} left in by accident.`, file)
+    }
+  })
+})
