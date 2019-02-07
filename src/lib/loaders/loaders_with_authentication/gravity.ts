@@ -47,7 +47,7 @@ export default (accessToken, userID, opts) => {
     followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
     followedShowLoader: trackedEntityLoaderFactory(
       gravityLoader("follow_shows"),
-      "shows",
+      "show_ids",
       "is_followed",
       "partner_show"
     ),

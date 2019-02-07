@@ -511,13 +511,13 @@ export const ShowType = new GraphQLObjectType({
       type: GraphQLBoolean,
       description: "Is the user following this show",
       resolve: async (
-        { id },
+        { _id },
         _args,
         _context,
         { rootValue: { followedShowLoader } }
       ) => {
         if (!followedShowLoader) return null
-        return followedShowLoader(id).then(({ is_followed }) => is_followed)
+        return followedShowLoader(_id).then(({ is_followed }) => is_followed)
       },
     },
     name: {

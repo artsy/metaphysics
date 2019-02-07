@@ -2,6 +2,7 @@
 import moment from "moment"
 import gql from "lib/gql"
 import { runQuery } from "test/utils"
+import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
 describe("Show type", () => {
   let showData = null
@@ -11,6 +12,7 @@ describe("Show type", () => {
   beforeEach(() => {
     showData = {
       id: "new-museum-1-2015-triennial-surround-audience",
+      _id: "abcdefg123456",
       start_at: "2015-02-25T12:00:00+00:00",
       end_at: "2015-05-24T12:00:00+00:00",
       press_release: "**foo** *bar*",
@@ -144,46 +146,55 @@ describe("Show type", () => {
     }
   })
 
-  describe.only("is_followed", () => {
-    const query = gql`
+  describe("is_followed", () => {
+    let gravityLoader
+
+    beforeEach(() => {
+      gravityLoader = jest.fn()
+      rootValue.followedShowLoader = trackedEntityLoaderFactory(
+        gravityLoader,
+        "show_ids",
+        "is_followed",
+        "partner_show"
+      )
+    })
+
+    it("returns true if the show is returned", async () => {
+      gravityLoader.mockReturnValue(
+        Promise.resolve([
+          {
+            partner_show: {
+              id: showData._id,
+            },
+          },
+        ])
+      )
+      const data = await runQuery(
+        gql`
       {
-        show(id: "new-museum-1-2015-triennial-surround-audience") {
+        show(id: "${showData._id}") {
           is_followed
         }
       }
-    `
-
-    it("returns false if user is not following show", () => {
-      rootValue.followedShowsLoader = () =>
-        Promise.resolve({
-          body: [],
-        })
-
-      return runQuery(query, rootValue).then(({ show }) => {
-        expect(show).toEqual({
-          is_followed: false,
-        })
-      })
+    `,
+        rootValue
+      )
+      expect(data.show.is_followed).toBeTruthy()
     })
 
-    it("returns true if user is following show", () => {
-      rootValue.followedShowsLoader = () =>
-        Promise.resolve({
-          body: [
-            {
-              partner_show: {
-                id: "new-museum-1-2015-triennial-surround-audience",
-                _id: "54ef55f57261694bbf7f2500",
-              },
-            },
-          ],
-        })
-
-      return runQuery(query, rootValue).then(({ show }) => {
-        expect(show).toEqual({
-          is_followed: true,
-        })
-      })
+    it("returns false if the show is not returned", async () => {
+      gravityLoader.mockReturnValue(Promise.resolve([]))
+      const data = await runQuery(
+        gql`
+          {
+            show(id: "some_other_id") {
+              is_followed
+            }
+          }
+        `,
+        rootValue
+      )
+      expect(data.show.is_followed).toBeFalsy()
     })
   })
 
