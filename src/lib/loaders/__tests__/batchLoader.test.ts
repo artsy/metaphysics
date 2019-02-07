@@ -246,6 +246,7 @@ describe("normalizeKeys", () => {
   it("should turn a string into an object with an id", () => {
     expect(normalizeKeys(["123"])).toEqual([{ id: "123" }])
   })
+
   it("should preserve an object with an id", () => {
     const keys = [{ id: "123", foo: "bar" }]
     expect(normalizeKeys(keys)).toEqual(keys)
