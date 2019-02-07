@@ -1,5 +1,5 @@
 import * as url from "url"
-import { SearchEntity } from "schema/search"
+import { SearchEntity } from "schema/search/SearchEntity"
 
 export const searchLoader = gravityLoader => {
   return gravityLoader(

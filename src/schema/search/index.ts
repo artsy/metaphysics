@@ -15,18 +15,7 @@ import { createPageCursors } from "schema/fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { SearchableItem } from "schema/searchableItem"
 import { Searchable } from "schema/searchable"
-
-export const SearchEntity = new GraphQLEnumType({
-  name: "SearchEntity",
-  values: {
-    ARTWORK: {
-      value: "Artwork",
-    },
-    ARTIST: {
-      value: "Artist",
-    },
-  },
-})
+import { SearchEntity } from "./SearchEntity"
 
 export const SearchMode = new GraphQLEnumType({
   name: "SearchMode",
