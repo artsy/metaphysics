@@ -66,7 +66,7 @@ export const getKeyGroup = key => {
  * Takes an array of normalized keys and groups them based on their parameters.
  * @returns a tuple of an array of group strings and an array of grouped keys
  */
-export const groupKeys = (requestedKeys): [KeyGroupList, NormalKey[][]] => {
+export const groupKeys = (requestedKeys: NormalKey[]): [KeyGroupList, NormalKey[][]] => {
   const [keyGroupList, groupedKeys] = chain(requestedKeys)
     .groupBy(getKeyGroup)
     .entries()
