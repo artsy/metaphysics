@@ -1,5 +1,3 @@
-import { cacheKey } from "lib/cache"
-
 describe("batchLoader", () => {
   beforeEach(() => {
     jest.resetModules()
@@ -223,19 +221,19 @@ describe("cacheKeyFn", () => {
   })
 
   it("should not treat two objects with the same id but different params as different", () => {
-    expect(cacheKey({ id: "123" })).not.toEqual(
-      cacheKey({ id: "123", foo: "bar" })
+    expect(cacheKeyFn({ id: "123" })).not.toEqual(
+      cacheKeyFn({ id: "123", foo: "bar" })
     )
   })
 
   it("should treat two objects with the same params and id as equal", () => {
-    expect(cacheKey({ id: "123", foo: "bar" })).toEqual(
-      cacheKey({ id: "123", foo: "bar" })
+    expect(cacheKeyFn({ id: "123", foo: "bar" })).toEqual(
+      cacheKeyFn({ id: "123", foo: "bar" })
     )
   })
 
   it("should treat two objects with different ids as different", () => {
-    expect(cacheKey({ id: "456", foo: "bar" })).not.toEqual({
+    expect(cacheKeyFn({ id: "456", foo: "bar" })).not.toEqual({
       id: "567",
       foo: "bar",
     })
@@ -245,7 +243,7 @@ describe("cacheKeyFn", () => {
 describe("normalizeKeys", () => {
   const { normalizeKeys } = require("../batchLoader")
 
-  it("should turn a stinrg into an object with an id", () => {
+  it("should turn a string into an object with an id", () => {
     expect(normalizeKeys(["123"])).toEqual([{ id: "123" }])
   })
   it("should preserve an object with an id", () => {
