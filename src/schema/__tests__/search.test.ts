@@ -21,6 +21,34 @@ describe("Search", () => {
         display: "Self Portrait",
         image_url: "https://example.com/artwork.jpg",
       },
+      {
+        _id: "galleryID",
+        id: "catty-gallery",
+        label: "Profile",
+        owner_type: "PartnerGallery",
+      },
+      {
+        _id: "museumID",
+        id: "catty-museum",
+        label: "Profile",
+        owner_type: "PartnerInstitution",
+      },
+      {
+        _id: "fairID",
+        id: "catty-fair",
+        label: "Profile",
+        owner_type: "FairOrganizer",
+      },
+      {
+        _id: "geneID",
+        id: "catty-gene",
+        label: "Gene",
+      },
+      {
+        _id: "auctionID",
+        id: "catty-auction",
+        label: "Sale",
+      },
     ]
 
     rootValue = {
@@ -83,6 +111,21 @@ describe("Search", () => {
 
       expect(artworkSearchableItemNode.id).toBe("david-bowie-self-portrait")
       expect(artworkSearchableItemNode._id).toBe("artworkId")
+
+      const gallerySearchableItemNode = data!.search.edges[2].node
+      expect(gallerySearchableItemNode.searchableType).toBe("Gallery")
+
+      const museumSearchableItemNode = data!.search.edges[3].node
+      expect(museumSearchableItemNode.searchableType).toBe("Institution")
+
+      const fairSearchableItemNode = data!.search.edges[4].node
+      expect(fairSearchableItemNode.searchableType).toBe("Fair")
+
+      const geneSearchableItemNode = data!.search.edges[5].node
+      expect(geneSearchableItemNode.searchableType).toBe("Category")
+
+      const auctionSearchableItemNode = data!.search.edges[6].node
+      expect(auctionSearchableItemNode.searchableType).toBe("Auction")
     })
   })
 
