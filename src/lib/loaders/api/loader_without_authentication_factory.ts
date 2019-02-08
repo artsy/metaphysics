@@ -44,7 +44,6 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
     const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
     const loader = new DataLoader<string, T | { body: T; headers: any }>(
       (keys: string[]) =>
-        // Promise.all<T | { body: T; headers: any } | Error>(
         Promise.all<any>(
           keys.map(key => {
             const clock = timer(key)
@@ -55,9 +54,13 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
               cached,
             }: {
               message: string
+              /**
+               * Omit when ran outside of the HTTP request, otherwise specify if
+               * the data was loaded from the cache.
+               */
               cached?: boolean
-            }) => {
-              return tap(data => {
+            }) =>
+              tap(data => {
                 verbose(message)
                 const time = clock.end()
                 if (
@@ -66,29 +69,36 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                   globalAPIOptions.requestIDs &&
                   globalAPIOptions.requestIDs.requestID
                 ) {
-                  extensionsLogger(globalAPIOptions.requestIDs.requestID, apiName, key, {
-                    time,
-                    cache: cached,
-                    length: cached === false ?
-                      formatBytes(data.headers["content-length"]) : "N/A",
-                  })
+                  extensionsLogger(
+                    globalAPIOptions.requestIDs.requestID,
+                    apiName,
+                    key,
+                    {
+                      time,
+                      cache: cached,
+                      length:
+                        !cached &&
+                        data.headers &&
+                        data.headers["content-length"]
+                          ? formatBytes(data.headers["content-length"])
+                          : "N/A",
+                    }
+                  )
                 }
               })
-            }
 
             const callApi = () =>
-              api(key, null, apiOptions)
-                .catch(err => {
-                  warn(key, err)
-                  throw err
-                })
+              api(key, null, apiOptions).catch(err => {
+                warn(key, err)
+                throw err
+              })
 
             const reduceData = ({ body, headers }) =>
               apiOptions.headers ? { body, headers } : body
 
-            const cacheData = tap(data => {
+            const cacheData = tap(data =>
               cache.set(key, data).catch(err => warn(key, err))
-            })
+            )
 
             if (CACHE_DISABLED) {
               return callApi()
@@ -100,8 +110,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                 )
                 .then(reduceData)
             } else {
-              // No need to pluck the right data from a cache hit, because we
-              // only ever cache the already plucked data.
+              // No need to run reduceData on a cache fetch.
               return (
                 cache
                   .get(key)
@@ -124,7 +133,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                             .then(cacheData)
                             .catch(err => {
                               if (err.statusCode === 404) {
-                                // Unpublished
+                                // Unpublished.
                                 cache.delete(key)
                               }
                             }),
@@ -132,7 +141,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                       )
                     )
                   )
-                  // Cache miss
+                  // Cache miss.
                   .catch(() =>
                     callApi()
                       .then(
