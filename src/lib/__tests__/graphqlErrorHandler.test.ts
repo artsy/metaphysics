@@ -1,6 +1,5 @@
 import {
   formattedGraphQLError,
-  shouldReportParentError,
   shouldReportError,
 } from "../graphqlErrorHandler"
 import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
@@ -9,21 +8,16 @@ import { GraphQLError } from "graphql"
 
 describe("graphqlErrorHandler", () => {
   describe(shouldReportError, () => {
-    it("passes on null-y errors", () => {
+    it("reports when the error is null", () => {
       expect(shouldReportError(null)).toBeTruthy()
+    })
+
+    it("reports when the error is undefined", () => {
       expect(shouldReportError(undefined)).toBeTruthy()
     })
 
-    it("passes on non-HTTP errors", () => {
+    it("reports non-HTTP errors", () => {
       expect(shouldReportError(new Error())).toBeTruthy()
-    })
-
-    it("passes on non-GraphQL errors", () => {
-      expect(shouldReportError(new GraphQLTimeoutError("oh noes"))).toBeTruthy()
-    })
-
-    it("passes general GraphQL errors", () => {
-      expect(shouldReportError(new GraphQLError("Wrong Args"))).toBeTruthy()
     })
 
     it("denies general GraphQL syntax errors", () => {
@@ -33,24 +27,11 @@ describe("graphqlErrorHandler", () => {
         )
       ).toBeFalsy()
     })
-  })
-  describe(shouldReportParentError, () => {
-    it("reports when the error is null", () => {
-      expect(shouldReportParentError(null)).toBeTruthy()
-    })
-
-    it("reports when the error is undefined", () => {
-      expect(shouldReportParentError(undefined)).toBeTruthy()
-    })
-
-    it("reports non-HTTP errors", () => {
-      expect(shouldReportParentError(new Error())).toBeTruthy()
-    })
 
     it("reports HTTP client errors that are not blacklisted", () => {
       ;[400, 418].forEach(statusCode => {
         expect(
-          shouldReportParentError(new HTTPError("an error", statusCode))
+          shouldReportError(new HTTPError("an error", statusCode))
         ).toBeTruthy()
       })
     })
@@ -58,7 +39,7 @@ describe("graphqlErrorHandler", () => {
     it("does not report blacklisted HTTP client errors", () => {
       ;[401, 403, 404].forEach(statusCode => {
         expect(
-          shouldReportParentError(new HTTPError("an error", statusCode))
+          shouldReportError(new HTTPError("an error", statusCode))
         ).toBeFalsy()
       })
     })
@@ -66,15 +47,13 @@ describe("graphqlErrorHandler", () => {
     it("does not report HTTP server errors", () => {
       ;[500, 511].forEach(statusCode => {
         expect(
-          shouldReportParentError(new HTTPError("an error", statusCode))
+          shouldReportError(new HTTPError("an error", statusCode))
         ).toBeFalsy()
       })
     })
 
     it("does not report resolver timeout errors", () => {
-      expect(
-        shouldReportParentError(new GraphQLTimeoutError("oh noes"))
-      ).toBeFalsy()
+      expect(shouldReportError(new GraphQLTimeoutError("oh noes"))).toBeFalsy()
     })
   })
 
