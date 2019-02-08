@@ -151,12 +151,11 @@ describe("Show type", () => {
 
     beforeEach(() => {
       gravityLoader = jest.fn()
-      rootValue.followedShowLoader = trackedEntityLoaderFactory(
-        gravityLoader,
-        "show_ids",
-        "is_followed",
-        "partner_show"
-      )
+      rootValue.followedShowLoader = trackedEntityLoaderFactory(gravityLoader, {
+        paramKey: "show_ids",
+        trackingKey: "is_followed",
+        entityKeyPath: "partner_show",
+      })
     })
 
     it("returns true if the show is returned", async () => {
