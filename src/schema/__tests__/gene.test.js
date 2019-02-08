@@ -391,12 +391,11 @@ describe("Gene", () => {
           { gene: { id: "brooklyn-artists", name: "Brooklyn Artists" } },
         ])
       )
-      followedGeneLoader = trackedEntityLoaderFactory(
-        gravityLoader,
-        "genes",
-        "is_followed",
-        "gene"
-      )
+      followedGeneLoader = trackedEntityLoaderFactory(gravityLoader, {
+        paramKey: "genes",
+        trackingKey: "is_followed",
+        entityKeyPath: "gene",
+      })
     })
 
     it("returns true if gene is returned", () => {
