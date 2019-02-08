@@ -45,7 +45,7 @@ export const apiLoaderWithAuthenticationFactory = (
                       }
                       const time = clock.end()
                       const length = formatBytes(
-                        response.headers["content-length"]
+                        (response && response.headers["content-length"]) || 0
                       )
                       return extensionsLogger(
                         globalAPIOptions.requestIDs.requestID,

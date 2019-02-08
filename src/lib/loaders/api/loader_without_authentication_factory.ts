@@ -100,7 +100,9 @@ export const apiLoaderWithoutAuthenticationFactory = (
                           resolve(body)
                         }
                         verbose(`Requested (Uncached): ${key}`)
-                        const length = formatBytes(headers["content-length"])
+                        const length = formatBytes(
+                          (headers && headers["content-length"]) || 0
+                        )
                         const time = clock.end()
                         extensionsLogger(
                           globalAPIOptions.requestIDs.requestID,
