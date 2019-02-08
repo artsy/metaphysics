@@ -1,4 +1,3 @@
-// @ts-check
 import factories from "../api"
 import config from "config"
 

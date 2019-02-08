@@ -1,5 +1,3 @@
-// @ts-check
-
 import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ArtworkType } from "schema/artwork/index"

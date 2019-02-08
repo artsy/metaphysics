@@ -1,5 +1,3 @@
-// @ts-check
-
 import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
@@ -65,7 +63,7 @@ export default (accessToken, userID, opts) => {
     homepageSuggestedArtworksLoader: gravityLoader("me/suggested/artworks/homepage"),
     inquiryRequestsLoader: gravityLoader("me/inquiry_requests", {}, { headers: true }),
     lotStandingLoader: gravityLoader("me/lot_standings"),
-    meBidderPositionLoader: gravityLoader(({ id }) => `me/bidder_position/${id}/`, {}, { headers: true }),
+    meBidderPositionLoader: gravityLoader(id => `me/bidder_position/${id}/`, {}, { headers: true }),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBiddersLoader: gravityLoader("me/bidders"),
     meCreditCardsLoader: gravityLoader("me/credit_cards", {}, { headers: true }),

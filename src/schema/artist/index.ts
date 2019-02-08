@@ -592,7 +592,7 @@ export const ArtistType = new GraphQLObjectType({
           _request,
           { rootValue: { artistGenesLoader } }
         ) => {
-          return artistGenesLoader({ id }).then(genes => genes)
+          return artistGenesLoader(id).then(genes => genes)
         },
       },
       gender: { type: GraphQLString },

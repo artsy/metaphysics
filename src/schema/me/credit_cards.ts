@@ -1,5 +1,3 @@
-// @ts-check
-
 import { CreditCardConnection } from "schema/credit_card"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"

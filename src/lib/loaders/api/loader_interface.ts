@@ -1,9 +1,19 @@
-// @ts-check
-
 import { toKey } from "lib/helpers"
 import DataLoader from "dataloader"
 
-export type FuncToString = (data?: any) => string
+export type PathGenerator<T> = (data: T) => string
+
+// TODO: This should be more specific to take types that are serializeable.
+type ParamValue = any
+
+export type StaticPathLoader<T> = (
+  params?: { [key: string]: ParamValue }
+) => Promise<T>
+
+export type DynamicPathLoader<T, P = string> = (
+  id: P,
+  params?: { [key: string]: ParamValue }
+) => Promise<T>
 
 const encodeStaticPath = (path: string, globalParams, params) => {
   return toKey(path, Object.assign({}, globalParams, params))
@@ -36,9 +46,21 @@ const encodeDynamicPath = (
  * @param {object} globalParams a dictionary of query params that are to be included in each request
  */
 
-export function loaderInterface<R = any>(
-  loader: DataLoader<string, R>,
-  pathOrGenerator: string | FuncToString,
+export function loaderInterface<T>(
+  loader: DataLoader<string, T>,
+  pathOrGenerator: string,
+  globalParams: any
+): StaticPathLoader<T>
+
+export function loaderInterface<T, P>(
+  loader: DataLoader<string, T>,
+  pathOrGenerator: PathGenerator<P>,
+  globalParams: any
+): DynamicPathLoader<T>
+
+export function loaderInterface<T, P>(
+  loader: DataLoader<string, T>,
+  pathOrGenerator: string | PathGenerator<P>,
   globalParams: any
 ) {
   return (...idAndOrParams) => {
