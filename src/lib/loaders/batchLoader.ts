@@ -4,12 +4,12 @@ import config from "config"
 
 const { ENABLE_RESOLVER_BATCHING } = config
 
+type Key = string | { id: string[] }
+
 interface NormalKey {
   id: string
   [key: string]: any
 }
-
-type Key = string | NormalKey
 
 type KeyGroupList = string[]
 
@@ -30,21 +30,13 @@ interface GravityResult {
  *  their contents. If an object is empty except for an id field, we just use id.
  *  Otherwise we stringify the object so it can be compared via strict comparison.
  */
-export const cacheKeyFn = (key: Key): string => {
-  if (typeof key === "object" && key !== null) {
-    if (Object.keys(key).length === 1 && key.id) {
-      return key.id
-    }
-    return JSON.stringify(key)
+export const cacheKeyFn = (key: NormalKey): string => {
+  // If id is the *only* property of the key object
+  if (Object.keys(key).length === 1) {
+    return key.id
   }
-  return key
+  return JSON.stringify(key)
 }
-
-/**
- * This coerces all keys to an object structure for consistent processing
- */
-export const normalizeKeys = (keys: Key[]) =>
-  keys.map(key => (typeof key === "string" ? { id: key } : key))
 
 /**
  * This is just used to compare options sent into the dataloader.
@@ -66,7 +58,9 @@ export const getKeyGroup = key => {
  * Takes an array of normalized keys and groups them based on their parameters.
  * @returns a tuple of an array of group strings and an array of grouped keys
  */
-export const groupKeys = (requestedKeys: NormalKey[]): [KeyGroupList, NormalKey[][]] => {
+export const groupKeys = (
+  requestedKeys: NormalKey[]
+): [KeyGroupList, NormalKey[][]] => {
   const [keyGroupList, groupedKeys] = chain(requestedKeys)
     .groupBy(getKeyGroup)
     .entries()
@@ -106,22 +100,21 @@ interface BatchLoaderArgs {
 export const batchLoader = ({
   singleLoader,
   multipleLoader,
-  defaultResult = null,
 }: BatchLoaderArgs) => {
   if (!ENABLE_RESOLVER_BATCHING) {
     return singleLoader ? singleLoader : multipleLoader
   }
   const dl = new DataLoader(
-    (keys: Key[]) => {
-      const normalKeys = normalizeKeys(keys)
+    (normalKeys: NormalKey[]) => {
       const [keyGroups, groupedKeys] = groupKeys(normalKeys)
 
       return Promise.all(
-        groupedKeys.map(compactKeyForRequest).map(keys => {
-          if (keys.id.length === 1 && singleLoader) {
-            return singleLoader(keys.id[0])
+        groupedKeys.map(compactKeyForRequest).map(params => {
+          if (params.id.length === 1 && singleLoader) {
+            // TODO: Warn or error if there are params
+            return singleLoader(params.id[0])
           } else {
-            return multipleLoader(keys)
+            return multipleLoader(params)
           }
         })
       ).then((data: Array<GravityResult | GravityResult[]>) => {
@@ -129,15 +122,19 @@ export const batchLoader = ({
           datum => (Array.isArray(datum) ? datum : [datum])
         )
 
-        return normalKeys.map(key => {
+        const results = normalKeys.map(key => {
           const group = getKeyGroup(key)
           const groupIndex = keyGroups.indexOf(group)
-          return (
-            normalizedData[groupIndex].find(
-              ({ _id, _slug }) => key.id === _id || key.id === _slug
-            ) || defaultResult
+          const groupData = normalizedData[groupIndex]
+          // TODO: Better handling of slugs
+          const data = groupData.find(
+            gravityResult =>
+              key.id === gravityResult._id || key.id === gravityResult.id
           )
+          return data
         })
+
+        return results
       })
     },
     {
@@ -146,27 +143,40 @@ export const batchLoader = ({
     }
   )
 
-  return key => dl.load(key)
+  return (key: Key) => {
+    if (typeof key === "object" && key !== null) {
+      if (key.id.length === 1) {
+        return dl
+          .load({ ...key, id: key.id[0] })
+          .then(result => (result === undefined ? [] : [result]))
+      }
+
+      return dl.loadMany(
+        key.id.map(id => ({
+          ...key,
+          id: id,
+        }))
+      )
+    } else if (typeof key === "string") {
+      return dl.load({ id: key })
+    } else {
+      console.error("o no")
+    }
+  }
 }
 
 /**
  * @returns a tuple of a single batch loader and a multiple batch loader
  */
-export const createBatchLoaders = ({
-  singleLoader,
-  multipleLoader,
-  singleDefault,
-  multipleDefault,
-}) => {
+export const createBatchLoaders = ({ singleLoader, multipleLoader }) => {
+  // TODO: Move env check here
   return [
     batchLoader({
       singleLoader,
       multipleLoader,
-      defaultResult: singleDefault,
     }),
     batchLoader({
       multipleLoader,
-      defaultResult: multipleDefault,
     }),
   ]
 }

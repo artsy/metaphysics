@@ -58,7 +58,7 @@ describe("batchLoader", () => {
       )
       const batch = batchLoader({ multipleLoader })
 
-      await batch({ id: "foo", param: "bar" })
+      await batch({ id: ["foo"], param: "bar" })
       expect(multipleLoader).toBeCalledWith({
         id: ["foo"],
         param: "bar",
@@ -77,34 +77,6 @@ describe("batchLoader", () => {
       await Promise.all([batch("123"), batch("456"), batch("789")])
 
       expect(multipleLoader).toBeCalledTimes(1)
-    })
-
-    it("should return a default value when an id is missing", async () => {
-      const multipleLoader = jest.fn(({ id: ids }) =>
-        ids.slice(1).map(id => ({
-          _id: id,
-        }))
-      )
-      const batch = batchLoader({ multipleLoader, defaultResult: {} })
-
-      const results = await Promise.all([
-        batch("123"),
-        batch("456"),
-        batch("789"),
-      ])
-      expect(results).toEqual([
-        {},
-        {
-          _id: "456",
-        },
-        {
-          _id: "789",
-        },
-      ])
-
-      expect(multipleLoader).toBeCalledWith({
-        id: ["123", "456", "789"],
-      })
     })
   })
 })
@@ -212,14 +184,6 @@ describe("groupKeys", () => {
 
 describe("cacheKeyFn", () => {
   const { cacheKeyFn } = require("../batchLoader")
-  it("should treat strings and objects with only an id key the same", () => {
-    expect(cacheKeyFn("123")).toEqual(cacheKeyFn({ id: "123" }))
-  })
-
-  it("should treat strings and objects with params as different", () => {
-    expect(cacheKeyFn("123")).not.toEqual(cacheKeyFn({ id: "123", foo: "bar" }))
-  })
-
   it("should not treat two objects with the same id but different params as different", () => {
     expect(cacheKeyFn({ id: "123" })).not.toEqual(
       cacheKeyFn({ id: "123", foo: "bar" })
@@ -237,18 +201,5 @@ describe("cacheKeyFn", () => {
       id: "567",
       foo: "bar",
     })
-  })
-})
-
-describe("normalizeKeys", () => {
-  const { normalizeKeys } = require("../batchLoader")
-
-  it("should turn a string into an object with an id", () => {
-    expect(normalizeKeys(["123"])).toEqual([{ id: "123" }])
-  })
-
-  it("should preserve an object with an id", () => {
-    const keys = [{ id: "123", foo: "bar" }]
-    expect(normalizeKeys(keys)).toEqual(keys)
   })
 })

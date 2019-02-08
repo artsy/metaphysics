@@ -12,8 +12,6 @@ export default opts => {
   const [ batchSaleLoader, batchSalesLoader ] = createBatchLoaders({ 
     singleLoader: gravityLoader(id => `sale/${id}`), 
     multipleLoader: gravityLoader('sales'), 
-    singleDefault: null, 
-    multipleDefault: [] 
   })
 
   return {
