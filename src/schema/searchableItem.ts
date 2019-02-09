@@ -40,7 +40,33 @@ export const SearchableItem = new GraphQLObjectType({
     },
     searchableType: {
       type: GraphQLString,
-      resolve: item => item.label,
+      resolve: ({ label, owner_type }) => {
+        switch (label) {
+          case "Profile":
+            const institutionTypes = [
+              "PartnerInstitution",
+              "PartnerInstitutionalSeller",
+            ]
+            if (institutionTypes.includes(owner_type)) {
+              return "Institution"
+            } else if (owner_type === "FairOrganizer") {
+              return "Fair"
+            } else {
+              return "Gallery"
+            }
+          case "Gene":
+            return "Category"
+
+          // TODO: How do we correctly display Sale/Auction types?
+          // There's nothing to distinguish the two types present
+          // in the special `match` JSON returned from the Gravity API.
+          case "Sale":
+            return "Auction"
+
+          default:
+            return label
+        }
+      },
     },
   },
 })
