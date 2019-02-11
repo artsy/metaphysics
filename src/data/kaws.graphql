@@ -27,6 +27,12 @@ type Collection {
   query: CollectionQuery!
   createdAt: DateTime!
   updatedAt: DateTime!
+
+  # Suggested average price for included works
+  price_guidance: Float
+
+  # Collection can be surfaced on editorial pages
+  show_on_editorial: Boolean!
 }
 
 type CollectionCategory {
@@ -71,7 +77,7 @@ type CollectionQuery {
 scalar DateTime
 
 type Query {
-  collections(artistID: String): [Collection!]!
+  collections(showOnEditorial: Boolean, artistID: String): [Collection!]!
   categories: [CollectionCategory!]!
   collection(slug: String!): Collection
 }
