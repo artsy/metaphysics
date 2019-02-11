@@ -59,6 +59,7 @@ export default (accessToken, userID, opts) => {
       }
     ),
     followedFairsLoader: gravityLoader("/me/follow/profiles", {}, { headers: true }),
+    followedPartnersLoader: gravityLoader("/me/follow/profiles", {}, { headers: true }),
     homepageModulesLoader: gravityLoader("me/modules"),
     homepageSuggestedArtworksLoader: gravityLoader("me/suggested/artworks/homepage"),
     inquiryRequestsLoader: gravityLoader("me/inquiry_requests", {}, { headers: true }),

@@ -9,6 +9,8 @@ import date from "./fields/date"
 import numeral from "./fields/numeral"
 import Profile from "./profile"
 import Image from "./image"
+import Artist from "./artist"
+import Partner from "./partner"
 import { showConnection } from "./show"
 import Location from "./location"
 import { GravityIDFields } from "./object_identification"
@@ -25,6 +27,18 @@ import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
+
+const FollowedContentType = new GraphQLObjectType({
+  name: "FollowedContent",
+  fields: () => ({
+    artists: {
+      type: new GraphQLList(Artist.type),
+    },
+    galleries: {
+      type: new GraphQLList(Partner.type),
+    },
+  }),
+})
 
 const FairOrganizerType = new GraphQLObjectType({
   name: "organizer",
@@ -55,6 +69,29 @@ const FairType = new GraphQLObjectType({
     ...GravityIDFields,
     about: {
       type: GraphQLString,
+    },
+    followed_content: {
+      type: FollowedContentType,
+      resolve: (
+        fair,
+        _options,
+        _request,
+        { rootValue: { followedArtistsLoader, followedPartnersLoader } }
+      ) => {
+        const fair_id = fair.id
+
+        return {
+          artists: followedArtistsLoader({ fair_id }).then(({ body }) => {
+            return body.map(artist_follow => artist_follow.artist)
+          }),
+          galleries: followedPartnersLoader({
+            fair_id,
+            owner_types: ["PartnerGallery"],
+          }).then(({ body }) => {
+            return body.map(profile_follow => profile_follow.profile.owner)
+          }),
+        }
+      },
     },
     artists: {
       type: artistConnection,
