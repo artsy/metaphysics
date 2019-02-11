@@ -4919,6 +4919,12 @@ type MarketingCollection {
   query: MarketingCollectionQuery!
   createdAt: MarketingDateTime!
   updatedAt: MarketingDateTime!
+
+  # Suggested average price for included works
+  price_guidance: Float
+
+  # Collection can be surfaced on editorial pages
+  show_on_editorial: Boolean!
   artworks(
     acquireable: Boolean
     offerable: Boolean
@@ -7313,7 +7319,10 @@ type Query {
 
   # Find partners by ID
   _unused_gravity_partners(ids: [ID]!): [DoNotUseThisPartner]
-  marketingCollections(artistID: String): [MarketingCollection!]!
+  marketingCollections(
+    showOnEditorial: Boolean
+    artistID: String
+  ): [MarketingCollection!]!
   marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
 }
