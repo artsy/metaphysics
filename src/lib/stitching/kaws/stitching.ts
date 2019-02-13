@@ -7,7 +7,7 @@ export const kawsStitchingEnvironment = (
   // The SDL used to declare how to stitch an object
   extensionSchema: `
     extend type Artist {
-      marketingCollections: [MarketingCollection]
+      marketingCollections(size: Int): [MarketingCollection]
     }
     extend type MarketingCollection {
       artworks(
@@ -60,13 +60,15 @@ export const kawsStitchingEnvironment = (
             _id
           }
         `,
-        resolve: ({ _id: artistID }, _args, context, info) => {
+        resolve: ({ _id: artistID }, { size }, context, info) => {
           return info.mergeInfo.delegateToSchema({
             schema: kawsSchema,
             operation: "query",
             fieldName: "marketingCollections",
+
             args: {
               artistID,
+              size,
             },
             context,
             info,

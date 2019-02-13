@@ -347,7 +347,7 @@ type Artist implements Node & Searchable {
   statuses: ArtistStatuses
   highlights: ArtistHighlights
   years: String
-  marketingCollections: [MarketingCollection]
+  marketingCollections(size: Int): [MarketingCollection]
 }
 
 enum ArtistArtworksFilters {
@@ -7328,6 +7328,7 @@ type Query {
   # Find partners by ID
   _unused_gravity_partners(ids: [ID]!): [DoNotUseThisPartner]
   marketingCollections(
+    size: Int
     showOnEditorial: Boolean
     artistID: String
   ): [MarketingCollection!]!
