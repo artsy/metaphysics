@@ -77,7 +77,11 @@ type CollectionQuery {
 scalar DateTime
 
 type Query {
-  collections(showOnEditorial: Boolean, artistID: String): [Collection!]!
+  collections(
+    size: Int
+    showOnEditorial: Boolean
+    artistID: String
+  ): [Collection!]!
   categories: [CollectionCategory!]!
   collection(slug: String!): Collection
 }
