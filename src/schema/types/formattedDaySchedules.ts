@@ -54,6 +54,9 @@ function formatDaySchedule(day: DayOfWeek, daySchedules: Array<DaySchedule>) {
 // Returns an array of formatted 'day schedule' objects for a 7 day week:
 // [{ start: 'Monday', hours: '10am – 7pm'}, {start: 'Tuesday, hours: 'Closed'}, ... ]
 export function formatDaySchedules(daySchedules: Array<DaySchedule>) {
+  if (_.isEmpty(daySchedules)) {
+    return []
+  }
   const formattedDaySchedules = () =>
     _.map(Object.values(DayOfWeek), day => {
       return formatDaySchedule(day, daySchedules)
