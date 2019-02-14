@@ -70,6 +70,9 @@ export const LocationType = new GraphQLObjectType({
     state: {
       type: GraphQLString,
     },
+    summary: {
+      type: GraphQLString,
+    },
   }),
 })
 
