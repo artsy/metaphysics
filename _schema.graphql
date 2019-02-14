@@ -4879,6 +4879,7 @@ type Location {
   phone: String
   postal_code: String
   state: String
+  summary: String
 }
 
 type LotStanding {
