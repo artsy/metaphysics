@@ -22,7 +22,7 @@ describe("CreateGeminiEntryForAsset", () => {
     `
 
     const rootValue = {
-      createNewGeminiEntryAssetLoader: () =>
+      createNewGeminiEntryAssetLoader: () => () =>
         Promise.resolve({
           token: "zVHJce-Fey3OIsazH8WDTg",
           image_urls: {},

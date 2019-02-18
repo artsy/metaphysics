@@ -18,7 +18,7 @@ describe("addAssetToConsignmentSubmission", () => {
     `
 
     const rootValue = {
-      createNewGeminiAssetLoader: () =>
+      createNewGeminiAssetLoader: () => () =>
         Promise.resolve({
           policy_encoded: "12345==",
           policy_document: {

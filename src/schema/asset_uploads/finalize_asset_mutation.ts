@@ -55,6 +55,6 @@ export default mutationWithClientMutationId({
       source_key,
       source_bucket,
       metadata,
-    })
+    })()
   },
 })
