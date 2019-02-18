@@ -95,6 +95,6 @@ export default mutationWithClientMutationId({
     { rootValue: { createNewGeminiAssetLoader } }
   ) => {
     if (!createNewGeminiAssetLoader) return null
-    return createNewGeminiAssetLoader({ name, acl })
+    return createNewGeminiAssetLoader({ name, acl })()
   },
 })
