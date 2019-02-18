@@ -295,6 +295,10 @@ export const filterArtworksArgs = {
   keyword: {
     type: GraphQLString,
   },
+  keyword_match_exact: {
+    type: GraphQLBoolean,
+    description: "When true, will only return exact keyword match",
+  },
 }
 
 const filterArtworksTypeFactory = mapRootToFilterParams => ({
