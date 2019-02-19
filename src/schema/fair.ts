@@ -281,7 +281,7 @@ const FairType = new GraphQLObjectType({
       resolve: ({ tickets_link }) => tickets_link,
     },
     exhibitors_grouped_by_name: {
-      description: "The exhibitors with booths in this fair.",
+      description: "The exhibitors with booths in this fair with letter.",
       type: new GraphQLList(
         new GraphQLObjectType({
           name: "FairExhibitorsGroup",
@@ -291,12 +291,26 @@ const FairType = new GraphQLObjectType({
               description: "Letter exhibitors group belongs to",
             },
             exhibitors: {
-              type: new GraphQLList(GraphQLString),
-              description: "Exhibitors sorted by name",
-            },
-            profile_ids: {
-              type: new GraphQLList(GraphQLString),
-              description: "Partner/Exhibitor default profile id",
+              description: "The exhibitor data.",
+              type: new GraphQLList(
+                new GraphQLObjectType({
+                  name: "FairExhibitor",
+                  fields: {
+                    exhibitor_name: {
+                      type: GraphQLString,
+                      description: "Exhibitor name",
+                    },
+                    exhibitor_id: {
+                      type: GraphQLString,
+                      description: "Exhibitors id",
+                    },
+                    profile_id: {
+                      type: GraphQLString,
+                      description: "Partner default profile id",
+                    },
+                  },
+                })
+              ),
             },
           },
         })
@@ -313,8 +327,13 @@ const FairType = new GraphQLObjectType({
         const exhibitor_groups: {
           [letter: string]: {
             letter: string
-            exhibitors: [String]
-            profile_ids: [String]
+            exhibitors: [
+              {
+                exhibitor_name: string
+                profile_id: string
+                exhibitor_id: string
+              }
+            ]
           }
         } = {}
         const fetch = allViaLoader(fairPartnersLoader, root._id)
@@ -332,15 +351,21 @@ const FairType = new GraphQLObjectType({
             const firstName = names[0]
             const letter = firstName.charAt(0).toUpperCase()
             if (exhibitor_groups[letter]) {
-              exhibitor_groups[letter].exhibitors.push(fairExhibitor.name)
-              exhibitor_groups[letter].profile_ids.push(
-                fairExhibitor.default_profile_id
-              )
+              exhibitor_groups[letter].exhibitors.push({
+                exhibitor_name: fairExhibitor.name,
+                profile_id: fairExhibitor.partner_show_ids[0],
+                exhibitor_id: fairExhibitor.id,
+              })
             } else {
               exhibitor_groups[letter] = {
                 letter,
-                exhibitors: [fairExhibitor.name],
-                profile_ids: [fairExhibitor.default_profile_id],
+                exhibitors: [
+                  {
+                    exhibitor_name: fairExhibitor.name,
+                    profile_id: fairExhibitor.partner_show_ids[0],
+                    exhibitor_id: fairExhibitor.id,
+                  },
+                ],
               }
             }
           }
