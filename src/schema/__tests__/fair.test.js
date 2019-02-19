@@ -13,7 +13,7 @@ describe("Fair type", () => {
     },
   }
 
-  const query = `
+  const query = gql`
     {
       fair(id: "the-armory-show-2017") {
         id
@@ -135,8 +135,13 @@ describe("Fair", () => {
         exhibitors_grouped_by_name: [
           {
             letter: "A",
-            exhibitors: ["ArtHelix Gallery"],
-            profile_ids: ["arthelix-gallery"],
+            exhibitors: [
+              {
+                name: "ArtHelix Gallery",
+                id: "arthelix-gallery",
+                profile_id: "arthelix-gallery",
+              },
+            ],
           },
         ],
       },
@@ -168,7 +173,8 @@ describe("Fair", () => {
         Promise.resolve({
           body: {
             name: "ArtHelix Gallery",
-            default_profile_id: "arthelix-gallery",
+            id: "arthelix-gallery",
+            partner_show_ids: ["arthelix-gallery"],
           },
           headers: {
             "x-total-count": 1,
@@ -186,8 +192,11 @@ describe("Fair", () => {
           name
           exhibitors_grouped_by_name {
             letter
-            exhibitors
-            profile_ids
+            exhibitors {
+              name
+              id
+              profile_id
+            }
           }
         }
       }
@@ -202,8 +211,13 @@ describe("Fair", () => {
         exhibitors_grouped_by_name: [
           {
             letter: "A",
-            exhibitors: ["ArtHelix Gallery"],
-            profile_ids: ["arthelix-gallery"],
+            exhibitors: [
+              {
+                name: "ArtHelix Gallery",
+                id: "arthelix-gallery",
+                profile_id: "arthelix-gallery",
+              },
+            ],
           },
         ],
       },

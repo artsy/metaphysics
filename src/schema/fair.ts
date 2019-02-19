@@ -296,11 +296,11 @@ const FairType = new GraphQLObjectType({
                 new GraphQLObjectType({
                   name: "FairExhibitor",
                   fields: {
-                    exhibitor_name: {
+                    name: {
                       type: GraphQLString,
                       description: "Exhibitor name",
                     },
-                    exhibitor_id: {
+                    id: {
                       type: GraphQLString,
                       description: "Exhibitors id",
                     },
@@ -329,16 +329,18 @@ const FairType = new GraphQLObjectType({
             letter: string
             exhibitors: [
               {
-                exhibitor_name: string
+                name: string
                 profile_id: string
-                exhibitor_id: string
+                id: string
               }
             ]
           }
         } = {}
         const fetch = allViaLoader(fairPartnersLoader, root._id)
+        console.log("fairPartnersLoader", fairPartnersLoader())
 
         return fetch.then(result => {
+          console.log("results???", result)
           const fairExhibitors = result.sort((a, b) => {
             const asc = a.name.toLowerCase()
             const desc = b.name.toLowerCase()
@@ -352,18 +354,18 @@ const FairType = new GraphQLObjectType({
             const letter = firstName.charAt(0).toUpperCase()
             if (exhibitor_groups[letter]) {
               exhibitor_groups[letter].exhibitors.push({
-                exhibitor_name: fairExhibitor.name,
+                name: fairExhibitor.name,
                 profile_id: fairExhibitor.partner_show_ids[0],
-                exhibitor_id: fairExhibitor.id,
+                id: fairExhibitor.id,
               })
             } else {
               exhibitor_groups[letter] = {
                 letter,
                 exhibitors: [
                   {
-                    exhibitor_name: fairExhibitor.name,
+                    name: fairExhibitor.name,
                     profile_id: fairExhibitor.partner_show_ids[0],
-                    exhibitor_id: fairExhibitor.id,
+                    id: fairExhibitor.id,
                   },
                 ],
               }

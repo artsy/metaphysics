@@ -3356,10 +3356,10 @@ type FairCounts {
 
 type FairExhibitor {
   # Exhibitor name
-  exhibitor_name: String
+  name: String
 
   # Exhibitors id
-  exhibitor_id: String
+  id: String
 
   # Partner default profile id
   profile_id: String
