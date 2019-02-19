@@ -337,10 +337,8 @@ const FairType = new GraphQLObjectType({
           }
         } = {}
         const fetch = allViaLoader(fairPartnersLoader, root._id)
-        console.log("fairPartnersLoader", fairPartnersLoader())
 
         return fetch.then(result => {
-          console.log("results???", result)
           const fairExhibitors = result.sort((a, b) => {
             const asc = a.name.toLowerCase()
             const desc = b.name.toLowerCase()
