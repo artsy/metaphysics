@@ -304,6 +304,10 @@ const FairType = new GraphQLObjectType({
                       type: GraphQLString,
                       description: "Exhibitors id",
                     },
+                    _id: {
+                      type: GraphQLString,
+                      description: "Exhibitors _id",
+                    },
                     profile_id: {
                       type: GraphQLString,
                       description: "Partner default profile id",
@@ -332,6 +336,7 @@ const FairType = new GraphQLObjectType({
                 name: string
                 profile_id: string
                 id: string
+                _id: string
               }
             ]
           }
@@ -339,6 +344,7 @@ const FairType = new GraphQLObjectType({
         const fetch = allViaLoader(fairPartnersLoader, root._id)
 
         return fetch.then(result => {
+          console.log("result", result)
           const fairExhibitors = result.sort((a, b) => {
             const asc = a.name.toLowerCase()
             const desc = b.name.toLowerCase()
@@ -355,6 +361,7 @@ const FairType = new GraphQLObjectType({
                 name: fairExhibitor.name,
                 profile_id: fairExhibitor.partner_show_ids[0],
                 id: fairExhibitor.id,
+                _id: fairExhibitor._id,
               })
             } else {
               exhibitor_groups[letter] = {
@@ -364,6 +371,7 @@ const FairType = new GraphQLObjectType({
                     name: fairExhibitor.name,
                     profile_id: fairExhibitor.partner_show_ids[0],
                     id: fairExhibitor.id,
+                    _id: fairExhibitor._id,
                   },
                 ],
               }

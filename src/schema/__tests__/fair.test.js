@@ -174,6 +174,7 @@ describe("Fair", () => {
           body: {
             name: "ArtHelix Gallery",
             id: "arthelix-gallery",
+            _id: "1234567890",
             partner_show_ids: ["arthelix-gallery"],
           },
           headers: {
@@ -195,6 +196,7 @@ describe("Fair", () => {
             exhibitors {
               name
               id
+              _id
               profile_id
             }
           }
@@ -215,6 +217,7 @@ describe("Fair", () => {
               {
                 name: "ArtHelix Gallery",
                 id: "arthelix-gallery",
+                _id: "1234567890",
                 profile_id: "arthelix-gallery",
               },
             ],
