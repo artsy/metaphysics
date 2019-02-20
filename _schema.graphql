@@ -246,6 +246,9 @@ type Artist implements Node & Searchable {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 
   # A string showing the total number of works and those for sale
@@ -585,6 +588,9 @@ type ArtistItem implements Node & Searchable {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 
   # A string showing the total number of works and those for sale
@@ -1196,6 +1202,9 @@ type ArtworkContextFair {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 }
 
@@ -1498,6 +1507,9 @@ type ArtworkFilterGene implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 }
 
@@ -1556,6 +1568,9 @@ type ArtworkFilterTag implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 }
 
@@ -3323,6 +3338,9 @@ type Fair {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 }
 
@@ -3794,6 +3812,9 @@ type Gene implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
     after: String
     first: Int
     before: String
@@ -3841,6 +3862,9 @@ type Gene implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
   href: String
   image: Image
@@ -3980,6 +4004,9 @@ type GeneItem implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
     after: String
     first: Int
     before: String
@@ -4027,6 +4054,9 @@ type GeneItem implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
   href: String
   image: Image
@@ -4498,6 +4528,9 @@ type HomePageModuleContextFair {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 }
 
@@ -4565,6 +4598,9 @@ type HomePageModuleContextGene implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
     after: String
     first: Int
     before: String
@@ -4612,6 +4648,9 @@ type HomePageModuleContextGene implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
   href: String
   image: Image
@@ -6981,6 +7020,9 @@ type Query {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 
   # Sale Artworks Elastic Search results
@@ -8186,6 +8228,9 @@ type Show implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 
   # A path to the show on Artsy
@@ -8482,6 +8527,9 @@ type Tag implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 }
 
@@ -8895,6 +8943,9 @@ type Viewer {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 
   # Sale Artworks Elastic Search results

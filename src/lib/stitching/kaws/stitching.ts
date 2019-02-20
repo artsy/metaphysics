@@ -30,7 +30,7 @@ export const kawsStitchingEnvironment = (
         gene_ids: [String]
         height: String
         width: String
-    
+
         # A string from the list of allocations, or * to denote all mediums
         medium: String
         period: String
@@ -79,7 +79,7 @@ export const kawsStitchingEnvironment = (
     MarketingCollection: {
       artworks: {
         fragment: `
-          fragment MarketingCollectionQuery on MarketingCollection { 
+          fragment MarketingCollectionQuery on MarketingCollection {
             query {
               acquireable
               offerable
@@ -111,17 +111,19 @@ export const kawsStitchingEnvironment = (
               sort
               tag_id
               keyword
-            } 
+            }
           }
         `,
         resolve: (parent, _args, context, info) => {
           const query = parent.query
+          const hasKeyword = Boolean(parent.query.keyword)
           return info.mergeInfo.delegateToSchema({
             schema: localSchema,
             operation: "query",
             fieldName: "filter_artworks",
             args: {
               ...query,
+              keyword_match_exact: hasKeyword,
               ..._args,
             },
             context,
