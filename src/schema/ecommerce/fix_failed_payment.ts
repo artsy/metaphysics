@@ -50,6 +50,7 @@ export const FixFailedPaymentMutation = mutationWithClientMutationId({
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 ${BuyerOrderFields}
+                creditCardId
               }
             }
             ... on EcommerceOrderWithMutationFailure {

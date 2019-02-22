@@ -2,7 +2,7 @@ import { runQuery } from "test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import gql from "lib/gql"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
-import { OrderSellerFields } from "./order_fields"
+import { OrderBuyerFields } from "./order_fields"
 import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
 
 let rootValue
@@ -14,7 +14,7 @@ describe("FixFailedPayment Mutation", () => {
         orderOrError {
           ... on OrderWithMutationSuccess {
             order {
-              ${OrderSellerFields}
+              ${OrderBuyerFields}
             }
           }
           ... on OrderWithMutationFailure {
@@ -42,7 +42,7 @@ describe("FixFailedPayment Mutation", () => {
 
     return runQuery(mutation, rootValue).then(data => {
       expect(data!.ecommerceFixFailedPayment.orderOrError.order).toEqual(
-        sampleOrder()
+        sampleOrder({includeCreditCard: true})
       )
     })
   })
