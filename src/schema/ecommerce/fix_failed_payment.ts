@@ -26,7 +26,7 @@ export const FixFailedPaymentInputType = new GraphQLInputObjectType({
 })
 
 export const FixFailedPaymentMutation = mutationWithClientMutationId({
-  name: "fixFailedPayment",
+  name: "FixFailedPayment",
   description: "Fix the failed payment on an offer order",
   inputFields: FixFailedPaymentInputType.getFields(),
   outputFields: {
