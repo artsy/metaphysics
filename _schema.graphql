@@ -3477,6 +3477,20 @@ type FilterSaleArtworksCounts {
   ): FormattedNumber
 }
 
+input FixFailedPaymentInput {
+  # Offer ID
+  offerId: ID!
+
+  # Credit card ID
+  creditCardId: String!
+  clientMutationId: String
+}
+
+type FixFailedPaymentPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
+}
+
 type FollowArtist {
   artist: Artist
   auto: Boolean
@@ -5496,6 +5510,11 @@ type Mutation {
   ecommerceSubmitOrderWithOffer(
     input: SubmitOrderWithOfferInput!
   ): SubmitOrderWithOfferPayload
+
+  # Fix the failed payment on an offer order
+  ecommerceFixFailedPayment(
+    input: FixFailedPaymentInput!
+  ): FixFailedPaymentPayload
 
   # Creates an order with an artwork
   createOrderWithArtwork(

@@ -36,6 +36,7 @@ import { SellerRejectOfferMutation } from "./ecommerce/seller_reject_offer_mutat
 import { FulfillOrderAtOnceMutation } from "./ecommerce/fulfill_order_at_once_mutation"
 import { ConfirmPickupMutation } from "./ecommerce/confirm_pickup_mutation"
 import { RejectOrderMutation } from "./ecommerce/reject_order_mutation"
+import { FixFailedPaymentMutation } from "./ecommerce/fix_failed_payment"
 import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
 import Profile from "./profile"
@@ -198,6 +199,7 @@ stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
 stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
 stitchedMutations.ecommerceAddInitialOfferToOrder = AddInitialOfferToOrderMutation
 stitchedMutations.ecommerceSubmitOrderWithOffer = SubmitOrderWithOfferMutation
+stitchedMutations.ecommerceFixFailedPayment = FixFailedPaymentMutation
 
 // Deprecated
 stitchedRootFields.order = Order
