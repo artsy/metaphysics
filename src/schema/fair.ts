@@ -304,7 +304,7 @@ const FairType = new GraphQLObjectType({
                       type: GraphQLString,
                       description: "Exhibitors id",
                     },
-                    _id: {
+                    exhibitor_id: {
                       type: GraphQLString,
                       description: "Exhibitors _id",
                     },
@@ -336,7 +336,7 @@ const FairType = new GraphQLObjectType({
                 name: string
                 profile_id: string
                 id: string
-                _id: string
+                exhibitor_id: string
               }
             ]
           }
@@ -360,7 +360,7 @@ const FairType = new GraphQLObjectType({
                 name: fairExhibitor.name,
                 profile_id: fairExhibitor.partner_show_ids[0],
                 id: fairExhibitor.id,
-                _id: fairExhibitor._id,
+                exhibitor_id: fairExhibitor.partner_id,
               })
             } else {
               exhibitor_groups[letter] = {
@@ -370,7 +370,7 @@ const FairType = new GraphQLObjectType({
                     name: fairExhibitor.name,
                     profile_id: fairExhibitor.partner_show_ids[0],
                     id: fairExhibitor.id,
-                    _id: fairExhibitor._id,
+                    exhibitor_id: fairExhibitor.partner_id,
                   },
                 ],
               }
