@@ -3379,6 +3379,9 @@ type FairExhibitor {
   # Exhibitors id
   id: String
 
+  # Exhibitors _id
+  partner_id: String
+
   # Partner default profile id
   profile_id: String
 }
