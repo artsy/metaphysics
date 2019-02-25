@@ -55,6 +55,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           displayable: true,
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+          has_location: true,
           total_count: true,
         }
         delete gravityOptions.page
