@@ -146,11 +146,12 @@ describe("Show type", () => {
     }
   })
 
-  it("returns a fair booth even with displayable set to true", async () => {
+  it("returns a fair booth even with displayable set to false", async () => {
     showData.fair = {
       id: "the-art-show-2019",
       name: "The Art Show 2019",
     }
+    showData.displayable = false
 
     const query = gql`
       {
