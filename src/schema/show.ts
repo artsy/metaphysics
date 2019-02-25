@@ -654,7 +654,7 @@ const Show = {
   resolve: (_root, { id }, _request, { rootValue: { showLoader } }) => {
     return showLoader(id)
       .then(show => {
-        if (!show.displayable && !show.is_reference) {
+        if (!show.displayable && !show.is_reference && !isExisty(show.fair)) {
           return new HTTPError("Show Not Found", 404)
         }
         return show

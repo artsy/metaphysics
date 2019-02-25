@@ -146,6 +146,28 @@ describe("Show type", () => {
     }
   })
 
+  it("returns a fair booth even with displayable set to false", async () => {
+    showData.fair = {
+      id: "the-art-show-2019",
+      name: "The Art Show 2019",
+    }
+    showData.displayable = false
+
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          name
+          fair {
+            id
+            name
+          }
+        }
+      }
+    `
+    const data = await runQuery(query, rootValue)
+    expect(data.show.fair.id).toEqual("the-art-show-2019")
+  })
+
   describe("is_followed", () => {
     let gravityLoader
 
