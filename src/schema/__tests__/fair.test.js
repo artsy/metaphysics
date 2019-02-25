@@ -140,7 +140,7 @@ describe("Fair", () => {
                 name: "ArtHelix Gallery",
                 id: "arthelix-gallery",
                 profile_id: "arthelix-gallery",
-                exhibitor_id: "1234567890",
+                partner_id: "1234567890",
               },
             ],
           },
@@ -197,7 +197,7 @@ describe("Fair", () => {
             exhibitors {
               name
               id
-              exhibitor_id
+              partner_id
               profile_id
             }
           }
@@ -218,7 +218,7 @@ describe("Fair", () => {
               {
                 name: "ArtHelix Gallery",
                 id: "arthelix-gallery",
-                exhibitor_id: "1234567890",
+                partner_id: "1234567890",
                 profile_id: "arthelix-gallery",
               },
             ],
