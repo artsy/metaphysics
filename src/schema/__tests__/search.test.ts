@@ -10,6 +10,7 @@ describe("Search", () => {
       {
         _id: "artistId",
         label: "Artist",
+        model: "artist",
         id: "david-bowie",
         display: "David Bowie",
         image_url: "https://example.com/artist.jpg",
@@ -18,6 +19,7 @@ describe("Search", () => {
         _id: "artworkId",
         id: "david-bowie-self-portrait",
         label: "Artwork",
+        model: "artwork",
         display: "Self Portrait",
         image_url: "https://example.com/artwork.jpg",
       },
@@ -25,29 +27,34 @@ describe("Search", () => {
         _id: "galleryID",
         id: "catty-gallery",
         label: "Profile",
+        model: "profile",
         owner_type: "PartnerGallery",
       },
       {
         _id: "museumID",
         id: "catty-museum",
         label: "Profile",
+        model: "profile",
         owner_type: "PartnerInstitution",
       },
       {
         _id: "fairID",
         id: "catty-fair",
         label: "Profile",
+        model: "profile",
         owner_type: "FairOrganizer",
       },
       {
         _id: "geneID",
         id: "catty-gene",
         label: "Gene",
+        model: "gene",
       },
       {
         _id: "auctionID",
         id: "catty-auction",
         label: "Sale",
+        model: "sale",
       },
     ]
 
@@ -114,18 +121,22 @@ describe("Search", () => {
 
       const gallerySearchableItemNode = data!.search.edges[2].node
       expect(gallerySearchableItemNode.searchableType).toBe("Gallery")
+      expect(gallerySearchableItemNode.href).toBe("/catty-gallery")
 
       const museumSearchableItemNode = data!.search.edges[3].node
       expect(museumSearchableItemNode.searchableType).toBe("Institution")
+      expect(museumSearchableItemNode.href).toBe("/catty-museum")
 
       const fairSearchableItemNode = data!.search.edges[4].node
       expect(fairSearchableItemNode.searchableType).toBe("Fair")
 
       const geneSearchableItemNode = data!.search.edges[5].node
       expect(geneSearchableItemNode.searchableType).toBe("Category")
+      expect(geneSearchableItemNode.href).toBe("/gene/catty-gene")
 
       const auctionSearchableItemNode = data!.search.edges[6].node
       expect(auctionSearchableItemNode.searchableType).toBe("Auction")
+      expect(auctionSearchableItemNode.href).toBe("/auction/catty-auction")
     })
   })
 

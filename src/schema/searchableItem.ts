@@ -8,6 +8,22 @@ import { toGlobalId } from "graphql-relay"
 import { Searchable } from "schema/searchable"
 import { NodeInterface, GravityIDFields } from "schema/object_identification"
 
+const hrefFromAutosuggestResult = item => {
+  if (item.href) return item.href
+  switch (item.label) {
+    case "Profile":
+      return `/${item.id}`
+    case "Fair":
+      return `/${item.profile_id}`
+    case "Sale":
+      return `/auction/${item.id}`
+    case "City":
+      return `/shows/${item.id}`
+    default:
+      return `/${item.model}/${item.id}`
+  }
+}
+
 export const SearchableItem = new GraphQLObjectType({
   name: "SearchableItem",
   interfaces: [NodeInterface, Searchable],
@@ -27,16 +43,7 @@ export const SearchableItem = new GraphQLObjectType({
     },
     href: {
       type: GraphQLString,
-      resolve: item => {
-        switch (item.label) {
-          case "Artwork":
-            return `/artwork/${item.id}`
-          case "Artist":
-            return `/artist/${item.id}`
-          default:
-            return ""
-        }
-      },
+      resolve: item => hrefFromAutosuggestResult(item),
     },
     searchableType: {
       type: GraphQLString,
@@ -62,6 +69,9 @@ export const SearchableItem = new GraphQLObjectType({
           // in the special `match` JSON returned from the Gravity API.
           case "Sale":
             return "Auction"
+
+          case "MarketingCollection":
+            return "Collection"
 
           default:
             return label
