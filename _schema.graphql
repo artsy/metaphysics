@@ -7404,6 +7404,7 @@ type Query {
   # Find partners by ID
   _unused_gravity_partners(ids: [ID]!): [DoNotUseThisPartner]
   marketingCollections(
+    randomize: Boolean
     size: Int
     showOnEditorial: Boolean
     artistID: String

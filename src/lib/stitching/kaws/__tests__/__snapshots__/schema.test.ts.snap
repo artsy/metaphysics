@@ -79,7 +79,7 @@ type MarketingCollectionQuery {
 scalar MarketingDateTime
 
 type Query {
-  marketingCollections(size: Int, showOnEditorial: Boolean, artistID: String): [MarketingCollection!]!
+  marketingCollections(randomize: Boolean, size: Int, showOnEditorial: Boolean, artistID: String): [MarketingCollection!]!
   marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
 }
