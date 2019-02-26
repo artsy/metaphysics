@@ -8,12 +8,6 @@ import gravity from "lib/apis/gravity"
 import impulse from "lib/apis/impulse"
 import positron from "lib/apis/positron"
 
-import {
-  StaticPathLoader,
-  DynamicPathLoader,
-  PathGenerator,
-} from "./loader_interface"
-
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
 
@@ -25,39 +19,6 @@ export type API = (
 
 export interface APIOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE"
-}
-
-export interface LoaderFactory {
-  <T = any>(
-    path: string,
-    globalParams?: any,
-    pathAPIOptions?: APIOptions
-  ): StaticPathLoader<T>
-  <T = any, P = string>(
-    path: PathGenerator<P>,
-    globalParams?: any,
-    pathAPIOptions?: APIOptions
-  ): DynamicPathLoader<T, P>
-  <T = any>(
-    path: string,
-    globalParams: any,
-    pathAPIOptions: { headers: false } & APIOptions
-  ): StaticPathLoader<T>
-  <T = any, P = string>(
-    path: PathGenerator<P>,
-    globalParams: any,
-    pathAPIOptions: { headers: false } & APIOptions
-  ): DynamicPathLoader<T, P>
-  <T = any>(
-    path: string,
-    globalParams: any,
-    pathAPIOptions: { headers: true } & APIOptions
-  ): StaticPathLoader<{ body: T; headers: any }>
-  <T = any, P = string>(
-    path: PathGenerator<P>,
-    globalParams: any,
-    pathAPIOptions: { headers: true } & APIOptions
-  ): DynamicPathLoader<{ body: T; headers: any }, P>
 }
 
 export default opts => ({

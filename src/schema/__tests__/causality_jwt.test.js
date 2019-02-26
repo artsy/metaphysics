@@ -7,7 +7,7 @@ import config from "config"
 const { HMAC_SECRET } = config
 
 describe("CausalityJWT", () => {
-  let rootValue
+  let context
 
   beforeEach(() => {
     const me = {
@@ -25,7 +25,7 @@ describe("CausalityJWT", () => {
 
     const mePartners = [{ _id: "fooPartner" }]
 
-    rootValue = {
+    context = {
       saleLoader: sinon.stub().returns(Promise.resolve(sale)),
       meLoader: sinon.stub().returns(Promise.resolve(me)),
       mePartnersLoader: sinon.stub().returns(Promise.resolve(mePartners)),
@@ -46,7 +46,7 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "foo")
     }`
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "bidder",
@@ -61,7 +61,7 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "slug")
     }`
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "bidder",
@@ -76,8 +76,7 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "slug")
     }`
-    delete rootValue.accessToken
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, { saleLoader: context.saleLoader }).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
@@ -92,8 +91,8 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "bar")
     }`
-    rootValue.meBiddersLoader = sinon.stub().returns(Promise.resolve([]))
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    context.meBiddersLoader = sinon.stub().returns(Promise.resolve([]))
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
@@ -108,7 +107,7 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "foo")
     }`
-    rootValue.meBiddersLoader = sinon.stub().returns(
+    context.meBiddersLoader = sinon.stub().returns(
       Promise.resolve([
         {
           id: "bidder1",
@@ -117,7 +116,7 @@ describe("CausalityJWT", () => {
         },
       ])
     )
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
@@ -132,8 +131,8 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: OPERATOR, sale_id: "foo")
     }`
-    rootValue.mePartnersLoader = sinon.stub().returns(Promise.resolve([]))
-    return runAuthenticatedQuery(query, rootValue).catch(e => {
+    context.mePartnersLoader = sinon.stub().returns(Promise.resolve([]))
+    return runAuthenticatedQuery(query, context).catch(e => {
       expect(e.message).toEqual("Unauthorized to be operator")
     })
   })
@@ -142,7 +141,7 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: OPERATOR, sale_id: "foo")
     }`
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "externalOperator",

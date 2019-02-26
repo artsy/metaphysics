@@ -1,9 +1,16 @@
 import { clone } from "lodash"
 import Sale from "./sale/index"
 import SaleSorts from "./sale/sorts"
-import { GraphQLList, GraphQLInt, GraphQLBoolean, GraphQLString } from "graphql"
+import {
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+  GraphQLString,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const Sales = {
+const Sales: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Sale.type),
   description: "A list of Sales",
   args: {
@@ -34,7 +41,7 @@ const Sales = {
     },
     sort: SaleSorts,
   },
-  resolve: (_root, options, _request, { rootValue: { salesLoader } }) => {
+  resolve: (_root, options, { salesLoader }) => {
     const cleanedOptions = clone(options)
     // Rename ids plural to id to match Gravity
     if (options.ids) {

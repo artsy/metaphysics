@@ -1,11 +1,12 @@
 import gravity from "lib/apis/gravity" // Uncached
-import { GraphQLObjectType, GraphQLBoolean } from "graphql"
+import { GraphQLObjectType, GraphQLBoolean, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const StatusType = new GraphQLObjectType({
+const StatusType = new GraphQLObjectType<any, ResolverContext>({
   name: "Status",
   fields: {
     gravity: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "StatusGravity",
         description: "Gravity ping",
         fields: {
@@ -30,7 +31,7 @@ const StatusType = new GraphQLObjectType({
   },
 })
 
-const Status = {
+const Status: GraphQLFieldConfig<void, ResolverContext> = {
   type: StatusType,
   resolve: () => ({}),
 }

@@ -2,7 +2,7 @@ import { runQuery } from "test/utils"
 
 describe("Layer type", () => {
   let artworksResponse
-  let rootValue
+  let context
 
   beforeEach(() => {
     artworksResponse = [
@@ -17,7 +17,7 @@ describe("Layer type", () => {
       },
     ]
 
-    rootValue = {
+    context = {
       relatedLayerArtworksLoader: () => Promise.resolve(artworksResponse),
       artworkLoader: () => Promise.resolve({ id: "artwork" }),
       relatedLayersLoader: () => Promise.resolve([{ id: "main" }]),
@@ -37,7 +37,7 @@ describe("Layer type", () => {
       }
     `
 
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       artwork: {
         layers: [
@@ -67,7 +67,7 @@ describe("Layer type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         artwork: {
@@ -113,7 +113,7 @@ describe("Layer type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         artwork: {
@@ -145,7 +145,7 @@ describe("Layer type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         artwork: {

@@ -46,7 +46,7 @@ describe("HomePageArtistModule", () => {
     ],
   }
 
-  const rootValue = {
+  const context = {
     trendingArtistsLoader: () => Promise.resolve(trendingArtistData),
     popularArtistsLoader: () => Promise.resolve(popularArtistData),
     suggestedSimilarArtistsLoader: () => Promise.resolve(similarArtistData),
@@ -54,7 +54,7 @@ describe("HomePageArtistModule", () => {
 
   describe("when signed-in", () => {
     it("returns trending artists", () => {
-      return runAuthenticatedQuery(query("TRENDING"), rootValue).then(
+      return runAuthenticatedQuery(query("TRENDING"), context).then(
         ({ home_page }) => {
           expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
         }
@@ -62,7 +62,7 @@ describe("HomePageArtistModule", () => {
     })
 
     it("returns trending artists", () => {
-      return runAuthenticatedQuery(query("TRENDING"), rootValue).then(
+      return runAuthenticatedQuery(query("TRENDING"), context).then(
         ({ home_page }) => {
           expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
         }
@@ -70,7 +70,7 @@ describe("HomePageArtistModule", () => {
     })
 
     it("returns suggestions", () => {
-      return runAuthenticatedQuery(query("SUGGESTED"), rootValue).then(
+      return runAuthenticatedQuery(query("SUGGESTED"), context).then(
         ({ home_page }) => {
           expect(home_page.artist_module.results).toEqual([{ id: "suggested" }])
         }
@@ -80,7 +80,7 @@ describe("HomePageArtistModule", () => {
 
   describe("when signed-out", () => {
     it("returns trending artists", () => {
-      return runAuthenticatedQuery(query("TRENDING"), rootValue).then(
+      return runAuthenticatedQuery(query("TRENDING"), context).then(
         ({ home_page }) => {
           expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
         }
@@ -88,7 +88,7 @@ describe("HomePageArtistModule", () => {
     })
 
     it("returns trending artists", () => {
-      return runAuthenticatedQuery(query("TRENDING"), rootValue).then(
+      return runAuthenticatedQuery(query("TRENDING"), context).then(
         ({ home_page }) => {
           expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
         }

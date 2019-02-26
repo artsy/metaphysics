@@ -1,12 +1,16 @@
 import Fair from "schema/fair"
 import { GraphQLList, GraphQLObjectType, GraphQLNonNull } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-export const HomePageFairsModuleType = new GraphQLObjectType({
+export const HomePageFairsModuleType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "HomePageFairsModule",
   fields: {
     results: {
       type: new GraphQLNonNull(new GraphQLList(Fair.type)),
-      resolve: (_root, _options, _request, { rootValue: { fairsLoader } }) => {
+      resolve: (_root, _options, { fairsLoader }) => {
         // Check for all fairs that are currently running
         const gravityOptions = {
           has_full_feature: true,

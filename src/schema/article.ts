@@ -1,7 +1,7 @@
 import cached from "./fields/cached"
 import { connectionWithCursorInfo } from "schema/fields/pagination"
 import AuthorType from "./author"
-import Image from "./image"
+import Image, { normalizeImageData } from "./image"
 import date from "./fields/date"
 import { IDFields, NodeInterface } from "./object_identification"
 import {
@@ -10,9 +10,11 @@ import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const ArticleType = new GraphQLObjectType({
+const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
   interfaces: [NodeInterface],
   fields: () => ({
@@ -45,7 +47,7 @@ const ArticleType = new GraphQLObjectType({
     },
     thumbnail_image: {
       type: Image.type,
-      resolve: ({ thumbnail_image }) => Image.resolve(thumbnail_image),
+      resolve: ({ thumbnail_image }) => normalizeImageData(thumbnail_image),
     },
     tier: {
       type: GraphQLInt,
@@ -57,7 +59,7 @@ const ArticleType = new GraphQLObjectType({
   }),
 })
 
-const Article = {
+const Article: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArticleType,
   description: "An Article",
   args: {
@@ -66,8 +68,7 @@ const Article = {
       description: "The ID of the Article",
     },
   },
-  resolve: (_root, { id }, _request, { rootValue: { articleLoader } }) =>
-    articleLoader(id),
+  resolve: (_root, { id }, { articleLoader }) => articleLoader(id),
 }
 
 export default Article

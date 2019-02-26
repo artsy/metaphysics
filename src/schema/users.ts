@@ -1,8 +1,9 @@
 import { clone } from "lodash"
 import { UserType } from "./user"
-import { GraphQLList, GraphQLString } from "graphql"
+import { GraphQLList, GraphQLString, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const Users = {
+const Users: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(UserType),
   description: "A list of Users",
   args: {
@@ -10,7 +11,8 @@ const Users = {
       type: new GraphQLList(GraphQLString),
     },
   },
-  resolve: (_root, options, _request, { rootValue: { usersLoader } }) => {
+  resolve: (_root, options, { usersLoader }) => {
+    if (!usersLoader) return null
     const cleanedOptions = clone(options)
     // make ids singular to match gravity :id
     if (options.ids) {

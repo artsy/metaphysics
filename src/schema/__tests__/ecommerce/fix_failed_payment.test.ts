@@ -5,7 +5,7 @@ import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { OrderBuyerFields } from "./order_fields"
 import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
 
-let rootValue
+let context
 
 describe("FixFailedPayment Mutation", () => {
   const mutation = gql`
@@ -38,11 +38,11 @@ describe("FixFailedPayment Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
 
-    return runQuery(mutation, rootValue).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceFixFailedPayment.orderOrError.order).toEqual(
-        sampleOrder({includeCreditCard: true})
+        sampleOrder({ includeCreditCard: true })
       )
     })
   })
@@ -61,9 +61,9 @@ describe("FixFailedPayment Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
 
-    return runQuery(mutation, rootValue).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceFixFailedPayment.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

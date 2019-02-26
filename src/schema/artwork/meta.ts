@@ -2,7 +2,13 @@ import { isEmpty, map } from "lodash"
 import { join, truncate } from "lib/helpers"
 import { getDefault } from "schema/image"
 import { setVersion } from "schema/image/normalize"
-import { GraphQLInt, GraphQLString, GraphQLObjectType } from "graphql"
+import {
+  GraphQLInt,
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
 const titleWithDate = ({ title, date }) =>
   join(" ", [title, date ? `(${date})` : undefined])
@@ -23,7 +29,7 @@ const partnerDescription = ({ partner, forsale }, expanded = true) => {
     : `From ${name}`
 }
 
-const ArtworkMetaType = new GraphQLObjectType({
+const ArtworkMetaType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkMeta",
   fields: {
     description: {
@@ -77,7 +83,9 @@ const ArtworkMetaType = new GraphQLObjectType({
   },
 })
 
-export default {
+const Meta: GraphQLFieldConfig<any, ResolverContext> = {
   type: ArtworkMetaType,
   resolve: x => x,
 }
+
+export default Meta

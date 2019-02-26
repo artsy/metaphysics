@@ -6,9 +6,11 @@ import {
   GraphQLBoolean,
   GraphQLObjectType,
   GraphQLEnumType,
+  GraphQLFieldConfig,
 } from "graphql"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import { Sellable } from "./sellable"
+import { ResolverContext } from "types/graphql"
 
 export const EditionSetSorts = {
   type: new GraphQLEnumType({
@@ -28,7 +30,7 @@ const EditionSetAvailabilities = [
   "permanent collection",
 ]
 
-const EditionSetType = new GraphQLObjectType({
+const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
   name: "EditionSet",
   interfaces: [Sellable],
   fields: {
@@ -91,6 +93,8 @@ const EditionSetType = new GraphQLObjectType({
   },
 })
 
-export default {
+const EditionSet: GraphQLFieldConfig<void, ResolverContext> = {
   type: EditionSetType,
 }
+
+export default EditionSet

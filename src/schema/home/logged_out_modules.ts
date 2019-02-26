@@ -1,5 +1,7 @@
+import { HomePageArtworkModuleDetails } from "./types"
+
 export default (auction, fair) => {
-  const modules = [
+  const modules: HomePageArtworkModuleDetails[] = [
     {
       key: "popular_artists",
       display: true,

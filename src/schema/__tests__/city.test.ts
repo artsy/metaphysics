@@ -86,7 +86,7 @@ describe("City", () => {
   })
 
   describe("shows", () => {
-    let query, rootValue, mockShows, mockShowsLoader
+    let query, context, mockShows, mockShowsLoader
 
     beforeEach(() => {
       query = gql`
@@ -108,7 +108,7 @@ describe("City", () => {
       mockShowsLoader = jest.fn(() =>
         Promise.resolve({ body: mockShows, headers: { "x-total-count": 1 } })
       )
-      rootValue = {
+      context = {
         showsWithHeadersLoader: mockShowsLoader,
         accessToken: null,
         userID: null,
@@ -116,7 +116,7 @@ describe("City", () => {
     })
 
     it("resolves nearby shows", () => {
-      return runQuery(query, rootValue).then(result => {
+      return runQuery(query, context).then(result => {
         expect(result!.city).toEqual({
           name: "Sacramende",
           shows: {
@@ -137,8 +137,8 @@ describe("City", () => {
     })
 
     it("requests displayable shows, by default", async () => {
-      await runQuery(query, rootValue)
-      const gravityOptions = rootValue.showsWithHeadersLoader.mock.calls[0][0]
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
       expect(gravityOptions).toMatchObject({ displayable: true })
       expect(gravityOptions).not.toHaveProperty("discoverable")
@@ -159,8 +159,8 @@ describe("City", () => {
           }
         }
       `
-      await runQuery(query, rootValue)
-      const gravityOptions = rootValue.showsWithHeadersLoader.mock.calls[0][0]
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
       expect(gravityOptions).toMatchObject({ discoverable: true })
       expect(gravityOptions).not.toHaveProperty("displayable")
@@ -182,13 +182,11 @@ describe("City", () => {
 
       const mockFairs = [{ id: "first-fair" }]
       const mockFairsLoader = jest.fn(() => Promise.resolve(mockFairs))
-      const rootValue = {
+      const context = {
         fairsLoader: mockFairsLoader,
-        accessToken: null,
-        userID: null,
       }
 
-      return runQuery(query, rootValue).then(result => {
+      return runQuery(query, context).then(result => {
         expect(result!.city).toEqual({
           name: "Sacramende",
           fairs: mockFairs,

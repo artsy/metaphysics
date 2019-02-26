@@ -7,13 +7,13 @@ import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
 import gql from "lib/gql"
 import { OrderSellerFields } from "./order_fields"
 
-let rootValue
+let context
 
 describe("Order query", () => {
   beforeEach(() => {
     const resolvers = { Query: { order: () => exchangeOrderJSON } }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
   })
   it("fetches order by id", () => {
     const query = gql`
@@ -24,7 +24,7 @@ describe("Order query", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.order).toEqual(
         sampleOrder({
           fulfillments: true,

@@ -9,6 +9,7 @@ import {
 } from "graphql"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import Artist from "schema/artist"
+import { ResolverContext } from "types/graphql"
 
 export const SubmissionDimensionAggregation = new GraphQLEnumType({
   name: "SubmissionDimensionAggregation",
@@ -91,7 +92,7 @@ export const SubmissionStateAggregation = new GraphQLEnumType({
   },
 })
 
-export const SubmissionType = new GraphQLObjectType({
+export const SubmissionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ConsignmentSubmission",
   description: "A work to be consigned to the user",
   interfaces: [NodeInterface],
@@ -179,12 +180,7 @@ export const SubmissionType = new GraphQLObjectType({
     },
     artist: {
       type: Artist.type,
-      resolve: (
-        { artist_id },
-        _args,
-        _request,
-        { rootValue: { artistLoader } }
-      ) => {
+      resolve: ({ artist_id }, _args, { artistLoader }) => {
         if (!artist_id) return null
         return artistLoader(artist_id).catch(() => null)
       },

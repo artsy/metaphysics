@@ -17,11 +17,11 @@ describe("User-Agent (with the real data loaders)", () => {
     `
 
     const userAgent = "catty browser"
-    const rootValue = createLoaders("access-token", "user-id", {
+    const context = createLoaders("access-token", "user-id", {
       userAgent,
     })
     expect.assertions(1)
-    await runQuery(query, rootValue)
+    await runQuery(query, context)
 
     expect(gravity).toBeCalledWith("artist/andy-warhol?", null, {
       userAgent,
@@ -40,9 +40,9 @@ describe("User-Agent (with the real data loaders)", () => {
       }
     `
     const userAgent = "catty browser"
-    const rootValue = createLoaders("secret", "user-42", { userAgent })
+    const context = createLoaders("secret", "user-42", { userAgent })
     expect.assertions(1)
-    await runAuthenticatedQuery(query, rootValue)
+    await runAuthenticatedQuery(query, context)
 
     expect(gravity).toBeCalledWith("me/lot_standings?", "secret", {
       userAgent,

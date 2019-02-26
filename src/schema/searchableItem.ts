@@ -7,6 +7,7 @@ import {
 import { toGlobalId } from "graphql-relay"
 import { Searchable } from "schema/searchable"
 import { NodeInterface, GravityIDFields } from "schema/object_identification"
+import { ResolverContext } from "types/graphql"
 
 const hrefFromAutosuggestResult = item => {
   if (item.href) return item.href
@@ -24,7 +25,7 @@ const hrefFromAutosuggestResult = item => {
   }
 }
 
-export const SearchableItem = new GraphQLObjectType({
+export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
   name: "SearchableItem",
   interfaces: [NodeInterface, Searchable],
   fields: {

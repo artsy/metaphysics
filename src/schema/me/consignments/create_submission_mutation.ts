@@ -1,8 +1,9 @@
-import { mutationWithClientMutationId } from "graphql-relay"
+import { mutationWithClientMutationId, MutationConfig } from "graphql-relay"
 import { SubmissionType } from "./submission"
 import { omit } from "lodash"
+import { ResolverContext } from "types/graphql"
 
-export const config = {
+export const config: MutationConfig<any, any, ResolverContext> = {
   name: "CreateSubmissionMutation",
   description: "Create a new consignment submission using Convection",
   inputFields: {
@@ -14,11 +15,7 @@ export const config = {
       resolve: response => response,
     },
   },
-  mutateAndGetPayload: (
-    request,
-    _response,
-    { rootValue: { submissionCreateLoader } }
-  ) => {
+  mutateAndGetPayload: (request, { submissionCreateLoader }) => {
     if (!submissionCreateLoader) return null
     return submissionCreateLoader(request)
   },

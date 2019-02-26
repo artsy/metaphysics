@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "test/utils"
 
 describe("BidderStatus type", () => {
   it("returns the correct state when you are the high bidder on a work", () => {
-    const rootValue = {
+    const context = {
       lotStandingLoader: sinon.stub().returns(
         Promise.resolve([
           {
@@ -57,7 +57,7 @@ describe("BidderStatus type", () => {
       }
     `
 
-    return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
+    return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
         bidder_status: {
           is_highest_bidder: true,
@@ -69,7 +69,7 @@ describe("BidderStatus type", () => {
   })
 
   it("returns the correct state when you are outbid on a work", () => {
-    const rootValue = {
+    const context = {
       lotStandingLoader: sinon.stub().returns(
         Promise.resolve([
           {
@@ -108,7 +108,7 @@ describe("BidderStatus type", () => {
       }
     `
 
-    return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
+    return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
         bidder_status: {
           is_highest_bidder: false,

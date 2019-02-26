@@ -3,7 +3,7 @@ import { runQuery } from "test/utils"
 
 describe("Article type", () => {
   let article = null
-  let rootValue = null
+  let context = null
 
   beforeEach(() => {
     article = {
@@ -32,7 +32,7 @@ describe("Article type", () => {
       ],
     }
 
-    rootValue = {
+    context = {
       articleLoader: sinon.stub().returns(Promise.resolve(article)),
     }
   })
@@ -47,7 +47,7 @@ describe("Article type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data.article.id).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
     })
@@ -67,7 +67,7 @@ describe("Article type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data.article.id).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
       expect(data.article.contributing_authors).toEqual([

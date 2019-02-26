@@ -4,7 +4,7 @@ import { runQuery } from "test/utils"
 
 describe("PartnerShow type", () => {
   let showData = null
-  let rootValue = null
+  let context = null
 
   beforeEach(() => {
     showData = {
@@ -20,7 +20,7 @@ describe("PartnerShow type", () => {
       eligible_artworks_count: 8,
     }
 
-    rootValue = {
+    context = {
       showLoader: sinon.stub().returns(Promise.resolve(showData)),
     }
   })
@@ -34,7 +34,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           has_location: true,
@@ -51,7 +51,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           has_location: true,
@@ -68,7 +68,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           has_location: true,
@@ -84,7 +84,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           has_location: false,
@@ -101,7 +101,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue)
+    return runQuery(query, context)
       .then(() => {
         throw new Error("Did not expect query to not throw an error")
       })
@@ -121,7 +121,7 @@ describe("PartnerShow type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           id: "new-museum-1-2015-triennial-surround-audience",
@@ -141,7 +141,7 @@ describe("PartnerShow type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           exhibition_period: "Feb 25 – May 24, 2015",
@@ -158,7 +158,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           status_update: "Closing tomorrow",
@@ -174,7 +174,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
@@ -183,7 +183,7 @@ describe("PartnerShow type", () => {
     })
   })
   it("includes the total number of artworks", () => {
-    rootValue.partnerShowArtworksLoader = sinon
+    context.partnerShowArtworksLoader = sinon
       .stub()
       .returns(Promise.resolve({ headers: { "x-total-count": 42 } }))
     const query = `
@@ -195,7 +195,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           counts: {
@@ -215,7 +215,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           counts: {
@@ -226,7 +226,7 @@ describe("PartnerShow type", () => {
     })
   })
   it("includes the number of artworks by a specific artist", () => {
-    rootValue.partnerShowArtworksLoader = sinon
+    context.partnerShowArtworksLoader = sinon
       .stub()
       .returns(Promise.resolve({ headers: { "x-total-count": 2 } }))
     const query = `
@@ -238,7 +238,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner_show: {
           counts: {
@@ -249,7 +249,7 @@ describe("PartnerShow type", () => {
     })
   })
   it("does not return errors when there is no cover image", () => {
-    rootValue.partnerShowArtworksLoader = sinon
+    context.partnerShowArtworksLoader = sinon
       .stub()
       .returns(Promise.resolve({ body: [] }))
     const query = `
@@ -261,7 +261,7 @@ describe("PartnerShow type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(({ partner_show }) => {
+    return runQuery(query, context).then(({ partner_show }) => {
       expect(partner_show).toEqual({
         cover_image: null,
       })
@@ -283,7 +283,7 @@ describe("PartnerShow type", () => {
           id: "pier-paolo-calzolari-untitled-146",
         },
       ]
-      rootValue = {
+      context = {
         partnerShowArtworksLoader: () =>
           Promise.resolve({
             body: artworksResponse,
@@ -308,7 +308,7 @@ describe("PartnerShow type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         partner_show: {
@@ -348,7 +348,7 @@ describe("PartnerShow type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         partner_show: {
@@ -374,7 +374,7 @@ describe("PartnerShow type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         partner_show: {

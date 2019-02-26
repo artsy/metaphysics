@@ -17,7 +17,7 @@ describe("OrderedSets type", () => {
   }
 `
 
-  const rootValue = {
+  const context = {
     setsLoader: sinon.stub().returns(
       Promise.resolve([
         {
@@ -39,7 +39,7 @@ describe("OrderedSets type", () => {
   }
 
   it("fetches sets by key", () => {
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         ordered_sets: [
           {

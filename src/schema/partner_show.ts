@@ -16,7 +16,7 @@ import Partner from "./partner"
 import Fair from "./fair"
 import Artwork, { artworkConnection } from "./artwork"
 import Location from "./location"
-import Image, { getDefault } from "./image"
+import Image, { getDefault, normalizeImageData } from "./image"
 import PartnerShowEventType from "./partner_show_event"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import { pageable } from "relay-cursor-paging"
@@ -27,10 +27,12 @@ import {
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
+  GraphQLFieldConfig,
 } from "graphql"
 import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
 import { connectionFromArraySlice } from "graphql-relay"
+import { ResolverContext } from "types/graphql"
 
 const kind = ({ artists, fair }) => {
   if (isExisty(fair)) return "fair"
@@ -54,7 +56,7 @@ const artworksArgs = {
   },
 }
 
-const PartnerShowType = new GraphQLObjectType({
+const PartnerShowType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerShow",
   // @ts-ignore
   deprecationReason: "Prefer to use Show schema",
@@ -85,13 +87,8 @@ const PartnerShowType = new GraphQLObjectType({
           defaultValue: 25,
         },
       },
-      resolve: (
-        show,
-        options,
-        _request,
-        { rootValue: { partnerShowArtworksLoader } }
-      ) => {
-        let fetch = null
+      resolve: (show, options, { partnerShowArtworksLoader }) => {
+        let fetch: Promise<any>
         if (options.all) {
           fetch = allViaLoader(
             partnerShowArtworksLoader,
@@ -114,12 +111,7 @@ const PartnerShowType = new GraphQLObjectType({
       description: "A connection of artworks featured in the show",
       type: artworkConnection,
       args: pageable(artworksArgs),
-      resolve: (
-        show,
-        options,
-        _request,
-        { rootValue: { partnerShowArtworksLoader } }
-      ) => {
+      resolve: (show, options, { partnerShowArtworksLoader }) => {
         const loaderOptions = {
           partner_id: show.partner.id,
           show_id: show.id,
@@ -156,7 +148,7 @@ const PartnerShowType = new GraphQLObjectType({
       },
     },
     counts: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "PartnerShowCounts",
         fields: {
           artworks: {
@@ -170,8 +162,7 @@ const PartnerShowType = new GraphQLObjectType({
             resolve: (
               { id, partner },
               options,
-              _request,
-              { rootValue: { partnerShowArtworksLoader } }
+              { partnerShowArtworksLoader }
             ) => {
               return totalViaLoader(
                 partnerShowArtworksLoader,
@@ -192,11 +183,10 @@ const PartnerShowType = new GraphQLObjectType({
       resolve: (
         { id, partner, image_versions, image_url },
         _options,
-        _request,
-        { rootValue: { partnerShowArtworksLoader } }
+        { partnerShowArtworksLoader }
       ) => {
         if (image_versions && image_versions.length && image_url) {
-          return Image.resolve({ image_versions, image_url })
+          return normalizeImageData({ image_versions, image_url })
         }
 
         return (
@@ -209,7 +199,7 @@ const PartnerShowType = new GraphQLObjectType({
             }
           ).then(({ body }) => {
             const artwork = body[0]
-            return artwork && Image.resolve(getDefault(artwork.images))
+            return artwork && normalizeImageData(getDefault(artwork.images))
           })
         )
       },
@@ -225,12 +215,7 @@ const PartnerShowType = new GraphQLObjectType({
     end_at: date,
     events: {
       type: new GraphQLList(PartnerShowEventType),
-      resolve: (
-        { partner, id },
-        _options,
-        _request,
-        { rootValue: { partnerShowLoader } }
-      ) =>
+      resolve: ({ partner, id }, _options, { partnerShowLoader }) =>
         // Gravity redirects from /api/v1/show/:id => /api/v1/partner/:partner_id/show/:show_id
         // this creates issues where events will remain cached. Fetch the non-redirected
         // route to circumvent this
@@ -266,13 +251,8 @@ const PartnerShowType = new GraphQLObjectType({
           type: GraphQLInt,
         },
       },
-      resolve: (
-        { id },
-        options,
-        _request,
-        { rootValue: { partnerShowImagesLoader } }
-      ) => {
-        return partnerShowImagesLoader(id, options).then(Image.resolve)
+      resolve: ({ id }, options, { partnerShowImagesLoader }) => {
+        return partnerShowImagesLoader(id, options).then(normalizeImageData)
       },
     },
     has_location: {
@@ -302,12 +282,7 @@ const PartnerShowType = new GraphQLObjectType({
     },
     kind: {
       type: GraphQLString,
-      resolve: (
-        show,
-        _options,
-        _request,
-        { rootValue: { partnerShowLoader } }
-      ) => {
+      resolve: (show, _options, { partnerShowLoader }) => {
         if (show.artists) return kind(show)
         return partnerShowLoader({
           partner_id: show.partner.id,
@@ -324,11 +299,10 @@ const PartnerShowType = new GraphQLObjectType({
       resolve: (
         { id, partner, image_versions, image_url },
         _options,
-        _request,
-        { rootValue: { partnerShowArtworksLoader } }
+        { partnerShowArtworksLoader }
       ) => {
         if (image_versions && image_versions.length && image_url) {
-          return Image.resolve({ image_versions, image_url })
+          return normalizeImageData({ image_versions, image_url })
         }
 
         return partnerShowArtworksLoader(
@@ -337,7 +311,7 @@ const PartnerShowType = new GraphQLObjectType({
             published: true,
           }
         ).then(({ body }) => {
-          return Image.resolve(
+          return normalizeImageData(
             getDefault(find(body, { can_share_image: true }))
           )
         })
@@ -375,7 +349,7 @@ const PartnerShowType = new GraphQLObjectType({
   }),
 })
 
-const PartnerShow = {
+const PartnerShow: GraphQLFieldConfig<void, ResolverContext> = {
   type: PartnerShowType,
   description: "A Partner Show",
   args: {
@@ -384,7 +358,7 @@ const PartnerShow = {
       description: "The slug or ID of the PartnerShow",
     },
   },
-  resolve: (_root, { id }, _request, { rootValue: { showLoader } }) => {
+  resolve: (_root, { id }, { showLoader }) => {
     return showLoader(id).then(show => {
       if (!show.displayable) {
         return new HTTPError("Show Not Found", 404)

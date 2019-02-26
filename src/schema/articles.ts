@@ -1,8 +1,14 @@
 import Article from "./article"
 import ArticleSorts from "./sorts/article_sorts"
-import { GraphQLString, GraphQLBoolean, GraphQLList } from "graphql"
+import {
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLList,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const Articles = {
+const Articles: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Article.type),
   description: "A list of Articles",
   args: {
@@ -18,7 +24,7 @@ const Articles = {
     },
     sort: ArticleSorts,
   },
-  resolve: (_root, options, _request, { rootValue: { articlesLoader } }) => {
+  resolve: (_root, options, { articlesLoader }) => {
     return articlesLoader(options).then(articles => articles.results)
   },
 }

@@ -1,6 +1,15 @@
 import { isExisty } from "lib/helpers"
 
-export function isZoomable(image) {
+type ZoomableImage = {
+  tile_base_url: string
+  tile_format: string
+  tile_size: number
+  tile_overlap: number
+  max_tiled_height: number
+  max_tiled_width: number
+}
+
+export function isZoomable(image: Partial<ZoomableImage>) {
   return (
     isExisty(image.tile_base_url) &&
     isExisty(image.tile_size) &&
@@ -11,14 +20,20 @@ export function isZoomable(image) {
   )
 }
 
-import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const DeepZoomType = new GraphQLObjectType({
+const DeepZoomType = new GraphQLObjectType<any, ResolverContext>({
   name: "DeepZoom",
   fields: {
     Image: {
       resolve: image => image,
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "DeepZoomImage",
         fields: {
           Format: {
@@ -31,7 +46,7 @@ const DeepZoomType = new GraphQLObjectType({
           },
           Size: {
             resolve: image => image,
-            type: new GraphQLObjectType({
+            type: new GraphQLObjectType<any, ResolverContext>({
               name: "DeepZoomImageSize",
               fields: {
                 Width: {
@@ -69,7 +84,9 @@ const DeepZoomType = new GraphQLObjectType({
   },
 })
 
-export default {
+const DeepZoom: GraphQLFieldConfig<Partial<ZoomableImage>, ResolverContext> = {
   type: DeepZoomType,
   resolve: image => (isZoomable(image) ? image : null),
 }
+
+export default DeepZoom

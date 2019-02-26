@@ -6,11 +6,13 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLNonNull,
+  GraphQLFieldConfig,
 } from "graphql"
 import filterArtworks from "./filter_artworks"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+import { ResolverContext } from "types/graphql"
 
-const TagType = new GraphQLObjectType({
+const TagType = new GraphQLObjectType<any, ResolverContext>({
   name: "Tag",
   interfaces: [NodeInterface],
   fields: () => {
@@ -36,7 +38,7 @@ const TagType = new GraphQLObjectType({
   },
 })
 
-const Tag = {
+const Tag: GraphQLFieldConfig<void, ResolverContext> = {
   type: TagType,
   args: {
     id: {
@@ -44,12 +46,7 @@ const Tag = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (
-    _root,
-    { id },
-    _request,
-    { fieldNodes, rootValue: { tagLoader } }
-  ) => {
+  resolve: (_root, { id }, { tagLoader }, { fieldNodes }) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ["filtered_artworks", "id", "__id"]

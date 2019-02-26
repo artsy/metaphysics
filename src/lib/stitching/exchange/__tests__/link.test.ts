@@ -26,13 +26,8 @@ xdescribe("exchange link", () => {
     const link = createExchangeLink()
     const defaultContext = {
       graphqlContext: {
-        res: {
-          locals: {
-            requestIDs: {
-              requestID: "req123",
-            },
-            dataLoaders: {},
-          },
+        requestIDs: {
+          requestID: "req123",
         },
       },
     }
@@ -63,17 +58,10 @@ xdescribe("exchange link", () => {
       const link = createExchangeLink()
       const defaultContext = {
         graphqlContext: {
-          res: {
-            locals: {
-              requestIDs: {
-                requestID: "req123",
-              },
-              dataLoaders: {
-                exchangeTokenLoader: () =>
-                  Promise.resolve({ token: "token_123" }),
-              },
-            },
+          requestIDs: {
+            requestID: "req123",
           },
+          exchangeTokenLoader: () => Promise.resolve({ token: "token_123" }),
         },
       }
 

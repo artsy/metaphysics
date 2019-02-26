@@ -8,11 +8,13 @@ import {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLID,
+  GraphQLFieldConfig,
 } from "graphql"
 import {
   SaleArtworksAggregationResultsType,
   SaleArtworksAggregation,
 } from "./aggregations/filter_sale_artworks_aggregation"
+import { ResolverContext } from "types/graphql"
 
 /**
  * NOTE: This type has been deprecated in favor of `SaleArtworks`.
@@ -70,7 +72,7 @@ export const SaleArtworkAggregations = {
 }
 
 export const SaleArtworkCounts = {
-  type: new GraphQLObjectType({
+  type: new GraphQLObjectType<any, ResolverContext>({
     name: "FilterSaleArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
@@ -82,7 +84,10 @@ export const SaleArtworkCounts = {
   resolve: artist => artist,
 }
 
-export const FilterSaleArtworksType = new GraphQLObjectType({
+export const FilterSaleArtworksType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "FilterSaleArtworks",
   fields: () => ({
     aggregations: SaleArtworkAggregations,
@@ -94,17 +99,12 @@ export const FilterSaleArtworksType = new GraphQLObjectType({
   }),
 })
 
-const FilterSaleArtworks = {
+const FilterSaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: FilterSaleArtworksType,
   description: "Sale Artworks Elastic Search results",
   deprecationReason: "This type has been superceded by `sale_artworks`",
   args: filterSaleArtworksArgs,
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { saleArtworksFilterLoader } }
-  ) => {
+  resolve: (_root, options, { saleArtworksFilterLoader }) => {
     return saleArtworksFilterLoader(options)
   },
 }

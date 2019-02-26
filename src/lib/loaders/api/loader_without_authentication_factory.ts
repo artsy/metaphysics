@@ -7,7 +7,8 @@ import { throttled as deferThrottled } from "lib/throttle"
 import { verbose, warn } from "lib/loggers"
 import extensionsLogger, { formatBytes } from "lib/loaders/api/extensionsLogger"
 import config from "config"
-import { LoaderFactory, API } from "./index"
+import { API } from "./index"
+import { LoaderFactory } from "../index"
 
 const { CACHE_DISABLED } = config
 

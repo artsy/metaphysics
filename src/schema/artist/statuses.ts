@@ -1,17 +1,18 @@
-import { GraphQLObjectType, GraphQLBoolean, GraphQLInt } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLBoolean,
+  GraphQLInt,
+  GraphQLFieldConfig,
+} from "graphql"
 import { totalViaLoader } from "lib/total"
+import { ResolverContext } from "types/graphql"
 
-const ArtistStatusesType = new GraphQLObjectType({
+const ArtistStatusesType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistStatuses",
   fields: {
     artists: {
       type: GraphQLBoolean,
-      resolve: (
-        { id },
-        _options,
-        _request,
-        { rootValue: { relatedMainArtistsLoader } }
-      ) =>
+      resolve: ({ id }, _options, { relatedMainArtistsLoader }) =>
         totalViaLoader(
           relatedMainArtistsLoader,
           {},
@@ -20,12 +21,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     articles: {
       type: GraphQLBoolean,
-      resolve: (
-        { _id },
-        _options,
-        _request,
-        { rootValue: { articlesLoader } }
-      ) =>
+      resolve: ({ _id }, _options, { articlesLoader }) =>
         articlesLoader({
           artist_id: _id,
           published: true,
@@ -48,12 +44,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     biography: {
       type: GraphQLBoolean,
-      resolve: (
-        { _id },
-        _options,
-        _request,
-        { rootValue: { articlesLoader } }
-      ) =>
+      resolve: ({ _id }, _options, { articlesLoader }) =>
         articlesLoader({
           published: true,
           biography_for_artist_id: _id,
@@ -62,12 +53,7 @@ const ArtistStatusesType = new GraphQLObjectType({
     },
     contemporary: {
       type: GraphQLBoolean,
-      resolve: (
-        { id },
-        _options,
-        _request,
-        { rootValue: { relatedContemporaryArtistsLoader } }
-      ) => {
+      resolve: ({ id }, _options, { relatedContemporaryArtistsLoader }) => {
         return totalViaLoader(
           relatedContemporaryArtistsLoader,
           {},
@@ -99,7 +85,7 @@ const ArtistStatusesType = new GraphQLObjectType({
   },
 })
 
-const ArtistStatuses = {
+const ArtistStatuses: GraphQLFieldConfig<any, ResolverContext> = {
   type: ArtistStatusesType,
   resolve: artist => artist,
 }

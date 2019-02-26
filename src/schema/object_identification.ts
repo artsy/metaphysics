@@ -14,7 +14,7 @@
  *   NodeInterface,
  * } from './object_identification';
  *
- * const ArtworkType = new GraphQLObjectType({
+ * const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
  *   ...
  *   interfaces: [NodeInterface],
  *   fields: () => ({
@@ -126,7 +126,7 @@ const NodeField = {
     },
   },
   // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
-  resolve: (_root, { __id }, request, rootValue) => {
+  resolve: (_root, { __id }, context, rootValue) => {
     const { type: typeName, id } = fromGlobalId(__id)
     if (isSupportedType(typeName)) {
       let exported = SupportedTypes.typeModules[typeName]
@@ -138,7 +138,7 @@ const NodeField = {
         resolve(
           null,
           argumentsForChild(typeName, id),
-          request,
+          context,
           rootValueForChild(rootValue)
         )
       ).then(data => {

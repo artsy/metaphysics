@@ -6,7 +6,7 @@ import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
 import gql from "lib/gql"
 import { OrderBuyerFields } from "./order_fields"
 
-let rootValue
+let context
 
 describe("Create Buy Order Mutation", () => {
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe("Create Buy Order Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
   })
 
   it("creates order and returns it", () => {
@@ -45,7 +45,7 @@ describe("Create Buy Order Mutation", () => {
       }
     `
 
-    return runQuery(mutation, rootValue).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceCreateOrderWithArtwork.orderOrError.order).toEqual(
         sampleOrder()
       )

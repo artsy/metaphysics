@@ -21,7 +21,7 @@ describe("Meta", () => {
     },
   }
 
-  const rootValue = {
+  const context = {
     artworkLoader: () => Promise.resolve(artworkData),
   }
 
@@ -37,7 +37,7 @@ describe("Meta", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue as any)
+      const data = await runQuery(query, context as any)
 
       expect(data).toEqual({
         artwork: {
@@ -62,7 +62,7 @@ describe("Meta", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue as any)
+      const data = await runQuery(query, context as any)
 
       expect(data).toEqual({
         artwork: {

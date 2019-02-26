@@ -3,7 +3,7 @@ import { map, find } from "lodash"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("HomePageArtworkModules", () => {
-  let rootValue = null
+  let context = null
 
   let gravity
   let modules
@@ -38,7 +38,7 @@ describe("HomePageArtworkModules", () => {
     gravity = sinon.stub()
     gravity.with = sinon.stub().returns(gravity)
 
-    rootValue = {
+    context = {
       homepageModulesLoader: () => Promise.resolve(modules),
       suggestedSimilarArtistsLoader: () =>
         Promise.resolve(relatedArtistsResponse),
@@ -61,7 +61,7 @@ describe("HomePageArtworkModules", () => {
       }
     `
 
-    return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
+    return runAuthenticatedQuery(query, context).then(({ home_page }) => {
       const keys = map(home_page.artwork_modules, "key")
 
       // the default module response is 8 keys
@@ -98,7 +98,7 @@ describe("HomePageArtworkModules", () => {
         },
       ],
     }
-    rootValue.suggestedSimilarArtistsLoader = () =>
+    context.suggestedSimilarArtistsLoader = () =>
       Promise.resolve(relatedArtistsResponse)
 
     const query = `
@@ -115,7 +115,7 @@ describe("HomePageArtworkModules", () => {
       }
     `
 
-    return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
+    return runAuthenticatedQuery(query, context).then(({ home_page }) => {
       const keys = map(home_page.artwork_modules, "key")
 
       // the default module response is 8 keys
@@ -141,7 +141,7 @@ describe("HomePageArtworkModules", () => {
   })
 
   it("skips the followed_artist module if the pairs are empty", () => {
-    rootValue.suggestedSimilarArtistsLoader = () => Promise.resolve([])
+    context.suggestedSimilarArtistsLoader = () => Promise.resolve([])
     const query = `
       {
         home_page {
@@ -156,7 +156,7 @@ describe("HomePageArtworkModules", () => {
       }
     `
 
-    return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
+    return runAuthenticatedQuery(query, context).then(({ home_page }) => {
       const keys = map(home_page.artwork_modules, "key")
       expect(keys).toEqual([
         "followed_galleries",
@@ -191,17 +191,17 @@ describe("HomePageArtworkModules", () => {
       },
     }
 
-    rootValue.meLoader = () =>
+    context.meLoader = () =>
       Promise.resolve({
         recently_viewed_artwork_ids: ["artwork-foo", "artwork-bar"],
       })
-    rootValue.similarArtworksLoader = () =>
+    context.similarArtworksLoader = () =>
       Promise.resolve([
         { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
         { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
       ])
 
-    return runAuthenticatedQuery(query, rootValue).then(results => {
+    return runAuthenticatedQuery(query, context).then(results => {
       expect(results).toEqual(expectedResults)
     })
   })
@@ -227,18 +227,18 @@ describe("HomePageArtworkModules", () => {
       },
     }
 
-    rootValue.savedArtworksLoader = () =>
+    context.savedArtworksLoader = () =>
       Promise.resolve([
         { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
         { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
       ])
-    rootValue.similarArtworksLoader = () =>
+    context.similarArtworksLoader = () =>
       Promise.resolve([
         { id: "artwork-foo", _id: "artwork-foo", name: "Foo" },
         { id: "artwork-bar", _id: "artwork-bar", name: "Bar" },
       ])
 
-    return runAuthenticatedQuery(query, rootValue).then(results => {
+    return runAuthenticatedQuery(query, context).then(results => {
       expect(results).toEqual(expectedResults)
     })
   })
@@ -254,7 +254,7 @@ describe("HomePageArtworkModules", () => {
     }
     `
 
-    return runAuthenticatedQuery(query, rootValue).then(
+    return runAuthenticatedQuery(query, context).then(
       ({ home_page: { artwork_modules } }) => {
         // The order of rails not included in the preferred order list is left as-is from Gravity’s
         // modules endpoint response. Rails in the preferred order list that aren’t even included in
@@ -285,7 +285,7 @@ describe("HomePageArtworkModules", () => {
     }
     `
 
-    return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
+    return runAuthenticatedQuery(query, context).then(({ home_page }) => {
       const keys = map(home_page.artwork_modules, "key")
       expect(keys).not.toContain("recommended_works")
     })

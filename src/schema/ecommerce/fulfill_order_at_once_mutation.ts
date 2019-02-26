@@ -9,6 +9,7 @@ import { SellerOrderFields } from "./query_helpers"
 import gql from "lib/gql"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
+import { ResolverContext } from "types/graphql"
 
 const FulfillmentInputType = new GraphQLInputObjectType({
   name: "FulfillmentInputType",
@@ -42,7 +43,11 @@ const FulfillOrderAtOnceInputType = new GraphQLInputObjectType({
   },
 })
 
-export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
+export const FulfillOrderAtOnceMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
   name: "FulfillOrderAtOnce",
   description:
     "Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order",
@@ -52,11 +57,8 @@ export const FulfillOrderAtOnceMutation = mutationWithClientMutationId({
       type: OrderOrFailureUnionType,
     },
   },
-  mutateAndGetPayload: (
-    { orderId, fulfillment },
-    context,
-    { rootValue: { accessToken, exchangeSchema } }
-  ) => {
+  mutateAndGetPayload: ({ orderId, fulfillment }, context) => {
+    const { accessToken, exchangeSchema } = context
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }

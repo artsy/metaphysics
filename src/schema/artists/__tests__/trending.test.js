@@ -12,7 +12,7 @@ describe("Trending Artists", () => {
         }
       }
     `
-    const rootValue = {
+    const context = {
       deltaLoader: ({ name }) =>
         name === "artist_fair" &&
         Promise.resolve({
@@ -27,7 +27,7 @@ describe("Trending Artists", () => {
 
     const {
       trending_artists: { artists },
-    } = await runQuery(query, rootValue)
+    } = await runQuery(query, context)
     expect(artists).toMatchSnapshot()
   })
 })

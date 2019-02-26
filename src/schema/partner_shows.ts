@@ -3,9 +3,16 @@ import PartnerShowSorts from "./sorts/partner_show_sorts"
 import EventStatus from "./input_fields/event_status"
 import Near from "./input_fields/near"
 import PartnerShow from "./partner_show"
-import { GraphQLString, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
+import {
+  GraphQLString,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const PartnerShows = {
+const PartnerShows: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(PartnerShow.type),
   description: "A list of PartnerShows",
   args: {
@@ -41,7 +48,7 @@ const PartnerShows = {
     sort: PartnerShowSorts,
     status: EventStatus,
   },
-  resolve: (_root, options, _request, { rootValue: { showsLoader } }) => {
+  resolve: (_root, options, { showsLoader }) => {
     let gravityOptions = options
     if (options.near) {
       gravityOptions = _.assign(options, {

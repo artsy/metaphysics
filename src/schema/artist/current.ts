@@ -3,13 +3,15 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLUnionType,
+  GraphQLFieldConfig,
 } from "graphql"
-import Image from "schema/image"
+import Image, { normalizeImageData } from "schema/image"
 import { error } from "lib/loggers"
 import { exhibitionPeriod } from "lib/date"
 import { ShowType } from "../show"
 import { SaleType } from "../sale"
 import { date as DateFormat } from "schema/fields/date"
+import { ResolverContext } from "types/graphql"
 
 const UnderlyingCurrentEventType = new GraphQLUnionType({
   name: "UnderlyingCurrentEvent",
@@ -17,7 +19,7 @@ const UnderlyingCurrentEventType = new GraphQLUnionType({
   resolveType: ({ __type }) => __type,
 })
 
-const CurrentEventType = new GraphQLObjectType({
+const CurrentEventType = new GraphQLObjectType<any, ResolverContext>({
   name: "CurrentEvent",
   fields: {
     event: {
@@ -77,13 +79,15 @@ const saleDetails = (sale, timezone) => {
   return `Bidding ends ${dateLabel}`
 }
 
-export const CurrentEvent = {
+export const CurrentEvent: GraphQLFieldConfig<
+  { id: string },
+  ResolverContext
+> = {
   type: CurrentEventType,
   resolve: (
     { id },
     _options,
-    _request,
-    { rootValue: { relatedSalesLoader, relatedShowsLoader, defaultTimezone } }
+    { relatedSalesLoader, relatedShowsLoader, defaultTimezone }
   ) => {
     return Promise.all([
       relatedShowsLoader({
@@ -112,7 +116,7 @@ export const CurrentEvent = {
             name: sale.name,
             href: `/auction/${sale.id}`,
             details: saleDetails(sale, defaultTimezone || DEFAULT_TZ),
-            image: Image.resolve({ image_versions, image_url }),
+            image: normalizeImageData({ image_versions, image_url }),
           }
         } else if (shows.length > 0) {
           const show = shows[0]
@@ -127,7 +131,7 @@ export const CurrentEvent = {
             href: `/show/${show.id}`,
             partner: show.partner.name,
             details: showDetails(show),
-            image: Image.resolve({ image_versions, image_url }),
+            image: normalizeImageData({ image_versions, image_url }),
           }
         } else {
           return null

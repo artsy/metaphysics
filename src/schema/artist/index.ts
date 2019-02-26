@@ -59,10 +59,12 @@ import {
   GraphQLNonNull,
   GraphQLList,
   GraphQLInt,
+  GraphQLFieldConfig,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { totalViaLoader } from "lib/total"
+import { ResolverContext } from "types/graphql"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -81,10 +83,10 @@ const artistArtworkArrayLength = (artist, filter) => {
   return length
 }
 
-export const ArtistType = new GraphQLObjectType({
+export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artist",
   interfaces: [NodeInterface, Searchable],
-  fields: (): any => {
+  fields: () => {
     return {
       ...GravityIDFields,
       cached,
@@ -100,12 +102,7 @@ export const ArtistType = new GraphQLObjectType({
           },
         }),
         type: articleConnection,
-        resolve: (
-          { _id },
-          args,
-          _request,
-          { rootValue: { articlesLoader } }
-        ) => {
+        resolve: ({ _id }, args, { articlesLoader }) => {
           const pageOptions = convertConnectionArgsToGravityArgs(args)
           const { page, size, offset } = pageOptions
 
@@ -141,12 +138,7 @@ export const ArtistType = new GraphQLObjectType({
           in_editorial_feed: { type: GraphQLBoolean },
         },
         type: new GraphQLList(Article.type),
-        resolve: (
-          { _id },
-          options,
-          _request,
-          { rootValue: { articlesLoader } }
-        ) =>
+        resolve: ({ _id }, options, { articlesLoader }) =>
           articlesLoader(
             defaults(options, {
               artist_id: _id,
@@ -166,12 +158,7 @@ export const ArtistType = new GraphQLObjectType({
             defaultValue: true,
           },
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { relatedMainArtistsLoader } }
-        ) =>
+        resolve: ({ id }, options, { relatedMainArtistsLoader }) =>
           relatedMainArtistsLoader(
             defaults(options, {
               artist: [id],
@@ -191,12 +178,7 @@ export const ArtistType = new GraphQLObjectType({
           filter: { type: new GraphQLList(ArtistArtworksFilters) },
           exclude: { type: new GraphQLList(GraphQLString) },
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { artistArtworksLoader } }
-        ) =>
+        resolve: ({ id }, options, { artistArtworksLoader }) =>
           artistArtworksLoader(id, options).then(
             exclude(options.exclude, "id")
           ),
@@ -217,12 +199,7 @@ export const ArtistType = new GraphQLObjectType({
           },
           sort: ArtworkSorts,
         }),
-        resolve: (
-          artist,
-          options,
-          _request,
-          { rootValue: { artistArtworksLoader } }
-        ) => {
+        resolve: (artist, options, { artistArtworksLoader }) => {
           // Convert `after` cursors to page params
           const { limit: size, offset } = getPagingParameters(options)
           // Construct an object of all the params gravity will listen to
@@ -267,12 +244,7 @@ export const ArtistType = new GraphQLObjectType({
               "When true, will only return records for allowed artists.",
           },
         }),
-        resolve: (
-          { _id },
-          options,
-          _request,
-          { rootValue: { auctionLotLoader } }
-        ) => {
+        resolve: ({ _id }, options, { auctionLotLoader }) => {
           if (options.recordsTrusted && !includes(auctionRecordsTrusted, _id)) {
             return null
           }
@@ -332,12 +304,7 @@ export const ArtistType = new GraphQLObjectType({
       biography: {
         type: Article.type,
         description: "The Artist biography article written by Artsy",
-        resolve: (
-          { _id },
-          _options,
-          _request,
-          { rootValue: { articlesLoader } }
-        ) =>
+        resolve: ({ _id }, _options, { articlesLoader }) =>
           articlesLoader({
             published: true,
             biography_for_artist_id: _id,
@@ -355,7 +322,7 @@ export const ArtistType = new GraphQLObjectType({
           },
           markdown().args
         ),
-        type: new GraphQLObjectType({
+        type: new GraphQLObjectType<any, ResolverContext>({
           name: "ArtistBlurb",
           fields: {
             credit: {
@@ -377,8 +344,7 @@ export const ArtistType = new GraphQLObjectType({
         resolve: (
           { blurb, id },
           { format, partner_bio },
-          _request,
-          { rootValue: { partnerArtistsForArtistLoader } }
+          { partnerArtistsForArtistLoader }
         ) => {
           if (!partner_bio && blurb && blurb.length) {
             return { text: formatMarkdownValue(blurb, format) }
@@ -431,12 +397,7 @@ export const ArtistType = new GraphQLObjectType({
             defaultValue: true,
           },
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { relatedContemporaryArtistsLoader } }
-        ) =>
+        resolve: ({ id }, options, { relatedContemporaryArtistsLoader }) =>
           relatedContemporaryArtistsLoader(
             defaults(options, {
               artist: [id],
@@ -448,7 +409,7 @@ export const ArtistType = new GraphQLObjectType({
         deprecationReason: "Favor `is_`-prefixed boolean attributes",
       },
       counts: {
-        type: new GraphQLObjectType({
+        type: new GraphQLObjectType<any, ResolverContext>({
           name: "ArtistCounts",
           fields: {
             artworks: numeral(
@@ -463,12 +424,7 @@ export const ArtistType = new GraphQLObjectType({
             ),
             related_artists: {
               type: GraphQLInt,
-              resolve: (
-                { id },
-                _options,
-                _request,
-                { rootValue: { relatedMainArtistsLoader } }
-              ) => {
+              resolve: ({ id }, _options, { relatedMainArtistsLoader }) => {
                 return totalViaLoader(
                   relatedMainArtistsLoader,
                   {},
@@ -480,12 +436,7 @@ export const ArtistType = new GraphQLObjectType({
             },
             articles: {
               type: GraphQLInt,
-              resolve: (
-                { _id },
-                _options,
-                _request,
-                { rootValue: { articlesLoader } }
-              ) =>
+              resolve: ({ _id }, _options, { articlesLoader }) =>
                 articlesLoader({
                   artist_id: _id,
                   published: true,
@@ -524,12 +475,7 @@ export const ArtistType = new GraphQLObjectType({
         type: new GraphQLList(Show.type),
         description:
           "Custom-sorted list of shows for an artist, in order of significance.",
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { relatedShowsLoader } }
-        ) => {
+        resolve: ({ id }, options, { relatedShowsLoader }) => {
           return relatedShowsLoader({
             artist_id: id,
             sort: "-relevance,-start_at",
@@ -586,12 +532,7 @@ export const ArtistType = new GraphQLObjectType({
       genes: {
         description: `A list of genes associated with an artist`,
         type: new GraphQLList(GeneType),
-        resolve: (
-          { id },
-          _options,
-          _request,
-          { rootValue: { artistGenesLoader } }
-        ) => {
+        resolve: ({ id }, _options, { artistGenesLoader }) => {
           return artistGenesLoader(id).then(genes => genes)
         },
       },
@@ -631,12 +572,7 @@ export const ArtistType = new GraphQLObjectType({
       },
       is_followed: {
         type: GraphQLBoolean,
-        resolve: (
-          { id },
-          {},
-          _request,
-          { rootValue: { followedArtistLoader } }
-        ) => {
+        resolve: ({ id }, _args, { followedArtistLoader }) => {
           if (!followedArtistLoader) return false
           return followedArtistLoader(id).then(({ is_followed }) => is_followed)
         },
@@ -661,12 +597,7 @@ export const ArtistType = new GraphQLObjectType({
             type: new GraphQLList(GraphQLString),
           },
         }),
-        resolve: (
-          { id: artist_id },
-          options,
-          _request,
-          { rootValue: { partnerArtistsLoader } }
-        ) => {
+        resolve: ({ id: artist_id }, options, { partnerArtistsLoader }) => {
           return partnersForArtist(artist_id, options, partnerArtistsLoader)
         },
       },
@@ -678,17 +609,13 @@ export const ArtistType = new GraphQLObjectType({
             description: "The number of PartnerArtists to return",
           },
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { partnerArtistsForArtistLoader } }
-        ) => partnerArtistsForArtistLoader(id, options),
+        resolve: ({ id }, options, { partnerArtistsForArtistLoader }) =>
+          partnerArtistsForArtistLoader(id, options),
       },
       partner_shows: {
+        ...ShowField,
         type: new GraphQLList(PartnerShow.type),
         deprecationReason: "Prefer to use shows attribute",
-        ...ShowField,
       },
       public: {
         type: GraphQLBoolean,
@@ -706,12 +633,7 @@ export const ArtistType = new GraphQLObjectType({
           },
           sort: SaleSorts,
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { relatedSalesLoader } }
-        ) =>
+        resolve: ({ id }, options, { relatedSalesLoader }) =>
           relatedSalesLoader(
             defaults(options, {
               artist_id: id,
@@ -719,8 +641,8 @@ export const ArtistType = new GraphQLObjectType({
             })
           ),
       },
-      shows: { type: new GraphQLList(Show.type), ...ShowField },
-      showsConnection: { type: showConnection, ...ShowsConnectionField },
+      shows: { ...ShowField, type: new GraphQLList(Show.type) },
+      showsConnection: { ...ShowsConnectionField, type: showConnection },
       sortable_id: {
         type: GraphQLString,
         description:
@@ -733,7 +655,7 @@ export const ArtistType = new GraphQLObjectType({
   },
 })
 
-const Artist = {
+const Artist: GraphQLFieldConfig<void, ResolverContext> = {
   type: ArtistType,
   description: "An Artist",
   args: {
@@ -742,11 +664,10 @@ const Artist = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, _request, resolver) => {
+  resolve: (_root, { id }, { artistLoader }) => {
     if (id.length === 0) {
       return null
     }
-    const { artistLoader } = resolver.rootValue
     return artistLoader(id)
   },
 }

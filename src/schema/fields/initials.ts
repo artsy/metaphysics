@@ -1,5 +1,6 @@
 import { get, take } from "lodash"
-import { GraphQLString, GraphQLInt } from "graphql"
+import { GraphQLString, GraphQLInt, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export function initials(string = "", length = 3) {
   if (!string) return null
@@ -16,7 +17,7 @@ export function initials(string = "", length = 3) {
     .toUpperCase()
 }
 
-export default attr => ({
+export default (attr): GraphQLFieldConfig<void, ResolverContext> => ({
   type: GraphQLString,
   args: {
     length: {

@@ -11,8 +11,9 @@ import { AttachmentType } from "./attachment"
 import { DeliveryType } from "./delivery"
 import { InvoiceType } from "./invoice"
 import { isExisty } from "lib/helpers"
+import { ResolverContext } from "types/graphql"
 
-const MessageInitiatorType = new GraphQLObjectType({
+const MessageInitiatorType = new GraphQLObjectType<any, ResolverContext>({
   name: "MessageInitiator",
   description: "The participant who sent the message.",
   fields: {
@@ -29,7 +30,7 @@ const isInvoiceMessage = metadata => {
   return !!metadata && isExisty(metadata.lewitt_invoice_id)
 }
 
-export const MessageType = new GraphQLObjectType({
+export const MessageType = new GraphQLObjectType<any, ResolverContext>({
   name: "Message",
   description: "A message in a conversation.",
   interfaces: [NodeInterface],
@@ -58,8 +59,7 @@ export const MessageType = new GraphQLObjectType({
           from_principal,
         },
         _options,
-        _req,
-        { rootValue: { userID } }
+        { userID }
       ) =>
         from_principal ||
         (userID && from_id === userID) ||
@@ -120,10 +120,9 @@ export const MessageType = new GraphQLObjectType({
       resolve: (
         { metadata, conversation_id },
         _options,
-        _request,
-        { rootValue: { conversationInvoiceLoader } }
+        { conversationInvoiceLoader }
       ) => {
-        if (!isInvoiceMessage(metadata)) {
+        if (!conversationInvoiceLoader || !isInvoiceMessage(metadata)) {
           return null
         }
         return conversationInvoiceLoader({

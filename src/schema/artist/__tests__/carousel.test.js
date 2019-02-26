@@ -4,7 +4,7 @@ import { removeReproductionsFromArtworks } from "../carousel"
 
 describe("ArtistCarousel type", () => {
   let artist = null
-  let rootValue = null
+  let context = null
 
   beforeEach(() => {
     artist = {
@@ -13,14 +13,14 @@ describe("ArtistCarousel type", () => {
       birthday: null,
       artworks_count: null,
     }
-    rootValue = {
+    context = {
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
     }
   })
 
   describe("with artworks, no shows", () => {
     beforeEach(() => {
-      rootValue.relatedShowsLoader = sinon
+      context.relatedShowsLoader = sinon
         .stub()
         .withArgs(artist.id, {
           sort: "-end_at",
@@ -30,7 +30,7 @@ describe("ArtistCarousel type", () => {
         })
         .returns(Promise.resolve({ body: [] }))
 
-      rootValue.artistArtworksLoader = sinon
+      context.artistArtworksLoader = sinon
         .stub()
         .withArgs(artist.id, {
           size: 7,
@@ -74,7 +74,7 @@ describe("ArtistCarousel type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data.artist.carousel).toEqual({
           images: [
             {

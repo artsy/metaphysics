@@ -1,7 +1,8 @@
 import Artwork from "./artwork"
-import { GraphQLList, GraphQLString } from "graphql"
+import { GraphQLList, GraphQLString, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const Artworks = {
+const Artworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Artwork.type),
   description: "A list of Artworks",
   args: {
@@ -9,8 +10,7 @@ const Artworks = {
       type: new GraphQLList(GraphQLString),
     },
   },
-  resolve: (_root, options, _request, { rootValue: { artworksLoader } }) =>
-    artworksLoader(options),
+  resolve: (_root, options, { artworksLoader }) => artworksLoader(options),
 }
 
 export default Artworks

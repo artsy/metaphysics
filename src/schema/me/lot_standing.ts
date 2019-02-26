@@ -3,7 +3,13 @@ import BidderPosition from "schema/bidder_position"
 import Bidder from "schema/bidder"
 import Sale from "schema/sale"
 import SaleArtwork from "schema/sale_artwork"
-import { GraphQLObjectType, GraphQLString, GraphQLBoolean } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
 // is leading human bidder
 export const isLeadingBidder = lotStanding =>
@@ -13,7 +19,7 @@ export const isHighestBidder = lotStanding =>
   isLeadingBidder(lotStanding) &&
   lotStanding.sale_artwork.reserve_status !== "reserve_not_met"
 
-export const LotStandingType = new GraphQLObjectType({
+export const LotStandingType = new GraphQLObjectType<any, ResolverContext>({
   name: "LotStanding",
   fields: () => ({
     active_bid: {
@@ -43,12 +49,7 @@ export const LotStandingType = new GraphQLObjectType({
     },
     sale: {
       type: Sale.type,
-      resolve: (
-        { bidder },
-        _options,
-        _request,
-        { rootValue: { saleLoader } }
-      ) => {
+      resolve: ({ bidder }, _options, { saleLoader }) => {
         if (bidder.sale && bidder.sale.id) {
           // don't error if the sale is unpublished
           return saleLoader(bidder.sale.id).catch(() => null)
@@ -62,7 +63,7 @@ export const LotStandingType = new GraphQLObjectType({
   }),
 })
 
-export default {
+const LotStanding: GraphQLFieldConfig<void, ResolverContext> = {
   type: LotStandingType,
   description: "The current user's status relating to bids on artworks",
   args: {
@@ -79,8 +80,7 @@ export default {
   resolve: (
     _root,
     { sale_id, artwork_id, sale_artwork_id },
-    _request,
-    { rootValue: { lotStandingLoader } }
+    { lotStandingLoader }
   ) => {
     if (!lotStandingLoader) return null
     return lotStandingLoader({ sale_id, artwork_id, sale_artwork_id }).then(
@@ -90,3 +90,5 @@ export default {
     )
   },
 }
+
+export default LotStanding

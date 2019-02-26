@@ -50,7 +50,7 @@ describe("Object Identification", () => {
     const fieldName = _.snakeCase(typeName)
     const loaderName = _.keys(loaderTests[typeName])[0]
     const payload = loaderTests[typeName][loaderName]
-    const rootValue = {
+    const context = {
       [loaderName]: sinon
         .stub()
         .withArgs(payload.id)
@@ -67,7 +67,7 @@ describe("Object Identification", () => {
           }
         `
 
-        return runQuery(query, rootValue).then(data => {
+        return runQuery(query, context).then(data => {
           const expectedData = {}
           expectedData[fieldName] = { __id: toGlobalId(typeName, "foo-bar") }
           expect(data).toEqual(expectedData)
@@ -86,7 +86,7 @@ describe("Object Identification", () => {
           }
         `
 
-        return runQuery(query, rootValue).then(data => {
+        return runQuery(query, context).then(data => {
           expect(data).toEqual({
             node: {
               __typename: typeName,

@@ -1,6 +1,7 @@
-// This is the key to this one file:
+import config from "config"
 
-process.env.BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT = "400000"
+// This is the key to this one file:
+config.BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT = 400000
 
 import { runQuery } from "test/utils"
 
@@ -32,11 +33,11 @@ describe("SaleArtwork type", () => {
   const execute = async (
     query,
     gravityResponse = saleArtwork,
-    rootValue = {}
+    context = {}
   ) => {
     return await runQuery(query, {
       saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
-      ...rootValue,
+      ...context,
     })
   }
 
@@ -51,7 +52,7 @@ describe("SaleArtwork type", () => {
           }
         `
 
-        const rootValue = {
+        const context = {
           saleLoader: () => {
             return Promise.resolve({
               increment_strategy: "default",
@@ -78,7 +79,7 @@ describe("SaleArtwork type", () => {
           },
         }
 
-        const data = await execute(query, saleArtwork, rootValue)
+        const data = await execute(query, saleArtwork, context)
         expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
           351000,
           355000,

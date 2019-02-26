@@ -4,6 +4,7 @@ import {
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLFieldConfig,
 } from "graphql"
 
 import { LatLngType } from "../location"
@@ -23,8 +24,9 @@ import {
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import Near from "schema/input_fields/near"
 import { LatLng, Point, distance } from "lib/geospatial"
+import { ResolverContext } from "types/graphql"
 
-const CityType = new GraphQLObjectType({
+const CityType = new GraphQLObjectType<any, ResolverContext>({
   name: "City",
   fields: {
     slug: {
@@ -47,12 +49,7 @@ const CityType = new GraphQLObjectType({
             "Whether to include local discovery stubs as well as displayable shows",
         },
       }),
-      resolve: async (
-        city,
-        args,
-        _c,
-        { rootValue: { showsWithHeadersLoader } }
-      ) => {
+      resolve: async (city, args, { showsWithHeadersLoader }) => {
         const gravityOptions = {
           ...convertConnectionArgsToGravityArgs(args),
           displayable: true,
@@ -87,7 +84,7 @@ const CityType = new GraphQLObjectType({
         sort: FairSorts,
         status: EventStatus,
       },
-      resolve: (obj, args, _context, { rootValue: { fairsLoader } }) => {
+      resolve: (obj, args, { fairsLoader }) => {
         const gravityOptions = {
           ...args,
           near: `${obj.coordinates.lat},${obj.coordinates.lng}`,
@@ -99,7 +96,7 @@ const CityType = new GraphQLObjectType({
   },
 })
 
-export const City = {
+export const City: GraphQLFieldConfig<void, ResolverContext> = {
   type: CityType,
   description: "A city-based entry point for local discovery",
   args: {

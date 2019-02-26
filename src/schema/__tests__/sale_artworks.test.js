@@ -3,10 +3,10 @@ import gql from "lib/gql"
 import { runQuery } from "test/utils"
 
 describe("Sale Artworks", () => {
-  const execute = async (gravityResponse, query, rootValue = {}) => {
+  const execute = async (gravityResponse, query, context = {}) => {
     return await runQuery(query, {
       saleArtworksFilterLoader: () => Promise.resolve(gravityResponse),
-      ...rootValue,
+      ...context,
     })
   }
 

@@ -1,3 +1,5 @@
+import { GraphQLFieldConfig, GraphQLInt, GraphQLList } from "graphql"
+import { ResolverContext } from "types/graphql"
 import {
   filter,
   find,
@@ -5,20 +7,25 @@ import {
   keys,
   map,
   remove,
-  slice,
   set,
+  slice,
   without,
 } from "lodash"
-import { GraphQLEnumType, GraphQLInt, GraphQLList } from "graphql"
-import { HomePageArtworkModuleType } from "./home_page_artwork_module"
-import loggedOutModules from "./logged_out_modules"
 import addGenericGenes from "./add_generic_genes"
 import {
-  featuredFair,
   featuredAuction,
-  relatedArtists,
+  featuredFair,
   followedGenes,
+  relatedArtists,
 } from "./fetch"
+import { HomePageArtworkModuleType } from "./home_page_artwork_module"
+import loggedOutModules from "./logged_out_modules"
+import { LoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
+import {
+  HomePageArtworkModuleTypeKeys,
+  HomePageArtworkModuleDetails,
+  HomePageArtworkModuleTypes,
+} from "./types"
 
 const filterModules = (modules, max_rails) => {
   const allModules = addGenericGenes(filter(modules, ["display", true]))
@@ -26,10 +33,10 @@ const filterModules = (modules, max_rails) => {
 }
 
 const addFollowedGenes = (
-  followedGenesLoader,
-  modules,
-  max_followed_gene_rails
-) => {
+  followedGenesLoader: LoadersWithAuthentication["followedGenesLoader"],
+  modules: HomePageArtworkModuleDetails[],
+  max_followed_gene_rails: number
+): Promise<HomePageArtworkModuleDetails[]> => {
   const followedGeneIndex = findIndex(modules, { key: "genes" })
   if (followedGeneIndex && max_followed_gene_rails >= 1) {
     // 100 is the max that Gravity will return per page.
@@ -37,23 +44,25 @@ const addFollowedGenes = (
     return followedGenes(followedGenesLoader, size).then(results => {
       const blueprint = modules[followedGeneIndex]
       const genes = map(results, ({ gene }) => {
-        return Object.assign({ params: { id: gene.id, gene } }, blueprint)
+        return { ...blueprint, params: { id: gene.id, gene } }
       })
       const copy = modules.slice(0)
-      const args = [followedGeneIndex, 1].concat(genes)
-      Array.prototype.splice.apply(copy, args as any)
+      copy.splice(followedGeneIndex, 1, ...genes)
       return copy
     })
   }
   return Promise.resolve(modules)
 }
 
-const reorderModules = (modules, preferredOrder) => {
+const reorderModules = (
+  modules: HomePageArtworkModuleDetails[],
+  preferredOrder: Array<HomePageArtworkModuleTypeKeys>
+) => {
   if (!preferredOrder) {
     return modules
   }
   const unordered = modules.slice(0)
-  const reordered = []
+  const reordered: HomePageArtworkModuleDetails[] = []
   preferredOrder.forEach(key => {
     remove(unordered, (mod: any) => {
       if (mod.key === key) {
@@ -67,55 +76,7 @@ const reorderModules = (modules, preferredOrder) => {
   return reordered.concat(unordered)
 }
 
-const HomePageArtworkModuleTypes = new GraphQLEnumType({
-  name: "HomePageArtworkModuleTypes",
-  values: {
-    ACTIVE_BIDS: {
-      value: "active_bids",
-    },
-    CURRENT_FAIRS: {
-      value: "current_fairs",
-    },
-    FOLLOWED_ARTIST: {
-      value: "followed_artist",
-    },
-    FOLLOWED_ARTISTS: {
-      value: "followed_artists",
-    },
-    FOLLOWED_GALLERIES: {
-      value: "followed_galleries",
-    },
-    FOLLOWED_GENES: {
-      value: "genes",
-    },
-    GENERIC_GENES: {
-      value: "generic_gene",
-    },
-    LIVE_AUCTIONS: {
-      value: "live_auctions",
-    },
-    RECOMMENDED_WORKS: {
-      value: "recommended_works",
-    },
-    RELATED_ARTISTS: {
-      value: "related_artists",
-    },
-    SAVED_WORKS: {
-      value: "saved_works",
-    },
-    RECENTLY_VIEWED_WORKS: {
-      value: "recently_viewed_works",
-    },
-    SIMILAR_TO_RECENTLY_VIEWED: {
-      value: "similar_to_recently_viewed",
-    },
-    SIMILAR_TO_SAVED_WORKS: {
-      value: "similar_to_saved_works",
-    },
-  },
-})
-
-const HomePageArtworkModules = {
+const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(HomePageArtworkModuleType),
   description: "Artwork modules to show on the home screen",
   args: {
@@ -145,20 +106,16 @@ const HomePageArtworkModules = {
   resolve: (
     _root,
     { max_rails, max_followed_gene_rails, order, exclude },
-    _request,
     {
-      rootValue: {
-        accessToken,
-        followedGenesLoader,
-        homepageModulesLoader,
-        fairsLoader,
-        salesLoader,
-        suggestedSimilarArtistsLoader,
-      },
+      followedGenesLoader,
+      homepageModulesLoader,
+      fairsLoader,
+      salesLoader,
+      suggestedSimilarArtistsLoader,
     }
-  ) => {
+  ): Promise<HomePageArtworkModuleDetails[]> => {
     // If user is logged in, get their specific modules
-    if (accessToken) {
+    if (homepageModulesLoader && followedGenesLoader) {
       return homepageModulesLoader().then(response => {
         const keysToDisplay = without(keys(response), ...exclude)
         const modulesToDisplay = map(keysToDisplay, key => ({
@@ -189,13 +146,6 @@ const HomePageArtworkModules = {
                 // we will use one for the related_artist rail and one for
                 // the followed_artist rail
                 if (artistPairs && artistPairs.length) {
-                  const { artist, sim_artist } = artistPairs[0]
-
-                  const relatedArtistModuleParams = {
-                    followed_artist_id: sim_artist.id,
-                    related_artist_id: artist.id,
-                  }
-
                   if (artistPairs[1]) {
                     modules.splice(relatedArtistIndex, 0, {
                       key: "followed_artist",
@@ -205,6 +155,11 @@ const HomePageArtworkModules = {
                       },
                     })
                     relatedArtistIndex++
+                  }
+
+                  const relatedArtistModuleParams = {
+                    followed_artist_id: artistPairs[0].sim_artist.id,
+                    related_artist_id: artistPairs[0].artist.id,
                   }
 
                   return set(

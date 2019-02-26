@@ -1,7 +1,14 @@
-import { GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"
+import {
+  GraphQLString,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLInt,
+  GraphQLFieldConfig,
+} from "graphql"
 import Gene from "schema/gene"
+import { ResolverContext } from "types/graphql"
 
-const GeneMatch = {
+const GeneMatch: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Gene.type),
   description: "A Search for Genes",
   args: {
@@ -22,8 +29,7 @@ const GeneMatch = {
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (_root, options, _request, { rootValue: { matchGeneLoader } }) =>
-    matchGeneLoader(options),
+  resolve: (_root, options, { matchGeneLoader }) => matchGeneLoader(options),
 }
 
 export default GeneMatch

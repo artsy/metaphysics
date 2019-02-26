@@ -31,6 +31,7 @@ import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
+import { ResolverContext } from "types/graphql"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -109,8 +110,8 @@ async function startApp() {
     fetchPersistedQuery,
     crunchInterceptor,
     graphqlHTTP((req, res, params) => {
-      const accessToken = req.headers["x-access-token"]
-      const userID = req.headers["x-user-id"]
+      const accessToken = req.headers["x-access-token"] as string | undefined
+      const userID = req.headers["x-user-id"] as string | undefined
       const timezone = req.headers["x-timezone"] as string | undefined
       const userAgent = req.headers["user-agent"]
 
@@ -133,23 +134,21 @@ async function startApp() {
         userAgent,
       })
 
-      // Share with e.g. the Convection ApolloLink in mergedSchema.
-      res.locals.dataLoaders = loaders
-      res.locals.accessToken = accessToken
-
-      // Supply userAgent for analytics
-      res.locals.userAgent = userAgent
+      const context: ResolverContext = {
+        accessToken,
+        userID,
+        defaultTimezone,
+        ...loaders,
+        // For stitching purposes
+        exchangeSchema,
+        requestIDs,
+        userAgent,
+      }
 
       return {
         schema,
         graphiql: true,
-        rootValue: {
-          accessToken,
-          userID,
-          defaultTimezone,
-          exchangeSchema,
-          ...loaders,
-        },
+        context,
         formatError: graphqlErrorHandler(enableSentry, {
           req,
           // Why the checking on params? Do we reach this code if params is falsy?

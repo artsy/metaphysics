@@ -3,9 +3,10 @@ import { IDFields } from "schema/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import { GraphQLObjectType, GraphQLBoolean } from "graphql"
+import { GraphQLObjectType, GraphQLBoolean, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-export const FollowArtistType = new GraphQLObjectType({
+export const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowArtist",
   fields: {
     artist: {
@@ -18,16 +19,11 @@ export const FollowArtistType = new GraphQLObjectType({
   },
 })
 
-export default {
+const FollowedArtists: GraphQLFieldConfig<void, ResolverContext> = {
   type: connectionDefinitions({ nodeType: FollowArtistType }).connectionType,
   args: pageable({}),
   description: "A list of the current user’s inquiry requests",
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { followedArtistsLoader } }
-  ) => {
+  resolve: (_root, options, { followedArtistsLoader }) => {
     if (!followedArtistsLoader) return null
     const { limit: size, offset } = getPagingParameters(options)
     const gravityArgs = {
@@ -43,3 +39,5 @@ export default {
     })
   },
 }
+
+export default FollowedArtists

@@ -1,8 +1,9 @@
 import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ProfileType } from "schema/profile"
+import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId({
+export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "FollowProfile",
   description: "Follow (or unfollow) a profile",
   inputFields: {
@@ -17,20 +18,15 @@ export default mutationWithClientMutationId({
   outputFields: {
     profile: {
       type: ProfileType,
-      resolve: (
-        { profile_id },
-        _options,
-        _request,
-        { rootValue: { profileLoader } }
-      ) => profileLoader(profile_id),
+      resolve: ({ profile_id }, _options, { profileLoader }) =>
+        profileLoader(profile_id),
     },
   },
   mutateAndGetPayload: (
     { profile_id, unfollow },
-    _request,
-    { rootValue: { accessToken, followProfileLoader, unfollowProfileLoader } }
+    { followProfileLoader, unfollowProfileLoader }
   ) => {
-    if (!accessToken) {
+    if (!followProfileLoader || !unfollowProfileLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 

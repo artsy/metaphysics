@@ -3,9 +3,11 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLEnumType,
+  GraphQLFieldConfig,
 } from "graphql"
 import { amount } from "../../fields/money"
 import { IDFields, NodeInterface } from "../../object_identification"
+import { ResolverContext } from "types/graphql"
 
 const InvoiceState = new GraphQLEnumType({
   name: "InvoiceState",
@@ -25,7 +27,7 @@ const InvoiceState = new GraphQLEnumType({
   },
 })
 
-export const InvoiceType = new GraphQLObjectType({
+export const InvoiceType = new GraphQLObjectType<any, ResolverContext>({
   name: "Invoice",
   description: "Fields of an invoice (currently from Lewitt)",
   interfaces: [NodeInterface],
@@ -47,7 +49,7 @@ export const InvoiceType = new GraphQLObjectType({
   },
 })
 
-export default {
+const Invoice: GraphQLFieldConfig<void, ResolverContext> = {
   type: InvoiceType,
   description: "An invoice",
   args: {
@@ -63,8 +65,7 @@ export default {
   resolve: (
     _root,
     { conversationId, invoiceId },
-    _request,
-    { rootValue: { conversationInvoiceLoader } }
+    { conversationInvoiceLoader }
   ) => {
     if (!conversationInvoiceLoader) return null
     return conversationInvoiceLoader({
@@ -73,3 +74,5 @@ export default {
     })
   },
 }
+
+export default Invoice

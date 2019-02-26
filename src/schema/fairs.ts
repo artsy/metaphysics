@@ -3,9 +3,16 @@ import FairSorts from "./sorts/fair_sorts"
 import EventStatus from "./input_fields/event_status"
 import Near from "./input_fields/near"
 import Fair from "./fair"
-import { GraphQLString, GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
+import {
+  GraphQLString,
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const Fairs = {
+const Fairs: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Fair.type),
   description: "A list of Fairs",
   args: {
@@ -40,7 +47,7 @@ const Fairs = {
     sort: FairSorts,
     status: EventStatus,
   },
-  resolve: (_root, options, _request, { rootValue: { fairsLoader } }) => {
+  resolve: (_root, options, { fairsLoader }) => {
     let gravityOptions = options
     if (options.near) {
       gravityOptions = _.assign(options, {

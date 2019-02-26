@@ -5,7 +5,9 @@ import {
   GraphQLList,
   GraphQLEnumType,
   GraphQLString,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export const ArtistInsightType = new GraphQLEnumType({
   name: "ArtistInsightType",
@@ -65,7 +67,7 @@ const buildInsights = artist => {
   )
 }
 
-const ArtistInsight = new GraphQLObjectType({
+const ArtistInsight = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistInsight",
   fields: {
     type: {
@@ -83,7 +85,7 @@ const ArtistInsight = new GraphQLObjectType({
   },
 })
 
-export const ArtistInsights = {
+export const ArtistInsights: GraphQLFieldConfig<any, ResolverContext> = {
   type: new GraphQLList(ArtistInsight),
   resolve: artist => {
     return buildInsights(artist)

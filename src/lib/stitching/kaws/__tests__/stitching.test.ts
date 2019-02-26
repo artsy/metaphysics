@@ -17,14 +17,12 @@ describe("MarketingCollectionArtwork", () => {
         }
       }
     `
-    const rootValue = {
-      accessToken: null,
-      userID: null,
+    const context = {
       filterArtworksLoader: jest.fn(() => Promise.resolve()),
     }
 
-    await runQuery(query, rootValue)
-    expect(rootValue.filterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
+    await runQuery(query, context)
+    expect(context.filterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
 Array [
   Object {
     "aggregations": Array [],
@@ -56,14 +54,12 @@ Array [
       }
     `
 
-    const rootValue = {
-      accessToken: null,
-      userID: null,
+    const context = {
       filterArtworksLoader: jest.fn(() => Promise.resolve()),
     }
 
-    await runQuery(query, rootValue)
-    expect(rootValue.filterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
+    await runQuery(query, context)
+    expect(context.filterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
 Array [
   Object {
     "aggregations": Array [],

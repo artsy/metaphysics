@@ -34,7 +34,7 @@ export default (accessToken, userID, opts) => {
     followedGeneLoader: trackedEntityLoaderFactory(gravityLoader("me/follow/genes"), {
       paramKey: "genes", trackingKey: "is_followed", entityKeyPath: "gene"
     }),
-    followedGenesLoader: gravityLoader("me/follow/genes", {}, { headers: true }),
+    followedGenesLoader: gravityLoader<{ gene: { id: string, name: string } }[]>("me/follow/genes", {}, { headers: true }),
     followedProfilesArtworksLoader: gravityLoader("me/follow/profiles/artworks", {}, { headers: true }),
     followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
     followProfileLoader: gravityLoader("me/follow/profile", {}, { method: "POST" }),

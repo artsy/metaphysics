@@ -13,7 +13,7 @@ describe("UpdateConversationMutation", () => {
       }
     `
 
-    const rootValue = {
+    const context = {
       conversationUpdateLoader: () =>
         Promise.resolve({
           initial_message: "Howdy",
@@ -22,7 +22,7 @@ describe("UpdateConversationMutation", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
+    return runAuthenticatedQuery(mutation, context).then(
       updatedConversation => {
         expect(updatedConversation).toMatchSnapshot()
       }

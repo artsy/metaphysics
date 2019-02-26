@@ -33,7 +33,7 @@ describe("UpdateSubmissionMutation", () => {
       }
     `
 
-    const rootValue = {
+    const context = {
       submissionUpdateLoader: () =>
         Promise.resolve({
           id: "106",
@@ -44,7 +44,7 @@ describe("UpdateSubmissionMutation", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(data => {
+    return runAuthenticatedQuery(mutation, context).then(data => {
       expect(data).toMatchSnapshot()
     })
   })

@@ -1,8 +1,14 @@
 import _ from "lodash"
 import BidderPosition from "schema/bidder_position"
-import { GraphQLList, GraphQLBoolean, GraphQLString } from "graphql"
+import {
+  GraphQLList,
+  GraphQLBoolean,
+  GraphQLString,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
-export default {
+const BidderPositions: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(BidderPosition.type),
   description: "A list of the current user's bidder positions",
   args: {
@@ -22,11 +28,9 @@ export default {
   resolve: (
     _root,
     { current, artwork_id, sale_id },
-    _request,
-    {
-      rootValue: { meBidderPositionsLoader, saleLoader, saleArtworkRootLoader },
-    }
+    { meBidderPositionsLoader, saleLoader, saleArtworkRootLoader }
   ) => {
+    if (!meBidderPositionsLoader) return null
     return meBidderPositionsLoader({
       artwork_id,
       sale_id,
@@ -80,3 +84,5 @@ export default {
     })
   },
 }
+
+export default BidderPositions

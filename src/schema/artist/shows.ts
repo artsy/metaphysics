@@ -1,10 +1,16 @@
 import { pageable } from "relay-cursor-paging"
-import { GraphQLInt, GraphQLString, GraphQLBoolean } from "graphql"
+import {
+  GraphQLInt,
+  GraphQLString,
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+} from "graphql"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import { merge, defaults, reject, includes, omit } from "lodash"
 import { createPageCursors } from "schema/fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
+import { ResolverContext } from "types/graphql"
 
 // TODO: Fix upstream, for now we remove shows from certain Partner types
 const blacklistedPartnerTypes = [
@@ -55,14 +61,10 @@ const ShowArgs = {
 }
 
 // TODO: Get rid of this when we remove the deprecated PartnerShow in favour of Show.
-export const ShowField = {
+export const ShowField: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
+  type: null,
   args: ShowArgs,
-  resolve: (
-    { id },
-    options,
-    _request,
-    { rootValue: { relatedShowsLoader } }
-  ) => {
+  resolve: ({ id }, options, { relatedShowsLoader }) => {
     return relatedShowsLoader(
       defaults(options, {
         artist_id: id,
@@ -72,9 +74,13 @@ export const ShowField = {
   },
 }
 
-export const ShowsConnectionField = {
+export const ShowsConnectionField: GraphQLFieldConfig<
+  { id: string },
+  ResolverContext
+> = {
+  type: null,
   args: pageable(ShowArgs),
-  resolve: ({ id }, args, _request, { rootValue: { relatedShowsLoader } }) => {
+  resolve: ({ id }, args, { relatedShowsLoader }) => {
     const pageOptions = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = pageOptions
     const gravityArgs = omit(args, ["first", "after", "last", "before"])

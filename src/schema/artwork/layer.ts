@@ -1,11 +1,17 @@
 import Artwork, { artworkConnection } from "./index"
 import { IDFields } from "schema/object_identification"
-import { GraphQLObjectType, GraphQLString, GraphQLList } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLList,
+  GraphQLFieldConfig,
+} from "graphql"
 import { pageable } from "relay-cursor-paging"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
+import { ResolverContext } from "types/graphql"
 
-const ArtworkLayerType = new GraphQLObjectType({
+const ArtworkLayerType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkLayer",
   fields: () => ({
     ...IDFields,
@@ -14,8 +20,7 @@ const ArtworkLayerType = new GraphQLObjectType({
       resolve: (
         { id, type, artwork_id },
         _options,
-        _request,
-        { rootValue: { relatedLayerArtworksLoader } }
+        { relatedLayerArtworksLoader }
       ) => {
         return relatedLayerArtworksLoader(
           { id, type },
@@ -36,8 +41,7 @@ const ArtworkLayerType = new GraphQLObjectType({
       resolve: (
         { id, type, artwork_id },
         options,
-        _request,
-        { rootValue: { relatedLayerArtworksLoader } }
+        { relatedLayerArtworksLoader }
       ) => {
         const { size } = convertConnectionArgsToGravityArgs(options)
 
@@ -77,6 +81,8 @@ const ArtworkLayerType = new GraphQLObjectType({
   }),
 })
 
-export default {
+const ArtworkLayer: GraphQLFieldConfig<any, ResolverContext> = {
   type: ArtworkLayerType,
 }
+
+export default ArtworkLayer

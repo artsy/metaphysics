@@ -1,6 +1,7 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-export const AttachmentType = new GraphQLObjectType({
+export const AttachmentType = new GraphQLObjectType<any, ResolverContext>({
   name: "Attachment",
   description: "Fields of an attachment (currently from Radiation)",
   fields: {

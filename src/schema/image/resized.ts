@@ -9,7 +9,9 @@ import {
   GraphQLInt,
   GraphQLString,
   GraphQLList,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export const resizedImageUrl = (image, options) => {
   const opts = _.defaults(options, {
@@ -43,7 +45,7 @@ export const resizedImageUrl = (image, options) => {
   }
 }
 
-const ResizedImageUrlType = new GraphQLObjectType({
+const ResizedImageUrlType = new GraphQLObjectType<any, ResolverContext>({
   name: "ResizedImageUrl",
   fields: {
     factor: {
@@ -61,7 +63,7 @@ const ResizedImageUrlType = new GraphQLObjectType({
   },
 })
 
-export default {
+const Resized: GraphQLFieldConfig<void, ResolverContext> = {
   args: {
     width: {
       type: GraphQLInt,
@@ -76,3 +78,5 @@ export default {
   type: ResizedImageUrlType,
   resolve: resizedImageUrl,
 }
+
+export default Resized

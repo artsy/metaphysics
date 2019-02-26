@@ -34,13 +34,13 @@ describe("Me", () => {
         intents: ["buy art & design"],
       }
 
-      const rootValue = {
+      const context = {
         collectorProfileLoader: sinon
           .stub()
           .returns(Promise.resolve(collectorProfile)),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(
+      return runAuthenticatedQuery(query, context).then(
         ({ me: { collector_profile } }) => {
           expect(collector_profile).toEqual(expectedProfileData)
         }

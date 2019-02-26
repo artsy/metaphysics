@@ -4,7 +4,7 @@ import { runAuthenticatedQuery } from "test/utils"
 describe("Me", () => {
   describe("Conversation", () => {
     describe("Message", () => {
-      const rootValue = {
+      const context = {
         conversationLoader: () =>
           Promise.resolve({
             id: "420",
@@ -60,7 +60,7 @@ describe("Me", () => {
           }
         `
 
-        return runAuthenticatedQuery(query, rootValue).then(
+        return runAuthenticatedQuery(query, context).then(
           ({ me: conversation }) => {
             expect(conversation).toMatchSnapshot()
           }
@@ -99,7 +99,7 @@ describe("Me", () => {
           ],
         }
 
-        const customRootValue = Object.assign({}, rootValue, {
+        const customRootValue = Object.assign({}, context, {
           conversationMessagesLoader: () => Promise.resolve(message),
         })
 
@@ -138,7 +138,7 @@ describe("Me", () => {
           }
         `
 
-        return runAuthenticatedQuery(query, rootValue).then(
+        return runAuthenticatedQuery(query, context).then(
           ({ me: conversation }) => {
             expect(conversation).toMatchSnapshot()
           }

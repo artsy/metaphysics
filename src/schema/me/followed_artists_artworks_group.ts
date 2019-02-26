@@ -3,19 +3,24 @@ import moment from "moment"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import Artwork, { artworkConnection } from "schema/artwork"
 import ArtworkSorts from "schema/sorts/artwork_sorts"
-import Image from "schema/image"
+import Image, { normalizeImageData } from "schema/image"
 import date from "schema/fields/date"
 import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLFieldConfig,
 } from "graphql"
 import { omit, groupBy, map } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
+import { ResolverContext } from "types/graphql"
 
-const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
+const FollowedArtistsArtworksGroupType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "FollowedArtistsArtworksGroup",
   interfaces: [NodeInterface],
   fields: () => ({
@@ -50,7 +55,7 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
         return (
           artworks.length > 0 &&
           artworks[0].artists.length > 0 &&
-          Image.resolve(artworks[0].artists[0])
+          normalizeImageData(artworks[0].artists[0])
         )
       },
     },
@@ -58,7 +63,10 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType({
   }),
 })
 
-const FollowedArtistsArtworksGroup = {
+const FollowedArtistsArtworksGroup: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
   type: connectionDefinitions({ nodeType: FollowedArtistsArtworksGroupType })
     .connectionType,
   description:
@@ -67,12 +75,7 @@ const FollowedArtistsArtworksGroup = {
     sort: ArtworkSorts,
     for_sale: { type: GraphQLBoolean },
   }),
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { followedArtistsArtworksLoader } }
-  ) => {
+  resolve: (_root, options, { followedArtistsArtworksLoader }) => {
     if (!followedArtistsArtworksLoader) return null
 
     // Convert Relay-style pagination to the supported page/size style for the backend.

@@ -1,6 +1,8 @@
 // Please do not add schema imports here while stitching is an ENV flag
 //
 import { graphql, GraphQLError } from "graphql"
+import { ResolverContext } from "types/graphql"
+import { createLoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
 
 /**
  * Performs a GraphQL query against our schema.
@@ -9,28 +11,27 @@ import { graphql, GraphQLError } from "graphql"
  *
  * On error, the promise will reject with the original error that was thrown.
  *
- * @param {String} query      The GraphQL query to run.
- * @param {Object} rootValue  The request params, which currently are `accessToken` and `userID`.
- * @returns {Promise}
+ * @param query   The GraphQL query to run.
+ * @param context The request specific data, such as `userID` and data-loaders.
  *
  * @todo This assumes there will always be just 1 error, not sure how to handle this differently.
  */
 export const runQuery = (
   query,
-  rootValue = { accessToken: null, userID: null },
-  context: any = {}
+  context: Partial<ResolverContext> = {
+    accessToken: undefined,
+    userID: undefined,
+  }
 ) => {
   const schema = require("schema").default
-
-  // Set up some of the default state when a request is made
-  context.res = context.res || {}
-  context.res.locals = context.res.locals || {}
-  context.res.locals.requestIDs = context.res.locals.requestIDs || {
-    requestID: "123456789",
-    xForwardedFor: "123.456.789",
-  }
-
-  return graphql(schema, query, rootValue, context).then(result => {
+  return graphql(schema, query, null, {
+    requestIDs: {
+      requestID: "123456789",
+      xForwardedFor: "123.456.789",
+      ...context.requestIDs,
+    },
+    ...context,
+  }).then(result => {
     if (result.errors) {
       const errors = result.errors.reduce(
         (acc, gqlError) => {
@@ -68,22 +69,30 @@ const isCombinedError = (
 const unpackGraphQLError = (error: GraphQLError) => error.originalError || error
 
 /**
- * Same as `runQuery` except it provides a `rootValue` that’s required for authenticated queries.
+ * Same as `runQuery` except it simulates an authenticated request.
  *
- * @param {String} query      The GraphQL query to run.
- * @param {Object} rootValue  The request params, which currently are `accessToken` and `userID`.
+ * It provides mocks for all authenticated loaders so that tests don’t need to
+ * provide those for resolvers that test for the existence of some authenticated
+ * loaders not under test.
+ *
+ * @param query   The GraphQL query to run.
+ * @param context The request specific data, such as `userID` and data-loaders.
  * @see runQuery
  */
 export const runAuthenticatedQuery = (
   query,
-  rootValue: any = {},
-  context = {}
+  context: Partial<ResolverContext> = {}
 ) => {
-  return runQuery(
-    query,
-    Object.assign({ accessToken: "secret", userID: "user-42" }, rootValue),
-    context
-  )
+  const accessToken = "secret"
+  const userID = "user-42"
+  const loaders = createLoadersWithAuthentication(accessToken, userID, {})
+  Object.keys(loaders).forEach(key => (loaders[key] = jest.fn()))
+  return runQuery(query, {
+    accessToken,
+    userID,
+    ...loaders,
+    ...context,
+  })
 }
 
 let mergedSchema
@@ -93,13 +102,13 @@ let mergedSchema
 /**
  * Same as `runQuery`, but runs against stitched schema
  *
- * @param {String} query      The GraphQL query to run.
- * @param {Object} rootValue  The request params, which currently are `accessToken` and `userID`.
+ * @param query   The GraphQL query to run.
+ * @param context The request specific data, such as `userID` and data-loaders.
  * @see runQuery
  */
 export const runQueryMerged = async (
   query,
-  rootValue = { accessToken: null, userID: null }
+  context: Partial<ResolverContext> = {}
 ) => {
   const { incrementalMergeSchemas } = require("lib/stitching/mergeSchemas")
 
@@ -109,7 +118,7 @@ export const runQueryMerged = async (
       ENABLE_CONSIGNMENTS_STITCHING: true,
     })
   }
-  return graphql(mergedSchema, query, rootValue, {}).then(result => {
+  return graphql(mergedSchema, query, null, context).then(result => {
     if (result.errors) {
       const error = result.errors[0]
       throw error.originalError || error

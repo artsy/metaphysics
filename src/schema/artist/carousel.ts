@@ -1,10 +1,11 @@
 import _ from "lodash"
 import Image from "schema/image"
 import { error } from "lib/loggers"
-import { GraphQLObjectType, GraphQLList } from "graphql"
+import { GraphQLObjectType, GraphQLList, GraphQLFieldConfig } from "graphql"
 import { GravityArtwork } from "types/gravity/artworkResponse"
+import { ResolverContext } from "types/graphql"
 
-const ArtistCarouselType = new GraphQLObjectType({
+const ArtistCarouselType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistCarousel",
   fields: {
     images: {
@@ -14,15 +15,13 @@ const ArtistCarouselType = new GraphQLObjectType({
   },
 })
 
-const ArtistCarousel = {
+const ArtistCarousel: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
   type: ArtistCarouselType,
-  resolve: ({ id }, _options, _request, resolver) => {
-    const {
-      artistArtworksLoader,
-      partnerShowImagesLoader,
-      relatedShowsLoader,
-    } = resolver.rootValue
-
+  resolve: (
+    { id },
+    _args,
+    { artistArtworksLoader, partnerShowImagesLoader, relatedShowsLoader }
+  ) => {
     return Promise.all([
       relatedShowsLoader({
         artist_id: id,

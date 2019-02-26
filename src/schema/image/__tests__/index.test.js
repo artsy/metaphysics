@@ -33,7 +33,7 @@ describe("Image type", () => {
   }
 
   let artwork = null
-  let rootValue = null
+  let context = null
 
   beforeEach(() => {
     artwork = {
@@ -42,7 +42,7 @@ describe("Image type", () => {
       artists: [],
       images: [image],
     }
-    rootValue = {
+    context = {
       artworkLoader: sinon
         .stub()
         .withArgs(artwork.id)
@@ -61,14 +61,14 @@ describe("Image type", () => {
 
     it("returns original aspect_ratio when available", () => {
       assign(image, { aspect_ratio: 1.5 })
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data.artwork.image.aspect_ratio).toBe(1.5)
       })
     })
 
     it("defaults to 1 when original aspect ratio is not available", () => {
       assign(image, { aspect_ratio: null })
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data.artwork.image.aspect_ratio).toBe(1)
       })
     })
@@ -86,7 +86,7 @@ describe("Image type", () => {
     it("is square by default (when there is no image geometry)", () => {
       assign(image, { original_width: null, original_height: null })
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data.artwork.image.orientation).toBe("square")
       })
     })
@@ -94,7 +94,7 @@ describe("Image type", () => {
     it("detects portrait", () => {
       assign(image, { original_width: 1000, original_height: 1500 })
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data.artwork.image.orientation).toBe("portrait")
       })
     })
@@ -102,7 +102,7 @@ describe("Image type", () => {
     it("detects landscape", () => {
       assign(image, { original_width: 2000, original_height: 1500 })
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data.artwork.image.orientation).toBe("landscape")
       })
     })
@@ -110,7 +110,7 @@ describe("Image type", () => {
     it("detects square", () => {
       assign(image, { original_width: 2000, original_height: 2000 })
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data.artwork.image.orientation).toBe("square")
       })
     })

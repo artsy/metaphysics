@@ -26,11 +26,11 @@ describe("Collections", () => {
           }
         }
       `
-      const rootValue = {
+      const context = {
         collectionLoader: id =>
           id === "saved-artwork" && Promise.resolve(gravityData),
       }
-      const data = await runAuthenticatedQuery(query, rootValue)
+      const data = await runAuthenticatedQuery(query, context)
       expect(data).toMatchSnapshot()
     })
 
@@ -57,7 +57,7 @@ describe("Collections", () => {
         "artworks_array.json"
       )
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
-      const rootValue = {
+      const context = {
         collectionArtworksLoader: (id, params) => {
           if (
             id === "saved-artwork" &&
@@ -76,7 +76,7 @@ describe("Collections", () => {
           }
         },
       }
-      const data = await runAuthenticatedQuery(query, rootValue)
+      const data = await runAuthenticatedQuery(query, context)
       expect(data).toMatchSnapshot()
     })
 
@@ -95,7 +95,7 @@ describe("Collections", () => {
           }
         }
       `
-      const rootValue = {
+      const context = {
         collectionArtworksLoader: () =>
           Promise.reject(new Error("Collection Not Found")),
       }
@@ -103,7 +103,7 @@ describe("Collections", () => {
         collection: {
           artworks_connection: { edges },
         },
-      } = await runAuthenticatedQuery(query, rootValue)
+      } = await runAuthenticatedQuery(query, context)
       expect(edges).toEqual([])
     })
   })

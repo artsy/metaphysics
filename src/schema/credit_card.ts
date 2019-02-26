@@ -4,6 +4,7 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLUnionType,
+  GraphQLFieldConfig,
 } from "graphql"
 import { GravityIDFields } from "schema/object_identification"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
@@ -11,8 +12,12 @@ import {
   connectionDefinitions,
   cursorForObjectInConnection,
 } from "graphql-relay"
+import { ResolverContext } from "types/graphql"
 
-const CreditCardMutationSuccessType = new GraphQLObjectType({
+const CreditCardMutationSuccessType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "CreditCardMutationSuccess",
   isTypeOf: data => data.id,
   fields: () => ({
@@ -32,7 +37,10 @@ const CreditCardMutationSuccessType = new GraphQLObjectType({
   }),
 })
 
-const CreditCardMutationFailureType = new GraphQLObjectType({
+const CreditCardMutationFailureType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "CreditCardMutationFailure",
   isTypeOf: data => {
     return data._type === "GravityMutationError"
@@ -50,7 +58,7 @@ export const CreditCardMutationType = new GraphQLUnionType({
   types: [CreditCardMutationSuccessType, CreditCardMutationFailureType],
 })
 
-const CreditCardType = new GraphQLObjectType({
+const CreditCardType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreditCard",
   fields: () => ({
     ...GravityIDFields,
@@ -108,7 +116,7 @@ export const {
   nodeType: CreditCardType,
 })
 
-export const CreditCard = {
+export const CreditCard: GraphQLFieldConfig<void, ResolverContext> = {
   type: CreditCardType,
   description: "A user's credit card",
   args: {
@@ -117,6 +125,6 @@ export const CreditCard = {
       description: "The ID of the Credit Card",
     },
   },
-  resolve: (_root, { id }, _request, { rootValue: { creditCardLoader } }) =>
-    creditCardLoader(id),
+  resolve: (_root, { id }, { creditCardLoader }) =>
+    creditCardLoader ? creditCardLoader(id) : null,
 }

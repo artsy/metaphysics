@@ -10,6 +10,7 @@ import {
   GraphQLString,
 } from "graphql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
+import { ResolverContext } from "types/graphql"
 
 export const FixFailedPaymentInputType = new GraphQLInputObjectType({
   name: "FixFailedPaymentInput",
@@ -25,7 +26,11 @@ export const FixFailedPaymentInputType = new GraphQLInputObjectType({
   },
 })
 
-export const FixFailedPaymentMutation = mutationWithClientMutationId({
+export const FixFailedPaymentMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
   name: "FixFailedPayment",
   description: "Fix the failed payment on an offer order",
   inputFields: FixFailedPaymentInputType.getFields(),
@@ -34,11 +39,8 @@ export const FixFailedPaymentMutation = mutationWithClientMutationId({
       type: OrderOrFailureUnionType,
     },
   },
-  mutateAndGetPayload: (
-    { offerId, creditCardId },
-    context,
-    { rootValue: { accessToken, exchangeSchema } }
-  ) => {
+  mutateAndGetPayload: ({ offerId, creditCardId }, context) => {
+    const { accessToken, exchangeSchema } = context
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }
