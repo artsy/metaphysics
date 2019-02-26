@@ -26,13 +26,3 @@ export interface ResolverContextValues {
 
 export type ResolverContext = ResolverContextValues &
   ReturnType<typeof createLoaders>
-
-declare module "graphql/type" {
-  interface GraphQLResolveInfo {
-    /**
-     * Where we store user/data-loader context, yes there's a context
-     * object but without a big refactor it's not happening soon.
-     */
-    readonly rootValue: void
-  }
-}

@@ -21,15 +21,14 @@ patch-package
      getInterfaces(): GraphQLInterfaceType[];
      toString(): string;
      toJSON(): string;
-@@ -371,7 +371,10 @@ export interface GraphQLResolveInfo {
+@@ -371,7 +371,9 @@ export interface GraphQLResolveInfo {
      readonly path: ResponsePath;
      readonly schema: GraphQLSchema;
      readonly fragments: { [key: string]: FragmentDefinitionNode };
 -    readonly rootValue: any;
-+    // Check out ./src/types/graphql.d.ts for the replacement
-+    // which uses our types instead.
-+    //
-+    // readonly rootValue: any;
++    // This is re-typed as `void` to ensure nobody at Artsy uses the old pattern
++    // anymore before we moved to using the proper `context` parameter.
++    readonly rootValue: void;
      readonly operation: OperationDefinitionNode;
      readonly variableValues: { [variableName: string]: any };
  }

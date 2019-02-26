@@ -811,29 +811,17 @@
   dependencies:
     "@types/node" "*"
 
-"@types/graphql-relay@^0.4.0":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@types/graphql-relay/-/graphql-relay-0.4.3.tgz#44921f90afeb79f906424306c1730417d8053aa0"
-  integrity sha512-ANcZJyMX7ZJmV4Pko14Q/Ndn768fIaZe0yM6s4fRnxBdkjkC7ECO0nSKyiwotwnh2bqIAY3b2WBUIXYwxup9OA==
-  dependencies:
-    "@types/graphql" "*"
-
-"@types/graphql-relay@^0.4.9":
+"@types/graphql-relay@^0.4.0", "@types/graphql-relay@^0.4.9":
   version "0.4.9"
   resolved "https://registry.yarnpkg.com/@types/graphql-relay/-/graphql-relay-0.4.9.tgz#0f34ee87a1bf1fc4c986eeefe0707318c7433212"
   integrity sha512-SL0UXsnNozTBIXwSs0pGB1iTWKaQzxmfqBwx9m0NvDGg463sYaFw4f7rizTzL4OSaVobLkvGJWUPesbg66MfHw==
   dependencies:
     "@types/graphql" "*"
 
-"@types/graphql@*", "@types/graphql@0.12.6", "@types/graphql@^0.13.1":
-  version "0.13.1"
-  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.13.1.tgz#7d39750355c9ecb921816d6f76c080405b5f6bea"
-  integrity sha512-a6vRcP4M6+7Lqev1JeF3hGFmC3FNBIJ5cRnaSN/z1LtGVr/CaY6nqSlQbnFr2j8ucDlUAQU43LCnJrz6uLUyHg==
-
-"@types/graphql@^0.13.3":
-  version "0.13.3"
-  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.13.3.tgz#23af65796d341f93ef5b485138bd52c67786452d"
-  integrity sha512-YNGkX5HtcDtufyQquww05yoWYiDdZPPubLafXqukYqGmpawHjodAXwufhTemqDdgGk48WU7RX2Ouj0VTc9b3AA==
+"@types/graphql@*", "@types/graphql@0.12.6", "@types/graphql@^0.13.1", "@types/graphql@^0.13.3":
+  version "0.13.4"
+  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.13.4.tgz#55ae9c29f0fd6b85ee536f5c72b4769d5c5e06b1"
+  integrity sha512-B4yel4ro2nTb3v0pYO8vO6SjgvFJSrwUY+IO6TUSLdOSB+gQFslylrhRCHxvXMIhxB71mv5PEE9dAX+24S8sew==
 
 "@types/invariant@^2.2.29":
   version "2.2.29"
