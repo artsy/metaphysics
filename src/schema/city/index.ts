@@ -42,7 +42,11 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
       type: showConnection,
       args: pageable({
         sort: PartnerShowSorts,
-        status: EventStatus,
+        status: {
+          type: EventStatus.type,
+          defaultValue: "CURRENT",
+          description: "By default we filter shows by current",
+        },
         discoverable: {
           type: GraphQLBoolean,
           description:
@@ -50,11 +54,17 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         },
       }),
       resolve: async (city, args, { showsWithHeadersLoader }) => {
+        // default Enum value for status is not properly resolved
+        // so we have to manually resolve it by lowercasing the value
+        // https://github.com/apollographql/graphql-tools/issues/715
+        args.status = args.status.toLowerCase()
+
         const gravityOptions = {
           ...convertConnectionArgsToGravityArgs(args),
           displayable: true,
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+          has_location: true,
           total_count: true,
         }
         delete gravityOptions.page
