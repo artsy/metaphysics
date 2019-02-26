@@ -149,6 +149,7 @@ async function startApp() {
         schema,
         graphiql: true,
         context,
+        rootValue: {},
         formatError: graphqlErrorHandler(enableSentry, {
           req,
           // Why the checking on params? Do we reach this code if params is falsy?
