@@ -8305,7 +8305,9 @@ type Show implements Node {
   # Shows that are near (~75km) from this show
   nearbyShows(
     sort: PartnerShowSorts
-    status: EventStatus
+
+    # By default show only current shows
+    status: EventStatus = CURRENT
 
     # Whether to include local discovery stubs as well as displayable shows
     discoverable: Boolean
