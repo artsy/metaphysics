@@ -9,7 +9,6 @@ export const HomePageArtworkModuleTypeValues = {
   followed_artist: null,
   followed_artists: null,
   followed_galleries: null,
-  genes: null,
   live_auctions: null,
   popular_artists: null,
   recommended_works: null,
@@ -25,7 +24,10 @@ export const HomePageArtworkModuleTypes = new GraphQLEnumType({
   values: Object.keys(HomePageArtworkModuleTypeValues).reduce(
     (acc, type) => ({ ...acc, [type.toUpperCase()]: { value: type } }),
     {
-      // This one needs manual handling because of inconsistent naming.
+      // These need manual handling because of inconsistent naming.
+      FOLLOWED_GENES: {
+        value: "genes",
+      },
       GENERIC_GENES: {
         value: "generic_gene",
       },
@@ -34,6 +36,7 @@ export const HomePageArtworkModuleTypes = new GraphQLEnumType({
 })
 
 export type HomePageArtworkModuleTypeKeys =
+  | "genes"
   | "generic_gene"
   | keyof typeof HomePageArtworkModuleTypeValues
 
