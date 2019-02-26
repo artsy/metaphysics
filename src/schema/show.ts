@@ -498,7 +498,11 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       type: showConnection,
       args: pageable({
         sort: PartnerShowSorts,
-        status: EventStatus,
+        status: {
+          type: EventStatus.type,
+          defaultValue: "CURRENT",
+          description: "By default show only current shows",
+        },
         discoverable: {
           type: GraphQLBoolean,
           description:
@@ -511,6 +515,8 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           return connectionFromArray([], args)
         }
 
+        // Manually toLowerCase to handle issue with resolving Enum default value
+        args.status = args.status.toLowerCase()
         const coordinates = show.location.coordinates
         const gravityOptions = {
           ...convertConnectionArgsToGravityArgs(args),
@@ -518,6 +524,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           near: `${coordinates.lat},${coordinates.lng}`,
 
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+          has_location: true,
           total_count: true,
         }
         delete gravityOptions.page
