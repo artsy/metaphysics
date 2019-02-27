@@ -47,7 +47,7 @@ const Fairs: GraphQLFieldConfig<void, ResolverContext> = {
     sort: FairSorts,
     status: EventStatus,
   },
-  resolve: (_root, options, { fairsLoader }) => {
+  resolve: async (_root, options, { fairsLoader }) => {
     let gravityOptions = options
     if (options.near) {
       gravityOptions = _.assign(options, {
@@ -60,7 +60,8 @@ const Fairs: GraphQLFieldConfig<void, ResolverContext> = {
       gravityOptions.id = options.ids
       delete gravityOptions.ids
     }
-    return fairsLoader(gravityOptions)
+    const { body: fairs } = await fairsLoader(gravityOptions)
+    return fairs
   },
 }
 

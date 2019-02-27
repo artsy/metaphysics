@@ -1,7 +1,5 @@
 import {
   GraphQLBoolean,
-  GraphQLInt,
-  GraphQLList,
   GraphQLObjectType,
   GraphQLString,
   GraphQLFieldConfig,
@@ -10,7 +8,7 @@ import {
 import { LatLngType } from "../location"
 import { showConnection } from "schema/show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
-import Fair from "schema/fair"
+import { FairType } from "schema/fair"
 import FairSorts from "schema/sorts/fair_sorts"
 import EventStatus from "schema/input_fields/event_status"
 
@@ -25,6 +23,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import Near from "schema/input_fields/near"
 import { LatLng, Point, distance } from "lib/geospatial"
 import { ResolverContext } from "types/graphql"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
 
 const CityType = new GraphQLObjectType<any, ResolverContext>({
   name: "City",
@@ -74,9 +73,9 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         }
 
         const response = await showsWithHeadersLoader(gravityOptions)
-        const { headers, body: cities } = response
+        const { headers, body: shows } = response
 
-        const results = connectionFromArraySlice(cities, args, {
+        const results = connectionFromArraySlice(shows, args, {
           arrayLength: headers["x-total-count"],
           sliceStart: gravityOptions.offset,
         })
@@ -88,19 +87,32 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     fairs: {
-      type: new GraphQLList(Fair.type),
-      args: {
-        size: { type: GraphQLInt },
+      type: connectionWithCursorInfo(FairType),
+      args: pageable({
         sort: FairSorts,
         status: EventStatus,
-      },
-      resolve: (obj, args, { fairsLoader }) => {
+      }),
+      resolve: async (city, args, { fairsLoader }) => {
         const gravityOptions = {
-          ...args,
-          near: `${obj.coordinates.lat},${obj.coordinates.lng}`,
+          ...convertConnectionArgsToGravityArgs(args),
+          near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+          total_count: true,
         }
-        return fairsLoader(gravityOptions)
+        delete gravityOptions.page
+
+        const response = await fairsLoader(gravityOptions)
+        const { headers, body: fairs } = response
+
+        const results = connectionFromArraySlice(fairs, args, {
+          arrayLength: headers["x-total-count"],
+          sliceStart: gravityOptions.offset,
+        })
+
+        // This is in our schema, so might as well fill it
+        // @ts-ignore
+        results.totalCount = headers["x-total-count"]
+        return results
       },
     },
   },

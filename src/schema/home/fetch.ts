@@ -11,13 +11,16 @@ import {
 } from "lodash"
 import blacklist from "lib/artist_blacklist"
 import { LoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
+import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 
-export const featuredFair = fairsLoader => {
+export const featuredFair = (
+  fairsLoader: LoadersWithoutAuthentication["fairsLoader"]
+) => {
   return fairsLoader({
     size: 5,
     active: true,
     has_homepage_section: true,
-  }).then(fairs => {
+  }).then(({ body: fairs }) => {
     if (fairs.length) {
       return first(
         sortBy(fairs, ({ banner_size }) =>

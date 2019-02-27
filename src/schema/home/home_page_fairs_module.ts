@@ -17,7 +17,7 @@ export const HomePageFairsModuleType = new GraphQLObjectType<
           sort: "-start_at",
           active: true,
         }
-        return fairsLoader(gravityOptions).then(runningFairs => {
+        return fairsLoader(gravityOptions).then(({ body: runningFairs }) => {
           // If there are less than 8, get the most recent closed fairs
           if (runningFairs.length < 8) {
             const newOptions = {
@@ -26,7 +26,7 @@ export const HomePageFairsModuleType = new GraphQLObjectType<
               active: false,
               size: 8 - runningFairs.length,
             }
-            return fairsLoader(newOptions).then(closedFairs => {
+            return fairsLoader(newOptions).then(({ body: closedFairs }) => {
               const allFairs = runningFairs.concat(closedFairs)
               return allFairs.filter(fair => fair.mobile_image)
             })
