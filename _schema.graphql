@@ -2357,6 +2357,9 @@ type BuyOrder implements Order {
 
   # Credit card on this order
   creditCard: CreditCard
+
+  # Whether or not the last attempt to charge the buyer failed
+  lastTransactionFailed: Boolean
   lastApprovedAt(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -5896,6 +5899,9 @@ type OfferOrder implements Order {
 
   # Credit card on this order
   creditCard: CreditCard
+
+  # Whether or not the last attempt to charge the buyer failed
+  lastTransactionFailed: Boolean
   lastApprovedAt(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -6112,6 +6118,9 @@ interface Order {
 
   # Credit card on this order
   creditCard: CreditCard
+
+  # Whether or not the last attempt to charge the buyer failed
+  lastTransactionFailed: Boolean
   lastApprovedAt(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
