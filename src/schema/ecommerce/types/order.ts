@@ -6,6 +6,7 @@ import {
   GraphQLFloat,
   GraphQLInterfaceType,
   GraphQLFieldConfigMap,
+  GraphQLBoolean,
 } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 
@@ -138,6 +139,10 @@ const orderFields: GraphQLFieldConfigMap<
     description: "Credit card on this order",
     resolve: ({ creditCardId }, _args, { creditCardLoader }) =>
       creditCardId && creditCardLoader ? creditCardLoader(creditCardId) : null,
+  },
+  lastTransactionFailed: {
+    type: GraphQLBoolean,
+    description: "Whether or not the last attempt to charge the buyer failed",
   },
   lastApprovedAt: date,
   lastSubmittedAt: date,
