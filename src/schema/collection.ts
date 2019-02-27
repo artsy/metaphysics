@@ -54,7 +54,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
         return collectionArtworksLoader(id, gravityOptions)
           .then(({ body, headers }) => {
             return connectionFromArraySlice(body, options, {
-              arrayLength: headers["x-total-count"],
+              arrayLength: parseInt(headers["x-total-count"] || "0", 10),
               sliceStart: gravityOptions.offset,
             })
           })

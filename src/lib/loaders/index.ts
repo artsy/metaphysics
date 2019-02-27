@@ -13,7 +13,9 @@ import {
   PathGenerator,
 } from "./api/loader_interface"
 
-export type BodyAndHeaders<B = any, H = any> = {
+type ResponseHeaders = { [header: string]: string }
+
+export type BodyAndHeaders<B = any, H = ResponseHeaders> = {
   body: B
   headers: H
 }
@@ -39,12 +41,12 @@ export interface LoaderFactory {
     globalParams: any,
     pathAPIOptions: { headers: false } & APIOptions
   ): DynamicPathLoader<Body, PathGeneratorParams>
-  <Body = any, Headers = any>(
+  <Body = any, Headers = ResponseHeaders>(
     path: string,
     globalParams: any,
     pathAPIOptions: { headers: true } & APIOptions
   ): StaticPathLoader<BodyAndHeaders<Body, Headers>>
-  <Body = any, PathGeneratorParams = string, Headers = any>(
+  <Body = any, PathGeneratorParams = string, Headers = ResponseHeaders>(
     path: PathGenerator<PathGeneratorParams>,
     globalParams: any,
     pathAPIOptions: { headers: true } & APIOptions

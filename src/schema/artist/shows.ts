@@ -96,7 +96,7 @@ export const ShowsConnectionField: GraphQLFieldConfig<
         return { body: whitelistedShows, headers }
       })
       .then(({ body, headers }) => {
-        const totalCount = headers["x-total-count"]
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
         const totalPages = Math.ceil(totalCount / size)
 
         return merge(

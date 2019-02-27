@@ -85,7 +85,7 @@ const FollowedArtistsArtworksGroup: GraphQLFieldConfig<
     return followedArtistsArtworksLoader(omit(gravityOptions, "offset")).then(
       ({ body, headers }) => {
         const connection = connectionFromArraySlice(body, options, {
-          arrayLength: headers["x-total-count"],
+          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
           sliceStart: gravityOptions.offset,
         })
 

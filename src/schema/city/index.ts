@@ -76,13 +76,13 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         const { headers, body: shows } = response
 
         const results = connectionFromArraySlice(shows, args, {
-          arrayLength: headers["x-total-count"],
+          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
           sliceStart: gravityOptions.offset,
         })
 
         // This is in our schema, so might as well fill it
         // @ts-ignore
-        results.totalCount = headers["x-total-count"]
+        results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
         return results
       },
     },
@@ -105,13 +105,13 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         const { headers, body: fairs } = response
 
         const results = connectionFromArraySlice(fairs, args, {
-          arrayLength: headers["x-total-count"],
+          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
           sliceStart: gravityOptions.offset,
         })
 
         // This is in our schema, so might as well fill it
         // @ts-ignore
-        results.totalCount = headers["x-total-count"]
+        results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
         return results
       },
     },
