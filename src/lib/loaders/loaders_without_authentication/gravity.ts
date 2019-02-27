@@ -28,7 +28,7 @@ export default opts => {
     fairBoothsLoader: gravityLoader(id => `fair/${id}/shows`, {}, { headers: true }),
     fairPartnersLoader: gravityLoader(id => `fair/${id}/partners`, {}, { headers: true }),
     fairLoader: gravityLoader(id => `fair/${id}`),
-    fairsLoader: gravityLoader("fairs"),
+    fairsLoader: gravityLoader("fairs", {}, { headers: true }),
     filterArtworksLoader: gravityLoader("filter/artworks"),
     geneArtistsLoader: gravityLoader(id => `gene/${id}/artists`),
     geneFamiliesLoader: gravityLoader("gene_families"),

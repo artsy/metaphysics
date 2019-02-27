@@ -23,7 +23,7 @@ const RESULTS_SIZE = 20
 const moduleResults: HomePageArtworkModuleResolvers = {
   active_bids: ({ lotStandingLoader }) => activeSaleArtworks(lotStandingLoader),
   current_fairs: ({ fairsLoader, filterArtworksLoader }) => {
-    return featuredFair(fairsLoader).then(fair => {
+    return featuredFair(fairsLoader).then<any[] | undefined>(fair => {
       if (fair) {
         return filterArtworksLoader({
           fair_id: fair.id,

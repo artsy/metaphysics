@@ -60,7 +60,7 @@ const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const FairType = new GraphQLObjectType<any, ResolverContext>({
+export const FairType = new GraphQLObjectType<any, ResolverContext>({
   name: "Fair",
   fields: () => ({
     ...GravityIDFields,

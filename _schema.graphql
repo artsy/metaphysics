@@ -2450,7 +2450,14 @@ type City {
     before: String
     last: Int
   ): ShowConnection
-  fairs(size: Int, sort: FairSorts, status: EventStatus): [Fair]
+  fairs(
+    sort: FairSorts
+    status: EventStatus
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FairConnection
 }
 
 type Collection implements Node {
@@ -3351,6 +3358,17 @@ enum FairArtistSorts {
   NAME_DESC
 }
 
+# A connection to a list of items.
+type FairConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [FairEdge]
+  pageCursors: PageCursors
+  totalCount: Int
+}
+
 type FairCounts {
   artists(
     # Returns a `String` when format is specified. e.g.`'0,0.0000''`
@@ -3372,6 +3390,15 @@ type FairCounts {
     format: String
     label: String
   ): FormattedNumber
+}
+
+# An edge in a connection.
+type FairEdge {
+  # The item at the end of the edge
+  node: Fair
+
+  # A cursor for use in pagination
+  cursor: String!
 }
 
 type FairExhibitor {

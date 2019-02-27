@@ -106,7 +106,7 @@ describe("City", () => {
 
       mockShows = [{ id: "first-show" }]
       mockShowsLoader = jest.fn(() =>
-        Promise.resolve({ body: mockShows, headers: { "x-total-count": 1 } })
+        Promise.resolve({ body: mockShows, headers: { "x-total-count": "1" } })
       )
       context = {
         showsWithHeadersLoader: mockShowsLoader,
@@ -131,6 +131,7 @@ describe("City", () => {
         expect(mockShowsLoader).toHaveBeenCalledWith(
           expect.objectContaining({
             near: "38.5,-121.8",
+            total_count: true,
           })
         )
       })
@@ -173,15 +174,21 @@ describe("City", () => {
         {
           city(slug: "sacramende-ca-usa") {
             name
-            fairs {
-              id
+            fairs(first: 10) {
+              edges {
+                node {
+                  id
+                }
+              }
             }
           }
         }
       `
 
       const mockFairs = [{ id: "first-fair" }]
-      const mockFairsLoader = jest.fn(() => Promise.resolve(mockFairs))
+      const mockFairsLoader = jest.fn(() =>
+        Promise.resolve({ body: mockFairs, headers: { "x-total-count": "1" } })
+      )
       const context = {
         fairsLoader: mockFairsLoader,
       }
@@ -189,12 +196,15 @@ describe("City", () => {
       return runQuery(query, context).then(result => {
         expect(result!.city).toEqual({
           name: "Sacramende",
-          fairs: mockFairs,
+          fairs: {
+            edges: [{ node: { id: "first-fair" } }],
+          },
         })
 
         expect(mockFairsLoader).toHaveBeenCalledWith(
           expect.objectContaining({
             near: "38.5,-121.8",
+            total_count: true,
           })
         )
       })
