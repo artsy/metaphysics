@@ -133,7 +133,7 @@ export const partnersForArtist = (
 
   return loader(gravityArgs).then(({ body, headers }) => {
     return connectionFromArraySlice(body, options, {
-      arrayLength: headers["x-total-count"],
+      arrayLength: parseInt(headers["x-total-count"] || "0", 10),
       sliceStart: offset,
       // Type properly
       // @ts-ignore

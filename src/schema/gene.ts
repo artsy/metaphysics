@@ -168,7 +168,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           return similarGenesLoader(gene.id, gravityArgs).then(
             ({ body, headers }) => {
               const genes = body
-              const totalCount = headers["x-total-count"]
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
               return connectionFromArraySlice(genes, options, {
                 arrayLength: totalCount,

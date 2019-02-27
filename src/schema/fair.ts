@@ -111,7 +111,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             return artistsLoader({ ids: map(body, "artist_id") }).then(
               artists => {
                 return connectionFromArraySlice(artists, options, {
-                  arrayLength: headers["x-total-count"],
+                  arrayLength: parseInt(headers["x-total-count"] || "0", 10),
                   sliceStart: gravityOptions.offset,
                 })
               }

@@ -68,7 +68,7 @@ export const Related = {
               : relatedContemporaryArtistsLoader
 
           return fetch(gravityArgs).then(({ body, headers }) => {
-            const totalCount = headers["x-total-count"]
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
             const pageCursors = createPageCursors({ page, size }, totalCount)
 
             return assign({
@@ -98,7 +98,7 @@ export const Related = {
           return suggestedArtistsLoader(gravityOptions).then(
             ({ body, headers }) => {
               const suggestedArtists = body
-              const totalCount = headers["x-total-count"]
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
               return connectionFromArraySlice(suggestedArtists, options, {
                 arrayLength: totalCount,
                 sliceStart: offset,

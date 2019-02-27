@@ -115,7 +115,7 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           return partnerArtworksLoader(id, gravityArgs).then(
             ({ body, headers }) => {
               return connectionFromArraySlice(body, options, {
-                arrayLength: headers["x-total-count"],
+                arrayLength: parseInt(headers["x-total-count"] || "0", 10),
                 sliceStart: offset,
               })
             }

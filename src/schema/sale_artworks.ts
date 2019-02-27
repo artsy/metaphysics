@@ -49,7 +49,7 @@ const SaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
         hits: response,
         aggregations: {
           total: {
-            value: headers["x-total-count"],
+            value: parseInt(headers["x-total-count"] || "0", 10),
           },
         },
       }

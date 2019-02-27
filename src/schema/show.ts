@@ -167,7 +167,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         return partnerShowArtworksLoader(loaderOptions, gravityArgs).then(
           ({ body, headers }) => {
             return connectionFromArraySlice(body, options, {
-              arrayLength: headers["x-total-count"],
+              arrayLength: parseInt(headers["x-total-count"] || "0", 10),
               sliceStart: offset,
             })
           }
@@ -537,13 +537,13 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         const { headers, body: cities } = response
 
         const results = connectionFromArraySlice(cities, args, {
-          arrayLength: headers["x-total-count"],
+          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
           sliceStart: gravityOptions.offset,
         })
 
         // This is in our schema, so might as well fill it
         // @ts-ignore
-        results.totalCount = headers["x-total-count"]
+        results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
         return results
       },
     },
