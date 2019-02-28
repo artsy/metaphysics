@@ -1,6 +1,3 @@
-import { runQuery } from "test/utils"
-import gql from "lib/gql"
-
 const mockCities = {
   "sacramende-ca-usa": {
     slug: "sacramende-ca-usa",
@@ -14,11 +11,20 @@ const mockCities = {
   },
 }
 
-beforeEach(() => {
-  jest.mock("../city/city_data.json", () => mockCities)
-})
+jest.mock("../city/city_data.json", () => mockCities)
+jest.mock("../../lib/all.ts")
+
+import { runQuery } from "test/utils"
+import gql from "lib/gql"
+import { MAX_GRAPHQL_INT, allViaLoader as _allViaLoader } from "lib/all"
+
+const allViaLoader = _allViaLoader as jest.Mock<typeof _allViaLoader>
 
 describe("City", () => {
+  afterEach(() => {
+    allViaLoader.mockReset()
+  })
+
   describe("finding by slug", () => {
     it("finds a city by its slug", () => {
       const query = gql`
@@ -145,7 +151,7 @@ describe("City", () => {
       expect(gravityOptions).not.toHaveProperty("discoverable")
     })
 
-    it("can request all discoverable shows, optionally", async () => {
+    it("can filter by discoverable shows", async () => {
       query = gql`
         {
           city(slug: "sacramende-ca-usa") {
@@ -165,6 +171,30 @@ describe("City", () => {
 
       expect(gravityOptions).toMatchObject({ discoverable: true })
       expect(gravityOptions).not.toHaveProperty("displayable")
+    })
+
+    it("can request all shows [that match other filter parameters]", async () => {
+      allViaLoader.mockImplementation(() => Promise.resolve(mockShows))
+
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            shows(first: ${MAX_GRAPHQL_INT}) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+
+      expect(allViaLoader).toHaveBeenCalledWith(
+        mockShowsLoader,
+        expect.anything()
+      )
     })
   })
 

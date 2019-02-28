@@ -24,6 +24,7 @@ import Near from "schema/input_fields/near"
 import { LatLng, Point, distance } from "lib/geospatial"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "schema/fields/pagination"
+import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 
 const CityType = new GraphQLObjectType<any, ResolverContext>({
   name: "City",
@@ -53,31 +54,57 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         },
       }),
       resolve: async (city, args, { showsWithHeadersLoader }) => {
-        // default Enum value for status is not properly resolved
-        // so we have to manually resolve it by lowercasing the value
-        // https://github.com/apollographql/graphql-tools/issues/715
-        args.status = args.status.toLowerCase()
-
-        const gravityOptions = {
-          ...convertConnectionArgsToGravityArgs(args),
-          displayable: true,
+        const baseParams = {
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
           has_location: true,
-          total_count: true,
+          sort: args.sort,
+          // default Enum value for status is not properly resolved
+          // so we have to manually resolve it by lowercasing the value
+          // https://github.com/apollographql/graphql-tools/issues/715
+          status: args.status.toLowerCase(),
+          // This is to ensure the key never makes its way into the `baseParams`
+          // object if not needed,
+          ...(typeof args.discoverable === "undefined"
+            ? undefined
+            : { discoverable: args.discoverable }),
+          ...(typeof args.discoverable === "undefined"
+            ? { displayable: true }
+            : undefined),
         }
-        delete gravityOptions.page
 
-        if (args.discoverable) {
-          delete gravityOptions.displayable
+        let response
+        let offset
+
+        if (args.first === MAX_GRAPHQL_INT) {
+          // TODO: We could throw an error if the `after` arg is passed, but not
+          //       doing so, for now.
+          offset = 0
+          response = await allViaLoader(showsWithHeadersLoader, {
+            params: baseParams,
+          }).then(shows => ({
+            // This just creates a body/headers object again, as the code
+            // below already expects that.
+            // TODO: Perhaps `allViaLoader` should support that out of the box.
+            body: shows,
+            headers: { "x-total-count": shows.length.toString() },
+          }))
+        } else {
+          const connectionParams = convertConnectionArgsToGravityArgs(args)
+          offset = connectionParams.offset
+          response = await showsWithHeadersLoader({
+            ...baseParams,
+            size: connectionParams.size,
+            page: connectionParams.page,
+            total_count: true,
+          })
         }
 
-        const response = await showsWithHeadersLoader(gravityOptions)
         const { headers, body: shows } = response
 
         const results = connectionFromArraySlice(shows, args, {
           arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-          sliceStart: gravityOptions.offset,
+          sliceStart: offset,
         })
 
         // This is in our schema, so might as well fill it
