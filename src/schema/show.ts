@@ -361,8 +361,8 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       type: Fair.type,
       resolve: ({ fair }) => fair,
     },
-    filteredArtworks: filterArtworksWithParams(({ id, partner }) => ({
-      show_id: id,
+    filteredArtworks: filterArtworksWithParams(({ _id, partner }) => ({
+      partner_show_id: _id,
       partner_id: partner.id,
     })),
     href: {
