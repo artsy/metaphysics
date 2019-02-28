@@ -1107,7 +1107,7 @@ describe("Show type", () => {
       const data = await runQuery(query, context)
       expect(context.filterArtworksLoader).toHaveBeenCalledWith(
         expect.objectContaining({
-          show_id: "new-museum-1-2015-triennial-surround-audience",
+          partner_show_id: "abcdefg123456",
           partner_id: "new-museum",
         })
       )
