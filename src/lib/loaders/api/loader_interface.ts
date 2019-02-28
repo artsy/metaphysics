@@ -69,12 +69,9 @@ export function loaderInterface<T, P>(
   pathOrGenerator: string | PathGenerator<P>,
   globalParams: any
 ) {
+  const keyGenerator: any =
+    typeof pathOrGenerator === "function" ? encodeDynamicPath : encodeStaticPath
   return (...idAndOrParams) => {
-    const keyGenerator: any =
-      typeof pathOrGenerator === "function"
-        ? encodeDynamicPath
-        : encodeStaticPath
-
     const key = keyGenerator(pathOrGenerator, globalParams, ...idAndOrParams)
     return loader.load(key)
   }

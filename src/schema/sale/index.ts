@@ -96,7 +96,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           }
 
           if (options.all) {
-            fetch = allViaLoader(saleArtworksLoader, id, options)
+            fetch = allViaLoader(saleArtworksLoader, {
+              path: id,
+              params: options,
+            })
           } else {
             fetch = saleArtworksLoader(id, options).then(({ body }) => body)
           }
@@ -273,7 +276,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ id }, options, { saleArtworksLoader }) => {
           let fetch: Promise<any>
           if (options.all) {
-            fetch = allViaLoader(saleArtworksLoader, id, options)
+            fetch = allViaLoader(saleArtworksLoader, {
+              path: id,
+              params: options,
+            })
           } else {
             fetch = saleArtworksLoader(id, options).then(({ body }) => body)
           }

@@ -317,7 +317,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             ]
           }
         } = {}
-        const fetch = allViaLoader(fairPartnersLoader, root._id)
+        const fetch = allViaLoader(fairPartnersLoader, { path: root._id })
 
         return fetch.then(result => {
           const fairExhibitors = result.sort((a, b) => {
