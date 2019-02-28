@@ -9,6 +9,7 @@ import {
   GraphQLFloat,
   GraphQLList,
   GraphQLFieldConfig,
+  GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -21,6 +22,16 @@ export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
     lng: {
       type: GraphQLFloat,
     },
+  },
+})
+
+const FormattedDaySchedulesOrTextUnion = new GraphQLUnionType({
+  name: "FormattedDaySchedulesOrTextUnionType",
+  types: [FormattedDaySchedules, GraphQLString],
+  resolveType: object => {
+    if (object.day_schedules) {
+      return FormattedDaySchedules
+    } else return GraphQLString
   },
 })
 
@@ -55,9 +66,11 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     displayDaySchedules: {
-      type: new GraphQLList(FormattedDaySchedules.type),
-      resolve: ({ day_schedules }) =>
-        FormattedDaySchedules.resolve(day_schedules),
+      type: FormattedDaySchedulesOrTextUnion,
+      resolve: ({ day_schedules, day_schedule_text }) =>
+        day_schedules
+          ? FormattedDaySchedules.resolve(day_schedules)
+          : day_schedule_text,
     },
     display: {
       type: GraphQLString,
