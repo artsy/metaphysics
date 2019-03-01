@@ -1105,6 +1105,9 @@ type ArtworkContextFair {
   cached: Int
   banner_size: String
   counts: FairCounts
+
+  # A formatted description of the start to end dates
+  exhibition_period: String
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
@@ -3232,6 +3235,9 @@ type Fair {
   cached: Int
   banner_size: String
   counts: FairCounts
+
+  # A formatted description of the start to end dates
+  exhibition_period: String
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
@@ -4410,6 +4416,9 @@ type HomePageModuleContextFair {
   cached: Int
   banner_size: String
   counts: FairCounts
+
+  # A formatted description of the start to end dates
+  exhibition_period: String
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
