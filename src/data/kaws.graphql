@@ -78,7 +78,7 @@ scalar DateTime
 
 type Query {
   collections(
-    randomize: Boolean
+    randomizationSeed: String
     size: Int
     showOnEditorial: Boolean
     artistID: String
