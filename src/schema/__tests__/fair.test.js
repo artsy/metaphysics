@@ -130,8 +130,11 @@ describe("Fair", () => {
         artists_count: 1,
         artworks_count: 2,
         partners_count: 3,
+        start_at: "2019-02-15T23:00:00+00:00",
+        end_at: "2019-02-17T11:00:00+00:00",
         partner_shows_count: 4,
         name: "Aqua Art Miami 2018",
+        exhibition_period: "Feb 15 – 17",
         exhibitors_grouped_by_name: [
           {
             letter: "A",
@@ -224,6 +227,23 @@ describe("Fair", () => {
             ],
           },
         ],
+      },
+    })
+  })
+
+  it("includes a formatted exhibition period", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          exhibition_period
+        }
+      }
+    `
+
+    const data = await runQuery(query, rootValue)
+    expect(data).toEqual({
+      fair: {
+        exhibition_period: "Feb 15 – 17",
       },
     })
   })
