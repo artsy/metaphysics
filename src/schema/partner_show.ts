@@ -90,11 +90,10 @@ const PartnerShowType = new GraphQLObjectType<any, ResolverContext>({
       resolve: (show, options, { partnerShowArtworksLoader }) => {
         let fetch: Promise<any>
         if (options.all) {
-          fetch = allViaLoader(
-            partnerShowArtworksLoader,
-            { partner_id: show.partner.id, show_id: show.id },
-            options
-          )
+          fetch = allViaLoader(partnerShowArtworksLoader, {
+            path: { partner_id: show.partner.id, show_id: show.id },
+            params: options,
+          })
         } else {
           fetch = partnerShowArtworksLoader(
             { partner_id: show.partner.id, show_id: show.id },

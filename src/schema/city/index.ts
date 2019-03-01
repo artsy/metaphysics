@@ -19,11 +19,14 @@ import {
   LOCAL_DISCOVERY_RADIUS_KM,
   NEAREST_CITY_THRESHOLD_KM,
 } from "./constants"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, CursorPageable } from "lib/helpers"
 import Near from "schema/input_fields/near"
 import { LatLng, Point, distance } from "lib/geospatial"
 import { ResolverContext } from "types/graphql"
 import { connectionWithCursorInfo } from "schema/fields/pagination"
+import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
+import { StaticPathLoader } from "lib/loaders/api/loader_interface"
+import { BodyAndHeaders } from "lib/loaders"
 
 const CityType = new GraphQLObjectType<any, ResolverContext>({
   name: "City",
@@ -52,39 +55,25 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
             "Whether to include local discovery stubs as well as displayable shows",
         },
       }),
-      resolve: async (city, args, { showsWithHeadersLoader }) => {
-        // default Enum value for status is not properly resolved
-        // so we have to manually resolve it by lowercasing the value
-        // https://github.com/apollographql/graphql-tools/issues/715
-        args.status = args.status.toLowerCase()
-
-        const gravityOptions = {
-          ...convertConnectionArgsToGravityArgs(args),
-          displayable: true,
+      resolve: async (city, args, { showsWithHeadersLoader }) =>
+        loadData(args, showsWithHeadersLoader, {
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
           has_location: true,
-          total_count: true,
-        }
-        delete gravityOptions.page
-
-        if (args.discoverable) {
-          delete gravityOptions.displayable
-        }
-
-        const response = await showsWithHeadersLoader(gravityOptions)
-        const { headers, body: shows } = response
-
-        const results = connectionFromArraySlice(shows, args, {
-          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-          sliceStart: gravityOptions.offset,
-        })
-
-        // This is in our schema, so might as well fill it
-        // @ts-ignore
-        results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
-        return results
-      },
+          sort: args.sort,
+          // default Enum value for status is not properly resolved
+          // so we have to manually resolve it by lowercasing the value
+          // https://github.com/apollographql/graphql-tools/issues/715
+          status: args.status.toLowerCase(),
+          // This is to ensure the key never makes its way into the `baseParams`
+          // object if not needed,
+          ...(typeof args.discoverable === "undefined"
+            ? undefined
+            : { discoverable: args.discoverable }),
+          ...(typeof args.discoverable === "undefined"
+            ? { displayable: true }
+            : undefined),
+        }),
     },
     fairs: {
       type: connectionWithCursorInfo(FairType),
@@ -92,28 +81,11 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         sort: FairSorts,
         status: EventStatus,
       }),
-      resolve: async (city, args, { fairsLoader }) => {
-        const gravityOptions = {
-          ...convertConnectionArgsToGravityArgs(args),
+      resolve: (city, args, { fairsLoader }) =>
+        loadData(args, fairsLoader, {
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-          total_count: true,
-        }
-        delete gravityOptions.page
-
-        const response = await fairsLoader(gravityOptions)
-        const { headers, body: fairs } = response
-
-        const results = connectionFromArraySlice(fairs, args, {
-          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-          sliceStart: gravityOptions.offset,
-        })
-
-        // This is in our schema, so might as well fill it
-        // @ts-ignore
-        results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
-        return results
-      },
+        }),
     },
   },
 })
@@ -180,3 +152,47 @@ const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
 
 const isCloseEnough = (latLng: LatLng, city: Point) =>
   distance(latLng, city.coordinates) < NEAREST_CITY_THRESHOLD_KM * 1000
+
+async function loadData(
+  args: CursorPageable,
+  loader: StaticPathLoader<BodyAndHeaders>,
+  baseParams: { [key: string]: any }
+) {
+  let response
+  let offset
+
+  if (args.first === MAX_GRAPHQL_INT) {
+    // TODO: We could throw an error if the `after` arg is passed, but not
+    //       doing so, for now.
+    offset = 0
+    response = await allViaLoader(loader, {
+      params: baseParams,
+    }).then(data => ({
+      // This just creates a body/headers object again, as the code
+      // below already expects that.
+      // TODO: Perhaps `allViaLoader` should support that out of the box.
+      body: data,
+      headers: { "x-total-count": data.length.toString() },
+    }))
+  } else {
+    const connectionParams = convertConnectionArgsToGravityArgs(args)
+    offset = connectionParams.offset
+    response = await loader({
+      ...baseParams,
+      size: connectionParams.size,
+      page: connectionParams.page,
+      total_count: true,
+    })
+  }
+
+  const { headers, body: fairs } = response
+  const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+  return {
+    totalCount,
+    ...connectionFromArraySlice(fairs, args, {
+      arrayLength: totalCount,
+      sliceStart: offset,
+    }),
+  }
+}

@@ -39,8 +39,10 @@ const SaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
     if (saleArtworksAllLoader && options.live_sale) {
       delete params.page
-      params.total_count = true
-      const { body, headers } = await saleArtworksAllLoader(params)
+      const { body, headers } = await saleArtworksAllLoader({
+        ...params,
+        total_count: true,
+      })
       response = body
 
       // Piggyback on existing ES API. TODO: This could perhaps be unified

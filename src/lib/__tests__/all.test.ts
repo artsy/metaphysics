@@ -12,16 +12,16 @@ describe("all", () => {
       )
       .mockReturnValue(Promise.resolve({}))
 
-    return allViaLoader(loader, {}, { size: 10 }).then(artworks => {
+    return allViaLoader(loader, { params: { size: 10 } }).then(artworks => {
       expect(artworks.length).toBe(3) // 3 pages of 10 each to get 22 works
 
-      // Initial count fetch
-      expect(loader.mock.calls[0].slice(-1)[0].size).toBe(0)
-      expect(loader.mock.calls[0].slice(-1)[0].page).toBe(1)
-      expect(loader.mock.calls[0].slice(-1)[0].total_count).toBe(true)
-      expect(loader.mock.calls[1].slice(-1)[0].page).toBe(1)
-      expect(loader.mock.calls[2].slice(-1)[0].page).toBe(2)
-      expect(loader.mock.calls[3].slice(-1)[0].page).toBe(3)
+      // FIXME: The /shows endpoint does not return a count with size=0
+      // expect(loader.mock.calls[0][0].size).toBe(0)
+      expect(loader.mock.calls[0][0].page).toBe(1)
+      expect(loader.mock.calls[0][0].total_count).toBe(true)
+      expect(loader.mock.calls[1][0].page).toBe(1)
+      expect(loader.mock.calls[2][0].page).toBe(2)
+      expect(loader.mock.calls[3][0].page).toBe(3)
     })
   })
 })
