@@ -19,6 +19,22 @@ import { stringify } from "qs"
 import { getPagingParameters } from "relay-cursor-paging"
 import { formatMarkdownValue } from "schema/fields/markdown"
 
+// These are copied from the relay-cursor-paging lib
+// https://github.com/darthtrevino/relay-cursor-paging/blob/master/src/interfaces.ts
+export interface PagingParameters {
+  offset: number
+  limit: number
+}
+export interface CursorPageable {
+  // Backward Paging Arguments
+  before?: string
+  last?: number
+
+  // Forward Paging Arguments
+  after?: string
+  first?: number
+}
+
 const loadNs = now()
 const loadMs = Date.now()
 
@@ -91,8 +107,12 @@ export const queryContainsField = (fieldASTs, soughtField) => {
   return parseFieldASTsIntoArray(fieldASTs).includes(soughtField)
 }
 
-export const convertConnectionArgsToGravityArgs = options => {
-  const { limit: size, offset } = getPagingParameters(options)
+export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
+  options: T
+) => {
+  const { limit: size, offset } = getPagingParameters(
+    options
+  ) as PagingParameters
   const page = Math.round((size + offset) / size)
   const gravityArgs = omit(options, ["first", "after", "last", "before"])
   return Object.assign({}, { page, size, offset }, gravityArgs)
