@@ -199,12 +199,26 @@ describe("City", () => {
   })
 
   describe("fairs", () => {
+    let mockFairs
+    let mockFairsLoader
+    let context
+
+    beforeEach(() => {
+      mockFairs = [{ id: "first-fair" }]
+      mockFairsLoader = jest.fn(() =>
+        Promise.resolve({ body: mockFairs, headers: { "x-total-count": "1" } })
+      )
+      context = {
+        fairsLoader: mockFairsLoader,
+      }
+    })
+
     it("resolves nearby fairs", () => {
       const query = gql`
         {
           city(slug: "sacramende-ca-usa") {
             name
-            fairs(first: 10) {
+            fairs(first: 1) {
               edges {
                 node {
                   id
@@ -214,14 +228,6 @@ describe("City", () => {
           }
         }
       `
-
-      const mockFairs = [{ id: "first-fair" }]
-      const mockFairsLoader = jest.fn(() =>
-        Promise.resolve({ body: mockFairs, headers: { "x-total-count": "1" } })
-      )
-      const context = {
-        fairsLoader: mockFairsLoader,
-      }
 
       return runQuery(query, context).then(result => {
         expect(result!.city).toEqual({
@@ -238,6 +244,30 @@ describe("City", () => {
           })
         )
       })
+    })
+
+    it("can request all shows [that match other filter parameters]", async () => {
+      allViaLoader.mockImplementation(() => Promise.resolve(mockFairs))
+
+      const query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            fairs(first: ${MAX_GRAPHQL_INT}) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+
+      expect(allViaLoader).toHaveBeenCalledWith(
+        mockFairsLoader,
+        expect.anything()
+      )
     })
   })
 })

@@ -101,16 +101,15 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         }
 
         const { headers, body: shows } = response
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-        const results = connectionFromArraySlice(shows, args, {
-          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-          sliceStart: offset,
-        })
-
-        // This is in our schema, so might as well fill it
-        // @ts-ignore
-        results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
-        return results
+        return {
+          totalCount,
+          ...connectionFromArraySlice(shows, args, {
+            arrayLength: totalCount,
+            sliceStart: offset,
+          }),
+        }
       },
     },
     fairs: {
@@ -120,26 +119,48 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         status: EventStatus,
       }),
       resolve: async (city, args, { fairsLoader }) => {
-        const gravityOptions = {
-          ...convertConnectionArgsToGravityArgs(args),
+        const baseParams = {
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-          total_count: true,
         }
-        delete gravityOptions.page
 
-        const response = await fairsLoader(gravityOptions)
+        let response
+        let offset
+
+        if (args.first === MAX_GRAPHQL_INT) {
+          // TODO: We could throw an error if the `after` arg is passed, but not
+          //       doing so, for now.
+          offset = 0
+          response = await allViaLoader(fairsLoader, {
+            params: baseParams,
+          }).then(fairs => ({
+            // This just creates a body/headers object again, as the code
+            // below already expects that.
+            // TODO: Perhaps `allViaLoader` should support that out of the box.
+            body: fairs,
+            headers: { "x-total-count": fairs.length.toString() },
+          }))
+        } else {
+          const connectionParams = convertConnectionArgsToGravityArgs(args)
+          offset = connectionParams.offset
+          response = await fairsLoader({
+            ...baseParams,
+            size: connectionParams.size,
+            page: connectionParams.page,
+            total_count: true,
+          })
+        }
+
         const { headers, body: fairs } = response
+        const totalCount = parseInt(headers["x-total-count"] || "0", 10)
 
-        const results = connectionFromArraySlice(fairs, args, {
-          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-          sliceStart: gravityOptions.offset,
-        })
-
-        // This is in our schema, so might as well fill it
-        // @ts-ignore
-        results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
-        return results
+        return {
+          totalCount,
+          ...connectionFromArraySlice(fairs, args, {
+            arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+            sliceStart: offset,
+          }),
+        }
       },
     },
   },
