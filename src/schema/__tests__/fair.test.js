@@ -240,7 +240,7 @@ describe("Fair", () => {
       }
     `
 
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       fair: {
         exhibition_period: "Feb 15 – 17",
