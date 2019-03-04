@@ -65,7 +65,7 @@ type AnalyticsPageInfo {
 # Partner Stats
 type AnalyticsPartnerStatsType {
   partnerId: String!
-  timeSeries(partnerId: String!): [AnalyticsPartnerTimeSeriesStatsType!]
+  timeSeries: [AnalyticsPartnerTimeSeriesStatsType!]
   uniqueVisitors: Int
 }
 

@@ -33,7 +33,7 @@ Partner Stats
 """
 type PartnerStatsType {
   partnerId: String!
-  timeSeries(partnerId: String!): [PartnerTimeSeriesStatsType!]
+  timeSeries: [PartnerTimeSeriesStatsType!]
   uniqueVisitors: Int
 }
 
