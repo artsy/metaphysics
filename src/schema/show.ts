@@ -43,6 +43,15 @@ import EventStatus from "./input_fields/event_status"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 
+const ShowsFollowedContentType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ShowsFollowedContent",
+  fields: () => ({
+    artists: {
+      type: new GraphQLList(Artist.type),
+    },
+  }),
+})
+
 const kind = ({ artists, fair, artists_without_artworks, group }) => {
   if (isExisty(fair)) return "fair"
   if (
@@ -606,6 +615,19 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       description: "Is it a fair booth or a show?",
       type: GraphQLString,
       resolve: ({ fair }) => (isExisty(fair) ? "Fair Booth" : "Show"),
+    },
+    followedContent: {
+      type: ShowsFollowedContentType,
+      resolve: (show, _options, { followedArtistsLoader }) => {
+        if (!followedArtistsLoader) return null
+        return {
+          artists: followedArtistsLoader({ show_id: show.id }).then(
+            ({ body }) => {
+              return body.map(artist_follow => artist_follow.artist)
+            }
+          ),
+        }
+      },
     },
   }),
 })

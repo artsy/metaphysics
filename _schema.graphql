@@ -8395,6 +8395,7 @@ type Show implements Node {
 
   # Is it a fair booth or a show?
   type: String
+  followedContent: ShowsFollowedContent
 }
 
 # A connection to a list of items.
@@ -8428,6 +8429,10 @@ type ShowEdge {
 
   # A cursor for use in pagination
   cursor: String!
+}
+
+type ShowsFollowedContent {
+  artists: [Artist]
 }
 
 enum ShowSort {
