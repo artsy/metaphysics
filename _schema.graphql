@@ -3077,6 +3077,10 @@ type DaySchedule {
   day_of_week: String
 }
 
+type DayScheduleText {
+  text: String
+}
+
 type DeepZoom {
   Image: DeepZoomImage
 }
@@ -3805,10 +3809,16 @@ enum Format {
   markdown @deprecated(reason: "deprecated")
 }
 
+type FormattedArray {
+  schedules: [FormattedDaySchedules]
+}
+
 type FormattedDaySchedules {
   days: String
   hours: String
 }
+
+union FormattedDaySchedulesOrTextUnionType = FormattedArray | DayScheduleText
 
 # The `FormattedNumber` type represents a number that can optionally be returnedas
 # a formatted String. It does not try to coerce the type.
@@ -5014,7 +5024,7 @@ type Location {
 
   # Alternate Markdown-supporting free text representation of a location's opening hours
   day_schedule_text: String
-  displayDaySchedules: [FormattedDaySchedules]
+  displayDaySchedules: FormattedDaySchedulesOrTextUnionType
   display: String
   phone: String
   postal_code: String
