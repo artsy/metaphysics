@@ -36,6 +36,9 @@ type MarketingCollection {
 
   # Collection can be surfaced on editorial pages
   show_on_editorial: Boolean!
+
+  # Collection has prioritized connection to artist
+  is_featured_artist_content: Boolean!
 }
 
 type MarketingCollectionCategory {
@@ -79,7 +82,7 @@ type MarketingCollectionQuery {
 scalar MarketingDateTime
 
 type Query {
-  marketingCollections(randomizationSeed: String, size: Int, showOnEditorial: Boolean, artistID: String): [MarketingCollection!]!
+  marketingCollections(randomizationSeed: String, size: Int, isFeaturedArtistContent: Boolean, showOnEditorial: Boolean, artistID: String): [MarketingCollection!]!
   marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
 }

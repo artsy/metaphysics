@@ -33,6 +33,9 @@ type Collection {
 
   # Collection can be surfaced on editorial pages
   show_on_editorial: Boolean!
+
+  # Collection has prioritized connection to artist
+  is_featured_artist_content: Boolean!
 }
 
 type CollectionCategory {
@@ -80,6 +83,7 @@ type Query {
   collections(
     randomizationSeed: String
     size: Int
+    isFeaturedArtistContent: Boolean
     showOnEditorial: Boolean
     artistID: String
   ): [Collection!]!

@@ -5040,6 +5040,9 @@ type MarketingCollection {
 
   # Collection can be surfaced on editorial pages
   show_on_editorial: Boolean!
+
+  # Collection has prioritized connection to artist
+  is_featured_artist_content: Boolean!
   artworks(
     acquireable: Boolean
     offerable: Boolean
@@ -7451,6 +7454,7 @@ type Query {
   marketingCollections(
     randomizationSeed: String
     size: Int
+    isFeaturedArtistContent: Boolean
     showOnEditorial: Boolean
     artistID: String
   ): [MarketingCollection!]!
