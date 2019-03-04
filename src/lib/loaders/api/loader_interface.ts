@@ -1,14 +1,11 @@
 import { toKey } from "lib/helpers"
 import DataLoader from "dataloader"
+import { APIOptions, DataLoaderKey } from "./index"
 
 export type PathGenerator<T> = (data: T) => string
 
 // TODO: This should be more specific to take types that are serializeable.
 type ParamValue = any
-
-interface APIOptions {
-  requestThrottleMs: number
-}
 
 export type StaticPathLoader<T> = (
   params?: { [key: string]: ParamValue },
@@ -53,26 +50,27 @@ const encodeDynamicPath = (
  */
 
 export function loaderInterface<T>(
-  loader: DataLoader<string, T>,
+  loader: DataLoader<DataLoaderKey, T>,
   pathOrGenerator: string,
   globalParams: any
 ): StaticPathLoader<T>
 
 export function loaderInterface<T, P>(
-  loader: DataLoader<string, T>,
+  loader: DataLoader<DataLoaderKey, T>,
   pathOrGenerator: PathGenerator<P>,
   globalParams: any
 ): DynamicPathLoader<T>
 
 export function loaderInterface<T, P>(
-  loader: DataLoader<string, T>,
+  loader: DataLoader<DataLoaderKey, T>,
   pathOrGenerator: string | PathGenerator<P>,
   globalParams: any
 ) {
-  const keyGenerator: any =
-    typeof pathOrGenerator === "function" ? encodeDynamicPath : encodeStaticPath
-  return (...idAndOrParams) => {
-    const key = keyGenerator(pathOrGenerator, globalParams, ...idAndOrParams)
-    return loader.load(key)
+  const dynamicPath = typeof pathOrGenerator === "function"
+  const keyGenerator: any = dynamicPath ? encodeDynamicPath : encodeStaticPath
+  return (...args) => {
+    const key = keyGenerator(pathOrGenerator, globalParams, ...args)
+    const apiOptions = dynamicPath ? args[2] : args[1]
+    return loader.load({ key, apiOptions })
   }
 }

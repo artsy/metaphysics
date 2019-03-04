@@ -7,7 +7,7 @@ import { throttled as deferThrottled } from "lib/throttle"
 import { verbose, warn } from "lib/loggers"
 import extensionsLogger, { formatBytes } from "lib/loaders/api/extensionsLogger"
 import config from "config"
-import { API } from "./index"
+import { API, DataLoaderKey, APIOptions } from "./index"
 import { LoaderFactory } from "../index"
 
 const { CACHE_DISABLED } = config
@@ -39,14 +39,19 @@ function tap(cb) {
 export const apiLoaderWithoutAuthenticationFactory = <T = any>(
   api: API,
   apiName: string,
-  globalAPIOptions: any = {}
+  globalAPIOptions: APIOptions = {}
 ) => {
   const apiLoaderFactory = (path, globalParams = {}, pathAPIOptions = {}) => {
-    const apiOptions = Object.assign({}, globalAPIOptions, pathAPIOptions)
-    const loader = new DataLoader<string, T | { body: T; headers: any }>(
-      (keys: string[]) =>
+    const loader = new DataLoader<DataLoaderKey, T | { body: T; headers: any }>(
+      keys =>
         Promise.all<any>(
-          keys.map(key => {
+          keys.map(({ key, apiOptions: invocationAPIOptions }) => {
+            const apiOptions = {
+              ...globalAPIOptions,
+              ...pathAPIOptions,
+              ...invocationAPIOptions,
+            }
+
             const clock = timer(key)
             clock.start()
 
@@ -161,6 +166,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
       {
         batch: false,
         cache: true,
+        cacheKeyFn: input => JSON.stringify(input),
       }
     )
     return loaderInterface(loader, path, globalParams)
