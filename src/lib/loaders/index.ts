@@ -20,36 +20,44 @@ export type BodyAndHeaders<B = any, H = ResponseHeaders> = {
   headers: H
 }
 
+// Remove the `headers` key here so we can use pattern matching below to
+// differentiate between loaders that are configured to return headers and those
+// that are not.
+type APIOptionsWithoutHeaders = Pick<
+  APIOptions,
+  Exclude<keyof APIOptions, "headers">
+>
+
 export interface LoaderFactory {
   <Body = any>(
     path: string,
     globalParams?: any,
-    pathAPIOptions?: APIOptions
+    pathAPIOptions?: APIOptionsWithoutHeaders
   ): StaticPathLoader<Body>
   <Body = any, PathGeneratorParams = string>(
     path: PathGenerator<PathGeneratorParams>,
     globalParams?: any,
-    pathAPIOptions?: APIOptions
+    pathAPIOptions?: APIOptionsWithoutHeaders
   ): DynamicPathLoader<Body, PathGeneratorParams>
   <Body = any>(
     path: string,
     globalParams: any,
-    pathAPIOptions: { headers: false } & APIOptions
+    pathAPIOptions: { headers: false } & APIOptionsWithoutHeaders
   ): StaticPathLoader<Body>
   <Body = any, PathGeneratorParams = string>(
     path: PathGenerator<PathGeneratorParams>,
     globalParams: any,
-    pathAPIOptions: { headers: false } & APIOptions
+    pathAPIOptions: { headers: false } & APIOptionsWithoutHeaders
   ): DynamicPathLoader<Body, PathGeneratorParams>
   <Body = any, Headers = ResponseHeaders>(
     path: string,
     globalParams: any,
-    pathAPIOptions: { headers: true } & APIOptions
+    pathAPIOptions: { headers: true } & APIOptionsWithoutHeaders
   ): StaticPathLoader<BodyAndHeaders<Body, Headers>>
   <Body = any, PathGeneratorParams = string, Headers = ResponseHeaders>(
     path: PathGenerator<PathGeneratorParams>,
     globalParams: any,
-    pathAPIOptions: { headers: true } & APIOptions
+    pathAPIOptions: { headers: true } & APIOptionsWithoutHeaders
   ): DynamicPathLoader<BodyAndHeaders<Body, Headers>, PathGeneratorParams>
 }
 

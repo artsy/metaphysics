@@ -69,7 +69,7 @@ describe("API loaders", () => {
   describe("without authentication", () => {
     beforeEach(() => {
       apiLoader = apiLoaderWithoutAuthenticationFactory(api, "test_name", {
-        requestIDs: { requestID: "1234" },
+        requestIDs: { requestID: "1234", xForwardedFor: "42.42.42.42" },
         userAgent: "catty browser",
       })
       loader = apiLoader("some/path")

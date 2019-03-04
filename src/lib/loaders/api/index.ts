@@ -19,6 +19,20 @@ export type API = (
 
 export interface APIOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE"
+  requestIDs?: {
+    requestID: string
+    xForwardedFor: string
+  }
+  userAgent?: string
+  headers?: boolean
+
+  /** This only applies to caching loaders */
+  requestThrottleMs?: number
+}
+
+export interface DataLoaderKey {
+  key: string
+  apiOptions?: APIOptions
 }
 
 export default opts => ({

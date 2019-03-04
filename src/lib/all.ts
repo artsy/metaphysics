@@ -1,4 +1,5 @@
 import { times, flatten } from "lodash"
+import { APIOptions } from "./loaders/api"
 
 // TODO: Type this and refactor, because I think things just kinda work by luck,
 //       because a static and a dynamic path loader take different number of
@@ -12,7 +13,7 @@ export const allViaLoader = (
     // For dynamic path loaders
     path?: string | { [key: string]: any }
     params?: { [key: string]: any }
-    api?: { [key: string]: any }
+    api?: APIOptions
   } = {}
 ) => {
   const params = options.params ? { size: 25, ...options.params } : { size: 25 }

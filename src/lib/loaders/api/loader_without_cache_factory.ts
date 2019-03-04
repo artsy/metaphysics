@@ -1,6 +1,7 @@
 import DataLoader from "dataloader"
 import { loaderInterface } from "./loader_interface"
 import { LoaderFactory } from "../index"
+import { DataLoaderKey } from "./index"
 
 /**
  * This factory provides a short-cut system for our data loader system, it provides
@@ -17,8 +18,16 @@ export const uncachedLoaderFactory = (
   const apiLoaderFactory = (path, options: any | null) => {
     // If you use gravity as the api here, then options will get interpreted as
     // an accessToken, so you have to explicitly pass null
-    const loader = new DataLoader<string, Promise<string>>(
-      ([route]) => Promise.resolve([api(route, options).then(r => r.body)]),
+    const loader = new DataLoader<DataLoaderKey, any>(
+      keys =>
+        Promise.all(
+          keys.map(({ key, apiOptions }) => {
+            if (apiOptions) {
+              throw new Error("A uncachedLoader does not accept API options.")
+            }
+            return Promise.resolve(api(key, options).then(r => r.body))
+          })
+        ),
       { cache: false, batch: false }
     )
     return loaderInterface(loader, path, options)
