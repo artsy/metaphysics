@@ -72,6 +72,8 @@ const {
   SENTRY_PRIVATE_DSN,
   STATSD_HOST,
   STATSD_PORT,
+  VORTEX_API_BASE,
+  VORTEX_APP_ID,
 } = process.env
 
 const mustHave = {
@@ -94,6 +96,8 @@ const mustHave = {
   POSITRON_API_BASE,
   EXCHANGE_API_BASE,
   KAWS_API_BASE,
+  VORTEX_API_BASE,
+  VORTEX_APP_ID,
 }
 
 Object.keys(mustHave).forEach(key => {
@@ -191,4 +195,6 @@ export default {
   EXCHANGE_APP_ID,
   STATSD_HOST: STATSD_HOST || "localhost",
   STATSD_PORT: Number(STATSD_PORT) || 8125,
+  VORTEX_API_BASE,
+  VORTEX_APP_ID,
 }
