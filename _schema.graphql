@@ -6827,7 +6827,7 @@ type PartnerShowEventType {
   ): String
 
   # A formatted description of the start to end dates
-  exhibition_period: String
+  exhibitionPeriod: String
 }
 
 enum PartnerShowSorts {
