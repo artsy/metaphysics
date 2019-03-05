@@ -18,6 +18,10 @@ export interface TrackedEntityLoaderFactoryOptions {
    * An optional path to the IDs used to compare entities (defaults to `id`, but `_id` is sometimes useful).
    */
   entityIDKeyPath?: string
+  /**
+   * The maximum number of requests to batch in a single request (defaults to 200).
+   */
+  batchSize?: number
 }
 
 /**
@@ -36,6 +40,7 @@ const trackedEntityLoaderFactory = (
     trackingKey,
     entityKeyPath,
     entityIDKeyPath = "id",
+    batchSize = 200,
   } = options
   const trackedEntityLoader = new DataLoader(
     ids => {
@@ -57,7 +62,7 @@ const trackedEntityLoaderFactory = (
         return parsedResults
       })
     },
-    { batch: true, cache: true }
+    { batch: true, cache: true, maxBatchSize: batchSize }
   )
   return id => trackedEntityLoader.load(id)
 }
