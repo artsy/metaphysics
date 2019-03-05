@@ -1,3 +1,14 @@
+const mockSponsoredContent = {
+  fairs: {
+    "the-armory-show-2017": {
+      activationText: "Lorem ipsum dolor sit amet",
+      pressReleaseUrl: "https://www.example.com",
+    },
+  },
+}
+
+jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
+
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 import gql from "lib/gql"
@@ -13,7 +24,7 @@ describe("Fair type", () => {
     },
   }
 
-  const query = gql`
+  let query = gql`
     {
       fair(id: "the-armory-show-2017") {
         id
@@ -116,6 +127,26 @@ describe("Fair type", () => {
           },
         },
       })
+    })
+  })
+
+  it("includes sponsored content", async () => {
+    query = gql`
+      {
+        fair(id: "the-armory-show-2017") {
+          sponsoredContent {
+            activationText
+            pressReleaseUrl
+          }
+        }
+      }
+    `
+
+    const result = await runQuery(query, context)
+
+    expect(result.fair.sponsoredContent).toEqual({
+      activationText: "Lorem ipsum dolor sit amet",
+      pressReleaseUrl: "https://www.example.com",
     })
   })
 })

@@ -30,6 +30,7 @@ import ShowSort from "./sorts/show_sort"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
+import { sponsoredContentForFair } from "lib/sponsoredContent"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -363,6 +364,20 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     filteredArtworks: filterArtworks("fair_id"),
+    sponsoredContent: {
+      type: new GraphQLObjectType<any, ResolverContext>({
+        name: "FairSponsoredContent",
+        fields: {
+          activationText: {
+            type: GraphQLString,
+          },
+          pressReleaseUrl: {
+            type: GraphQLString,
+          },
+        },
+      }),
+      resolve: fair => sponsoredContentForFair(fair.id),
+    },
   }),
 })
 
