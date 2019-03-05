@@ -11,8 +11,18 @@ const mockCities = {
   },
 }
 
+const mockSponsoredContent = {
+  cities: {
+    "sacramende-ca-usa": {
+      introText: "Lorem ipsum dolot sit amet",
+      artGuideUrl: "https://www.example.com/",
+    },
+  },
+}
+
 jest.mock("../city/city_data.json", () => mockCities)
-jest.mock("../../lib/all.ts")
+jest.mock("lib/all.ts")
+jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
 
 import { runQuery } from "test/utils"
 import gql from "lib/gql"
@@ -268,6 +278,26 @@ describe("City", () => {
         mockFairsLoader,
         expect.anything()
       )
+    })
+  })
+
+  it("includes sponsored content", async () => {
+    const query = gql`
+      {
+        city(slug: "sacramende-ca-usa") {
+          sponsoredContent {
+            introText
+            artGuideUrl
+          }
+        }
+      }
+    `
+
+    const result = await runQuery(query)
+
+    expect(result!.city.sponsoredContent).toEqual({
+      introText: "Lorem ipsum dolot sit amet",
+      artGuideUrl: "https://www.example.com/",
     })
   })
 })

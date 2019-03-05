@@ -27,6 +27,7 @@ import { connectionWithCursorInfo } from "schema/fields/pagination"
 import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
+import { sponsoredContentForCity } from "lib/sponsoredContent"
 
 const CityType = new GraphQLObjectType<any, ResolverContext>({
   name: "City",
@@ -86,6 +87,20 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
         }),
+    },
+    sponsoredContent: {
+      type: new GraphQLObjectType<any, ResolverContext>({
+        name: "CitySponsoredContent",
+        fields: {
+          introText: {
+            type: GraphQLString,
+          },
+          artGuideUrl: {
+            type: GraphQLString,
+          },
+        },
+      }),
+      resolve: city => sponsoredContentForCity(city.slug),
     },
   },
 })
