@@ -1,6 +1,10 @@
 import moment from "moment"
 import { pageable } from "relay-cursor-paging"
-import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
+import {
+  connectionFromArraySlice,
+  connectionFromArray,
+  connectionDefinitions,
+} from "graphql-relay"
 import {
   isExisty,
   exclude,
@@ -42,12 +46,13 @@ import PartnerShowSorts from "./sorts/partner_show_sorts"
 import EventStatus from "./input_fields/event_status"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
+import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 
-const ShowsFollowedContentType = new GraphQLObjectType<any, ResolverContext>({
-  name: "ShowsFollowedContent",
+const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ShowFollowArtist",
   fields: () => ({
-    artists: {
-      type: new GraphQLList(Artist.type),
+    artist: {
+      type: Artist.type,
     },
   }),
 })
@@ -616,18 +621,14 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ fair }) => (isExisty(fair) ? "Fair Booth" : "Show"),
     },
-    followedContent: {
-      type: ShowsFollowedContentType,
-      resolve: (show, _options, { followedArtistsLoader }) => {
-        if (!followedArtistsLoader) return null
-        return {
-          artists: followedArtistsLoader({ show_id: show.id }).then(
-            ({ body }) => {
-              return body.map(artist_follow => artist_follow.artist)
-            }
-          ),
-        }
-      },
+    followedArtists: {
+      type: connectionDefinitions({ nodeType: FollowArtistType })
+        .connectionType,
+      args: pageable({}),
+      description:
+        "A Connection of followed artists by current user for this show",
+      resolve: (show, args, context) =>
+        followArtistsResolver({ show_id: show.id }, args, context),
     },
   }),
 })
