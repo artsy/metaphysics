@@ -19,6 +19,9 @@ const PartnerShowEventType = new GraphQLObjectType<any, ResolverContext>({
     },
     start_at: date,
     end_at: date,
+    exhibition_period: {
+      type: GraphQLString,
+    },
   },
 })
 

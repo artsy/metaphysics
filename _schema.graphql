@@ -6825,6 +6825,7 @@ type PartnerShowEventType {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+  exhibition_period: String
 }
 
 enum PartnerShowSorts {
