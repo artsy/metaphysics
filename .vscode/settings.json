@@ -33,6 +33,7 @@
     "mockxchange",
     "orderable",
     "orderables",
+    "pageable",
     "urljoin"
   ],
   "debug.node.autoAttach": "on",
