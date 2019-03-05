@@ -3,16 +3,18 @@ import moment from "moment"
 export function exhibitionPeriod(startAt, endAt) {
   const startMoment = moment(startAt)
   const endMoment = moment(endAt)
-  const thisMoment = moment()
-
+  const thisMoment = moment.utc(Date.now())
   let startFormat = "MMM D"
+  let endFormat = "D"
+  let singleDateFormat = "MMM D"
+
   if (startMoment.year() !== endMoment.year()) {
     startFormat = startFormat.concat(", YYYY")
   }
 
-  let endFormat = "D"
   if (endMoment.year() !== thisMoment.year()) {
     endFormat = endFormat.concat(", YYYY")
+    singleDateFormat = singleDateFormat.concat(", YYYY")
   }
   if (
     !(
@@ -23,7 +25,15 @@ export function exhibitionPeriod(startAt, endAt) {
     endFormat = "MMM ".concat(endFormat)
   }
 
-  return `${startMoment.format(startFormat)} – ${endMoment.format(endFormat)}`
+  if (
+    startMoment.dayOfYear() === endMoment.dayOfYear() &&
+    startMoment.year() === endMoment.year()
+  ) {
+    // Duration is the same day
+    return `${endMoment.format(singleDateFormat)}`
+  } else {
+    return `${startMoment.format(startFormat)} – ${endMoment.format(endFormat)}`
+  }
 }
 
 function relativeDays(prefix, today, other, max) {
