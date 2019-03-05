@@ -150,6 +150,18 @@ describe("City", () => {
       expect(gravityOptions).toMatchObject({ displayable: true })
       expect(gravityOptions).not.toHaveProperty("discoverable")
     })
+    it("requests shows with location, by default", async () => {
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({ has_location: true })
+    })
+    it("excludes fair booths, by default", async () => {
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({ at_a_fair: false })
+    })
 
     it("can filter by discoverable shows", async () => {
       query = gql`
