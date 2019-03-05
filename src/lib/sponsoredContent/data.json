@@ -1,0 +1,52 @@
+{
+  "cities": {
+    "new-york-ny-usa": {
+      "introText": "The BMW Art Guide is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in New York.",
+      "artGuideUrl": "https://www.bmw-art-guide.com/",
+      "partnerIds": []
+    },
+    "london-united-kingdom": {
+      "introText": "The BMW Art Guide is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in London.",
+      "artGuideUrl": "https://www.bmw-art-guide.com/",
+      "partnerIds": []
+    },
+    "los-angeles-ca-usa": {
+      "introText": "The BMW Art Guide is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Los Angeles.",
+      "artGuideUrl": "https://www.bmw-art-guide.com/",
+      "partnerIds": []
+    },
+    "paris-france": {
+      "introText": "The BMW Art Guide is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Paris.",
+      "artGuideUrl": "https://www.bmw-art-guide.com/",
+      "partnerIds": []
+    },
+    "berlin-germany": {
+      "introText": "The BMW Art Guide is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Berlin.",
+      "artGuideUrl": "https://www.bmw-art-guide.com/",
+      "partnerIds": []
+    },
+    "hong-kong-hong-kong": {
+      "introText": "The BMW Art Guide is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Hong Kong.",
+      "artGuideUrl": "https://www.bmw-art-guide.com/",
+      "partnerIds": []
+    }
+  },
+  "fairs": {
+    "art-basel-hong-kong-2019": {
+      "activationText": "Labore excepteur culpa minim dolor. Magna anim mollit enim mollit sit ipsum aliqua velit proident magna eu. Pariatur proident aliqua et eu commodo consequat laborum irure velit. Sunt minim dolor deserunt proident irure officia ea sint.",
+      "pressReleaseUrl": "https://www.example.com"
+    },
+    "frieze-new-york-2019": {
+      "activationText": "In quis ex pariatur esse consectetur occaecat nulla quis consequat do in. Ipsum in cillum ut magna sunt proident. Ullamco culpa nisi commodo incididunt. Qui sunt consequat ullamco magna anim.",
+      "pressReleaseUrl": "https://www.example.com"
+    },
+    "frieze-london-2018": {
+      "activationText": "Dolore qui quis non ea dolore laboris ad aute reprehenderit irure. Deserunt veniam est nisi eu ipsum deserunt deserunt non in pariatur duis. Cillum tempor deserunt reprehenderit Lorem eiusmod. Tempor deserunt aute aliquip ea aliqua dolore adipisicing ut ad quis elit consectetur cupidatat. Et amet velit elit cillum. Anim elit minim excepteur duis cillum magna commodo amet id sit fugiat.",
+      "pressReleaseUrl": "https://www.example.com"
+    },
+    "paris-photo-2018": {
+      "activationText": "Occaecat dolor reprehenderit deserunt veniam nulla eu. Magna consequat commodo duis nulla fugiat elit velit consequat aute excepteur eiusmod nostrud tempor. Consequat consectetur nisi nostrud magna mollit velit ullamco sunt magna et mollit anim ea.",
+      "pressReleaseUrl": "https://www.example.com"
+    }
+  }
+}

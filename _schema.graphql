@@ -1209,6 +1209,7 @@ type ArtworkContextFair {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
+  sponsoredContent: FairSponsoredContent
 }
 
 type ArtworkContextPartnerShow implements Node {
@@ -2464,6 +2465,12 @@ type City {
     before: String
     last: Int
   ): FairConnection
+  sponsoredContent: CitySponsoredContent
+}
+
+type CitySponsoredContent {
+  introText: String
+  artGuideUrl: String
 }
 
 type Collection implements Node {
@@ -3360,6 +3367,7 @@ type Fair {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
+  sponsoredContent: FairSponsoredContent
 }
 
 enum FairArtistSorts {
@@ -3439,6 +3447,11 @@ enum FairSorts {
   NAME_DESC
   START_AT_ASC
   START_AT_DESC
+}
+
+type FairSponsoredContent {
+  activationText: String
+  pressReleaseUrl: String
 }
 
 type FeaturedLinkItem {
@@ -4591,6 +4604,7 @@ type HomePageModuleContextFair {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
+  sponsoredContent: FairSponsoredContent
 }
 
 type HomePageModuleContextFollowArtists {
