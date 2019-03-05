@@ -42,6 +42,30 @@ Note: This script uses your current \`.env\` variables.
   markdown("The changes to the Schema:\n\n```diff\n" + diff + "```")
 }
 
+danger.git
+  .structuredDiffForFile("_schema.graphql")
+  .then(diff => {
+    if (diff) {
+      diff.chunks.forEach(chunk => {
+        chunk.changes.forEach(change => {
+          if (change.type === "add") {
+            const offence = /^\+\s*([a-zA-Z]+_\w*):/.exec(change.content)
+            if (offence) {
+              fail(
+                "Found addition using snake_case instead of camelCase: " +
+                  offence[1],
+                "_schema.graphql",
+                change.ln
+              )
+            }
+          }
+        })
+      })
+    }
+    return
+  })
+  .catch(console.error)
+
 // Make sure we don't leave in any testing shortcuts (ex: `it.only`)
 const testingShortcuts = ["it.only", "describe.only"]
 testFiles.forEach(file => {
