@@ -125,7 +125,7 @@
     "@typescript-eslint/eslint-plugin": "^1.1.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
-    "danger": "^4.0",
+    "danger": "^7.0.14",
     "deep-equal": "^1.0.1",
     "dotenv": "^5.0.1",
     "eslint": "^5.12.1",
