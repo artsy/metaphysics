@@ -18,6 +18,11 @@ import { SearchableItem } from "schema/searchableItem"
 import { Searchable } from "schema/searchable"
 import { SearchEntity } from "./SearchEntity"
 import { ResolverContext } from "types/graphql"
+import {
+  SearchAggregationResultsType,
+  SearchAggregation,
+} from "schema/search/SearchAggregation"
+import { map } from "lodash"
 
 export const SearchMode = new GraphQLEnumType({
   name: "SearchMode",
@@ -43,6 +48,9 @@ export const searchArgs = pageable({
   mode: {
     type: SearchMode,
     description: "Mode of search to execute. Default: SITE.",
+  },
+  aggregations: {
+    type: new GraphQLList(SearchAggregation),
   },
 })
 
@@ -95,7 +103,20 @@ const shouldFetch = (searchResultItem, info: GraphQLResolveInfo) => {
   return fetch
 }
 
-const SearchConnection = connectionWithCursorInfo(Searchable)
+export const SearchAggregations: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "Returns aggregation counts for the given filter query.",
+  type: new GraphQLList(SearchAggregationResultsType),
+  resolve: ({ aggregations }) => {
+    return map(aggregations, (counts, slice) => ({
+      slice,
+      counts,
+    }))
+  },
+}
+
+const SearchConnection = connectionWithCursorInfo(Searchable, {
+  aggregations: SearchAggregations,
+})
 
 const processSearchResultItem = (
   searchResultItem,
@@ -131,11 +152,16 @@ export const Search: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     return context.searchLoader(gravityArgs).then(({ body, headers }) => {
+      debugger
       const totalCount = parseInt(headers["x-total-count"])
       const pageCursors = createPageCursors(pageOptions, totalCount)
 
+      let results = body
+      if (args.aggregations) {
+        results = body.results
+      }
       return Promise.all(
-        body.map(searchResultItem =>
+        results.map(searchResultItem =>
           processSearchResultItem(searchResultItem, info, context)
         )
       ).then(processedSearchResults => {
@@ -149,6 +175,7 @@ export const Search: GraphQLFieldConfig<void, ResolverContext> = {
         )
 
         return {
+          aggregations: body.aggregations,
           pageCursors: pageCursors,
           totalCount,
           ...connection,

@@ -3,9 +3,26 @@ import { runQuery } from "test/utils"
 
 describe("Search", () => {
   let searchResults: any
+  let aggregations: any
   let context: any
 
   beforeEach(() => {
+    aggregations = {
+      _type: {
+        profile: {
+          name: "profile",
+          count: 100,
+        },
+        artist: {
+          name: "artist",
+          count: 50,
+        },
+        artwork: {
+          name: "artwork",
+          count: 25,
+        },
+      },
+    }
     searchResults = [
       {
         _id: "artistId",
@@ -137,6 +154,40 @@ describe("Search", () => {
       const auctionSearchableItemNode = data!.search.edges[6].node
       expect(auctionSearchableItemNode.searchableType).toBe("Auction")
       expect(auctionSearchableItemNode.href).toBe("/auction/catty-auction")
+    })
+  })
+
+  it("can return aggregations", () => {
+    context.searchLoader = () =>
+      Promise.resolve({
+        body: { results: searchResults, aggregations },
+        headers: { "x-total-count": 100 },
+      })
+    const query = `
+      {
+        search(query: "David Bowie", first: 10, aggregations: [TYPE]) {
+          aggregations {
+            slice
+            counts {
+              name
+              count
+            }
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(data => {
+      const typeAggregation = data!.search.aggregations.find(
+        agg => agg.slice === "TYPE"
+      ).counts
+
+      const profileCount = typeAggregation.find(agg => agg.name === "profile")
+      expect(profileCount.count).toBe(100)
+      const artistCount = typeAggregation.find(agg => agg.name === "artist")
+      expect(artistCount.count).toBe(50)
+      const artworkCount = typeAggregation.find(agg => agg.name === "artwork")
+      expect(artworkCount.count).toBe(25)
     })
   })
 
