@@ -105,6 +105,17 @@ Object.keys(mustHave).forEach(key => {
   }
 })
 
+/**
+ * Use this if "0" should be respected as 0 and only use the default value for
+ * other falsy values, such as `undefined`, `null`, or an empty string.
+ *
+ * Because JS treats 0 as falsy, the following returns 42: `Number("0") || 42`
+ */
+function IntWithDefault(value: any | undefined, defaultValue: number): number {
+  const result = parseInt(value, 10)
+  return result === Number.NaN ? defaultValue : result
+}
+
 export default {
   ARTICLE_REQUEST_THROTTLE_MS: Number(ARTICLE_REQUEST_THROTTLE_MS) || 600000,
   BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT:
@@ -169,7 +180,7 @@ export default {
   PREDICTION_ENDPOINT,
   PRODUCTION_ENV: NODE_ENV === "production",
   QUERY_DEPTH_LIMIT: Number(QUERY_DEPTH_LIMIT) || null,
-  RATE_LIMIT_MAX: Number(RATE_LIMIT_MAX) || 100,
+  RATE_LIMIT_MAX: IntWithDefault(RATE_LIMIT_MAX, 100),
   RATE_LIMIT_WINDOW_MS: Number(RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   REQUEST_THROTTLE_MS: Number(REQUEST_THROTTLE_MS) || 5000,
   REQUEST_TIMEOUT_MS: Number(REQUEST_TIMEOUT_MS) || 5000,
