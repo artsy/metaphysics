@@ -5,12 +5,7 @@ import { Request } from "express"
 import config from "../config"
 
 // We expect our own services to include DataDog headers.
-export const skip = (req: Request) =>
-  !!(
-    req.headers["x-datadog-trace-id"] ||
-    (req.body.query &&
-      !req.body.query.includes("routes_OverviewQueryRendererQuery"))
-  )
+export const skip = (req: Request) => !!req.headers["x-datadog-trace-id"]
 
 export const rateLimiter = new RateLimit({
   max: config.RATE_LIMIT_MAX,
