@@ -36,5 +36,6 @@
     "urljoin"
   ],
   "debug.node.autoAttach": "on",
-  "eslint.validate": ["typescript"]
+  "eslint.validate": ["typescript"],
+  "typescript.surveys.enabled": false
 }

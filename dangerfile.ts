@@ -45,17 +45,20 @@ export default async () => {
 
   const diff = await danger.git.structuredDiffForFile("_schema.graphql")
   if (diff) {
-    const declaredCamel = danger.github.pr.body.includes("#skip_camel")
-    const violation = declaredCamel ? warn : fail
-    var failed = false
+    const skipCamelCaseCheck = danger.github.pr.body.includes("#skip_camel")
+    const violation = skipCamelCaseCheck ? warn : fail
+    let failed = false
     diff.chunks.forEach(chunk => {
       chunk.changes.forEach(change => {
         if (change.type === "add") {
           const offence = /^\+\s*([a-zA-Z]+_\w*):/.exec(change.content)
           if (offence) {
+            failed = true
             violation(
-              "Found addition using snake_case instead of camelCase: " +
-                offence[1],
+              "Addition uses `snake_case` instead of `camelCase`: " +
+                "`" +
+                offence[1] +
+                "`",
               "_schema.graphql",
               change.ln
             )
@@ -63,9 +66,10 @@ export default async () => {
         }
       })
     })
-    if (failed) {
+    if (!skipCamelCaseCheck && failed) {
       fail(
-        "Failed due to snake_case field naming, if you want to skip this check add #skip_camel to your post body, and re-run CI."
+        "Failed due to [`snake_case` field naming](https://github.com/artsy/README/blob/master/playbooks/graphql-schema-design.md#how-to-model-our-graph). " +
+          "If you want to skip this check add `#skip_camel` to your post body and re-run CI."
       )
     }
   }
