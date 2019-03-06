@@ -7359,6 +7359,7 @@ type Query {
 
     # Mode of search to execute. Default: SITE.
     mode: SearchMode
+    aggregations: [SearchAggregation]
     after: String
     first: Int
     before: String
@@ -7996,6 +7997,9 @@ type SearchableConnection {
   edges: [SearchableEdge]
   pageCursors: PageCursors
   totalCount: Int
+
+  # Returns aggregation counts for the given filter query.
+  aggregations: [SearchAggregationResults]
 }
 
 # An edge in a connection.
@@ -8019,6 +8023,16 @@ type SearchableItem implements Node & Searchable {
   imageUrl: String
   href: String
   searchableType: String
+}
+
+enum SearchAggregation {
+  TYPE
+}
+
+# The results for a requested aggregations
+type SearchAggregationResults {
+  counts: [AggregationCount]
+  slice: SearchAggregation
 }
 
 enum SearchEntity {
@@ -9316,6 +9330,7 @@ type Viewer {
 
     # Mode of search to execute. Default: SITE.
     mode: SearchMode
+    aggregations: [SearchAggregation]
     after: String
     first: Int
     before: String

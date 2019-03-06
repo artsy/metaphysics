@@ -3,13 +3,12 @@ import { SearchEntity } from "schema/search/SearchEntity"
 
 export const searchLoader = gravityLoader => {
   return gravityLoader(
-    ({ query, entities, mode, offset, size }) => {
+    ({ query, entities, mode, ...rest }) => {
       const queryParams = {
         term: query,
         "indexes[]":
           entities || SearchEntity.getValues().map(index => index.value),
-        size: size,
-        offset: offset,
+        ...rest,
       }
 
       switch (mode) {

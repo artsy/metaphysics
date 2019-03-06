@@ -144,7 +144,7 @@ export function createPageCursors(
   return pageCursors
 }
 
-export function connectionWithCursorInfo(type) {
+export function connectionWithCursorInfo(type, connectionFields = {}) {
   return connectionDefinitions({
     nodeType: type,
     connectionFields: {
@@ -156,6 +156,7 @@ export function connectionWithCursorInfo(type) {
         type: GraphQLInt,
         resolve: ({ totalCount }) => totalCount,
       },
+      ...connectionFields,
     },
   }).connectionType
 }
