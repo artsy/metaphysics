@@ -70,16 +70,10 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           type: GraphQLBoolean,
           description: "Whether to include local discovery stubs",
         },
-        displayable: {
-          type: GraphQLBoolean,
-          defaultValue: true,
-          description: "Filter by displayable shows",
-        },
         discoverable: {
           type: GraphQLBoolean,
           description: "Whether to include stub shows or not",
-          deprecationReason:
-            "Use `includeStubShows` and `displayable` combination",
+          deprecationReason: "Use `includeStubShows`",
         },
       }),
       resolve: async (city, args, { showsWithHeadersLoader }) =>
@@ -96,7 +90,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           status: args.status.toLowerCase(),
           displayable: true,
           include_local_discovery:
-            args.discoverable === true || args.includeStubShows,
+            args.includeStubShows || args.discoverable === true,
         }),
     },
     fairs: {

@@ -221,29 +221,6 @@ describe("City", () => {
       })
     })
 
-    it("can filter by displayable", async () => {
-      query = gql`
-        {
-          city(slug: "sacramende-ca-usa") {
-            name
-            shows(first: 1, displayable: true) {
-              edges {
-                node {
-                  id
-                }
-              }
-            }
-          }
-        }
-      `
-      await runQuery(query, context)
-      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
-
-      expect(gravityOptions).toMatchObject({
-        displayable: true,
-      })
-    })
-
     describe("filtering by single partner type", () => {
       it("can filter to gallery shows", async () => {
         query = gql`
