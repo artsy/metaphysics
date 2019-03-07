@@ -191,8 +191,56 @@ describe("City", () => {
       await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
-      expect(gravityOptions).toMatchObject({ discoverable: true })
-      expect(gravityOptions).not.toHaveProperty("displayable")
+      expect(gravityOptions).toMatchObject({
+        include_local_discovery: true,
+        displayable: true,
+      })
+    })
+
+    it("can ask for inclduing local_discovery shows", async () => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            shows(first: 1, includeLocalDiscovery: true) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({
+        include_local_discovery: true,
+      })
+    })
+
+    it("can filter by displayable", async () => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            shows(first: 1, displayable: true) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({
+        displayable: true,
+      })
     })
 
     describe("filtering by single partner type", () => {

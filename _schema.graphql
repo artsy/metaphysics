@@ -2453,7 +2453,13 @@ type City {
     # Filter shows by partner type
     partnerType: PartnerShowPartnerType
 
-    # Whether to include local discovery stubs as well as displayable shows
+    # Whether to include local discovery stubs
+    includeLocalDiscovery: Boolean
+
+    # Filter by displayable shows
+    displayable: Boolean = true
+
+    # Whether to include local discovery stubs
     discoverable: Boolean
     after: String
     first: Int
