@@ -217,6 +217,7 @@ describe("City", () => {
 
       expect(gravityOptions).toMatchObject({
         include_local_discovery: true,
+        displayable: true,
       })
     })
 

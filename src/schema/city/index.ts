@@ -94,9 +94,9 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           // so we have to manually resolve it by lowercasing the value
           // https://github.com/apollographql/graphql-tools/issues/715
           status: args.status.toLowerCase(),
+          displayable: true,
           include_local_discovery:
             args.discoverable === true || args.includeStubShows,
-          displayable: args.discoverable === true || args.displayable,
         }),
     },
     fairs: {
