@@ -197,12 +197,12 @@ describe("City", () => {
       })
     })
 
-    it("can ask for inclduing local_discovery shows", async () => {
+    it("can ask for including stubbed shows", async () => {
       query = gql`
         {
           city(slug: "sacramende-ca-usa") {
             name
-            shows(first: 1, includeLocalDiscovery: true) {
+            shows(first: 1, includeStubShows: true) {
               edges {
                 node {
                   id

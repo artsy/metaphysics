@@ -66,7 +66,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           type: PartnerShowPartnerType,
           description: "Filter shows by partner type",
         },
-        includeLocalDiscovery: {
+        includeStubShows: {
           type: GraphQLBoolean,
           description: "Whether to include local discovery stubs",
         },
@@ -77,9 +77,9 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         },
         discoverable: {
           type: GraphQLBoolean,
-          description: "Whether to include local discovery stubs",
+          description: "Whether to include stub shows or not",
           deprecationReason:
-            "Use `includeLocalDiscovery` and `displayable` combination",
+            "Use `includeStubShows` and `displayable` combination",
         },
       }),
       resolve: async (city, args, { showsWithHeadersLoader }) =>
@@ -95,7 +95,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           // https://github.com/apollographql/graphql-tools/issues/715
           status: args.status.toLowerCase(),
           include_local_discovery:
-            args.discoverable === true || args.includeLocalDiscovery,
+            args.discoverable === true || args.includeStubShows,
           displayable: args.discoverable === true || args.displayable,
         }),
     },

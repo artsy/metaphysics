@@ -2454,12 +2454,12 @@ type City {
     partnerType: PartnerShowPartnerType
 
     # Whether to include local discovery stubs
-    includeLocalDiscovery: Boolean
+    includeStubShows: Boolean
 
     # Filter by displayable shows
     displayable: Boolean = true
 
-    # Whether to include local discovery stubs
+    # Whether to include stub shows or not
     discoverable: Boolean
     after: String
     first: Int
