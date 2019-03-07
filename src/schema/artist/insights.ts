@@ -25,7 +25,7 @@ export const ArtistInsightType = new GraphQLEnumType({
       value: "Reviewed by a major art publication",
     },
     BIENNIAL: {
-      value: "Participated in a major biennial",
+      value: "Included in a major biennial",
     },
   },
 })
