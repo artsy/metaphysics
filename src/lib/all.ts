@@ -24,7 +24,7 @@ export const allViaLoader = (
   const countParams = {
     ...params,
     page: 1,
-    size: 1, // FIXME: The /shows endpoint does not return a count with size=0
+    size: 0,
     total_count: true,
   }
   return invokeLoader(countParams)
