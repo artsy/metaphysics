@@ -221,7 +221,7 @@ describe("City", () => {
       })
     })
 
-    describe("filtering by single partner type", () => {
+    describe("filtering by partner type", () => {
       it("can filter to gallery shows", async () => {
         query = gql`
           {
