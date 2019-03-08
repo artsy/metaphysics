@@ -1,16 +1,17 @@
 import { parse } from "url"
 
 export const isDimensional = value => parseFloat(value) > 0
-
-export const isThreeDimensional = ({ depth, diameter }) => {
-  return isDimensional(depth) || isDimensional(diameter)
-}
+export const isTinyDimensional = value => parseFloat(value) > 1
 
 export const isTwoDimensional = ({ width, height, depth, diameter }) => {
   return (
     isDimensional(width) &&
     isDimensional(height) &&
-    !isThreeDimensional({ depth, diameter })
+    !isDimensional(diameter) &&
+    // It's quite reasonable for a gallery to put on a depth of under an
+    // inch for an artwork that we should treat as being something we can
+    // up for view in room.
+    !isTinyDimensional(depth)
   )
 }
 
