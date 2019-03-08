@@ -265,6 +265,27 @@ describe("City", () => {
           partner_types: ["Institution", "Institutional Seller"],
         })
       })
+
+      it("works with a null partner type", async () => {
+        query = gql`
+          {
+            city(slug: "sacramende-ca-usa") {
+              name
+              shows(first: 1, partnerType: null) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        `
+        await runQuery(query, context)
+        const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+        expect(gravityOptions.partner_types).toBeUndefined()
+      })
     })
 
     it("can request all shows [that match other filter parameters]", async () => {

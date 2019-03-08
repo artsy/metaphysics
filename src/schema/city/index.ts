@@ -82,7 +82,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
           has_location: true,
           at_a_fair: false,
-          partner_types: args.partnerType,
+          ...(args.partnerType ? { partner_types: args.partnerType } : {}),
           sort: args.sort,
           // default Enum value for status is not properly resolved
           // so we have to manually resolve it by lowercasing the value
