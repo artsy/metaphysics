@@ -198,8 +198,8 @@ async function loadData(
     offset = connectionParams.offset
     response = await loader({
       ...baseParams,
-      size: connectionParams.size,
-      page: connectionParams.page,
+      size: connectionParams.size || 0,
+      page: connectionParams.page || 1,
       total_count: true,
     })
   }
