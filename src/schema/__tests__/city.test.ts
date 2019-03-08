@@ -195,6 +195,52 @@ describe("City", () => {
       expect(gravityOptions).not.toHaveProperty("displayable")
     })
 
+    describe("filtering by single partner type", () => {
+      it("can filter to gallery shows", async () => {
+        query = gql`
+          {
+            city(slug: "sacramende-ca-usa") {
+              name
+              shows(first: 1, partnerType: GALLERY) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        `
+        await runQuery(query, context)
+        const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+        expect(gravityOptions).toMatchObject({ partner_types: ["Gallery"] })
+      })
+
+      it("can filter to museum shows", async () => {
+        query = gql`
+          {
+            city(slug: "sacramende-ca-usa") {
+              name
+              shows(first: 1, partnerType: MUSEUM) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        `
+        await runQuery(query, context)
+        const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+        expect(gravityOptions).toMatchObject({
+          partner_types: ["Institution", "Institutional Seller"],
+        })
+      })
+    })
+
     it("can request all shows [that match other filter parameters]", async () => {
       allViaLoader.mockImplementation(() => Promise.resolve(mockShows))
 
