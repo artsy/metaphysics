@@ -66,10 +66,14 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           type: PartnerShowPartnerType,
           description: "Filter shows by partner type",
         },
+        includeStubShows: {
+          type: GraphQLBoolean,
+          description: "Whether to include local discovery stubs",
+        },
         discoverable: {
           type: GraphQLBoolean,
-          description:
-            "Whether to include local discovery stubs as well as displayable shows",
+          description: "Whether to include stub shows or not",
+          deprecationReason: "Use `includeStubShows`",
         },
       }),
       resolve: async (city, args, { showsWithHeadersLoader }) =>
@@ -84,14 +88,9 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           // so we have to manually resolve it by lowercasing the value
           // https://github.com/apollographql/graphql-tools/issues/715
           status: args.status.toLowerCase(),
-          // This is to ensure the key never makes its way into the `baseParams`
-          // object if not needed,
-          ...(typeof args.discoverable === "undefined"
-            ? undefined
-            : { discoverable: args.discoverable }),
-          ...(typeof args.discoverable === "undefined"
-            ? { displayable: true }
-            : undefined),
+          displayable: true,
+          include_local_discovery:
+            args.includeStubShows || args.discoverable === true,
         }),
     },
     fairs: {

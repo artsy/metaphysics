@@ -191,11 +191,37 @@ describe("City", () => {
       await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
-      expect(gravityOptions).toMatchObject({ discoverable: true })
-      expect(gravityOptions).not.toHaveProperty("displayable")
+      expect(gravityOptions).toMatchObject({
+        include_local_discovery: true,
+        displayable: true,
+      })
     })
 
-    describe("filtering by single partner type", () => {
+    it("can ask for including stubbed shows", async () => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            shows(first: 1, includeStubShows: true) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({
+        include_local_discovery: true,
+        displayable: true,
+      })
+    })
+
+    describe("filtering by partner type", () => {
       it("can filter to gallery shows", async () => {
         query = gql`
           {
