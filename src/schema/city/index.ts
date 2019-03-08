@@ -1,5 +1,6 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLObjectType,
   GraphQLString,
   GraphQLFieldConfig,
@@ -11,7 +12,6 @@ import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import { FairType } from "schema/fair"
 import FairSorts from "schema/sorts/fair_sorts"
 import EventStatus from "schema/input_fields/event_status"
-
 import cityData from "./city_data.json"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
@@ -28,6 +28,18 @@ import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
+
+const PartnerShowPartnerType = new GraphQLEnumType({
+  name: "PartnerShowPartnerType",
+  values: {
+    GALLERY: {
+      value: ["Gallery"],
+    },
+    MUSEUM: {
+      value: ["Institution", "Institutional Seller"],
+    },
+  },
+})
 
 const CityType = new GraphQLObjectType<any, ResolverContext>({
   name: "City",
@@ -48,7 +60,11 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         status: {
           type: EventStatus.type,
           defaultValue: "CURRENT",
-          description: "By default we filter shows by current",
+          description: "Filter shows by chronological event status",
+        },
+        partnerType: {
+          type: PartnerShowPartnerType,
+          description: "Filter shows by partner type",
         },
         discoverable: {
           type: GraphQLBoolean,
@@ -62,6 +78,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
           has_location: true,
           at_a_fair: false,
+          partner_types: args.partnerType,
           sort: args.sort,
           // default Enum value for status is not properly resolved
           // so we have to manually resolve it by lowercasing the value
