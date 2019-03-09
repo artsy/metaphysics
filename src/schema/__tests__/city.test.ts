@@ -221,7 +221,7 @@ describe("City", () => {
       })
     })
 
-    it("can filter to gallery shows", async () => {
+    it("can filter to shows by status and dayThreshold", async () => {
       query = gql`
         {
           city(slug: "sacramende-ca-usa") {
