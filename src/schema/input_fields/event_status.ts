@@ -36,6 +36,10 @@ const EventStatus = {
         value: "upcoming",
         description: "Start date is in the future",
       },
+      CLOSING_SOON: {
+        value: "closing_soon",
+        description: "End date is in near future",
+      },
     },
   }),
 }
