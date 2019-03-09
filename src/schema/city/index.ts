@@ -115,6 +115,25 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           artGuideUrl: {
             type: GraphQLString,
           },
+          shows: {
+            type: showConnection,
+            args: pageable({
+              sort: PartnerShowSorts,
+              status: EventStatus,
+            }),
+            resolve: async (
+              citySponsoredContent,
+              args,
+              { showsWithHeadersLoader }
+            ) => {
+              return loadData(args, showsWithHeadersLoader, {
+                id: citySponsoredContent.showIds,
+                include_local_discovery: true,
+                sort: args.sort,
+                status: args.status,
+              })
+            },
+          },
         },
       }),
       resolve: city => sponsoredContentForCity(city.slug),

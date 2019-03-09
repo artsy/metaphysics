@@ -2477,6 +2477,14 @@ type City {
 type CitySponsoredContent {
   introText: String
   artGuideUrl: String
+  shows(
+    sort: PartnerShowSorts
+    status: EventStatus
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ShowConnection
 }
 
 type Collection implements Node {
