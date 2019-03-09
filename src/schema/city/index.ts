@@ -4,6 +4,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLFieldConfig,
+  GraphQLInt,
 } from "graphql"
 
 import { LatLngType } from "../location"
@@ -66,6 +67,11 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           type: PartnerShowPartnerType,
           description: "Filter shows by partner type",
         },
+        dayThreshold: {
+          type: GraphQLInt,
+          description:
+            "Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows",
+        },
         includeStubShows: {
           type: GraphQLBoolean,
           description: "Whether to include local discovery stubs",
@@ -83,6 +89,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           has_location: true,
           at_a_fair: false,
           ...(args.partnerType && { partner_types: args.partnerType }),
+          ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
           sort: args.sort,
           // default Enum value for status is not properly resolved
           // so we have to manually resolve it by lowercasing the value

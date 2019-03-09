@@ -2453,6 +2453,9 @@ type City {
     # Filter shows by partner type
     partnerType: PartnerShowPartnerType
 
+    # Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows
+    dayThreshold: Int
+
     # Whether to include local discovery stubs
     includeStubShows: Boolean
 
@@ -3241,6 +3244,9 @@ enum EventStatus {
 
   # Start date is in the future
   UPCOMING
+
+  # End date is in near future
+  CLOSING_SOON
 }
 
 type ExternalPartner {

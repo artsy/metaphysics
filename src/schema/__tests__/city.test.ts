@@ -221,6 +221,30 @@ describe("City", () => {
       })
     })
 
+    it("can filter to shows by status and dayThreshold", async () => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            shows(first: 1, status: CLOSING_SOON, dayThreshold: 5) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({
+        day_threshold: 5,
+        status: "closing_soon",
+      })
+    })
+
     describe("filtering by partner type", () => {
       it("can filter to gallery shows", async () => {
         query = gql`
