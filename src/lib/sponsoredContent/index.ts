@@ -6,6 +6,9 @@ interface CitySponsoredContent {
 
   /** Link to external guide */
   artGuideUrl: string
+
+  /** Manually curated list of sponsored shows */
+  showIds: string
 }
 
 interface FairSponsoredContent {
