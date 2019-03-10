@@ -29,6 +29,7 @@ import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
+import { omit } from "lodash"
 
 const PartnerShowPartnerType = new GraphQLEnumType({
   name: "PartnerShowPartnerType",
@@ -192,6 +193,9 @@ const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
 const isCloseEnough = (latLng: LatLng, city: Point) =>
   distance(latLng, city.coordinates) < NEAREST_CITY_THRESHOLD_KM * 1000
 
+const stripConnectionArgs = (obj: any) =>
+  omit(obj, ["first", "last", "before", "after"])
+
 async function loadData(
   args: CursorPageable,
   loader: StaticPathLoader<BodyAndHeaders>,
@@ -199,13 +203,17 @@ async function loadData(
 ) {
   let response
   let offset
+  let gravityArgs = stripConnectionArgs(args)
 
   if (args.first === MAX_GRAPHQL_INT) {
     // TODO: We could throw an error if the `after` arg is passed, but not
     //       doing so, for now.
     offset = 0
     response = await allViaLoader(loader, {
-      params: baseParams,
+      params: {
+        ...gravityArgs, // This passes along sort/status
+        ...baseParams,
+      },
       api: {
         requestThrottleMs: 86400000, // 1000 * 60 * 60 * 24 = 1 day
       },
@@ -220,6 +228,7 @@ async function loadData(
     const connectionParams = convertConnectionArgsToGravityArgs(args)
     offset = connectionParams.offset
     response = await loader({
+      ...gravityArgs, // This passes along sort/status
       ...baseParams,
       size: connectionParams.size || 0,
       page: connectionParams.page || 1,
