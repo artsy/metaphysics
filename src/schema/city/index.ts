@@ -110,6 +110,8 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         loadData(args, fairsLoader, {
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+          sort: args.sort,
+          status: args.status,
         }),
     },
     sponsoredContent: {
@@ -121,6 +123,25 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           },
           artGuideUrl: {
             type: GraphQLString,
+          },
+          shows: {
+            type: showConnection,
+            args: pageable({
+              sort: PartnerShowSorts,
+              status: EventStatus,
+            }),
+            resolve: async (
+              citySponsoredContent,
+              args,
+              { showsWithHeadersLoader }
+            ) => {
+              return loadData(args, showsWithHeadersLoader, {
+                id: citySponsoredContent.showIds,
+                include_local_discovery: true,
+                sort: args.sort,
+                status: args.status,
+              })
+            },
           },
         },
       }),
