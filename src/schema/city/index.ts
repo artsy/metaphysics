@@ -103,6 +103,8 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         loadData(args, fairsLoader, {
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+          sort: args.sort,
+          status: args.status,
         }),
     },
     sponsoredContent: {
