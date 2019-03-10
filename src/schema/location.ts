@@ -30,12 +30,13 @@ const DayScheduleText = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     text: {
       type: GraphQLString,
+      resolve: ({ day_schedule_text }) => day_schedule_text,
     },
   },
 })
 
-const FormattedArray = new GraphQLObjectType<any, ResolverContext>({
-  name: "FormattedArray",
+const FormattedDayScheduleArray = new GraphQLObjectType<any, ResolverContext>({
+  name: "FormattedDayScheduleArray",
   fields: {
     schedules: {
       type: new GraphQLList(FormattedDaySchedules.type),
@@ -46,10 +47,10 @@ const FormattedArray = new GraphQLObjectType<any, ResolverContext>({
 
 const FormattedDaySchedulesOrTextUnion = new GraphQLUnionType({
   name: "FormattedDaySchedulesOrTextUnionType",
-  types: [FormattedArray, DayScheduleText],
+  types: [FormattedDayScheduleArray, DayScheduleText],
   resolveType: object => {
     if (object.schedules) {
-      return FormattedArray
+      return FormattedDayScheduleArray
     } else return DayScheduleText
   },
 })

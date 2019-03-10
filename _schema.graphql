@@ -3809,7 +3809,7 @@ enum Format {
   markdown @deprecated(reason: "deprecated")
 }
 
-type FormattedArray {
+type FormattedDayScheduleArray {
   schedules: [FormattedDaySchedules]
 }
 
@@ -3818,7 +3818,9 @@ type FormattedDaySchedules {
   hours: String
 }
 
-union FormattedDaySchedulesOrTextUnionType = FormattedArray | DayScheduleText
+union FormattedDaySchedulesOrTextUnionType =
+    FormattedDayScheduleArray
+  | DayScheduleText
 
 # The `FormattedNumber` type represents a number that can optionally be returnedas
 # a formatted String. It does not try to coerce the type.
