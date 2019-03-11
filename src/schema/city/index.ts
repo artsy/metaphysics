@@ -13,7 +13,7 @@ import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import { FairType } from "schema/fair"
 import FairSorts from "schema/sorts/fair_sorts"
 import EventStatus from "schema/input_fields/event_status"
-import cityData from "./city_data.json"
+import cityDataSortedByDisplayPreference from "./cityDataSortedByDisplayPreference.json"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import {
@@ -182,12 +182,15 @@ export const City: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 const lookupCity = (slug: string) => {
-  if (!cityData.hasOwnProperty(slug)) {
+  const city = cityDataSortedByDisplayPreference.find(c => c.slug === slug)
+  if (!city) {
     throw new Error(
-      `City ${slug} not found in: ${Object.keys(cityData).join(", ")}`
+      `City ${slug} not found in: ${cityDataSortedByDisplayPreference
+        .map(({ slug }) => slug)
+        .join(", ")}`
     )
   }
-  return cityData[slug]
+  return city
 }
 
 const nearestCity = (latLng: LatLng) => {
@@ -201,7 +204,7 @@ const nearestCity = (latLng: LatLng) => {
 }
 
 const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
-  let cities: Point[] = Object.values(cityData)
+  let cities: Point[] = Object.values(cityDataSortedByDisplayPreference)
   cities.sort((a, b) => {
     const distanceA = distance(latLng, a.coordinates)
     const distanceB = distance(latLng, b.coordinates)

@@ -1,15 +1,15 @@
-const mockCities = {
-  "sacramende-ca-usa": {
+const mockCities = [
+  {
     slug: "sacramende-ca-usa",
     name: "Sacramende",
     coordinates: { lat: 38.5, lng: -121.8 },
   },
-  "smallville-usa": {
+  {
     slug: "smallvile-usa",
     name: "Smallville",
     coordinates: { lat: 39.78, lng: -100.45 },
   },
-}
+]
 
 const mockSponsoredContent = {
   cities: {
@@ -21,7 +21,7 @@ const mockSponsoredContent = {
   },
 }
 
-jest.mock("../city/city_data.json", () => mockCities)
+jest.mock("../city/cityDataSortedByDisplayPreference.json", () => mockCities)
 jest.mock("lib/all.ts")
 jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
 
