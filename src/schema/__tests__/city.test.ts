@@ -246,6 +246,31 @@ describe("City", () => {
       })
     })
 
+    it("works with null status and dayThreshold", async () => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            shows(first: 1, status: null, dayThreshold: null) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+
+      expect(context.showsWithHeadersLoader).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          day_threshold: expect.anything(),
+          status: expect.anything(),
+        })
+      )
+    })
+
     describe("filtering by partner type", () => {
       it("can filter to gallery shows", async () => {
         query = gql`
