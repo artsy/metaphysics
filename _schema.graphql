@@ -3077,10 +3077,6 @@ type DaySchedule {
   day_of_week: String
 }
 
-type DayScheduleText {
-  text: String
-}
-
 type DeepZoom {
   Image: DeepZoomImage
 }
@@ -3809,18 +3805,14 @@ enum Format {
   markdown @deprecated(reason: "deprecated")
 }
 
-type FormattedDayScheduleArray {
-  schedules: [FormattedDaySchedules]
-}
-
 type FormattedDaySchedules {
   days: String
   hours: String
 }
 
 union FormattedDaySchedulesOrTextUnionType =
-    FormattedDayScheduleArray
-  | DayScheduleText
+    OpeningHoursArray
+  | OpeningHoursText
 
 # The `FormattedNumber` type represents a number that can optionally be returnedas
 # a formatted String. It does not try to coerce the type.
@@ -5026,7 +5018,11 @@ type Location {
 
   # Alternate Markdown-supporting free text representation of a location's opening hours
   day_schedule_text: String
-  displayDaySchedules: FormattedDaySchedulesOrTextUnionType
+  displayDaySchedules: [FormattedDaySchedules]
+    @deprecated(reason: "Use openingHours instead")
+
+  # Union returning opening hours in formatted structure or a string
+  openingHours: FormattedDaySchedulesOrTextUnionType
   display: String
   phone: String
   postal_code: String
@@ -6023,6 +6019,14 @@ type OfferOrder implements Order {
 
   # List of submitted offers made on this order so far
   offers: OfferConnection
+}
+
+type OpeningHoursArray {
+  schedules: [FormattedDaySchedules]
+}
+
+type OpeningHoursText {
+  text: String
 }
 
 interface Order {
