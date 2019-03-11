@@ -5,6 +5,7 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import Near from "../input_fields/near"
 
 const FollowedShowEdge = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedShowEdge",
@@ -26,7 +27,11 @@ export const FollowedShowConnection = connectionDefinitions({
 
 const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
   type: FollowedShowConnection.connectionType,
-  args: pageable({}),
+  args: pageable({
+    near: {
+      type: Near,
+    },
+  }),
   description: "A list of the current user’s currently followed shows",
   resolve: (_root, options, { followedShowsLoader }) => {
     if (!followedShowsLoader) return null
@@ -36,6 +41,8 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
       size,
       offset,
       total_count: true,
+      near: !!options.near ? `${options.near.lat},${options.near.lng}` : null,
+      distance: !!options.near ? options.distance || 75 : null,
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {

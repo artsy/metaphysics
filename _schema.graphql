@@ -3773,6 +3773,7 @@ type FollowsAndSaves {
 
   # A list of the current user’s currently followed shows
   shows(
+    near: Near
     after: String
     first: Int
     before: String
