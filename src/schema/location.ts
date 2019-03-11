@@ -9,6 +9,7 @@ import {
   GraphQLFloat,
   GraphQLList,
   GraphQLFieldConfig,
+  GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -21,6 +22,37 @@ export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
     lng: {
       type: GraphQLFloat,
     },
+  },
+})
+
+const OpeningHoursText = new GraphQLObjectType<any, ResolverContext>({
+  name: "OpeningHoursText",
+  fields: {
+    text: {
+      type: GraphQLString,
+      resolve: ops => ops.day_schedule_text,
+    },
+  },
+})
+
+const OpeningHoursArray = new GraphQLObjectType<any, ResolverContext>({
+  name: "OpeningHoursArray",
+  fields: {
+    schedules: {
+      type: new GraphQLList(FormattedDaySchedules.type),
+      resolve: ({ day_schedules }) =>
+        FormattedDaySchedules.resolve(day_schedules),
+    },
+  },
+})
+
+const OpeningHoursUnion = new GraphQLUnionType({
+  name: "OpeningHoursUnion",
+  types: [OpeningHoursArray, OpeningHoursText],
+  resolveType: object => {
+    if (object.day_schedules && object.day_schedules.length > 0) {
+      return OpeningHoursArray
+    } else return OpeningHoursText
   },
 })
 
@@ -54,11 +86,23 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
         "Alternate Markdown-supporting free text representation of a location's opening hours",
       type: GraphQLString,
     },
+
     displayDaySchedules: {
       type: new GraphQLList(FormattedDaySchedules.type),
       resolve: ({ day_schedules }) =>
         FormattedDaySchedules.resolve(day_schedules),
+      deprecationReason: "Use openingHours instead",
     },
+    openingHours: {
+      type: OpeningHoursUnion,
+      resolve: ({ day_schedules, day_schedule_text }) =>
+        day_schedules && day_schedules.length > 0
+          ? { day_schedules }
+          : { day_schedule_text },
+      description:
+        "Union returning opening hours in formatted structure or a string",
+    },
+
     display: {
       type: GraphQLString,
     },
