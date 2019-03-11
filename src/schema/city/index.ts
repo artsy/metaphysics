@@ -138,6 +138,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
               return loadData(args, showsWithHeadersLoader, {
                 id: citySponsoredContent.showIds,
                 include_local_discovery: true,
+                displayable: true,
                 sort: args.sort,
                 status: args.status,
               })
