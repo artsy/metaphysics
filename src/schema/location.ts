@@ -30,7 +30,7 @@ const OpeningHoursText = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     text: {
       type: GraphQLString,
-      resolve: ({ day_schedule_text }) => day_schedule_text,
+      resolve: ops => ops.day_schedule_text,
     },
   },
 })
@@ -47,10 +47,10 @@ const OpeningHoursArray = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const OpeningHoursUnion = new GraphQLUnionType({
-  name: "FormattedDaySchedulesOrTextUnionType",
+  name: "OpeningHoursUnion",
   types: [OpeningHoursArray, OpeningHoursText],
   resolveType: object => {
-    if (object.day_schedules) {
+    if (object.day_schedules && object.day_schedules.length > 0) {
       return OpeningHoursArray
     } else return OpeningHoursText
   },
@@ -96,7 +96,9 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
     openingHours: {
       type: OpeningHoursUnion,
       resolve: ({ day_schedules, day_schedule_text }) =>
-        day_schedules ? { day_schedules } : { day_schedule_text },
+        day_schedules && day_schedules.length > 0
+          ? { day_schedules }
+          : { day_schedule_text },
       description:
         "Union returning opening hours in formatted structure or a string",
     },

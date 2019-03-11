@@ -3810,10 +3810,6 @@ type FormattedDaySchedules {
   hours: String
 }
 
-union FormattedDaySchedulesOrTextUnionType =
-    OpeningHoursArray
-  | OpeningHoursText
-
 # The `FormattedNumber` type represents a number that can optionally be returnedas
 # a formatted String. It does not try to coerce the type.
 scalar FormattedNumber
@@ -5022,7 +5018,7 @@ type Location {
     @deprecated(reason: "Use openingHours instead")
 
   # Union returning opening hours in formatted structure or a string
-  openingHours: FormattedDaySchedulesOrTextUnionType
+  openingHours: OpeningHoursUnion
   display: String
   phone: String
   postal_code: String
@@ -6028,6 +6024,8 @@ type OpeningHoursArray {
 type OpeningHoursText {
   text: String
 }
+
+union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 
 interface Order {
   # ID of the order
