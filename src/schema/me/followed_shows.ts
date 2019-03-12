@@ -42,7 +42,14 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
       offset,
       total_count: true,
       near: !!options.near ? `${options.near.lat},${options.near.lng}` : null,
-      distance: !!options.near ? options.distance || 75 : null,
+      max_distance: !!options.near ? options.near.max_distance || 75 : null,
+    }
+
+    // this feels weirdly messy to me, but it works. TypeScript complains
+    // if I try to add these after initialization, rather than removing.
+    if (!gravityArgs.near) {
+      delete gravityArgs.near
+      delete gravityArgs.max_distance
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {
