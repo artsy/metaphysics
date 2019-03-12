@@ -965,6 +965,16 @@ describe("Artwork type", () => {
           })
         })
 
+        it("is hangable if artwork is 2d with a reasonable dimensions + tiny depth", () => {
+          artwork.width = 100
+          artwork.height = 100
+          artwork.depth = 0.5
+          artwork.category = "ink"
+          return runQuery(query, context).then(data => {
+            expect(data.artwork.is_hangable).toBe(true)
+          })
+        })
+
         it("is hangable if painting artwork is 2d and has reasonable dimensions", () => {
           artwork.width = 100
           artwork.height = 100
