@@ -20,6 +20,8 @@ const hrefFromAutosuggestResult = item => {
       return `/auction/${item.id}`
     case "City":
       return `/shows/${item.id}`
+    case "MarketingCollection":
+      return `/collection/${item.id}`
     default:
       return `/${item.model}/${item.id}`
   }

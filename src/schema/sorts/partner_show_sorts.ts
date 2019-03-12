@@ -74,6 +74,10 @@ const PartnerShowSorts = {
       START_AT_DESC: {
         value: "-start_at",
       },
+      PARTNER_ASC: {
+        // TODO: Change to proper order once Gravity supports this type of sort
+        value: "end_at",
+      },
     },
   }),
 }

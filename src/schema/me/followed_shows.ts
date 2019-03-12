@@ -3,10 +3,19 @@ import { IDFields } from "schema/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
+import { GraphQLObjectType, GraphQLFieldConfig, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import EventStatus from "schema/input_fields/event_status"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
+import cityData from "../city/cityDataSortedByDisplayPreference.json"
+import { LOCAL_DISCOVERY_RADIUS_KM } from "../city/constants"
+
+const location_by_city_slug = cityData.reduce((acc, val) => {
+  acc[val.slug] = val.coordinates
+  return acc
+}, {})
+
+const getValidCitySlugs = () => Object.keys(location_by_city_slug).join(", ")
 
 const FollowedShowEdge = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedShowEdge",
@@ -31,10 +40,28 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
   args: pageable({
     status: EventStatus,
     sort: PartnerShowSorts,
+    city: {
+      type: GraphQLString,
+      description: `A string representing one of the supported cities in the City Guide, which are: ${getValidCitySlugs()}`,
+    },
   }),
   description: "A list of the current user’s currently followed shows",
   resolve: (_root, options, { followedShowsLoader }) => {
     if (!followedShowsLoader) return null
+
+    let locationArgs = {}
+    if (options.city) {
+      const location = location_by_city_slug[options.city]
+
+      if (!location) {
+        throw new Error(`City slug must be one of: ${getValidCitySlugs()}`)
+      }
+
+      locationArgs = {
+        near: `${location.lat},${location.lng}`,
+        max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+      }
+    }
 
     const { limit: size, offset } = getPagingParameters(options)
     const gravityArgs = {
@@ -43,6 +70,7 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
       total_count: true,
       sort: options.sort,
       status: options.status,
+      ...locationArgs,
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {

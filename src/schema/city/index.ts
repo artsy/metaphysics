@@ -1,8 +1,10 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
   GraphQLObjectType,
   GraphQLString,
   GraphQLFieldConfig,
+  GraphQLInt,
 } from "graphql"
 
 import { LatLngType } from "../location"
@@ -11,8 +13,7 @@ import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import { FairType } from "schema/fair"
 import FairSorts from "schema/sorts/fair_sorts"
 import EventStatus from "schema/input_fields/event_status"
-
-import cityData from "./city_data.json"
+import cityDataSortedByDisplayPreference from "./cityDataSortedByDisplayPreference.json"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import {
@@ -28,6 +29,18 @@ import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
+
+const PartnerShowPartnerType = new GraphQLEnumType({
+  name: "PartnerShowPartnerType",
+  values: {
+    GALLERY: {
+      value: ["Gallery"],
+    },
+    MUSEUM: {
+      value: ["Institution", "Institutional Seller"],
+    },
+  },
+})
 
 const CityType = new GraphQLObjectType<any, ResolverContext>({
   name: "City",
@@ -48,12 +61,25 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         status: {
           type: EventStatus.type,
           defaultValue: "CURRENT",
-          description: "By default we filter shows by current",
+          description: "Filter shows by chronological event status",
+        },
+        partnerType: {
+          type: PartnerShowPartnerType,
+          description: "Filter shows by partner type",
+        },
+        dayThreshold: {
+          type: GraphQLInt,
+          description:
+            "Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows",
+        },
+        includeStubShows: {
+          type: GraphQLBoolean,
+          description: "Whether to include local discovery stubs",
         },
         discoverable: {
           type: GraphQLBoolean,
-          description:
-            "Whether to include local discovery stubs as well as displayable shows",
+          description: "Whether to include stub shows or not",
+          deprecationReason: "Use `includeStubShows`",
         },
       }),
       resolve: async (city, args, { showsWithHeadersLoader }) =>
@@ -62,19 +88,16 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
           has_location: true,
           at_a_fair: false,
+          ...(args.partnerType && { partner_types: args.partnerType }),
+          ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
           sort: args.sort,
           // default Enum value for status is not properly resolved
           // so we have to manually resolve it by lowercasing the value
           // https://github.com/apollographql/graphql-tools/issues/715
-          status: args.status.toLowerCase(),
-          // This is to ensure the key never makes its way into the `baseParams`
-          // object if not needed,
-          ...(typeof args.discoverable === "undefined"
-            ? undefined
-            : { discoverable: args.discoverable }),
-          ...(typeof args.discoverable === "undefined"
-            ? { displayable: true }
-            : undefined),
+          ...(args.status && { status: args.status.toLowerCase() }),
+          displayable: true,
+          include_local_discovery:
+            args.includeStubShows || args.discoverable === true,
         }),
     },
     fairs: {
@@ -87,6 +110,8 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         loadData(args, fairsLoader, {
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+          sort: args.sort,
+          status: args.status,
         }),
     },
     sponsoredContent: {
@@ -98,6 +123,26 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           },
           artGuideUrl: {
             type: GraphQLString,
+          },
+          shows: {
+            type: showConnection,
+            args: pageable({
+              sort: PartnerShowSorts,
+              status: EventStatus,
+            }),
+            resolve: async (
+              citySponsoredContent,
+              args,
+              { showsWithHeadersLoader }
+            ) => {
+              return loadData(args, showsWithHeadersLoader, {
+                id: citySponsoredContent.showIds,
+                include_local_discovery: true,
+                displayable: true,
+                sort: args.sort,
+                status: args.status,
+              })
+            },
           },
         },
       }),
@@ -138,12 +183,15 @@ export const City: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 const lookupCity = (slug: string) => {
-  if (!cityData.hasOwnProperty(slug)) {
+  const city = cityDataSortedByDisplayPreference.find(c => c.slug === slug)
+  if (!city) {
     throw new Error(
-      `City ${slug} not found in: ${Object.keys(cityData).join(", ")}`
+      `City ${slug} not found in: ${cityDataSortedByDisplayPreference
+        .map(({ slug }) => slug)
+        .join(", ")}`
     )
   }
-  return cityData[slug]
+  return city
 }
 
 const nearestCity = (latLng: LatLng) => {
@@ -157,7 +205,7 @@ const nearestCity = (latLng: LatLng) => {
 }
 
 const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
-  let cities: Point[] = Object.values(cityData)
+  let cities: Point[] = Object.values(cityDataSortedByDisplayPreference)
   cities.sort((a, b) => {
     const distanceA = distance(latLng, a.coordinates)
     const distanceB = distance(latLng, b.coordinates)
@@ -198,8 +246,8 @@ async function loadData(
     offset = connectionParams.offset
     response = await loader({
       ...baseParams,
-      size: connectionParams.size,
-      page: connectionParams.page,
+      size: connectionParams.size || 0,
+      page: connectionParams.page || 1,
       total_count: true,
     })
   }

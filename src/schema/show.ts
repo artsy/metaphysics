@@ -435,13 +435,18 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ fair }) => isExisty(fair),
     },
     is_reference: {
-      description: "Is it a stubbed show?",
+      description: "Is it a show provided for historical reference?",
       type: GraphQLBoolean,
       resolve: ({ is_reference }) => is_reference,
     },
     is_local_discovery: {
+      deprecationReason: "Prefer isStubShow",
+      type: GraphQLBoolean,
+    },
+    isStubShow: {
       description: "Is it an outsourced local discovery stub show?",
       type: GraphQLBoolean,
+      resolve: ({ is_local_discovery }) => is_local_discovery,
     },
     kind: {
       description: "Whether the show is in a fair, group or solo",

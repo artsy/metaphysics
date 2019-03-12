@@ -1,26 +1,27 @@
-const mockCities = {
-  "sacramende-ca-usa": {
+const mockCities = [
+  {
     slug: "sacramende-ca-usa",
     name: "Sacramende",
     coordinates: { lat: 38.5, lng: -121.8 },
   },
-  "smallville-usa": {
+  {
     slug: "smallvile-usa",
     name: "Smallville",
     coordinates: { lat: 39.78, lng: -100.45 },
   },
-}
+]
 
 const mockSponsoredContent = {
   cities: {
     "sacramende-ca-usa": {
       introText: "Lorem ipsum dolot sit amet",
       artGuideUrl: "https://www.example.com/",
+      showIds: ["abc", "123", "def", "456"],
     },
   },
 }
 
-jest.mock("../city/city_data.json", () => mockCities)
+jest.mock("../city/cityDataSortedByDisplayPreference.json", () => mockCities)
 jest.mock("lib/all.ts")
 jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
 
@@ -191,8 +192,150 @@ describe("City", () => {
       await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
-      expect(gravityOptions).toMatchObject({ discoverable: true })
-      expect(gravityOptions).not.toHaveProperty("displayable")
+      expect(gravityOptions).toMatchObject({
+        include_local_discovery: true,
+        displayable: true,
+      })
+    })
+
+    it("can ask for including stubbed shows", async () => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            shows(first: 1, includeStubShows: true) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({
+        include_local_discovery: true,
+        displayable: true,
+      })
+    })
+
+    it("can filter to shows by status and dayThreshold", async () => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            shows(first: 1, status: CLOSING_SOON, dayThreshold: 5) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({
+        day_threshold: 5,
+        status: "closing_soon",
+      })
+    })
+
+    it("works with null status and dayThreshold", async () => {
+      query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            name
+            shows(first: 1, status: null, dayThreshold: null) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+      await runQuery(query, context)
+
+      expect(context.showsWithHeadersLoader).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          day_threshold: expect.anything(),
+          status: expect.anything(),
+        })
+      )
+    })
+
+    describe("filtering by partner type", () => {
+      it("can filter to gallery shows", async () => {
+        query = gql`
+          {
+            city(slug: "sacramende-ca-usa") {
+              name
+              shows(first: 1, partnerType: GALLERY) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        `
+        await runQuery(query, context)
+        const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+        expect(gravityOptions).toMatchObject({ partner_types: ["Gallery"] })
+      })
+
+      it("can filter to museum shows", async () => {
+        query = gql`
+          {
+            city(slug: "sacramende-ca-usa") {
+              name
+              shows(first: 1, partnerType: MUSEUM) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        `
+        await runQuery(query, context)
+        const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+        expect(gravityOptions).toMatchObject({
+          partner_types: ["Institution", "Institutional Seller"],
+        })
+      })
+
+      it("works with a null partner type", async () => {
+        query = gql`
+          {
+            city(slug: "sacramende-ca-usa") {
+              name
+              shows(first: 1, partnerType: null) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        `
+        await runQuery(query, context)
+        const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+        expect(gravityOptions.partner_types).toBeUndefined()
+      })
     })
 
     it("can request all shows [that match other filter parameters]", async () => {
@@ -293,23 +436,71 @@ describe("City", () => {
     })
   })
 
-  it("includes sponsored content", async () => {
-    const query = gql`
-      {
-        city(slug: "sacramende-ca-usa") {
-          sponsoredContent {
-            introText
-            artGuideUrl
+  describe("sponsored content", () => {
+    it("includes static texts", async () => {
+      const query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            sponsoredContent {
+              introText
+              artGuideUrl
+            }
           }
         }
+      `
+
+      const result = await runQuery(query)
+
+      expect(result!.city.sponsoredContent).toEqual({
+        introText: "Lorem ipsum dolot sit amet",
+        artGuideUrl: "https://www.example.com/",
+      })
+    })
+
+    it("includes shows and stub shows from a hard-coded list", async () => {
+      const mockShows = [{ id: "sponsored-show" }]
+
+      const mockShowsLoader = jest.fn(() =>
+        Promise.resolve({
+          headers: { "x-total-count": "1" },
+          body: mockShows,
+        })
+      )
+
+      const context = {
+        showsWithHeadersLoader: mockShowsLoader,
       }
-    `
 
-    const result = await runQuery(query)
+      const query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            sponsoredContent {
+              shows(first: 1) {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
 
-    expect(result!.city.sponsoredContent).toEqual({
-      introText: "Lorem ipsum dolot sit amet",
-      artGuideUrl: "https://www.example.com/",
+      const result = await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(result!.city.sponsoredContent).toEqual({
+        shows: {
+          edges: [{ node: { id: "sponsored-show" } }],
+        },
+      })
+
+      expect(gravityOptions).toMatchObject({
+        id: ["abc", "123", "def", "456"],
+        include_local_discovery: true,
+        displayable: true,
+      })
     })
   })
 })

@@ -73,6 +73,12 @@ describe("Search", () => {
         label: "Sale",
         model: "sale",
       },
+      {
+        _id: "collectionID",
+        id: "catty-collection",
+        label: "MarketingCollection",
+        model: "marketingcollection",
+      },
     ]
 
     context = {
@@ -154,6 +160,12 @@ describe("Search", () => {
       const auctionSearchableItemNode = data!.search.edges[6].node
       expect(auctionSearchableItemNode.searchableType).toBe("Auction")
       expect(auctionSearchableItemNode.href).toBe("/auction/catty-auction")
+
+      const collectionSearchableItemNode = data!.search.edges[7].node
+      expect(collectionSearchableItemNode.searchableType).toBe("Collection")
+      expect(collectionSearchableItemNode.href).toBe(
+        "/collection/catty-collection"
+      )
     })
   })
 
