@@ -3,9 +3,17 @@ import { IDFields } from "schema/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
+import { GraphQLObjectType, GraphQLFieldConfig, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
-import Near from "../input_fields/near"
+import cityData from "../city/cityDataSortedByDisplayPreference.json"
+import { LOCAL_DISCOVERY_RADIUS_KM } from "../city/constants"
+
+const location_by_city_slug = cityData.reduce((acc, val) => {
+  acc[val.slug] = val.coordinates
+  return acc
+}, {})
+
+const getValidCitySlugs = () => Object.keys(location_by_city_slug).join(", ")
 
 const FollowedShowEdge = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedShowEdge",
@@ -28,28 +36,35 @@ export const FollowedShowConnection = connectionDefinitions({
 const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
   type: FollowedShowConnection.connectionType,
   args: pageable({
-    near: {
-      type: Near,
+    city: {
+      type: GraphQLString,
+      description: `A string representing one of the supported cities in the City Guide, which are: ${getValidCitySlugs()}`,
     },
   }),
   description: "A list of the current user’s currently followed shows",
   resolve: (_root, options, { followedShowsLoader }) => {
     if (!followedShowsLoader) return null
 
+    let locationArgs = {}
+    if (options.city) {
+      const location = location_by_city_slug[options.city]
+
+      if (!location) {
+        throw new Error(`City slug must be one of: ${getValidCitySlugs()}`)
+      }
+
+      locationArgs = {
+        near: `${location.lat},${location.lng}`,
+        max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+      }
+    }
+
     const { limit: size, offset } = getPagingParameters(options)
     const gravityArgs = {
       size,
       offset,
       total_count: true,
-      near: !!options.near ? `${options.near.lat},${options.near.lng}` : null,
-      max_distance: !!options.near ? options.near.max_distance || 75 : null,
-    }
-
-    // this feels weirdly messy to me, but it works. TypeScript complains
-    // if I try to add these after initialization, rather than removing.
-    if (!gravityArgs.near) {
-      delete gravityArgs.near
-      delete gravityArgs.max_distance
+      ...locationArgs,
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {
