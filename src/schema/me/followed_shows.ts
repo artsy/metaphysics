@@ -5,6 +5,8 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLObjectType, GraphQLFieldConfig, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
+import EventStatus from "schema/input_fields/event_status"
+import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import cityData from "../city/cityDataSortedByDisplayPreference.json"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "../city/constants"
 
@@ -36,6 +38,8 @@ export const FollowedShowConnection = connectionDefinitions({
 const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
   type: FollowedShowConnection.connectionType,
   args: pageable({
+    status: EventStatus,
+    sort: PartnerShowSorts,
     city: {
       type: GraphQLString,
       description: `A string representing one of the supported cities in the City Guide, which are: ${getValidCitySlugs()}`,
@@ -64,6 +68,8 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
       size,
       offset,
       total_count: true,
+      sort: options.sort,
+      status: options.status,
       ...locationArgs,
     }
 
