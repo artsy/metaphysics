@@ -117,6 +117,10 @@ export const kawsStitchingEnvironment = (
         resolve: (parent, _args, context, info) => {
           const query = parent.query
           const hasKeyword = Boolean(parent.query.keyword)
+          const contextWithCache = { ...context }
+          const filterArtworksLoader = context.filterArtworksLoaderWithCache
+          contextWithCache.filterArtworksLoader = filterArtworksLoader
+
           return info.mergeInfo.delegateToSchema({
             schema: localSchema,
             operation: "query",
@@ -126,7 +130,7 @@ export const kawsStitchingEnvironment = (
               keyword_match_exact: hasKeyword,
               ..._args,
             },
-            context,
+            context: contextWithCache,
             info,
             transforms: kawsSchema.transforms,
           })
