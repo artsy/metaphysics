@@ -1,7 +1,7 @@
 import { runQuery } from "test/utils"
 
 describe("MarketingCollectionArtwork", () => {
-  it.skip("sets keyword_match_exact to true when keywords are set", async () => {
+  it("sets keyword_match_exact to true when keywords are set", async () => {
     const query = `
       {
         marketingCollection(slug: "kaws-snoopy") {
@@ -18,11 +18,12 @@ describe("MarketingCollectionArtwork", () => {
       }
     `
     const context = {
-      filterArtworksLoader: jest.fn(() => Promise.resolve()),
+      filterArtworksLoaderWithCache: jest.fn(() => Promise.resolve()),
     }
 
     await runQuery(query, context)
-    expect(context.filterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
+    expect(context.filterArtworksLoaderWithCache.mock.calls[0])
+      .toMatchInlineSnapshot(`
 Array [
   Object {
     "aggregations": Array [],
@@ -37,7 +38,7 @@ Array [
 `)
   })
 
-  it.skip("sets keyword_match_exact to false when keywords are not set", async () => {
+  it("sets keyword_match_exact to false when keywords are not set", async () => {
     const query = `
       {
         marketingCollection(slug: "alexander-calder-mobiles") {
@@ -55,11 +56,12 @@ Array [
     `
 
     const context = {
-      filterArtworksLoader: jest.fn(() => Promise.resolve()),
+      filterArtworksLoaderWithCache: jest.fn(() => Promise.resolve()),
     }
 
     await runQuery(query, context)
-    expect(context.filterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
+    expect(context.filterArtworksLoaderWithCache.mock.calls[0])
+      .toMatchInlineSnapshot(`
 Array [
   Object {
     "aggregations": Array [],
