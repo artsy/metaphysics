@@ -5,6 +5,8 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import EventStatus from "schema/input_fields/event_status"
+import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 
 const FollowedShowEdge = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedShowEdge",
@@ -26,7 +28,10 @@ export const FollowedShowConnection = connectionDefinitions({
 
 const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
   type: FollowedShowConnection.connectionType,
-  args: pageable({}),
+  args: pageable({
+    status: EventStatus,
+    sort: PartnerShowSorts,
+  }),
   description: "A list of the current user’s currently followed shows",
   resolve: (_root, options, { followedShowsLoader }) => {
     if (!followedShowsLoader) return null
@@ -36,6 +41,8 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
       size,
       offset,
       total_count: true,
+      sort: options.sort,
+      status: options.status,
     }
 
     return followedShowsLoader(gravityArgs).then(({ body, headers }) => {

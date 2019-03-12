@@ -3753,6 +3753,8 @@ type FollowsAndSaves {
 
   # A list of the current user’s currently followed shows
   shows(
+    status: EventStatus
+    sort: PartnerShowSorts
     after: String
     first: Int
     before: String
