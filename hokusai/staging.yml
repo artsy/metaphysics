@@ -56,6 +56,12 @@ spec:
         ports:
           - containerPort: 80
           - containerPort: 443
+        readinessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 15
+          timeoutSeconds: 10
         lifecycle:
           preStop:
             exec:
