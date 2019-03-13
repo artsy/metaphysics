@@ -40,6 +40,11 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
   args: pageable({
     status: EventStatus,
     sort: PartnerShowSorts,
+    dayThreshold: {
+      type: GraphQLString,
+      description:
+        "Number of days which will be used to filter upcoming and closing soon shows",
+    },
     city: {
       type: GraphQLString,
       description: `A string representing one of the supported cities in the City Guide, which are: ${getValidCitySlugs()}`,
@@ -70,6 +75,7 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
       total_count: true,
       sort: options.sort,
       status: options.status,
+      day_threshold: options.dayThreshold,
       ...locationArgs,
     }
 
