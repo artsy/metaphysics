@@ -3,7 +3,12 @@ import { IDFields } from "schema/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import { GraphQLObjectType, GraphQLFieldConfig, GraphQLString } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLFieldConfig,
+  GraphQLString,
+  GraphQLInt,
+} from "graphql"
 import { ResolverContext } from "types/graphql"
 import EventStatus from "schema/input_fields/event_status"
 import cityData from "../city/cityDataSortedByDisplayPreference.json"
@@ -39,7 +44,7 @@ const FollowedShows: GraphQLFieldConfig<void, ResolverContext> = {
   args: pageable({
     status: EventStatus,
     dayThreshold: {
-      type: GraphQLString,
+      type: GraphQLInt,
       description:
         "Number of days which will be used to filter upcoming and closing soon shows",
     },
