@@ -51,6 +51,29 @@ spec:
               value: https
           initialDelaySeconds: 5
           periodSeconds: 5
+      - name: metaphysics-nginx
+        image: artsy/docker-nginx:1.14.2
+        ports:
+          - containerPort: 80
+          - containerPort: 443
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/usr/sbin/nginx", "-s", "quit"]
+        env:
+          - name: 'NGINX_DEFAULT_CONF'
+            valueFrom:
+              configMapKeyRef:
+                name: nginx-config
+                key: metaphysics
+        volumeMounts:
+          - name: nginx-secrets
+            mountPath: /etc/nginx/ssl
+      volumes:
+        - name: nginx-secrets
+          secret:
+            secretName: nginx-secrets
+            defaultMode: 420
       dnsPolicy: ClusterFirst
       dnsConfig:
         options:
@@ -114,3 +137,29 @@ spec:
     component: web
   sessionAffinity: None
   type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: metaphysics
+    layer: application
+    component: web
+  name: metaphysics-web-internal
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    name: http
+    targetPort: 80
+  - port: 443
+    protocol: TCP
+    name: https
+    targetPort: 443
+  selector:
+    app: metaphysics
+    layer: application
+    component: web
+  type: ClusterIP
