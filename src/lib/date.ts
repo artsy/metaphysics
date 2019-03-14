@@ -3,25 +3,22 @@ import moment from "moment"
 export function exhibitionPeriod(startAt, endAt) {
   const startMoment = moment(startAt)
   const endMoment = moment(endAt)
-  const thisMoment = moment.utc(Date.now())
+  const thisMoment = moment()
   let startFormat = "MMM D"
   let endFormat = "D"
   let singleDateFormat = "MMM D"
 
   if (startMoment.year() !== endMoment.year()) {
+    // Adds years if the dates are not the same year
     startFormat = startFormat.concat(", YYYY")
+    endFormat = endFormat.concat(", YYYY")
+  } else if (endMoment.year() !== thisMoment.year()) {
+    // Otherwise if they're the same year, but not this year, add year to endFormat
+    endFormat = endFormat.concat(", YYYY")
   }
 
-  if (endMoment.year() !== thisMoment.year()) {
-    endFormat = endFormat.concat(", YYYY")
-    singleDateFormat = singleDateFormat.concat(", YYYY")
-  }
-  if (
-    !(
-      startMoment.year() === endMoment.year() &&
-      startMoment.month() === endMoment.month()
-    )
-  ) {
+  if (startMoment.month() !== endMoment.month()) {
+    // Show the end month if the month is different
     endFormat = "MMM ".concat(endFormat)
   }
 
@@ -30,8 +27,12 @@ export function exhibitionPeriod(startAt, endAt) {
     startMoment.year() === endMoment.year()
   ) {
     // Duration is the same day
+    if (endMoment.year() !== thisMoment.year()) {
+      singleDateFormat = singleDateFormat.concat(", YYYY")
+    }
     return `${endMoment.format(singleDateFormat)}`
   } else {
+    // Show date range if not the same day
     return `${startMoment.format(startFormat)} – ${endMoment.format(endFormat)}`
   }
 }
