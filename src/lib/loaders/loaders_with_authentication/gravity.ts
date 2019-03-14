@@ -88,6 +88,7 @@ export default (accessToken, userID, opts) => {
       }
     ),
     savedArtworksLoader: gravityLoader("collection/saved-artwork/artworks", { user_id: userID, private: true }),
+    sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     suggestedArtistsLoader: gravityLoader("me/suggested/artists", {}, { headers: true }),
     suggestedSimilarArtistsLoader: gravityLoader(`user/${userID}/suggested/similar/artists`, {}, { headers: true }),
     unfollowArtistLoader: gravityLoader(id => `me/follow/artist/${id}`, {}, { method: "DELETE" }),

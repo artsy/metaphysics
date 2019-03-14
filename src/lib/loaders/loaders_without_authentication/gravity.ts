@@ -70,6 +70,7 @@ export default opts => {
     saleLoader: batchSaleLoader,
     salesLoader: batchSalesLoader,
     searchLoader: searchLoader(gravityLoader),
+    sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     setItemsLoader: gravityLoader(id => `set/${id}/items`),
     setLoader: gravityLoader(id => `set/${id}`),
     setsLoader: gravityLoader("sets"),

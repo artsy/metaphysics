@@ -86,6 +86,7 @@ import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
 import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
+import { sendFeedbackMutation } from "./sendFeedbackMutation"
 
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
@@ -232,6 +233,7 @@ export default new GraphQLSchema({
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
       sendConversationMessage: SendConversationMessageMutation,
+      sendFeedback: sendFeedbackMutation,
       saveArtwork: SaveArtworkMutation,
       endSale: endSaleMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
