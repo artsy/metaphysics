@@ -144,6 +144,7 @@ export const Search: GraphQLFieldConfig<void, ResolverContext> = {
   args: searchArgs,
   resolve: (_source, args, context, info) => {
     const pageOptions = convertConnectionArgsToGravityArgs(args)
+    const { page, size } = pageOptions
 
     const gravityArgs = {
       ...pageOptions,
@@ -152,9 +153,9 @@ export const Search: GraphQLFieldConfig<void, ResolverContext> = {
     }
 
     return context.searchLoader(gravityArgs).then(({ body, headers }) => {
-      debugger
       const totalCount = parseInt(headers["x-total-count"])
       const pageCursors = createPageCursors(pageOptions, totalCount)
+      const totalPages = Math.ceil(totalCount / size)
 
       let results = body
       if (args.aggregations) {
@@ -181,9 +182,8 @@ export const Search: GraphQLFieldConfig<void, ResolverContext> = {
           ...connection,
           pageInfo: {
             ...connection.pageInfo,
-            hasPreviousPage: pageOptions.page > 1,
-            hasNextPage:
-              pageCursors.last && pageOptions.page < pageCursors.last.page,
+            hasPreviousPage: page > 1,
+            hasNextPage: page < totalPages,
           },
         }
       })
