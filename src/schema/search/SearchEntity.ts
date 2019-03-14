@@ -24,6 +24,9 @@ export const SearchEntity = new GraphQLEnumType({
     FEATURE: {
       value: "Feature",
     },
+    GALLERY: {
+      value: "gallery",
+    },
     GENE: {
       value: "Gene",
     },
@@ -32,6 +35,9 @@ export const SearchEntity = new GraphQLEnumType({
     },
     SALE: {
       value: "Sale",
+    },
+    SHOW: {
+      value: "PartnerShow",
     },
     TAG: {
       value: "Tag",

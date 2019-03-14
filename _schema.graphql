@@ -8110,9 +8110,11 @@ enum SearchEntity {
   COLLECTION
   FAIR
   FEATURE
+  GALLERY
   GENE
   PROFILE
   SALE
+  SHOW
   TAG
 }
 
