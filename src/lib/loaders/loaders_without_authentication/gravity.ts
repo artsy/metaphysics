@@ -30,7 +30,6 @@ export default opts => {
     fairLoader: gravityLoader(id => `fair/${id}`),
     fairsLoader: gravityLoader("fairs", {}, { headers: true }),
     filterArtworksLoader: gravityLoader("filter/artworks"),
-    filterArtworksLoaderWithCache: gravityLoader("filter/artworks", {}, { requestThrottleMs: 1000 * 60 * 60 }), // 1 hour
     geneArtistsLoader: gravityLoader(id => `gene/${id}/artists`),
     geneFamiliesLoader: gravityLoader("gene_families"),
     geneLoader: gravityLoader(id => `gene/${id}`),

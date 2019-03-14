@@ -117,9 +117,14 @@ export const kawsStitchingEnvironment = (
         resolve: (parent, _args, context, info) => {
           const query = parent.query
           const hasKeyword = Boolean(parent.query.keyword)
-          const contextWithCache = { ...context }
-          const filterArtworksLoader = context.filterArtworksLoaderWithCache
-          contextWithCache.filterArtworksLoader = filterArtworksLoader
+          const contextWithCache = {
+            ...context,
+            filterArtworksLoader: loaderParams =>
+              context.filterArtworksLoader(
+                { ...loaderParams },
+                { requestThrottleMs: 1000 * 60 * 60 } // 1 hour
+              ),
+          }
 
           return info.mergeInfo.delegateToSchema({
             schema: localSchema,
