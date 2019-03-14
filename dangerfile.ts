@@ -84,4 +84,15 @@ export default async () => {
       }
     })
   })
+
+  // No `debugger` statements.
+  danger.git.modified_files
+    .concat(danger.git.created_files)
+    .filter(f => f.endsWith(".js") || f.endsWith(".ts"))
+    .forEach(file => {
+      const content = readFileSync(file, "utf8")
+      if (content.includes("debugger")) {
+        fail(`Found a debugger statement left in by accident.`, file)
+      }
+    })
 }
