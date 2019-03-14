@@ -1,14 +1,15 @@
 import {
   GraphQLBoolean,
   GraphQLEnumType,
-  GraphQLObjectType,
-  GraphQLString,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
 } from "graphql"
 
 import { LatLngType } from "../location"
-import { showConnection } from "schema/show"
+import { showConnection, ShowType } from "schema/show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import { FairType } from "schema/fair"
 import FairSorts from "schema/sorts/fair_sorts"
@@ -123,6 +124,16 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           },
           artGuideUrl: {
             type: GraphQLString,
+          },
+          featuredShows: {
+            type: new GraphQLList(ShowType),
+            resolve: (citySponsoredContent, _args, { showsLoader }) => {
+              return showsLoader({
+                id: citySponsoredContent.featuredShowIds,
+                include_local_discovery: true,
+                displayable: true,
+              })
+            },
           },
           shows: {
             type: showConnection,

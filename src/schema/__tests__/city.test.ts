@@ -16,6 +16,7 @@ const mockSponsoredContent = {
     "sacramende-ca-usa": {
       introText: "Lorem ipsum dolot sit amet",
       artGuideUrl: "https://www.example.com/",
+      featuredShowIds: ["456", "def"],
       showIds: ["abc", "123", "def", "456"],
     },
   },
@@ -498,6 +499,39 @@ describe("City", () => {
 
       expect(gravityOptions).toMatchObject({
         id: ["abc", "123", "def", "456"],
+        include_local_discovery: true,
+        displayable: true,
+      })
+    })
+
+    it("includes featured shows", async () => {
+      const mockShows = [{ id: "featured-show" }]
+      const mockShowsLoader = jest.fn(() => Promise.resolve(mockShows))
+      const context = {
+        showsLoader: mockShowsLoader,
+      }
+
+      const query = gql`
+        {
+          city(slug: "sacramende-ca-usa") {
+            sponsoredContent {
+              featuredShows {
+                id
+              }
+            }
+          }
+        }
+      `
+
+      const result = await runQuery(query, context)
+      const gravityOptions = context.showsLoader.mock.calls[0][0]
+
+      expect(result!.city.sponsoredContent).toEqual({
+        featuredShows: [{ id: "featured-show" }],
+      })
+
+      expect(gravityOptions).toMatchObject({
+        id: ["456", "def"],
         include_local_discovery: true,
         displayable: true,
       })

@@ -9,6 +9,9 @@ interface CitySponsoredContent {
 
   /** Manually curated list of sponsored shows */
   showIds: string
+
+  /** Within the curated list, shows to feature more prominently */
+  featuredShowIds: string
 }
 
 interface FairSponsoredContent {
