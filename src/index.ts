@@ -133,7 +133,7 @@ async function startApp() {
         requestIDs,
         userAgent,
       })
-      const unauhtenticatedLoaders = createLoaders(accessToken, userID, {
+      const unauhtenticatedLoaders = createLoaders(null, null, {
         requestIDs,
         userAgent,
       })
