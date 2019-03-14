@@ -46,6 +46,10 @@
     "paris-france": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Paris.",
       "artGuideUrl": "https://www.bmw-arts-design.com/bmw_art_guide",
+      "featuredShowIds": [
+        "5c8857f3702b1d000691f4fa",
+        "5c8857f3702b1d000691f4fc"
+      ],
       "showIds": ["5c8857f3702b1d000691f4fa", "5c8857f3702b1d000691f4fc"]
     },
     "berlin-germany": {
