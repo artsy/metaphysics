@@ -3,7 +3,7 @@ import moment from "moment"
 export function exhibitionPeriod(startAt, endAt) {
   const startMoment = moment(startAt)
   const endMoment = moment(endAt)
-  const thisMoment = moment()
+  const thisMoment = moment.utc(Date.now())
   let startFormat = "MMM D"
   let endFormat = "D"
   let singleDateFormat = "MMM D"
