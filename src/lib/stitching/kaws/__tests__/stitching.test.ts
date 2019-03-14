@@ -18,11 +18,14 @@ describe("MarketingCollectionArtwork", () => {
       }
     `
     const context = {
-      filterArtworksLoader: jest.fn(() => Promise.resolve()),
+      unauhtenticatedLoaders: {
+        filterArtworksLoader: jest.fn(() => Promise.resolve()),
+      },
     }
 
     await runQuery(query, context)
-    expect(context.filterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
+    expect(context.unauhtenticatedLoaders.filterArtworksLoader.mock.calls[0])
+      .toMatchInlineSnapshot(`
 Array [
   Object {
     "aggregations": Array [],
@@ -58,11 +61,14 @@ Array [
     `
 
     const context = {
-      filterArtworksLoader: jest.fn(() => Promise.resolve()),
+      unauhtenticatedLoaders: {
+        filterArtworksLoader: jest.fn(() => Promise.resolve()),
+      },
     }
 
     await runQuery(query, context)
-    expect(context.filterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
+    expect(context.unauhtenticatedLoaders.filterArtworksLoader.mock.calls[0])
+      .toMatchInlineSnapshot(`
 Array [
   Object {
     "aggregations": Array [],

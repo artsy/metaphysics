@@ -120,7 +120,7 @@ export const kawsStitchingEnvironment = (
           const contextWithCache = {
             ...context,
             filterArtworksLoader: loaderParams =>
-              context.filterArtworksLoader(
+              context.unauhtenticatedLoaders.filterArtworksLoader(
                 { ...loaderParams },
                 { requestThrottleMs: 1000 * 60 * 60 } // 1 hour
               ),

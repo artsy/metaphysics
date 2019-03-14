@@ -12,6 +12,10 @@ export interface ResolverContextValues {
   /** The schema used by the internal exchange graphql engine */
   exchangeSchema: GraphQLSchema
 
+  /** To bypass logic sending loader based on accessToken */
+  unauhtenticatedLoaders: createLoaders
+  authenticatedLoaders: createLoaders
+
   /**
    * TODO: Why is this shaped like this, instead of a single ID?
    */

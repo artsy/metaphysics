@@ -133,12 +133,18 @@ async function startApp() {
         requestIDs,
         userAgent,
       })
+      const unauhtenticatedLoaders = createLoaders(accessToken, userID, {
+        requestIDs,
+        userAgent,
+      })
 
       const context: ResolverContext = {
         accessToken,
         userID,
         defaultTimezone,
         ...loaders,
+        authenticatedLoaders: loaders,
+        unauhtenticatedLoaders,
         // For stitching purposes
         exchangeSchema,
         requestIDs,
