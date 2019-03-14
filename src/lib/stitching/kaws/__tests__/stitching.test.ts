@@ -18,12 +18,11 @@ describe("MarketingCollectionArtwork", () => {
       }
     `
     const context = {
-      filterArtworksLoaderWithCache: jest.fn(() => Promise.resolve()),
+      filterArtworksLoader: jest.fn(() => Promise.resolve()),
     }
 
     await runQuery(query, context)
-    expect(context.filterArtworksLoaderWithCache.mock.calls[0])
-      .toMatchInlineSnapshot(`
+    expect(context.filterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
 Array [
   Object {
     "aggregations": Array [],
@@ -33,6 +32,9 @@ Array [
     "gene_ids": Array [],
     "keyword": "Snoopy, Woodstock, Man’s Best Friend, No One's Home, Isolation Tower, Stay Steady, The Things that Comfort",
     "keyword_match_exact": true,
+  },
+  Object {
+    "requestThrottleMs": 3600000,
   },
 ]
 `)
@@ -56,12 +58,11 @@ Array [
     `
 
     const context = {
-      filterArtworksLoaderWithCache: jest.fn(() => Promise.resolve()),
+      filterArtworksLoader: jest.fn(() => Promise.resolve()),
     }
 
     await runQuery(query, context)
-    expect(context.filterArtworksLoaderWithCache.mock.calls[0])
-      .toMatchInlineSnapshot(`
+    expect(context.filterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
 Array [
   Object {
     "aggregations": Array [],
@@ -72,6 +73,9 @@ Array [
       "kinetic-sculpture",
     ],
     "keyword_match_exact": false,
+  },
+  Object {
+    "requestThrottleMs": 3600000,
   },
 ]
 `)
