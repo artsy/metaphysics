@@ -13,7 +13,7 @@ export interface ResolverContextValues {
   exchangeSchema: GraphQLSchema
 
   /** To bypass logic sending loader based on accessToken */
-  unauhtenticatedLoaders: createLoaders
+  unauthenticatedLoaders: createLoaders
   authenticatedLoaders: createLoaders
 
   /**

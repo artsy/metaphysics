@@ -133,7 +133,7 @@ async function startApp() {
         requestIDs,
         userAgent,
       })
-      const unauhtenticatedLoaders = createLoaders(null, null, {
+      const unauthenticatedLoaders = createLoaders(null, null, {
         requestIDs,
         userAgent,
       })
@@ -144,7 +144,7 @@ async function startApp() {
         defaultTimezone,
         ...loaders,
         authenticatedLoaders: loaders,
-        unauhtenticatedLoaders,
+        unauthenticatedLoaders,
         // For stitching purposes
         exchangeSchema,
         requestIDs,
