@@ -40,6 +40,11 @@ const EventStatus = {
         value: "closing_soon",
         description: "End date is in near future",
       },
+      RUNNING_AND_UPCOMING: {
+        value: "current",
+        description:
+          "Special filtering option which is used to show running and upcoming shows",
+      },
     },
   }),
 }
