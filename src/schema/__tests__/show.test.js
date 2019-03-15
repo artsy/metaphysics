@@ -128,9 +128,10 @@ describe("Show type", () => {
     })
   })
 
-  it("doesn't return a show that’s neither displayable nor a reference", async () => {
+  it("doesn't return a show that’s neither displayable nor a reference show nor a stub show", async () => {
     showData.displayable = false
     showData.is_reference = false
+    showData.is_local_discovery = false
     const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -166,6 +167,21 @@ describe("Show type", () => {
     `
     const data = await runQuery(query, context)
     expect(data.show.fair.id).toEqual("the-art-show-2019")
+  })
+
+  it("returns a local discovery stub show even with displayable set to false", async () => {
+    showData.is_local_discovery = true
+    showData.displayable = false
+
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          name
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+    expect(data.show.name).toEqual("Whitespace Abounds")
   })
 
   describe("is_followed", () => {
