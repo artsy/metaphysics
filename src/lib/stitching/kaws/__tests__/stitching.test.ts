@@ -1,6 +1,7 @@
 import { runQuery } from "test/utils"
 
-describe("MarketingCollectionArtwork", () => {
+// TODO: The tests in this file make _actual_ requests to KAWS.
+xdescribe("MarketingCollectionArtwork", () => {
   let context
   let mockFilterArtworksLoader
 
