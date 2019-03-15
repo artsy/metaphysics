@@ -44,6 +44,106 @@ type AggregationCount {
   sortable_id: String
 }
 
+# An ISO 8601 datetime
+scalar AnalyticsDateTime
+
+# A histogram bin
+type AnalyticsHistogramBin {
+  maxPriceCents: Int!
+  minPriceCents: Int!
+  numArtworks: Int!
+}
+
+# Partner Stats
+type AnalyticsPartnerStatsType {
+  partnerId: String!
+  timeSeries: [AnalyticsPartnerTimeSeriesStatsType!]
+  uniqueVisitors: Int
+}
+
+# Partner Time Series Stats
+type AnalyticsPartnerTimeSeriesStatsType {
+  artworksPublished: Int
+  date: AnalyticsDateTime
+  partnerId: String
+}
+
+# Pricing Context Histogram
+type AnalyticsPricingContext {
+  bins: [AnalyticsHistogramBin!]!
+  filterDescription: String!
+}
+
+enum AnalyticsPricingContextCategoryEnum {
+  # Architecture
+  ARCHITECTURE
+
+  # Books and Portfolios
+  BOOKS_AND_PORTFOLIOS
+
+  # Design/Decorative Art
+  DESIGN_DECORATIVE_ART
+
+  # Drawing, Collage or other Work on Paper
+  DRAWING_COLAGE_OTHER_WORK_ON_PAPER
+
+  # Fashion Design and Wearable Art
+  FASHON
+
+  # Installation
+  INSTALLATION
+
+  # Jewelry
+  JEWELRY
+
+  # Mixed Media
+  MIXED_MEDIA
+
+  # Other
+  OTHER
+
+  # Painting
+  PAINTING
+
+  # Performance Art
+  PERFORMANCE
+
+  # Photography
+  PHOTOGRAPHY
+
+  # Posters
+  POSTERS
+
+  # Print
+  PRINT
+
+  # Sculpture
+  SCULPTURE
+
+  # Sound
+  SOUND
+
+  # Textile Arts
+  TEXTILE
+
+  # Video/Film/Animation
+  VIDEO_FILM_ANIMATION
+
+  # Work on Paper
+  WORK_ON_PAPER
+}
+
+enum AnalyticsPricingContextDimensionsEnum {
+  # large
+  LARGE
+
+  # medium
+  MEDIUM
+
+  # small
+  SMALL
+}
+
 input ApproveOrderInput {
   # Order ID
   orderId: String!
@@ -350,6 +450,7 @@ type Artist implements Node & Searchable {
   statuses: ArtistStatuses
   highlights: ArtistHighlights
   years: String
+  marketingCollections(size: Int): [MarketingCollection]
 }
 
 enum ArtistArtworksFilters {
@@ -2447,7 +2548,7 @@ type City {
     sort: PartnerShowSorts
 
     # Filter shows by chronological event status
-    status: EventStatus = null
+    status: EventStatus = CURRENT
 
     # Filter shows by partner type
     partnerType: PartnerShowPartnerType
@@ -3149,6 +3250,23 @@ type Delivery {
 type dimensions {
   in: String
   cm: String
+}
+
+# Partner
+type DoNotUseThisPartner {
+  # Partners display name
+  display_name: String
+
+  # Partners given name
+  given_name: String
+
+  # Uniq ID for this partner
+  id: ID!
+  relative_size: Int
+
+  # Uniq, friendly identifier for this artist
+  slug: String!
+  subscription_state: String
 }
 
 type EcommerceError {
@@ -5049,6 +5167,122 @@ type LotStanding {
   sale_artwork: SaleArtwork
 }
 
+# Object representing a collection page
+type MarketingCollection {
+  id: ID!
+
+  # slug version of title, used for pretty URLs (e.g. `kaws-prints` for Kaws Prints
+  slug: String!
+
+  # Name of the collection
+  title: String!
+
+  # Description of the collection which can include links to other collections
+  description: String
+
+  # Background image for the header of the collection page
+  headerImage: String
+
+  # Set of keywords used for SEO purposes
+  keywords: String!
+
+  # Image credit for the header image
+  credit: String
+
+  # Category of the collection
+  category: String!
+
+  # Structured object used to build filtered artworks query
+  query: MarketingCollectionQuery!
+  createdAt: MarketingDateTime!
+  updatedAt: MarketingDateTime!
+
+  # Suggested average price for included works
+  price_guidance: Float
+
+  # Collection can be surfaced on editorial pages
+  show_on_editorial: Boolean!
+
+  # Collection has prioritized connection to artist
+  is_featured_artist_content: Boolean!
+  artworks(
+    acquireable: Boolean
+    offerable: Boolean
+    aggregation_partner_cities: [String]
+    aggregations: [ArtworkAggregation]
+    artist_id: String
+    artist_ids: [String]
+    at_auction: Boolean
+    attribution_class: [String]
+    color: String
+    dimension_range: String
+    extra_aggregation_gene_ids: [String]
+    include_artworks_by_followed_artists: Boolean
+    include_medium_filter_in_aggregation: Boolean
+    inquireable_only: Boolean
+    for_sale: Boolean
+    gene_id: String
+    gene_ids: [String]
+    height: String
+    width: String
+
+    # A string from the list of allocations, or * to denote all mediums
+    medium: String
+    period: String
+    periods: [String]
+    major_periods: [String]
+    partner_id: ID
+    partner_cities: [String]
+    price_range: String
+    page: Int
+    sale_id: ID
+    size: Int
+    sort: String
+    tag_id: String
+    keyword: String
+  ): FilterArtworks
+}
+
+type MarketingCollectionCategory {
+  name: String!
+  collections: [MarketingCollection!]!
+}
+
+type MarketingCollectionQuery {
+  id: ID
+  acquireable: Boolean
+  aggregations: [String!]
+  artist_ids: [String!]
+  artist_id: String
+  at_auction: Boolean
+  color: String
+  dimension_range: String
+  extra_aggregation_gene_ids: [String!]
+  include_artworks_by_followed_artists: Boolean
+  include_medium_filter_in_aggregation: Boolean
+  inquireable_only: Boolean
+  for_sale: Boolean
+  gene_id: String
+  gene_ids: [String!]
+  height: String
+  width: String
+  medium: String
+  period: String
+  periods: [String!]
+  major_periods: [String!]
+  partner_id: ID
+  partner_cities: [String!]
+  price_range: String
+  page: Int
+  sale_id: ID
+  size: Int
+  sort: String
+  tag_id: String
+  keyword: String
+}
+
+scalar MarketingDateTime
+
 type Me implements Node {
   # A globally unique ID.
   __id: ID!
@@ -5517,6 +5751,7 @@ type Mutation {
 
   # Submits an order
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
+  recordArtworkView(input: RecordArtworkViewInput): RecordArtworkViewPayload
 }
 
 input Near {
@@ -7390,6 +7625,52 @@ type Query {
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
+
+  # Autocomplete resolvers.
+  _unused_gravity_match_partners(
+    term: String
+    page: Int = 1
+    size: Int = 5
+    match_type: String
+  ): [DoNotUseThisPartner]
+
+  # Find partners by ID
+  _unused_gravity_partners(ids: [ID]!): [DoNotUseThisPartner]
+
+  # Find PartnerStats
+  analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStatsType
+
+  # Pricing Context Histograms
+  analyticsPricingContext(
+    artistId: String!
+    category: AnalyticsPricingContextCategoryEnum!
+    dimensions: AnalyticsPricingContextDimensionsEnum!
+    listPriceCents: Int!
+  ): AnalyticsPricingContext
+  marketingCollections(
+    randomizationSeed: String
+    size: Int
+    isFeaturedArtistContent: Boolean
+    showOnEditorial: Boolean
+    artistID: String
+  ): [MarketingCollection!]!
+  marketingCategories: [MarketingCollectionCategory!]!
+  marketingCollection(slug: String!): MarketingCollection
+}
+
+# Autogenerated input type of RecordArtworkView
+input RecordArtworkViewInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  artwork_id: String!
+}
+
+# Autogenerated return type of RecordArtworkView
+type RecordArtworkViewPayload {
+  artwork_id: String!
+
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
 }
 
 input RejectOrderInput {
@@ -8322,7 +8603,7 @@ type Show implements Node {
     sort: PartnerShowSorts
 
     # By default show only current shows
-    status: EventStatus = null
+    status: EventStatus = CURRENT
 
     # Whether to include local discovery stubs as well as displayable shows
     discoverable: Boolean

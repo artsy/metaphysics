@@ -12,9 +12,6 @@ type HistogramBin {
   numArtworks: Int!
 }
 
-type Mutation {
-}
-
 """
 Partner Stats
 """
@@ -164,5 +161,10 @@ type Query {
   """
   Pricing Context Histograms
   """
-  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, dimensions: PricingContextDimensionsEnum!, listPriceCents: Int!): PricingContext
+  pricingContext(
+    artistId: String!
+    category: PricingContextCategoryEnum!
+    dimensions: PricingContextDimensionsEnum!
+    listPriceCents: Int!
+  ): PricingContext
 }
