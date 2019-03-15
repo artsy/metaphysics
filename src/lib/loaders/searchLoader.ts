@@ -7,7 +7,10 @@ export const searchLoader = gravityLoader => {
       const queryParams = {
         term: query,
         "indexes[]":
-          entities || SearchEntity.getValues().map(index => index.value),
+          entities ||
+          SearchEntity.getValues()
+            .filter(index => index.value !== "gallery")
+            .map(index => index.value),
         ...rest,
       }
 

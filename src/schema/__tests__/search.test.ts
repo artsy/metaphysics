@@ -85,7 +85,7 @@ describe("Search", () => {
       searchLoader: () =>
         Promise.resolve({
           body: searchResults,
-          headers: { "x-total-count": 100 },
+          headers: { "x-total-count": 40 },
         }),
       artistLoader: () => Promise.resolve({ hometown: "London, UK" }),
       artworkLoader: () => Promise.resolve({ title: "Self Portrait" }),
@@ -166,6 +166,22 @@ describe("Search", () => {
       expect(collectionSearchableItemNode.href).toBe(
         "/collection/catty-collection"
       )
+    })
+  })
+
+  it("returns `hasNextPage`", () => {
+    const query = `
+      {
+        search(query: "David Bowie", first: 10) {
+          pageInfo {
+            hasNextPage
+          }
+        }
+      }
+    `
+
+    return runQuery(query, context).then(data => {
+      expect(data!.search.pageInfo.hasNextPage).toBeTruthy()
     })
   })
 
