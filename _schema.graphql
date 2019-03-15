@@ -155,7 +155,7 @@ type ApproveOrderPayload {
   clientMutationId: String
 }
 
-type Article implements Node {
+type Article implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -165,7 +165,9 @@ type Article implements Node {
   author: Author
   channel_id: String
   contributing_authors: [Author]
+  displayLabel: String
   href: String
+  imageUrl: String
   published_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -4349,7 +4351,7 @@ type HighestBid {
 
 union Highlighted = HighlightedShow | HighlightedArticle
 
-type HighlightedArticle implements Node {
+type HighlightedArticle implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -4359,7 +4361,9 @@ type HighlightedArticle implements Node {
   author: Author
   channel_id: String
   contributing_authors: [Author]
+  displayLabel: String
   href: String
+  imageUrl: String
   published_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean

@@ -13,10 +13,11 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { Searchable } from "./searchable"
 
 const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
-  interfaces: [NodeInterface],
+  interfaces: [NodeInterface, Searchable],
   fields: () => ({
     ...IDFields,
     cached,
@@ -31,9 +32,18 @@ const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(AuthorType),
       resolve: ({ contributing_authors }) => contributing_authors,
     },
+    displayLabel: {
+      type: GraphQLString,
+      resolve: ({ title }) => title,
+    },
     href: {
       type: GraphQLString,
       resolve: ({ slug }) => `/article/${slug}`,
+    },
+    imageUrl: {
+      type: GraphQLString,
+      resolve: ({ thumbnail_image }) =>
+        normalizeImageData(thumbnail_image).image_url,
     },
     published_at: date,
     slug: {
