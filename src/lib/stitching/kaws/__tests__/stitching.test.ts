@@ -1,6 +1,26 @@
 import { runQuery } from "test/utils"
 
-describe("MarketingCollectionArtwork", () => {
+// TODO: The tests in this file make _actual_ requests to KAWS.
+xdescribe("MarketingCollectionArtwork", () => {
+  let context
+  let mockFilterArtworksLoader
+
+  beforeEach(() => {
+    mockFilterArtworksLoader = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve())
+    context = {
+      authenticatedLoaders: {},
+      unauthenticatedLoaders: {
+        filterArtworksLoader: mockFilterArtworksLoader,
+      },
+    }
+  })
+
+  afterEach(() => {
+    mockFilterArtworksLoader.mockReset()
+  })
+
   it("sets keyword_match_exact to true when keywords are set", async () => {
     const query = `
       {
@@ -17,16 +37,9 @@ describe("MarketingCollectionArtwork", () => {
         }
       }
     `
-    const context: any = {
-      authenticatedLoaders: {},
-      unauthenticatedLoaders: {
-        filterArtworksLoader: jest.fn(() => Promise.resolve()),
-      },
-    }
 
     await runQuery(query, context)
-    expect(context.unauthenticatedLoaders.filterArtworksLoader.mock.calls[0])
-      .toMatchInlineSnapshot(`
+    expect(mockFilterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
 Array [
   Object {
     "aggregations": Array [],
@@ -36,6 +49,9 @@ Array [
     "gene_ids": Array [],
     "keyword": "Snoopy, Woodstock, Man’s Best Friend, No One's Home, Isolation Tower, Stay Steady, The Things that Comfort",
     "keyword_match_exact": true,
+  },
+  Object {
+    "requestThrottleMs": 3600000,
   },
 ]
 `)
@@ -58,16 +74,8 @@ Array [
       }
     `
 
-    const context: any = {
-      authenticatedLoaders: {},
-      unauthenticatedLoaders: {
-        filterArtworksLoader: jest.fn(() => Promise.resolve()),
-      },
-    }
-
     await runQuery(query, context)
-    expect(context.unauthenticatedLoaders.filterArtworksLoader.mock.calls[0])
-      .toMatchInlineSnapshot(`
+    expect(mockFilterArtworksLoader.mock.calls[0]).toMatchInlineSnapshot(`
 Array [
   Object {
     "aggregations": Array [],
@@ -78,6 +86,9 @@ Array [
       "kinetic-sculpture",
     ],
     "keyword_match_exact": false,
+  },
+  Object {
+    "requestThrottleMs": 3600000,
   },
 ]
 `)

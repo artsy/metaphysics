@@ -117,14 +117,16 @@ export const kawsStitchingEnvironment = (
         resolve: (parent, _args, context, info) => {
           const query = parent.query
           const hasKeyword = Boolean(parent.query.keyword)
-          const contextWithCache = {
-            ...context,
-            filterArtworksLoader: loaderParams =>
-              context.filterArtworksLoader(
-                { ...loaderParams },
-                { requestThrottleMs: 1000 * 60 * 60 } // 1 hour
-              ),
+
+          const existingLoader =
+            context.unauthenticatedLoaders.filterArtworksLoader
+          const newLoader = loaderParams => {
+            return existingLoader.call(null, loaderParams, {
+              requestThrottleMs: 1000 * 60 * 60,
+            })
           }
+
+          context.unauthenticatedLoaders.filterArtworksLoader = newLoader
 
           return info.mergeInfo.delegateToSchema({
             schema: localSchema,
@@ -135,7 +137,7 @@ export const kawsStitchingEnvironment = (
               keyword_match_exact: hasKeyword,
               ..._args,
             },
-            context: contextWithCache,
+            context,
             info,
             transforms: kawsSchema.transforms,
           })
