@@ -103,38 +103,61 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
       resolve: (
         { options: gravityOptions },
         args,
-        { filterArtworksLoader }
+        {
+          unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
+          authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
+        }
       ) => {
         const relayOptions = convertConnectionArgsToGravityArgs(args)
+        const {
+          include_artworks_by_followed_artists,
+          aggregations,
+        } = gravityOptions
+        const requestedPersonalizedAggregation = aggregations.includes(
+          "followed_artists"
+        )
 
-        return filterArtworksLoader(
-          assign(gravityOptions, relayOptions, {})
-        ).then(({ aggregations, hits }) => {
-          if (!aggregations || !aggregations.total) {
-            throw new Error("This query must contain the total aggregation")
+        let loader
+        if (
+          include_artworks_by_followed_artists ||
+          requestedPersonalizedAggregation
+        ) {
+          if (!loaderWithoutCache) {
+            throw new Error("You must be logged in to request these params.")
           }
+          loader = loaderWithoutCache
+        } else {
+          loader = loaderWithCache
+        }
 
-          const totalPages = computeTotalPages(
-            aggregations.total.value,
-            relayOptions.size
-          )
+        return loader(Object.assign(gravityOptions, relayOptions, {})).then(
+          ({ aggregations, hits }) => {
+            if (!aggregations || !aggregations.total) {
+              throw new Error("This query must contain the total aggregation")
+            }
 
-          return assign(
-            {
-              pageCursors: createPageCursors(
-                relayOptions,
-                aggregations.total.value
-              ),
-            },
-            connectionFromArraySlice(hits, args, {
-              arrayLength: Math.min(
-                aggregations.total.value,
-                totalPages * relayOptions.size
-              ),
-              sliceStart: relayOptions.offset,
-            })
-          )
-        })
+            const totalPages = computeTotalPages(
+              aggregations.total.value,
+              relayOptions.size
+            )
+
+            return Object.assign(
+              {
+                pageCursors: createPageCursors(
+                  relayOptions,
+                  aggregations.total.value
+                ),
+              },
+              connectionFromArraySlice(hits, args, {
+                arrayLength: Math.min(
+                  aggregations.total.value,
+                  totalPages * relayOptions.size
+                ),
+                sliceStart: relayOptions.offset,
+              })
+            )
+          }
+        )
       },
     },
     counts: FilterArtworksCounts,
@@ -301,7 +324,19 @@ const filterArtworksTypeFactory = (
   type: FilterArtworksType,
   description: "Artworks Elastic Search results",
   args: filterArtworksArgs,
-  resolve: (root, options, { filterArtworksLoader }, { fieldNodes }) => {
+  resolve: (
+    root,
+    options,
+    {
+      unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
+      authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
+    },
+    { fieldNodes }
+  ) => {
+    const { include_artworks_by_followed_artists, aggregations } = options
+    const requestedPersonalizedAggregation = aggregations.includes(
+      "followed_artists"
+    )
     const gravityOptions = Object.assign(
       {},
       options,
@@ -317,10 +352,23 @@ const filterArtworksTypeFactory = (
 
     removeNulls(gravityOptions)
 
+    let loader
+    if (
+      include_artworks_by_followed_artists ||
+      requestedPersonalizedAggregation
+    ) {
+      if (!loaderWithoutCache) {
+        throw new Error("You must be logged in to request these params.")
+      }
+      loader = loaderWithoutCache
+    } else {
+      loader = loaderWithCache
+    }
+
     const blacklistedFields = ["artworks_connection", "__id"]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return filterArtworksLoader(gravityOptions).then(response =>
-        assign({}, response, { options: gravityOptions })
+      return loader(gravityOptions).then(response =>
+        Object.assign({}, response, { options: gravityOptions })
       )
     }
     return { hits: null, aggregations: null, options: gravityOptions }

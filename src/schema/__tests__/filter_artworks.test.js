@@ -9,26 +9,28 @@ describe("Filter Artworks", () => {
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
 
       context = {
-        filterArtworksLoader: sinon
-          .stub()
-          .withArgs("filter/artworks", {
-            gene_id: "500-1000-ce",
-            aggregations: ["total"],
-            for_sale: true,
-          })
-          .returns(
-            Promise.resolve({
-              hits: [
-                {
-                  id: "oseberg-norway-queens-ship",
-                  title: "Queen's Ship",
-                  artists: [],
-                },
-              ],
-              aggregations: [],
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: sinon
+            .stub()
+            .withArgs("filter/artworks", {
+              gene_id: "500-1000-ce",
+              aggregations: ["total"],
+              for_sale: true,
             })
-          ),
-
+            .returns(
+              Promise.resolve({
+                hits: [
+                  {
+                    id: "oseberg-norway-queens-ship",
+                    title: "Queen's Ship",
+                    artists: [],
+                  },
+                ],
+                aggregations: [],
+              })
+            ),
+        },
         geneLoader: sinon.stub().returns(Promise.resolve(gene)),
       }
     })
@@ -116,36 +118,39 @@ describe("Filter Artworks", () => {
   describe(`Pagination for the last page`, () => {
     beforeEach(() => {
       context = {
-        filterArtworksLoader: sinon
-          .stub()
-          .withArgs("filter/artworks")
-          .returns(
-            Promise.resolve({
-              hits: [
-                {
-                  id: "oseberg-norway-queens-ship-0",
-                  cursor: Buffer.from("artwork:297").toString("base64"),
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: sinon
+            .stub()
+            .withArgs("filter/artworks")
+            .returns(
+              Promise.resolve({
+                hits: [
+                  {
+                    id: "oseberg-norway-queens-ship-0",
+                    cursor: Buffer.from("artwork:297").toString("base64"),
+                  },
+                  {
+                    id: "oseberg-norway-queens-ship-1",
+                    cursor: Buffer.from("artwork:298").toString("base64"),
+                  },
+                  {
+                    id: "oseberg-norway-queens-ship-2",
+                    cursor: Buffer.from("artwork:299").toString("base64"),
+                  },
+                  {
+                    id: "oseberg-norway-queens-ship-3",
+                    cursor: Buffer.from("artwork:300").toString("base64"),
+                  },
+                ],
+                aggregations: {
+                  total: {
+                    value: 303,
+                  },
                 },
-                {
-                  id: "oseberg-norway-queens-ship-1",
-                  cursor: Buffer.from("artwork:298").toString("base64"),
-                },
-                {
-                  id: "oseberg-norway-queens-ship-2",
-                  cursor: Buffer.from("artwork:299").toString("base64"),
-                },
-                {
-                  id: "oseberg-norway-queens-ship-3",
-                  cursor: Buffer.from("artwork:300").toString("base64"),
-                },
-              ],
-              aggregations: {
-                total: {
-                  value: 303,
-                },
-              },
-            })
-          ),
+              })
+            ),
+        },
       }
     })
 
@@ -168,6 +173,53 @@ describe("Filter Artworks", () => {
         expect(filter_artworks.artworks_connection.pageInfo).toEqual({
           hasNextPage: false,
         })
+      })
+    })
+  })
+
+  describe(`When requesting personalized arguments`, () => {
+    beforeEach(() => {
+      context = {
+        authenticatedLoaders: {
+          filterArtworksLoader: () =>
+            Promise.resolve({
+              hits: [
+                {
+                  id: "oseberg-norway-queens-ship-0",
+                },
+              ],
+              aggregations: {
+                total: {
+                  value: 303,
+                },
+              },
+            }),
+        },
+        unauthenticatedLoaders: {},
+      }
+    })
+
+    it("returns results using the personalized loader", () => {
+      const query = `
+        {
+          filter_artworks(aggregations:[TOTAL], include_artworks_by_followed_artists: true){
+            artworks_connection(first: 1){
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, context).then(({ filter_artworks }) => {
+        expect(filter_artworks.artworks_connection.edges).toEqual([
+          {
+            node: { id: "oseberg-norway-queens-ship-0" },
+          },
+        ])
       })
     })
   })
