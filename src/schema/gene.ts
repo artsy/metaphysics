@@ -4,7 +4,8 @@ import _ from "lodash"
 import cached from "./fields/cached"
 import Artwork from "./artwork"
 import Artist, { artistConnection } from "./artist"
-import Image from "./image"
+import Image, { getDefault } from "schema/image"
+
 import filterArtworks, {
   ArtworkFilterAggregations,
   filterArtworksArgs,
@@ -25,6 +26,8 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { Searchable } from "./searchable"
+import { setVersion } from "schema/image/normalize"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -40,7 +43,7 @@ const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 
 export const GeneType = new GraphQLObjectType<any, ResolverContext>({
   name: "Gene",
-  interfaces: [NodeInterface],
+  interfaces: [NodeInterface, Searchable],
   fields: () => {
     return {
       ...GravityIDFields,
@@ -118,12 +121,28 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
       display_name: {
         type: GraphQLString,
       },
+      displayLabel: {
+        type: GraphQLString,
+        resolve: ({ display_name }) => display_name,
+      },
       filtered_artworks: filterArtworks("gene_id"),
       href: {
         type: GraphQLString,
         resolve: ({ id }) => `/gene/${id}`,
       },
       image: Image,
+      imageUrl: {
+        type: GraphQLString,
+        resolve: ({ image_versions, image_url, image_urls }) =>
+          setVersion(
+            getDefault({
+              image_url: image_url,
+              images_urls: image_urls,
+              image_versions: image_versions,
+            }),
+            ["thumb"]
+          ),
+      },
       is_published: {
         type: GraphQLBoolean,
         resolve: ({ published }) => published,

@@ -3993,7 +3993,7 @@ type GeminiEntry {
   token: String!
 }
 
-type Gene implements Node {
+type Gene implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -4058,6 +4058,7 @@ type Gene implements Node {
   ): GeneArtworksConnection
   description: String
   display_name: String
+  displayLabel: String
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -4104,6 +4105,7 @@ type Gene implements Node {
   ): FilterArtworks
   href: String
   image: Image
+  imageUrl: String
   is_published: Boolean
   is_followed: Boolean
   mode: String
@@ -4185,7 +4187,7 @@ type GeneFamilyEdge {
   cursor: String!
 }
 
-type GeneItem implements Node {
+type GeneItem implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -4250,6 +4252,7 @@ type GeneItem implements Node {
   ): GeneArtworksConnection
   description: String
   display_name: String
+  displayLabel: String
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -4296,6 +4299,7 @@ type GeneItem implements Node {
   ): FilterArtworks
   href: String
   image: Image
+  imageUrl: String
   is_published: Boolean
   is_followed: Boolean
   mode: String
@@ -4797,7 +4801,7 @@ type HomePageModuleContextFollowedArtist {
   artist: Artist
 }
 
-type HomePageModuleContextGene implements Node {
+type HomePageModuleContextGene implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -4862,6 +4866,7 @@ type HomePageModuleContextGene implements Node {
   ): GeneArtworksConnection
   description: String
   display_name: String
+  displayLabel: String
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -4908,6 +4913,7 @@ type HomePageModuleContextGene implements Node {
   ): FilterArtworks
   href: String
   image: Image
+  imageUrl: String
   is_published: Boolean
   is_followed: Boolean
   mode: String
