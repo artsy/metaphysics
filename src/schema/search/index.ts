@@ -56,12 +56,13 @@ export const searchArgs = pageable({
 
 const fetch = (
   searchResultItem,
-  { artistLoader, artworkLoader, articleLoader }: ResolverContext
+  { artistLoader, artworkLoader, articleLoader, fairLoader }: ResolverContext
 ) => {
   const loaderMapping = {
     Artist: artistLoader,
     Artwork: artworkLoader,
     Article: articleLoader,
+    Fair: fairLoader,
   }
 
   const loader = loaderMapping[searchResultItem.label]

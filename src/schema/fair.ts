@@ -14,7 +14,7 @@ import Artist from "./artist"
 import Partner from "./partner"
 import { showConnection } from "./show"
 import Location from "./location"
-import { GravityIDFields } from "./object_identification"
+import { GravityIDFields, NodeInterface } from "./object_identification"
 import filterArtworks from "./filter_artworks"
 import {
   GraphQLObjectType,
@@ -31,6 +31,7 @@ import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
+import { Searchable } from "./searchable"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -64,6 +65,7 @@ const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
 
 export const FairType = new GraphQLObjectType<any, ResolverContext>({
   name: "Fair",
+  interfaces: [NodeInterface, Searchable],
   fields: () => ({
     ...GravityIDFields,
     about: {
@@ -140,6 +142,10 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       }),
       resolve: fair => fair,
     },
+    displayLabel: {
+      type: GraphQLString,
+      resolve: ({ name }) => name,
+    },
     exhibition_period: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
@@ -168,6 +174,10 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     image: Image,
+    imageUrl: {
+      type: GraphQLString,
+      resolve: ({ image_url }) => image_url,
+    },
     is_active: {
       type: GraphQLBoolean,
       deprecationReason: "Prefer isActive instead",

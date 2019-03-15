@@ -1191,7 +1191,7 @@ type ArtworkContextAuction implements Node {
   symbol: String
 }
 
-type ArtworkContextFair {
+type ArtworkContextFair implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -1213,6 +1213,7 @@ type ArtworkContextFair {
   cached: Int
   banner_size: String
   counts: FairCounts
+  displayLabel: String
 
   # A formatted description of the start to end dates
   exhibition_period: String
@@ -1223,6 +1224,7 @@ type ArtworkContextFair {
   hours: String
   href: String
   image: Image
+  imageUrl: String
   is_active: Boolean @deprecated(reason: "Prefer isActive instead")
 
   # Are we currently in the fair's active period?
@@ -3382,7 +3384,7 @@ type ExternalPartner {
   name: String
 }
 
-type Fair {
+type Fair implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -3404,6 +3406,7 @@ type Fair {
   cached: Int
   banner_size: String
   counts: FairCounts
+  displayLabel: String
 
   # A formatted description of the start to end dates
   exhibition_period: String
@@ -3414,6 +3417,7 @@ type Fair {
   hours: String
   href: String
   image: Image
+  imageUrl: String
   is_active: Boolean @deprecated(reason: "Prefer isActive instead")
 
   # Are we currently in the fair's active period?
@@ -4650,7 +4654,7 @@ union HomePageModuleContext =
   | HomePageModuleContextSale
   | HomePageModuleContextTrending
 
-type HomePageModuleContextFair {
+type HomePageModuleContextFair implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -4672,6 +4676,7 @@ type HomePageModuleContextFair {
   cached: Int
   banner_size: String
   counts: FairCounts
+  displayLabel: String
 
   # A formatted description of the start to end dates
   exhibition_period: String
@@ -4682,6 +4687,7 @@ type HomePageModuleContextFair {
   hours: String
   href: String
   image: Image
+  imageUrl: String
   is_active: Boolean @deprecated(reason: "Prefer isActive instead")
 
   # Are we currently in the fair's active period?
