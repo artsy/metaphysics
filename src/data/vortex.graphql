@@ -4,28 +4,15 @@ An ISO 8601 datetime
 scalar DateTime
 
 """
-Information about pagination in a connection.
+A histogram bin
 """
-type PageInfo {
-  """
-  When paginating forwards, the cursor to continue.
-  """
-  endCursor: String
+type HistogramBin {
+  maxPriceCents: Int!
+  minPriceCents: Int!
+  numArtworks: Int!
+}
 
-  """
-  When paginating forwards, are there more items?
-  """
-  hasNextPage: Boolean!
-
-  """
-  When paginating backwards, are there more items?
-  """
-  hasPreviousPage: Boolean!
-
-  """
-  When paginating backwards, the cursor to continue.
-  """
-  startCursor: String
+type Mutation {
 }
 
 """
@@ -42,53 +29,130 @@ Partner Time Series Stats
 """
 type PartnerTimeSeriesStatsType {
   artworksPublished: Int
+  date: DateTime
   partnerId: String
-  week: DateTime
 }
 
 """
-A Price Record
+Pricing Context Histogram
 """
-type PriceRecord {
-  artistId: String!
-  id: ID!
-  priceUsCents: Int!
-  soldAt: DateTime!
+type PricingContext {
+  bins: [HistogramBin!]!
+  filterDescription: String!
 }
 
-"""
-The connection type for PriceRecord.
-"""
-type PriceRecordConnection {
+enum PricingContextCategoryEnum {
   """
-  A list of edges.
+  Architecture
   """
-  edges: [PriceRecordEdge]
+  ARCHITECTURE
 
   """
-  A list of nodes.
+  Books and Portfolios
   """
-  nodes: [PriceRecord]
+  BOOKS_AND_PORTFOLIOS
 
   """
-  Information to aid in pagination.
+  Design/Decorative Art
   """
-  pageInfo: PageInfo!
+  DESIGN_DECORATIVE_ART
+
+  """
+  Drawing, Collage or other Work on Paper
+  """
+  DRAWING_COLAGE_OTHER_WORK_ON_PAPER
+
+  """
+  Fashion Design and Wearable Art
+  """
+  FASHON
+
+  """
+  Installation
+  """
+  INSTALLATION
+
+  """
+  Jewelry
+  """
+  JEWELRY
+
+  """
+  Mixed Media
+  """
+  MIXED_MEDIA
+
+  """
+  Other
+  """
+  OTHER
+
+  """
+  Painting
+  """
+  PAINTING
+
+  """
+  Performance Art
+  """
+  PERFORMANCE
+
+  """
+  Photography
+  """
+  PHOTOGRAPHY
+
+  """
+  Posters
+  """
+  POSTERS
+
+  """
+  Print
+  """
+  PRINT
+
+  """
+  Sculpture
+  """
+  SCULPTURE
+
+  """
+  Sound
+  """
+  SOUND
+
+  """
+  Textile Arts
+  """
+  TEXTILE
+
+  """
+  Video/Film/Animation
+  """
+  VIDEO_FILM_ANIMATION
+
+  """
+  Work on Paper
+  """
+  WORK_ON_PAPER
 }
 
-"""
-An edge in a connection.
-"""
-type PriceRecordEdge {
+enum PricingContextDimensionsEnum {
   """
-  A cursor for use in pagination.
+  large
   """
-  cursor: String!
+  LARGE
 
   """
-  The item at the end of the edge.
+  medium
   """
-  node: PriceRecord
+  MEDIUM
+
+  """
+  small
+  """
+  SMALL
 }
 
 type Query {
@@ -98,28 +162,7 @@ type Query {
   partnerStats(partnerId: String!): PartnerStatsType
 
   """
-  Find PriceRecords
+  Pricing Context Histograms
   """
-  priceRecords(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-    artistId: String!
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-  ): PriceRecordConnection
+  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, dimensions: PricingContextDimensionsEnum!, listPriceCents: Int!): PricingContext
 }
