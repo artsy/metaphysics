@@ -1083,25 +1083,28 @@ describe("Show type", () => {
     it("fetches FilterArtworks using the show id and partner id", async () => {
       context = {
         ...context,
-        filterArtworksLoader: jest.fn().mockReturnValue(
-          Promise.resolve({
-            hits: [
-              {
-                id: "1",
-                title: "foo-artwork",
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: jest.fn().mockReturnValue(
+            Promise.resolve({
+              hits: [
+                {
+                  id: "1",
+                  title: "foo-artwork",
+                },
+                {
+                  id: "2",
+                  title: "bar-artwork",
+                },
+              ],
+              aggregations: {
+                total: {
+                  value: 303,
+                },
               },
-              {
-                id: "2",
-                title: "bar-artwork",
-              },
-            ],
-            aggregations: {
-              total: {
-                value: 303,
-              },
-            },
-          })
-        ),
+            })
+          ),
+        },
       }
 
       const query = gql`
@@ -1121,7 +1124,9 @@ describe("Show type", () => {
         }
       `
       const data = await runQuery(query, context)
-      expect(context.filterArtworksLoader).toHaveBeenCalledWith(
+      expect(
+        context.unauthenticatedLoaders.filterArtworksLoader
+      ).toHaveBeenCalledWith(
         expect.objectContaining({
           partner_show_id: "abcdefg123456",
           partner_id: "new-museum",

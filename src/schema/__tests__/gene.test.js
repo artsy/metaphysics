@@ -12,24 +12,27 @@ describe("Gene", () => {
 
     beforeEach(() => {
       context = {
-        filterArtworksLoader: sinon
-          .stub()
-          .withArgs("filter/artworks", {
-            gene_id: "500-1000-ce",
-            aggregations: ["total"],
-          })
-          .returns(
-            Promise.resolve({
-              hits: [
-                {
-                  id: "oseberg-norway-queens-ship",
-                  title: "Queen's Ship",
-                  artists: [],
-                },
-              ],
-              aggregations: [],
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: sinon
+            .stub()
+            .withArgs("filter/artworks", {
+              gene_id: "500-1000-ce",
+              aggregations: ["total"],
             })
-          ),
+            .returns(
+              Promise.resolve({
+                hits: [
+                  {
+                    id: "oseberg-norway-queens-ship",
+                    title: "Queen's Ship",
+                    artists: [],
+                  },
+                ],
+                aggregations: [],
+              })
+            ),
+        },
       }
     })
 
@@ -62,6 +65,8 @@ describe("Gene", () => {
     beforeEach(() => {
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
       context = {
+        authenticatedLoaders: {},
+        unauthenticatedLaders: {},
         geneLoader: sinon.stub().returns(Promise.resolve(gene)),
         filterArtworksLoader: sinon.stub().returns(
           Promise.resolve({
@@ -333,24 +338,27 @@ describe("Gene", () => {
     beforeEach(() => {
       const gene = { id: "500-1000-ce", browseable: true, family: "" }
       context = {
-        filterArtworksLoader: sinon
-          .stub()
-          .withArgs("filter/artworks", {
-            gene_id: "500-1000-ce",
-            aggregations: ["total"],
-          })
-          .returns(
-            Promise.resolve({
-              hits: [
-                {
-                  id: "oseberg-norway-queens-ship",
-                  title: "Queen's Ship",
-                  artists: [],
-                },
-              ],
-              aggregations: [],
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: sinon
+            .stub()
+            .withArgs("filter/artworks", {
+              gene_id: "500-1000-ce",
+              aggregations: ["total"],
             })
-          ),
+            .returns(
+              Promise.resolve({
+                hits: [
+                  {
+                    id: "oseberg-norway-queens-ship",
+                    title: "Queen's Ship",
+                    artists: [],
+                  },
+                ],
+                aggregations: [],
+              })
+            ),
+        },
         geneLoader: sinon.stub().returns(Promise.resolve(gene)),
       }
     })

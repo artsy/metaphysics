@@ -61,6 +61,14 @@ export interface LoaderFactory {
   ): DynamicPathLoader<BodyAndHeaders<Body, Headers>, PathGeneratorParams>
 }
 
+type AllLoaders = LoadersWithoutAuthentication &
+  Partial<LoadersWithAuthentication>
+
+interface AvailableLoaders extends AllLoaders {
+  unauthenticatedLoaders: LoadersWithoutAuthentication
+  authenticatedLoaders: Partial<LoadersWithAuthentication>
+}
+
 /**
  * Creates a new set of data loaders for all routes. These should be created for each GraphQL query and passed to the
  * `graphql` query execution function.
@@ -68,18 +76,20 @@ export interface LoaderFactory {
  * Only if credentials are provided will the set include authenticated loaders, so before using an authenticated loader
  * it would be wise to check if the loader is not in fact `undefined`.
  */
-export default (
-  accessToken,
-  userID,
-  opts
-): LoadersWithoutAuthentication & Partial<LoadersWithAuthentication> => {
-  const loaders = createLoadersWithoutAuthentication(opts)
+export default (accessToken, userID, opts): AvailableLoaders => {
+  const unauthenticatedLoaders = createLoadersWithoutAuthentication(opts)
+  let authenticatedLoaders = {}
   if (accessToken) {
-    return Object.assign(
-      {},
-      loaders,
-      createLoadersWithAuthentication(accessToken, userID, opts)
+    authenticatedLoaders = createLoadersWithAuthentication(
+      accessToken,
+      userID,
+      opts
     )
   }
-  return loaders
+  return {
+    ...unauthenticatedLoaders,
+    ...authenticatedLoaders,
+    unauthenticatedLoaders,
+    authenticatedLoaders,
+  }
 }

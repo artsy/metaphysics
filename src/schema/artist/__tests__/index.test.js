@@ -750,7 +750,8 @@ describe("Artist type", () => {
           aggregations: { total: { value: 75 } },
         })
       )
-      context.filterArtworksLoader = filterArtworksLoader
+      context.unauthenticatedLoaders = { filterArtworksLoader }
+      context.authenticatedLoaders = {}
 
       const query = `
         {
