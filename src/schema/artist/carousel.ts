@@ -31,7 +31,7 @@ const ArtistCarousel: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
         top_tier: true,
       }),
       artistArtworksLoader(id, {
-        size: 10, // we only show a max of 7 though, a hotfix for AS-285
+        size: 7,
         sort: "-iconicity",
         published: true,
       }),
@@ -56,7 +56,6 @@ const ArtistCarousel: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
           .then(showsWithImages => {
             return showsWithImages.concat(
               artworks
-                .slice(0, 6) // Always return the top 7 artworks
                 .map(artwork => {
                   return _.assign(
                     { href: `/artwork/${artwork.id}`, title: artwork.title },
