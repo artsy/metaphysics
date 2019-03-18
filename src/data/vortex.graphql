@@ -1,0 +1,170 @@
+"""
+An ISO 8601 datetime
+"""
+scalar DateTime
+
+"""
+A histogram bin
+"""
+type HistogramBin {
+  maxPriceCents: Int!
+  minPriceCents: Int!
+  numArtworks: Int!
+}
+
+"""
+Partner Stats
+"""
+type PartnerStatsType {
+  partnerId: String!
+  timeSeries: [PartnerTimeSeriesStatsType!]
+  uniqueVisitors: Int
+}
+
+"""
+Partner Time Series Stats
+"""
+type PartnerTimeSeriesStatsType {
+  artworksPublished: Int
+  date: DateTime
+  partnerId: String
+}
+
+"""
+Pricing Context Histogram
+"""
+type PricingContext {
+  bins: [HistogramBin!]!
+  filterDescription: String!
+}
+
+enum PricingContextCategoryEnum {
+  """
+  Architecture
+  """
+  ARCHITECTURE
+
+  """
+  Books and Portfolios
+  """
+  BOOKS_AND_PORTFOLIOS
+
+  """
+  Design/Decorative Art
+  """
+  DESIGN_DECORATIVE_ART
+
+  """
+  Drawing, Collage or other Work on Paper
+  """
+  DRAWING_COLAGE_OTHER_WORK_ON_PAPER
+
+  """
+  Fashion Design and Wearable Art
+  """
+  FASHON
+
+  """
+  Installation
+  """
+  INSTALLATION
+
+  """
+  Jewelry
+  """
+  JEWELRY
+
+  """
+  Mixed Media
+  """
+  MIXED_MEDIA
+
+  """
+  Other
+  """
+  OTHER
+
+  """
+  Painting
+  """
+  PAINTING
+
+  """
+  Performance Art
+  """
+  PERFORMANCE
+
+  """
+  Photography
+  """
+  PHOTOGRAPHY
+
+  """
+  Posters
+  """
+  POSTERS
+
+  """
+  Print
+  """
+  PRINT
+
+  """
+  Sculpture
+  """
+  SCULPTURE
+
+  """
+  Sound
+  """
+  SOUND
+
+  """
+  Textile Arts
+  """
+  TEXTILE
+
+  """
+  Video/Film/Animation
+  """
+  VIDEO_FILM_ANIMATION
+
+  """
+  Work on Paper
+  """
+  WORK_ON_PAPER
+}
+
+enum PricingContextDimensionsEnum {
+  """
+  large
+  """
+  LARGE
+
+  """
+  medium
+  """
+  MEDIUM
+
+  """
+  small
+  """
+  SMALL
+}
+
+type Query {
+  """
+  Find PartnerStats
+  """
+  partnerStats(partnerId: String!): PartnerStatsType
+
+  """
+  Pricing Context Histograms
+  """
+  pricingContext(
+    artistId: String!
+    category: PricingContextCategoryEnum!
+    dimensions: PricingContextDimensionsEnum!
+    listPriceCents: Int!
+  ): PricingContext
+}

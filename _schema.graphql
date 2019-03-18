@@ -44,6 +44,106 @@ type AggregationCount {
   sortable_id: String
 }
 
+# An ISO 8601 datetime
+scalar AnalyticsDateTime
+
+# A histogram bin
+type AnalyticsHistogramBin {
+  maxPriceCents: Int!
+  minPriceCents: Int!
+  numArtworks: Int!
+}
+
+# Partner Stats
+type AnalyticsPartnerStatsType {
+  partnerId: String!
+  timeSeries: [AnalyticsPartnerTimeSeriesStatsType!]
+  uniqueVisitors: Int
+}
+
+# Partner Time Series Stats
+type AnalyticsPartnerTimeSeriesStatsType {
+  artworksPublished: Int
+  date: AnalyticsDateTime
+  partnerId: String
+}
+
+# Pricing Context Histogram
+type AnalyticsPricingContext {
+  bins: [AnalyticsHistogramBin!]!
+  filterDescription: String!
+}
+
+enum AnalyticsPricingContextCategoryEnum {
+  # Architecture
+  ARCHITECTURE
+
+  # Books and Portfolios
+  BOOKS_AND_PORTFOLIOS
+
+  # Design/Decorative Art
+  DESIGN_DECORATIVE_ART
+
+  # Drawing, Collage or other Work on Paper
+  DRAWING_COLAGE_OTHER_WORK_ON_PAPER
+
+  # Fashion Design and Wearable Art
+  FASHON
+
+  # Installation
+  INSTALLATION
+
+  # Jewelry
+  JEWELRY
+
+  # Mixed Media
+  MIXED_MEDIA
+
+  # Other
+  OTHER
+
+  # Painting
+  PAINTING
+
+  # Performance Art
+  PERFORMANCE
+
+  # Photography
+  PHOTOGRAPHY
+
+  # Posters
+  POSTERS
+
+  # Print
+  PRINT
+
+  # Sculpture
+  SCULPTURE
+
+  # Sound
+  SOUND
+
+  # Textile Arts
+  TEXTILE
+
+  # Video/Film/Animation
+  VIDEO_FILM_ANIMATION
+
+  # Work on Paper
+  WORK_ON_PAPER
+}
+
+enum AnalyticsPricingContextDimensionsEnum {
+  # large
+  LARGE
+
+  # medium
+  MEDIUM
+
+  # small
+  SMALL
+}
+
 input ApproveOrderInput {
   # Order ID
   orderId: String!
@@ -7536,6 +7636,17 @@ type Query {
 
   # Find partners by ID
   _unused_gravity_partners(ids: [ID]!): [DoNotUseThisPartner]
+
+  # Find PartnerStats
+  analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStatsType
+
+  # Pricing Context Histograms
+  analyticsPricingContext(
+    artistId: String!
+    category: AnalyticsPricingContextCategoryEnum!
+    dimensions: AnalyticsPricingContextDimensionsEnum!
+    listPriceCents: Int!
+  ): AnalyticsPricingContext
   marketingCollections(
     randomizationSeed: String
     size: Int
