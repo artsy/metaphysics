@@ -2,7 +2,6 @@ import _ from "lodash"
 import Image from "schema/image"
 import { error } from "lib/loggers"
 import { GraphQLObjectType, GraphQLList, GraphQLFieldConfig } from "graphql"
-import { GravityArtwork } from "types/gravity/artworkResponse"
 import { ResolverContext } from "types/graphql"
 
 const ArtistCarouselType = new GraphQLObjectType<any, ResolverContext>({
