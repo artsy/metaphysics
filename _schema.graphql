@@ -1121,9 +1121,10 @@ type ArtworkContextFair {
   hours: String
   href: String
   image: Image
+  is_active: Boolean @deprecated(reason: "Prefer isActive instead")
 
   # Are we currently in the fair's active period?
-  is_active: Boolean
+  isActive: Boolean
   links: String
   mobile_image: Image
   is_published: Boolean
@@ -1150,6 +1151,14 @@ type ArtworkContextFair {
     timezone: String
   ): String
   end_at(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  active_start_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
     format: String
@@ -3303,9 +3312,10 @@ type Fair {
   hours: String
   href: String
   image: Image
+  is_active: Boolean @deprecated(reason: "Prefer isActive instead")
 
   # Are we currently in the fair's active period?
-  is_active: Boolean
+  isActive: Boolean
   links: String
   mobile_image: Image
   is_published: Boolean
@@ -3332,6 +3342,14 @@ type Fair {
     timezone: String
   ): String
   end_at(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  active_start_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
     format: String
@@ -4560,9 +4578,10 @@ type HomePageModuleContextFair {
   hours: String
   href: String
   image: Image
+  is_active: Boolean @deprecated(reason: "Prefer isActive instead")
 
   # Are we currently in the fair's active period?
-  is_active: Boolean
+  isActive: Boolean
   links: String
   mobile_image: Image
   is_published: Boolean
@@ -4589,6 +4608,14 @@ type HomePageModuleContextFair {
     timezone: String
   ): String
   end_at(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  active_start_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
     format: String

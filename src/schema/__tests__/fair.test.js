@@ -12,6 +12,8 @@ jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 import gql from "lib/gql"
+import moment from "moment"
+
 describe("Fair type", () => {
   const fair = {
     id: "the-armory-show-2017",
@@ -42,7 +44,7 @@ describe("Fair type", () => {
     }
   `
 
-  const context = {
+  let context = {
     fairLoader: sinon.stub().returns(Promise.resolve(fair)),
   }
 
@@ -310,6 +312,113 @@ describe("Fair", () => {
           ],
         },
       },
+    })
+  })
+
+  describe("isActive flag", () => {
+    describe("when active_start_at and end_at are in the past", () => {
+      it("is false ", async () => {
+        const mockFair = {
+          id: "this-fair-was-active",
+          active_start_at: moment()
+            .subtract(14, "days")
+            .toISOString(),
+          end_at: moment()
+            .subtract(7, "days")
+            .toISOString(),
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "this-fair-was-active") {
+              isActive
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isActive: false,
+          },
+        })
+      })
+    })
+
+    describe("when active_start_at is in the past and end_at is in the future", () => {
+      it("is true ", async () => {
+        const mockFair = {
+          id: "this-fair-is-active",
+          active_start_at: moment()
+            .subtract(7, "days")
+            .toISOString(),
+          end_at: moment()
+            .add(7, "days")
+            .toISOString(),
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "this-fair-is-active") {
+              isActive
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isActive: true,
+          },
+        })
+      })
+    })
+
+    describe("when active_start_at and end_at are in the future", () => {
+      it("is false ", async () => {
+        const mockFair = {
+          id: "this-fair-not-yet-active",
+          active_start_at: moment()
+            .add(7, "days")
+            .toISOString(),
+          end_at: moment()
+            .add(14, "days")
+            .toISOString(),
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "this-fair-not-yet-active") {
+              isActive
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isActive: false,
+          },
+        })
+      })
     })
   })
 
