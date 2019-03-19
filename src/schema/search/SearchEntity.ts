@@ -48,6 +48,8 @@ export const SearchEntity = new GraphQLEnumType({
   },
 })
 
+const defaultBlockList = ["gallery", "institution"]
+
 export const DEFAULT_ENTITIES = SearchEntity.getValues().filter(
-  index => index.value !== "gallery" && index.value !== "institution"
+  index => defaultBlockList.includes(index.value)
 )
