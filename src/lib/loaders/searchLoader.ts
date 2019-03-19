@@ -1,8 +1,8 @@
 import * as url from "url"
-import { DEFAULT_ENTITIES } from "schema/search/SearchEntity"
+import { DEFAULT_ENTITIES, SUGGEST_ENTITIES } from "schema/search/SearchEntity"
 
 const modeMap = {
-  AUTOSUGGEST: { fallbackEntities: DEFAULT_ENTITIES, pathname: "/match/suggest" },
+  AUTOSUGGEST: { fallbackEntities: SUGGEST_ENTITIES, pathname: "/match/suggest" },
   DEFAULT: { fallbackEntities: DEFAULT_ENTITIES, pathname: "/match" },
 }
 

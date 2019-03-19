@@ -51,5 +51,11 @@ export const SearchEntity = new GraphQLEnumType({
 const defaultBlockList = ["gallery", "institution"]
 
 export const DEFAULT_ENTITIES = SearchEntity.getValues().filter(
-  index => defaultBlockList.includes(index.value)
+  index => !defaultBlockList.includes(index.value)
+)
+
+const suggestBlockList = ["gallery", "institution", "show"]
+
+export const SUGGEST_ENTITIES = SearchEntity.getValues().filter(
+  index => !suggestBlockList.includes(index.value)
 )
