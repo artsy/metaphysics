@@ -29,7 +29,7 @@ export default opts => {
     fairPartnersLoader: gravityLoader(id => `fair/${id}/partners`, {}, { headers: true }),
     fairLoader: gravityLoader(id => `fair/${id}`),
     fairsLoader: gravityLoader("fairs", {}, { headers: true }),
-    filterArtworksLoader: gravityLoader("filter/artworks"),
+    filterArtworksLoader: gravityLoader("filter/artworks", {}, { requestThrottleMs: 1000 * 60 * 60 }),
     geneArtistsLoader: gravityLoader(id => `gene/${id}/artists`),
     geneFamiliesLoader: gravityLoader("gene_families"),
     geneLoader: gravityLoader(id => `gene/${id}`),
