@@ -162,6 +162,14 @@ describe("City", () => {
       expect(gravityOptions).toMatchObject({ displayable: true })
       expect(gravityOptions).not.toHaveProperty("discoverable")
     })
+
+    it("requests non-blocked discovery shows, by default", async () => {
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
+
+      expect(gravityOptions).toMatchObject({ include_discovery_blocked: false })
+    })
+
     it("requests shows with location, by default", async () => {
       await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
