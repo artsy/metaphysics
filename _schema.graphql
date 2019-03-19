@@ -8223,6 +8223,7 @@ enum SearchEntity {
   FEATURE
   GALLERY
   GENE
+  INSTITUTION
   PROFILE
   SALE
   SHOW

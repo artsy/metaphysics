@@ -30,6 +30,9 @@ export const SearchEntity = new GraphQLEnumType({
     GENE: {
       value: "Gene",
     },
+    INSTITUTION: {
+      value: "institution",
+    },
     PROFILE: {
       value: "Profile",
     },
@@ -44,3 +47,7 @@ export const SearchEntity = new GraphQLEnumType({
     },
   },
 })
+
+export const DefaultEntities = SearchEntity.getValues().filter(
+  index => index.value !== "gallery" && index.value !== "institution"
+)

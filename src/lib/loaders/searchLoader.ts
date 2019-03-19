@@ -1,16 +1,12 @@
 import * as url from "url"
-import { SearchEntity } from "schema/search/SearchEntity"
+import { DefaultEntities } from "schema/search/SearchEntity"
 
 export const searchLoader = gravityLoader => {
   return gravityLoader(
     ({ query, entities, mode, ...rest }) => {
       const queryParams = {
         term: query,
-        "indexes[]":
-          entities ||
-          SearchEntity.getValues()
-            .filter(index => index.value !== "gallery")
-            .map(index => index.value),
+        "indexes[]": entities || DefaultEntities.map(index => index.value),
         ...rest,
       }
 
