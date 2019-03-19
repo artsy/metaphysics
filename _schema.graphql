@@ -7105,7 +7105,7 @@ type PriceCents {
   exact: Boolean
 }
 
-type Profile {
+type Profile implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
 
@@ -7117,9 +7117,11 @@ type Profile {
   cached: Int
   bio: String
   counts: ProfileCounts
+  displayLabel: String
   href: String
   icon: Image
   image: Image
+  imageUrl: String
   initials(length: Int = 3): String
   is_followed: Boolean
   is_published: Boolean

@@ -61,6 +61,7 @@ const fetch = (searchResultItem, context: ResolverContext) => {
     Article: context.articleLoader,
     Fair: context.fairLoader,
     Gene: context.geneLoader,
+    Profile: context.profileLoader,
   }
 
   const loader = loaderMapping[searchResultItem.label]

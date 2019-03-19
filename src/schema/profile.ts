@@ -1,8 +1,8 @@
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import numeral from "./fields/numeral"
-import Image, { normalizeImageData } from "./image"
-import { GravityIDFields } from "./object_identification"
+import Image, { normalizeImageData, getDefault } from "./image"
+import { GravityIDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -11,9 +11,12 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { Searchable } from "./searchable"
+import { setVersion } from "./image/normalize"
 
 export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
   name: "Profile",
+  interfaces: [NodeInterface, Searchable],
   fields: () => ({
     ...GravityIDFields,
     cached,
@@ -29,6 +32,10 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
         },
       }),
     },
+    displayLabel: {
+      type: GraphQLString,
+      resolve: ({ owner }) => owner.name,
+    },
     href: {
       type: GraphQLString,
       resolve: ({ id }) => `/${id}`,
@@ -40,6 +47,21 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
     image: {
       type: Image.type,
       resolve: ({ cover_image }) => normalizeImageData(cover_image),
+    },
+    imageUrl: {
+      type: GraphQLString,
+      resolve: ({ cover_image }) => {
+        const { image_versions, image_url, image_urls } = cover_image
+
+        return setVersion(
+          getDefault({
+            image_url: image_url,
+            images_urls: image_urls,
+            image_versions: image_versions,
+          }),
+          ["square"]
+        )
+      },
     },
     initials: initials("owner.name"),
     is_followed: {
