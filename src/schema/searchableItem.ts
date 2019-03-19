@@ -36,6 +36,10 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLID),
       resolve: item => toGlobalId("SearchableItem", item._id),
     },
+    description: {
+      type: GraphQLString,
+      resolve: item => item.description,
+    },
     displayLabel: {
       type: GraphQLString,
       resolve: item => item.display,
