@@ -48,6 +48,6 @@ export const SearchEntity = new GraphQLEnumType({
   },
 })
 
-export const DefaultEntities = SearchEntity.getValues().filter(
+export const DEFAULT_ENTITIES = SearchEntity.getValues().filter(
   index => index.value !== "gallery" && index.value !== "institution"
 )
