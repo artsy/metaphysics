@@ -601,6 +601,11 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       description: "The press release for this show",
       ...markdown(),
     },
+    pressReleaseUrl: {
+      type: GraphQLString,
+      description: "Link to the press release for this show",
+      resolve: ({ press_release_url }) => press_release_url,
+    },
     start_at: {
       description: "When this show starts",
       ...date,
