@@ -99,6 +99,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           displayable: true,
           include_local_discovery:
             args.includeStubShows || args.discoverable === true,
+          include_discovery_blocked: false,
         }),
     },
     fairs: {
