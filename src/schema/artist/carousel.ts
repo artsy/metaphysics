@@ -54,13 +54,12 @@ const ArtistCarousel: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
           })
           .then(showsWithImages => {
             return showsWithImages.concat(
-              artworks
-                .map(artwork => {
-                  return _.assign(
-                    { href: `/artwork/${artwork.id}`, title: artwork.title },
-                    _.find(artwork.images, i => i.is_default)
-                  )
-                })
+              artworks.map(artwork => {
+                return _.assign(
+                  { href: `/artwork/${artwork.id}`, title: artwork.title },
+                  _.find(artwork.images, i => i.is_default)
+                )
+              })
             )
           })
       })
