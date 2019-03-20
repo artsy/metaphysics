@@ -20,6 +20,10 @@ export function exhibitionPeriod(startAt, endAt) {
   if (startMoment.month() !== endMoment.month()) {
     // Show the end month if the month is different
     endFormat = "MMM ".concat(endFormat)
+  } else {
+    if (startMoment.year() !== endMoment.year()) {
+      endFormat = "MMM ".concat(endFormat)
+    }
   }
 
   if (
