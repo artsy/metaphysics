@@ -19,12 +19,11 @@
       "artGuideUrl": "https://www.bmw-arts-design.com/bmw_art_guide",
       "featuredShowIds": [
         "5c8857f6702b1d000691f50e",
-        "5c8857f6702b1d000691f50a"
+        "5c8857f5702b1d000691f504"
       ],
       "showIds": [
         "5c8857f6702b1d000691f50e",
         "5c8857f5702b1d000691f504",
-        "5c8857f6702b1d000691f50a",
         "5c8857f6702b1d000691f50b"
       ]
     },
@@ -57,22 +56,16 @@
         "5c8857f1702b1d000691f4f5",
         "5c8857f3702b1d000691f4fb",
         "5c8857f2702b1d000691f4f8",
-        "5c8857f4702b1d000691f4fe",
-        "5c8857f4702b1d000691f4ff",
         "5c8857f4702b1d000691f503",
         "5c8857f5702b1d000691f505",
-        "5c8857f5702b1d000691f506",
         "5c8857f5702b1d000691f508"
       ]
     },
     "hong-kong-hong-kong": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Hong Kong.",
       "artGuideUrl": "https://www.bmw-arts-design.com/bmw_art_guide",
-      "featuredShowIds": [
-        "5c8857f4702b1d000691f500",
-        "5c8857f6702b1d000691f50d"
-      ],
-      "showIds": ["5c8857f4702b1d000691f500", "5c8857f6702b1d000691f50d"]
+      "featuredShowIds": ["5c8857f4702b1d000691f500"],
+      "showIds": ["5c8857f4702b1d000691f500"]
     }
   },
   "fairs": {
