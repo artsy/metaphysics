@@ -8,6 +8,9 @@ import { toGlobalId } from "graphql-relay"
 import { Searchable } from "schema/searchable"
 import { NodeInterface, GravityIDFields } from "schema/object_identification"
 import { ResolverContext } from "types/graphql"
+import { stripTags } from "lib/helpers"
+import moment from "moment"
+import { exhibitionPeriod } from "lib/date"
 
 const hrefFromAutosuggestResult = item => {
   if (item.href) return item.href
@@ -38,7 +41,22 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
     },
     description: {
       type: GraphQLString,
-      resolve: item => item.description,
+      resolve: ({ description, end_at, label, published_at, start_at }) => {
+        switch (label) {
+          case "Article":
+            return moment.utc(published_at).format("MMM Do, YYYY")
+          case "Sale":
+            const period = exhibitionPeriod(start_at, end_at)
+
+            return `Sale running from ${period}`
+          default:
+            if (!description || description.length === 0) {
+              return null
+            } else {
+              return stripTags(description)
+            }
+        }
+      },
     },
     displayLabel: {
       type: GraphQLString,
