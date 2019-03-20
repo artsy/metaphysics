@@ -8224,6 +8224,7 @@ type SearchableItem implements Node & Searchable {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
+  description: String
   displayLabel: String
   imageUrl: String
   href: String
