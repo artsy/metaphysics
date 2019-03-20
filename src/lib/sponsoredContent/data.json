@@ -18,14 +18,12 @@
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in London.",
       "artGuideUrl": "https://www.bmw-arts-design.com/bmw_art_guide",
       "featuredShowIds": [
-        "5c8857f3702b1d000691f4f9",
-        "5c8857f6702b1d000691f50e"
+        "5c8857f6702b1d000691f50e",
+        "5c8857f6702b1d000691f50a"
       ],
       "showIds": [
-        "5c8857f3702b1d000691f4f9",
         "5c8857f6702b1d000691f50e",
         "5c8857f5702b1d000691f504",
-        "5c8857f6702b1d000691f509",
         "5c8857f6702b1d000691f50a",
         "5c8857f6702b1d000691f50b"
       ]
@@ -37,11 +35,7 @@
         "5c8857f4702b1d000691f502",
         "5c8857f5702b1d000691f507"
       ],
-      "showIds": [
-        "5c8857f4702b1d000691f502",
-        "5c8857f5702b1d000691f507",
-        "5c8857f3702b1d000691f4fd"
-      ]
+      "showIds": ["5c8857f4702b1d000691f502", "5c8857f5702b1d000691f507"]
     },
     "paris-france": {
       "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Paris.",
