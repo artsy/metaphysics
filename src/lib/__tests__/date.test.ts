@@ -12,6 +12,14 @@ describe("date", () => {
       expect(period).toBe("Jan 1, 2011 – Apr 19, 2014")
     })
 
+    it("different years and same month", () => {
+      const period = exhibitionPeriod(
+        moment("2011-01-01"),
+        moment("2014-01-04")
+      )
+      expect(period).toBe("Jan 1, 2011 – Jan 4, 2014")
+    })
+
     it("does not include the year of the start date if it’s the same year as the end date", () => {
       const period = exhibitionPeriod(
         moment("2011-01-01"),
