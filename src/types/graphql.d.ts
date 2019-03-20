@@ -12,6 +12,9 @@ export interface ResolverContextValues {
   /** The schema used by the internal exchange graphql engine */
   exchangeSchema: GraphQLSchema
 
+  /** The schema used by the internal vortex graphql engine */
+  vortexSchema: GraphQLSchema
+
   /**
    * TODO: Why is this shaped like this, instead of a single ID?
    */

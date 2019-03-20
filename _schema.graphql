@@ -1043,6 +1043,7 @@ type Artwork implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
   certificateOfAuthenticity: ArtworkInfoRow
+  pricingContext: AnalyticsPricingContext
 }
 
 enum ArtworkAggregation {
@@ -1901,6 +1902,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
   certificateOfAuthenticity: ArtworkInfoRow
+  pricingContext: AnalyticsPricingContext
 }
 
 type ArtworkLayer {

@@ -32,6 +32,7 @@ import { rateLimiter } from "./lib/rateLimiter"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
 import { ResolverContext } from "types/graphql"
+import { executableVortexSchema } from "lib/stitching/vortex/schema"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -74,6 +75,7 @@ async function startApp() {
   const exchangeSchema = await executableExchangeSchema(
     legacyTransformsForExchange
   )
+  const vortexSchema = executableVortexSchema()
 
   if (RESOLVER_TIMEOUT_MS > 0) {
     console.warn("[FEATURE] Enabling resolver timeouts")
@@ -141,6 +143,7 @@ async function startApp() {
         ...loaders,
         // For stitching purposes
         exchangeSchema,
+        vortexSchema,
         requestIDs,
         userAgent,
       }
