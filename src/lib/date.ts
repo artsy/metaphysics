@@ -17,13 +17,13 @@ export function exhibitionPeriod(startAt, endAt) {
     endFormat = endFormat.concat(", YYYY")
   }
 
-  if (startMoment.month() !== endMoment.month()) {
+  if (
+    startMoment.month() !== endMoment.month() ||
+    (startMoment.year() !== endMoment.year() &&
+      startMoment.month() === endMoment.month())
+  ) {
     // Show the end month if the month is different
     endFormat = "MMM ".concat(endFormat)
-  } else {
-    if (startMoment.year() !== endMoment.year()) {
-      endFormat = "MMM ".concat(endFormat)
-    }
   }
 
   if (
