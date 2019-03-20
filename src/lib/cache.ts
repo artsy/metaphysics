@@ -5,7 +5,6 @@ import { error, verbose } from "./loggers"
 import Memcached from "memcached"
 import { cacheTracer } from "./tracer"
 import { statsClient } from "./stats"
-import { APIOptions } from "lib/loaders/api"
 
 const {
   NODE_ENV,
@@ -127,7 +126,11 @@ function _get<T>(key) {
   })
 }
 
-function _set(key, data, options: APIOptions) {
+export interface CacheOptions {
+  cacheTtlInSeconds?: number
+}
+
+function _set(key, data, options: CacheOptions) {
   const timestamp = new Date().getTime()
   /* eslint-disable no-param-reassign */
   if (isArray(data)) {
@@ -137,9 +140,7 @@ function _set(key, data, options: APIOptions) {
   }
   /* eslint-enable no-param-reassign */
 
-  const cacheTtl =
-    (options.requestThrottleMs || 0) / 1000 || CACHE_LIFETIME_IN_SECONDS
-
+  const cacheTtl = options.cacheTtlInSeconds || CACHE_LIFETIME_IN_SECONDS
   if (CACHE_COMPRESSION_DISABLED) {
     return new Promise<void>((resolve, reject) => {
       const payload = JSON.stringify(data)
@@ -179,7 +180,7 @@ export default {
     return cacheTracer.get(_get<T>(key))
   },
 
-  set: (key: string, data: any, options = {}) => {
+  set: (key: string, data: any, options: CacheOptions = {}) => {
     return cacheTracer.set(_set(key, data, options))
   },
 

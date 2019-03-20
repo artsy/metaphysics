@@ -1,7 +1,7 @@
 import DataLoader from "dataloader"
 
 import { loaderInterface } from "./loader_interface"
-import cache from "lib/cache"
+import cache, { CacheOptions } from "lib/cache"
 import timer from "lib/timer"
 import { verbose, warn } from "lib/loggers"
 import extensionsLogger, { formatBytes } from "lib/loaders/api/extensionsLogger"
@@ -101,7 +101,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
             const reduceData = ({ body, headers }) =>
               apiOptions.headers ? { body, headers } : body
 
-            const cacheData = (data, options: APIOptions) => {
+            const cacheData = (data, options: CacheOptions) => {
               cache.set(key, data, options).catch(err => warn(key, err))
               return data
             }
@@ -128,8 +128,13 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                     })
                   )
                   // Cache miss.
-                  .catch(() =>
-                    callApi()
+                  .catch(() => {
+                    const cacheOptions: CacheOptions = {}
+                    if (apiOptions.requestThrottleMs) {
+                      cacheOptions.cacheTtlInSeconds =
+                        apiOptions.requestThrottleMs / 1000
+                    }
+                    return callApi()
                       .then(
                         finish({
                           message: `Requested (Uncached): ${key}`,
@@ -137,8 +142,8 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                         })
                       )
                       .then(reduceData)
-                      .then(data => cacheData(data, apiOptions))
-                  )
+                      .then(data => cacheData(data, cacheOptions))
+                  })
               )
             }
           })
