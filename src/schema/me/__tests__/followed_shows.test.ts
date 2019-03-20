@@ -1,11 +1,8 @@
 /* eslint-disable promise/always-return */
-import { resolve } from "path"
-import { readFileSync } from "fs"
 import { runAuthenticatedQuery } from "test/utils"
 import gql from "lib/gql"
 import cityData from "../../../schema/city/cityDataSortedByDisplayPreference.json"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "../../../schema/city/constants"
-import { getArgumentValues } from "graphql/execution/values"
 
 const BASE_GRAVITY_ARGS = {
   size: 10,
@@ -13,10 +10,11 @@ const BASE_GRAVITY_ARGS = {
   total_count: true,
 }
 
-const location_by_city_slug = cityData.reduce((acc, val) => {
-  acc[val.slug] = val.coordinates
-  return acc
-}, {})
+const stubResolver = () =>
+  Promise.resolve({
+    body: [],
+    headers: {},
+  })
 
 const generate_query = (params = `(first: 10)`) =>
   gql`
@@ -35,22 +33,22 @@ const generate_query = (params = `(first: 10)`) =>
     }
   `
 
-const getStub = () =>
-  sinon.stub().returns(
-    Promise.resolve({
-      body: [],
-      headers: {},
-    })
-  )
-
 describe("returns followed shows for a user", () => {
+  let followedShowsLoader
+
+  beforeEach(() => {
+    followedShowsLoader = jest.fn(stubResolver)
+  })
+
+  const expectArgs = args =>
+    followedShowsLoader.mock.calls.some(val => args === val)
+
   it("generates a predictable URL with no parameters", done => {
-    const followedShowsLoader = getStub()
     const query = generate_query()
     runAuthenticatedQuery(query, {
       followedShowsLoader,
-    }).then(data => {
-      expect(followedShowsLoader.calledWith(BASE_GRAVITY_ARGS))
+    }).then(_data => {
+      expectArgs(BASE_GRAVITY_ARGS)
       done()
     })
   })
@@ -71,13 +69,12 @@ describe("returns followed shows for a user", () => {
     })
 
     cityData.forEach(city => {
-      it.call(this, `Handles ${city.name}`, done => {
-        const followedShowsLoader = getStub()
+      it.call(null, `Handles ${city.name}`, done => {
         const { query, expectedArgs } = buildTestData(city)
         runAuthenticatedQuery(query, {
           followedShowsLoader,
-        }).then(data => {
-          expect(followedShowsLoader.calledWith(expectedArgs))
+        }).then(_data => {
+          expectArgs(expectedArgs)
           done()
         })
       })
@@ -90,9 +87,9 @@ describe("returns followed shows for a user", () => {
       })
 
       runAuthenticatedQuery(query, {
-        followedShowsLoader: getStub(),
+        followedShowsLoader,
       })
-        .then(data => {
+        .then(_data => {
           // should never get here
           expect(true).toEqual(false)
           done()
