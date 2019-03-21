@@ -22,10 +22,11 @@ export const OrderLineItemType = new GraphQLObjectType<any, ResolverContext>({
     artwork: {
       type: Artwork.type,
       description: "Artwork that is being ordered",
-      resolve: ({ artworkId }, _args, { authenticatedArtworkLoader }) =>
-        authenticatedArtworkLoader
-          ? authenticatedArtworkLoader(artworkId)
-          : null,
+      resolve: (
+        { artworkId },
+        _args,
+        { authenticatedLoaders: { artworkLoader } }
+      ) => (artworkLoader ? artworkLoader(artworkId) : null),
     },
     artworkVersion: {
       type: ArtworkVersion,

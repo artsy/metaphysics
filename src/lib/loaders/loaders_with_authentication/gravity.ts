@@ -7,7 +7,7 @@ export default (accessToken, userID, opts) => {
   const gravityLoader = gravityLoaderWithAuthenticationFactory(gravityAccessTokenLoader)
 
   return {
-    authenticatedArtworkLoader: gravityLoader(id => `artwork/${id}`),
+    artworkLoader: gravityLoader(id => `artwork/${id}`),
     authenticatedArtworkVersionLoader: gravityLoader(id => `artwork_version/${id}`),
     collectionArtworksLoader: gravityLoader(id => `collection/${id}/artworks`, { user_id: userID }, { headers: true }),
     collectionLoader: gravityLoader(id => `collection/${id}`, { user_id: userID }),

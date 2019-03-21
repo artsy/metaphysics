@@ -1,9 +1,8 @@
 import DataLoader from "dataloader"
 
 import { loaderInterface } from "./loader_interface"
-import cache from "lib/cache"
+import cache, { CacheOptions } from "lib/cache"
 import timer from "lib/timer"
-import { throttled as deferThrottled } from "lib/throttle"
 import { verbose, warn } from "lib/loggers"
 import extensionsLogger, { formatBytes } from "lib/loaders/api/extensionsLogger"
 import config from "config"
@@ -102,9 +101,10 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
             const reduceData = ({ body, headers }) =>
               apiOptions.headers ? { body, headers } : body
 
-            const cacheData = tap(data =>
-              cache.set(key, data).catch(err => warn(key, err))
-            )
+            const cacheData = (data, options: CacheOptions) => {
+              cache.set(key, data, options).catch(err => warn(key, err))
+              return data
+            }
 
             if (CACHE_DISABLED) {
               return callApi()
@@ -127,29 +127,14 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                       cached: true,
                     })
                   )
-                  // Trigger a cache update after returning the data.
-                  .then(
-                    tap(() =>
-                      deferThrottled(
-                        key,
-                        () =>
-                          callApi()
-                            .then(finish({ message: `Refreshing: ${key}` }))
-                            .then(reduceData)
-                            .then(cacheData)
-                            .catch(err => {
-                              if (err.statusCode === 404) {
-                                // Unpublished.
-                                cache.delete(key)
-                              }
-                            }),
-                        { requestThrottleMs: apiOptions.requestThrottleMs }
-                      )
-                    )
-                  )
                   // Cache miss.
-                  .catch(() =>
-                    callApi()
+                  .catch(() => {
+                    const cacheOptions: CacheOptions = {}
+                    if (apiOptions.requestThrottleMs) {
+                      cacheOptions.cacheTtlInSeconds =
+                        apiOptions.requestThrottleMs / 1000
+                    }
+                    return callApi()
                       .then(
                         finish({
                           message: `Requested (Uncached): ${key}`,
@@ -157,8 +142,8 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                         })
                       )
                       .then(reduceData)
-                      .then(cacheData)
-                  )
+                      .then(data => cacheData(data, cacheOptions))
+                  })
               )
             }
           })
