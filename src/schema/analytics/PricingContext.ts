@@ -22,10 +22,10 @@ export const PricingContext: GraphQLFieldConfig<any, ResolverContext> = {
       return null
     }
     // this feature is only enbaled for lab users right now
-    if (!context.authenticatedLoaders.meLoader) {
+    if (!context.meLoader) {
       return null
     }
-    const me = await context.authenticatedLoaders.meLoader()
+    const me = await context.meLoader()
     if (!me.lab_features || !me.lab_features.includes("Pricing Context")) {
       return null
     }
