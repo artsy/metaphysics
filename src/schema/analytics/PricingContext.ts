@@ -1,18 +1,24 @@
-import { GraphQLFieldConfig, graphql } from "graphql"
+import { GraphQLFieldConfig } from "graphql"
 import { PricingContextType } from "./PricingContextType"
 import { ResolverContext } from "types/graphql"
-import gql from "lib/gql"
-import { error } from "util"
 
 export const PricingContext: GraphQLFieldConfig<any, ResolverContext> = {
   type: PricingContextType,
   resolve: async (
-    { width_cm, height_cm, artist, category, price_cents: [listPriceCents] },
+    { width_cm, height_cm, artist, category, price_cents, price_hidden },
     _,
     context
   ) => {
+    const listPriceCents = price_cents && price_cents[0]
     // fail if we don't have enough info to request a histogram
-    if (!artist || !width_cm || !height_cm || !category || !listPriceCents) {
+    if (
+      price_hidden ||
+      !artist ||
+      !width_cm ||
+      !height_cm ||
+      !category ||
+      !listPriceCents
+    ) {
       return null
     }
     // this feature is only enbaled for lab users right now
@@ -30,29 +36,6 @@ export const PricingContext: GraphQLFieldConfig<any, ResolverContext> = {
     const dimensions =
       area < 40 * 40 ? "SMALL" : area < 70 * 70 ? "MEDIUM" : "LARGE"
 
-    const query = gql`
-      query artworkPricingContextQuery(
-        $artistId: String!
-        $category: AnalyticsPricingContextCategoryEnum!
-        $dimensions: AnalyticsPricingContextDimensionsEnum!
-        $listPriceCents: Int!
-      ) {
-        analyticsPricingContext(
-          artistId: $artistId
-          category: $category
-          dimensions: $dimensions
-          listPriceCents: $listPriceCents
-        ) {
-          bins {
-            maxPriceCents
-            minPriceCents
-            numArtworks
-          }
-          filterDescription
-        }
-      }
-    `
-
     const vars = {
       artistId: artist._id,
       category: category.toUpperCase(),
@@ -60,19 +43,6 @@ export const PricingContext: GraphQLFieldConfig<any, ResolverContext> = {
       listPriceCents,
     }
 
-    const result = await graphql(
-      context.vortexSchema,
-      query,
-      null,
-      context,
-      vars
-    )
-
-    if (result.errors) {
-      error(result.errors)
-      return null
-    }
-
-    return result.data!.analyticsPricingContext
+    return context.pricingContextLoader(vars, context)
   },
 }

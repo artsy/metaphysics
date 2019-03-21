@@ -7684,14 +7684,6 @@ type Query {
 
   # Find PartnerStats
   analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStatsType
-
-  # Pricing Context Histograms
-  analyticsPricingContext(
-    artistId: String!
-    category: AnalyticsPricingContextCategoryEnum!
-    dimensions: AnalyticsPricingContextDimensionsEnum!
-    listPriceCents: Int!
-  ): AnalyticsPricingContext
   marketingCollections(
     randomizationSeed: String
     size: Int

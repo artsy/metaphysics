@@ -4,10 +4,13 @@ import {
   transformSchema,
   RenameTypes,
   RenameRootFields,
+  FilterRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
-export const executableVortexSchema = () => {
+export const executableVortexSchema = ({
+  removePricingContext = true,
+}: { removePricingContext?: boolean } = {}) => {
   const vortexLink = createVortexLink()
   const vortexTypeDefs = readFileSync("src/data/vortex.graphql", "utf8")
 
@@ -19,6 +22,11 @@ export const executableVortexSchema = () => {
 
   // Return the new modified schema
   return transformSchema(schema, [
+    // we don't want pricingContext to be a root query field, it is
+    // accessible through artwork
+    new FilterRootFields(
+      (_operation, name) => !removePricingContext || name !== "pricingContext"
+    ),
     new RenameTypes(name => {
       return `Analytics${name}`
     }),
