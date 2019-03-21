@@ -25,7 +25,6 @@ import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
 import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import {
-  graphql,
   GraphQLObjectType,
   GraphQLBoolean,
   GraphQLString,
@@ -34,7 +33,6 @@ import {
   GraphQLInt,
   GraphQLFieldConfig,
 } from "graphql"
-import gql from "lib/gql"
 import AttributionClass from "schema/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "../../lib/attributionClasses"
@@ -43,8 +41,7 @@ import { amount } from "schema/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 import { ResolverContext } from "types/graphql"
-import { PricingContextType } from "schema/analytics/PricingContextType"
-import { error } from "util"
+import { PricingContext } from "schema/analytics/PricingContext"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -807,80 +804,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return { label: "Certificate of authenticity", details: null }
         },
       },
-      pricingContext: {
-        type: PricingContextType,
-        resolve: async (
-          {
-            width_cm,
-            height_cm,
-            artist,
-            category,
-            price_cents: [listPriceCents],
-          },
-          _,
-          context
-        ) => {
-          if (
-            !artist ||
-            !width_cm ||
-            !height_cm ||
-            !category ||
-            !listPriceCents
-          ) {
-            return null
-          }
-          // copying vortex to calculate the 'dimensions' field which is actually an enum of "small" | "medium" | "large"
-          // https://github.com/artsy/vortex/blob/f9427ab1a182d2249c13d0ff246a378fb0c9eef0/dbt/models/sales/price_records.sql#L8
-          const area = width_cm * height_cm
-          const dimensions =
-            area < 40 * 40 ? "SMALL" : area < 70 * 70 ? "MEDIUM" : "LARGE"
-
-          const query = gql`
-            query artworkPricingContextQuery(
-              $artistId: String!
-              $category: AnalyticsPricingContextCategoryEnum!
-              $dimensions: AnalyticsPricingContextDimensionsEnum!
-              $listPriceCents: Int!
-            ) {
-              analyticsPricingContext(
-                artistId: $artistId
-                category: $category
-                dimensions: $dimensions
-                listPriceCents: $listPriceCents
-              ) {
-                bins {
-                  maxPriceCents
-                  minPriceCents
-                  numArtworks
-                }
-                filterDescription
-              }
-            }
-          `
-
-          const vars = {
-            artistId: artist._id,
-            category: category.toUpperCase(),
-            dimensions,
-            listPriceCents,
-          }
-
-          const result = await graphql(
-            context.vortexSchema,
-            query,
-            null,
-            context,
-            vars
-          )
-
-          if (result.errors) {
-            error(result.errors)
-            return null
-          }
-
-          return result.data!.analyticsPricingContext
-        },
-      },
+      pricingContext: PricingContext,
     }
   },
 })
