@@ -35,12 +35,16 @@ export const createVortexLink = () => {
           }
         })
       }
-      // Vortex uses no authentication for now
       return {
-        headers: {
-          ...headers,
-          Authorization: `Bearer ${config.VORTEX_TOKEN}`,
-        },
+        headers,
+        // TODO: if/when price summaries go public, add a new env var with a persistent jwt generated like this:
+        //    https://github.com/artsy/gravity/blob/master/doc/ApiAuthentication.md#create-an-app-trust-token
+        //
+        // Call it VORTEX_TOKEN and then use it in here:
+        // headers: {
+        //   ...headers,
+        //   Authorization: `Bearer ${config.VORTEX_TOKEN}`,
+        // },
       }
     }
   )

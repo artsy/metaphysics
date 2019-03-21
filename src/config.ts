@@ -74,7 +74,6 @@ const {
   STATSD_PORT,
   VORTEX_API_BASE,
   VORTEX_APP_ID,
-  VORTEX_TOKEN,
 } = process.env
 
 const mustHave = {
@@ -198,5 +197,4 @@ export default {
   STATSD_PORT: Number(STATSD_PORT) || 8125,
   VORTEX_API_BASE,
   VORTEX_APP_ID,
-  VORTEX_TOKEN,
 }
