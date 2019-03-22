@@ -66,10 +66,6 @@ describe("returns followed shows for a user", () => {
   })
 
   it("relies on the state of cityData", () => {
-    // if you update cityData, please make sure
-    // you update these tests to capture your changes.
-    // the behavior of this query is tightly coupled
-    // the state of cityData
     cityData
       .map(({ name, slug, coordinates: { lat, lng } }) => ({
         name,
