@@ -55,26 +55,24 @@ describe("returns followed shows for a user", () => {
   })
 
   it("throws an error if presented with an invalid city slug", async () => {
-    const query = generate_query(`(first: 10, city-slug: "this-is-not-a-city")`)
-    try {
-      await runAuthenticatedQuery(query, { followedShowsLoader })
-      // shouldn't get here - if we did then the error wasn't thrown.
-      expect(true).toBeFalsy()
-    } catch (e) {
-      expect(e).toBeDefined()
-    }
+    const query = generate_query(`(first: 10, city: "this-is-not-a-city")`)
+    await expect(
+      runAuthenticatedQuery(query, { followedShowsLoader })
+    ).rejects.toMatchInlineSnapshot(
+      `[Error: City slug must be one of: new-york-ny-usa, los-angeles-ca-usa, london-united-kingdom, berlin-germany, paris-france, hong-kong-hong-kong]`
+    )
   })
 
   it("relies on the state of cityData", () => {
     cityData
-      .map(({ name, slug, coordinates: { lat, lng } }) => ({
-        name,
-        slug,
-        lat,
-        lng,
+      .map(city => ({
+        name: city.name,
+        slug: city.slug,
+        lat: city.coordinates.lat,
+        lng: city.coordinates.lng,
       }))
       .forEach(city => {
-        expect(city).toMatchSnapshot({
+        expect(city).toMatchObject({
           name: expect.any(String),
           slug: expect.any(String),
           lat: expect.any(Number),
