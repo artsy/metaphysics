@@ -70,6 +70,20 @@ describe("returns followed shows for a user", () => {
     // you update these tests to capture your changes.
     // the behavior of this query is tightly coupled
     // the state of cityData
-    expect(cityData).toMatchSnapshot()
+    cityData
+      .map(({ name, slug, coordinates: { lat, lng } }) => ({
+        name,
+        slug,
+        lat,
+        lng,
+      }))
+      .forEach(city => {
+        expect(city).toMatchSnapshot({
+          name: expect.any(String),
+          slug: expect.any(String),
+          lat: expect.any(Number),
+          lng: expect.any(Number),
+        })
+      })
   })
 })
