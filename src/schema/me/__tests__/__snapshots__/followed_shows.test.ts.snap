@@ -1,0 +1,114 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`returns followed shows for a user relies on the state of cityData 1`] = `
+Array [
+  Object {
+    "coordinates": Object {
+      "lat": 40.713,
+      "lng": -74.006,
+    },
+    "maxBounds": Object {
+      "ne": Object {
+        "lat": 41.272,
+        "lng": -73.266,
+      },
+      "sw": Object {
+        "lat": 40.144,
+        "lng": -74.754,
+      },
+    },
+    "name": "New York",
+    "slug": "new-york-ny-usa",
+  },
+  Object {
+    "coordinates": Object {
+      "lat": 34.052,
+      "lng": -118.244,
+    },
+    "maxBounds": Object {
+      "ne": Object {
+        "lat": 34.644,
+        "lng": -117.521,
+      },
+      "sw": Object {
+        "lat": 33.453,
+        "lng": -118.959,
+      },
+    },
+    "name": "Los Angeles",
+    "slug": "los-angeles-ca-usa",
+  },
+  Object {
+    "coordinates": Object {
+      "lat": 51.507,
+      "lng": -0.128,
+    },
+    "maxBounds": Object {
+      "ne": Object {
+        "lat": 52.127,
+        "lng": 0.862,
+      },
+      "sw": Object {
+        "lat": 50.895,
+        "lng": -1.118,
+      },
+    },
+    "name": "London",
+    "slug": "london-united-kingdom",
+  },
+  Object {
+    "coordinates": Object {
+      "lat": 52.52,
+      "lng": 13.405,
+    },
+    "maxBounds": Object {
+      "ne": Object {
+        "lat": 53.159,
+        "lng": 14.452,
+      },
+      "sw": Object {
+        "lat": 51.882,
+        "lng": 12.352,
+      },
+    },
+    "name": "Berlin",
+    "slug": "berlin-germany",
+  },
+  Object {
+    "coordinates": Object {
+      "lat": 48.857,
+      "lng": 2.352,
+    },
+    "maxBounds": Object {
+      "ne": Object {
+        "lat": 49.377,
+        "lng": 3.139,
+      },
+      "sw": Object {
+        "lat": 48.339,
+        "lng": 1.561,
+      },
+    },
+    "name": "Paris",
+    "slug": "paris-france",
+  },
+  Object {
+    "coordinates": Object {
+      "lat": 22.282,
+      "lng": 114.158,
+    },
+    "maxBounds": Object {
+      "ne": Object {
+        "lat": 22.938,
+        "lng": 114.891,
+      },
+      "sw": Object {
+        "lat": 21.66,
+        "lng": 113.509,
+      },
+    },
+    "name": "Hong Kong",
+    "slug": "hong-kong-hong-kong",
+  },
+]
+`;
