@@ -180,11 +180,10 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     isActive: {
       type: GraphQLBoolean,
       description: "Are we currently in the fair's active period?",
-      resolve: ({ active_start_at, end_at }) => {
+      resolve: ({ active_start_at }) => {
         const activeStart = moment.utc(active_start_at)
-        const end = moment.utc(end_at)
         const now = moment.utc()
-        return now.isBetween(activeStart, end)
+        return now.isAfter(activeStart)
       },
     },
     links: {

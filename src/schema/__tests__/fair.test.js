@@ -345,7 +345,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            isActive: false,
+            isActive: true,
           },
         })
       })
