@@ -115,3 +115,74 @@ spec:
     component: web
   sessionAffinity: None
   type: LoadBalancer
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: metaphysics-web-canary
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: metaphysics
+        layer: application
+        component: web
+      name: metaphysics-web-canary
+    spec:
+      containers:
+      - name: metaphysics-web-canary
+        env:
+        - name: DD_TRACER_HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: DD_TRACER_SERVICE_NAME
+          value: metaphysics-canary
+        - name: STATSD_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        envFrom:
+        - configMapRef:
+            name: metaphysics-environment
+        image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:ceb17aec2655475edeffd93a124b5c42f5663d5b
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: '1'
+            memory: 1536Mi
+          limits:
+            memory: 1536Mi
+        readinessProbe:
+          httpGet:
+            port: 3000
+            path: /health
+            httpHeaders:
+            - name: X-FORWARDED-PROTO
+              value: https
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+        - name: ndots
+          value: "1"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: tier
+                operator: In
+                values:
+                - api
+                - foreground
