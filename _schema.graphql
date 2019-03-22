@@ -44,6 +44,14 @@ type AggregationCount {
   sortable_id: String
 }
 
+# Publish artwork Series Stats
+type AnalyticsArtworksPublishedTimeSeriesStats implements AnalyticsPartnerTimeSeriesStatsType {
+  count: Int
+  partnerId: String
+  samplingFrequency: AnalyticsSamplingFrequencyEnum!
+  time: AnalyticsDateTime
+}
+
 # An ISO 8601 datetime
 scalar AnalyticsDateTime
 
@@ -56,16 +64,16 @@ type AnalyticsHistogramBin {
 
 # Partner Stats
 type AnalyticsPartnerStatsType {
+  artworksPublished: [AnalyticsArtworksPublishedTimeSeriesStats!]
   partnerId: String!
-  timeSeries: [AnalyticsPartnerTimeSeriesStatsType!]
   uniqueVisitors: Int
 }
 
 # Partner Time Series Stats
-type AnalyticsPartnerTimeSeriesStatsType {
-  artworksPublished: Int
-  date: AnalyticsDateTime
+interface AnalyticsPartnerTimeSeriesStatsType {
   partnerId: String
+  samplingFrequency: AnalyticsSamplingFrequencyEnum!
+  time: AnalyticsDateTime
 }
 
 # Pricing Context Histogram
@@ -142,6 +150,14 @@ enum AnalyticsPricingContextDimensionsEnum {
 
   # small
   SMALL
+}
+
+enum AnalyticsSamplingFrequencyEnum {
+  # Daily
+  DAILY
+
+  # Weekly
+  WEEKLY
 }
 
 input ApproveOrderInput {
