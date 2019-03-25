@@ -283,10 +283,12 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
               size: 1,
               published: true,
             }
-          ).then(({ body }) => {
-            const artwork = body[0]
-            return artwork && normalizeImageData(getDefault(artwork.images))
-          })
+          )
+            .then(({ body }) => {
+              const artwork = body[0]
+              return artwork && normalizeImageData(getDefault(artwork.images))
+            })
+            .catch(() => null)
         }
 
         return null
