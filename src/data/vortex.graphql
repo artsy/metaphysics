@@ -1,4 +1,14 @@
 """
+Publish artwork Series Stats
+"""
+type ArtworksPublishedTimeSeriesStats implements PartnerTimeSeriesStatsType {
+  count: Int
+  partnerId: String
+  samplingFrequency: SamplingFrequencyEnum!
+  time: DateTime
+}
+
+"""
 An ISO 8601 datetime
 """
 scalar DateTime
@@ -16,18 +26,18 @@ type HistogramBin {
 Partner Stats
 """
 type PartnerStatsType {
+  artworksPublished: [ArtworksPublishedTimeSeriesStats!]
   partnerId: String!
-  timeSeries: [PartnerTimeSeriesStatsType!]
   uniqueVisitors: Int
 }
 
 """
 Partner Time Series Stats
 """
-type PartnerTimeSeriesStatsType {
-  artworksPublished: Int
-  date: DateTime
+interface PartnerTimeSeriesStatsType {
   partnerId: String
+  samplingFrequency: SamplingFrequencyEnum!
+  time: DateTime
 }
 
 """
@@ -161,10 +171,17 @@ type Query {
   """
   Pricing Context Histograms
   """
-  pricingContext(
-    artistId: String!
-    category: PricingContextCategoryEnum!
-    dimensions: PricingContextDimensionsEnum!
-    listPriceCents: Int!
-  ): PricingContext
+  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, dimensions: PricingContextDimensionsEnum!, listPriceCents: Int!): PricingContext
+}
+
+enum SamplingFrequencyEnum {
+  """
+  Daily
+  """
+  DAILY
+
+  """
+  Weekly
+  """
+  WEEKLY
 }
