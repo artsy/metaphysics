@@ -244,7 +244,7 @@ async function loadData(
     response = await allViaLoader(loader, {
       params: baseParams,
       api: {
-        requestThrottleMs: 86400000, // 1000 * 60 * 60 * 24 = 1 day
+        requestThrottleMs: 7200000, // 1000 * 60 * 60 * 2 = 2 hours
       },
     }).then(data => ({
       // This just creates a body/headers object again, as the code
