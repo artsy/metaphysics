@@ -25,8 +25,8 @@ export const PricingContext: GraphQLFieldConfig<any, ResolverContext> = {
     const vars = {
       artistId: artist._id,
       category: category.toUpperCase(),
-      widthCm: width_cm,
-      heightCm: height_cm,
+      widthCm: Math.round(width_cm),
+      heightCm: Math.round(height_cm),
     }
 
     return context.pricingContextLoader(vars, context)
