@@ -96,7 +96,7 @@ import { ResolverContext } from "types/graphql"
 import config from "config"
 import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
 import { AddInitialOfferToOrderMutation } from "./ecommerce/add_initial_offer_to_order_mutation"
-import { SearchableItem } from "./searchableItem"
+import { SearchableItem } from "./SearchableItem"
 const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
 // TODO: Remove this any
