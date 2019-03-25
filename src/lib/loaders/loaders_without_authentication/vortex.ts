@@ -9,14 +9,14 @@ const query = gql`
   query artworkPricingContextQuery(
     $artistId: String!
     $category: AnalyticsPricingContextCategoryEnum!
-    $dimensions: AnalyticsPricingContextDimensionsEnum!
-    $listPriceCents: Int!
+    $widthCm: Int!
+    $heightCm: Int!
   ) {
     analyticsPricingContext(
       artistId: $artistId
       category: $category
-      dimensions: $dimensions
-      listPriceCents: $listPriceCents
+      widthCm: $widthCm
+      heightCm: $heightCm
     ) {
       bins {
         maxPriceCents
@@ -34,8 +34,8 @@ export default () => {
       vars: {
         artistId: string
         category: string
-        dimensions: string
-        listPriceCents: number
+        widthCm: number
+        heightCm: number
       },
       context: ResolverContext
     ) {

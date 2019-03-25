@@ -141,17 +141,6 @@ enum AnalyticsPricingContextCategoryEnum {
   WORK_ON_PAPER
 }
 
-enum AnalyticsPricingContextDimensionsEnum {
-  # large
-  LARGE
-
-  # medium
-  MEDIUM
-
-  # small
-  SMALL
-}
-
 enum AnalyticsSamplingFrequencyEnum {
   # Daily
   DAILY

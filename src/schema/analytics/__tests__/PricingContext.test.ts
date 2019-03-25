@@ -3,9 +3,9 @@ import gql from "lib/gql"
 import { ResolverContext } from "types/graphql"
 
 describe("PricingContext type", () => {
-  const pricingContextLoader = jest.fn(({ dimensions }) =>
+  const pricingContextLoader = jest.fn(() =>
     Promise.resolve({
-      filterDescription: `${dimensions} mocks by David Sheldrick`,
+      filterDescription: `Small mocks by David Sheldrick`,
       bins: [
         {
           maxPriceCents: 8855,
@@ -30,27 +30,15 @@ describe("PricingContext type", () => {
       ],
     })
   )
-  const smallArtworkDimensions = {
-    width_cm: 1,
-    height_cm: 1,
-  }
-  const mediumArtworkDimensions = {
-    width_cm: 70,
-    height_cm: 69,
-  }
-  const largeArtworkDimensions = {
-    width_cm: 70,
-    height_cm: 71,
-  }
   const artwork = {
-    ...smallArtworkDimensions,
     category: "Painting",
-    price_cents: [234],
     artist: {
       _id: "artist-id",
       id: "artist-slug",
     },
     price_hidden: false,
+    width_cm: 15,
+    height_cm: 15,
   }
   const meLoader = jest.fn(() =>
     Promise.resolve({
@@ -111,7 +99,7 @@ Object {
           "numArtworks": 17,
         },
       ],
-      "filterDescription": "SMALL mocks by David Sheldrick",
+      "filterDescription": "Small mocks by David Sheldrick",
     },
   },
 }
@@ -120,30 +108,10 @@ Object {
 Object {
   "artistId": "artist-id",
   "category": "PAINTING",
-  "dimensions": "SMALL",
-  "listPriceCents": 234,
+  "heightCm": 15,
+  "widthCm": 15,
 }
 `)
-    })
-    it("correctly handles medium artworks", async () => {
-      artworkLoader.mockResolvedValueOnce({
-        ...artwork,
-        ...mediumArtworkDimensions,
-      })
-      const result = (await runQuery(query, context)) as any
-      expect(
-        result.artwork.pricingContext.filterDescription
-      ).toMatchInlineSnapshot(`"MEDIUM mocks by David Sheldrick"`)
-    })
-    it("correctly handles large artworks", async () => {
-      artworkLoader.mockResolvedValueOnce({
-        ...artwork,
-        ...largeArtworkDimensions,
-      })
-      const result = (await runQuery(query, context)) as any
-      expect(
-        result.artwork.pricingContext.filterDescription
-      ).toMatchInlineSnapshot(`"LARGE mocks by David Sheldrick"`)
     })
     it("is null when dimensions not present", async () => {
       const { width_cm, height_cm, ...others } = artwork
@@ -161,20 +129,6 @@ Object {
     it("is null when category is not present", async () => {
       const { category, ...others } = artwork
       artworkLoader.mockResolvedValueOnce(others)
-      const result = (await runQuery(query, context)) as any
-      expect(result.artwork.pricingContext).toBeNull()
-    })
-    it("is null when list price is not present", async () => {
-      const { price_cents, ...others } = artwork
-      artworkLoader.mockResolvedValueOnce(others)
-      const result = (await runQuery(query, context)) as any
-      expect(result.artwork.pricingContext).toBeNull()
-    })
-    it("is null when list price is/starts-at 0", async () => {
-      artworkLoader.mockResolvedValueOnce({
-        ...artwork,
-        price_cents: [0],
-      })
       const result = (await runQuery(query, context)) as any
       expect(result.artwork.pricingContext).toBeNull()
     })
