@@ -21,7 +21,7 @@ export const PricingContext: GraphQLFieldConfig<any, ResolverContext> = {
     ) {
       return null
     }
-    // this feature is only enbaled for lab users right now
+    // this feature is only enabled for lab users right now
     if (!context.meLoader) {
       return null
     }
