@@ -233,6 +233,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     },
     shows_connection: {
       type: showConnection,
+      description: "This pagination only supports forward pagination.",
       args: pageable({
         section: {
           type: GraphQLString,
@@ -244,21 +245,31 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         },
       }),
       resolve: ({ id }, options, { fairBoothsLoader }) => {
-        const gravityOptions = omit(
-          convertConnectionArgsToGravityArgs(options),
-          ["page"]
-        )
-        gravityOptions.sort = gravityOptions.sort || "-featured"
-
-        return Promise.all([
-          totalViaLoader(fairBoothsLoader, id, gravityOptions),
-          fairBoothsLoader(id, gravityOptions),
-        ]).then(([count, { body: { results } }]) => {
-          return connectionFromArraySlice(results, options, {
-            arrayLength: count,
-            sliceStart: gravityOptions.offset,
+        interface GravityOptions {
+          size: number
+          sort: string
+          cursor?: string
+          section: string
+        }
+        const gravityOptions: GravityOptions = {
+          sort: "-featured",
+          section: options.section,
+          size: options.first,
+        }
+        if (!!options.after) {
+          gravityOptions.cursor = options.after
+        }
+        return fairBoothsLoader(id, gravityOptions)
+          .then(({ body: { results, next } }) => {
+            const connection = connectionFromArraySlice(results, options, {
+              arrayLength: results.length,
+              sliceStart: 0,
+            })
+            connection.pageInfo.endCursor = next
+            connection.pageInfo.hasNextPage = !!next
+            return connection
           })
-        })
+          .catch(() => null)
       },
     },
     start_at: date,

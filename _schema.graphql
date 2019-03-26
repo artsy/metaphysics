@@ -1247,6 +1247,8 @@ type ArtworkContextFair {
   location: Location
   name: String
   profile: Profile
+
+  # This pagination only supports forward pagination.
   shows_connection(
     # Number of artworks to return
     section: String
@@ -3438,6 +3440,8 @@ type Fair {
   location: Location
   name: String
   profile: Profile
+
+  # This pagination only supports forward pagination.
   shows_connection(
     # Number of artworks to return
     section: String
@@ -4704,6 +4708,8 @@ type HomePageModuleContextFair {
   location: Location
   name: String
   profile: Profile
+
+  # This pagination only supports forward pagination.
   shows_connection(
     # Number of artworks to return
     section: String
