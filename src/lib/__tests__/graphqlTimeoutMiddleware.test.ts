@@ -178,7 +178,7 @@ describe("graphQLTimeoutMiddleware", () => {
         },
         Artist: {
           name: async () => {
-            await delay(defaultTimeout + 2)
+            await delay(defaultTimeout + 10)
             return "Some artist"
           },
         },
