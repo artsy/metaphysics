@@ -9,18 +9,18 @@ const { HMAC_SECRET } = config
 describe("CausalityJWT", () => {
   let context
 
+  const sale = {
+    _id: "foo",
+    name: "Foo sale",
+    id: "slug",
+    partner: { _id: "fooPartner" },
+  }
+
   beforeEach(() => {
     const me = {
       _id: "craig",
       paddle_number: "123",
       type: "User",
-    }
-
-    const sale = {
-      _id: "foo",
-      name: "Foo sale",
-      id: "slug",
-      partner: { _id: "fooPartner" },
     }
 
     const mePartners = [{ _id: "fooPartner" }]
@@ -128,10 +128,18 @@ describe("CausalityJWT", () => {
   })
 
   it("does not allow a non-admin user or user not associated with sale partner to be operator", () => {
+    expect.assertions(1)
+
     const query = `{
       causality_jwt(role: OPERATOR, sale_id: "foo")
     }`
-    context.mePartnersLoader = sinon.stub().returns(Promise.resolve([]))
+    context.saleLoader = sinon.stub().returns(
+      Promise.resolve({
+        ...sale,
+        partner: undefined, // in production partner is undefined when user is not an admin or a partner
+      })
+    )
+
     return runAuthenticatedQuery(query, context).catch(e => {
       expect(e.message).toEqual("Unauthorized to be operator")
     })
