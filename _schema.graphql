@@ -141,17 +141,6 @@ enum AnalyticsPricingContextCategoryEnum {
   WORK_ON_PAPER
 }
 
-enum AnalyticsPricingContextDimensionsEnum {
-  # large
-  LARGE
-
-  # medium
-  MEDIUM
-
-  # small
-  SMALL
-}
-
 enum AnalyticsSamplingFrequencyEnum {
   # Daily
   DAILY
@@ -1043,6 +1032,7 @@ type Artwork implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
   certificateOfAuthenticity: ArtworkInfoRow
+  pricingContext: AnalyticsPricingContext
 }
 
 enum ArtworkAggregation {
@@ -1901,6 +1891,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
   certificateOfAuthenticity: ArtworkInfoRow
+  pricingContext: AnalyticsPricingContext
 }
 
 type ArtworkLayer {
@@ -7682,14 +7673,6 @@ type Query {
 
   # Find PartnerStats
   analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStatsType
-
-  # Pricing Context Histograms
-  analyticsPricingContext(
-    artistId: String!
-    category: AnalyticsPricingContextCategoryEnum!
-    dimensions: AnalyticsPricingContextDimensionsEnum!
-    listPriceCents: Int!
-  ): AnalyticsPricingContext
   marketingCollections(
     randomizationSeed: String
     size: Int

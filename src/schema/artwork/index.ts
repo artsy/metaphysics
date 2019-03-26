@@ -41,6 +41,7 @@ import { amount } from "schema/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 import { ResolverContext } from "types/graphql"
+import { PricingContext } from "schema/analytics/PricingContext"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -803,6 +804,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return { label: "Certificate of authenticity", details: null }
         },
       },
+      pricingContext: PricingContext,
     }
   },
 })
