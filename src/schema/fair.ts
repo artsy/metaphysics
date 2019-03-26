@@ -25,7 +25,6 @@ import {
   GraphQLList,
   GraphQLFieldConfig,
 } from "graphql"
-import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
