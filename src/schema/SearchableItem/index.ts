@@ -41,19 +41,40 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
     },
     description: {
       type: GraphQLString,
-      resolve: ({ description, end_at, label, published_at, start_at }) => {
+      resolve: ({
+        description,
+        display,
+        end_at,
+        label,
+        published_at,
+        start_at,
+      }) => {
         switch (label) {
           case "Article":
-            const publishedAt = moment.utc(published_at).format("MMM Do, YYYY")
-            if (!description || description.length === 0) {
-              return publishedAt
-            } else {
-              return `${publishedAt} — ${description}`
+            let formattedPublishedAt
+            if (published_at) {
+              formattedPublishedAt = moment
+                .utc(published_at)
+                .format("MMM Do, YYYY")
             }
+
+            if (published_at && description) {
+              return `${formattedPublishedAt} ... ${description}`
+            } else if (published_at) {
+              return formattedPublishedAt
+            } else {
+              return description
+            }
+          case "City":
+            return `Browse current exhibitions in ${display}`
+          case "Fair":
           case "Sale":
             const period = exhibitionPeriod(start_at, end_at)
 
             return `Sale running from ${period}`
+          case "Show":
+          case "Booth":
+            return ""
           default:
             if (!description || description.length === 0) {
               return null
