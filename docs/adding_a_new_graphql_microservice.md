@@ -48,6 +48,8 @@ Let's pretend we're mapping a GraphQL API called `Three Body` but provides its o
    }
    ```
 
+   *Note:* If the new microservice requires gravity JWT authentication, another middleware is required to pass the token coming from client to gravity and get an application token from gravity and pass it to the microservice. Follow exchange example [here](https://github.com/artsy/metaphysics/blob/a1a2d507c7ce03c55f44b1165fff51b22446557c/src/lib/stitching/exchange/link.ts#L20-L40) to add a middleware and [here](https://github.com/artsy/metaphysics/blob/bda55ee11a622d9b1a5bd1ac1c2c64cea8888744/src/lib/loaders/loaders_with_authentication/exchange.ts) to add token loader.
+
 1. Create a GraphQL Schema: `src/lib/stitching/threeBody/schema.ts`
 
    This object represents the GraphQL schema, generated from your `threebody.schema`. In
