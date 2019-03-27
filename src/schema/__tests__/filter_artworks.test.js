@@ -115,6 +115,73 @@ describe("Filter Artworks", () => {
     })
   })
 
+  describe(`Passes along an incoming page param over cursors`, () => {
+    beforeEach(() => {
+      const gene = { id: "500-1000-ce", browseable: true, family: "" }
+
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: sinon
+            .stub()
+            .withArgs("filter/artworks", {
+              gene_id: "500-1000-ce",
+              aggregations: ["total"],
+              for_sale: true,
+              page: 20,
+              size: 30,
+            })
+            .returns(
+              Promise.resolve({
+                hits: [
+                  {
+                    id: "oseberg-norway-queens-ship",
+                    title: "Queen's Ship",
+                    artists: [],
+                  },
+                ],
+                aggregations: { total: { value: 1000 } },
+              })
+            ),
+        },
+        geneLoader: sinon.stub().returns(Promise.resolve(gene)),
+      }
+    })
+
+    it("returns filtered artworks, and makes a gravity call", () => {
+      const query = `
+        {
+          gene(id: "500-1000-ce") {
+            name
+            filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true, page: 20){
+              artworks_connection(first: 30, after: "") {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, context).then(
+        ({
+          gene: {
+            filtered_artworks: {
+              artworks_connection: { edges },
+            },
+          },
+        }) => {
+          expect(edges).toEqual([
+            { node: { id: "oseberg-norway-queens-ship" } },
+          ])
+        }
+      )
+    })
+  })
+
   describe(`Pagination for the last page`, () => {
     beforeEach(() => {
       context = {
