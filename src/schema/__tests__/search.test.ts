@@ -5,6 +5,7 @@ describe("Search", () => {
   let searchResults: any
   let aggregations: any
   let context: any
+  let searchResponse: any
 
   beforeEach(() => {
     aggregations = {
@@ -82,14 +83,14 @@ describe("Search", () => {
     ]
 
     context = {
-      searchLoader: () =>
-        Promise.resolve({
-          body: searchResults,
-          headers: { "x-total-count": 40 },
-        }),
       artistLoader: () => Promise.resolve({ hometown: "London, UK" }),
       artworkLoader: () => Promise.resolve({ title: "Self Portrait" }),
     }
+
+    searchResponse = Promise.resolve({
+      body: searchResults,
+      headers: { "x-total-count": 40 },
+    })
   })
 
   it("returns search results for a query", () => {
@@ -114,6 +115,7 @@ describe("Search", () => {
       }
     `
 
+    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
     return runQuery(query, context).then(data => {
       const artistSearchableItemNode = data!.search.edges[0].node
 
@@ -179,18 +181,38 @@ describe("Search", () => {
         }
       }
     `
+    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
     return runQuery(query, context).then(data => {
       expect(data!.search.pageInfo.hasNextPage).toBeTruthy()
     })
   })
 
+  it("passes an incoming page param and correctly computes the cursor", () => {
+    const query = `
+      {
+        search(query: "David Bowie", first: 20, page: 30, after: "") {
+          pageInfo {
+            endCursor
+          }
+        }
+      }
+    `
+    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
+
+    return runQuery(query, context).then(data => {
+      const { page, size } = context.searchLoader.mock.calls[0][0]
+      expect(page).toEqual(30)
+      expect(size).toEqual(20)
+      // Check that the cursor points to the end of page 20, size 30.
+      // Base64 encoded string: `arrayconnection:599`
+      expect(data!.search.pageInfo.endCursor).toEqual(
+        "YXJyYXljb25uZWN0aW9uOjU5OQ=="
+      )
+    })
+  })
+
   it("can return aggregations", () => {
-    context.searchLoader = () =>
-      Promise.resolve({
-        body: { results: searchResults, aggregations },
-        headers: { "x-total-count": 100 },
-      })
     const query = `
       {
         search(query: "David Bowie", first: 10, aggregations: [TYPE]) {
@@ -204,6 +226,13 @@ describe("Search", () => {
         }
       }
     `
+    const searchResponseWithAggregations = {
+      body: { results: searchResults, aggregations },
+      headers: { "x-total-count": 100 },
+    }
+    context.searchLoader = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve(searchResponseWithAggregations))
 
     return runQuery(query, context).then(data => {
       const typeAggregation = data!.search.aggregations.find(
@@ -235,6 +264,7 @@ describe("Search", () => {
         }
       }
     `
+    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
     return runQuery(query, context).then(data => {
       const artistNode = data!.search.edges[0].node
@@ -260,6 +290,7 @@ describe("Search", () => {
         }
       }
     `
+    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
     return runQuery(query, context).then(data => {
       const artworkNode = data!.search.edges[1].node

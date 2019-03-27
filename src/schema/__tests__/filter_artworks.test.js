@@ -155,6 +155,9 @@ describe("Filter Artworks", () => {
             name
             filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true, page: 20){
               artworks_connection(first: 30, after: "") {
+                pageInfo {
+                  endCursor
+                }
                 edges {
                   node {
                     id
@@ -170,13 +173,19 @@ describe("Filter Artworks", () => {
         ({
           gene: {
             filtered_artworks: {
-              artworks_connection: { edges },
+              artworks_connection: {
+                edges,
+                pageInfo: { endCursor },
+              },
             },
           },
         }) => {
           expect(edges).toEqual([
             { node: { id: "oseberg-norway-queens-ship" } },
           ])
+          // Check that the cursor points to the end of page 20, size 30.
+          // Base64 encoded string: `arrayconnection:599`
+          expect(endCursor).toEqual("YXJyYXljb25uZWN0aW9uOjU5OQ==")
         }
       )
     })
