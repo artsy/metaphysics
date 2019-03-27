@@ -105,7 +105,7 @@ describe("RecentlyViewedArtworks", () => {
       data: { recordArtworkView: { artwork_id: "percy" } },
     }
 
-    const mockFetch = fetch as jest.Mock<any>
+    const mockFetch = (fetch as unknown) as jest.Mock<any>
     mockFetch.mockImplementationOnce(() => {
       return Promise.resolve({
         text: () => Promise.resolve(JSON.stringify(responseData)),

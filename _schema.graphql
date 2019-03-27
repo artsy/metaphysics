@@ -60,6 +60,20 @@ type AnalyticsHistogramBin {
   maxPriceCents: Int!
   minPriceCents: Int!
   numArtworks: Int!
+  minPrice(
+    decimal: String = "."
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  maxPrice(
+    decimal: String = "."
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
 }
 
 # Partner Stats
@@ -1032,6 +1046,12 @@ type Artwork implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
   certificateOfAuthenticity: ArtworkInfoRow
+
+  # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
+  widthCm: Float
+
+  # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
+  heightCm: Float
   pricingContext: AnalyticsPricingContext
 }
 
@@ -1891,7 +1911,12 @@ type ArtworkItem implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
   certificateOfAuthenticity: ArtworkInfoRow
-  pricingContext: AnalyticsPricingContext
+
+  # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
+  widthCm: Float
+
+  # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
+  heightCm: Float
 }
 
 type ArtworkLayer {
