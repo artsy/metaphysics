@@ -1257,6 +1257,8 @@ type ArtworkContextFair {
   location: Location
   name: String
   profile: Profile
+
+  # This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.
   shows_connection(
     # Number of artworks to return
     section: String
@@ -3454,6 +3456,8 @@ type Fair {
   location: Location
   name: String
   profile: Profile
+
+  # This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.
   shows_connection(
     # Number of artworks to return
     section: String
@@ -4720,6 +4724,8 @@ type HomePageModuleContextFair {
   location: Location
   name: String
   profile: Profile
+
+  # This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.
   shows_connection(
     # Number of artworks to return
     section: String

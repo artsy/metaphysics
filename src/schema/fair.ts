@@ -25,7 +25,6 @@ import {
   GraphQLList,
   GraphQLFieldConfig,
 } from "graphql"
-import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
@@ -233,6 +232,8 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     },
     shows_connection: {
       type: showConnection,
+      description:
+        "This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.",
       args: pageable({
         section: {
           type: GraphQLString,
@@ -244,21 +245,31 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         },
       }),
       resolve: ({ id }, options, { fairBoothsLoader }) => {
-        const gravityOptions = omit(
-          convertConnectionArgsToGravityArgs(options),
-          ["page"]
+        interface GravityOptions {
+          size: number
+          sort: string
+          cursor?: string
+          section: string
+        }
+        const gravityOptions: GravityOptions = {
+          sort: options.sort || "-featured",
+          section: options.section,
+          size: options.first,
+        }
+        if (!!options.after) {
+          gravityOptions.cursor = options.after
+        }
+        return fairBoothsLoader(id, gravityOptions).then(
+          ({ body: { results, next } }) => {
+            const connection = connectionFromArraySlice(results, options, {
+              arrayLength: results.length,
+              sliceStart: 0,
+            })
+            connection.pageInfo.endCursor = next
+            connection.pageInfo.hasNextPage = !!next
+            return connection
+          }
         )
-        gravityOptions.sort = gravityOptions.sort || "-featured"
-
-        return Promise.all([
-          totalViaLoader(fairBoothsLoader, id, gravityOptions),
-          fairBoothsLoader(id, gravityOptions),
-        ]).then(([count, { body: { results } }]) => {
-          return connectionFromArraySlice(results, options, {
-            arrayLength: count,
-            sliceStart: gravityOptions.offset,
-          })
-        })
       },
     },
     start_at: date,

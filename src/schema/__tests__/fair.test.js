@@ -198,6 +198,18 @@ describe("Fair", () => {
           },
         })
       ),
+      fairBoothsLoader: jest.fn().mockReturnValue(
+        Promise.resolve({
+          body: {
+            results: [
+              {
+                id: "abxy-blk-and-blue",
+              },
+            ],
+            next: "1234567890",
+          },
+        })
+      ),
       artistsLoader: jest.fn().mockReturnValue(
         Promise.resolve([
           {
@@ -264,7 +276,34 @@ describe("Fair", () => {
     })
   })
 
-  xit("includes a formatted exhibition period", async () => {
+  it("Shows connection uses gravity cursor", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          shows: shows_connection(first: 0, after: "") {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      fair: {
+        shows: {
+          pageInfo: {
+            endCursor: "1234567890",
+            hasNextPage: true,
+          },
+        },
+      },
+    })
+  })
+
+  it("includes a formatted exhibition period", async () => {
     const query = gql`
       {
         fair(id: "aqua-art-miami-2018") {
