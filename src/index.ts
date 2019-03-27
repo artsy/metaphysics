@@ -15,7 +15,6 @@ import moment from "moment"
 import morgan from "artsy-morgan"
 import raven from "raven"
 import xapp from "artsy-xapp"
-import crunchInterceptor from "./lib/crunchInterceptor"
 import {
   fetchLoggerSetup,
   fetchLoggerRequestDone,
@@ -108,7 +107,6 @@ async function startApp() {
     logQueryDetailsIfEnabled(),
     nameOldEigenQueries,
     fetchPersistedQuery,
-    crunchInterceptor,
     graphqlHTTP((req, res, params) => {
       const accessToken = req.headers["x-access-token"] as string | undefined
       const userID = req.headers["x-user-id"] as string | undefined
