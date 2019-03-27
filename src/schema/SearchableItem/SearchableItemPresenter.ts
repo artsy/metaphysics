@@ -1,7 +1,5 @@
-import { stripTags } from "lib/helpers"
-
 import moment from "moment"
-import { exhibitionPeriod } from "lib/date"
+import { stripTags } from "lib/helpers"
 
 export class SearchableItemPresenter {
   private item: any
@@ -10,24 +8,27 @@ export class SearchableItemPresenter {
     this.item = item
   }
 
-  formattedDescription(): string | null {
-    const { description, display, end_at, start_at } = this.item
+  formattedDescription(): string | undefined {
+    const { description, display } = this.item
 
     switch (this.item.label) {
       case "Article":
         return this.formattedArticleDescription()
+      case "Fair":
+        return this.formatEventDescription("Art fair")
+      case "Sale":
+        return this.formatEventDescription("Sale")
+      case "Artwork":
+      case "Feature":
+      case "Gallery":
+      case "Page":
+        return description
       case "City":
         return `Browse current exhibitions in ${display}`
-      case "Fair":
-        const period = exhibitionPeriod(start_at, end_at)
-
-        return `Sale running from ${period}`
+      case "MarketingCollection":
+        return stripTags(description)
       default:
-        if (!description || description.length === 0) {
-          return null
-        } else {
-          return stripTags(description)
-        }
+        return undefined
     }
   }
 
@@ -69,22 +70,38 @@ export class SearchableItemPresenter {
         }
       case "Gene":
         return "Category"
-
       // TODO: How do we correctly display Sale/Auction types?
       // There's nothing to distinguish the two types present
       // in the special `match` JSON returned from the Gravity API.
       case "Sale":
         return "Auction"
-
       case "MarketingCollection":
         return "Collection"
-
       default:
         return label
     }
   }
 
-  private formattedArticleDescription(): string | null {
+  private formatEventDescription(title: string): string {
+    const { description, location, start_at, end_at } = this.item
+
+    const formattedStartAt = moment.utc(start_at).format("MMM Do, YYYY")
+    const formattedEndAt = moment.utc(end_at).format("MMM Do, YYYY")
+
+    if (start_at && end_at) {
+      let formattedDescription = `${title} running from ${formattedStartAt} to ${formattedEndAt}`
+      if (location) {
+        formattedDescription += ` in ${location}`
+      }
+      return formattedDescription
+    } else if (start_at) {
+      return `${title} opening ${formattedStartAt}`
+    } else {
+      return description
+    }
+  }
+
+  private formattedArticleDescription(): string {
     const { description, published_at } = this.item
 
     let formattedPublishedAt
