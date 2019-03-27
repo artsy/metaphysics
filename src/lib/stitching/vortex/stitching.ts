@@ -29,10 +29,6 @@ export const vortexStitchingEnvironment = () => ({
       ): String
     }
   `,
-
-  // Resolvers for the above, this passes in ALL potential parameters
-  // from KAWS into filter_artworks to allow end users to dynamically
-  // modify query filters using an admin tool
   resolvers: {
     AnalyticsHistogramBin: {
       minPrice: {
