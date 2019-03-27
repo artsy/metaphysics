@@ -258,8 +258,8 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         if (!!options.after) {
           gravityOptions.cursor = options.after
         }
-        return fairBoothsLoader(id, gravityOptions)
-          .then(({ body: { results, next } }) => {
+        return fairBoothsLoader(id, gravityOptions).then(
+          ({ body: { results, next } }) => {
             const connection = connectionFromArraySlice(results, options, {
               arrayLength: results.length,
               sliceStart: 0,
@@ -267,8 +267,8 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
             connection.pageInfo.endCursor = next
             connection.pageInfo.hasNextPage = !!next
             return connection
-          })
-          .catch(() => null)
+          }
+        )
       },
     },
     start_at: date,
