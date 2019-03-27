@@ -7592,6 +7592,9 @@ type Query {
     # Mode of search to execute. Default: SITE.
     mode: SearchMode
     aggregations: [SearchAggregation]
+
+    # If present, will be used for pagination instead of cursors.
+    page: Int
     after: String
     first: Int
     before: String
@@ -9606,6 +9609,9 @@ type Viewer {
     # Mode of search to execute. Default: SITE.
     mode: SearchMode
     aggregations: [SearchAggregation]
+
+    # If present, will be used for pagination instead of cursors.
+    page: Int
     after: String
     first: Int
     before: String
