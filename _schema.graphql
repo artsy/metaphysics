@@ -55,10 +55,32 @@ type AnalyticsArtworksPublishedTimeSeriesStats implements AnalyticsPartnerTimeSe
 # An ISO 8601 datetime
 scalar AnalyticsDateTime
 
-# A histogram bin
+# Histogram bin for pricing context
 type AnalyticsHistogramBin {
-  maxPriceCents: Int!
   minPriceCents: Int!
+
+  # A formatted price with various currency formatting options.
+  minPrice(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  maxPriceCents: Int!
+
+  # A formatted price with various currency formatting options.
+  maxPrice(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
   numArtworks: Int!
 }
 
@@ -76,69 +98,11 @@ interface AnalyticsPartnerTimeSeriesStatsType {
   time: AnalyticsDateTime
 }
 
-# Pricing Context Histogram
+# Price context for listed artworks.
 type AnalyticsPricingContext {
-  bins: [AnalyticsHistogramBin!]!
+  # The description of the filters being used to generate the contextual data.
   filterDescription: String!
-}
-
-enum AnalyticsPricingContextCategoryEnum {
-  # Architecture
-  ARCHITECTURE
-
-  # Books and Portfolios
-  BOOKS_AND_PORTFOLIOS
-
-  # Design/Decorative Art
-  DESIGN_DECORATIVE_ART
-
-  # Drawing, Collage or other Work on Paper
-  DRAWING_COLAGE_OTHER_WORK_ON_PAPER
-
-  # Fashion Design and Wearable Art
-  FASHON
-
-  # Installation
-  INSTALLATION
-
-  # Jewelry
-  JEWELRY
-
-  # Mixed Media
-  MIXED_MEDIA
-
-  # Other
-  OTHER
-
-  # Painting
-  PAINTING
-
-  # Performance Art
-  PERFORMANCE
-
-  # Photography
-  PHOTOGRAPHY
-
-  # Posters
-  POSTERS
-
-  # Print
-  PRINT
-
-  # Sculpture
-  SCULPTURE
-
-  # Sound
-  SOUND
-
-  # Textile Arts
-  TEXTILE
-
-  # Video/Film/Animation
-  VIDEO_FILM_ANIMATION
-
-  # Work on Paper
-  WORK_ON_PAPER
+  bins: [AnalyticsHistogramBin]!
 }
 
 enum AnalyticsSamplingFrequencyEnum {

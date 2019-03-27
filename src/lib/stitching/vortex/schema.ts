@@ -5,6 +5,7 @@ import {
   RenameTypes,
   RenameRootFields,
   FilterRootFields,
+  FilterTypes,
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
@@ -24,9 +25,14 @@ export const executableVortexSchema = ({
   return transformSchema(schema, [
     // we don't want pricingContext to be a root query field, it is
     // accessible through artwork
-    new FilterRootFields(
-      (_operation, name) => !removePricingContext || name !== "pricingContext"
-    ),
+    ...(removePricingContext
+      ? [
+          new FilterRootFields((_operation, name) => name !== "pricingContext"),
+          new FilterTypes(
+            type => !type.name.match(/HistogramBin|PricingContext/)
+          ),
+        ]
+      : []),
     new RenameTypes(name => {
       return `Analytics${name}`
     }),

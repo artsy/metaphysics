@@ -61,7 +61,9 @@ describe("PricingContext type", () => {
         pricingContext {
           filterDescription
           bins {
+            maxPrice
             maxPriceCents
+            minPrice
             minPriceCents
             numArtworks
           }
@@ -70,31 +72,38 @@ describe("PricingContext type", () => {
     }
   `
 
-  describe("PricingContext type", () => {
-    it("is accessible through the artwork type", async () => {
-      const result = await runQuery(query, context)
-      expect(result).toMatchInlineSnapshot(`
+  it("is accessible through the artwork type", async () => {
+    const result = await runQuery(query, context)
+    expect(result).toMatchInlineSnapshot(`
 Object {
   "artwork": Object {
     "pricingContext": Object {
       "bins": Array [
         Object {
+          "maxPrice": "$89",
           "maxPriceCents": 8855,
+          "minPrice": "$9",
           "minPriceCents": 900,
           "numArtworks": 67,
         },
         Object {
+          "maxPrice": "$168",
           "maxPriceCents": 16810,
+          "minPrice": "$89",
           "minPriceCents": 8855,
           "numArtworks": 57,
         },
         Object {
+          "maxPrice": "$248",
           "maxPriceCents": 24765,
+          "minPrice": "$168",
           "minPriceCents": 16810,
           "numArtworks": 45,
         },
         Object {
+          "maxPrice": "$327",
           "maxPriceCents": 32720,
+          "minPrice": "$248",
           "minPriceCents": 24765,
           "numArtworks": 17,
         },
@@ -104,7 +113,7 @@ Object {
   },
 }
 `)
-      expect(pricingContextLoader.mock.calls[0][0]).toMatchInlineSnapshot(`
+    expect(pricingContextLoader.mock.calls[0][0]).toMatchInlineSnapshot(`
 Object {
   "artistId": "artist-id",
   "category": "PAINTING",
@@ -112,52 +121,51 @@ Object {
   "widthCm": 15,
 }
 `)
-    })
-    it("is null when dimensions not present", async () => {
-      const { width_cm, height_cm, ...others } = artwork
-      artworkLoader.mockResolvedValueOnce(others)
-      const result = (await runQuery(query, context)) as any
-      expect(result.artwork.pricingContext).toBeNull()
-    })
-    it("is null when artist details are not present", async () => {
-      const { artist, ...others } = artwork
-      artworkLoader.mockResolvedValueOnce(others)
-      const result = (await runQuery(query, context)) as any
-      expect(result.artwork.pricingContext).toBeNull()
-    })
+  })
+  it("is null when dimensions not present", async () => {
+    const { width_cm, height_cm, ...others } = artwork
+    artworkLoader.mockResolvedValueOnce(others)
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
+  it("is null when artist details are not present", async () => {
+    const { artist, ...others } = artwork
+    artworkLoader.mockResolvedValueOnce(others)
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
 
-    it("is null when category is not present", async () => {
-      const { category, ...others } = artwork
-      artworkLoader.mockResolvedValueOnce(others)
-      const result = (await runQuery(query, context)) as any
-      expect(result.artwork.pricingContext).toBeNull()
+  it("is null when category is not present", async () => {
+    const { category, ...others } = artwork
+    artworkLoader.mockResolvedValueOnce(others)
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
+  it("is null when list price is not public", async () => {
+    artworkLoader.mockResolvedValueOnce({
+      ...artwork,
+      price_hidden: true,
     })
-    it("is null when list price is not public", async () => {
-      artworkLoader.mockResolvedValueOnce({
-        ...artwork,
-        price_hidden: true,
-      })
-      const result = (await runQuery(query, context)) as any
-      expect(result.artwork.pricingContext).toBeNull()
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
+  it("is null when not authenticated", async () => {
+    const { meLoader, ...others } = context
+    const result = (await runQuery(query, others)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
+  it("is null when user is not in lab feature", async () => {
+    meLoader.mockResolvedValueOnce({
+      lab_features: ["some other lab feature"],
     })
-    it("is null when not authenticated", async () => {
-      const { meLoader, ...others } = context
-      const result = (await runQuery(query, others)) as any
-      expect(result.artwork.pricingContext).toBeNull()
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
+  it("is null when user has no lab features", async () => {
+    meLoader.mockResolvedValueOnce({
+      lab_features: [],
     })
-    it("is null when user is not in lab feature", async () => {
-      meLoader.mockResolvedValueOnce({
-        lab_features: ["some other lab feature"],
-      })
-      const result = (await runQuery(query, context)) as any
-      expect(result.artwork.pricingContext).toBeNull()
-    })
-    it("is null when user has no lab features", async () => {
-      meLoader.mockResolvedValueOnce({
-        lab_features: [],
-      })
-      const result = (await runQuery(query, context)) as any
-      expect(result.artwork.pricingContext).toBeNull()
-    })
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
   })
 })
