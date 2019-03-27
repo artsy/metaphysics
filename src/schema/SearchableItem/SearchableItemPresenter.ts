@@ -1,6 +1,8 @@
 import moment from "moment"
 import { stripTags } from "lib/helpers"
 
+const DATE_FORMAT = "MMM Do, YYYY"
+
 export class SearchableItemPresenter {
   private item: any
 
@@ -85,8 +87,8 @@ export class SearchableItemPresenter {
   private formatEventDescription(title: string): string {
     const { description, location, start_at, end_at } = this.item
 
-    const formattedStartAt = moment.utc(start_at).format("MMM Do, YYYY")
-    const formattedEndAt = moment.utc(end_at).format("MMM Do, YYYY")
+    const formattedStartAt = moment.utc(start_at).format(DATE_FORMAT)
+    const formattedEndAt = moment.utc(end_at).format(DATE_FORMAT)
 
     if (start_at && end_at) {
       let formattedDescription = `${title} running from ${formattedStartAt} to ${formattedEndAt}`
@@ -104,10 +106,7 @@ export class SearchableItemPresenter {
   private formattedArticleDescription(): string {
     const { description, published_at } = this.item
 
-    let formattedPublishedAt
-    if (published_at) {
-      formattedPublishedAt = moment.utc(published_at).format("MMM Do, YYYY")
-    }
+    const formattedPublishedAt = moment.utc(published_at).format(DATE_FORMAT)
 
     if (published_at && description) {
       return `${formattedPublishedAt} ... ${description}`
