@@ -232,7 +232,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     },
     shows_connection: {
       type: showConnection,
-      description: "This pagination only supports forward pagination.",
+      description: "This connection only supports forward pagination",
       args: pageable({
         section: {
           type: GraphQLString,
@@ -251,7 +251,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           section: string
         }
         const gravityOptions: GravityOptions = {
-          sort: "-featured",
+          sort: options.sort || "-featured",
           section: options.section,
           size: options.first,
         }

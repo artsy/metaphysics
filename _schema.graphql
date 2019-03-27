@@ -1248,7 +1248,7 @@ type ArtworkContextFair {
   name: String
   profile: Profile
 
-  # This pagination only supports forward pagination.
+  # This connection only supports forward pagination
   shows_connection(
     # Number of artworks to return
     section: String
@@ -3441,7 +3441,7 @@ type Fair {
   name: String
   profile: Profile
 
-  # This pagination only supports forward pagination.
+  # This connection only supports forward pagination
   shows_connection(
     # Number of artworks to return
     section: String
@@ -4709,7 +4709,7 @@ type HomePageModuleContextFair {
   name: String
   profile: Profile
 
-  # This pagination only supports forward pagination.
+  # This connection only supports forward pagination
   shows_connection(
     # Number of artworks to return
     section: String
