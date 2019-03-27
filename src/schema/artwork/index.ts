@@ -32,6 +32,7 @@ import {
   GraphQLList,
   GraphQLInt,
   GraphQLFieldConfig,
+  GraphQLFloat,
 } from "graphql"
 import AttributionClass from "schema/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
@@ -41,7 +42,6 @@ import { amount } from "schema/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 import { ResolverContext } from "types/graphql"
-import { PricingContext } from "schema/analytics/PricingContext"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -804,7 +804,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return { label: "Certificate of authenticity", details: null }
         },
       },
-      pricingContext: PricingContext,
+      widthCm: {
+        description:
+          "If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field",
+        type: GraphQLFloat,
+        resolve: ({ width_cm }) => width_cm,
+      },
+      heightCm: {
+        description:
+          "If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field",
+        type: GraphQLFloat,
+        resolve: ({ height_cm }) => height_cm,
+      },
     }
   },
 })

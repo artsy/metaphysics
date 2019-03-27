@@ -2,40 +2,15 @@ import { runQuery } from "test/utils"
 import gql from "lib/gql"
 import { ResolverContext } from "types/graphql"
 
+jest.mock("../link")
+
 describe("PricingContext type", () => {
-  const pricingContextLoader = jest.fn(() =>
-    Promise.resolve({
-      filterDescription: `Small mocks by David Sheldrick`,
-      bins: [
-        {
-          maxPriceCents: 8855,
-          minPriceCents: 900,
-          numArtworks: 67,
-        },
-        {
-          maxPriceCents: 16810,
-          minPriceCents: 8855,
-          numArtworks: 57,
-        },
-        {
-          maxPriceCents: 24765,
-          minPriceCents: 16810,
-          numArtworks: 45,
-        },
-        {
-          maxPriceCents: 32720,
-          minPriceCents: 24765,
-          numArtworks: 17,
-        },
-      ],
-    })
-  )
   const artwork = {
-    category: "Painting",
     artist: {
-      _id: "artist-id",
       id: "artist-slug",
+      _id: "artist-id",
     },
+    category: "Painting",
     price_hidden: false,
     width_cm: 15,
     height_cm: 15,
@@ -50,10 +25,15 @@ describe("PricingContext type", () => {
     })
   )
   const artworkLoader = jest.fn(() => Promise.resolve(artwork))
+  const artistLoader = jest.fn(() =>
+    Promise.resolve({
+      _id: "artist-id",
+    })
+  )
   const context: Partial<ResolverContext> = {
     meLoader,
     artworkLoader,
-    pricingContextLoader,
+    artistLoader,
   }
   const query = gql`
     query {
@@ -111,14 +91,6 @@ Object {
       "filterDescription": "Small mocks by David Sheldrick",
     },
   },
-}
-`)
-    expect(pricingContextLoader.mock.calls[0][0]).toMatchInlineSnapshot(`
-Object {
-  "artistId": "artist-id",
-  "category": "PAINTING",
-  "heightCm": 15,
-  "widthCm": 15,
 }
 `)
   })
