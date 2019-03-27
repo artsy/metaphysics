@@ -4,7 +4,11 @@ import Artwork from "./artwork"
 import Artist from "./artist"
 import Tag from "./tag"
 import numeral from "./fields/numeral"
-import { computeTotalPages, createPageCursors } from "./fields/pagination"
+import {
+  computeTotalPages,
+  createPageCursors,
+  pageToCursor,
+} from "./fields/pagination"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
 import {
@@ -86,7 +90,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: "The ID of the object.",
       resolve: ({ options }) =>
-        toGlobalId("FilterArtworks", JSON.stringify(options)),
+        toGlobalId("FilterArtworks", JSON.stringify(omit(options, "page"))),
     },
     aggregations: ArtworkFilterAggregations,
     artworks_connection: {
@@ -111,6 +115,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
         const relayOptions = convertConnectionArgsToGravityArgs(args)
         if (!!gravityOptions.page) relayOptions.page = gravityOptions.page
 
+        const { page, size } = relayOptions
         const {
           include_artworks_by_followed_artists,
           aggregations,
@@ -143,6 +148,16 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
               relayOptions.size
             )
 
+            const connection = connectionFromArraySlice(hits, args, {
+              arrayLength: Math.min(
+                aggregations.total.value,
+                totalPages * relayOptions.size
+              ),
+              sliceStart: relayOptions.offset,
+            })
+
+            connection.pageInfo.endCursor = pageToCursor(page + 1, size)
+
             return Object.assign(
               {
                 pageCursors: createPageCursors(
@@ -150,13 +165,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
                   aggregations.total.value
                 ),
               },
-              connectionFromArraySlice(hits, args, {
-                arrayLength: Math.min(
-                  aggregations.total.value,
-                  totalPages * relayOptions.size
-                ),
-                sliceStart: relayOptions.offset,
-              })
+              connection
             )
           }
         )

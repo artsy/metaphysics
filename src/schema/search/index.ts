@@ -7,12 +7,13 @@ import {
   visit,
   BREAK,
   GraphQLResolveInfo,
+  GraphQLInt,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
 
 import { connectionWithCursorInfo } from "schema/fields/pagination"
-import { createPageCursors } from "schema/fields/pagination"
+import { createPageCursors, pageToCursor } from "schema/fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { SearchableItem } from "schema/searchableItem"
 import { Searchable } from "schema/searchable"
@@ -51,6 +52,10 @@ export const searchArgs = pageable({
   },
   aggregations: {
     type: new GraphQLList(SearchAggregation),
+  },
+  page: {
+    type: GraphQLInt,
+    description: "If present, will be used for pagination instead of cursors.",
   },
 })
 
@@ -143,11 +148,16 @@ export const Search: GraphQLFieldConfig<void, ResolverContext> = {
   description: "Global search",
   args: searchArgs,
   resolve: (_source, args, context, info) => {
+    if (!args.page) {
+      delete args.page
+    }
     const pageOptions = convertConnectionArgsToGravityArgs(args)
-    const { page, size } = pageOptions
-
+    if (!!args.page) pageOptions.page = args.page
+    const { page, size, offset, ...rest } = pageOptions
     const gravityArgs = {
-      ...pageOptions,
+      ...rest,
+      page,
+      size,
       entities: args.entities,
       total_count: true,
     }
@@ -171,9 +181,12 @@ export const Search: GraphQLFieldConfig<void, ResolverContext> = {
           args,
           {
             arrayLength: totalCount,
-            sliceStart: pageOptions.offset,
+            sliceStart: offset,
           }
         )
+
+        const pageInfo = connection.pageInfo
+        pageInfo.endCursor = pageToCursor(page + 1, size)
 
         return {
           aggregations: body.aggregations,
@@ -181,7 +194,7 @@ export const Search: GraphQLFieldConfig<void, ResolverContext> = {
           totalCount,
           ...connection,
           pageInfo: {
-            ...connection.pageInfo,
+            ...pageInfo,
             hasPreviousPage: page > 1,
             hasNextPage: page < totalPages,
           },
