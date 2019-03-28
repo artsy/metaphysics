@@ -1,3 +1,4 @@
+import { compact } from "lodash"
 import moment from "moment"
 import { stripTags } from "lib/helpers"
 import { SearchItemRawResponse } from "./SearchItemRawResponse"
@@ -14,21 +15,23 @@ export class SearchableItemPresenter {
   formattedDescription(): string | undefined {
     const { description, display } = this.item
 
-    switch (this.item.label) {
+    switch (this.searchableType()) {
       case "Article":
         return this.formattedArticleDescription()
       case "Fair":
-        return this.formatEventDescription("Art fair")
-      case "Sale":
-        return this.formatEventDescription("Sale")
+        return this.formattedEventDescription("Art fair")
+      case "Auction":
+        return this.formattedEventDescription("Sale")
       case "Artwork":
       case "Feature":
       case "Gallery":
       case "Page":
         return description
+      case "PartnerShow":
+        return this.formattedShowDescription()
       case "City":
         return `Browse current exhibitions in ${display}`
-      case "MarketingCollection":
+      case "Collection":
         return stripTags(description)
       default:
         return undefined
@@ -85,7 +88,7 @@ export class SearchableItemPresenter {
     }
   }
 
-  private formatEventDescription(title: string): string {
+  private formattedEventDescription(title: string): string {
     const { description, location, start_at, end_at } = this.item
 
     const formattedStartAt = moment.utc(start_at).format(DATE_FORMAT)
@@ -116,5 +119,108 @@ export class SearchableItemPresenter {
     } else {
       return description
     }
+  }
+
+  private formattedShowDescription(): string {
+    const { location, venue } = this.item
+
+    const leadHeading = this.formattedLeadHeading()
+    const runningTime = this.formattedRunningTime()
+
+    let artistNames = this.formattedArtistNames()
+    if (artistNames) {
+      artistNames = `featuring works by ${artistNames}`
+    }
+
+    let formattedVenue = venue
+    if (formattedVenue) {
+      formattedVenue = `at ${formattedVenue}`
+    }
+
+    return compact([
+      leadHeading,
+      artistNames,
+      formattedVenue,
+      location,
+      runningTime,
+    ]).join(" ")
+  }
+
+  private formattedArtistNames(): string {
+    const { artist_names } = this.item
+
+    if (artist_names.length > 1) {
+      return `${artist_names
+        .slice(0, artist_names.length - 1)
+        .join(", ")} and ${artist_names[artist_names.length - 1]}`
+    } else {
+      return artist_names[0]
+    }
+  }
+
+  private formattedLeadHeading(): string {
+    const { start_at, end_at } = this.item
+
+    if (!start_at || !end_at) {
+      return "Show"
+    }
+
+    const now = moment.utc()
+    const startAt = moment(start_at)
+    const endAt = moment(end_at)
+
+    const startDiff = startAt.diff(now, "days")
+    const endDiff = endAt.diff(now, "days")
+
+    let statusLabel: string
+    if (startDiff < 0 && endDiff < 0) {
+      statusLabel = "Past"
+    } else if (startDiff > 0) {
+      statusLabel = "Upcoming"
+    } else {
+      statusLabel = "Current"
+    }
+
+    return `${statusLabel} show`
+  }
+
+  private formattedRunningTime(): string | null {
+    const { start_at, end_at } = this.item
+
+    if (!start_at || !end_at) {
+      return null
+    }
+
+    const startAt = moment.utc(start_at)
+    const endAt = moment.utc(end_at)
+
+    const startMonth = startAt.format("MMM")
+    const startDay = startAt.format("Do")
+
+    const endMonth = endAt.format("MMM")
+    const endDay = endAt.format("Do")
+
+    let monthAndDate: string
+    if (startAt.year() === endAt.year()) {
+      if (
+        startAt.month() === endAt.month() &&
+        startAt.date() === endAt.date()
+      ) {
+        monthAndDate = `${startMonth} ${startDay}`
+      } else if (startAt.month() === endAt.month()) {
+        monthAndDate = `${startMonth} ${startDay} – ${endDay}`
+      } else {
+        monthAndDate = `${startMonth} ${startDay} – ${endMonth} ${endDay}`
+      }
+
+      if (startAt.year() !== moment.utc().year()) {
+        return `${monthAndDate} ${startAt.year()}`
+      } else {
+        return monthAndDate
+      }
+    } else
+      return `${startMonth} ${startDay}, ${startAt.format(
+        "YYYY"
+      )} – ${endMonth} ${endDay}, ${endAt.format("YYYY")}`
   }
 }

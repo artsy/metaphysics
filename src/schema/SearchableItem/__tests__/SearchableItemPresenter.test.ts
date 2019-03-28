@@ -1,5 +1,6 @@
 /* eslint-disable promise/always-return */
 import { SearchableItemPresenter } from "../SearchableItemPresenter"
+import * as moment from "moment"
 
 describe("SearchableItemPresenter", () => {
   describe("#formattedDescription", () => {
@@ -72,7 +73,7 @@ describe("SearchableItemPresenter", () => {
       })
     })
 
-    describe("for a Fair or Sale types", () => {
+    describe("for a Fair or Auction types", () => {
       const buildSearchableItem = label => {
         return {
           start_at: "2018-05-16T11:28:00.000Z",
@@ -89,7 +90,7 @@ describe("SearchableItemPresenter", () => {
           "Art fair running from May 16th, 2018 to May 30th, 2018"
         )
 
-        presenter = new SearchableItemPresenter(buildSearchableItem("Sale"))
+        presenter = new SearchableItemPresenter(buildSearchableItem("Auction"))
         description = presenter.formattedDescription()
 
         expect(description).toBe(
@@ -136,6 +137,98 @@ describe("SearchableItemPresenter", () => {
         expect(description).toBe(
           "Brian Donnelly, better known as KAWS, spent the first year of his career as an animator for Disney."
         )
+      })
+    })
+
+    describe("for a PartnerShow type", () => {
+      it("returns a formatted description for a past show", () => {
+        const searchableItem = {
+          start_at: "2018-03-26T12:00:00.000Z",
+          end_at: "2018-05-19T12:00:00.000Z",
+          label: "PartnerShow",
+          artist_names: ["KAWS"],
+          venue: "Yorkshire Sculpture Park",
+        }
+
+        const presenter = new SearchableItemPresenter(searchableItem)
+        const description = presenter.formattedDescription()
+        expect(description).toBe(
+          "Past show featuring works by KAWS at Yorkshire Sculpture Park Mar 26th – May 19th 2018"
+        )
+      })
+
+      it("returns a formatted description for a current show", () => {
+        const now = moment.utc()
+
+        const searchableItem = {
+          start_at: now.valueOf(),
+          end_at: now.add(1, "week").valueOf(),
+          label: "PartnerShow",
+          artist_names: ["KAWS"],
+          venue: "Yorkshire Sculpture Park",
+        }
+
+        const presenter = new SearchableItemPresenter(searchableItem)
+        const description = presenter.formattedDescription()
+        expect(description).toMatch(
+          "Current show featuring works by KAWS at Yorkshire Sculpture Park"
+        )
+      })
+
+      it("returns a formatted description for an upcoming show", () => {
+        const now = moment.utc()
+
+        const searchableItem = {
+          start_at: now.add(1, "day").valueOf(),
+          end_at: now.add(1, "week").valueOf(),
+          label: "PartnerShow",
+          artist_names: ["KAWS"],
+          venue: "Yorkshire Sculpture Park",
+        }
+
+        const presenter = new SearchableItemPresenter(searchableItem)
+        const description = presenter.formattedDescription()
+        expect(description).toMatch(
+          "Upcoming show featuring works by KAWS at Yorkshire Sculpture Park"
+        )
+      })
+
+      it("returns a formatted description with multiple artists", () => {
+        let searchableItem = {
+          label: "PartnerShow",
+          artist_names: ["KAWS", "Andy Warhol"],
+          venue: "Yorkshire Sculpture Park",
+        }
+
+        let presenter = new SearchableItemPresenter(searchableItem)
+        let description = presenter.formattedDescription()
+        expect(description).toBe(
+          "Show featuring works by KAWS and Andy Warhol at Yorkshire Sculpture Park"
+        )
+
+        searchableItem = {
+          label: "PartnerShow",
+          artist_names: ["KAWS", "Andy Warhol", "Ridley Howard"],
+          venue: "Yorkshire Sculpture Park",
+        }
+
+        presenter = new SearchableItemPresenter(searchableItem)
+        description = presenter.formattedDescription()
+        expect(description).toBe(
+          "Show featuring works by KAWS, Andy Warhol and Ridley Howard at Yorkshire Sculpture Park"
+        )
+      })
+
+      it("returns a formatted description with a location", () => {
+        const searchableItem = {
+          label: "PartnerShow",
+          artist_names: ["KAWS"],
+          location: "New York, NY",
+        }
+
+        const presenter = new SearchableItemPresenter(searchableItem)
+        const description = presenter.formattedDescription()
+        expect(description).toBe("Show featuring works by KAWS New York, NY")
       })
     })
   })
