@@ -1,10 +1,11 @@
 import moment from "moment"
 import { stripTags } from "lib/helpers"
+import { SearchItemRawResponse } from "./SearchItemRawResponse"
 
 const DATE_FORMAT = "MMM Do, YYYY"
 
 export class SearchableItemPresenter {
-  private item: any
+  private item: SearchItemRawResponse
 
   constructor(item: any) {
     this.item = item
