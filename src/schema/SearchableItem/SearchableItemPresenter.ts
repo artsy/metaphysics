@@ -15,7 +15,7 @@ export class SearchableItemPresenter {
   formattedDescription(): string | undefined {
     const { description, display } = this.item
 
-    switch (this.searchableType()) {
+    switch (this.displayType()) {
       case "Article":
         return this.formattedArticleDescription()
       case "Fair":
@@ -27,7 +27,8 @@ export class SearchableItemPresenter {
       case "Gallery":
       case "Page":
         return description
-      case "PartnerShow":
+      case "Booth":
+      case "Show":
         return this.formattedShowDescription()
       case "City":
         return `Browse current exhibitions in ${display}`
@@ -53,13 +54,16 @@ export class SearchableItemPresenter {
         return `/shows/${id}`
       case "MarketingCollection":
         return `/collection/${id}`
+      case "Booth":
+      case "PartnerShow":
+        return `/show/${id}`
       default:
         return `/${model}/${id}`
     }
   }
 
-  searchableType(): string {
-    const { label, owner_type } = this.item
+  displayType(): string {
+    const { fair_id, label, owner_type } = this.item
 
     switch (label) {
       case "Profile":
@@ -81,6 +85,8 @@ export class SearchableItemPresenter {
       // in the special `match` JSON returned from the Gravity API.
       case "Sale":
         return "Auction"
+      case "PartnerShow":
+        return fair_id ? "Booth" : "Show"
       case "MarketingCollection":
         return "Collection"
       default:
