@@ -2,6 +2,7 @@ export type SearchItemRawResponse = {
   description: string
   display: string
   end_at: string
+  fair_id: string
   href: string
   id: string
   label: string

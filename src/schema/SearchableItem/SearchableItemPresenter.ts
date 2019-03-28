@@ -159,10 +159,10 @@ export class SearchableItemPresenter {
   }
 
   private formattedLeadHeading(): string {
-    const { start_at, end_at } = this.item
+    const { fair_id, start_at, end_at } = this.item
 
     if (!start_at || !end_at) {
-      return "Show"
+      return fair_id ? "Fair booth" : "Show"
     }
 
     const now = moment.utc()
@@ -181,7 +181,9 @@ export class SearchableItemPresenter {
       statusLabel = "Current"
     }
 
-    return `${statusLabel} show`
+    const type = fair_id ? "fair booth" : "show"
+
+    return `${statusLabel} ${type}`
   }
 
   private formattedRunningTime(): string | null {

@@ -175,6 +175,25 @@ describe("SearchableItemPresenter", () => {
         )
       })
 
+      it("returns a formatted description for a current fair booth", () => {
+        const now = moment.utc()
+
+        const searchableItem = {
+          start_at: now.valueOf(),
+          end_at: now.add(1, "week").valueOf(),
+          label: "PartnerShow",
+          artist_names: ["KAWS"],
+          venue: "Yorkshire Sculpture Park",
+          fair_id: "abc123",
+        }
+
+        const presenter = new SearchableItemPresenter(searchableItem)
+        const description = presenter.formattedDescription()
+        expect(description).toMatch(
+          "Current fair booth featuring works by KAWS at Yorkshire Sculpture Park"
+        )
+      })
+
       it("returns a formatted description for an upcoming show", () => {
         const now = moment.utc()
 
@@ -229,6 +248,21 @@ describe("SearchableItemPresenter", () => {
         const presenter = new SearchableItemPresenter(searchableItem)
         const description = presenter.formattedDescription()
         expect(description).toBe("Show featuring works by KAWS New York, NY")
+      })
+
+      it("returns a formatted description for a fair booth", () => {
+        const searchableItem = {
+          label: "PartnerShow",
+          artist_names: ["KAWS"],
+          location: "New York, NY",
+          fair_id: "abc123",
+        }
+
+        const presenter = new SearchableItemPresenter(searchableItem)
+        const description = presenter.formattedDescription()
+        expect(description).toBe(
+          "Fair booth featuring works by KAWS New York, NY"
+        )
       })
     })
   })
