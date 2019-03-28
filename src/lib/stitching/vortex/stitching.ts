@@ -56,6 +56,9 @@ export const vortexStitchingEnvironment = () => ({
           ... on Artwork {
             widthCm
             heightCm
+            priceCents {
+              min
+            }
             artist {
               _id
             }
@@ -65,6 +68,7 @@ export const vortexStitchingEnvironment = () => ({
         `,
         resolve: async (source, _, context, info) => {
           const {
+            priceCents,
             widthCm,
             heightCm,
             artist,
@@ -74,6 +78,7 @@ export const vortexStitchingEnvironment = () => ({
           // fail if we don't have enough info to request a histogram
           if (
             is_price_hidden ||
+            !priceCents ||
             !artist ||
             !widthCm ||
             !heightCm ||

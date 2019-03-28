@@ -14,6 +14,7 @@ describe("PricingContext type", () => {
     price_hidden: false,
     width_cm: 15,
     height_cm: 15,
+    price_cents: [234],
   }
   const meLoader = jest.fn(() =>
     Promise.resolve({
@@ -94,12 +95,14 @@ Object {
 }
 `)
   })
+
   it("is null when dimensions not present", async () => {
     const { width_cm, height_cm, ...others } = artwork
     artworkLoader.mockResolvedValueOnce(others)
     const result = (await runQuery(query, context)) as any
     expect(result.artwork.pricingContext).toBeNull()
   })
+
   it("is null when artist details are not present", async () => {
     const { artist, ...others } = artwork
     artworkLoader.mockResolvedValueOnce(others)
@@ -113,6 +116,7 @@ Object {
     const result = (await runQuery(query, context)) as any
     expect(result.artwork.pricingContext).toBeNull()
   })
+
   it("is null when list price is not public", async () => {
     artworkLoader.mockResolvedValueOnce({
       ...artwork,
@@ -121,11 +125,13 @@ Object {
     const result = (await runQuery(query, context)) as any
     expect(result.artwork.pricingContext).toBeNull()
   })
+
   it("is null when not authenticated", async () => {
     const { meLoader, ...others } = context
     const result = (await runQuery(query, others)) as any
     expect(result.artwork.pricingContext).toBeNull()
   })
+
   it("is null when user is not in lab feature", async () => {
     meLoader.mockResolvedValueOnce({
       lab_features: ["some other lab feature"],
@@ -133,10 +139,18 @@ Object {
     const result = (await runQuery(query, context)) as any
     expect(result.artwork.pricingContext).toBeNull()
   })
+
   it("is null when user has no lab features", async () => {
     meLoader.mockResolvedValueOnce({
       lab_features: [],
     })
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
+
+  it("is null when there is not list price", async () => {
+    const { price_cents, ...others } = artwork
+    artworkLoader.mockResolvedValueOnce(others)
     const result = (await runQuery(query, context)) as any
     expect(result.artwork.pricingContext).toBeNull()
   })
