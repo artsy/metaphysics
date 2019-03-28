@@ -2,6 +2,7 @@ export type SearchItemRawResponse = {
   description: string
   display: string
   end_at: string
+  fair_id: string
   href: string
   id: string
   label: string
@@ -11,4 +12,6 @@ export type SearchItemRawResponse = {
   profile_id: string
   published_at: string
   start_at: string
+  artist_names: string[]
+  venue: string
 }

@@ -37,7 +37,12 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
     },
     searchableType: {
       type: GraphQLString,
-      resolve: item => new SearchableItemPresenter(item).searchableType(),
+      deprecationReason: "Switch to use `displayType`",
+      resolve: item => new SearchableItemPresenter(item).displayType(),
+    },
+    displayType: {
+      type: GraphQLString,
+      resolve: item => new SearchableItemPresenter(item).displayType(),
     },
   },
 })

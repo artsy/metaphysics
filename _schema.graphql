@@ -8261,7 +8261,8 @@ type SearchableItem implements Node & Searchable {
   displayLabel: String
   imageUrl: String
   href: String
-  searchableType: String
+  searchableType: String @deprecated(reason: "Switch to use `displayType`")
+  displayType: String
 }
 
 enum SearchAggregation {
