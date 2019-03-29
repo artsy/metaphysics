@@ -100,7 +100,7 @@ export const vortexStitchingEnvironment = () => ({
 
           const args = {
             artistId: artist._id,
-            category: category.toUpperCase(),
+            category: categoryMap[category] || "OTHER",
             widthCm: Math.round(widthCm),
             heightCm: Math.round(heightCm),
           }
@@ -123,3 +123,26 @@ export const vortexStitchingEnvironment = () => ({
     },
   },
 })
+
+const categoryMap = {
+  Architecture: "ARCHITECTURE",
+  "Books and Portfolios": "BOOKS_AND_PORTFOLIOS",
+  "Design/Decorative Art": "DESIGN_DECORATIVE_ART",
+  "Drawing, Collage or other Work on Paper":
+    "DRAWING_COLAGE_OTHER_WORK_ON_PAPER",
+  "Fashion Design and Wearable Art": "FASHON",
+  Installation: "INSTALLATION",
+  Jewelry: "JEWELRY",
+  "Mixed Media": "MIXED_MEDIA",
+  Other: "OTHER",
+  Painting: "PAINTING",
+  "Performance Art": "PERFORMANCE",
+  Photography: "PHOTOGRAPHY",
+  Posters: "POSTERS",
+  Print: "PRINT",
+  Sculpture: "SCULPTURE",
+  Sound: "SOUND",
+  "Textile Arts": "TEXTILE",
+  "Video/Film/Animation": "VIDEO_FILM_ANIMATION",
+  "Work on Paper": "WORK_ON_PAPER",
+}
