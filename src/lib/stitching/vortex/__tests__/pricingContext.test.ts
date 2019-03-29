@@ -3,6 +3,7 @@ import gql from "lib/gql"
 import { ResolverContext } from "types/graphql"
 
 jest.mock("../link")
+const mockFetch = require("../link").mockFetch as jest.Mock<any>
 
 describe("PricingContext type", () => {
   const artwork = {
@@ -92,6 +93,24 @@ Object {
       "filterDescription": "Small mocks by David Sheldrick",
     },
   },
+}
+`)
+  })
+
+  it("maps categories correctly", async () => {
+    artworkLoader.mockResolvedValueOnce({
+      ...artwork,
+      category: "Drawing, Collage or other Work on Paper",
+    })
+    mockFetch.mockClear()
+    await runQuery(query, context)
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
+      .toMatchInlineSnapshot(`
+Object {
+  "_v0_artistId": "artist-id",
+  "_v1_category": "DRAWING_COLAGE_OTHER_WORK_ON_PAPER",
+  "_v2_heightCm": 15,
+  "_v3_widthCm": 15,
 }
 `)
   })
