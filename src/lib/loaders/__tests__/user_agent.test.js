@@ -2,11 +2,12 @@ import { runAuthenticatedQuery, runQuery } from "test/utils"
 import createLoaders from "../../../lib/loaders"
 import gql from "lib/gql"
 
-jest.mock("../../apis/gravity", () => jest.fn(() => Promise.resolve({})))
+jest.mock("../../apis/gravity", () => jest.fn())
 import gravity from "../../apis/gravity"
 
 describe("User-Agent (with the real data loaders)", () => {
   it("resolves to add the initial user agent to a gravity header", async () => {
+    gravity.mockImplementation(() => Promise.resolve({ body: {} }))
     const query = gql`
       {
         artist(id: "andy-warhol") {
@@ -16,11 +17,11 @@ describe("User-Agent (with the real data loaders)", () => {
     `
 
     const userAgent = "catty browser"
-    const rootValue = createLoaders("access-token", "user-id", {
+    const context = createLoaders("access-token", "user-id", {
       userAgent,
     })
     expect.assertions(1)
-    await runQuery(query, rootValue)
+    await runQuery(query, context)
 
     expect(gravity).toBeCalledWith("artist/andy-warhol?", null, {
       userAgent,
@@ -28,6 +29,7 @@ describe("User-Agent (with the real data loaders)", () => {
   })
 
   it("(authenticated request) resolves to add the initial request ID to a gravity header", async () => {
+    gravity.mockImplementation(() => Promise.resolve({ body: [] }))
     const query = gql`
       {
         me {
@@ -38,9 +40,9 @@ describe("User-Agent (with the real data loaders)", () => {
       }
     `
     const userAgent = "catty browser"
-    const rootValue = createLoaders("secret", "user-42", { userAgent })
+    const context = createLoaders("secret", "user-42", { userAgent })
     expect.assertions(1)
-    await runAuthenticatedQuery(query, rootValue)
+    await runAuthenticatedQuery(query, context)
 
     expect(gravity).toBeCalledWith("me/lot_standings?", "secret", {
       userAgent,

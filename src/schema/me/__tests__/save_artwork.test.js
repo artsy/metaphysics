@@ -39,6 +39,7 @@ describe("SaveArtworkMutation", () => {
     return runAuthenticatedQuery(mutation, {
       saveArtworkLoader,
       artworkLoader,
+      deleteArtworkLoader: jest.fn(),
     }).then(({ saveArtwork }) => {
       expect(saveArtwork).toEqual(expectedArtworkData)
     })
@@ -82,6 +83,7 @@ describe("SaveArtworkMutation", () => {
     return runAuthenticatedQuery(mutation, {
       deleteArtworkLoader,
       artworkLoader,
+      saveArtworkLoader: jest.fn(),
     }).then(({ saveArtwork }) => {
       expect(saveArtwork).toEqual(expectedArtworkData)
     })

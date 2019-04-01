@@ -3,7 +3,7 @@ import { map } from "lodash"
 import { runQuery, runAuthenticatedQuery } from "test/utils"
 
 describe("HomePageArtistModules", () => {
-  let rootValue = null
+  let context = null
   const artists = [
     {
       id: "foo-bar",
@@ -22,7 +22,7 @@ describe("HomePageArtistModules", () => {
   const artistResultsWithoutData = { body: [], headers: { "x-total-count": 0 } }
 
   beforeEach(() => {
-    rootValue = {
+    context = {
       suggestedSimilarArtistsLoader: () =>
         Promise.resolve(artistResultsWithData),
       trendingArtistsLoader: () => Promise.resolve(artistResultsWithData),
@@ -43,16 +43,16 @@ describe("HomePageArtistModules", () => {
 
     describe("when signed-in", () => {
       it("shows all modules if there are any suggestions", () => {
-        return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
+        return runAuthenticatedQuery(query, context).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, "key")
           expect(keys).toEqual(["SUGGESTED", "TRENDING", "POPULAR"])
         })
       })
 
       it("only shows the trending and popular artists modules if there are no suggestions", () => {
-        rootValue.suggestedSimilarArtistsLoader = () =>
+        context.suggestedSimilarArtistsLoader = () =>
           Promise.resolve(artistResultsWithoutData)
-        return runAuthenticatedQuery(query, rootValue).then(({ home_page }) => {
+        return runAuthenticatedQuery(query, context).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, "key")
           expect(keys).toEqual(["TRENDING", "POPULAR"])
         })
@@ -61,8 +61,8 @@ describe("HomePageArtistModules", () => {
 
     describe("when signed-out", () => {
       it("only shows the trending and popular artists modules", () => {
-        delete rootValue.suggestedSimilarArtistsLoader
-        return runQuery(query, rootValue).then(({ home_page }) => {
+        delete context.suggestedSimilarArtistsLoader
+        return runQuery(query, context).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, "key")
           expect(keys).toEqual(["TRENDING", "POPULAR"])
         })

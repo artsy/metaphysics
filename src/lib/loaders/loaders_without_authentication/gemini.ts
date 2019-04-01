@@ -1,5 +1,3 @@
-// @ts-check
-
 import gemini from "../../apis/gemini"
 import { unescape } from "querystring"
 

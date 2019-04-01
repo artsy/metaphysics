@@ -1,8 +1,7 @@
-// @ts-check
-
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-export const AssetType = new GraphQLObjectType({
+export const AssetType = new GraphQLObjectType<any, ResolverContext>({
   name: "Asset",
   description: "An asset which is assigned to a consignment submission",
   fields: {

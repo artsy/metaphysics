@@ -33,7 +33,7 @@ describe("me { saved_artwork", () => {
           }
         }
       `
-      const rootValue = {
+      const context = {
         collectionLoader: sinon.stub().returns(
           Promise.resolve({
             name: "collection",
@@ -50,7 +50,7 @@ describe("me { saved_artwork", () => {
         ),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(data => {
+      return runAuthenticatedQuery(query, context).then(data => {
         expect(data).toMatchSnapshot()
       })
     })

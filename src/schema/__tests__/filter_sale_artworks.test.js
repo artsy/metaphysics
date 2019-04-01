@@ -2,9 +2,9 @@
 import { runQuery } from "test/utils"
 
 describe("Filter Sale Artworks", () => {
-  let rootValue = null
+  let context = null
   beforeEach(() => {
-    rootValue = {
+    context = {
       saleArtworksFilterLoader: sinon
         .stub()
         .withArgs("filter/sale_artworks", {
@@ -71,7 +71,7 @@ describe("Filter Sale Artworks", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(
+    return runQuery(query, context).then(
       ({ filter_sale_artworks: { aggregations, counts } }) => {
         expect(counts).toEqual({ followed_artists: 2, total: 400 })
         expect(aggregations).toEqual([

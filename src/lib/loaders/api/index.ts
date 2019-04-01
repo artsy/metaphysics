@@ -11,6 +11,30 @@ import positron from "lib/apis/positron"
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
 
+export type API = (
+  path: string,
+  token: string | null,
+  apiOptions: any
+) => Promise<any>
+
+export interface APIOptions {
+  method?: "GET" | "POST" | "PUT" | "DELETE"
+  requestIDs?: {
+    requestID: string
+    xForwardedFor: string
+  }
+  userAgent?: string
+  headers?: boolean
+
+  /** This only applies to caching loaders */
+  requestThrottleMs?: number
+}
+
+export interface DataLoaderKey {
+  key: string
+  apiOptions?: APIOptions
+}
+
 export default opts => ({
   // Unauthenticated loaders
 

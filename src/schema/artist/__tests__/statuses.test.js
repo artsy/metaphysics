@@ -3,7 +3,7 @@ import { runQuery } from "test/utils"
 
 describe("Artist Statuses", () => {
   let artist = null
-  let rootValue = null
+  let context = null
 
   beforeEach(() => {
     artist = {
@@ -16,7 +16,7 @@ describe("Artist Statuses", () => {
       displayable_partner_shows_count: 0,
     }
 
-    rootValue = {
+    context = {
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
       relatedMainArtistsLoader: () =>
         Promise.resolve({ headers: { "x-total-count": 3 } }),
@@ -37,7 +37,7 @@ describe("Artist Statuses", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           statuses: {
@@ -62,7 +62,7 @@ describe("Artist Statuses", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           statuses: {

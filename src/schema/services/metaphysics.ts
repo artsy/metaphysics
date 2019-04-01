@@ -5,6 +5,7 @@ import {
   GraphQLString,
 } from "graphql"
 import config from "config"
+import { ResolverContext } from "types/graphql"
 
 // The config variables found inside here should never contain
 // details that we consider to be private, as they are publicly
@@ -29,7 +30,7 @@ const mapEnvStrings = {
   environment: config.NODE_ENV,
 }
 
-const MetaphysicsSchema = new GraphQLObjectType({
+const MetaphysicsSchema = new GraphQLObjectType<any, ResolverContext>({
   name: "Metaphysics",
   fields: () => {
     const fields = {}
@@ -47,6 +48,7 @@ const MetaphysicsSchema = new GraphQLObjectType({
   },
 })
 
+// TODO: This isn't being used as a GraphQLFieldConfig, it seems.
 const Metaphysics = {
   type: MetaphysicsSchema,
   description: "The schema for Metaphysics' ENV settings",

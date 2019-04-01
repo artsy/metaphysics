@@ -54,7 +54,7 @@ describe("Me", () => {
         ],
       }
 
-      const rootValue = {
+      const context = {
         notificationsFeedLoader: sinon.stub().returns(
           Promise.resolve({
             total: 2,
@@ -75,7 +75,7 @@ describe("Me", () => {
           .returns(Promise.resolve([artwork1, artwork2])),
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(
+      return runAuthenticatedQuery(query, context).then(
         ({ me: { notifications_connection } }) => {
           expect(notifications_connection).toEqual(expectedConnectionData)
         }

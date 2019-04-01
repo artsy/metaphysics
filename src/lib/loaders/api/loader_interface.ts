@@ -1,9 +1,22 @@
-// @ts-check
-
 import { toKey } from "lib/helpers"
 import DataLoader from "dataloader"
+import { APIOptions, DataLoaderKey } from "./index"
 
-export type FuncToString = (data?: any) => string
+export type PathGenerator<T> = (data: T) => string
+
+// TODO: This should be more specific to take types that are serializeable.
+type ParamValue = any
+
+export type StaticPathLoader<T> = (
+  params?: { [key: string]: ParamValue },
+  apiOptions?: APIOptions
+) => Promise<T>
+
+export type DynamicPathLoader<T, P = string> = (
+  id: P,
+  params?: { [key: string]: ParamValue },
+  apiOptions?: APIOptions
+) => Promise<T>
 
 const encodeStaticPath = (path: string, globalParams, params) => {
   return toKey(path, Object.assign({}, globalParams, params))
@@ -36,18 +49,28 @@ const encodeDynamicPath = (
  * @param {object} globalParams a dictionary of query params that are to be included in each request
  */
 
-export function loaderInterface<R = any>(
-  loader: DataLoader<string, R>,
-  pathOrGenerator: string | FuncToString,
+export function loaderInterface<T>(
+  loader: DataLoader<DataLoaderKey, T>,
+  pathOrGenerator: string,
+  globalParams: any
+): StaticPathLoader<T>
+
+export function loaderInterface<T, P>(
+  loader: DataLoader<DataLoaderKey, T>,
+  pathOrGenerator: PathGenerator<P>,
+  globalParams: any
+): DynamicPathLoader<T>
+
+export function loaderInterface<T, P>(
+  loader: DataLoader<DataLoaderKey, T>,
+  pathOrGenerator: string | PathGenerator<P>,
   globalParams: any
 ) {
-  return (...idAndOrParams) => {
-    const keyGenerator: any =
-      typeof pathOrGenerator === "function"
-        ? encodeDynamicPath
-        : encodeStaticPath
-
-    const key = keyGenerator(pathOrGenerator, globalParams, ...idAndOrParams)
-    return loader.load(key)
+  const dynamicPath = typeof pathOrGenerator === "function"
+  const keyGenerator: any = dynamicPath ? encodeDynamicPath : encodeStaticPath
+  return (...args) => {
+    const key = keyGenerator(pathOrGenerator, globalParams, ...args)
+    const apiOptions = dynamicPath ? args[2] : args[1]
+    return loader.load({ key, apiOptions })
   }
 }

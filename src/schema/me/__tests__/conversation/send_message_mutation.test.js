@@ -31,7 +31,7 @@ describe("SendConversationMessageMutation", () => {
       }
     `
 
-    const rootValue = {
+    const context = {
       conversationLoader: () =>
         Promise.resolve({
           id: "420",
@@ -48,7 +48,7 @@ describe("SendConversationMessageMutation", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
+    return runAuthenticatedQuery(mutation, context).then(
       ({ sendConversationMessage }) => {
         expect(sendConversationMessage).toMatchSnapshot()
       }

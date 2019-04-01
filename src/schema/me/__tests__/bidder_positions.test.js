@@ -5,7 +5,7 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me type", () => {
-  let rootValue
+  let context
   let saleArtworkRootLoader
   beforeEach(() => {
     saleArtworkRootLoader = jest.fn()
@@ -57,7 +57,7 @@ describe("Me type", () => {
         })
       )
 
-    rootValue = {
+    context = {
       saleLoader,
       saleArtworkRootLoader,
       meBidderPositionsLoader: sinon.stub().returns(
@@ -107,7 +107,7 @@ describe("Me type", () => {
         }
       }
     `
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(map(data.me.bidder_positions, "id").join("")).toEqual("01234")
     })
   })
@@ -122,7 +122,7 @@ describe("Me type", () => {
         }
       }
     `
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(map(data.me.bidder_positions, "id").join("")).toEqual("14")
     })
   })
@@ -137,7 +137,7 @@ describe("Me type", () => {
         }
       }
     `
-    rootValue.saleArtworkRootLoader = jest
+    context.saleArtworkRootLoader = jest
       .fn()
       .mockReturnValueOnce(Promise.resolve(new Error("Forbidden")))
       .mockReturnValueOnce(
@@ -158,7 +158,7 @@ describe("Me type", () => {
         })
       )
 
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(map(data.me.bidder_positions, "id").join("")).toEqual("1")
     })
   })
@@ -175,7 +175,7 @@ describe("Me type", () => {
       }
     `
 
-    rootValue.saleArtworkRootLoader = jest
+    context.saleArtworkRootLoader = jest
       .fn()
       .mockReturnValueOnce(Promise.resolve({}))
       .mockReturnValueOnce(Promise.resolve({}))
@@ -191,7 +191,7 @@ describe("Me type", () => {
       .mockReturnValueOnce(Promise.resolve({}))
       .mockReturnValueOnce(Promise.resolve({}))
 
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(data.me.bidder_positions[2].is_winning).toEqual(true)
     })
   })

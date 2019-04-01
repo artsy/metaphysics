@@ -21,7 +21,7 @@ describe("Me", () => {
         .mockReturnValueOnce(Promise.resolve([]))
         .mockReturnValueOnce(Promise.resolve([{ id: "bidder-id" }]))
 
-      const rootValue = {
+      const context = {
         salesLoader: sinon.stub().returns(
           Promise.resolve([
             {
@@ -39,7 +39,7 @@ describe("Me", () => {
         meBiddersLoader,
       }
 
-      return runAuthenticatedQuery(query, rootValue).then(
+      return runAuthenticatedQuery(query, context).then(
         ({ me: { sale_registrations } }) => {
           expect(sale_registrations).toEqual([
             { is_registered: false, sale: { name: "Foo Sale" } },

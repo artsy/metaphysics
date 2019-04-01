@@ -3,10 +3,12 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLFieldConfig,
 } from "graphql"
 import Gene from "./gene"
+import { ResolverContext } from "types/graphql"
 
-const GeneFamilyType = new GraphQLObjectType({
+const GeneFamilyType = new GraphQLObjectType<any, ResolverContext>({
   name: "GeneFamily",
   fields: {
     id: {
@@ -21,7 +23,7 @@ const GeneFamilyType = new GraphQLObjectType({
   },
 })
 
-const GeneFamily = {
+const GeneFamily: GraphQLFieldConfig<void, ResolverContext> = {
   type: GeneFamilyType,
 }
 

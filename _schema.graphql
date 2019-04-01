@@ -44,6 +44,125 @@ type AggregationCount {
   sortable_id: String
 }
 
+# Publish artwork Series Stats
+type AnalyticsArtworksPublishedTimeSeriesStats implements AnalyticsPartnerTimeSeriesStatsType {
+  count: Int
+  partnerId: String
+  samplingFrequency: AnalyticsSamplingFrequencyEnum!
+  time: AnalyticsDateTime
+}
+
+# An ISO 8601 datetime
+scalar AnalyticsDateTime
+
+# A histogram bin
+type AnalyticsHistogramBin {
+  maxPriceCents: Int!
+  minPriceCents: Int!
+  numArtworks: Int!
+  minPrice(
+    decimal: String = "."
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  maxPrice(
+    decimal: String = "."
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+}
+
+# Partner Stats
+type AnalyticsPartnerStatsType {
+  artworksPublished: [AnalyticsArtworksPublishedTimeSeriesStats!]
+  partnerId: String!
+  uniqueVisitors: Int
+}
+
+# Partner Time Series Stats
+interface AnalyticsPartnerTimeSeriesStatsType {
+  partnerId: String
+  samplingFrequency: AnalyticsSamplingFrequencyEnum!
+  time: AnalyticsDateTime
+}
+
+# Pricing Context Histogram
+type AnalyticsPricingContext {
+  bins: [AnalyticsHistogramBin!]!
+  filterDescription: String!
+}
+
+enum AnalyticsPricingContextCategoryEnum {
+  # Architecture
+  ARCHITECTURE
+
+  # Books and Portfolios
+  BOOKS_AND_PORTFOLIOS
+
+  # Design/Decorative Art
+  DESIGN_DECORATIVE_ART
+
+  # Drawing, Collage or other Work on Paper
+  DRAWING_COLAGE_OTHER_WORK_ON_PAPER
+
+  # Fashion Design and Wearable Art
+  FASHON
+
+  # Installation
+  INSTALLATION
+
+  # Jewelry
+  JEWELRY
+
+  # Mixed Media
+  MIXED_MEDIA
+
+  # Other
+  OTHER
+
+  # Painting
+  PAINTING
+
+  # Performance Art
+  PERFORMANCE
+
+  # Photography
+  PHOTOGRAPHY
+
+  # Posters
+  POSTERS
+
+  # Print
+  PRINT
+
+  # Sculpture
+  SCULPTURE
+
+  # Sound
+  SOUND
+
+  # Textile Arts
+  TEXTILE
+
+  # Video/Film/Animation
+  VIDEO_FILM_ANIMATION
+
+  # Work on Paper
+  WORK_ON_PAPER
+}
+
+enum AnalyticsSamplingFrequencyEnum {
+  # Daily
+  DAILY
+
+  # Weekly
+  WEEKLY
+}
+
 input ApproveOrderInput {
   # Order ID
   orderId: String!
@@ -246,6 +365,9 @@ type Artist implements Node & Searchable {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 
   # A string showing the total number of works and those for sale
@@ -347,7 +469,7 @@ type Artist implements Node & Searchable {
   statuses: ArtistStatuses
   highlights: ArtistHighlights
   years: String
-  marketingCollections: [MarketingCollection]
+  marketingCollections(size: Int): [MarketingCollection]
 }
 
 enum ArtistArtworksFilters {
@@ -585,6 +707,9 @@ type ArtistItem implements Node & Searchable {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 
   # A string showing the total number of works and those for sale
@@ -765,6 +890,7 @@ type Artwork implements Node & Searchable & Sellable {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
+  cached: Int
   additional_information(format: Format): String
   artist(
     # Use whatever is in the original response instead of making a request
@@ -920,7 +1046,13 @@ type Artwork implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
   certificateOfAuthenticity: ArtworkInfoRow
-  cached: Int
+
+  # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
+  widthCm: Float
+
+  # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
+  heightCm: Float
+  pricingContext: AnalyticsPricingContext
 }
 
 enum ArtworkAggregation {
@@ -1093,6 +1225,7 @@ type ArtworkContextFair {
   # A type-specific Gravity Mongo Document ID.
   _id: String!
   about: String
+  followed_content: FollowedContent
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -1104,6 +1237,9 @@ type ArtworkContextFair {
   cached: Int
   banner_size: String
   counts: FairCounts
+
+  # A formatted description of the start to end dates
+  exhibition_period: String
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
@@ -1111,15 +1247,18 @@ type ArtworkContextFair {
   hours: String
   href: String
   image: Image
+  is_active: Boolean @deprecated(reason: "Prefer isActive instead")
 
   # Are we currently in the fair's active period?
-  is_active: Boolean
+  isActive: Boolean
   links: String
   mobile_image: Image
   is_published: Boolean
   location: Location
   name: String
   profile: Profile
+
+  # This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.
   shows_connection(
     # Number of artworks to return
     section: String
@@ -1147,13 +1286,21 @@ type ArtworkContextFair {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+  active_start_at(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   organizer: organizer
   published: Boolean
     @deprecated(reason: "Prefix Boolean returning fields with `is_`")
   tagline: String
   ticketsLink: String
 
-  # The exhibitors with booths in this fair.
+  # The exhibitors with booths in this fair with letter.
   exhibitors_grouped_by_name: [FairExhibitorsGroup]
 
   # Artworks Elastic Search results
@@ -1195,7 +1342,11 @@ type ArtworkContextFair {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
+  sponsoredContent: FairSponsoredContent
 }
 
 type ArtworkContextPartnerShow implements Node {
@@ -1497,6 +1648,9 @@ type ArtworkFilterGene implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 }
 
@@ -1555,6 +1709,9 @@ type ArtworkFilterTag implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 }
 
@@ -1600,6 +1757,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
+  cached: Int
   additional_information(format: Format): String
   artist(
     # Use whatever is in the original response instead of making a request
@@ -1755,7 +1913,12 @@ type ArtworkItem implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
   certificateOfAuthenticity: ArtworkInfoRow
-  cached: Int
+
+  # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
+  widthCm: Float
+
+  # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
+  heightCm: Float
 }
 
 type ArtworkLayer {
@@ -2341,6 +2504,9 @@ type BuyOrder implements Order {
 
   # Credit card on this order
   creditCard: CreditCard
+
+  # Whether or not the last attempt to charge the buyer failed
+  lastTransactionFailed: Boolean
   lastApprovedAt(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -2423,16 +2589,49 @@ type City {
   coordinates: LatLng
   shows(
     sort: PartnerShowSorts
-    status: EventStatus
 
-    # Whether to include local discovery stubs as well as displayable shows
+    # Filter shows by chronological event status
+    status: EventStatus = CURRENT
+
+    # Filter shows by partner type
+    partnerType: PartnerShowPartnerType
+
+    # Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows
+    dayThreshold: Int
+
+    # Whether to include local discovery stubs
+    includeStubShows: Boolean
+
+    # Whether to include stub shows or not
     discoverable: Boolean
     after: String
     first: Int
     before: String
     last: Int
   ): ShowConnection
-  fairs(size: Int, sort: FairSorts, status: EventStatus): [Fair]
+  fairs(
+    sort: FairSorts
+    status: EventStatus
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FairConnection
+  sponsoredContent: CitySponsoredContent
+}
+
+type CitySponsoredContent {
+  introText: String
+  artGuideUrl: String
+  featuredShows: [Show]
+  shows(
+    sort: PartnerShowSorts
+    status: EventStatus
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ShowConnection
 }
 
 type Collection implements Node {
@@ -2771,7 +2970,7 @@ input CreateGeminiEntryForAssetInput {
   # The S3 bucket where the file was uploaded
   source_bucket: String!
 
-  # Additional JSON data to pass through gemini, should deiinitely contain an `id` and a `_type`
+  # Additional JSON data to pass through gemini, should definitely contain an `id` and a `_type`
   metadata: JSON!
   clientMutationId: String
 }
@@ -3197,6 +3396,12 @@ enum EventStatus {
 
   # Start date is in the future
   UPCOMING
+
+  # End date is in near future
+  CLOSING_SOON
+
+  # Special filtering option which is used to show running and upcoming shows
+  RUNNING_AND_UPCOMING
 }
 
 type ExternalPartner {
@@ -3219,6 +3424,7 @@ type Fair {
   # A type-specific Gravity Mongo Document ID.
   _id: String!
   about: String
+  followed_content: FollowedContent
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -3230,6 +3436,9 @@ type Fair {
   cached: Int
   banner_size: String
   counts: FairCounts
+
+  # A formatted description of the start to end dates
+  exhibition_period: String
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
@@ -3237,15 +3446,18 @@ type Fair {
   hours: String
   href: String
   image: Image
+  is_active: Boolean @deprecated(reason: "Prefer isActive instead")
 
   # Are we currently in the fair's active period?
-  is_active: Boolean
+  isActive: Boolean
   links: String
   mobile_image: Image
   is_published: Boolean
   location: Location
   name: String
   profile: Profile
+
+  # This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.
   shows_connection(
     # Number of artworks to return
     section: String
@@ -3273,13 +3485,21 @@ type Fair {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+  active_start_at(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   organizer: organizer
   published: Boolean
     @deprecated(reason: "Prefix Boolean returning fields with `is_`")
   tagline: String
   ticketsLink: String
 
-  # The exhibitors with booths in this fair.
+  # The exhibitors with booths in this fair with letter.
   exhibitors_grouped_by_name: [FairExhibitorsGroup]
 
   # Artworks Elastic Search results
@@ -3321,12 +3541,27 @@ type Fair {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
+  sponsoredContent: FairSponsoredContent
 }
 
 enum FairArtistSorts {
   NAME_ASC
   NAME_DESC
+}
+
+# A connection to a list of items.
+type FairConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [FairEdge]
+  pageCursors: PageCursors
+  totalCount: Int
 }
 
 type FairCounts {
@@ -3352,15 +3587,35 @@ type FairCounts {
   ): FormattedNumber
 }
 
+# An edge in a connection.
+type FairEdge {
+  # The item at the end of the edge
+  node: Fair
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+type FairExhibitor {
+  # Exhibitor name
+  name: String
+
+  # Exhibitors id
+  id: String
+
+  # Exhibitors _id
+  partner_id: String
+
+  # Partner default profile id
+  profile_id: String
+}
+
 type FairExhibitorsGroup {
   # Letter exhibitors group belongs to
   letter: String
 
-  # Exhibitors sorted by name
-  exhibitors: [String]
-
-  # Partner/Exhibitor default profile id
-  profile_ids: [String]
+  # The exhibitor data.
+  exhibitors: [FairExhibitor]
 }
 
 enum FairSorts {
@@ -3372,6 +3627,11 @@ enum FairSorts {
   START_AT_DESC
 }
 
+type FairSponsoredContent {
+  activationText: String
+  pressReleaseUrl: String
+}
+
 type FeaturedLinkItem {
   # Attempt to get the ID of the entity of the FeaturedLink
   id: String
@@ -3380,6 +3640,17 @@ type FeaturedLinkItem {
   initials(length: Int = 3): String
   subtitle: String
   title: String
+}
+
+type Feedback {
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
+  id: String!
+
+  # Feedback message
+  message: String!
 }
 
 type FilterArtworks implements Node {
@@ -3447,6 +3718,20 @@ type FilterSaleArtworksCounts {
     format: String
     label: String
   ): FormattedNumber
+}
+
+input FixFailedPaymentInput {
+  # Offer ID
+  offerId: ID!
+
+  # Credit card ID
+  creditCardId: String!
+  clientMutationId: String
+}
+
+type FixFailedPaymentPayload {
+  orderOrError: OrderOrFailureUnionType
+  clientMutationId: String
 }
 
 type FollowArtist {
@@ -3554,6 +3839,11 @@ type FollowedArtistsArtworksGroupEdge {
   cursor: String!
 }
 
+type FollowedContent {
+  artists: [Artist]
+  galleries: [Partner]
+}
+
 # A connection to a list of items.
 type FollowedFairConnection {
   # Information to aid in pagination.
@@ -3652,6 +3942,15 @@ type FollowsAndSaves {
 
   # A list of the current user’s currently followed shows
   shows(
+    status: EventStatus
+
+    # Number of days which will be used to filter upcoming and closing soon shows
+    dayThreshold: Int
+
+    # A string representing one of the supported cities in the City Guide, which
+    # are: new-york-ny-usa, los-angeles-ca-usa, london-united-kingdom,
+    # berlin-germany, paris-france, hong-kong-hong-kong
+    city: String
     after: String
     first: Int
     before: String
@@ -3779,6 +4078,9 @@ type Gene implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
     after: String
     first: Int
     before: String
@@ -3826,6 +4128,9 @@ type Gene implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
   href: String
   image: Image
@@ -3965,6 +4270,9 @@ type GeneItem implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
     after: String
     first: Int
     before: String
@@ -4012,6 +4320,9 @@ type GeneItem implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
   href: String
   image: Image
@@ -4229,7 +4540,7 @@ type HomePage {
     # ID of followed artist to target for related artist rails
     followed_artist_id: String
 
-    # ID of generic gene rail to target
+    # [DEPRECATED: Favor more specific `generic_gene_id`] ID of generic gene rail to target
     generic_gene_id: String
 
     # ID of generic gene rail to target
@@ -4298,14 +4609,15 @@ type HomePageArtworkModule implements Node {
 }
 
 enum HomePageArtworkModuleTypes {
+  FOLLOWED_GENES
+  GENERIC_GENES
   ACTIVE_BIDS
   CURRENT_FAIRS
   FOLLOWED_ARTIST
   FOLLOWED_ARTISTS
   FOLLOWED_GALLERIES
-  FOLLOWED_GENES
-  GENERIC_GENES
   LIVE_AUCTIONS
+  POPULAR_ARTISTS
   RECOMMENDED_WORKS
   RELATED_ARTISTS
   SAVED_WORKS
@@ -4380,6 +4692,7 @@ type HomePageModuleContextFair {
   # A type-specific Gravity Mongo Document ID.
   _id: String!
   about: String
+  followed_content: FollowedContent
   artists(
     # Sorts for artists in a fair
     sort: FairArtistSorts
@@ -4391,6 +4704,9 @@ type HomePageModuleContextFair {
   cached: Int
   banner_size: String
   counts: FairCounts
+
+  # A formatted description of the start to end dates
+  exhibition_period: String
   has_full_feature: Boolean
   has_homepage_section: Boolean
   has_large_banner: Boolean
@@ -4398,15 +4714,18 @@ type HomePageModuleContextFair {
   hours: String
   href: String
   image: Image
+  is_active: Boolean @deprecated(reason: "Prefer isActive instead")
 
   # Are we currently in the fair's active period?
-  is_active: Boolean
+  isActive: Boolean
   links: String
   mobile_image: Image
   is_published: Boolean
   location: Location
   name: String
   profile: Profile
+
+  # This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.
   shows_connection(
     # Number of artworks to return
     section: String
@@ -4434,13 +4753,21 @@ type HomePageModuleContextFair {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+  active_start_at(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   organizer: organizer
   published: Boolean
     @deprecated(reason: "Prefix Boolean returning fields with `is_`")
   tagline: String
   ticketsLink: String
 
-  # The exhibitors with booths in this fair.
+  # The exhibitors with booths in this fair with letter.
   exhibitors_grouped_by_name: [FairExhibitorsGroup]
 
   # Artworks Elastic Search results
@@ -4482,7 +4809,11 @@ type HomePageModuleContextFair {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
+  sponsoredContent: FairSponsoredContent
 }
 
 type HomePageModuleContextFollowArtists {
@@ -4549,6 +4880,9 @@ type HomePageModuleContextGene implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
     after: String
     first: Int
     before: String
@@ -4596,6 +4930,9 @@ type HomePageModuleContextGene implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
   href: String
   image: Image
@@ -4867,10 +5204,15 @@ type Location {
   # Alternate Markdown-supporting free text representation of a location's opening hours
   day_schedule_text: String
   displayDaySchedules: [FormattedDaySchedules]
+    @deprecated(reason: "Use openingHours instead")
+
+  # Union returning opening hours in formatted structure or a string
+  openingHours: OpeningHoursUnion
   display: String
   phone: String
   postal_code: String
   state: String
+  summary: String
 }
 
 type LotStanding {
@@ -4919,6 +5261,15 @@ type MarketingCollection {
   query: MarketingCollectionQuery!
   createdAt: MarketingDateTime!
   updatedAt: MarketingDateTime!
+
+  # Suggested average price for included works
+  price_guidance: Float
+
+  # Collection can be surfaced on editorial pages
+  show_on_editorial: Boolean!
+
+  # Collection has prioritized connection to artist
+  is_featured_artist_content: Boolean!
   artworks(
     acquireable: Boolean
     offerable: Boolean
@@ -5082,7 +5433,7 @@ type Me implements Node {
   # A list of the current user’s artist follows
   follow_artists(page: Int, size: Int): FollowArtists
 
-  # A list of the current user’s inquiry requests
+  # A Connection of followed artists by current user
   followed_artists_connection(
     after: String
     first: Int
@@ -5324,6 +5675,9 @@ type Mutation {
     input: SendConversationMessageMutationInput!
   ): SendConversationMessageMutationPayload
 
+  # Send a feedback message
+  sendFeedback(input: SendFeedbackMutationInput!): SendFeedbackMutationPayload
+
   # Save (or remove) an artwork to (from) a users default collection.
   saveArtwork(input: SaveArtworkInput!): SaveArtworkPayload
 
@@ -5434,6 +5788,11 @@ type Mutation {
   ecommerceSubmitOrderWithOffer(
     input: SubmitOrderWithOfferInput!
   ): SubmitOrderWithOfferPayload
+
+  # Fix the failed payment on an offer order
+  ecommerceFixFailedPayment(
+    input: FixFailedPaymentInput!
+  ): FixFailedPaymentPayload
 
   # Creates an order with an artwork
   createOrderWithArtwork(
@@ -5782,6 +6141,9 @@ type OfferOrder implements Order {
 
   # Credit card on this order
   creditCard: CreditCard
+
+  # Whether or not the last attempt to charge the buyer failed
+  lastTransactionFailed: Boolean
   lastApprovedAt(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -5846,6 +6208,16 @@ type OfferOrder implements Order {
   # List of submitted offers made on this order so far
   offers: OfferConnection
 }
+
+type OpeningHoursArray {
+  schedules: [FormattedDaySchedules]
+}
+
+type OpeningHoursText {
+  text: String
+}
+
+union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 
 interface Order {
   # ID of the order
@@ -5998,6 +6370,9 @@ interface Order {
 
   # Credit card on this order
   creditCard: CreditCard
+
+  # Whether or not the last attempt to charge the buyer failed
+  lastTransactionFailed: Boolean
   lastApprovedAt(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -6690,6 +7065,14 @@ type PartnerShowEventType {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of the start to end dates
+  exhibitionPeriod: String
+}
+
+enum PartnerShowPartnerType {
+  GALLERY
+  MUSEUM
 }
 
 enum PartnerShowSorts {
@@ -6713,6 +7096,7 @@ enum PartnerShowSorts {
   PUBLISH_AT_DESC
   START_AT_ASC
   START_AT_DESC
+  PARTNER_ASC
 }
 
 enum PartnersSortType {
@@ -6958,6 +7342,9 @@ type Query {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 
   # Sale Artworks Elastic Search results
@@ -7202,8 +7589,12 @@ type Query {
     # Entities to include in search. Default: [ARTIST, ARTWORK].
     entities: [SearchEntity]
 
-    # Mode of search to exceute. Default: SITE.
+    # Mode of search to execute. Default: SITE.
     mode: SearchMode
+    aggregations: [SearchAggregation]
+
+    # If present, will be used for pagination instead of cursors.
+    page: Int
     after: String
     first: Int
     before: String
@@ -7313,7 +7704,16 @@ type Query {
 
   # Find partners by ID
   _unused_gravity_partners(ids: [ID]!): [DoNotUseThisPartner]
-  marketingCollections(artistID: String): [MarketingCollection!]!
+
+  # Find PartnerStats
+  analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStatsType
+  marketingCollections(
+    randomizationSeed: String
+    size: Int
+    isFeaturedArtistContent: Boolean
+    showOnEditorial: Boolean
+    artistID: String
+  ): [MarketingCollection!]!
   marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
 }
@@ -7835,6 +8235,9 @@ type SearchableConnection {
   edges: [SearchableEdge]
   pageCursors: PageCursors
   totalCount: Int
+
+  # Returns aggregation counts for the given filter query.
+  aggregations: [SearchAggregationResults]
 }
 
 # An edge in a connection.
@@ -7854,10 +8257,22 @@ type SearchableItem implements Node & Searchable {
 
   # A type-specific Gravity Mongo Document ID.
   _id: String!
+  description: String
   displayLabel: String
   imageUrl: String
   href: String
-  searchableType: String
+  searchableType: String @deprecated(reason: "Switch to use `displayType`")
+  displayType: String
+}
+
+enum SearchAggregation {
+  TYPE
+}
+
+# The results for a requested aggregations
+type SearchAggregationResults {
+  counts: [AggregationCount]
+  slice: SearchAggregation
 }
 
 enum SearchEntity {
@@ -7868,9 +8283,12 @@ enum SearchEntity {
   COLLECTION
   FAIR
   FEATURE
+  GALLERY
   GENE
+  INSTITUTION
   PROFILE
   SALE
+  SHOW
   TAG
 }
 
@@ -7955,6 +8373,38 @@ type SendConversationMessageMutationPayload {
   messageEdge: MessageEdge
   clientMutationId: String
 }
+
+type SendFeedbackMutationFailure {
+  mutationError: GravityMutationError
+}
+
+input SendFeedbackMutationInput {
+  # Message to be sent.
+  message: String!
+
+  # Email to associate with message (only used if logged out).
+  email: String
+
+  # Name to associate with message (only used if logged out).
+  name: String
+
+  # URL of page where feedback originated.
+  url: String
+  clientMutationId: String
+}
+
+type SendFeedbackMutationPayload {
+  feedbackOrError: SendFeedbackMutationType
+  clientMutationId: String
+}
+
+type SendFeedbackMutationSuccess {
+  feedback: Feedback
+}
+
+union SendFeedbackMutationType =
+    SendFeedbackMutationSuccess
+  | SendFeedbackMutationFailure
 
 type Services {
   convection: Convection!
@@ -8159,6 +8609,9 @@ type Show implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 
   # A path to the show on Artsy
@@ -8186,11 +8639,12 @@ type Show implements Node {
   # Does the show exist as a fair booth?
   is_fair_booth: Boolean
 
-  # Is it a stubbed show?
+  # Is it a show provided for historical reference?
   is_reference: Boolean
+  is_local_discovery: Boolean @deprecated(reason: "Prefer isStubShow")
 
   # Is it an outsourced local discovery stub show?
-  is_local_discovery: Boolean
+  isStubShow: Boolean
 
   # Whether the show is in a fair, group or solo
   kind: String
@@ -8210,7 +8664,9 @@ type Show implements Node {
   # Shows that are near (~75km) from this show
   nearbyShows(
     sort: PartnerShowSorts
-    status: EventStatus
+
+    # By default show only current shows
+    status: EventStatus = CURRENT
 
     # Whether to include local discovery stubs as well as displayable shows
     discoverable: Boolean
@@ -8228,6 +8684,9 @@ type Show implements Node {
 
   # The press release for this show
   press_release(format: Format): String
+
+  # Link to the press release for this show
+  pressReleaseUrl: String
 
   # When this show starts
   start_at(
@@ -8250,6 +8709,14 @@ type Show implements Node {
 
   # Is it a fair booth or a show?
   type: String
+
+  # A Connection of followed artists by current user for this show
+  followedArtists(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ShowFollowArtistConnection
 }
 
 # A connection to a list of items.
@@ -8280,6 +8747,28 @@ type ShowCounts {
 type ShowEdge {
   # The item at the end of the edge
   node: Show
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+type ShowFollowArtist {
+  artist: Artist
+}
+
+# A connection to a list of items.
+type ShowFollowArtistConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [ShowFollowArtistEdge]
+}
+
+# An edge in a connection.
+type ShowFollowArtistEdge {
+  # The item at the end of the edge
+  node: ShowFollowArtist
 
   # A cursor for use in pagination
   cursor: String!
@@ -8455,6 +8944,9 @@ type Tag implements Node {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 }
 
@@ -8868,6 +9360,9 @@ type Viewer {
     sort: String
     tag_id: String
     keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
   ): FilterArtworks
 
   # Sale Artworks Elastic Search results
@@ -9112,8 +9607,12 @@ type Viewer {
     # Entities to include in search. Default: [ARTIST, ARTWORK].
     entities: [SearchEntity]
 
-    # Mode of search to exceute. Default: SITE.
+    # Mode of search to execute. Default: SITE.
     mode: SearchMode
+    aggregations: [SearchAggregation]
+
+    # If present, will be used for pagination instead of cursors.
+    page: Int
     after: String
     first: Int
     before: String

@@ -1,5 +1,3 @@
-// @ts-check
-
 import { map, omit } from "lodash"
 import Partner from "schema/partner"
 import AggregationCount from "./aggregation_count"
@@ -9,6 +7,7 @@ import {
   GraphQLList,
   GraphQLInt,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export const PartnersAggregation = new GraphQLEnumType({
   name: "PartnersAggregation",
@@ -25,7 +24,10 @@ export const PartnersAggregation = new GraphQLEnumType({
   },
 })
 
-export const PartnersAggregationResultsType = new GraphQLObjectType({
+export const PartnersAggregationResultsType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "PartnersAggregationResults",
   description: "The results for one of the requested aggregations",
   fields: () => ({
@@ -39,7 +41,7 @@ export const PartnersAggregationResultsType = new GraphQLObjectType({
   }),
 })
 
-export const FilterPartnersType = new GraphQLObjectType({
+export const FilterPartnersType = new GraphQLObjectType<any, ResolverContext>({
   name: "FilterPartners",
   fields: () => ({
     aggregations: {

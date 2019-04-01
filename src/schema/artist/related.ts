@@ -7,6 +7,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { createPageCursors } from "schema/fields/pagination"
 import { assign } from "lodash"
 import { connectionFromArraySlice, connectionFromArray } from "graphql-relay"
+import { ResolverContext } from "types/graphql"
 
 const RelatedArtistsKind = {
   type: new GraphQLEnumType({
@@ -23,18 +24,13 @@ const RelatedArtistsKind = {
 }
 
 export const Related = {
-  type: new GraphQLObjectType({
+  type: new GraphQLObjectType<any, ResolverContext>({
     name: "ArtistRelatedData",
     fields: () => ({
       genes: {
         type: geneConnection,
         args: pageable({}),
-        resolve: (
-          { id },
-          args,
-          _request,
-          { rootValue: { relatedGenesLoader } }
-        ) => {
+        resolve: ({ id }, args, { relatedGenesLoader }) => {
           return relatedGenesLoader({ artist: [id] }).then(response => {
             return connectionFromArray(response, args)
           })
@@ -52,13 +48,7 @@ export const Related = {
         resolve: (
           { id },
           args,
-          _request,
-          {
-            rootValue: {
-              relatedContemporaryArtistsLoader,
-              relatedMainArtistsLoader,
-            },
-          }
+          { relatedContemporaryArtistsLoader, relatedMainArtistsLoader }
         ) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
@@ -78,7 +68,7 @@ export const Related = {
               : relatedContemporaryArtistsLoader
 
           return fetch(gravityArgs).then(({ body, headers }) => {
-            const totalCount = headers["x-total-count"]
+            const totalCount = parseInt(headers["x-total-count"] || "0", 10)
             const pageCursors = createPageCursors({ page, size }, totalCount)
 
             return assign({
@@ -97,12 +87,7 @@ export const Related = {
         args: pageable(SuggestedArtistsArgs),
         description:
           "A list of the current user’s suggested artists, based on a single artist",
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { suggestedArtistsLoader } }
-        ) => {
+        resolve: ({ id }, options, { suggestedArtistsLoader }) => {
           if (!suggestedArtistsLoader) return null
           const { offset } = getPagingParameters(options)
           const gravityOptions = assign(
@@ -113,7 +98,7 @@ export const Related = {
           return suggestedArtistsLoader(gravityOptions).then(
             ({ body, headers }) => {
               const suggestedArtists = body
-              const totalCount = headers["x-total-count"]
+              const totalCount = parseInt(headers["x-total-count"] || "0", 10)
               return connectionFromArraySlice(suggestedArtists, options, {
                 arrayLength: totalCount,
                 sliceStart: offset,

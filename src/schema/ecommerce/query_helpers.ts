@@ -156,6 +156,7 @@ export const BuyerOrderFields = gql`
   taxTotalCents
   totalListPriceCents
   transactionFeeCents
+  lastTransactionFailed
   updatedAt
   lineItems {
     edges {
@@ -209,6 +210,7 @@ export const SellerOrderFields = gql`
   taxTotalCents
   totalListPriceCents
   transactionFeeCents
+  lastTransactionFailed
   updatedAt
 `
 
@@ -241,4 +243,5 @@ export const AllOrderFields = gql`
   lastSubmittedAt
   commissionRate
   displayCommissionRate
+  lastTransactionFailed
 `

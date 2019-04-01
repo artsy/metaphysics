@@ -2,6 +2,7 @@ import { omit, map } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { exhibitionPeriod } from "lib/date"
 import { artistConnection } from "./artist"
 import moment from "moment"
 import cached from "./fields/cached"
@@ -9,6 +10,8 @@ import date from "./fields/date"
 import numeral from "./fields/numeral"
 import Profile from "./profile"
 import Image from "./image"
+import Artist from "./artist"
+import Partner from "./partner"
 import { showConnection } from "./show"
 import Location from "./location"
 import { GravityIDFields } from "./object_identification"
@@ -20,13 +23,27 @@ import {
   GraphQLBoolean,
   GraphQLNonNull,
   GraphQLList,
+  GraphQLFieldConfig,
 } from "graphql"
-import { totalViaLoader } from "lib/total"
 import ShowSort from "./sorts/show_sort"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
+import { ResolverContext } from "types/graphql"
+import { sponsoredContentForFair } from "lib/sponsoredContent"
 
-const FairOrganizerType = new GraphQLObjectType({
+const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
+  name: "FollowedContent",
+  fields: () => ({
+    artists: {
+      type: new GraphQLList(Artist.type),
+    },
+    galleries: {
+      type: new GraphQLList(Partner.type),
+    },
+  }),
+})
+
+const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
   name: "organizer",
   fields: {
     profile_id: {
@@ -34,12 +51,7 @@ const FairOrganizerType = new GraphQLObjectType({
     },
     profile: {
       type: Profile.type,
-      resolve: (
-        { profile_id },
-        _options,
-        _request,
-        { rootValue: { profileLoader } }
-      ) => {
+      resolve: ({ profile_id }, _options, { profileLoader }) => {
         return profileLoader(profile_id).catch(() => null)
       },
     },
@@ -49,12 +61,35 @@ const FairOrganizerType = new GraphQLObjectType({
   },
 })
 
-const FairType = new GraphQLObjectType({
+export const FairType = new GraphQLObjectType<any, ResolverContext>({
   name: "Fair",
   fields: () => ({
     ...GravityIDFields,
     about: {
       type: GraphQLString,
+    },
+    followed_content: {
+      type: FollowedContentType,
+      resolve: (
+        fair,
+        _options,
+        { followedArtistsLoader, followedPartnersLoader }
+      ) => {
+        if (!followedArtistsLoader || !followedPartnersLoader) return null
+        const fair_id = fair.id
+
+        return {
+          artists: followedArtistsLoader({ fair_id }).then(({ body }) => {
+            return body.map(artist_follow => artist_follow.artist)
+          }),
+          galleries: followedPartnersLoader({
+            fair_id,
+            owner_types: ["PartnerGallery"],
+          }).then(({ body }) => {
+            return body.map(profile_follow => profile_follow.profile.owner)
+          }),
+        }
+      },
     },
     artists: {
       type: artistConnection,
@@ -64,12 +99,7 @@ const FairType = new GraphQLObjectType({
           description: "Sorts for artists in a fair",
         },
       }),
-      resolve: (
-        { id },
-        options,
-        _request,
-        { rootValue: { fairArtistsLoader, artistsLoader } }
-      ) => {
+      resolve: ({ id }, options, { fairArtistsLoader, artistsLoader }) => {
         const gravityOptions = omit(
           convertConnectionArgsToGravityArgs(options),
           ["page"]
@@ -82,7 +112,7 @@ const FairType = new GraphQLObjectType({
             return artistsLoader({ ids: map(body, "artist_id") }).then(
               artists => {
                 return connectionFromArraySlice(artists, options, {
-                  arrayLength: headers["x-total-count"],
+                  arrayLength: parseInt(headers["x-total-count"] || "0", 10),
                   sliceStart: gravityOptions.offset,
                 })
               }
@@ -96,7 +126,7 @@ const FairType = new GraphQLObjectType({
       type: GraphQLString,
     },
     counts: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "FairCounts",
         fields: {
           artists: numeral(({ artists_count }) => artists_count),
@@ -108,6 +138,11 @@ const FairType = new GraphQLObjectType({
         },
       }),
       resolve: fair => fair,
+    },
+    exhibition_period: {
+      type: GraphQLString,
+      description: "A formatted description of the start to end dates",
+      resolve: ({ start_at, end_at }) => exhibitionPeriod(start_at, end_at),
     },
     has_full_feature: {
       type: GraphQLBoolean,
@@ -134,11 +169,20 @@ const FairType = new GraphQLObjectType({
     image: Image,
     is_active: {
       type: GraphQLBoolean,
-      description: "Are we currently in the fair's active period?",
+      deprecationReason: "Prefer isActive instead",
       resolve: ({ autopublish_artworks_at, end_at }) => {
         const start = moment.utc(autopublish_artworks_at).subtract(7, "days")
         const end = moment.utc(end_at).add(14, "days")
         return moment.utc().isBetween(start, end)
+      },
+    },
+    isActive: {
+      type: GraphQLBoolean,
+      description: "Are we currently in the fair's active period?",
+      resolve: ({ active_start_at }) => {
+        const activeStart = moment.utc(active_start_at)
+        const now = moment.utc()
+        return now.isAfter(activeStart)
       },
     },
     links: {
@@ -157,12 +201,7 @@ const FairType = new GraphQLObjectType({
     },
     location: {
       type: Location.type,
-      resolve: (
-        { id, location, published },
-        options,
-        _request,
-        { rootValue: { fairLoader } }
-      ) => {
+      resolve: ({ id, location, published }, options, { fairLoader }) => {
         if (location) {
           return location
         } else if (published) {
@@ -181,8 +220,7 @@ const FairType = new GraphQLObjectType({
       resolve: (
         { default_profile_id, organizer },
         _options,
-        _request,
-        { rootValue: { profileLoader } }
+        { profileLoader }
       ) => {
         const id = default_profile_id || (organizer && organizer.profile_id)
         return (
@@ -194,6 +232,8 @@ const FairType = new GraphQLObjectType({
     },
     shows_connection: {
       type: showConnection,
+      description:
+        "This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.",
       args: pageable({
         section: {
           type: GraphQLString,
@@ -204,31 +244,37 @@ const FairType = new GraphQLObjectType({
           description: "Sorts for shows in a fair",
         },
       }),
-      resolve: (
-        { id },
-        options,
-        _request,
-        { rootValue: { fairBoothsLoader } }
-      ) => {
-        const gravityOptions = omit(
-          convertConnectionArgsToGravityArgs(options),
-          ["page"]
+      resolve: ({ id }, options, { fairBoothsLoader }) => {
+        interface GravityOptions {
+          size: number
+          sort: string
+          cursor?: string
+          section: string
+        }
+        const gravityOptions: GravityOptions = {
+          sort: options.sort || "-featured",
+          section: options.section,
+          size: options.first,
+        }
+        if (!!options.after) {
+          gravityOptions.cursor = options.after
+        }
+        return fairBoothsLoader(id, gravityOptions).then(
+          ({ body: { results, next } }) => {
+            const connection = connectionFromArraySlice(results, options, {
+              arrayLength: results.length,
+              sliceStart: 0,
+            })
+            connection.pageInfo.endCursor = next
+            connection.pageInfo.hasNextPage = !!next
+            return connection
+          }
         )
-        gravityOptions.sort = gravityOptions.sort || "-featured"
-
-        return Promise.all([
-          totalViaLoader(fairBoothsLoader, id, gravityOptions),
-          fairBoothsLoader(id, gravityOptions),
-        ]).then(([count, { body: { results } }]) => {
-          return connectionFromArraySlice(results, options, {
-            arrayLength: count,
-            sliceStart: gravityOptions.offset,
-          })
-        })
       },
     },
     start_at: date,
     end_at: date,
+    active_start_at: date,
     organizer: {
       type: FairOrganizerType,
     },
@@ -244,9 +290,9 @@ const FairType = new GraphQLObjectType({
       resolve: ({ tickets_link }) => tickets_link,
     },
     exhibitors_grouped_by_name: {
-      description: "The exhibitors with booths in this fair.",
+      description: "The exhibitors with booths in this fair with letter.",
       type: new GraphQLList(
-        new GraphQLObjectType({
+        new GraphQLObjectType<any, ResolverContext>({
           name: "FairExhibitorsGroup",
           fields: {
             letter: {
@@ -254,33 +300,52 @@ const FairType = new GraphQLObjectType({
               description: "Letter exhibitors group belongs to",
             },
             exhibitors: {
-              type: new GraphQLList(GraphQLString),
-              description: "Exhibitors sorted by name",
-            },
-            profile_ids: {
-              type: new GraphQLList(GraphQLString),
-              description: "Partner/Exhibitor default profile id",
+              description: "The exhibitor data.",
+              type: new GraphQLList(
+                new GraphQLObjectType<any, ResolverContext>({
+                  name: "FairExhibitor",
+                  fields: {
+                    name: {
+                      type: GraphQLString,
+                      description: "Exhibitor name",
+                    },
+                    id: {
+                      type: GraphQLString,
+                      description: "Exhibitors id",
+                    },
+                    partner_id: {
+                      type: GraphQLString,
+                      description: "Exhibitors _id",
+                    },
+                    profile_id: {
+                      type: GraphQLString,
+                      description: "Partner default profile id",
+                    },
+                  },
+                })
+              ),
             },
           },
         })
       ),
-      resolve: (
-        root,
-        _options,
-        _request,
-        { rootValue: { fairPartnersLoader } }
-      ) => {
+      resolve: (root, _options, { fairPartnersLoader }) => {
         if (!root._id) {
           return []
         }
         const exhibitor_groups: {
           [letter: string]: {
             letter: string
-            exhibitors: [String]
-            profile_ids: [String]
+            exhibitors: [
+              {
+                name: string
+                profile_id: string
+                id: string
+                partner_id: string
+              }
+            ]
           }
         } = {}
-        const fetch = allViaLoader(fairPartnersLoader, root._id)
+        const fetch = allViaLoader(fairPartnersLoader, { path: root._id })
 
         return fetch.then(result => {
           const fairExhibitors = result.sort((a, b) => {
@@ -295,15 +360,23 @@ const FairType = new GraphQLObjectType({
             const firstName = names[0]
             const letter = firstName.charAt(0).toUpperCase()
             if (exhibitor_groups[letter]) {
-              exhibitor_groups[letter].exhibitors.push(fairExhibitor.name)
-              exhibitor_groups[letter].profile_ids.push(
-                fairExhibitor.default_profile_id
-              )
+              exhibitor_groups[letter].exhibitors.push({
+                name: fairExhibitor.name,
+                profile_id: fairExhibitor.partner_show_ids[0],
+                id: fairExhibitor.id,
+                partner_id: fairExhibitor.partner_id,
+              })
             } else {
               exhibitor_groups[letter] = {
                 letter,
-                exhibitors: [fairExhibitor.name],
-                profile_ids: [fairExhibitor.default_profile_id],
+                exhibitors: [
+                  {
+                    name: fairExhibitor.name,
+                    profile_id: fairExhibitor.partner_show_ids[0],
+                    id: fairExhibitor.id,
+                    partner_id: fairExhibitor.partner_id,
+                  },
+                ],
               }
             }
           }
@@ -312,10 +385,24 @@ const FairType = new GraphQLObjectType({
       },
     },
     filteredArtworks: filterArtworks("fair_id"),
+    sponsoredContent: {
+      type: new GraphQLObjectType<any, ResolverContext>({
+        name: "FairSponsoredContent",
+        fields: {
+          activationText: {
+            type: GraphQLString,
+          },
+          pressReleaseUrl: {
+            type: GraphQLString,
+          },
+        },
+      }),
+      resolve: fair => sponsoredContentForFair(fair.id),
+    },
   }),
 })
 
-const Fair = {
+const Fair: GraphQLFieldConfig<void, ResolverContext> = {
   type: FairType,
   description: "A Fair",
   args: {
@@ -324,7 +411,7 @@ const Fair = {
       description: "The slug or ID of the Fair",
     },
   },
-  resolve: (_root, { id }, _request, { rootValue: { fairLoader } }) => {
+  resolve: (_root, { id }, { fairLoader }) => {
     return fairLoader(id)
   },
 }

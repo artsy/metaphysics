@@ -1,14 +1,14 @@
 import { pageable } from "relay-cursor-paging"
-import { graphql, GraphQLString } from "graphql"
+import { graphql, GraphQLString, GraphQLFieldConfig } from "graphql"
 import { OrderConnection } from "schema/ecommerce/types/order"
 import { OrdersSortMethodTypeEnum } from "schema/ecommerce/types/enums/orders_sort_method_enum"
 import gql from "lib/gql"
 import { PageInfo, PaginationFields, AllOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
 import { OrderModeEnum } from "./types/enums/order_mode_enum"
+import { ResolverContext } from "types/graphql"
 
-export const Orders = {
-  name: "Orders",
+export const Orders: GraphQLFieldConfig<void, ResolverContext> = {
   type: OrderConnection,
   description: "Returns list of orders",
   args: pageable({
@@ -35,8 +35,7 @@ export const Orders = {
       last,
       before,
     },
-    context,
-    { rootValue: { exchangeSchema } }
+    context
   ) => {
     const query = gql`
       query EcommerceOrders(
@@ -90,7 +89,7 @@ export const Orders = {
         }
       }
     `
-    return graphql(exchangeSchema, query, null, context, {
+    return graphql(context.exchangeSchema, query, null, context, {
       buyerId,
       buyerType,
       sellerId,

@@ -6,7 +6,7 @@ import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/
 
 describe("Show type", () => {
   let showData = null
-  let rootValue = null
+  let context = null
   let galaxyData = null
 
   beforeEach(() => {
@@ -46,7 +46,7 @@ describe("Show type", () => {
       _links: "blah",
     }
 
-    rootValue = {
+    context = {
       showLoader: sinon.stub().returns(Promise.resolve(showData)),
       showsWithHeadersLoader: sinon.stub().returns(
         Promise.resolve({
@@ -70,7 +70,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         has_location: true,
@@ -87,7 +87,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         has_location: true,
@@ -104,7 +104,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         has_location: true,
@@ -120,7 +120,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         has_location: false,
@@ -128,9 +128,10 @@ describe("Show type", () => {
     })
   })
 
-  it("doesn't return a show that’s neither displayable nor a reference", async () => {
+  it("doesn't return a show that’s neither displayable nor a reference show nor a stub show", async () => {
     showData.displayable = false
     showData.is_reference = false
+    showData.is_local_discovery = false
     const query = gql`
       {
         show(id: "new-museum-1-2015-triennial-surround-audience") {
@@ -139,11 +140,48 @@ describe("Show type", () => {
       }
     `
     try {
-      await runQuery(query, rootValue)
+      await runQuery(query, context)
       throw new Error("Did not expect query to not throw an error")
     } catch (error) {
       expect(error.message).toEqual("Show Not Found")
     }
+  })
+
+  it("returns a fair booth even with displayable set to false", async () => {
+    showData.fair = {
+      id: "the-art-show-2019",
+      name: "The Art Show 2019",
+    }
+    showData.displayable = false
+
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          name
+          fair {
+            id
+            name
+          }
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+    expect(data.show.fair.id).toEqual("the-art-show-2019")
+  })
+
+  it("returns a local discovery stub show even with displayable set to false", async () => {
+    showData.is_local_discovery = true
+    showData.displayable = false
+
+    const query = gql`
+      {
+        show(id: "new-museum-1-2015-triennial-surround-audience") {
+          name
+        }
+      }
+    `
+    const data = await runQuery(query, context)
+    expect(data.show.name).toEqual("Whitespace Abounds")
   })
 
   describe("is_followed", () => {
@@ -151,12 +189,11 @@ describe("Show type", () => {
 
     beforeEach(() => {
       gravityLoader = jest.fn()
-      rootValue.followedShowLoader = trackedEntityLoaderFactory(
-        gravityLoader,
-        "show_ids",
-        "is_followed",
-        "partner_show"
-      )
+      context.followedShowLoader = trackedEntityLoaderFactory(gravityLoader, {
+        paramKey: "show_ids",
+        trackingKey: "is_followed",
+        entityKeyPath: "partner_show",
+      })
     })
 
     it("returns true if the show is returned", async () => {
@@ -177,7 +214,7 @@ describe("Show type", () => {
         }
       }
     `,
-        rootValue
+        context
       )
       expect(data.show.is_followed).toBeTruthy()
     })
@@ -192,7 +229,7 @@ describe("Show type", () => {
             }
           }
         `,
-        rootValue
+        context
       )
       expect(data.show.is_followed).toBeFalsy()
     })
@@ -207,7 +244,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           name: "Whitespace Abounds",
@@ -224,7 +261,7 @@ describe("Show type", () => {
         }
       `
       showData.name = null
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           name: null,
@@ -246,7 +283,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           city: "Quonochontaug",
@@ -264,7 +301,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           city: "Quonochontaug",
@@ -286,7 +323,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           city: "Quonochontaug",
@@ -307,7 +344,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "fair",
@@ -329,7 +366,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "solo",
@@ -354,7 +391,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "group",
@@ -376,7 +413,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "solo",
@@ -401,7 +438,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "group",
@@ -424,7 +461,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "group",
@@ -443,7 +480,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           href: "/show/new-museum-1-2015-triennial-surround-audience",
@@ -459,7 +496,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           href: null,
@@ -482,7 +519,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         partner: {
@@ -506,7 +543,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         partner: null,
@@ -525,7 +562,7 @@ describe("Show type", () => {
       }
     `
 
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         id: "new-museum-1-2015-triennial-surround-audience",
@@ -544,7 +581,7 @@ describe("Show type", () => {
       }
     `
 
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         exhibition_period: "Feb 25 – May 24, 2015",
@@ -561,7 +598,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         status_update: "Closing tomorrow",
@@ -577,7 +614,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
@@ -586,14 +623,14 @@ describe("Show type", () => {
   })
 
   it("includes the total number of artworks", async () => {
-    rootValue.partnerShowArtworksLoader = sinon.stub().returns(
+    context.partnerShowArtworksLoader = sinon.stub().returns(
       Promise.resolve({
         headers: {
           "x-total-count": 42,
         },
       })
     )
-    rootValue.partnerShowArtistsLoader = jest.fn(() =>
+    context.partnerShowArtistsLoader = jest.fn(() =>
       Promise.resolve({
         headers: {
           "x-total-count": 21,
@@ -609,7 +646,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         counts: {
@@ -620,7 +657,7 @@ describe("Show type", () => {
   })
 
   it("includes the total number of artists", async () => {
-    rootValue.partnerShowArtistsLoader = jest.fn(() =>
+    context.partnerShowArtistsLoader = jest.fn(() =>
       Promise.resolve({
         headers: {
           "x-total-count": 21,
@@ -636,7 +673,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         counts: {
@@ -656,7 +693,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         counts: {
@@ -667,7 +704,7 @@ describe("Show type", () => {
   })
 
   it("includes the number of artworks by a specific artist", async () => {
-    rootValue.partnerShowArtworksLoader = sinon.stub().returns(
+    context.partnerShowArtworksLoader = sinon.stub().returns(
       Promise.resolve({
         headers: {
           "x-total-count": 2,
@@ -683,7 +720,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         counts: {
@@ -694,7 +731,7 @@ describe("Show type", () => {
   })
 
   it("does not return errors when there is no cover image", () => {
-    rootValue.partnerShowArtworksLoader = sinon.stub().returns(
+    context.partnerShowArtworksLoader = sinon.stub().returns(
       Promise.resolve({
         body: [],
       })
@@ -708,7 +745,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runQuery(query, rootValue).then(({ show }) => {
+    return runQuery(query, context).then(({ show }) => {
       expect(show).toEqual({
         cover_image: null,
       })
@@ -736,7 +773,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           nearbyShows: {
@@ -766,7 +803,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           nearbyShows: {
@@ -796,8 +833,8 @@ describe("Show type", () => {
           }
         }
       `
-      await runQuery(query, rootValue)
-      const gravityOptions = rootValue.showsWithHeadersLoader.args[0][0]
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.args[0][0]
 
       expect(gravityOptions).toMatchObject({
         displayable: true,
@@ -825,8 +862,8 @@ describe("Show type", () => {
           }
         }
       `
-      await runQuery(query, rootValue)
-      const gravityOptions = rootValue.showsWithHeadersLoader.args[0][0]
+      await runQuery(query, context)
+      const gravityOptions = context.showsWithHeadersLoader.args[0][0]
 
       expect(gravityOptions).toMatchObject({
         discoverable: true,
@@ -848,7 +885,7 @@ describe("Show type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           artists: [
@@ -884,7 +921,7 @@ describe("Show type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           artists_grouped_by_name: [
@@ -936,7 +973,7 @@ describe("Show type", () => {
           id: "pier-paolo-calzolari-untitled-146",
         },
       ]
-      rootValue = {
+      context = {
         partnerShowArtworksLoader: () =>
           Promise.resolve({
             body: artworksResponse,
@@ -963,7 +1000,7 @@ describe("Show type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         show: {
@@ -1003,7 +1040,7 @@ describe("Show type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         show: {
@@ -1029,7 +1066,7 @@ describe("Show type", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         show: {
@@ -1044,27 +1081,30 @@ describe("Show type", () => {
   })
   describe("#filteredArtworks", () => {
     it("fetches FilterArtworks using the show id and partner id", async () => {
-      rootValue = {
-        ...rootValue,
-        filterArtworksLoader: jest.fn().mockReturnValue(
-          Promise.resolve({
-            hits: [
-              {
-                id: "1",
-                title: "foo-artwork",
+      context = {
+        ...context,
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: jest.fn().mockReturnValue(
+            Promise.resolve({
+              hits: [
+                {
+                  id: "1",
+                  title: "foo-artwork",
+                },
+                {
+                  id: "2",
+                  title: "bar-artwork",
+                },
+              ],
+              aggregations: {
+                total: {
+                  value: 303,
+                },
               },
-              {
-                id: "2",
-                title: "bar-artwork",
-              },
-            ],
-            aggregations: {
-              total: {
-                value: 303,
-              },
-            },
-          })
-        ),
+            })
+          ),
+        },
       }
 
       const query = gql`
@@ -1083,10 +1123,12 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runQuery(query, rootValue)
-      expect(rootValue.filterArtworksLoader).toHaveBeenCalledWith(
+      const data = await runQuery(query, context)
+      expect(
+        context.unauthenticatedLoaders.filterArtworksLoader
+      ).toHaveBeenCalledWith(
         expect.objectContaining({
-          show_id: "new-museum-1-2015-triennial-surround-audience",
+          partner_show_id: "abcdefg123456",
           partner_id: "new-museum",
         })
       )

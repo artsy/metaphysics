@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery, runQuery } from "test/utils"
 
 describe("UpdateCollectorProfile", () => {
   it("updates and returns a collector profile", () => {
@@ -17,7 +17,7 @@ describe("UpdateCollectorProfile", () => {
     `
     /* eslint-enable max-len */
 
-    const rootValue = {
+    const context = {
       updateCollectorProfileLoader: () =>
         Promise.resolve({
           id: "3",
@@ -37,7 +37,7 @@ describe("UpdateCollectorProfile", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
+    return runAuthenticatedQuery(mutation, context).then(
       ({ updateCollectorProfile }) => {
         expect(updateCollectorProfile).toEqual(expectedProfileData)
       }
@@ -59,13 +59,11 @@ describe("UpdateCollectorProfile", () => {
     `
     /* eslint-enable max-len */
 
-    const rootValue = {}
-
     const errorResponse =
       "Missing Update Collector Profile Loader. Check your access token."
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue)
+    return runQuery(mutation)
       .then(() => {
         throw new Error("An error was not thrown but was expected.")
       })

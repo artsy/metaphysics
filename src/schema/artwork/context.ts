@@ -2,7 +2,8 @@ import { assign, create, first, flow, compact } from "lodash"
 import Fair from "schema/fair"
 import Sale from "schema/sale/index"
 import PartnerShow from "schema/partner_show"
-import { GraphQLUnionType } from "graphql"
+import { GraphQLUnionType, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export const ArtworkContextFairType = create(Fair.type, {
   name: "ArtworkContextFair",
@@ -40,16 +41,15 @@ const choose = flow(
   first
 )
 
-export default {
+const Context: GraphQLFieldConfig<any, ResolverContext> = {
   type: ArtworkContextType,
   description: "Returns the associated Fair/Sale/PartnerShow",
   resolve: (
     { id, sale_ids },
     _options,
-    _request,
-    { rootValue: { salesLoader, relatedFairsLoader, relatedShowsLoader } }
+    { salesLoader, relatedFairsLoader, relatedShowsLoader }
   ) => {
-    let sale_promise = Promise.resolve(null)
+    let sale_promise
     if (sale_ids && sale_ids.length > 0) {
       sale_promise = salesLoader({ id: sale_ids })
         .then(first)
@@ -82,6 +82,12 @@ export default {
         return assign({ context_type: "PartnerShow" }, show)
       })
 
-    return Promise.all([sale_promise, fair_promise, show_promise]).then(choose)
+    return Promise.all([
+      sale_promise || Promise.resolve(null),
+      fair_promise,
+      show_promise,
+    ]).then(choose)
   },
 }
+
+export default Context

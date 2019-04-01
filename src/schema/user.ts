@@ -3,12 +3,14 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLBoolean,
+  GraphQLFieldConfig,
 } from "graphql"
 import cached from "./fields/cached"
 import { GravityIDFields } from "./object_identification"
 import { LocationType } from "schema/location"
+import { ResolverContext } from "types/graphql"
 
-export const UserType = new GraphQLObjectType({
+export const UserType = new GraphQLObjectType<any, ResolverContext>({
   name: "User",
   fields: () => ({
     ...GravityIDFields,
@@ -51,7 +53,7 @@ export const UserType = new GraphQLObjectType({
   }),
 })
 
-export const User = {
+export const User: GraphQLFieldConfig<void, ResolverContext> = {
   type: UserType,
   args: {
     email: {
@@ -63,12 +65,7 @@ export const User = {
       description: "ID of the user",
     },
   },
-  resolve: (
-    _root,
-    option,
-    _request,
-    { rootValue: { userByEmailLoader, userByIDLoader } }
-  ) => {
+  resolve: (_root, option, { userByEmailLoader, userByIDLoader }) => {
     const promise = option.id
       ? userByIDLoader(option.id)
       : userByEmailLoader(option)

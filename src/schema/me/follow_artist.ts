@@ -2,8 +2,9 @@ import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ArtistType } from "schema/artist/index"
 import PopularArtists from "schema/artists/popular"
+import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId({
+export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "FollowArtist",
   description: "Follow (or unfollow) an artist",
   inputFields: {
@@ -18,25 +19,20 @@ export default mutationWithClientMutationId({
   outputFields: {
     artist: {
       type: ArtistType,
-      resolve: (
-        { artist_id },
-        _options,
-        _request,
-        { rootValue: { artistLoader } }
-      ) => artistLoader(artist_id),
+      resolve: ({ artist_id }, _options, { artistLoader }) =>
+        artistLoader(artist_id),
     },
     popular_artists: PopularArtists,
   },
   mutateAndGetPayload: (
     { artist_id, unfollow },
-    _request,
-    { rootValue: { accessToken, followArtistLoader, unfollowArtistLoader } }
+    { followArtistLoader, unfollowArtistLoader }
   ) => {
-    if (!accessToken) {
+    if (!followArtistLoader || !unfollowArtistLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 
-    let performAction = null
+    let performAction: Promise<any>
     if (unfollow) {
       performAction = unfollowArtistLoader(artist_id)
     } else {

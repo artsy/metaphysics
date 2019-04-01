@@ -5,9 +5,10 @@ import HomePageArtistModules from "./home_page_artist_modules"
 import HomePageHeroUnits from "./home_page_hero_units"
 import HomePageFairsModule from "./home_page_fairs_module"
 
-import { GraphQLObjectType } from "graphql"
+import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const HomePageType = new GraphQLObjectType({
+const HomePageType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomePage",
   fields: {
     artist_module: HomePageArtistModule,
@@ -16,10 +17,10 @@ const HomePageType = new GraphQLObjectType({
     artwork_modules: HomePageArtworkModules,
     hero_units: HomePageHeroUnits,
     fairs_module: HomePageFairsModule,
-  } as any,
+  },
 })
 
-const HomePage = {
+const HomePage: GraphQLFieldConfig<void, ResolverContext> = {
   type: HomePageType,
   description: "Home screen content",
   resolve: () => {

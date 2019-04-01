@@ -4,7 +4,11 @@ import Artwork from "./artwork"
 import Artist from "./artist"
 import Tag from "./tag"
 import numeral from "./fields/numeral"
-import { computeTotalPages, createPageCursors } from "./fields/pagination"
+import {
+  computeTotalPages,
+  createPageCursors,
+  pageToCursor,
+} from "./fields/pagination"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
 import {
@@ -26,9 +30,11 @@ import {
   GraphQLID,
   GraphQLUnionType,
   GraphQLNonNull,
+  GraphQLFieldConfig,
 } from "graphql"
 
 import { NodeInterface } from "schema/object_identification"
+import { ResolverContext } from "types/graphql"
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",
@@ -45,7 +51,10 @@ export const ArtworkFilterFacetType = new GraphQLUnionType({
   types: [ArtworkFilterTagType, ArtworkFilterGeneType],
 })
 
-export const ArtworkFilterAggregations = {
+export const ArtworkFilterAggregations: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
   description: "Returns aggregation counts for the given filter query.",
   type: new GraphQLList(ArtworksAggregationResultsType),
   resolve: ({ aggregations }) => {
@@ -61,7 +70,7 @@ export const ArtworkFilterAggregations = {
 }
 
 export const FilterArtworksCounts = {
-  type: new GraphQLObjectType({
+  type: new GraphQLObjectType<any, ResolverContext>({
     name: "FilterArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
@@ -73,7 +82,7 @@ export const FilterArtworksCounts = {
   resolve: data => data,
 }
 
-export const FilterArtworksType = new GraphQLObjectType({
+export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
   name: "FilterArtworks",
   interfaces: [NodeInterface],
   fields: () => ({
@@ -81,7 +90,7 @@ export const FilterArtworksType = new GraphQLObjectType({
       type: new GraphQLNonNull(GraphQLID),
       description: "The ID of the object.",
       resolve: ({ options }) =>
-        toGlobalId("FilterArtworks", JSON.stringify(options)),
+        toGlobalId("FilterArtworks", JSON.stringify(omit(options, "page"))),
     },
     aggregations: ArtworkFilterAggregations,
     artworks_connection: {
@@ -98,39 +107,68 @@ export const FilterArtworksType = new GraphQLObjectType({
       resolve: (
         { options: gravityOptions },
         args,
-        _request,
-        { rootValue: { filterArtworksLoader } }
+        {
+          unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
+          authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
+        }
       ) => {
         const relayOptions = convertConnectionArgsToGravityArgs(args)
+        if (!!gravityOptions.page) relayOptions.page = gravityOptions.page
 
-        return filterArtworksLoader(
-          assign(gravityOptions, relayOptions, {})
-        ).then(({ aggregations, hits }) => {
-          if (!aggregations || !aggregations.total) {
-            throw new Error("This query must contain the total aggregation")
+        const { page, size } = relayOptions
+        const {
+          include_artworks_by_followed_artists,
+          aggregations,
+        } = gravityOptions
+        const requestedPersonalizedAggregation = aggregations.includes(
+          "followed_artists"
+        )
+
+        let loader
+        if (
+          include_artworks_by_followed_artists ||
+          requestedPersonalizedAggregation
+        ) {
+          if (!loaderWithoutCache) {
+            throw new Error("You must be logged in to request these params.")
           }
+          loader = loaderWithoutCache
+        } else {
+          loader = loaderWithCache
+        }
 
-          const totalPages = computeTotalPages(
-            aggregations.total.value,
-            relayOptions.size
-          )
+        return loader(Object.assign(gravityOptions, relayOptions, {})).then(
+          ({ aggregations, hits }) => {
+            if (!aggregations || !aggregations.total) {
+              throw new Error("This query must contain the total aggregation")
+            }
 
-          return assign(
-            {
-              pageCursors: createPageCursors(
-                relayOptions,
-                aggregations.total.value
-              ),
-            },
-            connectionFromArraySlice(hits, args, {
+            const totalPages = computeTotalPages(
+              aggregations.total.value,
+              relayOptions.size
+            )
+
+            const connection = connectionFromArraySlice(hits, args, {
               arrayLength: Math.min(
                 aggregations.total.value,
                 totalPages * relayOptions.size
               ),
               sliceStart: relayOptions.offset,
             })
-          )
-        })
+
+            connection.pageInfo.endCursor = pageToCursor(page + 1, size)
+
+            return Object.assign(
+              {
+                pageCursors: createPageCursors(
+                  relayOptions,
+                  aggregations.total.value
+                ),
+              },
+              connection
+            )
+          }
+        )
       },
     },
     counts: FilterArtworksCounts,
@@ -147,12 +185,7 @@ export const FilterArtworksType = new GraphQLObjectType({
       type: new GraphQLList(Artist.type),
       description:
         "Returns a list of merchandisable artists sorted by merch score.",
-      resolve: (
-        { aggregations },
-        _options,
-        _request,
-        { rootValue: { artistsLoader } }
-      ) => {
+      resolve: ({ aggregations }, _options, { artistsLoader }) => {
         if (!isExisty(aggregations.merchandisable_artists)) {
           return null
         }
@@ -168,12 +201,7 @@ export const FilterArtworksType = new GraphQLObjectType({
     },
     facet: {
       type: ArtworkFilterFacetType,
-      resolve: (
-        { options },
-        _options,
-        _request,
-        { rootValue: { geneLoader, tagLoader } }
-      ) => {
+      resolve: ({ options }, _options, { geneLoader, tagLoader }) => {
         const { tag_id, gene_id } = options
         if (tag_id) {
           return tagLoader(tag_id).then(tag =>
@@ -295,18 +323,31 @@ export const filterArtworksArgs = {
   keyword: {
     type: GraphQLString,
   },
+  keyword_match_exact: {
+    type: GraphQLBoolean,
+    description: "When true, will only return exact keyword match",
+  },
 }
 
-const filterArtworksTypeFactory = mapRootToFilterParams => ({
+const filterArtworksTypeFactory = (
+  mapRootToFilterParams
+): GraphQLFieldConfig<any, ResolverContext> => ({
   type: FilterArtworksType,
   description: "Artworks Elastic Search results",
   args: filterArtworksArgs,
   resolve: (
     root,
     options,
-    _request,
-    { fieldNodes, rootValue: { filterArtworksLoader } }
+    {
+      unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
+      authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
+    },
+    { fieldNodes }
   ) => {
+    const { include_artworks_by_followed_artists, aggregations } = options
+    const requestedPersonalizedAggregation = aggregations.includes(
+      "followed_artists"
+    )
     const gravityOptions = Object.assign(
       {},
       options,
@@ -322,10 +363,23 @@ const filterArtworksTypeFactory = mapRootToFilterParams => ({
 
     removeNulls(gravityOptions)
 
+    let loader
+    if (
+      include_artworks_by_followed_artists ||
+      requestedPersonalizedAggregation
+    ) {
+      if (!loaderWithoutCache) {
+        throw new Error("You must be logged in to request these params.")
+      }
+      loader = loaderWithoutCache
+    } else {
+      loader = loaderWithCache
+    }
+
     const blacklistedFields = ["artworks_connection", "__id"]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return filterArtworksLoader(gravityOptions).then(response =>
-        assign({}, response, { options: gravityOptions })
+      return loader(gravityOptions).then(response =>
+        Object.assign({}, response, { options: gravityOptions })
       )
     }
     return { hits: null, aggregations: null, options: gravityOptions }

@@ -1,7 +1,13 @@
 import LotStanding from "./lot_standing"
-import { GraphQLList, GraphQLBoolean, GraphQLString } from "graphql"
+import { ResolverContext } from "types/graphql"
+import {
+  GraphQLList,
+  GraphQLBoolean,
+  GraphQLString,
+  GraphQLFieldConfig,
+} from "graphql"
 
-export default {
+const LotStandings: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(LotStanding.type),
   description: "A list of the current user's auction standings for given lots",
   args: {
@@ -30,8 +36,7 @@ export default {
   resolve: (
     _root,
     { active_positions, artwork_id, live, sale_id, sale_artwork_id },
-    _request,
-    { rootValue: { lotStandingLoader } }
+    { lotStandingLoader }
   ) => {
     if (!lotStandingLoader) return null
     return lotStandingLoader({
@@ -45,3 +50,5 @@ export default {
     })
   },
 }
+
+export default LotStandings

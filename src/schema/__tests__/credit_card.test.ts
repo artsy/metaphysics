@@ -3,7 +3,7 @@ import { runQuery } from "test/utils"
 
 describe("CreditCard type", () => {
   let creditCard: any
-  let rootValue: any
+  let context: any
 
   beforeEach(() => {
     creditCard = {
@@ -12,7 +12,7 @@ describe("CreditCard type", () => {
       last_digits: "4242",
     }
 
-    rootValue = {
+    context = {
       creditCardLoader: () => Promise.resolve(creditCard),
     }
   })
@@ -28,7 +28,7 @@ describe("CreditCard type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.credit_card.id).toBe("card123")
       expect(data!.credit_card.brand).toBe("Visa")
       expect(data!.credit_card.last_digits).toBe("4242")

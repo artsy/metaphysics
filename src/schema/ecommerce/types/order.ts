@@ -5,11 +5,13 @@ import {
   GraphQLInt,
   GraphQLFloat,
   GraphQLInterfaceType,
+  GraphQLFieldConfigMap,
+  GraphQLBoolean,
 } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 
 import { amount } from "schema/fields/money"
-import date from "schema/fields/date"
+import date, { DateSource } from "schema/fields/date"
 import { CreditCard } from "schema/credit_card"
 import { OrderLineItemConnection } from "./order_line_item"
 import { RequestedFulfillmentUnionType } from "./requested_fulfillment_union_type"
@@ -18,8 +20,28 @@ import { OrderModeEnum } from "./enums/order_mode_enum"
 import { OfferConnection, OfferType } from "./offer"
 import { OrderParticipantEnum } from "./enums/order_participant_enum"
 import { PageCursorsType } from "schema/fields/pagination"
+import { ResolverContext } from "types/graphql"
 
-const orderFields = {
+interface BuyerSource {
+  __typename: "EcommerceUser"
+  id: string
+}
+
+interface SellerSource {
+  __typename: "EcommercePartner"
+  id: string
+}
+
+interface OrderSource {
+  buyer: BuyerSource
+  seller: SellerSource
+  creditCardId?: string
+}
+
+const orderFields: GraphQLFieldConfigMap<
+  DateSource & OrderSource,
+  ResolverContext
+> = {
   id: {
     type: GraphQLID,
     description: "ID of the order",
@@ -103,32 +125,24 @@ const orderFields = {
   seller: {
     type: OrderPartyUnionType,
     description: "Seller of this order",
-    resolve: (
-      { seller },
-      _args,
-      _context,
-      { rootValue: { userByIDLoader, partnerLoader } }
-    ) => resolveOrderParty(seller, userByIDLoader, partnerLoader),
+    resolve: ({ seller }, _args, { userByIDLoader, partnerLoader }) =>
+      resolveOrderParty(seller, userByIDLoader, partnerLoader),
   },
   buyer: {
     type: OrderPartyUnionType,
     description: "Buyer of this order",
-    resolve: (
-      { buyer },
-      _args,
-      _context,
-      { rootValue: { userByIDLoader, partnerLoader } }
-    ) => resolveOrderParty(buyer, userByIDLoader, partnerLoader),
+    resolve: ({ buyer }, _args, { userByIDLoader, partnerLoader }) =>
+      resolveOrderParty(buyer, userByIDLoader, partnerLoader),
   },
   creditCard: {
     type: CreditCard.type,
     description: "Credit card on this order",
-    resolve: (
-      { creditCardId },
-      _args,
-      _context,
-      { rootValue: { creditCardLoader } }
-    ) => (creditCardId ? creditCardLoader(creditCardId) : null),
+    resolve: ({ creditCardId }, _args, { creditCardLoader }) =>
+      creditCardId && creditCardLoader ? creditCardLoader(creditCardId) : null,
+  },
+  lastTransactionFailed: {
+    type: GraphQLBoolean,
+    description: "Whether or not the last attempt to charge the buyer failed",
   },
   lastApprovedAt: date,
   lastSubmittedAt: date,
@@ -151,7 +165,7 @@ export const OrderInterface = new GraphQLInterfaceType({
   fields: () => orderFields,
 })
 
-export const OfferOrderType = new GraphQLObjectType({
+export const OfferOrderType = new GraphQLObjectType<any, ResolverContext>({
   name: "OfferOrder",
   interfaces: () => [OrderInterface],
   fields: () => ({
@@ -176,7 +190,7 @@ export const OfferOrderType = new GraphQLObjectType({
   isTypeOf: () => true,
 })
 
-export const BuyOrderType = new GraphQLObjectType({
+export const BuyOrderType = new GraphQLObjectType<any, ResolverContext>({
   name: "BuyOrder",
   interfaces: () => [OrderInterface],
   fields: orderFields,
@@ -184,7 +198,7 @@ export const BuyOrderType = new GraphQLObjectType({
 })
 
 export const resolveOrderParty = async (
-  orderParty,
+  orderParty: BuyerSource | SellerSource,
   userByIDLoader,
   partnerLoader
 ) => {

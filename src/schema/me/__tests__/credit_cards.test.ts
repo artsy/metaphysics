@@ -3,13 +3,13 @@ import { runAuthenticatedQuery } from "test/utils"
 import gql from "lib/gql"
 
 describe("CreditCards", () => {
-  let rootValue: any
+  let context: any
   beforeEach(() => {
     const creditCards = [
       { id: "12345", brand: "Visa" },
       { id: "6789", brand: "Mastercard" },
     ]
-    rootValue = {
+    context = {
       meCreditCardsLoader: () =>
         Promise.resolve({ body: creditCards, headers: { "x-total-count": 2 } }),
     }
@@ -35,7 +35,7 @@ describe("CreditCards", () => {
     `
 
     expect.assertions(1)
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(data!.me.creditCards).toEqual({
         edges: [
           {

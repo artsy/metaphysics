@@ -9,7 +9,9 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLList,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 export const croppedImageUrl = (image, options) => {
   const opts = _.defaults(options, {
@@ -27,7 +29,7 @@ export const croppedImageUrl = (image, options) => {
   }
 }
 
-const CroppedImageUrlType = new GraphQLObjectType({
+const CroppedImageUrlType = new GraphQLObjectType<any, ResolverContext>({
   name: "CroppedImageUrl",
   fields: {
     width: {
@@ -42,7 +44,7 @@ const CroppedImageUrlType = new GraphQLObjectType({
   },
 })
 
-export default {
+const Cropped: GraphQLFieldConfig<void, ResolverContext> = {
   args: {
     width: {
       type: new GraphQLNonNull(GraphQLInt),
@@ -57,3 +59,5 @@ export default {
   type: CroppedImageUrlType,
   resolve: croppedImageUrl,
 }
+
+export default Cropped

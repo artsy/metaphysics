@@ -11,6 +11,7 @@ import gql from "lib/gql"
 import { BuyerOrderFields } from "./query_helpers"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
+import { ResolverContext } from "types/graphql"
 
 const ShippingInputField = new GraphQLInputObjectType({
   name: "ShippingInputField",
@@ -68,7 +69,11 @@ const SetOrderShippingInput = new GraphQLInputObjectType({
   },
 })
 
-export const SetOrderShippingMutation = mutationWithClientMutationId({
+export const SetOrderShippingMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
   name: "SetOrderShipping",
   description: "Sets shipping information for an order",
   inputFields: SetOrderShippingInput.getFields(),
@@ -77,11 +82,8 @@ export const SetOrderShippingMutation = mutationWithClientMutationId({
       type: OrderOrFailureUnionType,
     },
   },
-  mutateAndGetPayload: (
-    { orderId, fulfillmentType, shipping },
-    context,
-    { rootValue: { accessToken, exchangeSchema } }
-  ) => {
+  mutateAndGetPayload: ({ orderId, fulfillmentType, shipping }, context) => {
+    const { accessToken, exchangeSchema } = context
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }

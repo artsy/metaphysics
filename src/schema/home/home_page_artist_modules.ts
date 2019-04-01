@@ -3,16 +3,17 @@ import {
   HomePageArtistModuleType,
   HomePageArtistModuleTypes,
 } from "./home_page_artist_module"
-import { GraphQLList } from "graphql"
+import { GraphQLList, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const HomePageArtistModules = {
+const HomePageArtistModules: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(HomePageArtistModuleType),
   description: "Artist modules to show on the home screen",
-  resolve: (_root, _params, _request, { rootValue }) => {
+  resolve: (_root, _params, context) => {
     // First check each type if they can display…
     return Promise.all(
-      map(HomePageArtistModuleTypes, ({ display }: any, key) => {
-        return display({ rootValue }).then(displayable => ({
+      map(HomePageArtistModuleTypes, ({ display }, key) => {
+        return display(context).then(displayable => ({
           key,
           displayable,
         }))

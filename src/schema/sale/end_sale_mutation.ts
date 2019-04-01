@@ -1,8 +1,13 @@
 import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { SaleType } from "schema/sale/index"
+import { ResolverContext } from "types/graphql"
 
-export const endSaleMutation = mutationWithClientMutationId({
+export const endSaleMutation = mutationWithClientMutationId<
+  { sale_id: string },
+  { sale: any },
+  ResolverContext
+>({
   name: "EndSale",
   description: "Mark sale as ended.",
   inputFields: {
@@ -16,15 +21,10 @@ export const endSaleMutation = mutationWithClientMutationId({
       resolve: sale => sale,
     },
   },
-  mutateAndGetPayload: (
-    { sale_id },
-    _request,
-    { rootValue: { accessToken, endSaleLoader } }
-  ) => {
-    if (!accessToken) {
-      return new Error("You need to be signed in to perform this action")
+  mutateAndGetPayload: ({ sale_id }, { endSaleLoader }) => {
+    if (!endSaleLoader) {
+      throw new Error("You need to be signed in to perform this action")
     }
-
     return endSaleLoader(sale_id)
   },
 })

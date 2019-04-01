@@ -31,13 +31,13 @@ describe("Bidder position mutation", () => {
 
   describe("success", () => {
     it("creates a bidder position", async () => {
-      const rootValue = {
+      const context = {
         createBidderPositionLoader: sinon
           .stub()
           .returns(Promise.resolve(createBidderPosition)),
       }
 
-      const data = await runAuthenticatedQuery(query, rootValue)
+      const data = await runAuthenticatedQuery(query, context)
       expect(
         data.createBidderPosition.result.position.suggested_next_bid_cents
       ).toEqual(110000)
@@ -53,13 +53,13 @@ describe("Bidder position mutation", () => {
       const errorMessage = {
         message: errorMessageTemplate + errorObjectString,
       }
-      const rootValue = {
+      const context = {
         createBidderPositionLoader: sinon
           .stub()
           .returns(Promise.reject(errorMessage)),
       }
 
-      const data = await runAuthenticatedQuery(query, rootValue)
+      const data = await runAuthenticatedQuery(query, context)
 
       expect(data.createBidderPosition.result.position).toBeNull()
       expect(data.createBidderPosition.result.message_header).toEqual(
@@ -75,13 +75,13 @@ describe("Bidder position mutation", () => {
       const errorMessage = {
         message: errorMessageTemplate + errorObjectString,
       }
-      const rootValue = {
+      const context = {
         createBidderPositionLoader: sinon
           .stub()
           .returns(Promise.reject(errorMessage)),
       }
 
-      const data = await runAuthenticatedQuery(query, rootValue)
+      const data = await runAuthenticatedQuery(query, context)
 
       expect(data.createBidderPosition.result.position).toBeNull()
       expect(data.createBidderPosition.result.message_header).toEqual(
@@ -98,13 +98,13 @@ describe("Bidder position mutation", () => {
     const errorMessage = {
       message: errorMessageTemplate + errorObjectString,
     }
-    const rootValue = {
+    const context = {
       createBidderPositionLoader: sinon
         .stub()
         .returns(Promise.reject(errorMessage)),
     }
 
-    const data = await runAuthenticatedQuery(query, rootValue)
+    const data = await runAuthenticatedQuery(query, context)
 
     expect(data.createBidderPosition.result.position).toBeNull()
     expect(data.createBidderPosition.result.message_header).toEqual(
@@ -125,13 +125,13 @@ it("creates correct message when bidder is not qualifdied", async () => {
   const errorMessage = {
     message: errorMessageTemplate + errorObjectString,
   }
-  const rootValue = {
+  const context = {
     createBidderPositionLoader: sinon
       .stub()
       .returns(Promise.reject(errorMessage)),
   }
 
-  const data = await runAuthenticatedQuery(query, rootValue)
+  const data = await runAuthenticatedQuery(query, context)
 
   expect(data.createBidderPosition.result.position).toBeNull()
   expect(data.createBidderPosition.result.message_header).toEqual(

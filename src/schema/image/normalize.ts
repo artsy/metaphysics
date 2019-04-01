@@ -56,13 +56,28 @@ const normalizeBareUrls = image => {
   return image
 }
 
-const normalize = flow(
+const _normalize = flow(
   normalizeBareUrls,
   normalizeImageUrl,
   normalizeImageVersions
 )
 
-export default response => {
-  if (isArray(response)) return compact(response.map(normalize))
-  return normalize(response)
+export type ImageData =
+  | string
+  | {
+      url?: string
+      image_url?: string
+      versions?: string[]
+      image_versions?: string[]
+    }
+
+type NormalizedImageData = { image_url: string; image_versions: string[] }
+
+export function normalize(response: ImageData): NormalizedImageData
+export function normalize(response: ImageData[]): NormalizedImageData[]
+export function normalize(response: ImageData | ImageData[]) {
+  if (isArray(response)) return compact(response.map(_normalize))
+  return _normalize(response)
 }
+
+export default normalize

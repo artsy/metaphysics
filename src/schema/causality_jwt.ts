@@ -1,10 +1,16 @@
 import jwt from "jwt-simple"
-import { GraphQLString, GraphQLNonNull, GraphQLEnumType } from "graphql"
+import {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLEnumType,
+  GraphQLFieldConfig,
+} from "graphql"
 import config from "config"
+import { ResolverContext } from "types/graphql"
 
 const { HMAC_SECRET } = config
 
-export default {
+const CausalityJWT: GraphQLFieldConfig<void, ResolverContext> = {
   type: GraphQLString,
   description: "Creates, and authorizes, a JWT custom for Causality",
   args: {
@@ -26,19 +32,10 @@ export default {
   resolve: (
     _root,
     options,
-    _request,
-    {
-      rootValue: {
-        accessToken,
-        meLoader,
-        meBiddersLoader,
-        mePartnersLoader,
-        saleLoader,
-      },
-    }
+    { meLoader, meBiddersLoader, mePartnersLoader, saleLoader }
   ) => {
     // Observer role for logged out users
-    if (!accessToken) {
+    if (!meLoader || !meBiddersLoader || !mePartnersLoader) {
       return saleLoader(options.sale_id).then(sale =>
         jwt.encode(
           {
@@ -102,27 +99,30 @@ export default {
               HMAC_SECRET
             )
           }
-          return mePartnersLoader({ "partner_ids[]": sale.partner._id }).then(
-            mePartners => {
-              // Check if current user has access to partner running the sale
-              if (mePartners.length === 0) {
-                throw new Error("Unauthorized to be operator")
+
+          if (sale.partner) {
+            return mePartnersLoader({ "partner_ids[]": sale.partner._id }).then(
+              () => {
+                return jwt.encode(
+                  {
+                    aud: "auctions",
+                    role: "externalOperator",
+                    userId: me._id,
+                    saleId: sale._id,
+                    bidderId: me.paddle_number,
+                    iat: new Date().getTime(),
+                  },
+                  HMAC_SECRET
+                )
               }
-              return jwt.encode(
-                {
-                  aud: "auctions",
-                  role: "externalOperator",
-                  userId: me._id,
-                  saleId: sale._id,
-                  bidderId: me.paddle_number,
-                  iat: new Date().getTime(),
-                },
-                HMAC_SECRET
-              )
-            }
-          )
+            )
+          } else {
+            throw new Error("Unauthorized to be operator")
+          }
         }
       )
     }
   },
 }
+
+export default CausalityJWT

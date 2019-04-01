@@ -6,9 +6,11 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLList,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const OrderedSetType = new GraphQLObjectType({
+const OrderedSetType = new GraphQLObjectType<any, ResolverContext>({
   name: "OrderedSet",
   fields: () => ({
     ...IDFields,
@@ -24,12 +26,7 @@ const OrderedSetType = new GraphQLObjectType({
     },
     items: {
       type: new GraphQLList(ItemType),
-      resolve: (
-        { id, item_type },
-        _options,
-        _request,
-        { rootValue: { setItemsLoader } }
-      ) => {
+      resolve: ({ id, item_type }, _options, { setItemsLoader }) => {
         return setItemsLoader(id).then(items => {
           return items.map(item => {
             item.item_type = item_type // eslint-disable-line no-param-reassign
@@ -44,7 +41,7 @@ const OrderedSetType = new GraphQLObjectType({
   }),
 })
 
-const OrderedSet = {
+const OrderedSet: GraphQLFieldConfig<void, ResolverContext> = {
   type: OrderedSetType,
   description: "An OrderedSet",
   args: {
@@ -53,8 +50,7 @@ const OrderedSet = {
       description: "The ID of the OrderedSet",
     },
   },
-  resolve: (_root, { id }, _request, { rootValue: { setLoader } }) =>
-    setLoader(id),
+  resolve: (_root, { id }, { setLoader }) => setLoader(id),
 }
 
 export default OrderedSet

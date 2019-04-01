@@ -6,16 +6,24 @@ import {
   GraphQLFieldConfig,
   visit,
   BREAK,
+  GraphQLResolveInfo,
+  GraphQLInt,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
 
 import { connectionWithCursorInfo } from "schema/fields/pagination"
-import { createPageCursors } from "schema/fields/pagination"
+import { createPageCursors, pageToCursor } from "schema/fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { SearchableItem } from "schema/searchableItem"
+import { SearchableItem } from "schema/SearchableItem"
 import { Searchable } from "schema/searchable"
 import { SearchEntity } from "./SearchEntity"
+import { ResolverContext } from "types/graphql"
+import {
+  SearchAggregationResultsType,
+  SearchAggregation,
+} from "schema/search/SearchAggregation"
+import { map } from "lodash"
 
 export const SearchMode = new GraphQLEnumType({
   name: "SearchMode",
@@ -40,14 +48,24 @@ export const searchArgs = pageable({
   },
   mode: {
     type: SearchMode,
-    description: "Mode of search to exceute. Default: SITE.",
+    description: "Mode of search to execute. Default: SITE.",
+  },
+  aggregations: {
+    type: new GraphQLList(SearchAggregation),
+  },
+  page: {
+    type: GraphQLInt,
+    description: "If present, will be used for pagination instead of cursors.",
   },
 })
 
-const fetch = (searchResultItem, root) => {
+const fetch = (
+  searchResultItem,
+  { artistLoader, artworkLoader }: ResolverContext
+) => {
   const loaderMapping = {
-    Artist: root.artistLoader,
-    Artwork: root.artworkLoader,
+    Artist: artistLoader,
+    Artwork: artworkLoader,
   }
 
   const loader = loaderMapping[searchResultItem.label]
@@ -59,7 +77,7 @@ const fetch = (searchResultItem, root) => {
 
 // Fetch the full object if the GraphQL query includes any inline fragments
 // referencing the search result item's type (like Artist or Artwork)
-const shouldFetch = (searchResultItem, info) => {
+const shouldFetch = (searchResultItem, info: GraphQLResolveInfo) => {
   let fetch = false
 
   visit(info.fieldNodes[0], {
@@ -90,11 +108,28 @@ const shouldFetch = (searchResultItem, info) => {
   return fetch
 }
 
-const SearchConnection = connectionWithCursorInfo(Searchable)
+export const SearchAggregations: GraphQLFieldConfig<any, ResolverContext> = {
+  description: "Returns aggregation counts for the given filter query.",
+  type: new GraphQLList(SearchAggregationResultsType),
+  resolve: ({ aggregations }) => {
+    return map(aggregations, (counts, slice) => ({
+      slice,
+      counts,
+    }))
+  },
+}
 
-const processSearchResultItem = (searchResultItem, info, source) => {
+const SearchConnection = connectionWithCursorInfo(Searchable, {
+  aggregations: SearchAggregations,
+})
+
+const processSearchResultItem = (
+  searchResultItem,
+  info: GraphQLResolveInfo,
+  context: ResolverContext
+) => {
   if (shouldFetch(searchResultItem, info)) {
-    return fetch(searchResultItem, source).then(response => {
+    return fetch(searchResultItem, context).then(response => {
       return {
         ...response,
         __typename: searchResultItem.label,
@@ -108,46 +143,60 @@ const processSearchResultItem = (searchResultItem, info, source) => {
   }
 }
 
-export const Search: GraphQLFieldConfig<any, any, any> = {
+export const Search: GraphQLFieldConfig<void, ResolverContext> = {
   type: SearchConnection,
   description: "Global search",
   args: searchArgs,
-  resolve: (source, args, _request, info) => {
+  resolve: (_source, args, context, info) => {
+    if (!args.page) {
+      delete args.page
+    }
     const pageOptions = convertConnectionArgsToGravityArgs(args)
-
+    if (!!args.page) pageOptions.page = args.page
+    const { page, size, offset, ...rest } = pageOptions
     const gravityArgs = {
-      ...pageOptions,
+      ...rest,
+      page,
+      size,
       entities: args.entities,
       total_count: true,
     }
 
-    return source.searchLoader(gravityArgs).then(({ body, headers }) => {
+    return context.searchLoader(gravityArgs).then(({ body, headers }) => {
       const totalCount = parseInt(headers["x-total-count"])
       const pageCursors = createPageCursors(pageOptions, totalCount)
+      const totalPages = Math.ceil(totalCount / size)
 
+      let results = body
+      if (args.aggregations) {
+        results = body.results
+      }
       return Promise.all(
-        body.map(searchResultItem =>
-          processSearchResultItem(searchResultItem, info, source)
+        results.map(searchResultItem =>
+          processSearchResultItem(searchResultItem, info, context)
         )
-      ).then(procesedSearchResults => {
+      ).then(processedSearchResults => {
         const connection = connectionFromArraySlice(
-          procesedSearchResults,
+          processedSearchResults,
           args,
           {
             arrayLength: totalCount,
-            sliceStart: pageOptions.offset,
+            sliceStart: offset,
           }
         )
 
+        const pageInfo = connection.pageInfo
+        pageInfo.endCursor = pageToCursor(page + 1, size)
+
         return {
+          aggregations: body.aggregations,
           pageCursors: pageCursors,
           totalCount,
           ...connection,
           pageInfo: {
-            ...connection.pageInfo,
-            hasPreviousPage: pageOptions.page > 1,
-            hasNextPage:
-              pageCursors.last && pageOptions.page < pageCursors.last.page,
+            ...pageInfo,
+            hasPreviousPage: page > 1,
+            hasNextPage: page < totalPages,
           },
         }
       })

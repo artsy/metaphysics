@@ -6,11 +6,10 @@ describe("trackedEntityLoader", () => {
     const gravityLoader = jest.fn(() =>
       Promise.resolve([{ id: "queens-ship" }])
     )
-    const savedArtworksLoader = trackedEntityLoaderFactory(
-      gravityLoader,
-      "artworks",
-      "is_saved"
-    )
+    const savedArtworksLoader = trackedEntityLoaderFactory(gravityLoader, {
+      paramKey: "artworks",
+      trackingKey: "is_saved",
+    })
     const queens_ship = await savedArtworksLoader("queens-ship")
     expect(queens_ship.is_saved).toEqual(true)
     const kings_ship = await savedArtworksLoader("kings-ship")
@@ -25,12 +24,11 @@ describe("trackedEntityLoader", () => {
       gravityLoader = jest.fn(() =>
         Promise.resolve([{ artist: { id: "cab", name: "Cab" } }])
       )
-      followedArtistLoader = trackedEntityLoaderFactory(
-        gravityLoader,
-        "artists",
-        "is_followed",
-        "artist"
-      )
+      followedArtistLoader = trackedEntityLoaderFactory(gravityLoader, {
+        paramKey: "artists",
+        trackingKey: "is_followed",
+        entityKeyPath: "artist",
+      })
     })
 
     it("passes the params to gravity and batches multiple requests", async () => {
@@ -58,13 +56,11 @@ describe("trackedEntityLoader", () => {
       .fn()
       .mockResolvedValue([{ id: "queens-ship", _id: "abcdefg123456" }])
 
-    const savedArtworksLoader = trackedEntityLoaderFactory(
-      gravityLoader,
-      "artworks",
-      "is_saved",
-      null,
-      "_id"
-    )
+    const savedArtworksLoader = trackedEntityLoaderFactory(gravityLoader, {
+      paramKey: "artworks",
+      trackingKey: "is_saved",
+      entityIDKeyPath: "_id",
+    })
     const queens_ship = await savedArtworksLoader("abcdefg123456")
     expect(queens_ship.is_saved).toEqual(true)
     const kings_ship = await savedArtworksLoader("zyxwvut987654")

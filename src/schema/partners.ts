@@ -7,9 +7,11 @@ import {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLEnumType,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const Partners = {
+const Partners: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Partner.type),
   description: "A list of Partners",
   args: {
@@ -93,7 +95,7 @@ const Partners = {
       type: new GraphQLList(PartnerTypeType),
     },
   },
-  resolve: (_root, options, _request, { rootValue: { partnersLoader } }) => {
+  resolve: (_root, options, { partnersLoader }) => {
     const cleanedOptions = clone(options)
     // make ids singular to match gravity :id
     if (options.ids) {

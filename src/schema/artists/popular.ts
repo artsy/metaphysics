@@ -5,9 +5,11 @@ import {
   GraphQLInt,
   GraphQLBoolean,
   GraphQLString,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const PopularArtistsType = new GraphQLObjectType({
+const PopularArtistsType = new GraphQLObjectType<any, ResolverContext>({
   name: "PopularArtists",
   fields: () => ({
     artists: {
@@ -17,7 +19,7 @@ const PopularArtistsType = new GraphQLObjectType({
   }),
 })
 
-const PopularArtists = {
+const PopularArtists: GraphQLFieldConfig<void, ResolverContext> = {
   type: PopularArtistsType,
   description: "Popular artists",
   args: {
@@ -35,12 +37,8 @@ const PopularArtists = {
       description: "Number of results to return",
     },
   },
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { popularArtistsLoader } }
-  ) => popularArtistsLoader(options),
+  resolve: (_root, options, { popularArtistsLoader }) =>
+    popularArtistsLoader(options),
 }
 
 export default PopularArtists

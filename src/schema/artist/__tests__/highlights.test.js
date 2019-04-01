@@ -2,7 +2,7 @@
 import { runQuery } from "test/utils"
 
 describe("Artist Statuses", () => {
-  let rootValue = null
+  let context = null
   const artist = {
     id: "percy-z",
     birthday: "2014",
@@ -23,7 +23,7 @@ describe("Artist Statuses", () => {
   ]
 
   beforeEach(() => {
-    rootValue = {
+    context = {
       partnerArtistsLoader: sinon
         .stub()
         .withArgs(
@@ -77,7 +77,7 @@ describe("Artist Statuses", () => {
       },
     }
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual(expectedHighlightData)
     })
   })

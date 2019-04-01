@@ -1,0 +1,89 @@
+{
+  "cities": {
+    "new-york-ny-usa": {
+      "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in New York.",
+      "artGuideUrl": "https://www.bmw-arts-design.com/bmw_art_guide",
+      "featuredShowIds": [
+        "5c8857f2702b1d000691f4f7",
+        "5c8857f4702b1d000691f501"
+      ],
+      "showIds": [
+        "5c8857f2702b1d000691f4f7",
+        "5c8857f4702b1d000691f501",
+        "5c8857f2702b1d000691f4f6",
+        "5c8857f6702b1d000691f50c"
+      ]
+    },
+    "london-united-kingdom": {
+      "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in London.",
+      "artGuideUrl": "https://www.bmw-arts-design.com/bmw_art_guide",
+      "featuredShowIds": [
+        "5c8857f6702b1d000691f50e",
+        "5c8857f5702b1d000691f504"
+      ],
+      "showIds": [
+        "5c8857f6702b1d000691f50e",
+        "5c8857f5702b1d000691f504",
+        "5c8857f6702b1d000691f50b"
+      ]
+    },
+    "los-angeles-ca-usa": {
+      "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Los Angeles.",
+      "artGuideUrl": "https://www.bmw-arts-design.com/bmw_art_guide",
+      "featuredShowIds": [
+        "5c8857f4702b1d000691f502",
+        "5c8857f5702b1d000691f507"
+      ],
+      "showIds": ["5c8857f4702b1d000691f502", "5c8857f5702b1d000691f507"]
+    },
+    "paris-france": {
+      "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Paris.",
+      "artGuideUrl": "https://www.bmw-arts-design.com/bmw_art_guide",
+      "featuredShowIds": [
+        "5c8857f3702b1d000691f4fa",
+        "5c8857f3702b1d000691f4fc"
+      ],
+      "showIds": ["5c8857f3702b1d000691f4fa", "5c8857f3702b1d000691f4fc"]
+    },
+    "berlin-germany": {
+      "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Berlin.",
+      "artGuideUrl": "https://www.bmw-arts-design.com/bmw_art_guide",
+      "featuredShowIds": [
+        "5c8857f1702b1d000691f4f5",
+        "5c8857f3702b1d000691f4fb"
+      ],
+      "showIds": [
+        "5c8857f1702b1d000691f4f5",
+        "5c8857f3702b1d000691f4fb",
+        "5c8857f2702b1d000691f4f8",
+        "5c8857f4702b1d000691f503",
+        "5c8857f5702b1d000691f505",
+        "5c8857f5702b1d000691f508"
+      ]
+    },
+    "hong-kong-hong-kong": {
+      "introText": "The BMW Art Guide by Independent Collectors is your go-to-guide to discover private collections of modern and contemporary art which are accessible to the public. Please see below for collections in Hong Kong.",
+      "artGuideUrl": "https://www.bmw-arts-design.com/bmw_art_guide",
+      "featuredShowIds": ["5c8857f4702b1d000691f500"],
+      "showIds": ["5c8857f4702b1d000691f500"]
+    }
+  },
+  "fairs": {
+    "art-basel-hong-kong-2019": {
+      "activationText": "Hong Kong. From March 29 to 31, the Art Basel show in Hong Kong will open its doors offering again extensive insights into the modern and contemporary works by emerging and established artists, presented by 242 of the world’s leading galleries. As an official partner of the show, BMW will not only provide the VIP shuttle service, but also present the world’s first BMW Art Car (BMW 3.0 CSL, 1975), created by legendary artist Alexander Calder, in the BMW Lounge at the Hong Kong Convention and Exhibition Centre. Furthermore, the latest BMW Art Journey awardee Zac Langdon-Pole will be on-site documenting his journey and the next BMW Art Journey shortlist will be announced.",
+      "pressReleaseUrl": "https://www.press.bmwgroup.com/global/article/detail/T0292765EN/bmw-is-official-partner-of-art-basel-in-hong-kong-2019-next-bmw-art-journey-shortlist-to-be-announced-and-bmw-art-car-1-by-alexander-calder-on-display"
+    },
+    "frieze-new-york-2019": {
+      "activationText": "In quis ex pariatur esse consectetur occaecat nulla quis consequat do in. Ipsum in cillum ut magna sunt proident. Ullamco culpa nisi commodo incididunt. Qui sunt consequat ullamco magna anim.",
+      "pressReleaseUrl": "https://www.example.com"
+    },
+    "frieze-london-2018": {
+      "activationText": "Dolore qui quis non ea dolore laboris ad aute reprehenderit irure. Deserunt veniam est nisi eu ipsum deserunt deserunt non in pariatur duis. Cillum tempor deserunt reprehenderit Lorem eiusmod. Tempor deserunt aute aliquip ea aliqua dolore adipisicing ut ad quis elit consectetur cupidatat. Et amet velit elit cillum. Anim elit minim excepteur duis cillum magna commodo amet id sit fugiat.",
+      "pressReleaseUrl": "https://www.example.com"
+    },
+    "paris-photo-2018": {
+      "activationText": "Occaecat dolor reprehenderit deserunt veniam nulla eu. Magna consequat commodo duis nulla fugiat elit velit consequat aute excepteur eiusmod nostrud tempor. Consequat consectetur nisi nostrud magna mollit velit ullamco sunt magna et mollit anim ea.",
+      "pressReleaseUrl": "https://www.example.com"
+    }
+  }
+}

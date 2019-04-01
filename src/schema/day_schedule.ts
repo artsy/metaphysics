@@ -1,6 +1,7 @@
 import { GraphQLInt, GraphQLString, GraphQLObjectType } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const DayScheduleType = new GraphQLObjectType({
+const DayScheduleType = new GraphQLObjectType<any, ResolverContext>({
   name: "DaySchedule",
   fields: {
     start_time: {

@@ -1,9 +1,15 @@
 import PartnerCategory from "./partner_category"
 import CategoryType from "./input_fields/category_type"
 
-import { GraphQLList, GraphQLInt, GraphQLBoolean } from "graphql"
+import {
+  GraphQLList,
+  GraphQLInt,
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const PartnerCategories = {
+const PartnerCategories: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(PartnerCategory.type),
   description: "A list of PartnerCategories",
   args: {
@@ -17,12 +23,8 @@ const PartnerCategories = {
       type: GraphQLInt,
     },
   },
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { partnerCategoriesLoader } }
-  ) => partnerCategoriesLoader(options),
+  resolve: (_root, options, { partnerCategoriesLoader }) =>
+    partnerCategoriesLoader(options),
 }
 
 export default PartnerCategories

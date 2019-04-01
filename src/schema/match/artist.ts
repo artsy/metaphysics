@@ -1,7 +1,14 @@
-import { GraphQLString, GraphQLList, GraphQLNonNull, GraphQLInt } from "graphql"
+import {
+  GraphQLString,
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLInt,
+  GraphQLFieldConfig,
+} from "graphql"
 import Artist from "schema/artist"
+import { ResolverContext } from "types/graphql"
 
-const ArtistMatch = {
+const ArtistMatch: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Artist.type),
   description: "A Search for Artists",
   args: {
@@ -22,7 +29,7 @@ const ArtistMatch = {
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (_root, options, _request, { rootValue: { matchArtistsLoader } }) =>
+  resolve: (_root, options, { matchArtistsLoader }) =>
     matchArtistsLoader(options),
 }
 

@@ -6,7 +6,7 @@ import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import gql from "lib/gql"
 import { OrderBuyerFields } from "./order_fields"
 
-let rootValue
+let context
 
 describe("Approve Order Mutation", () => {
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe("Approve Order Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
   })
   it("sets order's payment information", () => {
     const mutation = gql`
@@ -45,7 +45,7 @@ describe("Approve Order Mutation", () => {
         }
     `
 
-    return runQuery(mutation, rootValue).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.setOrderPayment.orderOrError.order).toEqual(
         sampleOrder({ includeCreditCard: true })
       )

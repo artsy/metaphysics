@@ -26,13 +26,15 @@ import {
   GraphQLBoolean,
   GraphQLInt,
   GraphQLFloat,
+  GraphQLFieldConfig,
 } from "graphql"
 
 import config from "config"
+import { ResolverContext } from "types/graphql"
 
 const { PREDICTION_ENDPOINT } = config
 
-const BidIncrement = new GraphQLObjectType({
+const BidIncrement = new GraphQLObjectType<any, ResolverContext>({
   name: "BidIncrement",
   fields: {
     amount: {
@@ -47,7 +49,7 @@ const BidIncrement = new GraphQLObjectType({
   },
 })
 
-const BuyersPremium = new GraphQLObjectType({
+const BuyersPremium = new GraphQLObjectType<any, ResolverContext>({
   name: "BuyersPremium",
   fields: {
     ...GravityIDFields,
@@ -66,7 +68,7 @@ const saleArtworkConnection = connectionDefinitions({
   nodeType: SaleArtwork.type,
 }).connectionType
 
-export const SaleType = new GraphQLObjectType({
+export const SaleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Sale",
   interfaces: [NodeInterface],
   fields: () => {
@@ -85,13 +87,8 @@ export const SaleType = new GraphQLObjectType({
               "List of artwork IDs to exclude from the response (irrespective of size)",
           },
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { saleArtworksLoader } }
-        ) => {
-          let fetch = null
+        resolve: ({ id }, options, { saleArtworksLoader }) => {
+          let fetch: Promise<any>
 
           if (options.exclude) {
             options.exclude_ids = flatten([options.exclude])
@@ -99,7 +96,10 @@ export const SaleType = new GraphQLObjectType({
           }
 
           if (options.all) {
-            fetch = allViaLoader(saleArtworksLoader, id, options)
+            fetch = allViaLoader(saleArtworksLoader, {
+              path: id,
+              params: options,
+            })
           } else {
             fetch = saleArtworksLoader(id, options).then(({ body }) => body)
           }
@@ -121,8 +121,7 @@ export const SaleType = new GraphQLObjectType({
         resolve: (
           { eligible_sale_artworks_count, id },
           options,
-          _request,
-          { rootValue: { saleArtworksLoader } }
+          { saleArtworksLoader }
         ) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             options
@@ -153,12 +152,7 @@ export const SaleType = new GraphQLObjectType({
       },
       associated_sale: {
         type: SaleType,
-        resolve: (
-          { associated_sale },
-          _options,
-          _request,
-          { rootValue: { saleLoader } }
-        ) => {
+        resolve: ({ associated_sale }, _options, { saleLoader }) => {
           if (associated_sale && associated_sale.id) {
             return saleLoader(associated_sale.id)
           }
@@ -174,12 +168,7 @@ export const SaleType = new GraphQLObjectType({
         type: new GraphQLList(BidIncrement),
         description:
           "A bid increment policy that explains minimum bids in ranges.",
-        resolve: (
-          sale,
-          _options,
-          _request,
-          { rootValue: { incrementsLoader } }
-        ) => {
+        resolve: (sale, _options, { incrementsLoader }) => {
           return incrementsLoader({
             key: sale.increment_strategy,
           }).then(increments => {
@@ -200,22 +189,13 @@ export const SaleType = new GraphQLObjectType({
           }))
         },
       },
-      cover_image: {
-        type: Image.type,
-        resolve: ({ image_versions, image_url }) =>
-          Image.resolve({ image_versions, image_url }),
-      },
+      cover_image: Image,
       currency: { type: GraphQLString },
       description: { type: GraphQLString },
       display_timely_at: {
         type: GraphQLString,
 
-        resolve: (
-          sale,
-          _options,
-          _request,
-          { rootValue: { meBiddersLoader } }
-        ) => {
+        resolve: (sale, _options, { meBiddersLoader }) => {
           return displayTimelyAt({ sale, meBiddersLoader })
         },
       },
@@ -269,12 +249,7 @@ export const SaleType = new GraphQLObjectType({
       profile: { type: Profile.type, resolve: ({ profile }) => profile },
       promoted_sale: {
         type: SaleType,
-        resolve: (
-          { promoted_sale },
-          _options,
-          _request,
-          { rootValue: { saleLoader } }
-        ) => {
+        resolve: ({ promoted_sale }, _options, { saleLoader }) => {
           if (promoted_sale && promoted_sale.id) {
             return saleLoader(promoted_sale.id)
           }
@@ -285,12 +260,7 @@ export const SaleType = new GraphQLObjectType({
       registrationStatus: {
         type: Bidder.type,
         description: "A registration for this sale or null",
-        resolve: (
-          { id },
-          _args,
-          _request,
-          { rootValue: { meBiddersLoader } }
-        ) => {
+        resolve: ({ id }, _args, { meBiddersLoader }) => {
           if (!meBiddersLoader) return null
           return meBiddersLoader({ sale_id: id }).then(([bidder]) => bidder)
         },
@@ -303,15 +273,13 @@ export const SaleType = new GraphQLObjectType({
           size: { type: GraphQLInt, defaultValue: 25 },
           all: { type: GraphQLBoolean, defaultValue: false },
         },
-        resolve: (
-          { id },
-          options,
-          _request,
-          { rootValue: { saleArtworksLoader } }
-        ) => {
-          let fetch = null
+        resolve: ({ id }, options, { saleArtworksLoader }) => {
+          let fetch: Promise<any>
           if (options.all) {
-            fetch = allViaLoader(saleArtworksLoader, id, options)
+            fetch = allViaLoader(saleArtworksLoader, {
+              path: id,
+              params: options,
+            })
           } else {
             fetch = saleArtworksLoader(id, options).then(({ body }) => body)
           }
@@ -322,12 +290,7 @@ export const SaleType = new GraphQLObjectType({
       sale_artworks_connection: {
         type: saleArtworkConnection,
         args: pageable(),
-        resolve: (
-          sale,
-          options,
-          _request,
-          { rootValue: { saleArtworksLoader } }
-        ) => {
+        resolve: (sale, options, { saleArtworksLoader }) => {
           const { limit: size, offset } = getPagingParameters(options)
           return saleArtworksLoader(sale.id, {
             size,
@@ -349,12 +312,7 @@ export const SaleType = new GraphQLObjectType({
       sale_artwork: {
         type: SaleArtwork.type,
         args: { id: { type: new GraphQLNonNull(GraphQLString) } },
-        resolve: (
-          sale,
-          { id },
-          _request,
-          { rootValue: { saleArtworkLoader } }
-        ) => {
+        resolve: (sale, { id }, { saleArtworkLoader }) => {
           return saleArtworkLoader({ saleId: sale.id, saleArtworkId: id })
         },
       },
@@ -363,7 +321,7 @@ export const SaleType = new GraphQLObjectType({
   },
 })
 
-const Sale = {
+const Sale: GraphQLFieldConfig<void, ResolverContext> = {
   type: SaleType,
   description: "A Sale",
   args: {
@@ -372,10 +330,7 @@ const Sale = {
       description: "The slug or ID of the Sale",
     },
   },
-  resolve: async (_root, { id }, _request, { rootValue: { saleLoader } }) => {
-    const data = await saleLoader(id)
-    return data
-  },
+  resolve: (_root, { id }, { saleLoader }) => saleLoader(id),
 }
 
 export default Sale

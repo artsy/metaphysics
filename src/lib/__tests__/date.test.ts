@@ -12,6 +12,14 @@ describe("date", () => {
       expect(period).toBe("Jan 1, 2011 – Apr 19, 2014")
     })
 
+    it("different years and same month", () => {
+      const period = exhibitionPeriod(
+        moment("2011-01-01"),
+        moment("2014-01-04")
+      )
+      expect(period).toBe("Jan 1, 2011 – Jan 4, 2014")
+    })
+
     it("does not include the year of the start date if it’s the same year as the end date", () => {
       const period = exhibitionPeriod(
         moment("2011-01-01"),
@@ -28,12 +36,12 @@ describe("date", () => {
       expect(period).toBe("Jan 1 – 19, 2011")
     })
 
-    it("does not include the year of the end date if it’s in the current year", () => {
+    it("If one date's year is different show both years", () => {
       const period = exhibitionPeriod(
         moment("2011-01-01"),
         moment().format("YYYY-04-19")
       )
-      expect(period).toBe("Jan 1, 2011 – Apr 19")
+      expect(period).toBe("Jan 1, 2011 – Apr 19, 2019")
     })
 
     it("does not include a year at all if both start and end date are in the current year", () => {

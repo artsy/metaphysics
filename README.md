@@ -79,9 +79,10 @@ for testing queries locally.
 
 You will need to set up headers with both:
 
-- `x-access-token` - Evaluate `sd.CURRENT_USER.accessToken` in a dev console on
-  staging.artsy.net (sign in first, obvs).
+- `x-access-token` - Open https://staging.artsy.net, sign in and evaluate `sd.CURRENT_USER.accessToken` in a dev console _(CMD+Shift+C in Chrome)_.
 - `x-user-id` - As above, but `sd.CURRENT_USER.id`.
+
+_If you're new to GraphQL, you can checkout [Artsy's GraphQL Workshop](https://github.com/artsy/graphql-workshop)._
 
 ### Sample Queries
 

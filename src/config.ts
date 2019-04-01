@@ -72,6 +72,8 @@ const {
   SENTRY_PRIVATE_DSN,
   STATSD_HOST,
   STATSD_PORT,
+  VORTEX_API_BASE,
+  VORTEX_APP_ID,
 } = process.env
 
 const mustHave = {
@@ -94,6 +96,8 @@ const mustHave = {
   POSITRON_API_BASE,
   EXCHANGE_API_BASE,
   KAWS_API_BASE,
+  VORTEX_API_BASE,
+  VORTEX_APP_ID,
 }
 
 Object.keys(mustHave).forEach(key => {
@@ -105,6 +109,17 @@ Object.keys(mustHave).forEach(key => {
   }
 })
 
+/**
+ * Use this if "0" should be respected as 0 and only use the default value for
+ * other falsy values, such as `undefined`, `null`, or an empty string.
+ *
+ * Because JS treats 0 as falsy, the following returns 42: `Number("0") || 42`
+ */
+function IntWithDefault(value: any | undefined, defaultValue: number): number {
+  const result = parseInt(value, 10)
+  return result === Number.NaN ? defaultValue : result
+}
+
 export default {
   ARTICLE_REQUEST_THROTTLE_MS: Number(ARTICLE_REQUEST_THROTTLE_MS) || 600000,
   BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT:
@@ -112,7 +127,7 @@ export default {
     Number.MAX_SAFE_INTEGER,
   CACHE_COMPRESSION_DISABLED: CACHE_COMPRESSION_DISABLED === "true",
   CACHE_DISABLED: CACHE_DISABLED === "true",
-  CACHE_LIFETIME_IN_SECONDS: Number(CACHE_LIFETIME_IN_SECONDS) || 2592000, // 30 days
+  CACHE_LIFETIME_IN_SECONDS: Number(CACHE_LIFETIME_IN_SECONDS) || 60, // 1 minute
   CACHE_QUERY_LOGGING_THRESHOLD_MS:
     Number(CACHE_QUERY_LOGGING_THRESHOLD_MS) || 1000,
   CACHE_RETRIEVAL_TIMEOUT_MS: Number(CACHE_RETRIEVAL_TIMEOUT_MS) || 2000,
@@ -169,7 +184,7 @@ export default {
   PREDICTION_ENDPOINT,
   PRODUCTION_ENV: NODE_ENV === "production",
   QUERY_DEPTH_LIMIT: Number(QUERY_DEPTH_LIMIT) || null,
-  RATE_LIMIT_MAX: Number(RATE_LIMIT_MAX) || 100,
+  RATE_LIMIT_MAX: IntWithDefault(RATE_LIMIT_MAX, 100),
   RATE_LIMIT_WINDOW_MS: Number(RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
   REQUEST_THROTTLE_MS: Number(REQUEST_THROTTLE_MS) || 5000,
   REQUEST_TIMEOUT_MS: Number(REQUEST_TIMEOUT_MS) || 5000,
@@ -180,4 +195,6 @@ export default {
   EXCHANGE_APP_ID,
   STATSD_HOST: STATSD_HOST || "localhost",
   STATSD_PORT: Number(STATSD_PORT) || 8125,
+  VORTEX_API_BASE,
+  VORTEX_APP_ID,
 }

@@ -14,7 +14,7 @@ describe("FollowGene", () => {
       }
     `
 
-    const rootValue = {
+    const context = {
       followGeneLoader: () =>
         Promise.resolve({
           gene: {
@@ -45,7 +45,7 @@ describe("FollowGene", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(({ followGene }) => {
+    return runAuthenticatedQuery(mutation, context).then(({ followGene }) => {
       expect(followGene).toEqual(expectedGeneData)
     })
   })

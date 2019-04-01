@@ -17,8 +17,8 @@ describe("addAssetToConsignmentSubmission", () => {
       }
     `
 
-    const rootValue = {
-      createNewGeminiAssetLoader: () =>
+    const context = {
+      createNewGeminiAssetLoader: () => () =>
         Promise.resolve({
           policy_encoded: "12345==",
           policy_document: {
@@ -45,7 +45,7 @@ describe("addAssetToConsignmentSubmission", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(data => {
+    return runAuthenticatedQuery(mutation, context).then(data => {
       expect(data).toMatchSnapshot()
     })
   })

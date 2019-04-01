@@ -1,5 +1,7 @@
 import {
   GraphQLBoolean,
+  GraphQLEnumType,
+  GraphQLFieldConfig,
   GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
@@ -7,24 +9,41 @@ import {
 } from "graphql"
 
 import { LatLngType } from "../location"
-import { showConnection } from "schema/show"
+import { showConnection, ShowType } from "schema/show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
-import Fair from "schema/fair"
+import { FairType } from "schema/fair"
 import FairSorts from "schema/sorts/fair_sorts"
 import EventStatus from "schema/input_fields/event_status"
-
-import cityData from "./city_data.json"
+import cityDataSortedByDisplayPreference from "./cityDataSortedByDisplayPreference.json"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import {
   LOCAL_DISCOVERY_RADIUS_KM,
   NEAREST_CITY_THRESHOLD_KM,
 } from "./constants"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, CursorPageable } from "lib/helpers"
 import Near from "schema/input_fields/near"
 import { LatLng, Point, distance } from "lib/geospatial"
+import { ResolverContext } from "types/graphql"
+import { connectionWithCursorInfo } from "schema/fields/pagination"
+import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
+import { StaticPathLoader } from "lib/loaders/api/loader_interface"
+import { BodyAndHeaders } from "lib/loaders"
+import { sponsoredContentForCity } from "lib/sponsoredContent"
 
-const CityType = new GraphQLObjectType({
+const PartnerShowPartnerType = new GraphQLEnumType({
+  name: "PartnerShowPartnerType",
+  values: {
+    GALLERY: {
+      value: ["Gallery"],
+    },
+    MUSEUM: {
+      value: ["Institution", "Institutional Seller"],
+    },
+  },
+})
+
+const CityType = new GraphQLObjectType<any, ResolverContext>({
   name: "City",
   fields: {
     slug: {
@@ -40,66 +59,111 @@ const CityType = new GraphQLObjectType({
       type: showConnection,
       args: pageable({
         sort: PartnerShowSorts,
-        status: EventStatus,
+        status: {
+          type: EventStatus.type,
+          defaultValue: "CURRENT",
+          description: "Filter shows by chronological event status",
+        },
+        partnerType: {
+          type: PartnerShowPartnerType,
+          description: "Filter shows by partner type",
+        },
+        dayThreshold: {
+          type: GraphQLInt,
+          description:
+            "Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows",
+        },
+        includeStubShows: {
+          type: GraphQLBoolean,
+          description: "Whether to include local discovery stubs",
+        },
         discoverable: {
           type: GraphQLBoolean,
-          description:
-            "Whether to include local discovery stubs as well as displayable shows",
+          description: "Whether to include stub shows or not",
+          deprecationReason: "Use `includeStubShows`",
         },
       }),
-      resolve: async (
-        city,
-        args,
-        _c,
-        { rootValue: { showsWithHeadersLoader } }
-      ) => {
-        const gravityOptions = {
-          ...convertConnectionArgsToGravityArgs(args),
-          displayable: true,
+      resolve: async (city, args, { showsWithHeadersLoader }) =>
+        loadData(args, showsWithHeadersLoader, {
           near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-          total_count: true,
-        }
-        delete gravityOptions.page
-
-        if (args.discoverable) {
-          delete gravityOptions.displayable
-        }
-
-        const response = await showsWithHeadersLoader(gravityOptions)
-        const { headers, body: cities } = response
-
-        const results = connectionFromArraySlice(cities, args, {
-          arrayLength: headers["x-total-count"],
-          sliceStart: gravityOptions.offset,
-        })
-
-        // This is in our schema, so might as well fill it
-        // @ts-ignore
-        results.totalCount = headers["x-total-count"]
-        return results
-      },
+          has_location: true,
+          at_a_fair: false,
+          ...(args.partnerType && { partner_types: args.partnerType }),
+          ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
+          sort: args.sort,
+          // default Enum value for status is not properly resolved
+          // so we have to manually resolve it by lowercasing the value
+          // https://github.com/apollographql/graphql-tools/issues/715
+          ...(args.status && { status: args.status.toLowerCase() }),
+          displayable: true,
+          include_local_discovery:
+            args.includeStubShows || args.discoverable === true,
+          include_discovery_blocked: false,
+        }),
     },
     fairs: {
-      type: new GraphQLList(Fair.type),
-      args: {
-        size: { type: GraphQLInt },
+      type: connectionWithCursorInfo(FairType),
+      args: pageable({
         sort: FairSorts,
         status: EventStatus,
-      },
-      resolve: (obj, args, _context, { rootValue: { fairsLoader } }) => {
-        const gravityOptions = {
-          ...args,
-          near: `${obj.coordinates.lat},${obj.coordinates.lng}`,
+      }),
+      resolve: (city, args, { fairsLoader }) =>
+        loadData(args, fairsLoader, {
+          near: `${city.coordinates.lat},${city.coordinates.lng}`,
           max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-        }
-        return fairsLoader(gravityOptions)
-      },
+          sort: args.sort,
+          status: args.status,
+        }),
+    },
+    sponsoredContent: {
+      type: new GraphQLObjectType<any, ResolverContext>({
+        name: "CitySponsoredContent",
+        fields: {
+          introText: {
+            type: GraphQLString,
+          },
+          artGuideUrl: {
+            type: GraphQLString,
+          },
+          featuredShows: {
+            type: new GraphQLList(ShowType),
+            resolve: (citySponsoredContent, _args, { showsLoader }) => {
+              return showsLoader({
+                id: citySponsoredContent.featuredShowIds,
+                include_local_discovery: true,
+                displayable: true,
+              })
+            },
+          },
+          shows: {
+            type: showConnection,
+            args: pageable({
+              sort: PartnerShowSorts,
+              status: EventStatus,
+            }),
+            resolve: async (
+              citySponsoredContent,
+              args,
+              { showsWithHeadersLoader }
+            ) => {
+              return loadData(args, showsWithHeadersLoader, {
+                id: citySponsoredContent.showIds,
+                include_local_discovery: true,
+                displayable: true,
+                sort: args.sort,
+                status: args.status,
+              })
+            },
+          },
+        },
+      }),
+      resolve: city => sponsoredContentForCity(city.slug),
     },
   },
 })
 
-export const City = {
+export const City: GraphQLFieldConfig<void, ResolverContext> = {
   type: CityType,
   description: "A city-based entry point for local discovery",
   args: {
@@ -131,12 +195,15 @@ export const City = {
 }
 
 const lookupCity = (slug: string) => {
-  if (!cityData.hasOwnProperty(slug)) {
+  const city = cityDataSortedByDisplayPreference.find(c => c.slug === slug)
+  if (!city) {
     throw new Error(
-      `City ${slug} not found in: ${Object.keys(cityData).join(", ")}`
+      `City ${slug} not found in: ${cityDataSortedByDisplayPreference
+        .map(({ slug }) => slug)
+        .join(", ")}`
     )
   }
-  return cityData[slug]
+  return city
 }
 
 const nearestCity = (latLng: LatLng) => {
@@ -150,7 +217,7 @@ const nearestCity = (latLng: LatLng) => {
 }
 
 const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
-  let cities: Point[] = Object.values(cityData)
+  let cities: Point[] = Object.values(cityDataSortedByDisplayPreference)
   cities.sort((a, b) => {
     const distanceA = distance(latLng, a.coordinates)
     const distanceB = distance(latLng, b.coordinates)
@@ -161,3 +228,50 @@ const citiesOrderedByDistance = (latLng: LatLng): Point[] => {
 
 const isCloseEnough = (latLng: LatLng, city: Point) =>
   distance(latLng, city.coordinates) < NEAREST_CITY_THRESHOLD_KM * 1000
+
+async function loadData(
+  args: CursorPageable,
+  loader: StaticPathLoader<BodyAndHeaders>,
+  baseParams: { [key: string]: any }
+) {
+  let response
+  let offset
+
+  if (args.first === MAX_GRAPHQL_INT) {
+    // TODO: We could throw an error if the `after` arg is passed, but not
+    //       doing so, for now.
+    offset = 0
+    response = await allViaLoader(loader, {
+      params: baseParams,
+      api: {
+        requestThrottleMs: 7200000, // 1000 * 60 * 60 * 2 = 2 hours
+      },
+    }).then(data => ({
+      // This just creates a body/headers object again, as the code
+      // below already expects that.
+      // TODO: Perhaps `allViaLoader` should support that out of the box.
+      body: data,
+      headers: { "x-total-count": data.length.toString() },
+    }))
+  } else {
+    const connectionParams = convertConnectionArgsToGravityArgs(args)
+    offset = connectionParams.offset
+    response = await loader({
+      ...baseParams,
+      size: connectionParams.size || 0,
+      page: connectionParams.page || 1,
+      total_count: true,
+    })
+  }
+
+  const { headers, body: fairs } = response
+  const totalCount = parseInt(headers["x-total-count"] || "0", 10)
+
+  return {
+    totalCount,
+    ...connectionFromArraySlice(fairs, args, {
+      arrayLength: totalCount,
+      sliceStart: offset,
+    }),
+  }
+}

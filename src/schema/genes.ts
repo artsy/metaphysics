@@ -1,8 +1,14 @@
 import config from "config"
 import Gene from "./gene"
-import { GraphQLList, GraphQLInt, GraphQLString } from "graphql"
+import {
+  GraphQLList,
+  GraphQLInt,
+  GraphQLString,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const Genes = {
+const Genes: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Gene.type),
   description: "A list of Genes",
   args: {
@@ -17,12 +23,7 @@ const Genes = {
       `,
     },
   },
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { geneLoader, genesLoader } }
-  ) => {
+  resolve: (_root, options, { geneLoader, genesLoader }) => {
     if (options.slugs) {
       return Promise.all(
         options.slugs.map(slug =>

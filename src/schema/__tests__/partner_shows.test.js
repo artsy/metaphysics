@@ -15,7 +15,7 @@ describe("PartnerShows type", () => {
         }
       `
 
-      const rootValue = {
+      const context = {
         showsLoader: sinon.stub().returns(
           Promise.resolve([
             {
@@ -63,7 +63,7 @@ describe("PartnerShows type", () => {
           ),
       }
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           partner_shows: [
             { id: "new-museum-solo-show", kind: "solo" },

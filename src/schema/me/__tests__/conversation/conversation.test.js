@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "test/utils"
 
 describe("Me", () => {
   describe("Conversation", () => {
-    const rootValue = {
+    const context = {
       conversationLoader: () => {
         return Promise.resolve({
           id: "420",
@@ -160,7 +160,7 @@ describe("Me", () => {
         }
       `
 
-      return runAuthenticatedQuery(query, rootValue).then(
+      return runAuthenticatedQuery(query, context).then(
         ({ me: conversation }) => {
           expect(conversation).toMatchSnapshot()
         }
@@ -195,7 +195,7 @@ describe("Me", () => {
           ],
         }
 
-        const customRootValue = Object.assign({}, rootValue, {
+        const customRootValue = Object.assign({}, context, {
           conversationMessagesLoader: () => Promise.resolve(message),
         })
 
@@ -230,7 +230,7 @@ describe("Me", () => {
       `
 
       it("returns the conversation items", () => {
-        return runAuthenticatedQuery(query, rootValue).then(
+        return runAuthenticatedQuery(query, context).then(
           ({
             me: {
               conversation: { items },
@@ -243,10 +243,10 @@ describe("Me", () => {
       })
 
       it("doesnt return invalid items", () => {
-        const customRootValue = Object.assign({}, rootValue, {
+        const customRootValue = Object.assign({}, context, {
           // Get a copy of the conversation payload, mutate it, and return that instead.
           conversationLoader: () =>
-            rootValue.conversationLoader().then(conversation => {
+            context.conversationLoader().then(conversation => {
               const convo = conversation
               convo.items[0].properties = {}
               return convo
@@ -289,7 +289,7 @@ describe("Me", () => {
       it("returns messages in ascending order", () => {
         const query = getQuery()
 
-        return runAuthenticatedQuery(query, rootValue).then(
+        return runAuthenticatedQuery(query, context).then(
           ({
             me: {
               conversation: { messages },
@@ -304,7 +304,7 @@ describe("Me", () => {
       it("returns messages in descending order", () => {
         const query = getQuery("DESC")
 
-        return runAuthenticatedQuery(query, rootValue).then(
+        return runAuthenticatedQuery(query, context).then(
           ({
             me: {
               conversation: { messages },
@@ -318,7 +318,7 @@ describe("Me", () => {
       it("returns proper is_from_user for different values of `from_principal`", () => {
         const query = getQuery()
 
-        return runAuthenticatedQuery(query, rootValue).then(
+        return runAuthenticatedQuery(query, context).then(
           ({
             me: {
               conversation: { messages },

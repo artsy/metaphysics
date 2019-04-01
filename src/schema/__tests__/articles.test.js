@@ -2,7 +2,7 @@
 import { runQuery } from "test/utils"
 
 describe("Articles type", () => {
-  let rootValue = null
+  let context = null
 
   beforeEach(() => {
     const article = {
@@ -15,7 +15,7 @@ describe("Articles type", () => {
       },
     }
 
-    rootValue = {
+    context = {
       articlesLoader: sinon
         .stub()
         .returns(Promise.resolve({ results: [article] })),
@@ -32,7 +32,7 @@ describe("Articles type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data.articles[0].id).toBe("foo-bar")
       expect(data.articles[0].title).toBe("My Awesome Article")
     })

@@ -1,6 +1,7 @@
 import DataLoader from "dataloader"
 import { chain } from "lodash"
 import config from "config"
+import { StaticPathLoader, DynamicPathLoader } from "./api/loader_interface"
 
 const { ENABLE_RESOLVER_BATCHING } = config
 
@@ -165,11 +166,21 @@ export const batchLoader = ({
   }
 }
 
+type PathLoader = StaticPathLoader<any> | DynamicPathLoader<any, any>
+
 /**
  * @returns a tuple of a single batch loader and a multiple batch loader
  */
-export const createBatchLoaders = ({ singleLoader, multipleLoader }) => {
-  // TODO: Move env check here
+export const createBatchLoaders = <
+  SL extends PathLoader,
+  ML extends PathLoader
+>({
+  singleLoader,
+  multipleLoader,
+}: {
+  singleLoader: SL
+  multipleLoader: ML
+}): [SL, ML] => {
   return [
     batchLoader({
       singleLoader,

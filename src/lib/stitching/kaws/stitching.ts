@@ -7,7 +7,7 @@ export const kawsStitchingEnvironment = (
   // The SDL used to declare how to stitch an object
   extensionSchema: `
     extend type Artist {
-      marketingCollections: [MarketingCollection]
+      marketingCollections(size: Int): [MarketingCollection]
     }
     extend type MarketingCollection {
       artworks(
@@ -30,7 +30,7 @@ export const kawsStitchingEnvironment = (
         gene_ids: [String]
         height: String
         width: String
-    
+
         # A string from the list of allocations, or * to denote all mediums
         medium: String
         period: String
@@ -60,13 +60,15 @@ export const kawsStitchingEnvironment = (
             _id
           }
         `,
-        resolve: ({ _id: artistID }, _args, context, info) => {
+        resolve: ({ _id: artistID }, { size }, context, info) => {
           return info.mergeInfo.delegateToSchema({
             schema: kawsSchema,
             operation: "query",
             fieldName: "marketingCollections",
+
             args: {
               artistID,
+              size,
             },
             context,
             info,
@@ -77,7 +79,7 @@ export const kawsStitchingEnvironment = (
     MarketingCollection: {
       artworks: {
         fragment: `
-          fragment MarketingCollectionQuery on MarketingCollection { 
+          fragment MarketingCollectionQuery on MarketingCollection {
             query {
               acquireable
               offerable
@@ -109,17 +111,30 @@ export const kawsStitchingEnvironment = (
               sort
               tag_id
               keyword
-            } 
+            }
           }
         `,
         resolve: (parent, _args, context, info) => {
           const query = parent.query
+          const hasKeyword = Boolean(parent.query.keyword)
+
+          const existingLoader =
+            context.unauthenticatedLoaders.filterArtworksLoader
+          const newLoader = loaderParams => {
+            return existingLoader.call(null, loaderParams, {
+              requestThrottleMs: 1000 * 60 * 60,
+            })
+          }
+
+          context.unauthenticatedLoaders.filterArtworksLoader = newLoader
+
           return info.mergeInfo.delegateToSchema({
             schema: localSchema,
             operation: "query",
             fieldName: "filter_artworks",
             args: {
               ...query,
+              keyword_match_exact: hasKeyword,
               ..._args,
             },
             context,

@@ -1,4 +1,3 @@
-// @ts-check
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { warn } from "lib/loggers"
@@ -15,13 +14,16 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLBoolean,
+  GraphQLFieldResolver,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 // Note to developers working on collections, the staging server does not get a copy
 // of all artwork saves, so you will need to add some each week in order to have data
 // to work with.
 
-export const CollectionType = new GraphQLObjectType({
+export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
   name: "Collection",
   interfaces: [NodeInterface],
   fields: {
@@ -39,12 +41,9 @@ export const CollectionType = new GraphQLObjectType({
           type: CollectionSorts,
         },
       },
-      resolve: (
-        { id },
-        options,
-        _request,
-        { rootValue: { collectionArtworksLoader } }
-      ) => {
+      resolve: ({ id }, options, { collectionArtworksLoader }) => {
+        if (!collectionArtworksLoader) return null
+
         const gravityOptions = Object.assign(
           { total_count: true },
           convertConnectionArgsToGravityArgs(options)
@@ -55,7 +54,7 @@ export const CollectionType = new GraphQLObjectType({
         return collectionArtworksLoader(id, gravityOptions)
           .then(({ body, headers }) => {
             return connectionFromArraySlice(body, options, {
-              arrayLength: headers["x-total-count"],
+              arrayLength: parseInt(headers["x-total-count"] || "0", 10),
               sliceStart: gravityOptions.offset,
             })
           })
@@ -87,13 +86,12 @@ export const CollectionType = new GraphQLObjectType({
 })
 
 // This resolver is re-used by `me { saved_artworks }`
-export const collectionResolverFactory = collection_id => {
-  return (
-    _root,
-    options,
-    _request,
-    { fieldNodes, rootValue: { collectionLoader } }
-  ) => {
+export const collectionResolverFactory = (
+  collection_id
+): GraphQLFieldResolver<void, ResolverContext> => {
+  return (_root, options, { collectionLoader }, { fieldNodes }) => {
+    if (!collectionLoader) return null
+
     const id = collection_id || options.id
     const blacklistedFields = ["artworks_connection", "id", "__id"]
 
@@ -107,7 +105,7 @@ export const collectionResolverFactory = collection_id => {
   }
 }
 
-const Collection = {
+const Collection: GraphQLFieldConfig<void, ResolverContext> = {
   type: CollectionType,
   args: {
     id: {

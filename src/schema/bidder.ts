@@ -1,9 +1,15 @@
+import {
+  GraphQLBoolean,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 import date from "./fields/date"
-import Sale from "./sale/index"
 import { IDFields } from "./object_identification"
-import { GraphQLString, GraphQLObjectType, GraphQLBoolean } from "graphql"
+import Sale from "./sale/index"
 
-const BidderType = new GraphQLObjectType({
+const BidderType = new GraphQLObjectType<any, ResolverContext>({
   name: "Bidder",
   fields: () => ({
     ...IDFields,
@@ -20,6 +26,8 @@ const BidderType = new GraphQLObjectType({
   }),
 })
 
-export default {
+const Bidder: GraphQLFieldConfig<void, ResolverContext> = {
   type: BidderType,
 }
+
+export default Bidder

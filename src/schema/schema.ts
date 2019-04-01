@@ -36,6 +36,7 @@ import { SellerRejectOfferMutation } from "./ecommerce/seller_reject_offer_mutat
 import { FulfillOrderAtOnceMutation } from "./ecommerce/fulfill_order_at_once_mutation"
 import { ConfirmPickupMutation } from "./ecommerce/confirm_pickup_mutation"
 import { RejectOrderMutation } from "./ecommerce/reject_order_mutation"
+import { FixFailedPaymentMutation } from "./ecommerce/fix_failed_payment"
 import OrderedSet from "./ordered_set"
 import OrderedSets from "./ordered_sets"
 import Profile from "./profile"
@@ -85,15 +86,17 @@ import createBidderMutation from "./me/create_bidder_mutation"
 import createCreditCardMutation from "./me/create_credit_card_mutation"
 import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
+import { sendFeedbackMutation } from "./sendFeedbackMutation"
 
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
 import { GraphQLSchema, GraphQLObjectType } from "graphql"
+import { ResolverContext } from "types/graphql"
 
 import config from "config"
 import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
 import { AddInitialOfferToOrderMutation } from "./ecommerce/add_initial_offer_to_order_mutation"
-import { SearchableItem } from "./searchableItem"
+import { SearchableItem } from "./SearchableItem"
 const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
 // TODO: Remove this any
@@ -152,7 +155,7 @@ const rootFields: any = {
   popular_artists: PopularArtists,
 }
 
-const ViewerType = new GraphQLObjectType({
+const ViewerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Viewer",
   description: "A wildcard used to support complex root queries in Relay",
   fields: rootFields,
@@ -198,6 +201,7 @@ stitchedMutations.ecommerceRejectOrder = RejectOrderMutation
 stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
 stitchedMutations.ecommerceAddInitialOfferToOrder = AddInitialOfferToOrderMutation
 stitchedMutations.ecommerceSubmitOrderWithOffer = SubmitOrderWithOfferMutation
+stitchedMutations.ecommerceFixFailedPayment = FixFailedPaymentMutation
 
 // Deprecated
 stitchedRootFields.order = Order
@@ -214,7 +218,7 @@ stitchedMutations.submitOrder = SubmitOrderMutation
 
 export default new GraphQLSchema({
   allowedLegacyNames: ["__id"],
-  mutation: new GraphQLObjectType({
+  mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
     fields: {
       createBidder: createBidderMutation,
@@ -229,6 +233,7 @@ export default new GraphQLSchema({
       updateMyUserProfile: UpdateMyUserProfileMutation,
       updateConversation: UpdateConversationMutation,
       sendConversationMessage: SendConversationMessageMutation,
+      sendFeedback: sendFeedbackMutation,
       saveArtwork: SaveArtworkMutation,
       endSale: endSaleMutation,
       requestCredentialsForAssetUpload: CreateAssetRequestLoader,
@@ -236,7 +241,7 @@ export default new GraphQLSchema({
       ...stitchedMutations,
     },
   }),
-  query: new GraphQLObjectType({
+  query: new GraphQLObjectType<any, ResolverContext>({
     name: "Query",
     fields: {
       ...rootFields,

@@ -1,8 +1,9 @@
 import initials from "./fields/initials"
 import Image from "./image"
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const FeaturedLinkType = new GraphQLObjectType({
+const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeaturedLink",
   fields: {
     id: {
@@ -28,6 +29,8 @@ const FeaturedLinkType = new GraphQLObjectType({
   } as any,
 })
 
-export default {
+const FeaturedLink: GraphQLFieldConfig<void, ResolverContext> = {
   type: FeaturedLinkType,
 }
+
+export default FeaturedLink

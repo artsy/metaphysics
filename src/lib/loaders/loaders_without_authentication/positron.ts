@@ -1,5 +1,3 @@
-// @ts-check
-
 import factories from "../api"
 
 export default opts => {

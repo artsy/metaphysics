@@ -2,7 +2,7 @@
 import { runAuthenticatedQuery } from "test/utils"
 
 describe("BidderPosition", () => {
-  const rootValue = {
+  const context = {
     meBidderPositionLoader: jest
       .fn()
       .mockReturnValueOnce(
@@ -65,7 +65,7 @@ describe("BidderPosition", () => {
       }
     `
   it("returns winning when processed and reserve is met and active", () => {
-    return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
+    return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
         bidder_position: {
           status: "WINNING",
@@ -79,7 +79,7 @@ describe("BidderPosition", () => {
     })
   })
   it("returns pending when not processed yet", () => {
-    return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
+    return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
         bidder_position: {
           status: "PENDING",
@@ -93,7 +93,7 @@ describe("BidderPosition", () => {
     })
   })
   it("returns reserve not met when reserve not met", () => {
-    return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
+    return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
         bidder_position: {
           status: "RESERVE_NOT_MET",
@@ -107,7 +107,7 @@ describe("BidderPosition", () => {
     })
   })
   it("returns outbid when not active but reserve is met", () => {
-    return runAuthenticatedQuery(query, rootValue).then(({ me }) => {
+    return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
         bidder_position: {
           status: "OUTBID",

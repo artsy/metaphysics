@@ -9,6 +9,7 @@ import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 import { BuyerOrderFields } from "./query_helpers"
 import gql from "lib/gql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
+import { ResolverContext } from "types/graphql"
 
 const SubmitPendingOfferMutationInputType = new GraphQLInputObjectType({
   name: "OfferMutationInput",
@@ -20,7 +21,11 @@ const SubmitPendingOfferMutationInputType = new GraphQLInputObjectType({
   },
 })
 
-export const SubmitPendingOfferMutation = mutationWithClientMutationId({
+export const SubmitPendingOfferMutation = mutationWithClientMutationId<
+  any,
+  any,
+  ResolverContext
+>({
   name: "submitPendingOffer",
   description: "Submit pending offer",
   inputFields: SubmitPendingOfferMutationInputType.getFields(),
@@ -29,11 +34,8 @@ export const SubmitPendingOfferMutation = mutationWithClientMutationId({
       type: OrderOrFailureUnionType,
     },
   },
-  mutateAndGetPayload: (
-    { offerId },
-    context,
-    { rootValue: { accessToken, exchangeSchema } }
-  ) => {
+  mutateAndGetPayload: ({ offerId }, context) => {
+    const { accessToken, exchangeSchema } = context
     if (!accessToken) {
       return new Error("You need to be signed in to perform this action")
     }

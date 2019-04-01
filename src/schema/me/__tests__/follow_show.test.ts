@@ -20,7 +20,7 @@ describe("FollowShow", () => {
       }
     }
 
-    const rootValue = {
+    const context = {
       followShowLoader: () =>
         Promise.resolve({
           partner_show: {
@@ -43,7 +43,7 @@ describe("FollowShow", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(value => {
+    return runAuthenticatedQuery(mutation, context).then(value => {
       const { followShow } = value as Props
       expect(followShow).toEqual(expectedShowData)
     })
@@ -81,7 +81,7 @@ describe("FollowShow", () => {
       }
     }
 
-    const rootValue = {
+    const context = {
       followShowLoader: () =>
         Promise.resolve({
           partner_show: {
@@ -112,8 +112,8 @@ describe("FollowShow", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(setup, rootValue).then(() => {
-      return runAuthenticatedQuery(teardown, rootValue).then(value => {
+    return runAuthenticatedQuery(setup, context).then(() => {
+      return runAuthenticatedQuery(teardown, context).then(value => {
         const { followShow } = value as Props
         expect(followShow.show.id).toEqual(expectedShowData.show.id)
       })

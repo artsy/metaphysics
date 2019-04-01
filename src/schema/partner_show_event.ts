@@ -1,7 +1,9 @@
 import date from "./fields/date"
 import { GraphQLString, GraphQLObjectType } from "graphql"
+import { ResolverContext } from "types/graphql"
+import { exhibitionPeriod } from "lib/date"
 
-const PartnerShowEventType = new GraphQLObjectType({
+const PartnerShowEventType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerShowEventType",
   fields: {
     event_type: {
@@ -18,6 +20,11 @@ const PartnerShowEventType = new GraphQLObjectType({
     },
     start_at: date,
     end_at: date,
+    exhibitionPeriod: {
+      type: GraphQLString,
+      description: "A formatted description of the start to end dates",
+      resolve: ({ start_at, end_at }) => exhibitionPeriod(start_at, end_at),
+    },
   },
 })
 

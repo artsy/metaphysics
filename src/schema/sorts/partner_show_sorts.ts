@@ -74,6 +74,9 @@ const PartnerShowSorts = {
       START_AT_DESC: {
         value: "-start_at",
       },
+      PARTNER_ASC: {
+        value: "fully_qualified_name",
+      },
     },
   }),
 }

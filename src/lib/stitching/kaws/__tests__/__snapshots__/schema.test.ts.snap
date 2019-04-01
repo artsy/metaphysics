@@ -30,6 +30,15 @@ type MarketingCollection {
   query: MarketingCollectionQuery!
   createdAt: MarketingDateTime!
   updatedAt: MarketingDateTime!
+
+  # Suggested average price for included works
+  price_guidance: Float
+
+  # Collection can be surfaced on editorial pages
+  show_on_editorial: Boolean!
+
+  # Collection has prioritized connection to artist
+  is_featured_artist_content: Boolean!
 }
 
 type MarketingCollectionCategory {
@@ -73,7 +82,7 @@ type MarketingCollectionQuery {
 scalar MarketingDateTime
 
 type Query {
-  marketingCollections(artistID: String): [MarketingCollection!]!
+  marketingCollections(randomizationSeed: String, size: Int, isFeaturedArtistContent: Boolean, showOnEditorial: Boolean, artistID: String): [MarketingCollection!]!
   marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
 }

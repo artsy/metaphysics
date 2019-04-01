@@ -3,14 +3,14 @@ import { runQuery } from "test/utils"
 
 describe("ArtistInsights type", () => {
   let artist = null as any
-  let rootValue = null as any
+  let context = null as any
 
   beforeEach(() => {
     artist = {
       id: "foo-bar",
       name: "Foo Bar",
     }
-    rootValue = {
+    context = {
       artistLoader: () => Promise.resolve(artist),
     }
   })
@@ -29,7 +29,7 @@ describe("ArtistInsights type", () => {
         }
       `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.artist.insights).toEqual([])
     })
   })
@@ -50,7 +50,7 @@ describe("ArtistInsights type", () => {
         }
       `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.artist.insights).toEqual([])
     })
   })
@@ -75,7 +75,7 @@ describe("ArtistInsights type", () => {
           }
         `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.artist.insights).toEqual([
         {
           type: "SOLO_SHOW",
@@ -99,7 +99,7 @@ describe("ArtistInsights type", () => {
         },
         {
           type: "BIENNIAL",
-          label: "Participated in a major biennial",
+          label: "Included in a major biennial",
           entities: ["frieze"],
         },
       ])
@@ -122,7 +122,7 @@ describe("ArtistInsights type", () => {
           }
         `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.artist.insights).toEqual([
         {
           type: "COLLECTED",

@@ -7,12 +7,26 @@ import {
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLBoolean,
+  Thunk,
+  GraphQLFieldConfigMap,
+  GraphQLFieldConfig,
 } from "graphql"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters } from "relay-cursor-paging"
+import { ResolverContext } from "types/graphql"
+import { StaticPathLoader } from "lib/loaders/api/loader_interface"
+import { BodyAndHeaders } from "lib/loaders"
 
-const counts = {
-  type: new GraphQLObjectType({
+// TODO: This should move to the gravity loader
+interface PartnerArtistDetails {
+  published_artworks_count: number
+  published_for_sale_artworks_count: number
+  display_on_partner_profile: boolean
+  represented_by: boolean
+}
+
+const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
+  type: new GraphQLObjectType<any, ResolverContext>({
     name: "PartnerArtistCounts",
     fields: {
       artworks: numeral(
@@ -27,7 +41,9 @@ const counts = {
   resolve: partner_artist => partner_artist,
 }
 
-const fields = () => {
+const fields: Thunk<
+  GraphQLFieldConfigMap<PartnerArtistDetails, ResolverContext>
+> = () => {
   return {
     ...IDFields,
     artist: {
@@ -57,12 +73,12 @@ const fields = () => {
   }
 }
 
-export const PartnerArtistType = new GraphQLObjectType({
+export const PartnerArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerArtist",
   fields,
 })
 
-const PartnerArtist = {
+const PartnerArtist: GraphQLFieldConfig<void, ResolverContext> = {
   type: PartnerArtistType,
   description: "A PartnerArtist",
   args: {
@@ -75,12 +91,8 @@ const PartnerArtist = {
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (
-    _root,
-    { partner_id, artist_id },
-    _request,
-    { rootValue: { partnerArtistLoader } }
-  ) => partnerArtistLoader({ artist_id, partner_id }),
+  resolve: (_root, { partner_id, artist_id }, { partnerArtistLoader }) =>
+    partnerArtistLoader({ artist_id, partner_id }),
 }
 
 export default PartnerArtist
@@ -96,7 +108,11 @@ export const PartnerArtistConnection = connectionDefinitions({
   edgeFields: fields,
 }).connectionType
 
-export const partnersForArtist = (artist_id, options, loader) => {
+export const partnersForArtist = (
+  artist_id,
+  options,
+  loader: StaticPathLoader<BodyAndHeaders>
+) => {
   // Convert `after` cursors to page params
   const { limit: size, offset } = getPagingParameters(options)
   // Construct an object of all the params gravity will listen to
@@ -117,7 +133,7 @@ export const partnersForArtist = (artist_id, options, loader) => {
 
   return loader(gravityArgs).then(({ body, headers }) => {
     return connectionFromArraySlice(body, options, {
-      arrayLength: headers["x-total-count"],
+      arrayLength: parseInt(headers["x-total-count"] || "0", 10),
       sliceStart: offset,
       // Type properly
       // @ts-ignore

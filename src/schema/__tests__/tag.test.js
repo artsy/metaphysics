@@ -9,25 +9,28 @@ describe("Tag", () => {
     // request to gravity.
 
     it("returns filtered artworks", () => {
-      const rootValue = {
-        filterArtworksLoader: sinon
-          .stub()
-          .withArgs("filter/artworks", {
-            tag_id: "butt",
-            aggregations: ["total"],
-          })
-          .returns(
-            Promise.resolve({
-              hits: [
-                {
-                  id: "oseberg-norway-queens-ship",
-                  title: "Queen's Ship",
-                  artists: [],
-                },
-              ],
-              aggregations: [],
+      const context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: sinon
+            .stub()
+            .withArgs("filter/artworks", {
+              tag_id: "butt",
+              aggregations: ["total"],
             })
-          ),
+            .returns(
+              Promise.resolve({
+                hits: [
+                  {
+                    id: "oseberg-norway-queens-ship",
+                    title: "Queen's Ship",
+                    artists: [],
+                  },
+                ],
+                aggregations: [],
+              })
+            ),
+        },
       }
       const query = `
         {
@@ -41,7 +44,7 @@ describe("Tag", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           tag: {
             filtered_artworks: { hits },

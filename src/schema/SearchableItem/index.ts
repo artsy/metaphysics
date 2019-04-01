@@ -7,8 +7,10 @@ import {
 import { toGlobalId } from "graphql-relay"
 import { Searchable } from "schema/searchable"
 import { NodeInterface, GravityIDFields } from "schema/object_identification"
+import { ResolverContext } from "types/graphql"
+import { SearchableItemPresenter } from "./SearchableItemPresenter"
 
-export const SearchableItem = new GraphQLObjectType({
+export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
   name: "SearchableItem",
   interfaces: [NodeInterface, Searchable],
   fields: {
@@ -16,6 +18,10 @@ export const SearchableItem = new GraphQLObjectType({
     __id: {
       type: new GraphQLNonNull(GraphQLID),
       resolve: item => toGlobalId("SearchableItem", item._id),
+    },
+    description: {
+      type: GraphQLString,
+      resolve: item => new SearchableItemPresenter(item).formattedDescription(),
     },
     displayLabel: {
       type: GraphQLString,
@@ -27,20 +33,16 @@ export const SearchableItem = new GraphQLObjectType({
     },
     href: {
       type: GraphQLString,
-      resolve: item => {
-        switch (item.label) {
-          case "Artwork":
-            return `/artwork/${item.id}`
-          case "Artist":
-            return `/artist/${item.id}`
-          default:
-            return ""
-        }
-      },
+      resolve: item => new SearchableItemPresenter(item).href(),
     },
     searchableType: {
       type: GraphQLString,
-      resolve: item => item.label,
+      deprecationReason: "Switch to use `displayType`",
+      resolve: item => new SearchableItemPresenter(item).displayType(),
+    },
+    displayType: {
+      type: GraphQLString,
+      resolve: item => new SearchableItemPresenter(item).displayType(),
     },
   },
 })

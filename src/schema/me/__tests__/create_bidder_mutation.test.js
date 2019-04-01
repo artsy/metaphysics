@@ -44,12 +44,12 @@ describe("Bidder mutation", () => {
   }
   `
 
-  const rootValue = {
+  const context = {
     createBidderLoader: () => Promise.resolve(bidder),
   }
 
   it("creates a bidder", async () => {
-    return runAuthenticatedQuery(mutation, rootValue).then(data => {
+    return runAuthenticatedQuery(mutation, context).then(data => {
       expect(data).toEqual({
         createBidder: {
           bidder: {
@@ -65,7 +65,7 @@ describe("Bidder mutation", () => {
   })
 
   it("requires an access token", () => {
-    return runQuery(mutation, rootValue).catch(error => {
+    return runQuery(mutation, context).catch(error => {
       expect(error.message).toEqual(
         "You need to be signed in to perform this action"
       )

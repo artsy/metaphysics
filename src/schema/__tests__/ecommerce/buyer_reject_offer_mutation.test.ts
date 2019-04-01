@@ -5,7 +5,7 @@ import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { runQuery } from "test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 
-let rootValue
+let context
 
 describe("BuyerRejectOffer Mutation", () => {
   const mutationWithRejectReason = gql`
@@ -59,9 +59,9 @@ describe("BuyerRejectOffer Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
 
-    return runQuery(mutationWithRejectReason, rootValue).then(data => {
+    return runQuery(mutationWithRejectReason, context).then(data => {
       expect(data!.ecommerceBuyerRejectOffer.orderOrError.order).toEqual(
         sampleOrder()
       )
@@ -77,9 +77,9 @@ describe("BuyerRejectOffer Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
 
-    return runQuery(mutationWithoutRejectReason, rootValue).then(data => {
+    return runQuery(mutationWithoutRejectReason, context).then(data => {
       expect(data!.ecommerceBuyerRejectOffer.orderOrError.order).toEqual(
         sampleOrder()
       )
@@ -100,9 +100,9 @@ describe("BuyerRejectOffer Mutation", () => {
       },
     }
 
-    rootValue = mockxchange(resolvers)
+    context = mockxchange(resolvers)
 
-    return runQuery(mutationWithoutRejectReason, rootValue).then(data => {
+    return runQuery(mutationWithoutRejectReason, context).then(data => {
       expect(data!.ecommerceBuyerRejectOffer.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

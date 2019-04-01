@@ -19,7 +19,7 @@ describe("SystemTime type", () => {
     iso8601: "2018-07-02T20:58:58Z",
   }
 
-  const rootValue = {
+  const context = {
     systemTimeLoader: sinon.stub().returns(Promise.resolve(systemTimeData)),
   }
 
@@ -45,7 +45,7 @@ describe("SystemTime type", () => {
       }
     `
 
-    const { system } = await runQuery(query, rootValue)
+    const { system } = await runQuery(query, context)
     expect(system.time.day).toEqual(2)
     expect(system.time.iso8601).toEqual("2018-07-02T20:58:58Z")
   })

@@ -8,15 +8,22 @@ import {
 } from "./fetch"
 import { map, assign, keys, without, shuffle, slice } from "lodash"
 import Artwork from "schema/artwork/index"
-import { GraphQLList } from "graphql"
+import { GraphQLList, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
+import {
+  HomePageArtworkModuleDetails,
+  HomePageArtworkModuleResolvers,
+  isFollowedArtistArtworkModuleParams,
+  isFollowedGeneArtworkModuleParams,
+  isRelatedArtistArtworkModuleParams,
+} from "./types"
 
 const RESULTS_SIZE = 20
 
-const moduleResults = {
-  active_bids: ({ rootValue: { lotStandingLoader } }) =>
-    activeSaleArtworks(lotStandingLoader),
-  current_fairs: ({ rootValue: { fairsLoader, filterArtworksLoader } }) => {
-    return featuredFair(fairsLoader).then(fair => {
+const moduleResults: HomePageArtworkModuleResolvers = {
+  active_bids: ({ lotStandingLoader }) => activeSaleArtworks(lotStandingLoader),
+  current_fairs: ({ fairsLoader, filterArtworksLoader }) => {
+    return featuredFair(fairsLoader).then<any[] | undefined>(fair => {
       if (fair) {
         return filterArtworksLoader({
           fair_id: fair.id,
@@ -30,20 +37,23 @@ const moduleResults = {
       }
     })
   },
-  followed_artist: ({ rootValue: { filterArtworksLoader }, params }) => {
+  followed_artist: ({ filterArtworksLoader }, params) => {
+    if (!isFollowedArtistArtworkModuleParams(params)) return null
     return filterArtworksLoader({
       artist_id: params.followed_artist_id,
       for_sale: true,
       size: RESULTS_SIZE,
     }).then(({ hits }) => hits)
   },
-  followed_artists: ({ rootValue: { followedArtistsArtworksLoader } }) => {
+  followed_artists: ({ followedArtistsArtworksLoader }) => {
+    if (!followedArtistsArtworksLoader) return null
     return followedArtistsArtworksLoader({
       for_sale: true,
       size: RESULTS_SIZE,
     }).then(({ body }) => body)
   },
-  followed_galleries: ({ rootValue: { followedProfilesArtworksLoader } }) => {
+  followed_galleries: ({ followedProfilesArtworksLoader }) => {
+    if (!followedProfilesArtworksLoader) return null
     return followedProfilesArtworksLoader({
       for_sale: true,
       size: 60,
@@ -51,12 +61,9 @@ const moduleResults = {
       return slice(shuffle(body), 0, RESULTS_SIZE)
     })
   },
-  genes: ({
-    rootValue: { filterArtworksLoader, followedGenesLoader },
-    params: { id },
-  }) => {
-    if (id) {
-      return geneArtworks(filterArtworksLoader, id, RESULTS_SIZE)
+  genes: ({ filterArtworksLoader, followedGenesLoader }, params) => {
+    if (isFollowedGeneArtworkModuleParams(params)) {
+      return geneArtworks(filterArtworksLoader, params.id, RESULTS_SIZE)
     }
     // Backward compatibility for Force.
     return featuredGene(followedGenesLoader).then(gene => {
@@ -64,15 +71,15 @@ const moduleResults = {
         return geneArtworks(filterArtworksLoader, gene.id, RESULTS_SIZE)
       }
 
-      return undefined
+      return null
     })
   },
-  generic_gene: ({ rootValue: { filterArtworksLoader }, params }) => {
+  generic_gene: ({ filterArtworksLoader }, params) => {
     return filterArtworksLoader(
       assign({}, params, { size: RESULTS_SIZE, for_sale: true })
     ).then(({ hits }) => hits)
   },
-  live_auctions: ({ rootValue: { salesLoader, saleArtworksLoader } }) => {
+  live_auctions: ({ salesLoader, saleArtworksLoader }) => {
     return featuredAuction(salesLoader).then(auction => {
       if (auction) {
         return saleArtworksLoader(auction.id, {
@@ -81,11 +88,10 @@ const moduleResults = {
           return map(body, "artwork")
         })
       }
-
-      return undefined
+      return null
     })
   },
-  popular_artists: ({ rootValue: { filterArtworksLoader, deltaLoader } }) => {
+  popular_artists: ({ filterArtworksLoader, deltaLoader }) => {
     // TODO This appears to largely replicate Gravity’s /api/v1/artists/popular endpoint
     return popularArtists(deltaLoader).then(artists => {
       const ids = without(keys(artists), "cached", "context_type")
@@ -96,27 +102,29 @@ const moduleResults = {
       }).then(({ hits }) => hits)
     })
   },
-  recommended_works: ({ rootValue: { homepageSuggestedArtworksLoader } }) => {
+  recommended_works: ({ homepageSuggestedArtworksLoader }) => {
+    if (!homepageSuggestedArtworksLoader) return null
     return homepageSuggestedArtworksLoader({
       limit: RESULTS_SIZE,
     })
   },
-  related_artists: ({ rootValue: { filterArtworksLoader }, params }) => {
+  related_artists: ({ filterArtworksLoader }, params) => {
+    if (!isRelatedArtistArtworkModuleParams(params)) return null
     return filterArtworksLoader({
       artist_id: params.related_artist_id,
       for_sale: true,
       size: RESULTS_SIZE,
     }).then(({ hits }) => hits)
   },
-  saved_works: ({ rootValue: { savedArtworksLoader } }) => {
+  saved_works: ({ savedArtworksLoader }) => {
+    if (!savedArtworksLoader) return null
     return savedArtworksLoader({
       size: RESULTS_SIZE,
       sort: "-position",
     })
   },
-  similar_to_saved_works: ({
-    rootValue: { savedArtworksLoader, similarArtworksLoader },
-  }) => {
+  similar_to_saved_works: ({ savedArtworksLoader, similarArtworksLoader }) => {
+    if (!savedArtworksLoader) return null
     return savedArtworksLoader({
       size: RESULTS_SIZE,
       sort: "-position",
@@ -126,9 +134,8 @@ const moduleResults = {
       })
     })
   },
-  similar_to_recently_viewed: ({
-    rootValue: { meLoader, similarArtworksLoader },
-  }) => {
+  similar_to_recently_viewed: ({ meLoader, similarArtworksLoader }) => {
+    if (!meLoader) return null
     return meLoader().then(({ recently_viewed_artwork_ids }) => {
       if (recently_viewed_artwork_ids.length === 0) {
         return []
@@ -137,7 +144,8 @@ const moduleResults = {
       return similarArtworksLoader({ artwork_id: recentlyViewedIds })
     })
   },
-  recently_viewed_works: ({ rootValue: { meLoader, artworksLoader } }) => {
+  recently_viewed_works: ({ meLoader, artworksLoader }) => {
+    if (!meLoader) return null
     return meLoader().then(({ recently_viewed_artwork_ids }) => {
       if (recently_viewed_artwork_ids.length === 0) {
         return []
@@ -148,11 +156,16 @@ const moduleResults = {
   },
 }
 
-export default {
+const Results: GraphQLFieldConfig<
+  HomePageArtworkModuleDetails,
+  ResolverContext
+> = {
   type: new GraphQLList(Artwork.type),
-  resolve: ({ key, display, params }, _options, _request, { rootValue }) => {
+  resolve: ({ key, display, params }, _options, context) => {
     if (display) {
-      return moduleResults[key]({ rootValue, params: params || {} })
+      return moduleResults[key](context, params)
     }
   },
 }
+
+export default Results

@@ -129,4 +129,8 @@ describe("FormattedDaySchedules.resolve", () => {
       },
     ])
   })
+
+  it("handles empty schedules", () => {
+    expect(formatDaySchedules([])).toEqual([])
+  })
 })

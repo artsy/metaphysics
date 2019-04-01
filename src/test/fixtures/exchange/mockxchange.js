@@ -73,7 +73,7 @@ export const mockxchange = resolvers => {
     })
   )
 
-  const authenticatedArtworkLoader = sinon.stub().returns(
+  const artworkLoader = sinon.stub().returns(
     Promise.resolve({
       id: "hubert-farnsworth-smell-o-scope",
       title: "Smell-O-Scope",
@@ -89,7 +89,7 @@ export const mockxchange = resolvers => {
     partnerLoader,
     userByIDLoader,
     creditCardLoader,
-    authenticatedArtworkLoader,
+    authenticatedLoaders: { artworkLoader },
     accessToken,
   }
 }

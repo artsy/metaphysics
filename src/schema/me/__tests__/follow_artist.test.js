@@ -3,7 +3,7 @@ import { runAuthenticatedQuery } from "test/utils"
 
 describe("FollowArtist", () => {
   let artist = null
-  let rootValue = null
+  let context = null
 
   beforeEach(() => {
     artist = {
@@ -12,7 +12,7 @@ describe("FollowArtist", () => {
       artworks_count: 100,
     }
 
-    rootValue = {
+    context = {
       artistLoader: sinon.stub().returns(Promise.resolve(artist)),
       popularArtistsLoader: () =>
         Promise.resolve([
@@ -51,17 +51,15 @@ describe("FollowArtist", () => {
     `
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(
-      ({ followArtist }) => {
-        expect(followArtist).toEqual({
-          artist: {
-            name: "Damon Zucconi",
-          },
-          popular_artists: {
-            artists: [{ name: "Antonio Carreno" }, { name: "Benjamin Schmit" }],
-          },
-        })
-      }
-    )
+    return runAuthenticatedQuery(mutation, context).then(({ followArtist }) => {
+      expect(followArtist).toEqual({
+        artist: {
+          name: "Damon Zucconi",
+        },
+        popular_artists: {
+          artists: [{ name: "Antonio Carreno" }, { name: "Benjamin Schmit" }],
+        },
+      })
+    })
   })
 })

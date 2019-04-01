@@ -1,17 +1,30 @@
-import { create, assign } from "lodash"
+import {
+  GraphQLFieldConfig,
+  GraphQLObjectType,
+  GraphQLUnionType,
+} from "graphql"
+import { assign, create } from "lodash"
+import Artist from "schema/artist/index"
+import Trending from "schema/artists/trending"
+import Fair from "schema/fair"
+import Gene from "schema/gene"
+import FollowArtists from "schema/me/follow_artists"
+import Sale from "schema/sale/index"
+import { ResolverContext } from "types/graphql"
 import {
   featuredAuction,
   featuredFair,
   featuredGene,
   popularArtists,
 } from "./fetch"
-import Fair from "schema/fair"
-import Sale from "schema/sale/index"
-import Gene from "schema/gene"
-import Artist from "schema/artist/index"
-import FollowArtists from "schema/me/follow_artists"
-import Trending from "schema/artists/trending"
-import { GraphQLUnionType, GraphQLObjectType } from "graphql"
+import {
+  HomePageArtworkModuleDetails,
+  isFollowedArtistArtworkModuleParams,
+  isRelatedArtistArtworkModuleParams,
+  isFollowedGeneArtworkModuleParams,
+  isGenericGeneArtworkModuleParams,
+  HomePageArtworkModuleResolvers,
+} from "./types"
 
 export const HomePageModuleContextFairType = create(Fair.type, {
   name: "HomePageModuleContextFair",
@@ -41,7 +54,10 @@ export const HomePageModuleContextFollowArtistsType = create(
   }
 )
 
-export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
+export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "HomePageModuleContextRelatedArtist",
   fields: () => ({
     artist: {
@@ -54,7 +70,10 @@ export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType({
   isTypeOf: ({ context_type }) => context_type === "RelatedArtist",
 })
 
-export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType({
+export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "HomePageModuleContextFollowedArtist",
   fields: () => ({
     artist: {
@@ -64,14 +83,22 @@ export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType({
   isTypeOf: ({ context_type }) => context_type === "FollowedArtist",
 })
 
-export const moduleContext = {
-  popular_artists: ({ rootValue: { deltaLoader } }) => {
+// interface Params {
+//   followed_artist_id?: string
+//   related_artist_id?: string
+//   gene?: {} // TODO: Not sure what this type is
+//   gene_id?: string
+// }
+
+export const moduleContext: HomePageArtworkModuleResolvers = {
+  popular_artists: ({ deltaLoader }) => {
     return popularArtists(deltaLoader).then(trending => {
       return assign({}, trending, { context_type: "Trending" })
     })
   },
   active_bids: () => null,
-  followed_artists: ({ rootValue: { followedArtistsLoader } }) => {
+  followed_artists: ({ followedArtistsLoader }) => {
+    if (!followedArtistsLoader) return null
     return followedArtistsLoader({ size: 9, page: 1 }).then(({ body }) => {
       return assign({}, body, { context_type: "FollowArtists" })
     })
@@ -82,17 +109,18 @@ export const moduleContext = {
   similar_to_recently_viewed: () => null,
   similar_to_saved_works: () => null,
   recommended_works: () => null,
-  live_auctions: ({ rootValue: { salesLoader } }) => {
+  live_auctions: ({ salesLoader }) => {
     return featuredAuction(salesLoader).then(sale => {
       return assign({}, sale, { context_type: "Sale" })
     })
   },
-  current_fairs: ({ rootValue: { fairsLoader } }) => {
+  current_fairs: ({ fairsLoader }) => {
     return featuredFair(fairsLoader).then(fair => {
       return assign({}, fair, { context_type: "Fair" })
     })
   },
-  followed_artist: ({ rootValue: { artistLoader }, params }) => {
+  followed_artist: ({ artistLoader }, params) => {
+    if (!isFollowedArtistArtworkModuleParams(params)) return null
     return artistLoader(params.followed_artist_id).then(artist => {
       return assign(
         {},
@@ -103,7 +131,8 @@ export const moduleContext = {
       )
     })
   },
-  related_artists: ({ rootValue: { artistLoader }, params }) => {
+  related_artists: ({ artistLoader }, params) => {
+    if (!isRelatedArtistArtworkModuleParams(params)) return null
     return Promise.all([
       artistLoader(params.related_artist_id),
       artistLoader(params.followed_artist_id),
@@ -118,23 +147,27 @@ export const moduleContext = {
       )
     })
   },
-  genes: ({ rootValue: { followedGenesLoader }, params: { gene } }) => {
-    if (gene) {
-      return assign({}, gene, { context_type: "Gene" })
+  genes: ({ followedGenesLoader }, params) => {
+    if (isFollowedGeneArtworkModuleParams(params)) {
+      return assign({}, params.gene, { context_type: "Gene" })
     }
     // Backward compatibility for Force.
     return featuredGene(followedGenesLoader).then(fetchedGene => {
       return assign({}, fetchedGene, { context_type: "Gene" })
     })
   },
-  generic_gene: ({ rootValue: { geneLoader }, params: { gene_id } }) => {
-    return geneLoader(gene_id).then(gene => {
+  generic_gene: ({ geneLoader }, params) => {
+    if (!isGenericGeneArtworkModuleParams(params)) return null
+    return geneLoader(params.gene_id).then(gene => {
       return assign({}, gene, { context_type: "Gene" })
     })
   },
 }
 
-export default {
+const Context: GraphQLFieldConfig<
+  { key: string; params: HomePageArtworkModuleDetails["params"] },
+  ResolverContext
+> = {
   type: new GraphQLUnionType({
     name: "HomePageModuleContext",
     types: [
@@ -147,7 +180,9 @@ export default {
       HomePageModuleContextTrendingType,
     ],
   }),
-  resolve: ({ key, params }, _options, _request, { rootValue }) => {
-    return moduleContext[key]({ rootValue, params: params || {} })
+  resolve: ({ key, params }, _options, context) => {
+    return moduleContext[key](context, params)
   },
 }
+
+export default Context

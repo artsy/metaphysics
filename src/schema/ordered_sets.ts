@@ -5,9 +5,11 @@ import {
   GraphQLList,
   GraphQLBoolean,
   GraphQLInt,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const OrderedSets = {
+const OrderedSets: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(OrderedSet.type),
   description: "A collection of OrderedSets",
   args: {
@@ -28,8 +30,7 @@ const OrderedSets = {
       defaultValue: 10,
     },
   },
-  resolve: (_root, options, _request, { rootValue: { setsLoader } }) =>
-    setsLoader(options),
+  resolve: (_root, options, { setsLoader }) => setsLoader(options),
 }
 
 export default OrderedSets

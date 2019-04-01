@@ -1,5 +1,3 @@
-// @ts-check
-
 import factories from "../api"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
@@ -9,7 +7,7 @@ export default (accessToken, userID, opts) => {
   const gravityLoader = gravityLoaderWithAuthenticationFactory(gravityAccessTokenLoader)
 
   return {
-    authenticatedArtworkLoader: gravityLoader(id => `artwork/${id}`),
+    artworkLoader: gravityLoader(id => `artwork/${id}`),
     authenticatedArtworkVersionLoader: gravityLoader(id => `artwork_version/${id}`),
     collectionArtworksLoader: gravityLoader(id => `collection/${id}/artworks`, { user_id: userID }, { headers: true }),
     collectionLoader: gravityLoader(id => `collection/${id}`, { user_id: userID }),
@@ -27,37 +25,46 @@ export default (accessToken, userID, opts) => {
     followedArtistsLoader: gravityLoader("me/follow/artists", {}, { headers: true }),
     followedArtistLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/artists"),
-      "artists",
-      "is_followed",
-      "artist"
+      {
+        paramKey: "artists",
+        trackingKey: "is_followed",
+        entityKeyPath: "artist"
+      }
     ),
-    followedGeneLoader: trackedEntityLoaderFactory(gravityLoader("me/follow/genes"), "genes", "is_followed", "gene"),
-    followedGenesLoader: gravityLoader("me/follow/genes", {}, { headers: true }),
+    followedGeneLoader: trackedEntityLoaderFactory(gravityLoader("me/follow/genes"), {
+      paramKey: "genes", trackingKey: "is_followed", entityKeyPath: "gene"
+    }),
+    followedGenesLoader: gravityLoader<{ gene: { id: string, name: string } }[]>("me/follow/genes", {}, { headers: true }),
     followedProfilesArtworksLoader: gravityLoader("me/follow/profiles/artworks", {}, { headers: true }),
     followGeneLoader: gravityLoader("me/follow/gene", {}, { method: "POST" }),
     followProfileLoader: gravityLoader("me/follow/profile", {}, { method: "POST" }),
     followedProfileLoader: trackedEntityLoaderFactory(
       gravityLoader("me/follow/profiles"),
-      "profiles",
-      "is_followed",
-      "profile"
+      {
+        paramKey: "profiles",
+        trackingKey: "is_followed",
+        entityKeyPath: "profile"
+      }
     ),
     followShowLoader: gravityLoader("follow_shows", {}, { method: "POST" }),
     unfollowShowLoader: gravityLoader("follow_shows", {}, { method: "DELETE" }),
     followedShowsLoader: gravityLoader("follow_shows", {}, { headers: true }),
     followedShowLoader: trackedEntityLoaderFactory(
       gravityLoader("follow_shows"),
-      "show_ids",
-      "is_followed",
-      "partner_show",
-      "_id",
+      {
+        paramKey: "show_ids",
+        trackingKey: "is_followed",
+        entityKeyPath: "partner_show",
+        entityIDKeyPath: "_id",
+      }
     ),
     followedFairsLoader: gravityLoader("/me/follow/profiles", {}, { headers: true }),
+    followedPartnersLoader: gravityLoader("/me/follow/profiles", {}, { headers: true }),
     homepageModulesLoader: gravityLoader("me/modules"),
     homepageSuggestedArtworksLoader: gravityLoader("me/suggested/artworks/homepage"),
     inquiryRequestsLoader: gravityLoader("me/inquiry_requests", {}, { headers: true }),
     lotStandingLoader: gravityLoader("me/lot_standings"),
-    meBidderPositionLoader: gravityLoader(({ id }) => `me/bidder_position/${id}/`, {}, { headers: true }),
+    meBidderPositionLoader: gravityLoader(id => `me/bidder_position/${id}/`, {}, { headers: true }),
     meBidderPositionsLoader: gravityLoader("me/bidder_positions"),
     meBiddersLoader: gravityLoader("me/bidders"),
     meCreditCardsLoader: gravityLoader("me/credit_cards", {}, { headers: true }),
@@ -75,10 +82,13 @@ export default (accessToken, userID, opts) => {
         user_id: userID,
         private: true,
       }),
-      "artworks",
-      "is_saved"
+      {
+        paramKey: "artworks",
+        trackingKey: "is_saved"
+      }
     ),
     savedArtworksLoader: gravityLoader("collection/saved-artwork/artworks", { user_id: userID, private: true }),
+    sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     suggestedArtistsLoader: gravityLoader("me/suggested/artists", {}, { headers: true }),
     suggestedSimilarArtistsLoader: gravityLoader(`user/${userID}/suggested/similar/artists`, {}, { headers: true }),
     unfollowArtistLoader: gravityLoader(id => `me/follow/artist/${id}`, {}, { method: "DELETE" }),

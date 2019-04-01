@@ -3,9 +3,10 @@ import { IDFields } from "schema/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import { GraphQLObjectType } from "graphql"
+import { GraphQLObjectType, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const FollowedFairEdge = new GraphQLObjectType({
+const FollowedFairEdge = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedProfileEdge",
   fields: {
     ...IDFields,
@@ -20,16 +21,11 @@ export const FollowedFairConnection = connectionDefinitions({
   nodeType: Fair.type,
 })
 
-export default {
+const FollowedFairs: GraphQLFieldConfig<void, ResolverContext> = {
   type: FollowedFairConnection.connectionType,
   args: pageable({}),
   description: "A list of the current user’s currently followed fair profiles",
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { followedFairsLoader } }
-  ) => {
+  resolve: (_root, options, { followedFairsLoader }) => {
     if (!followedFairsLoader) return null
 
     const { limit: size, offset } = getPagingParameters(options)
@@ -42,7 +38,7 @@ export default {
 
     return followedFairsLoader(gravityArgs).then(({ body, headers }) => {
       return connectionFromArraySlice(body, options, {
-        arrayLength: headers["x-total-count"],
+        arrayLength: parseInt(headers["x-total-count"] || "0", 10),
         sliceStart: offset,
         // @ts-ignore
         resolveNode: follow_profile => follow_profile.profile.owner,
@@ -50,3 +46,5 @@ export default {
     })
   },
 }
+
+export default FollowedFairs

@@ -1,9 +1,15 @@
 import Artist from "./artist"
 import ArtistSorts from "./sorts/artist_sorts"
-import { GraphQLList, GraphQLInt, GraphQLString } from "graphql"
+import {
+  GraphQLList,
+  GraphQLInt,
+  GraphQLString,
+  GraphQLFieldConfig,
+} from "graphql"
 import config from "config"
+import { ResolverContext } from "types/graphql"
 
-const Artists = {
+const Artists: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Artist.type),
   description: "A list of Artists",
   args: {
@@ -30,12 +36,7 @@ const Artists = {
     },
     sort: ArtistSorts,
   },
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { artistLoader, artistsLoader } }
-  ) => {
+  resolve: (_root, options, { artistLoader, artistsLoader }) => {
     if (options.slugs) {
       return Promise.all(
         options.slugs.map(slug =>

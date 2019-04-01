@@ -1,6 +1,19 @@
+const mockSponsoredContent = {
+  fairs: {
+    "the-armory-show-2017": {
+      activationText: "Lorem ipsum dolor sit amet",
+      pressReleaseUrl: "https://www.example.com",
+    },
+  },
+}
+
+jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
+
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 import gql from "lib/gql"
+import moment from "moment"
+
 describe("Fair type", () => {
   const fair = {
     id: "the-armory-show-2017",
@@ -13,7 +26,7 @@ describe("Fair type", () => {
     },
   }
 
-  const query = `
+  let query = gql`
     {
       fair(id: "the-armory-show-2017") {
         id
@@ -31,7 +44,7 @@ describe("Fair type", () => {
     }
   `
 
-  const rootValue = {
+  let context = {
     fairLoader: sinon.stub().returns(Promise.resolve(fair)),
   }
 
@@ -42,9 +55,9 @@ describe("Fair type", () => {
       private: false,
     }
 
-    rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
+    context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -70,9 +83,9 @@ describe("Fair type", () => {
       private: false,
     }
 
-    rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
+    context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -98,9 +111,9 @@ describe("Fair type", () => {
       private: false,
     }
 
-    rootValue.profileLoader = sinon.stub().returns(Promise.resolve(profile))
+    context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -118,10 +131,30 @@ describe("Fair type", () => {
       })
     })
   })
+
+  it("includes sponsored content", async () => {
+    query = gql`
+      {
+        fair(id: "the-armory-show-2017") {
+          sponsoredContent {
+            activationText
+            pressReleaseUrl
+          }
+        }
+      }
+    `
+
+    const result = await runQuery(query, context)
+
+    expect(result.fair.sponsoredContent).toEqual({
+      activationText: "Lorem ipsum dolor sit amet",
+      pressReleaseUrl: "https://www.example.com",
+    })
+  })
 })
 
 describe("Fair", () => {
-  let rootValue = null
+  let context = null
   beforeEach(() => {
     const data = {
       fair: {
@@ -130,18 +163,27 @@ describe("Fair", () => {
         artists_count: 1,
         artworks_count: 2,
         partners_count: 3,
+        start_at: "2019-02-15T23:00:00+00:00",
+        end_at: "2019-02-17T11:00:00+00:00",
         partner_shows_count: 4,
         name: "Aqua Art Miami 2018",
+        exhibition_period: "Feb 15 – 17",
         exhibitors_grouped_by_name: [
           {
             letter: "A",
-            exhibitors: ["ArtHelix Gallery"],
-            profile_ids: ["arthelix-gallery"],
+            exhibitors: [
+              {
+                name: "ArtHelix Gallery",
+                id: "arthelix-gallery",
+                profile_id: "arthelix-gallery",
+                partner_id: "1234567890",
+              },
+            ],
           },
         ],
       },
     }
-    rootValue = {
+    context = {
       fairLoader: sinon.stub().returns(Promise.resolve(data.fair)),
       fairArtistsLoader: jest.fn().mockReturnValue(
         Promise.resolve({
@@ -153,6 +195,18 @@ describe("Fair", () => {
           ],
           headers: {
             "x-total-count": 1,
+          },
+        })
+      ),
+      fairBoothsLoader: jest.fn().mockReturnValue(
+        Promise.resolve({
+          body: {
+            results: [
+              {
+                id: "abxy-blk-and-blue",
+              },
+            ],
+            next: "1234567890",
           },
         })
       ),
@@ -168,7 +222,9 @@ describe("Fair", () => {
         Promise.resolve({
           body: {
             name: "ArtHelix Gallery",
-            default_profile_id: "arthelix-gallery",
+            id: "arthelix-gallery",
+            partner_id: "1234567890",
+            partner_show_ids: ["arthelix-gallery"],
           },
           headers: {
             "x-total-count": 1,
@@ -186,14 +242,18 @@ describe("Fair", () => {
           name
           exhibitors_grouped_by_name {
             letter
-            exhibitors
-            profile_ids
+            exhibitors {
+              name
+              id
+              partner_id
+              profile_id
+            }
           }
         }
       }
     `
 
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
 
     expect(data).toEqual({
       fair: {
@@ -202,10 +262,60 @@ describe("Fair", () => {
         exhibitors_grouped_by_name: [
           {
             letter: "A",
-            exhibitors: ["ArtHelix Gallery"],
-            profile_ids: ["arthelix-gallery"],
+            exhibitors: [
+              {
+                name: "ArtHelix Gallery",
+                id: "arthelix-gallery",
+                partner_id: "1234567890",
+                profile_id: "arthelix-gallery",
+              },
+            ],
           },
         ],
+      },
+    })
+  })
+
+  it("Shows connection uses gravity cursor", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          shows: shows_connection(first: 0, after: "") {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      fair: {
+        shows: {
+          pageInfo: {
+            endCursor: "1234567890",
+            hasNextPage: true,
+          },
+        },
+      },
+    })
+  })
+
+  it("includes a formatted exhibition period", async () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          exhibition_period
+        }
+      }
+    `
+
+    const data = await runQuery(query, context)
+    expect(data).toEqual({
+      fair: {
+        exhibition_period: "Feb 15 – 17",
       },
     })
   })
@@ -226,7 +336,7 @@ describe("Fair", () => {
       }
     `
 
-    const data = await runQuery(query, rootValue)
+    const data = await runQuery(query, context)
 
     expect(data).toEqual({
       fair: {
@@ -241,6 +351,113 @@ describe("Fair", () => {
           ],
         },
       },
+    })
+  })
+
+  describe("isActive flag", () => {
+    describe("when active_start_at and end_at are in the past", () => {
+      it("is false ", async () => {
+        const mockFair = {
+          id: "this-fair-was-active",
+          active_start_at: moment()
+            .subtract(14, "days")
+            .toISOString(),
+          end_at: moment()
+            .subtract(7, "days")
+            .toISOString(),
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "this-fair-was-active") {
+              isActive
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isActive: true,
+          },
+        })
+      })
+    })
+
+    describe("when active_start_at is in the past and end_at is in the future", () => {
+      it("is true ", async () => {
+        const mockFair = {
+          id: "this-fair-is-active",
+          active_start_at: moment()
+            .subtract(7, "days")
+            .toISOString(),
+          end_at: moment()
+            .add(7, "days")
+            .toISOString(),
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "this-fair-is-active") {
+              isActive
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isActive: true,
+          },
+        })
+      })
+    })
+
+    describe("when active_start_at and end_at are in the future", () => {
+      it("is false ", async () => {
+        const mockFair = {
+          id: "this-fair-not-yet-active",
+          active_start_at: moment()
+            .add(7, "days")
+            .toISOString(),
+          end_at: moment()
+            .add(14, "days")
+            .toISOString(),
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(mockFair))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const query = gql`
+          {
+            fair(id: "this-fair-not-yet-active") {
+              isActive
+            }
+          }
+        `
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            isActive: false,
+          },
+        })
+      })
     })
   })
 
@@ -261,7 +478,7 @@ describe("Fair", () => {
         }
       `
 
-      const data = await runQuery(query, rootValue)
+      const data = await runQuery(query, context)
       counts = data.fair.counts
     })
 

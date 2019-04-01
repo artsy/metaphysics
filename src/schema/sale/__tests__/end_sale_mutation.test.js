@@ -20,12 +20,12 @@ describe("End sale mutation", () => {
   }
   `
 
-  const rootValue = {
+  const context = {
     endSaleLoader: sinon.stub().returns(Promise.resolve(sale)),
   }
 
   it("ends the sale", async () => {
-    return runAuthenticatedQuery(query, rootValue).then(data => {
+    return runAuthenticatedQuery(query, context).then(data => {
       expect(data).toEqual({
         endSale: {
           sale: {

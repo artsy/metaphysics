@@ -1,7 +1,11 @@
 import { times, concat, clone } from "lodash"
+import {
+  GenericGeneArtworkModuleParams,
+  HomePageArtworkModuleDetails,
+} from "./types"
 
 // see https://github.com/artsy/force/issues/4705
-export const params = [
+export const params: GenericGeneArtworkModuleParams[] = [
   {
     id: "geometric",
     gene_id: "geometric",
@@ -69,7 +73,9 @@ export const params = [
   },
 ]
 
-export default modules => {
+const genericGenes: (
+  modules: HomePageArtworkModuleDetails[]
+) => HomePageArtworkModuleDetails[] = modules => {
   const clonedParams = clone(params)
   return concat(
     modules,
@@ -77,11 +83,14 @@ export default modules => {
       const index = Math.floor(Math.random() * clonedParams.length)
       const moduleParams = clonedParams[index]
       clonedParams.splice(index, 1)
-      return {
+      const mod: HomePageArtworkModuleDetails = {
         key: "generic_gene",
         display: true,
         params: moduleParams,
       }
+      return mod
     })
   )
 }
+
+export default genericGenes

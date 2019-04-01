@@ -1,10 +1,9 @@
-// @ts-check
-
 import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ArtworkType } from "schema/artwork/index"
+import { ResolverContext } from "types/graphql"
 
-export default mutationWithClientMutationId({
+export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "SaveArtwork",
   description:
     "Save (or remove) an artwork to (from) a users default collection.",
@@ -19,27 +18,15 @@ export default mutationWithClientMutationId({
   outputFields: {
     artwork: {
       type: ArtworkType,
-      resolve: (
-        { artwork_id },
-        _,
-        _request,
-        { rootValue: { artworkLoader } }
-      ) => artworkLoader(artwork_id),
+      resolve: ({ artwork_id }, _, { artworkLoader }) =>
+        artworkLoader(artwork_id),
     },
   },
   mutateAndGetPayload: (
     { artwork_id, remove },
-    _request,
-    {
-      rootValue: {
-        accessToken,
-        userID,
-        saveArtworkLoader,
-        deleteArtworkLoader,
-      },
-    }
+    { userID, saveArtworkLoader, deleteArtworkLoader }
   ) => {
-    if (!accessToken) {
+    if (!deleteArtworkLoader || !saveArtworkLoader) {
       return new Error("You need to be signed in to perform this action")
     }
 

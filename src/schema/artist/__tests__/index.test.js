@@ -3,10 +3,10 @@ import { runQuery } from "test/utils"
 
 describe("Artist type", () => {
   let artist = null
-  let rootValue
+  let context
 
   beforeEach(() => {
-    rootValue = {
+    context = {
       artistLoader: () => artist,
       articlesLoader: () => Promise.resolve({ count: 22 }),
       artistGenesLoader: () => Promise.resolve([{ name: "Foo Bar" }]),
@@ -27,13 +27,13 @@ describe("Artist type", () => {
   })
 
   it("returns null for an empty ID string", () => {
-    return runQuery(`{ artist(id: "") { id } }`, rootValue).then(data => {
+    return runQuery(`{ artist(id: "") { id } }`, context).then(data => {
       expect(data.artist).toBe(null)
     })
   })
 
   it("fetches an artist by ID", () => {
-    return runQuery(`{ artist(id: "foo-bar") { id, name } }`, rootValue).then(
+    return runQuery(`{ artist(id: "foo-bar") { id, name } }`, context).then(
       data => {
         expect(data.artist.id).toBe("foo-bar")
         expect(data.artist.name).toBe("Foo Bar")
@@ -52,7 +52,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           counts: {
@@ -74,7 +74,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           counts: {
@@ -96,7 +96,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           counts: {
@@ -116,7 +116,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           has_metadata: false,
@@ -134,7 +134,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, rootValue).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           collections: [
@@ -158,7 +158,7 @@ describe("Artist type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_nationality_and_birthday: "b. 2000",
@@ -178,7 +178,7 @@ describe("Artist type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_nationality_and_birthday: "b. 2000",
@@ -198,7 +198,7 @@ describe("Artist type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_nationality_and_birthday: "Est. 2000",
@@ -219,7 +219,7 @@ describe("Artist type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_nationality_and_birthday: "Martian, b. 2000",
@@ -239,7 +239,7 @@ describe("Artist type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_nationality_and_birthday: "Martian",
@@ -261,7 +261,7 @@ describe("Artist type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_nationality_and_birthday: "Martian, 2000–2012",
@@ -277,7 +277,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_nationality_and_birthday: null,
@@ -294,7 +294,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_nationality_and_birthday: null,
@@ -309,7 +309,7 @@ describe("Artist type", () => {
       artist.published_artworks_count = count
       artist.forsale_artworks_count = count
       const artworks = Promise.resolve(Array(count))
-      rootValue.artistArtworksLoader = sinon
+      context.artistArtworksLoader = sinon
         .stub()
         .withArgs(artist.id)
         .returns(artworks)
@@ -326,7 +326,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             artworks_connection: {
@@ -350,7 +350,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             artworks_connection: {
@@ -374,7 +374,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             artworks_connection: {
@@ -397,7 +397,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             blurb: "catty blurb",
@@ -419,7 +419,7 @@ describe("Artist type", () => {
               },
             },
           ])
-          rootValue.partnerArtistsForArtistLoader = sinon
+          context.partnerArtistsForArtistLoader = sinon
             .stub()
             .withArgs(artist.id)
             .returns(partnerArtists)
@@ -436,7 +436,7 @@ describe("Artist type", () => {
               }
             }
           `
-          return runQuery(query, rootValue).then(data => {
+          return runQuery(query, context).then(data => {
             expect(data).toEqual({
               artist: {
                 biography_blurb: {
@@ -455,7 +455,7 @@ describe("Artist type", () => {
       })
       describe("without a featured partner bio", () => {
         it("returns the artsy blurb if there is no featured partner bio", () => {
-          rootValue.partnerArtistsForArtistLoader = sinon
+          context.partnerArtistsForArtistLoader = sinon
             .stub()
             .returns(Promise.resolve([]))
           artist.blurb = "artsy blurb"
@@ -470,7 +470,7 @@ describe("Artist type", () => {
               }
             }
           `
-          return runQuery(query, rootValue).then(data => {
+          return runQuery(query, context).then(data => {
             expect(data).toEqual({
               artist: {
                 biography_blurb: {
@@ -497,7 +497,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             biography_blurb: {
@@ -519,7 +519,7 @@ describe("Artist type", () => {
           },
         },
       ])
-      rootValue.partnerArtistsForArtistLoader = sinon
+      context.partnerArtistsForArtistLoader = sinon
         .stub()
         .withArgs(artist.id)
         .returns(partnerArtists)
@@ -534,7 +534,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             biography_blurb: {
@@ -580,7 +580,7 @@ describe("Artist type", () => {
         is_reference: true,
         display_on_partner_profile: false,
       }
-      rootValue.relatedShowsLoader = sinon
+      context.relatedShowsLoader = sinon
         .stub()
         .withArgs(artist.id)
         .returns(
@@ -599,7 +599,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             shows: [
@@ -624,7 +624,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             exhibition_highlights: [
@@ -651,7 +651,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_artworks_count: "42 works, 21 for sale",
@@ -669,7 +669,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_artworks_count: "42 works",
@@ -687,7 +687,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_artworks_count: null,
@@ -705,7 +705,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             formatted_artworks_count: "1 work",
@@ -726,7 +726,7 @@ describe("Artist type", () => {
           }
         }
       `
-      return runQuery(query, rootValue).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
             genes: [{ name: "Foo Bar" }],
@@ -750,7 +750,8 @@ describe("Artist type", () => {
           aggregations: { total: { value: 75 } },
         })
       )
-      rootValue.filterArtworksLoader = filterArtworksLoader
+      context.unauthenticatedLoaders = { filterArtworksLoader }
+      context.authenticatedLoaders = {}
 
       const query = `
         {
@@ -774,7 +775,7 @@ describe("Artist type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           artist: {
             filtered_artworks: {
@@ -812,7 +813,7 @@ describe("Artist type", () => {
           count: 35,
         })
       )
-      rootValue.articlesLoader = articlesLoader
+      context.articlesLoader = articlesLoader
 
       const query = `
         {
@@ -844,7 +845,7 @@ describe("Artist type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           artist: {
             articlesConnection: {
@@ -897,7 +898,7 @@ describe("Artist type", () => {
           headers: { "x-total-count": 35 },
         })
       )
-      rootValue.relatedShowsLoader = relatedShowsLoader
+      context.relatedShowsLoader = relatedShowsLoader
 
       const query = `
         {
@@ -929,7 +930,7 @@ describe("Artist type", () => {
         }
       `
 
-      return runQuery(query, rootValue).then(
+      return runQuery(query, context).then(
         ({
           artist: {
             showsConnection: {

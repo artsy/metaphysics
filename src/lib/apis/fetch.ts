@@ -24,13 +24,12 @@ export default (url, options = {}) => {
     opts.headers = assign({}, { "User-Agent": userAgent }, opts.headers)
 
     request(url, opts, (err, response) => {
-      // If there is an error or non-200 status code, reject.
+      if (err) return reject(err)
+      // If there is a non-200 status code, reject.
       if (
-        !!err ||
-        (response.statusCode && !response.statusCode.toString().match(/^2/))
+        response.statusCode &&
+        (response.statusCode < 200 || response.statusCode >= 300)
       ) {
-        if (err) return reject(err)
-
         const message = compact([
           get(response, "request.uri.href"),
           response.body,

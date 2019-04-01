@@ -1,9 +1,15 @@
 import { map } from "lodash"
 import { totalViaLoader } from "lib/total"
 import Artist from "schema/artist"
-import { GraphQLInt, GraphQLList, GraphQLObjectType } from "graphql"
+import {
+  GraphQLInt,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLFieldConfig,
+} from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const FollowArtistsType = new GraphQLObjectType({
+const FollowArtistsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowArtists",
   fields: {
     artists: {
@@ -14,17 +20,12 @@ const FollowArtistsType = new GraphQLObjectType({
       },
     },
     counts: {
-      type: new GraphQLObjectType({
+      type: new GraphQLObjectType<any, ResolverContext>({
         name: "FollowArtistCounts",
         fields: {
           artists: {
             type: GraphQLInt,
-            resolve: (
-              _data,
-              _options,
-              _request,
-              { rootValue: { followedArtistsLoader } }
-            ) => {
+            resolve: (_data, _options, { followedArtistsLoader }) => {
               // FIXME: Expected 2-3 arguments, but got 1.
               // @ts-ignore
               return totalViaLoader(followedArtistsLoader)
@@ -37,7 +38,7 @@ const FollowArtistsType = new GraphQLObjectType({
   },
 })
 
-export default {
+const FollowArtists: GraphQLFieldConfig<void, ResolverContext> = {
   type: FollowArtistsType,
   description: "A list of the current user’s artist follows",
   args: {
@@ -48,13 +49,10 @@ export default {
       type: GraphQLInt,
     },
   },
-  resolve: (
-    _root,
-    options,
-    _request,
-    { rootValue: { followedArtistsLoader } }
-  ) => {
+  resolve: (_root, options, { followedArtistsLoader }) => {
     if (!followedArtistsLoader) return null
     return followedArtistsLoader(options).then(({ body }) => body)
   },
 }
+
+export default FollowArtists

@@ -1,6 +1,7 @@
-import { GraphQLObjectType, GraphQLString } from "graphql"
+import { GraphQLObjectType, GraphQLString, GraphQLFieldConfig } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const Dimensions = new GraphQLObjectType({
+const DimensionsType = new GraphQLObjectType<any, ResolverContext>({
   name: "dimensions",
   fields: {
     in: {
@@ -12,6 +13,8 @@ const Dimensions = new GraphQLObjectType({
   },
 })
 
-export default {
-  type: Dimensions,
+const Dimensions: GraphQLFieldConfig<void, ResolverContext> = {
+  type: DimensionsType,
 }
+
+export default Dimensions

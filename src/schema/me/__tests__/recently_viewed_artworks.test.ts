@@ -6,7 +6,7 @@ jest.mock("node-fetch", () => jest.fn())
 import fetch from "node-fetch"
 
 describe("RecentlyViewedArtworks", () => {
-  let rootValue
+  let context
   beforeEach(() => {
     const me = {
       recently_viewed_artwork_ids: ["percy", "matt"],
@@ -15,7 +15,7 @@ describe("RecentlyViewedArtworks", () => {
       { id: "percy", title: "Percy the Cat" },
       { id: "matt", title: "Matt the Person" },
     ]
-    rootValue = {
+    context = {
       meLoader: () => Promise.resolve(me),
       artworksLoader: () => Promise.resolve(artworks),
       recordArtworkViewLoader: jest.fn(() => Promise.resolve(me)),
@@ -41,7 +41,7 @@ describe("RecentlyViewedArtworks", () => {
       }
     `
 
-    const data = await runAuthenticatedQuery(query, rootValue)
+    const data = await runAuthenticatedQuery(query, context)
     const recentlyViewedArtworks = data!.me.recentlyViewedArtworks
 
     expect(recentlyViewedArtworks).toEqual({
@@ -77,11 +77,11 @@ describe("RecentlyViewedArtworks", () => {
         }
       }
     `
-    rootValue.meLoader = () =>
+    context.meLoader = () =>
       Promise.resolve({ recently_viewed_artwork_ids: [] })
     expect.assertions(1)
 
-    const data = await runAuthenticatedQuery(query, rootValue)
+    const data = await runAuthenticatedQuery(query, context)
     const recentlyViewedArtworks = data!.me.recentlyViewedArtworks
 
     expect(recentlyViewedArtworks).toEqual({
@@ -105,14 +105,14 @@ describe("RecentlyViewedArtworks", () => {
       data: { recordArtworkView: { artwork_id: "percy" } },
     }
 
-    const mockFetch = fetch as jest.Mock<any>
+    const mockFetch = (fetch as unknown) as jest.Mock<any>
     mockFetch.mockImplementationOnce(() => {
       return Promise.resolve({
         text: () => Promise.resolve(JSON.stringify(responseData)),
       })
     })
 
-    const data = await runAuthenticatedQuery(mutation, rootValue)
+    const data = await runAuthenticatedQuery(mutation, context)
 
     // The graphQL API
     expect(mockFetch).toBeCalledWith(

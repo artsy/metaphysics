@@ -21,8 +21,8 @@ describe("CreateGeminiEntryForAsset", () => {
       }
     `
 
-    const rootValue = {
-      createNewGeminiEntryAssetLoader: () =>
+    const context = {
+      createNewGeminiEntryAssetLoader: () => () =>
         Promise.resolve({
           token: "zVHJce-Fey3OIsazH8WDTg",
           image_urls: {},
@@ -31,7 +31,7 @@ describe("CreateGeminiEntryForAsset", () => {
     }
 
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, rootValue).then(data => {
+    return runAuthenticatedQuery(mutation, context).then(data => {
       expect(data).toMatchSnapshot()
     })
   })

@@ -13,6 +13,8 @@ import config from "config"
 import localSchema from "schema/schema"
 import { GraphQLSchema } from "graphql"
 import { exchangeStitchingEnvironment } from "./exchange/stitching"
+import { executableVortexSchema } from "lib/stitching/vortex/schema"
+import { vortexStitchingEnvironment } from "./vortex/stitching"
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -29,6 +31,16 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
   const extensionSchemas = [] as string[]
   const extensionResolvers = {} as any
 
+  const useStitchingEnvironment = ({ extensionSchema, resolvers }) => {
+    extensionSchemas.push(extensionSchema)
+    for (const [type, fieldResolvers] of Object.entries(resolvers)) {
+      extensionResolvers[type] = {
+        ...extensionResolvers[type],
+        ...fieldResolvers,
+      }
+    }
+  }
+
   const gravitySchema = executableGravitySchema()
   schemas.push(gravitySchema)
 
@@ -36,43 +48,29 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
     const exchangeSchema = executableExchangeSchema(transformsForExchange)
     schemas.push(exchangeSchema)
 
-    const { extensionSchema, resolvers } = exchangeStitchingEnvironment(
-      localSchema,
-      exchangeSchema
+    useStitchingEnvironment(
+      exchangeStitchingEnvironment(localSchema, exchangeSchema)
     )
-    extensionSchemas.push(extensionSchema)
-    for (var attr in resolvers) {
-      extensionResolvers[attr] = resolvers[attr]
-    }
   }
 
   if (ENABLE_CONSIGNMENTS_STITCHING) {
     const convectionSchema = executableConvectionSchema()
     schemas.push(convectionSchema)
 
-    const { extensionSchema, resolvers } = consignmentStitchingEnvironment(
-      localSchema,
-      convectionSchema
+    useStitchingEnvironment(
+      consignmentStitchingEnvironment(localSchema, convectionSchema)
     )
-    extensionSchemas.push(extensionSchema)
-    for (var attr in resolvers) {
-      extensionResolvers[attr] = resolvers[attr]
-    }
   }
+
+  const vortexSchema = executableVortexSchema()
+  schemas.push(vortexSchema)
+  useStitchingEnvironment(vortexStitchingEnvironment())
 
   // Always stitch kaws
   const kawsSchema = executableKawsSchema()
   schemas.push(kawsSchema)
 
-  const { extensionSchema, resolvers } = kawsStitchingEnvironment(
-    localSchema,
-    kawsSchema
-  )
-
-  extensionSchemas.push(extensionSchema)
-  for (var attr in resolvers) {
-    extensionResolvers[attr] = resolvers[attr]
-  }
+  useStitchingEnvironment(kawsStitchingEnvironment(localSchema, kawsSchema))
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon

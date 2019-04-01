@@ -8,19 +8,16 @@ import {
   GraphQLInt,
   GraphQLEnumType,
   GraphQLBoolean,
+  GraphQLFieldConfig,
 } from "graphql"
+import { ResolverContext } from "types/graphql"
 
-const TrendingArtistsType = new GraphQLObjectType({
+const TrendingArtistsType = new GraphQLObjectType<any, ResolverContext>({
   name: "TrendingArtists",
   fields: () => ({
     artists: {
       type: new GraphQLList(Artist.type),
-      resolve: (
-        deltaResponse,
-        _args,
-        _request,
-        { rootValue: { artistLoader } }
-      ) => {
+      resolve: (deltaResponse, _args, { artistLoader }) => {
         const ids = without(keys(deltaResponse), "cached", "context_type")
         return Promise.all(ids.map(id => artistLoader(id)))
       },
@@ -59,7 +56,7 @@ const TrendingMetricsType = new GraphQLEnumType({
   },
 })
 
-const TrendingArtists = {
+const TrendingArtists: GraphQLFieldConfig<void, ResolverContext> = {
   type: TrendingArtistsType,
   description: "Trending artists",
   args: {
@@ -87,8 +84,7 @@ const TrendingArtists = {
   resolve: (
     _root,
     { method, name, size, double_time_period },
-    _request,
-    { rootValue: { deltaLoader } }
+    { deltaLoader }
   ) =>
     deltaLoader({
       method,

@@ -9,15 +9,24 @@ import {
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
+  GraphQLFieldConfig,
 } from "graphql"
 import { totalViaLoader } from "lib/total"
+import { ResolverContext } from "types/graphql"
 
 // This object is used for both the `key` argument enum and to do fetching.
 // The order of the artists should be 1. suggested, 2. trending, 3. popular
-export const HomePageArtistModuleTypes = {
+type Value<T> = (context: ResolverContext) => Promise<T>
+export const HomePageArtistModuleTypes: {
+  [key: string]: {
+    description: string
+    display: Value<boolean>
+    resolve: Value<any>
+  }
+} = {
   SUGGESTED: {
     description: "Artists recommended for the specific user.",
-    display: ({ rootValue: { suggestedSimilarArtistsLoader } }) => {
+    display: ({ suggestedSimilarArtistsLoader }) => {
       if (!suggestedSimilarArtistsLoader) return Promise.resolve(false)
       return totalViaLoader(
         suggestedSimilarArtistsLoader,
@@ -28,7 +37,7 @@ export const HomePageArtistModuleTypes = {
         }
       ).then(total => total > 0)
     },
-    resolve: ({ rootValue: { suggestedSimilarArtistsLoader } }) => {
+    resolve: ({ suggestedSimilarArtistsLoader }) => {
       if (!suggestedSimilarArtistsLoader) {
         throw new Error(
           "Both the X-USER-ID and X-ACCESS-TOKEN headers are required."
@@ -43,18 +52,19 @@ export const HomePageArtistModuleTypes = {
   TRENDING: {
     description: "The trending artists.",
     display: () => Promise.resolve(true),
-    resolve: ({ rootValue: { trendingArtistsLoader } }) =>
-      trendingArtistsLoader(),
+    resolve: ({ trendingArtistsLoader }) => trendingArtistsLoader(),
   },
   POPULAR: {
     description: "The most searched for artists.",
     display: () => Promise.resolve(true),
-    resolve: ({ rootValue: { popularArtistsLoader } }) =>
-      popularArtistsLoader(),
+    resolve: ({ popularArtistsLoader }) => popularArtistsLoader(),
   },
 }
 
-export const HomePageArtistModuleType = new GraphQLObjectType({
+export const HomePageArtistModuleType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
   name: "HomePageArtistModule",
   interfaces: [NodeInterface],
   fields: {
@@ -71,14 +81,14 @@ export const HomePageArtistModuleType = new GraphQLObjectType({
     },
     results: {
       type: new GraphQLList(Artist.type),
-      resolve: ({ key }, _options, _request, { rootValue }) => {
-        return HomePageArtistModuleTypes[key].resolve({ rootValue })
+      resolve: ({ key }, _options, context) => {
+        return HomePageArtistModuleTypes[key].resolve(context)
       },
     },
   },
 })
 
-const HomePageArtistModule = {
+const HomePageArtistModule: GraphQLFieldConfig<void, ResolverContext> = {
   type: HomePageArtistModuleType,
   description: "Single artist module to show on the home screen.",
   args: {
@@ -90,8 +100,8 @@ const HomePageArtistModule = {
       }),
     },
   },
-  resolve: (_root, obj) =>
-    obj.key && HomePageArtistModuleTypes[obj.key] ? obj : null,
+  resolve: (_root, args) =>
+    args.key && HomePageArtistModuleTypes[args.key] ? args : null,
 }
 
 export default HomePageArtistModule
