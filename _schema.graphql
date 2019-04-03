@@ -45,9 +45,20 @@ type AggregationCount {
 }
 
 # Publish artwork Series Stats
+type AnalyticsArtworksPublishedStats {
+  percentageChanged: Int!
+  period: AnalyticsQueryPeriodEnum!
+
+  # Time series data on number of artworks published
+  timeSeries(
+    samplingFrequency: AnalyticsSamplingFrequencyEnum
+  ): [AnalyticsArtworksPublishedTimeSeriesStats!]
+  totalCount: Int!
+}
+
+# Publish artwork Series Stats
 type AnalyticsArtworksPublishedTimeSeriesStats implements AnalyticsPartnerTimeSeriesStatsType {
   count: Int
-  partnerId: String
   samplingFrequency: AnalyticsSamplingFrequencyEnum!
   time: AnalyticsDateTime
 }
@@ -78,14 +89,18 @@ type AnalyticsHistogramBin {
 
 # Partner Stats
 type AnalyticsPartnerStatsType {
-  artworksPublished: [AnalyticsArtworksPublishedTimeSeriesStats!]
+  # Time series data on number of artworks published
+  artworksPublished(
+    period: AnalyticsQueryPeriodEnum!
+  ): AnalyticsArtworksPublishedStats
   partnerId: String!
-  uniqueVisitors: Int
+
+  # Number of unique visitors
+  uniqueVisitors(period: AnalyticsQueryPeriodEnum!): Int
 }
 
 # Partner Time Series Stats
 interface AnalyticsPartnerTimeSeriesStatsType {
-  partnerId: String
   samplingFrequency: AnalyticsSamplingFrequencyEnum!
   time: AnalyticsDateTime
 }
@@ -155,9 +170,23 @@ enum AnalyticsPricingContextCategoryEnum {
   WORK_ON_PAPER
 }
 
+enum AnalyticsQueryPeriodEnum {
+  # Four weeks
+  FOUR_WEEKS
+
+  # One year
+  ONE_YEAR
+
+  # Sixteen weeks
+  SIXTEEN_WEEKS
+}
+
 enum AnalyticsSamplingFrequencyEnum {
   # Daily
   DAILY
+
+  # Monthly
+  MONTHLY
 
   # Weekly
   WEEKLY
