@@ -1,9 +1,22 @@
 """
 Publish artwork Series Stats
 """
+type ArtworksPublishedStats {
+  percentageChanged: Int!
+  period: QueryPeriodEnum!
+
+  """
+  Time series data on number of artworks published
+  """
+  timeSeries(samplingFrequency: SamplingFrequencyEnum): [ArtworksPublishedTimeSeriesStats!]
+  totalCount: Int!
+}
+
+"""
+Publish artwork Series Stats
+"""
 type ArtworksPublishedTimeSeriesStats implements PartnerTimeSeriesStatsType {
   count: Int
-  partnerId: String
   samplingFrequency: SamplingFrequencyEnum!
   time: DateTime
 }
@@ -26,16 +39,22 @@ type HistogramBin {
 Partner Stats
 """
 type PartnerStatsType {
-  artworksPublished: [ArtworksPublishedTimeSeriesStats!]
+  """
+  Time series data on number of artworks published
+  """
+  artworksPublished(period: QueryPeriodEnum!): ArtworksPublishedStats
   partnerId: String!
-  uniqueVisitors: Int
+
+  """
+  Number of unique visitors
+  """
+  uniqueVisitors(period: QueryPeriodEnum!): Int
 }
 
 """
 Partner Time Series Stats
 """
 interface PartnerTimeSeriesStatsType {
-  partnerId: String
   samplingFrequency: SamplingFrequencyEnum!
   time: DateTime
 }
@@ -162,11 +181,33 @@ type Query {
   ): PricingContext
 }
 
+enum QueryPeriodEnum {
+  """
+  Four weeks
+  """
+  FOUR_WEEKS
+
+  """
+  One year
+  """
+  ONE_YEAR
+
+  """
+  Sixteen weeks
+  """
+  SIXTEEN_WEEKS
+}
+
 enum SamplingFrequencyEnum {
   """
   Daily
   """
   DAILY
+
+  """
+  Monthly
+  """
+  MONTHLY
 
   """
   Weekly
