@@ -1,7 +1,7 @@
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { createPageCursors, pageToCursor } from "schema/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
-import { GraphQLResolveInfo, visit, BREAK } from "graphql"
+import { GraphQLResolveInfo, visit } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { Searchable } from "schema/searchable"
 import { SearchableItem } from "schema/SearchableItem"
@@ -10,6 +10,7 @@ export class SearchResolver {
   private args: any
   private context: ResolverContext
   private info: GraphQLResolveInfo
+  private cachedEntityTypesToFetch: string[] | undefined
 
   constructor(args: any, context: any, info: any) {
     this.args = args
@@ -33,8 +34,11 @@ export class SearchResolver {
 
   // Fetch the full object if the GraphQL query includes any inline fragments
   // referencing the search result item's type (like Artist or Artwork)
-  shouldFetch(searchResultItem) {
-    let fetch = false
+  shouldFetchEntityType(entityType: string): boolean {
+    if (this.cachedEntityTypesToFetch) {
+      return this.cachedEntityTypesToFetch.includes(entityType)
+    }
+    const entityTypesToFetch: string[] = []
 
     visit(this.info.fieldNodes[0], {
       Field(node) {
@@ -44,11 +48,9 @@ export class SearchResolver {
               if (
                 node.typeCondition &&
                 (node.typeCondition.name.value !== Searchable.name &&
-                  node.typeCondition.name.value !== SearchableItem.name) &&
-                node.typeCondition.name.value === searchResultItem.label
+                  node.typeCondition.name.value !== SearchableItem.name)
               ) {
-                fetch = true
-                return BREAK
+                entityTypesToFetch.push(node.typeCondition.name.value)
               }
             },
             FragmentSpread(_node) {
@@ -60,12 +62,12 @@ export class SearchResolver {
         }
       },
     })
-
-    return fetch
+    this.cachedEntityTypesToFetch = entityTypesToFetch
+    return this.cachedEntityTypesToFetch.includes(entityType)
   }
 
   processSearchResultItem(searchResultItem) {
-    if (this.shouldFetch(searchResultItem)) {
+    if (this.shouldFetchEntityType(searchResultItem.label)) {
       return this.fetch(searchResultItem).then(response => {
         return {
           ...response,
