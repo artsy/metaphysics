@@ -7,14 +7,14 @@ const { ENABLE_RESOLVER_BATCHING } = config
 
 type Key = string | { id: string[] }
 
-interface NormalKey {
+interface IdWithParams {
   id: string
   [key: string]: any
 }
 
-type KeyGroupList = string[]
+type SerializedParams = string[]
 
-interface CompactedKey {
+interface BatchedParams {
   id: string[]
   [key: string]: any
 }
@@ -31,7 +31,7 @@ interface GravityResult {
  *  their contents. If an object is empty except for an id field, we just use id.
  *  Otherwise we stringify the object so it can be compared via strict comparison.
  */
-export const cacheKeyFn = (key: NormalKey): string => {
+export const cacheKeyFn = (key: IdWithParams): string => {
   // If id is the *only* property of the key object
   if (Object.keys(key).length === 1) {
     return key.id
@@ -41,13 +41,8 @@ export const cacheKeyFn = (key: NormalKey): string => {
 
 /**
  * This is just used to compare options sent into the dataloader.
- * If the options are an object this stringifies the object in a way
- * that they can be grouped as similar.
  */
-export const getKeyGroup = key => {
-  if (typeof key === "string") {
-    return ""
-  }
+export const serializeParams = (key: IdWithParams) => {
   const { id, ...params } = key
   return Object.entries(params)
     .map(entry => entry.join("="))
@@ -56,17 +51,17 @@ export const getKeyGroup = key => {
 }
 
 /**
- * Takes an array of normalized keys and groups them based on their parameters.
+ * Takes an array of parameters and groups them by non-unique
  * @returns a tuple of an array of group strings and an array of grouped keys
  */
-export const groupKeys = (
-  requestedKeys: NormalKey[]
-): [KeyGroupList, NormalKey[][]] => {
-  const [keyGroupList, groupedKeys] = chain(requestedKeys)
-    .groupBy(getKeyGroup)
+export const groupByParams = (
+  params: IdWithParams[]
+): [SerializedParams, IdWithParams[][]] => {
+  const [serializedParams, groupedParams] = chain(params)
+    .groupBy(serializeParams)
     .entries()
     .thru(entries => {
-      const result: [KeyGroupList, NormalKey[][]] = [[], []]
+      const result: [SerializedParams, IdWithParams[][]] = [[], []]
       for (let i = 0; i < entries.length; ++i) {
         result[0].push(entries[i][0])
         result[1].push(entries[i][1])
@@ -75,13 +70,13 @@ export const groupKeys = (
     })
     .value()
 
-  return [keyGroupList, groupedKeys]
+  return [serializedParams, groupedParams]
 }
 
 /**
  * Collects all the params into one object to be passed to gravity loader
  */
-export const compactKeyForRequest = (keys: NormalKey[]): CompactedKey => ({
+export const batchParams = (keys: IdWithParams[]): BatchedParams => ({
   ...keys[0],
   id: keys.map(key => key.id),
 })
@@ -95,7 +90,6 @@ interface BatchLoaderArgs {
    */
   singleLoader?: any
   multipleLoader: any
-  defaultResult?: any
 }
 
 export const batchLoader = ({
@@ -106,33 +100,29 @@ export const batchLoader = ({
     return singleLoader ? singleLoader : multipleLoader
   }
   const dl = new DataLoader(
-    (normalKeys: NormalKey[]) => {
-      const [keyGroups, groupedKeys] = groupKeys(normalKeys)
-
+    (idWithParamsList: IdWithParams[]) => {
+      const [paramGroups, groupedParams] = groupByParams(idWithParamsList)
       return Promise.all(
-        groupedKeys.map(compactKeyForRequest).map(params => {
-          if (params.id.length === 1 && singleLoader) {
-            // TODO: Warn or error if there are params
+        groupedParams.map(batchParams).map(params => {
+          if (
+            params.id.length === 1 &&
+            singleLoader &&
+            Object.keys(params).length === 1
+          ) {
             return singleLoader(params.id[0])
           } else {
-            return multipleLoader(params)
+            return multipleLoader({ ...params, batched: true })
           }
         })
       ).then((data: Array<GravityResult | GravityResult[]>) => {
         const normalizedData = data.map(
-          datum => (Array.isArray(datum) ? datum : [datum])
+          datum => (Array.isArray(datum) ? datum.reverse() : [datum])
         )
 
-        const results = normalKeys.map(key => {
-          const group = getKeyGroup(key)
-          const groupIndex = keyGroups.indexOf(group)
-          const groupData = normalizedData[groupIndex]
-          // TODO: Better handling of slugs
-          const data = groupData.find(
-            gravityResult =>
-              key.id === gravityResult._id || key.id === gravityResult.id
-          )
-          return data
+        const results = idWithParamsList.map(params => {
+          const paramGroup = serializeParams(params)
+          const groupIndex = paramGroups.indexOf(paramGroup)
+          return normalizedData[groupIndex].pop()
         })
 
         return results
@@ -149,15 +139,19 @@ export const batchLoader = ({
       if (key.id.length === 1) {
         return dl
           .load({ ...key, id: key.id[0] })
-          .then(result => (result === undefined ? [] : [result]))
+          .then(
+            result => (result === undefined || result === null ? [] : [result])
+          )
       }
 
-      return dl.loadMany(
-        key.id.map(id => ({
-          ...key,
-          id: id,
-        }))
-      )
+      return dl
+        .loadMany(
+          key.id.map(id => ({
+            ...key,
+            id: id,
+          }))
+        )
+        .then(results => results.filter(result => result !== null))
     } else if (typeof key === "string") {
       return dl.load({ id: key })
     } else {
