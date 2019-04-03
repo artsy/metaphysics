@@ -8,8 +8,8 @@ import { SearchableItem } from "schema/SearchableItem"
 
 export class SearchResolver {
   private args: any
-  private context: any
-  private info: any
+  private context: ResolverContext
+  private info: GraphQLResolveInfo
 
   constructor(args: any, context: any, info: any) {
     this.args = args
@@ -17,7 +17,8 @@ export class SearchResolver {
     this.info = info
   }
 
-  fetch(searchResultItem, { artistLoader, artworkLoader }: ResolverContext) {
+  fetch(searchResultItem) {
+    const { artistLoader, artworkLoader } = this.context
     const loaderMapping = {
       Artist: artistLoader,
       Artwork: artworkLoader,
@@ -32,10 +33,10 @@ export class SearchResolver {
 
   // Fetch the full object if the GraphQL query includes any inline fragments
   // referencing the search result item's type (like Artist or Artwork)
-  shouldFetch(searchResultItem, info: GraphQLResolveInfo) {
+  shouldFetch(searchResultItem) {
     let fetch = false
 
-    visit(info.fieldNodes[0], {
+    visit(this.info.fieldNodes[0], {
       Field(node) {
         if (node.name.value === "node") {
           visit(node, {
@@ -63,13 +64,9 @@ export class SearchResolver {
     return fetch
   }
 
-  processSearchResultItem(
-    searchResultItem,
-    info: GraphQLResolveInfo,
-    context: ResolverContext
-  ) {
-    if (this.shouldFetch(searchResultItem, info)) {
-      return this.fetch(searchResultItem, context).then(response => {
+  processSearchResultItem(searchResultItem) {
+    if (this.shouldFetch(searchResultItem)) {
+      return this.fetch(searchResultItem).then(response => {
         return {
           ...response,
           __typename: searchResultItem.label,
@@ -106,11 +103,7 @@ export class SearchResolver {
       }
       return Promise.all(
         results.map(searchResultItem =>
-          this.processSearchResultItem(
-            searchResultItem,
-            this.info,
-            this.context
-          )
+          this.processSearchResultItem(searchResultItem)
         )
       ).then(processedSearchResults => {
         const connection = connectionFromArraySlice(
