@@ -29,7 +29,7 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
     },
     imageUrl: {
       type: GraphQLString,
-      resolve: item => item.image_url,
+      resolve: item => new SearchableItemPresenter(item).imageUrl(),
     },
     href: {
       type: GraphQLString,

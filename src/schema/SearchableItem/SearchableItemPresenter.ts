@@ -8,7 +8,7 @@ const DATE_FORMAT = "MMM Do, YYYY"
 export class SearchableItemPresenter {
   private item: SearchItemRawResponse
 
-  constructor(item: any) {
+  constructor(item: SearchItemRawResponse) {
     this.item = item
   }
 
@@ -92,6 +92,14 @@ export class SearchableItemPresenter {
       default:
         return label
     }
+  }
+
+  imageUrl(): string {
+    if (this.item.image_url === "/assets/shared/missing_image.png") {
+      return ""
+    }
+
+    return this.item.image_url
   }
 
   private formattedEventDescription(title: string): string {
@@ -192,11 +200,11 @@ export class SearchableItemPresenter {
     return `${statusLabel} ${type}`
   }
 
-  private formattedRunningTime(): string | null {
+  private formattedRunningTime(): string {
     const { start_at, end_at } = this.item
 
     if (!start_at || !end_at) {
-      return null
+      return ""
     }
 
     const startAt = moment.utc(start_at)
