@@ -4,18 +4,11 @@ import {
   GraphQLString,
   GraphQLNonNull,
   GraphQLFieldConfig,
-  visit,
-  BREAK,
-  GraphQLResolveInfo,
   GraphQLInt,
 } from "graphql"
-import { connectionFromArraySlice } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
 
 import { connectionWithCursorInfo } from "schema/fields/pagination"
-import { createPageCursors, pageToCursor } from "schema/fields/pagination"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { SearchableItem } from "schema/SearchableItem"
 import { Searchable } from "schema/searchable"
 import { SearchEntity } from "./SearchEntity"
 import { ResolverContext } from "types/graphql"
@@ -24,6 +17,7 @@ import {
   SearchAggregation,
 } from "schema/search/SearchAggregation"
 import { map } from "lodash"
+import { SearchResolver } from "./SearchResolver"
 
 export const SearchMode = new GraphQLEnumType({
   name: "SearchMode",
@@ -59,55 +53,6 @@ export const searchArgs = pageable({
   },
 })
 
-const fetch = (
-  searchResultItem,
-  { artistLoader, artworkLoader }: ResolverContext
-) => {
-  const loaderMapping = {
-    Artist: artistLoader,
-    Artwork: artworkLoader,
-  }
-
-  const loader = loaderMapping[searchResultItem.label]
-
-  if (loader) {
-    return loader(searchResultItem.id)
-  }
-}
-
-// Fetch the full object if the GraphQL query includes any inline fragments
-// referencing the search result item's type (like Artist or Artwork)
-const shouldFetch = (searchResultItem, info: GraphQLResolveInfo) => {
-  let fetch = false
-
-  visit(info.fieldNodes[0], {
-    Field(node) {
-      if (node.name.value === "node") {
-        visit(node, {
-          InlineFragment(node) {
-            if (
-              node.typeCondition &&
-              (node.typeCondition.name.value !== Searchable.name &&
-                node.typeCondition.name.value !== SearchableItem.name) &&
-              node.typeCondition.name.value === searchResultItem.label
-            ) {
-              fetch = true
-              return BREAK
-            }
-          },
-          FragmentSpread(_node) {
-            throw new Error(
-              "Named fragment spreads are currently unsupported for search."
-            )
-          },
-        })
-      }
-    },
-  })
-
-  return fetch
-}
-
 export const SearchAggregations: GraphQLFieldConfig<any, ResolverContext> = {
   description: "Returns aggregation counts for the given filter query.",
   type: new GraphQLList(SearchAggregationResultsType),
@@ -123,83 +68,13 @@ const SearchConnection = connectionWithCursorInfo(Searchable, {
   aggregations: SearchAggregations,
 })
 
-const processSearchResultItem = (
-  searchResultItem,
-  info: GraphQLResolveInfo,
-  context: ResolverContext
-) => {
-  if (shouldFetch(searchResultItem, info)) {
-    return fetch(searchResultItem, context).then(response => {
-      return {
-        ...response,
-        __typename: searchResultItem.label,
-      }
-    })
-  } else {
-    return Promise.resolve({
-      ...searchResultItem,
-      __typename: "SearchableItem",
-    })
-  }
-}
-
 export const Search: GraphQLFieldConfig<void, ResolverContext> = {
   type: SearchConnection,
   description: "Global search",
   args: searchArgs,
   resolve: (_source, args, context, info) => {
-    if (!args.page) {
-      delete args.page
-    }
-    const pageOptions = convertConnectionArgsToGravityArgs(args)
-    if (!!args.page) pageOptions.page = args.page
-    const { page, size, offset, ...rest } = pageOptions
-    const gravityArgs = {
-      ...rest,
-      page,
-      size,
-      entities: args.entities,
-      total_count: true,
-    }
+    const resolver = new SearchResolver(args, context, info)
 
-    return context.searchLoader(gravityArgs).then(({ body, headers }) => {
-      const totalCount = parseInt(headers["x-total-count"])
-      const pageCursors = createPageCursors(pageOptions, totalCount)
-      const totalPages = Math.ceil(totalCount / size)
-
-      let results = body
-      if (args.aggregations) {
-        results = body.results
-      }
-      return Promise.all(
-        results.map(searchResultItem =>
-          processSearchResultItem(searchResultItem, info, context)
-        )
-      ).then(processedSearchResults => {
-        const connection = connectionFromArraySlice(
-          processedSearchResults,
-          args,
-          {
-            arrayLength: totalCount,
-            sliceStart: offset,
-          }
-        )
-
-        const pageInfo = connection.pageInfo
-        pageInfo.endCursor = pageToCursor(page + 1, size)
-
-        return {
-          aggregations: body.aggregations,
-          pageCursors: pageCursors,
-          totalCount,
-          ...connection,
-          pageInfo: {
-            ...pageInfo,
-            hasPreviousPage: page > 1,
-            hasNextPage: page < totalPages,
-          },
-        }
-      })
-    })
+    return resolver.resolve()
   },
 }
