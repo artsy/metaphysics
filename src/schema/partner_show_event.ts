@@ -1,7 +1,45 @@
-import date from "./fields/date"
-import { GraphQLString, GraphQLObjectType } from "graphql"
+import dateField, { date, DateSource } from "./fields/date"
+import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { exhibitionPeriod } from "lib/date"
+
+const checkUserAgent = (userAgent): boolean =>
+  userAgent!.indexOf("Artsy-Mobile/4") > 0 ||
+  userAgent!.indexOf("Artsy-Mobile/5.0.0") > 0 ||
+  userAgent!.indexOf("Artsy-Mobile/5.0.1") > 0
+
+const isOlderEmissionVersion = (userAgent): boolean => {
+  let result = false
+  if (typeof userAgent === "string") {
+    result = checkUserAgent(userAgent)
+  } else if (Array.isArray(userAgent)) {
+    result = userAgent.some(ua => checkUserAgent(ua))
+  }
+  return result
+}
+
+const dateFieldForPartnerShowEvent: GraphQLFieldConfig<
+  DateSource,
+  ResolverContext
+> = {
+  ...dateField,
+  resolve: (
+    obj,
+    { format, timezone },
+    { defaultTimezone, userAgent },
+    { fieldName }
+  ) => {
+    const rawDate = obj[fieldName]
+
+    if (userAgent && isOlderEmissionVersion(userAgent)) {
+      const dateWithoutOffset = rawDate.replace(/[-+]\d\d:\d\d$/g, "")
+      return dateWithoutOffset
+    }
+
+    const timezoneString = timezone ? timezone : defaultTimezone
+    return date(rawDate, format, timezoneString)
+  },
+}
 
 const PartnerShowEventType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerShowEventType",
@@ -18,8 +56,8 @@ const PartnerShowEventType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: GraphQLString,
     },
-    start_at: date,
-    end_at: date,
+    start_at: dateFieldForPartnerShowEvent,
+    end_at: dateFieldForPartnerShowEvent,
     exhibitionPeriod: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
