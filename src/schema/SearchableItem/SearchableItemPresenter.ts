@@ -172,8 +172,8 @@ export class SearchableItemPresenter {
     }
 
     const now = moment.utc()
-    const startAt = moment(start_at)
-    const endAt = moment(end_at)
+    const startAt = moment.utc(start_at)
+    const endAt = moment.utc(end_at)
 
     const startDiff = startAt.diff(now, "days")
     const endDiff = endAt.diff(now, "days")
