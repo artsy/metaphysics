@@ -13,7 +13,7 @@ const isOlderEmissionVersion = (userAgent): boolean => {
   if (typeof userAgent === "string") {
     result = hasOldEmissionUserAgentString(userAgent)
   } else if (Array.isArray(userAgent)) {
-    result = userAgent.some(ua => hasOldEmissionUserAgentString(ua))
+    result = userAgent.some(hasOldEmissionUserAgentString)
   }
   return result
 }
@@ -32,7 +32,7 @@ const dateFieldForPartnerShowEvent: GraphQLFieldConfig<
     const rawDate = obj[fieldName]
 
     if (userAgent && isOlderEmissionVersion(userAgent)) {
-      const dateWithoutOffset = rawDate.replace(/[-+]\d\d:\d\d$/g, "")
+      const dateWithoutOffset = rawDate.replace(/[-+]\d\d:\d\d$/, "")
       return dateWithoutOffset
     }
 
