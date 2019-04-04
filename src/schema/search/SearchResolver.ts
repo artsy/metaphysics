@@ -39,34 +39,35 @@ export class SearchResolver {
   // Fetch the full object if the GraphQL query includes any inline fragments
   // referencing the search result item's type (like Artist or Artwork)
   shouldFetchEntityType(entityType: string): boolean {
-    if (this.cachedEntityTypesToFetch) {
-      return this.cachedEntityTypesToFetch.includes(entityType)
-    }
-    const entityTypesToFetch: string[] = []
+    if (!this.cachedEntityTypesToFetch) {
+      const entityTypesToFetch: string[] = []
 
-    visit(this.info.fieldNodes[0], {
-      Field(node) {
-        if (node.name.value === "node") {
-          visit(node, {
-            InlineFragment(node) {
-              if (
-                node.typeCondition &&
-                (node.typeCondition.name.value !== Searchable.name &&
-                  node.typeCondition.name.value !== SearchableItem.name)
-              ) {
-                entityTypesToFetch.push(node.typeCondition.name.value)
-              }
-            },
-            FragmentSpread(_node) {
-              throw new Error(
-                "Named fragment spreads are currently unsupported for search."
-              )
-            },
-          })
-        }
-      },
-    })
-    this.cachedEntityTypesToFetch = entityTypesToFetch
+      visit(this.info.fieldNodes[0], {
+        Field(node) {
+          if (node.name.value === "node") {
+            visit(node, {
+              InlineFragment(node) {
+                if (
+                  node.typeCondition &&
+                  (node.typeCondition.name.value !== Searchable.name &&
+                    node.typeCondition.name.value !== SearchableItem.name)
+                ) {
+                  entityTypesToFetch.push(node.typeCondition.name.value)
+                }
+              },
+              FragmentSpread(_node) {
+                throw new Error(
+                  "Named fragment spreads are currently unsupported for search."
+                )
+              },
+            })
+          }
+        },
+      })
+
+      this.cachedEntityTypesToFetch = entityTypesToFetch
+    }
+
     return this.cachedEntityTypesToFetch.includes(entityType)
   }
 
