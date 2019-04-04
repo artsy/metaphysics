@@ -43,6 +43,10 @@ type CollectionCategory {
   collections: [Collection!]!
 }
 
+type NewTypeAddedByMeThatIsntUpstream {
+  name: String!
+}
+
 type CollectionQuery {
   id: ID
   acquireable: Boolean

@@ -5348,6 +5348,10 @@ type MarketingCollectionQuery {
 
 scalar MarketingDateTime
 
+type MarketingNewTypeAddedByMeThatIsntUpstream {
+  name: String!
+}
+
 type Me implements Node {
   # A globally unique ID.
   __id: ID!
