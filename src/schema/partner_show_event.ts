@@ -3,7 +3,7 @@ import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { exhibitionPeriod } from "lib/date"
 
-const checkUserAgent = (userAgent): boolean =>
+const hasOldEmissionUserAgentString = (userAgent): boolean =>
   userAgent!.indexOf("Artsy-Mobile/4") > 0 ||
   userAgent!.indexOf("Artsy-Mobile/5.0.0") > 0 ||
   userAgent!.indexOf("Artsy-Mobile/5.0.1") > 0
@@ -11,9 +11,9 @@ const checkUserAgent = (userAgent): boolean =>
 const isOlderEmissionVersion = (userAgent): boolean => {
   let result = false
   if (typeof userAgent === "string") {
-    result = checkUserAgent(userAgent)
+    result = hasOldEmissionUserAgentString(userAgent)
   } else if (Array.isArray(userAgent)) {
-    result = userAgent.some(ua => checkUserAgent(ua))
+    result = userAgent.some(ua => hasOldEmissionUserAgentString(ua))
   }
   return result
 }

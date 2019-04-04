@@ -132,7 +132,7 @@ describe("date resolving", () => {
     })
   })
 
-  describe("if user agent is returned as an array", () => {
+  describe("When an Eigen user agent is returned as part of an array", () => {
     it("truncates the UTC offset", async () => {
       context.userAgent = [
         "x86_64 Mozilla/5.0 Artsy-Mobile/5.0.1 Eigen/2019.02.28.17/5.0.1 (iPhone; iOS 12.2; Scale/2.00) AppleWebKit/60 1.1.46 (KHTML, like Gecko)",
