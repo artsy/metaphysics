@@ -88,6 +88,10 @@ export class SearchResolver {
   }
 
   resolve() {
+    if (!this.args.page) {
+      delete this.args.page
+    }
+
     const pageOptions = convertConnectionArgsToGravityArgs(this.args)
     if (!!this.args.page) pageOptions.page = this.args.page
     const { page, size, offset, ...rest } = pageOptions
