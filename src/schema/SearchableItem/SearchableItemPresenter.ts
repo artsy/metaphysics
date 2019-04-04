@@ -179,7 +179,7 @@ export class SearchableItemPresenter {
       return fair_id ? "Fair booth" : "Show"
     }
 
-    const now = moment.utc()
+    const now = moment.utc().startOf("day")
     const startAt = moment.utc(start_at)
     const endAt = moment.utc(end_at)
 
