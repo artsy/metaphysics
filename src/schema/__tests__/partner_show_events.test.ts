@@ -75,10 +75,10 @@ describe("date resolving", () => {
     })
   })
 
-  describe("with Eigen 4.x", () => {
+  describe("with Eigen 4.4.x", () => {
     it("truncates the UTC offset", async () => {
       context.userAgent =
-        "Mozilla/5.0 Artsy-Mobile/4.3.3 Eigen/2018.11.09.15/4.3.3 (iPhone; iOS 12.1.4; Scale/3.00) AppleWebKit/601.1.46 (KHTML, like Gecko); Metaphysics"
+        "iPhone9,1 Mozilla/5.0 Artsy-Mobile/4.4.1 Eigen/2019.03.15.11/4.4.1 (iPhone; iOS 12.1.4; Scale/2.00) AppleWebKit/601.1.46 (KHTML, like Gecko)"
 
       const data = await runQuery(query, context)
       expect(data).toEqual({
