@@ -7,12 +7,16 @@ import { Searchable } from "schema/searchable"
 import { SearchableItem } from "schema/SearchableItem"
 
 export class SearchResolver {
-  private args: any
+  private args: { [argName: string]: any }
   private context: ResolverContext
   private info: GraphQLResolveInfo
   private cachedEntityTypesToFetch: string[] | undefined
 
-  constructor(args: any, context: any, info: any) {
+  constructor(
+    args: { [argName: string]: any },
+    context: ResolverContext,
+    info: GraphQLResolveInfo
+  ) {
     this.args = args
     this.context = context
     this.info = info
