@@ -461,12 +461,11 @@ describe("Fair", () => {
     })
   })
 
-  describe("dateStatusDisplay", () => {
-    // Mocks a reserved timestamp for moment() to compare against
+  describe("formattedDateStatus", () => {
     const query = gql`
       {
         fair(id: "aqua-art-miami-2018") {
-          dateStatusDisplay
+          formattedDateStatus
         }
       }
     `
@@ -495,7 +494,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            dateStatusDisplay: "Opens Feb 6 at 12pm",
+            formattedDateStatus: "Opens Feb 6 at 12pm",
           },
         })
       })
@@ -517,7 +516,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            dateStatusDisplay: "Closes Feb 4 at 12pm",
+            formattedDateStatus: "Closes Feb 4 at 12pm",
           },
         })
       })
@@ -539,7 +538,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            dateStatusDisplay: "Closed",
+            formattedDateStatus: "Closed",
           },
         })
       })
