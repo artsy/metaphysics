@@ -54,7 +54,7 @@ const variablesLookup = {
   },
 }
 
-// These are queries that should be skipped, becuase they are known to fail with
+// These are queries that should be skipped, because they are known to fail with
 // the current schema (and presumably for good reasons).
 const KnownToFail = [
   "e3c3792bba0779073c8650e4dc8e9112",
