@@ -1,8 +1,32 @@
 import moment from "moment"
 
+const formatDateStatusDisplayDate = date => {
+  const momentToUse = moment.utc(date, "YYYY-MM-DD[T]HH:mm:ss")
+  const momentDate = momentToUse.format("MMM D")
+  const momentHour = momentToUse.format("ha")
+  if (!!momentHour && !!momentDate) {
+    return ` ${momentDate} at ${momentHour}`
+  } else if (!!momentDate) {
+    return ` ${momentDate}`
+  }
+}
+
+export function dateStatusDisplay(startAt, endAt) {
+  const thisMoment = moment()
+  const startMoment = moment(startAt, "YYYY-MM-DD[T]HH:mm:ss")
+  const endMoment = moment(endAt, "YYYY-MM-DD[T]HH:mm:ss")
+  if (thisMoment.isBefore(startMoment)) {
+    return `Opens${formatDateStatusDisplayDate(startAt)}`
+  } else if (thisMoment.isBefore(endMoment)) {
+    return `Closes${formatDateStatusDisplayDate(endAt)}`
+  } else {
+    return "Closed"
+  }
+}
+
 export function exhibitionPeriod(startAt, endAt) {
-  const startMoment = moment(startAt)
-  const endMoment = moment(endAt)
+  const startMoment = moment.utc(startAt, "YYYY-MM-DD[T]HH:mm:ss")
+  const endMoment = moment.utc(endAt, "YYYY-MM-DD[T]HH:mm:ss")
   const thisMoment = moment()
   let startFormat = "MMM D"
   let endFormat = "D"
