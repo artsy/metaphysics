@@ -4,7 +4,11 @@ const formattedDateStatusDate = date => {
   const momentToUse = moment.utc(date, "YYYY-MM-DD[T]HH:mm:ss")
   const momentDate = momentToUse.format("MMM D")
   const momentHour = momentToUse.format("ha")
-  if (!!momentHour && !!momentDate) {
+  const momentMinutes = momentToUse.format("mm")
+  const momentHourWithMinutes = momentToUse.format("h:mma")
+  if (!!momentHour && !!momentDate && momentMinutes !== "00") {
+    return `${momentDate} at ${momentHourWithMinutes}`
+  } else if (!!momentHour && !!momentDate) {
     return `${momentDate} at ${momentHour}`
   } else if (!!momentDate) {
     return `${momentDate}`

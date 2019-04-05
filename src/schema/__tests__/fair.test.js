@@ -479,7 +479,7 @@ describe("Fair", () => {
     })
 
     describe("with future dates", () => {
-      it("The fair is opening", async () => {
+      it("The fair is opening on the hour", async () => {
         const fairData = {
           start_at: "2019–02–06T12:00:56+00:00",
           end_at: "2019–02–30T12:34:56+00:00",
@@ -495,6 +495,26 @@ describe("Fair", () => {
         expect(data).toEqual({
           fair: {
             formattedDateStatus: "Opens Feb 6 at 12pm",
+          },
+        })
+      })
+
+      it("The fair is opening with minutes", async () => {
+        const fairData = {
+          start_at: "2019–02–06T12:30:56+00:00",
+          end_at: "2019–02–30T12:34:56+00:00",
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            formattedDateStatus: "Opens Feb 6 at 12:30pm",
           },
         })
       })
