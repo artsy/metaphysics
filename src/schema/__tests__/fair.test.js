@@ -461,11 +461,11 @@ describe("Fair", () => {
     })
   })
 
-  describe("formattedDateStatus", () => {
+  describe("formattedOpeningHours", () => {
     const query = gql`
       {
         fair(id: "aqua-art-miami-2018") {
-          formattedDateStatus
+          formattedOpeningHours
         }
       }
     `
@@ -494,7 +494,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            formattedDateStatus: "Opens Feb 6 at 12pm",
+            formattedOpeningHours: "Opens Feb 6 at 12pm",
           },
         })
       })
@@ -514,7 +514,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            formattedDateStatus: "Opens Feb 6 at 12:30pm",
+            formattedOpeningHours: "Opens Feb 6 at 12:30pm",
           },
         })
       })
@@ -536,7 +536,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            formattedDateStatus: "Closes Feb 4 at 12pm",
+            formattedOpeningHours: "Closes Feb 4 at 12pm",
           },
         })
       })
@@ -558,7 +558,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            formattedDateStatus: "Closed",
+            formattedOpeningHours: "Closed",
           },
         })
       })

@@ -1,28 +1,27 @@
 import moment from "moment"
 
-const formattedDateStatusDate = date => {
+const formattedOpeningHoursDate = date => {
   const momentToUse = moment.utc(date, "YYYY-MM-DD[T]HH:mm:ss")
   const momentDate = momentToUse.format("MMM D")
   const momentHour = momentToUse.format("ha")
-  const momentMinutes = momentToUse.format("mm")
-  const momentHourWithMinutes = momentToUse.format("h:mma")
-  if (!!momentHour && !!momentDate && momentMinutes !== "00") {
+  if (momentHour && momentDate && momentToUse.minutes() !== 0) {
+    const momentHourWithMinutes = momentToUse.format("h:mma")
     return `${momentDate} at ${momentHourWithMinutes}`
-  } else if (!!momentHour && !!momentDate) {
+  } else if (momentHour && momentDate) {
     return `${momentDate} at ${momentHour}`
-  } else if (!!momentDate) {
+  } else if (momentDate) {
     return `${momentDate}`
   }
 }
 
-export function formattedDateStatus(startAt, endAt) {
+export function formattedOpeningHours(startAt, endAt) {
   const thisMoment = moment()
   const startMoment = moment(startAt, "YYYY-MM-DD[T]HH:mm:ss")
   const endMoment = moment(endAt, "YYYY-MM-DD[T]HH:mm:ss")
   if (thisMoment.isBefore(startMoment)) {
-    return `Opens ${formattedDateStatusDate(startAt)}`
+    return `Opens ${formattedOpeningHoursDate(startAt)}`
   } else if (thisMoment.isBefore(endMoment)) {
-    return `Closes ${formattedDateStatusDate(endAt)}`
+    return `Closes ${formattedOpeningHoursDate(endAt)}`
   } else {
     return "Closed"
   }
