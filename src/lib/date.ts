@@ -10,7 +10,7 @@ const formattedOpeningHoursDate = date => {
   } else if (momentHour && momentDate) {
     return `${momentDate} at ${momentHour}`
   } else if (momentDate) {
-    return `${momentDate}`
+    return momentDate
   }
 }
 
