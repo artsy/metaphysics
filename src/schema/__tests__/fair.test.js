@@ -481,8 +481,8 @@ describe("Fair", () => {
     describe("with future dates", () => {
       it("The fair is opening on the hour", async () => {
         const fairData = {
-          start_at: "2019–02–06T12:00:56+00:00",
-          end_at: "2019–02–30T12:34:56+00:00",
+          start_at: "2019-02-06T12:00:56+00:00",
+          end_at: "2019-02-30T12:34:56+00:00",
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
@@ -501,8 +501,8 @@ describe("Fair", () => {
 
       it("The fair is opening with minutes", async () => {
         const fairData = {
-          start_at: "2019–02–06T12:30:56+00:00",
-          end_at: "2019–02–30T12:34:56+00:00",
+          start_at: "2019-02-06T12:30:56+00:00",
+          end_at: "2019-02-30T12:34:56+00:00",
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
@@ -523,8 +523,8 @@ describe("Fair", () => {
     describe("with running dates", () => {
       it("The fair is closing", async () => {
         const fairData = {
-          start_at: "2019–01–20T12:34:56+00:00",
-          end_at: "2019–02–04T12:00:56+00:00",
+          start_at: "2019-01-20T12:34:56+00:00",
+          end_at: "2019-02-04T12:00:56+00:00",
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
@@ -545,8 +545,8 @@ describe("Fair", () => {
     describe("with past dates", () => {
       it("The fair is closed", async () => {
         const fairData = {
-          start_at: "2019–01–01T12:34:56+00:00",
-          end_at: "2019–01–10T12:34:56+00:00",
+          start_at: "2019-01-01T12:34:56+00:00",
+          end_at: "2019-01-10T12:34:56+00:00",
         }
 
         const mockFairLoader = jest.fn(() => Promise.resolve(fairData))

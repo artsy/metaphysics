@@ -1,7 +1,7 @@
 import moment from "moment"
 
 const formattedOpeningHoursDate = date => {
-  const momentToUse = moment.utc(date, "YYYY-MM-DD[T]HH:mm:ss")
+  const momentToUse = moment.utc(date)
   const momentDate = momentToUse.format("MMM D")
   const momentHour = momentToUse.format("ha")
   if (momentHour && momentDate && momentToUse.minutes() !== 0) {
@@ -16,8 +16,8 @@ const formattedOpeningHoursDate = date => {
 
 export function formattedOpeningHours(startAt, endAt) {
   const thisMoment = moment()
-  const startMoment = moment(startAt, "YYYY-MM-DD[T]HH:mm:ss")
-  const endMoment = moment(endAt, "YYYY-MM-DD[T]HH:mm:ss")
+  const startMoment = moment(startAt)
+  const endMoment = moment(endAt)
   if (thisMoment.isBefore(startMoment)) {
     return `Opens ${formattedOpeningHoursDate(startAt)}`
   } else if (thisMoment.isBefore(endMoment)) {
@@ -28,8 +28,8 @@ export function formattedOpeningHours(startAt, endAt) {
 }
 
 export function exhibitionPeriod(startAt, endAt) {
-  const startMoment = moment.utc(startAt, "YYYY-MM-DD[T]HH:mm:ss")
-  const endMoment = moment.utc(endAt, "YYYY-MM-DD[T]HH:mm:ss")
+  const startMoment = moment.utc(startAt)
+  const endMoment = moment.utc(endAt)
   const thisMoment = moment()
   let startFormat = "MMM D"
   let endFormat = "D"
