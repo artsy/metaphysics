@@ -1,8 +1,35 @@
 import moment from "moment"
 
-export function exhibitionPeriod(startAt, endAt) {
+const formattedOpeningHoursDate = date => {
+  const momentToUse = moment.utc(date)
+  const momentDate = momentToUse.format("MMM D")
+  const momentHour = momentToUse.format("ha")
+  if (momentHour && momentDate && momentToUse.minutes() !== 0) {
+    const momentHourWithMinutes = momentToUse.format("h:mma")
+    return `${momentDate} at ${momentHourWithMinutes}`
+  } else if (momentHour && momentDate) {
+    return `${momentDate} at ${momentHour}`
+  } else if (momentDate) {
+    return momentDate
+  }
+}
+
+export function formattedOpeningHours(startAt, endAt) {
+  const thisMoment = moment()
   const startMoment = moment(startAt)
   const endMoment = moment(endAt)
+  if (thisMoment.isBefore(startMoment)) {
+    return `Opens ${formattedOpeningHoursDate(startAt)}`
+  } else if (thisMoment.isBefore(endMoment)) {
+    return `Closes ${formattedOpeningHoursDate(endAt)}`
+  } else {
+    return "Closed"
+  }
+}
+
+export function exhibitionPeriod(startAt, endAt) {
+  const startMoment = moment.utc(startAt)
+  const endMoment = moment.utc(endAt)
   const thisMoment = moment()
   let startFormat = "MMM D"
   let endFormat = "D"

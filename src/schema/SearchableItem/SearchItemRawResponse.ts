@@ -5,6 +5,7 @@ export type SearchItemRawResponse = {
   fair_id: string
   href: string
   id: string
+  image_url: string
   label: string
   location: string
   model: string

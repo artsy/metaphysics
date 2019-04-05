@@ -1,12 +1,33 @@
 /* eslint-disable promise/always-return */
 import { SearchableItemPresenter } from "../SearchableItemPresenter"
 import * as moment from "moment"
+import { SearchItemRawResponse } from "../SearchItemRawResponse"
 
 describe("SearchableItemPresenter", () => {
+  const BASE_ITEM: SearchItemRawResponse = {
+    description: "",
+    display: "",
+    end_at: "",
+    fair_id: "",
+    href: "",
+    id: "",
+    image_url: "",
+    label: "",
+    location: "",
+    model: "",
+    owner_type: "",
+    profile_id: "",
+    published_at: "",
+    start_at: "",
+    artist_names: [""],
+    venue: "",
+  }
+
   describe("#formattedDescription", () => {
     describe("for an Article type", () => {
       it("prepends the published at date before the provided description, joined by a separator", () => {
         const searchableItem = {
+          ...BASE_ITEM,
           published_at: "2018-04-17T16:04:52.573Z",
           label: "Article",
           description:
@@ -22,7 +43,8 @@ describe("SearchableItemPresenter", () => {
 
       it("uses the description if the published at date is unavailable", () => {
         const searchableItem = {
-          published_at: null,
+          ...BASE_ITEM,
+          published_at: "",
           label: "Article",
           description:
             "Saltz had been a finalist twice before, in 2001 and 2006. The Pulitzer board commended him for “a robust body of work that conveyed a canny and often ...",
@@ -37,9 +59,10 @@ describe("SearchableItemPresenter", () => {
 
       it("uses the published at date only if the description is unavailable", () => {
         const searchableItem = {
+          ...BASE_ITEM,
           published_at: "2018-04-17T16:04:52.573Z",
           label: "Article",
-          description: null,
+          description: "",
         }
 
         const presenter = new SearchableItemPresenter(searchableItem)
@@ -47,22 +70,24 @@ describe("SearchableItemPresenter", () => {
         expect(description).toBe("Apr 17th, 2018")
       })
 
-      it("returns null if both attributes are unavailable", () => {
+      it("returns empty string if both attributes are unavailable", () => {
         const searchableItem = {
-          published_at: null,
+          ...BASE_ITEM,
+          published_at: "",
           label: "Article",
-          description: null,
+          description: "",
         }
 
         const presenter = new SearchableItemPresenter(searchableItem)
         const description = presenter.formattedDescription()
-        expect(description).toBe(null)
+        expect(description).toBe("")
       })
     })
 
     describe("for a City type", () => {
       it("formats a definition", () => {
         const searchableItem = {
+          ...BASE_ITEM,
           display: "New York, NY",
           label: "City",
         }
@@ -76,6 +101,7 @@ describe("SearchableItemPresenter", () => {
     describe("for a Fair or Auction types", () => {
       const buildSearchableItem = label => {
         return {
+          ...BASE_ITEM,
           start_at: "2018-05-16T11:28:00.000Z",
           end_at: "2018-05-30T18:40:09.000Z",
           label: label,
@@ -114,6 +140,7 @@ describe("SearchableItemPresenter", () => {
       it("returns description if date attributes are unavailable", () => {
         ;["Fair", "Sale"].forEach(label => {
           const presenter = new SearchableItemPresenter({
+            ...BASE_ITEM,
             label: label,
             description: "Fallback description",
           })
@@ -127,6 +154,7 @@ describe("SearchableItemPresenter", () => {
     describe("for a MarketingCollection type", () => {
       it("strips html tags from the description", () => {
         const searchableItem = {
+          ...BASE_ITEM,
           description:
             "<p>Brian Donnelly, better known as KAWS, spent the first year of his career as an animator for Disney.</p>",
           label: "MarketingCollection",
@@ -143,6 +171,7 @@ describe("SearchableItemPresenter", () => {
     describe("for a PartnerShow type", () => {
       it("returns a formatted description for a past show", () => {
         const searchableItem = {
+          ...BASE_ITEM,
           start_at: "2018-03-26T12:00:00.000Z",
           end_at: "2018-05-19T12:00:00.000Z",
           label: "PartnerShow",
@@ -161,8 +190,9 @@ describe("SearchableItemPresenter", () => {
         const now = moment.utc()
 
         const searchableItem = {
-          start_at: now.valueOf(),
-          end_at: now.add(1, "week").valueOf(),
+          ...BASE_ITEM,
+          start_at: now.toISOString(),
+          end_at: now.add(1, "week").toISOString(),
           label: "PartnerShow",
           artist_names: ["KAWS"],
           venue: "Yorkshire Sculpture Park",
@@ -179,8 +209,9 @@ describe("SearchableItemPresenter", () => {
         const now = moment.utc()
 
         const searchableItem = {
-          start_at: now.valueOf(),
-          end_at: now.add(1, "week").valueOf(),
+          ...BASE_ITEM,
+          start_at: now.toISOString(),
+          end_at: now.add(1, "week").toISOString(),
           label: "PartnerShow",
           artist_names: ["KAWS"],
           venue: "Yorkshire Sculpture Park",
@@ -198,8 +229,9 @@ describe("SearchableItemPresenter", () => {
         const now = moment.utc()
 
         const searchableItem = {
-          start_at: now.add(1, "day").valueOf(),
-          end_at: now.add(1, "week").valueOf(),
+          ...BASE_ITEM,
+          start_at: now.add(1, "day").toISOString(),
+          end_at: now.add(1, "week").toISOString(),
           label: "PartnerShow",
           artist_names: ["KAWS"],
           venue: "Yorkshire Sculpture Park",
@@ -214,6 +246,7 @@ describe("SearchableItemPresenter", () => {
 
       it("returns a formatted description with multiple artists", () => {
         let searchableItem = {
+          ...BASE_ITEM,
           label: "PartnerShow",
           artist_names: ["KAWS", "Andy Warhol"],
           venue: "Yorkshire Sculpture Park",
@@ -226,6 +259,7 @@ describe("SearchableItemPresenter", () => {
         )
 
         searchableItem = {
+          ...BASE_ITEM,
           label: "PartnerShow",
           artist_names: ["KAWS", "Andy Warhol", "Ridley Howard"],
           venue: "Yorkshire Sculpture Park",
@@ -240,6 +274,7 @@ describe("SearchableItemPresenter", () => {
 
       it("returns a formatted description with a location", () => {
         const searchableItem = {
+          ...BASE_ITEM,
           label: "PartnerShow",
           artist_names: ["KAWS"],
           location: "New York, NY",
@@ -252,6 +287,7 @@ describe("SearchableItemPresenter", () => {
 
       it("returns a formatted description for a fair booth", () => {
         const searchableItem = {
+          ...BASE_ITEM,
           label: "PartnerShow",
           artist_names: ["KAWS"],
           location: "New York, NY",
@@ -264,6 +300,19 @@ describe("SearchableItemPresenter", () => {
           "Fair booth featuring works by KAWS New York, NY"
         )
       })
+    })
+  })
+
+  describe("#imageUrl", () => {
+    it("returns an empty string if image_url references 404ing missing_url.png asset", () => {
+      const searchableItem = {
+        ...BASE_ITEM,
+        image_url: "/assets/shared/missing_image.png",
+      }
+
+      const presenter = new SearchableItemPresenter(searchableItem)
+      const imageUrl = presenter.imageUrl()
+      expect(imageUrl).toBe("")
     })
   })
 })

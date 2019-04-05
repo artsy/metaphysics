@@ -22,11 +22,13 @@
   },
   "typescript.tsdk": "./node_modules/typescript/lib",
   "cSpell.words": [
+    "API's",
     "Ecommerce",
     "Eigen",
     "Kubernetes",
     "Refetch",
     "Reloadable",
+    "SDLs",
     "consignable",
     "dataloader",
     "kaws",
