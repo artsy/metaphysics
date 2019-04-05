@@ -60,6 +60,7 @@ describe("batchLoader", () => {
 
       await batch({ id: ["foo"], param: "bar" })
       expect(multipleLoader).toBeCalledWith({
+        batched: true,
         id: ["foo"],
         param: "bar",
       })
@@ -81,10 +82,10 @@ describe("batchLoader", () => {
   })
 })
 
-describe("groupKeys", () => {
-  const { groupKeys } = require("../batchLoader")
+describe("groupByParams", () => {
+  const { groupByParams } = require("../batchLoader")
   it("should handle a single key", () => {
-    expect(groupKeys([{ id: "a" }])).toEqual([
+    expect(groupByParams([{ id: "a" }])).toEqual([
       [""],
       [
         [
@@ -105,7 +106,7 @@ describe("groupKeys", () => {
         id: "b",
       },
     ]
-    expect(groupKeys(keys)).toEqual([
+    expect(groupByParams(keys)).toEqual([
       [""],
       [
         [
@@ -131,7 +132,7 @@ describe("groupKeys", () => {
         foo: "bar",
       },
     ]
-    expect(groupKeys(keys)).toEqual([
+    expect(groupByParams(keys)).toEqual([
       ["foo=bar"],
       [
         [
@@ -156,7 +157,7 @@ describe("groupKeys", () => {
       { id: "c", foo: "bar", boo: "baz" },
     ]
 
-    expect(groupKeys(keys)).toEqual([
+    expect(groupByParams(keys)).toEqual([
       ["", "foo=bar", "boo=baz&foo=bar"],
       [
         [

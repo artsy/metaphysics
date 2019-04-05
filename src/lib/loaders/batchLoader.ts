@@ -5,8 +5,6 @@ import { StaticPathLoader, DynamicPathLoader } from "./api/loader_interface"
 
 const { ENABLE_RESOLVER_BATCHING } = config
 
-type Key = string | { id: string[] }
-
 interface IdWithParams {
   id: string
   [key: string]: any
@@ -102,6 +100,7 @@ export const batchLoader = ({
   const dl = new DataLoader(
     (idWithParamsList: IdWithParams[]) => {
       const [paramGroups, groupedParams] = groupByParams(idWithParamsList)
+      console.log("params", paramGroups, groupedParams)
       return Promise.all(
         groupedParams.map(batchParams).map(params => {
           if (
@@ -134,7 +133,21 @@ export const batchLoader = ({
     }
   )
 
+  type Key = string | { id: string[] }
+
+  /**
+   * This is an abstraction around the data loader to keep api parity with the
+   * existing gravityLoader api
+   */
   return (key: Key) => {
+    /**
+     * This section covers the case when an endpoint is being requested that supports
+     * parameters. An example would the be `sales` endpoint which has filters like
+     * `live` or `is_auction`.
+     *
+     * The assumption here is that things are being requested from a list endpoint
+     * so the results are always formatted into an array
+     */
     if (typeof key === "object" && key !== null) {
       if (key.id.length === 1) {
         return dl
@@ -152,10 +165,14 @@ export const batchLoader = ({
           }))
         )
         .then(results => results.filter(result => result !== null))
+      /**
+       * This section covers the case when a single resource endpoint is being requested.
+       * Take the `sale` endpoint for example. `key` is expected to be a string of `id` or `slug`.
+       */
     } else if (typeof key === "string") {
       return dl.load({ id: key })
     } else {
-      console.error("o no")
+      console.error("Requested an invalid key type for batchLoader")
     }
   }
 }
