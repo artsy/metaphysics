@@ -461,6 +461,110 @@ describe("Fair", () => {
     })
   })
 
+  describe("formattedOpeningHours", () => {
+    const query = gql`
+      {
+        fair(id: "aqua-art-miami-2018") {
+          formattedOpeningHours
+        }
+      }
+    `
+
+    const realNow = Date.now
+    beforeEach(() => {
+      Date.now = () => new Date("2019-01-30T03:24:00")
+    })
+    afterEach(() => {
+      Date.now = realNow
+    })
+
+    describe("with future dates", () => {
+      it("The fair is opening on the hour", async () => {
+        const fairData = {
+          start_at: "2019-02-06T12:00:56+00:00",
+          end_at: "2019-02-30T12:34:56+00:00",
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            formattedOpeningHours: "Opens Feb 6 at 12pm",
+          },
+        })
+      })
+
+      it("The fair is opening with minutes", async () => {
+        const fairData = {
+          start_at: "2019-02-06T12:30:56+00:00",
+          end_at: "2019-02-30T12:34:56+00:00",
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            formattedOpeningHours: "Opens Feb 6 at 12:30pm",
+          },
+        })
+      })
+    })
+
+    describe("with running dates", () => {
+      it("The fair is closing", async () => {
+        const fairData = {
+          start_at: "2019-01-20T12:34:56+00:00",
+          end_at: "2019-02-04T12:00:56+00:00",
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            formattedOpeningHours: "Closes Feb 4 at 12pm",
+          },
+        })
+      })
+    })
+
+    describe("with past dates", () => {
+      it("The fair is closed", async () => {
+        const fairData = {
+          start_at: "2019-01-01T12:34:56+00:00",
+          end_at: "2019-01-10T12:34:56+00:00",
+        }
+
+        const mockFairLoader = jest.fn(() => Promise.resolve(fairData))
+        context = {
+          fairLoader: mockFairLoader,
+        }
+
+        const data = await runQuery(query, context)
+
+        expect(data).toEqual({
+          fair: {
+            formattedOpeningHours: "Closed",
+          },
+        })
+      })
+    })
+  })
+
   describe("fair counts", () => {
     let counts
 
