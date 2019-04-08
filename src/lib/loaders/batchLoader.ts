@@ -98,34 +98,30 @@ export const batchLoader = ({
     return singleLoader ? singleLoader : multipleLoader
   }
   const dl = new DataLoader(
-    (idWithParamsList: IdWithParams[]) => {
+    async (idWithParamsList: IdWithParams[]) => {
       const [paramGroups, groupedParams] = groupByParams(idWithParamsList)
-      console.log("params", paramGroups, groupedParams)
-      return Promise.all(
-        groupedParams.map(batchParams).map(params => {
+      const data = await Promise.all(
+        groupedParams.map(batchParams).map(params_1 => {
           if (
-            params.id.length === 1 &&
+            params_1.id.length === 1 &&
             singleLoader &&
-            Object.keys(params).length === 1
+            Object.keys(params_1).length === 1
           ) {
-            return singleLoader(params.id[0])
+            return singleLoader(params_1.id[0])
           } else {
-            return multipleLoader({ ...params, batched: true })
+            return multipleLoader({ ...params_1, batched: true })
           }
         })
-      ).then((data: Array<GravityResult | GravityResult[]>) => {
-        const normalizedData = data.map(
-          datum => (Array.isArray(datum) ? datum.reverse() : [datum])
-        )
-
-        const results = idWithParamsList.map(params => {
-          const paramGroup = serializeParams(params)
-          const groupIndex = paramGroups.indexOf(paramGroup)
-          return normalizedData[groupIndex].pop()
-        })
-
-        return results
+      )
+      const normalizedData = data.map(
+        datum => (Array.isArray(datum) ? datum.reverse() : [datum])
+      )
+      const results = idWithParamsList.map(params_2 => {
+        const paramGroup = serializeParams(params_2)
+        const groupIndex = paramGroups.indexOf(paramGroup)
+        return normalizedData[groupIndex].pop()
       })
+      return results
     },
     {
       maxBatchSize: 20,
