@@ -17,12 +17,6 @@ interface BatchedParams {
   [key: string]: any
 }
 
-interface GravityResult {
-  _id: string
-  _slug: string
-  [key: string]: any
-}
-
 /**
  *  This function is used by the dataloader to determine the uniqueness of keys.
  *  Because keys can be objects, it's important to be able to differentiate between
