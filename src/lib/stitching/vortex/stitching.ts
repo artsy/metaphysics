@@ -63,21 +63,36 @@ export const vortexStitchingEnvironment = () => ({
               _id
             }
             category
+            is_for_sale
             is_price_hidden
+            is_in_auction
+            price_currency
+            artists {
+              _id
+            }
           }
         `,
         resolve: async (source, _, context, info) => {
           const {
+            artist,
+            artists,
+            category,
+            heightCm,
+            is_for_sale,
+            is_in_auction,
+            is_price_hidden,
+            price_currency,
             priceCents,
             widthCm,
-            heightCm,
-            artist,
-            category,
-            is_price_hidden,
           } = source
           // fail if we don't have enough info to request a histogram
+
           if (
             is_price_hidden ||
+            is_in_auction ||
+            price_currency !== "USD" ||
+            (artists && artists.length > 1) ||
+            !is_for_sale ||
             !priceCents ||
             !artist ||
             !widthCm ||
