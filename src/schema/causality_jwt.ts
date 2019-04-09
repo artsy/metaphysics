@@ -102,7 +102,12 @@ const CausalityJWT: GraphQLFieldConfig<void, ResolverContext> = {
 
           if (sale.partner) {
             return mePartnersLoader({ "partner_ids[]": sale.partner._id }).then(
-              () => {
+              mePartners => {
+                // Check if current user has access to partner running the sale
+                if (mePartners.length === 0) {
+                  throw new Error("Unauthorized to be operator")
+                }
+
                 return jwt.encode(
                   {
                     aud: "auctions",

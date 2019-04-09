@@ -127,7 +127,7 @@ describe("CausalityJWT", () => {
     })
   })
 
-  it("does not allow a non-admin user or user not associated with sale partner to be operator", () => {
+  it("does not allow a non-admin user to be operator", () => {
     expect.assertions(1)
 
     const query = `{
@@ -139,6 +139,28 @@ describe("CausalityJWT", () => {
         partner: undefined, // in production partner is undefined when user is not an admin or a partner
       })
     )
+
+    return runAuthenticatedQuery(query, context).catch(e => {
+      expect(e.message).toEqual("Unauthorized to be operator")
+    })
+  })
+
+  it("does not allow a user not associated with sale partner to be operator", () => {
+    expect.assertions(1)
+
+    const query = `{
+      causality_jwt(role: OPERATOR, sale_id: "foo")
+    }`
+
+    context.saleLoader = sinon.stub().returns(
+      Promise.resolve({
+        ...sale,
+        partner: {
+          _id: "partner-id",
+        },
+      })
+    )
+    context.mePartnersLoader = sinon.stub().returns(Promise.resolve([]))
 
     return runAuthenticatedQuery(query, context).catch(e => {
       expect(e.message).toEqual("Unauthorized to be operator")
