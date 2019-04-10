@@ -132,7 +132,7 @@ export const batchLoader = ({
   return (key: Key) => {
     /**
      * This section covers the case when an endpoint is being requested that supports
-     * parameters. An example would the be `sales` endpoint which has filters like
+     * parameters. An example would be the `sales` endpoint which has filters like
      * `live` or `is_auction`.
      *
      * The assumption here is that things are being requested from a list endpoint
