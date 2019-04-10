@@ -2,8 +2,26 @@ import { executableVortexSchema } from "./schema"
 import { amount } from "schema/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
+import { error } from "util"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
+
+export const parseDimensionsString = str => {
+  const [width, height]: Number[] = str
+    .split(/\s+/)
+    .map(Number)
+    .filter(Boolean)
+  if (!width || !height) {
+    error(
+      `Malformed dimensions string: ${JSON.stringify(
+        str
+      )}. Has the format changed?`
+    )
+    return null
+  }
+
+  return { width, height }
+}
 
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
@@ -82,6 +100,11 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           ... on Artwork {
             widthCm
             heightCm
+            edition_sets {
+              dimensions {
+                cm
+              }
+            }
             priceCents {
               min
             }
@@ -105,6 +128,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             artists,
             artist_names,
             category,
+            edition_sets,
             heightCm,
             is_for_sale,
             is_in_auction,
@@ -113,8 +137,18 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             priceCents,
             widthCm,
           } = source
-          // fail if we don't have enough info to request a histogram
 
+          // Pull out width and height from first edition set if > 1
+          let width = widthCm
+          let height = heightCm
+          if (edition_sets.length > 1 && edition_sets[0].dimensions.cm) {
+            const result = parseDimensionsString(edition_sets[0].dimensions.cm)
+            if (result) {
+              ;({ width, height } = result)
+            }
+          }
+
+          // fail if we don't have enough info to request a histogram
           if (
             is_price_hidden ||
             is_in_auction ||
@@ -123,12 +157,13 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             !is_for_sale ||
             !priceCents ||
             !artist ||
-            !widthCm ||
-            !heightCm ||
+            !width ||
+            !height ||
             !category
           ) {
             return null
           }
+
           // this feature is only enabled for lab users right now
           if (!context.meLoader) {
             return null

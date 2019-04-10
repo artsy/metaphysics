@@ -22,6 +22,7 @@ describe("PricingContext type", () => {
     price_hidden: false,
     width_cm: 15,
     height_cm: 15,
+    edition_sets: [{ dimensions: { cm: "15 × 15 cm" } }],
     forsale: true,
     is_in_auction: false,
     price_currency: "USD",
@@ -140,6 +141,27 @@ Object {
   "_v1_category": "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
   "_v2_heightCm": 15,
   "_v3_widthCm": 15,
+}
+`)
+  })
+
+  it("uses the first edition set dimensions when there is more than one edition set", async () => {
+    artworkLoader.mockResolvedValueOnce({
+      ...artwork,
+      edition_sets: [
+        { dimensions: { cm: "27.9 × 35.6 cm" } },
+        { dimensions: { cm: "50.8 × 61 cm" } },
+        { dimensions: { cm: "101.6 × 127 cm" } },
+      ],
+    })
+    await runQuery(query, context)
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
+      .toMatchInlineSnapshot(`
+Object {
+  "_v0_artistId": "artist-id",
+  "_v1_category": "PAINTING",
+  "_v2_heightCm": 36,
+  "_v3_widthCm": 28,
 }
 `)
   })
