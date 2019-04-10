@@ -82,6 +82,19 @@ describe("batchLoader", () => {
   })
 })
 
+describe("serializeParams", () => {
+  const { serializeParams } = require("../batchLoader")
+
+  it("should return an empty string for a param object with only id", () => {
+    expect(serializeParams({ id: "a" })).toBe("")
+  })
+  it("should return key=value for every entry in the params object", () => {
+    expect(serializeParams({ id: "a", foo: "bar", bleep: "bloop" })).toBe(
+      "bleep=bloop&foo=bar"
+    )
+  })
+})
+
 describe("groupByParams", () => {
   const { groupByParams } = require("../batchLoader")
   it("should handle a single key", () => {
