@@ -2,7 +2,7 @@ import { omit, map } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { exhibitionPeriod, formattedOpeningHours } from "lib/date"
+import { dateRange, formattedOpeningHours } from "lib/date"
 import { artistConnection } from "./artist"
 import moment from "moment"
 import cached from "./fields/cached"
@@ -142,7 +142,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     exhibition_period: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
-      resolve: ({ start_at, end_at }) => exhibitionPeriod(start_at, end_at),
+      resolve: ({ start_at, end_at }) => dateRange(start_at, end_at),
     },
     formattedOpeningHours: {
       type: GraphQLString,

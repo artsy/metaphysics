@@ -8410,6 +8410,12 @@ type PartnerShowEventType {
     timezone: String
   ): String
 
+  # Returns true if dates are on same day
+  datesAreSameDay: Boolean
+
+  # A formatted description of the dates with hours
+  datesWithHours: String
+
   # A formatted description of the start to end dates
   exhibitionPeriod: String
 }
