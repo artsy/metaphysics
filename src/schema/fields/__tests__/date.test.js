@@ -1,4 +1,4 @@
-import { date } from "schema/fields/date"
+import dateField, { date } from "schema/fields/date"
 
 describe("date", () => {
   const rawDate = "2020-12-31T12:00:00+00:00"
@@ -25,5 +25,18 @@ describe("date", () => {
       "12/31/2020 5:00 -07:00"
     )
     expect(date(rawDate, format, "Pacific/Fiji")).toBe("1/1/2021 1:00 +13:00")
+  })
+})
+
+describe("dateField", () => {
+  it("should return null for a missing date", () => {
+    expect(
+      dateField.resolve(
+        { date: null },
+        { timezone: "America/Boise" },
+        {},
+        { fieldName: "date" }
+      )
+    ).toBeNull()
   })
 })

@@ -43,6 +43,9 @@ const dateField: GraphQLFieldConfig<DateSource, ResolverContext> = {
   },
   resolve: (obj, { format, timezone }, { defaultTimezone }, { fieldName }) => {
     const rawDate = obj[fieldName]
+    if (!rawDate) {
+      return null
+    }
     const timezoneString = timezone ? timezone : defaultTimezone
     return date(rawDate, format, timezoneString)
   },
