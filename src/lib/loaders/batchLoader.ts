@@ -162,7 +162,7 @@ export const batchLoader = ({
     } else if (typeof key === "string") {
       return dl.load({ id: key })
     } else {
-      console.error("Requested an invalid key type for batchLoader")
+      throw new Error("Requested an invalid key type for batchLoader")
     }
   }
 }
