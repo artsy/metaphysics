@@ -43,13 +43,17 @@ export const serializeParams = (key: IdWithParams) => {
 }
 
 /**
- * Takes an array of parameters and groups them by non-unique
+ * A tuple containing a list of stringify params (minus id) and
+ * an array of arrays of params with Id. Each of the inner arrays
+ * contain param objects that have all the same params besides id.
+ */
+type ParamGrouping = [SerializedParams, IdWithParams[][]]
+/**
+ * Takes an array of parameter objects and groups them by all their params except for id.
  * @returns a tuple of an array of group strings and an array of grouped keys
  */
-export const groupByParams = (
-  params: IdWithParams[]
-): [SerializedParams, IdWithParams[][]] => {
-  const [serializedParams, groupedParams] = chain(params)
+export const groupByParams = (params: IdWithParams[]): ParamGrouping => {
+  const paramGrouping: ParamGrouping = chain(params)
     .groupBy(serializeParams)
     .entries()
     .thru(entries => {
@@ -62,13 +66,15 @@ export const groupByParams = (
     })
     .value()
 
-  return [serializedParams, groupedParams]
+  return paramGrouping
 }
 
 /**
- * Collects all the params into one object to be passed to gravity loader
+ * Takes an array of like parameters with different ids and joins them into one
+ * object with an array of ids. This is the format that gravity's list endpoints
+ * consume.
  */
-export const batchParams = (keys: IdWithParams[]): BatchedParams => ({
+export const flattenedParams = (keys: IdWithParams[]): BatchedParams => ({
   ...keys[0],
   id: keys.map(key => key.id),
 })
@@ -95,23 +101,23 @@ export const batchLoader = ({
     async (idWithParamsList: IdWithParams[]) => {
       const [paramGroups, groupedParams] = groupByParams(idWithParamsList)
       const data = await Promise.all(
-        groupedParams.map(batchParams).map(params_1 => {
+        groupedParams.map(flattenedParams).map(params => {
           if (
-            params_1.id.length === 1 &&
+            params.id.length === 1 &&
             singleLoader &&
-            Object.keys(params_1).length === 1
+            Object.keys(params).length === 1
           ) {
-            return singleLoader(params_1.id[0])
+            return singleLoader(params.id[0])
           } else {
-            return multipleLoader({ ...params_1, batched: true })
+            return multipleLoader({ ...params, batched: true })
           }
         })
       )
       const normalizedData = data.map(
         datum => (Array.isArray(datum) ? datum.reverse() : [datum])
       )
-      const results = idWithParamsList.map(params_2 => {
-        const paramGroup = serializeParams(params_2)
+      const results = idWithParamsList.map(params => {
+        const paramGroup = serializeParams(params)
         const groupIndex = paramGroups.indexOf(paramGroup)
         return normalizedData[groupIndex].pop()
       })
