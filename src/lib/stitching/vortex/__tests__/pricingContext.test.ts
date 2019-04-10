@@ -11,10 +11,18 @@ describe("PricingContext type", () => {
       id: "artist-slug",
       _id: "artist-id",
     },
+    artists: [
+      {
+        _id: "artist-1",
+      },
+    ],
     category: "Painting",
     price_hidden: false,
     width_cm: 15,
     height_cm: 15,
+    forsale: true,
+    is_in_auction: false,
+    price_currency: "USD",
     price_cents: [234],
   }
   const meLoader = jest.fn(() =>
@@ -32,10 +40,18 @@ describe("PricingContext type", () => {
       _id: "artist-id",
     })
   )
+  const salesLoader = jest.fn(() =>
+    Promise.resolve([
+      {
+        _id: "sale-1",
+      },
+    ])
+  )
   const context: Partial<ResolverContext> = {
     meLoader,
     artworkLoader,
     artistLoader,
+    salesLoader,
   }
   const query = gql`
     query {
@@ -167,9 +183,45 @@ Object {
     expect(result.artwork.pricingContext).toBeNull()
   })
 
-  it("is null when there is not list price", async () => {
+  it("is null when there is no list price", async () => {
     const { price_cents, ...others } = artwork
     artworkLoader.mockResolvedValueOnce(others)
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
+
+  it("is null when the artwork is not for sale", async () => {
+    artworkLoader.mockResolvedValueOnce({
+      ...artwork,
+      forsale: false,
+    })
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
+
+  it("is null when the artwork is in an auction", async () => {
+    artworkLoader.mockResolvedValueOnce({
+      ...artwork,
+      sale_ids: ["sale-1"],
+    })
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
+
+  it("is null when the artwork has multiple artists", async () => {
+    artworkLoader.mockResolvedValueOnce({
+      ...artwork,
+      artists: [{ id: "artist1" }, { id: "artist2" }],
+    })
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
+
+  it("is null when the artwork is not in USD", async () => {
+    artworkLoader.mockResolvedValueOnce({
+      ...artwork,
+      price_currency: "GBP",
+    })
     const result = (await runQuery(query, context)) as any
     expect(result.artwork.pricingContext).toBeNull()
   })
