@@ -60,7 +60,7 @@ export function exhibitionPeriod(startAt, endAt) {
     if (endMoment.year() !== thisMoment.year()) {
       singleDateFormat = singleDateFormat.concat(", YYYY")
     }
-    return `${endMoment.format(singleDateFormat)}`
+    return endMoment.format(singleDateFormat)
   } else {
     // Show date range if not the same day
     return `${startMoment.format(startFormat)} – ${endMoment.format(endFormat)}`
