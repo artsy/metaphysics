@@ -134,7 +134,9 @@ function _set(key, data, options: CacheOptions) {
   const timestamp = new Date().getTime()
   /* eslint-disable no-param-reassign */
   if (isArray(data)) {
-    data.forEach(datum => (datum.cached = timestamp))
+    data.forEach(datum => {
+      datum && (datum.cached = timestamp)
+    })
   } else {
     data.cached = timestamp
   }

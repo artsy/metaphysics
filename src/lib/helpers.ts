@@ -78,10 +78,19 @@ export const truncate = (string, length, append = "…") => {
   return x.length > limit ? x.slice(0, limit) + append : x
 }
 export const toQueryString = (options = {}) =>
-  stringify(options, {
-    arrayFormat: "brackets",
-    sort: (a, b) => a.localeCompare(b),
-  })
+  /**
+   * In the case of batched requests we want to explicitly _not_ sort the
+   * params because the order matters to dataloader
+   */
+  // @ts-ignore
+  options.batched
+    ? stringify(options, {
+        arrayFormat: "brackets",
+      })
+    : stringify(options, {
+        arrayFormat: "brackets",
+        sort: (a, b) => a.localeCompare(b),
+      })
 export const toKey = (path, options = {}) => `${path}?${toQueryString(options)}`
 export const exclude = (values?: any[], property?: any) => xs =>
   reject(xs, x => includes(values, x[property]))

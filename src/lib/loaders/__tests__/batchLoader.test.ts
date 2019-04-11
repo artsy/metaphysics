@@ -58,11 +58,11 @@ describe("batchLoader", () => {
       )
       const batch = batchLoader({ multipleLoader })
 
-      await batch({ id: "foo", param: "bar" })
+      await batch({ id: ["foo"], param: "bar" })
       expect(multipleLoader).toBeCalledWith({
+        batched: true,
         id: ["foo"],
         param: "bar",
-        size: 1,
       })
     })
 
@@ -79,55 +79,58 @@ describe("batchLoader", () => {
 
       expect(multipleLoader).toBeCalledTimes(1)
     })
-
-    it("should return a default value when an id is missing", async () => {
-      const multipleLoader = jest.fn(({ id: ids }) =>
-        ids.slice(1).map(id => ({
-          _id: id,
-        }))
-      )
-      const batch = batchLoader({ multipleLoader, defaultResult: {} })
-
-      const results = await Promise.all([
-        batch("123"),
-        batch("456"),
-        batch("789"),
-      ])
-      expect(results).toEqual([
-        {},
-        {
-          _id: "456",
-        },
-        {
-          _id: "789",
-        },
-      ])
-
-      expect(multipleLoader).toBeCalledWith({
-        id: ["123", "456", "789"],
-        size: 3,
-      })
-    })
   })
 })
 
-const { groupKeys } = require("../batchLoader")
-describe("groupKeys", () => {
+describe("serializeParams", () => {
+  const { serializeParams } = require("../batchLoader")
+
+  it("should return an empty string for a param object with only id", () => {
+    expect(serializeParams({ id: "a" })).toBe("")
+  })
+  it("should return key=value for every entry in the params object", () => {
+    expect(serializeParams({ id: "a", foo: "bar", bleep: "bloop" })).toBe(
+      "bleep=bloop&foo=bar"
+    )
+  })
+})
+
+describe("groupByParams", () => {
+  const { groupByParams } = require("../batchLoader")
   it("should handle a single key", () => {
-    expect(groupKeys(["a"])).toEqual([
-      {
-        id: ["a"],
-        size: 1,
-      },
+    expect(groupByParams([{ id: "a" }])).toEqual([
+      [""],
+      [
+        [
+          {
+            id: "a",
+          },
+        ],
+      ],
     ])
   })
 
   it("should group single keys together", () => {
-    expect(groupKeys(["a", "b", "c"])).toEqual([
+    const keys = [
       {
-        id: ["a", "b", "c"],
-        size: 3,
+        id: "a",
       },
+      {
+        id: "b",
+      },
+    ]
+    expect(groupByParams(keys)).toEqual([
+      [""],
+      [
+        [
+          {
+            id: "a",
+          },
+          {
+            id: "b",
+          },
+        ],
+      ],
     ])
   })
 
@@ -142,38 +145,75 @@ describe("groupKeys", () => {
         foo: "bar",
       },
     ]
-    expect(groupKeys(keys)).toEqual([
-      {
-        id: ["a", "b"],
-        foo: "bar",
-        size: 2,
-      },
+    expect(groupByParams(keys)).toEqual([
+      ["foo=bar"],
+      [
+        [
+          {
+            id: "a",
+            foo: "bar",
+          },
+
+          {
+            id: "b",
+            foo: "bar",
+          },
+        ],
+      ],
     ])
   })
 
   it("should separate keys with different parameters", () => {
     const keys = [
-      "a",
+      { id: "a" },
       { id: "b", foo: "bar" },
       { id: "c", foo: "bar", boo: "baz" },
     ]
 
-    expect(groupKeys(keys)).toEqual([
-      {
-        id: ["a"],
-        size: 1,
-      },
-      {
-        id: ["b"],
-        foo: "bar",
-        size: 1,
-      },
-      {
-        id: ["c"],
-        foo: "bar",
-        boo: "baz",
-        size: 1,
-      },
+    expect(groupByParams(keys)).toEqual([
+      ["", "foo=bar", "boo=baz&foo=bar"],
+      [
+        [
+          {
+            id: "a",
+          },
+        ],
+        [
+          {
+            id: "b",
+            foo: "bar",
+          },
+        ],
+        [
+          {
+            id: "c",
+            foo: "bar",
+            boo: "baz",
+          },
+        ],
+      ],
     ])
+  })
+})
+
+describe("cacheKeyFn", () => {
+  const { cacheKeyFn } = require("../batchLoader")
+  it("should not treat two objects with the same id but different params as different", () => {
+    expect(cacheKeyFn({ id: "123" })).not.toEqual(
+      cacheKeyFn({ id: "123", foo: "bar" })
+    )
+  })
+
+  it("should treat two objects with the same params and id as equal", () => {
+    expect(cacheKeyFn({ id: "123", foo: "bar" })).toEqual(
+      cacheKeyFn({ id: "123", foo: "bar" })
+    )
+  })
+
+  it("should treat two objects with different ids as different", () => {
+    expect(cacheKeyFn({ id: "456", foo: "bar" })).not.toEqual({
+      id: "567",
+      foo: "bar",
+    })
   })
 })
