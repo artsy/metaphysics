@@ -57,7 +57,7 @@ export const groupByParams = (params: IdWithParams[]): ParamGrouping => {
     .groupBy(serializeParams)
     .entries()
     .thru(entries => {
-      const result: [SerializedParams, IdWithParams[][]] = [[], []]
+      const result: ParamGrouping = [[], []]
       for (let i = 0; i < entries.length; ++i) {
         result[0].push(entries[i][0])
         result[1].push(entries[i][1])
