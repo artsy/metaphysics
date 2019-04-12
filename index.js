@@ -6,7 +6,7 @@ import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
 import { info, error } from "./src/lib/loggers"
 import config from "config"
-import cache from "lib/cache"
+import { isAvailable as isCacheAvailable } from "lib/cache"
 import { init as initTracer } from "lib/tracer"
 import { IpFilter as ipfilter } from "express-ipfilter"
 import { errorHandler } from "lib/errorHandler"
@@ -101,8 +101,7 @@ function bootApp() {
     if (isShuttingDown) {
       return res.status(503).end()
     }
-    cache
-      .isAvailable()
+    isCacheAvailable()
       .then(stats => {
         return res.status(200).end()
       })
@@ -142,3 +141,5 @@ function gracefulExit() {
     process.exit(0)
   })
 }
+
+export default app
