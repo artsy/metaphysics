@@ -3,7 +3,6 @@ import { isArray } from "lodash"
 import config from "config"
 import { error, verbose } from "./loggers"
 import Memcached from "memcached"
-import { cacheTracer } from "./tracer"
 import { statsClient } from "./stats"
 
 const {
@@ -77,9 +76,9 @@ function createMemcachedClient() {
   return client
 }
 
-export const client = isTest ? createMockClient() : createMemcachedClient()
+export const _client = isTest ? createMockClient() : createMemcachedClient()
 
-function _get<T>(key) {
+export function get<T = any>(key: string) {
   return new Promise<T>((resolve, reject) => {
     let timeoutId: NodeJS.Timer | null = setTimeout(() => {
       timeoutId = null
@@ -90,7 +89,7 @@ function _get<T>(key) {
     }, CACHE_RETRIEVAL_TIMEOUT_MS)
 
     const start = Date.now()
-    client.get(cacheKey(key), (err, data) => {
+    _client.get(cacheKey(key), (err, data) => {
       const time = Date.now() - start
       if (time > CACHE_QUERY_LOGGING_THRESHOLD_MS) {
         error(`[Cache#get] Slow read of ${time}ms for key ${cacheKey(key)}`)
@@ -130,7 +129,7 @@ export interface CacheOptions {
   cacheTtlInSeconds?: number
 }
 
-function _set(key, data, options: CacheOptions) {
+export function set(key: string, data: any, options: CacheOptions = {}) {
   const timestamp = new Date().getTime()
   /* eslint-disable no-param-reassign */
   if (isArray(data)) {
@@ -147,7 +146,7 @@ function _set(key, data, options: CacheOptions) {
     return new Promise<void>((resolve, reject) => {
       const payload = JSON.stringify(data)
       verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
-      client.set(cacheKey(key), payload, cacheTtl, err => {
+      _client.set(cacheKey(key), payload, cacheTtl, err => {
         err ? reject(err) : resolve()
       })
     }).catch(error)
@@ -158,7 +157,7 @@ function _set(key, data, options: CacheOptions) {
         verbose(`CACHE SET: ${cacheKey(key)}: ${payload}`)
 
         return new Promise<void>((resolve, reject) => {
-          client.set(
+          _client.set(
             cacheKey(key),
             payload,
             cacheTtl,
@@ -170,36 +169,23 @@ function _set(key, data, options: CacheOptions) {
   }
 }
 
-const _delete = key =>
-  new Promise<void>((resolve, reject) =>
-    client.del(cacheKey(key), err => {
+export function del(key: string) {
+  return new Promise<void>((resolve, reject) =>
+    _client.del(cacheKey(key), err => {
       err ? reject(err) : resolve()
     })
   )
+}
 
-export default {
-  get: <T = any>(key: string) => {
-    return cacheTracer.get(_get<T>(key))
-  },
-
-  set: (key: string, data: any, options: CacheOptions = {}) => {
-    return cacheTracer.set(_set(key, data, options))
-  },
-
-  delete: (key: string) => {
-    return cacheTracer.delete(_delete(key))
-  },
-
-  isAvailable: () => {
-    return new Promise((resolve, reject) => {
-      client.stats((err, resp) => {
-        if (err) {
-          error(err)
-          reject(err)
-        } else {
-          resolve(resp)
-        }
-      })
+export function isAvailable() {
+  return new Promise((resolve, reject) => {
+    _client.stats((err, resp) => {
+      if (err) {
+        error(err)
+        reject(err)
+      } else {
+        resolve(resp)
+      }
     })
-  },
+  })
 }
