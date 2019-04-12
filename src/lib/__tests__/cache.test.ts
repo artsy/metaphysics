@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import zlib from "zlib"
 import config from "config"
-import cache, { client, cacheKey } from "lib/cache"
+import * as cache from "lib/cache"
 
 jest.mock("lib/tracer", () => {
   return {
@@ -40,7 +40,7 @@ describe("Cache with compression enabled", () => {
       beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
 
       it("deletes the data", async () => {
-        await cache.delete("get_foo")
+        await cache.del("get_foo")
         expect.assertions(1)
         try {
           await cache.get("get_foo")
@@ -55,7 +55,7 @@ describe("Cache with compression enabled", () => {
         it("sets the cache and includes a timestamp", async done => {
           await cache.set("set_foo", { bar: "baz" })
 
-          client.get(cacheKey("set_foo"), (_err, data) => {
+          cache._client.get(cache.cacheKey("set_foo"), (_err, data) => {
             const parsed = parseCacheResponse(
               data,
               config.CACHE_COMPRESSION_DISABLED
@@ -72,7 +72,7 @@ describe("Cache with compression enabled", () => {
       it("with an Array it sets the cache and includes a timestamp", async done => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
-        client.get(cacheKey("set_bar"), (_err, data) => {
+        cache._client.get(cache.cacheKey("set_bar"), (_err, data) => {
           const parsed = parseCacheResponse(
             data,
             config.CACHE_COMPRESSION_DISABLED
@@ -108,7 +108,7 @@ describe("Cache with compression disabled", () => {
       beforeEach(async () => await cache.set("get_foo", { bar: "baz" }))
 
       it("deletes the data", () => {
-        cache.delete("get_foo")
+        cache.del("get_foo")
         return cache.get("get_foo").catch(e => {
           expect(e.message).toEqual("[Cache#get] Cache miss")
         })
@@ -120,7 +120,7 @@ describe("Cache with compression disabled", () => {
         it("sets the cache and includes a timestamp", async done => {
           await cache.set("set_foo", { bar: "baz" })
 
-          client.get(cacheKey("set_foo"), (_err, data) => {
+          cache._client.get(cache.cacheKey("set_foo"), (_err, data) => {
             const parsed = parseCacheResponse(
               data,
               config.CACHE_COMPRESSION_DISABLED
@@ -137,7 +137,7 @@ describe("Cache with compression disabled", () => {
       it("with an Array it sets the cache and includes a timestamp", async done => {
         await cache.set("set_bar", [{ baz: "qux" }])
 
-        client.get(cacheKey("set_bar"), (_err, data) => {
+        cache._client.get(cache.cacheKey("set_bar"), (_err, data) => {
           const parsed = parseCacheResponse(
             data,
             config.CACHE_COMPRESSION_DISABLED
