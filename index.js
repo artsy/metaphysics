@@ -141,3 +141,5 @@ function gracefulExit() {
     process.exit(0)
   })
 }
+
+export default app
