@@ -2,7 +2,7 @@
 import { apiLoaderWithAuthenticationFactory } from "lib/loaders/api/loader_with_authentication_factory"
 import { apiLoaderWithoutAuthenticationFactory } from "lib/loaders/api/loader_without_authentication_factory"
 
-import * as cache from "lib/cache"
+import cache from "lib/cache"
 import { StaticPathLoader } from "../api/loader_interface"
 import { API } from "../api"
 import { LoaderFactory } from "../index"

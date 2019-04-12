@@ -795,6 +795,13 @@
     "@types/express" "*"
     "@types/node" "*"
 
+"@types/dd-trace@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@types/dd-trace/-/dd-trace-0.6.0.tgz#6323324e6f1228290dac84df15da2267dc87ac4a"
+  integrity sha512-h7rEG1eee2O+vEGF3lgkfUsXe+zGJkoS8pGDhYpJQ6tYq5MNCHRaoXPzNlTJJlCIOUbjy6WwwffFNh1tpCcvdw==
+  dependencies:
+    opentracing ">=0.14.1"
+
 "@types/express-graphql@^0.6.1":
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/@types/express-graphql/-/express-graphql-0.6.1.tgz#9e8c5544a5099c3db82d29847b1efb2af4ad147c"
@@ -890,11 +897,6 @@
   version "8.0.53"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.53.tgz#396b35af826fa66aad472c8cb7b8d5e277f4e6d8"
   integrity sha512-54Dm6NwYeiSQmRB1BLXKr5GELi0wFapR1npi8bnZhEcu84d/yQKqnwwXQ56hZ0RUbTG6L5nqDZaN3dgByQXQRQ==
-
-"@types/node@^10.12.18":
-  version "10.14.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.4.tgz#1c586b991457cbb58fef51bc4e0cfcfa347714b5"
-  integrity sha512-DT25xX/YgyPKiHFOpNuANIQIVvYEwCWXgK2jYYwqgaMrYE6+tq+DtmMwlD3drl6DJbUwtlIDnn0d7tIn/EbXBg==
 
 "@types/node@^9.4.6":
   version "9.4.7"
@@ -2411,27 +2413,24 @@ date-fns@^1.27.2:
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
   integrity sha512-lbTXWZ6M20cWH8N9S6afb0SBm6tMk+uUg6z3MqHPKE9atmsY3kJkTm8vKe93izJ2B2+q5MV990sM2CHgtAZaOw==
 
-dd-trace@^0.10.4:
-  version "0.10.4"
-  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-0.10.4.tgz#f6c587960dfa57921de038f7a8bee212111e20d3"
-  integrity sha512-RveeQY6Ri2ZlaBVhRsR2RCXQy6bet0KWvSA6eCYjaNzslFtO82bvhvau9kyG2/PN1JvC28OvdYZHKv3WxwgugQ==
+dd-trace@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-0.7.3.tgz#bc028454e2e4a83b13d2ec8346c1a749a3b8ba69"
+  integrity sha512-aIOmLl5Tu1V8C37tsh+esxFot2kq/N/Fuj8zsZaOOrD5C7m6IYJGinkHQINWxep+MN56Q3x95z473zcuqCiFdg==
   dependencies:
-    "@types/node" "^10.12.18"
     async-hook-jl "^1.7.6"
     int64-buffer "^0.1.9"
     koalas "^1.0.2"
     lodash.kebabcase "^4.1.1"
     lodash.memoize "^4.1.2"
     lodash.pick "^4.4.0"
-    lodash.sortby "^4.7.0"
     lodash.truncate "^4.4.2"
     lodash.uniq "^4.5.0"
     methods "^1.1.2"
-    module-details-from-path "^1.0.3"
     msgpack-lite "^0.1.26"
-    opentracing ">=0.12.1"
+    opentracing "0.14.1"
     parent-module "^0.1.0"
-    path-to-regexp "^0.1.2"
+    path-to-regexp "^2.2.1"
     performance-now "^2.1.0"
     read-pkg-up "^3.0.0"
     require-in-the-middle "^2.2.2"
@@ -6426,15 +6425,15 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-opentracing@>=0.12.1:
-  version "0.14.3"
-  resolved "https://registry.yarnpkg.com/opentracing/-/opentracing-0.14.3.tgz#23e3ad029fa66a653926adbe57e834469f8550aa"
-  integrity sha1-I+OtAp+mamU5Jq2+V+g0Rp+FUKo=
-
-opentracing@^0.14.1:
+opentracing@0.14.1, opentracing@^0.14.1:
   version "0.14.1"
   resolved "https://registry.yarnpkg.com/opentracing/-/opentracing-0.14.1.tgz#40d278beea417660a35dd9d3ee76511ffa911dcd"
   integrity sha1-QNJ4vupBdmCjXdnT7nZRH/qRHc0=
+
+opentracing@>=0.14.1:
+  version "0.14.3"
+  resolved "https://registry.yarnpkg.com/opentracing/-/opentracing-0.14.3.tgz#23e3ad029fa66a653926adbe57e834469f8550aa"
+  integrity sha1-I+OtAp+mamU5Jq2+V+g0Rp+FUKo=
 
 optimist@^0.6.1:
   version "0.6.1"
@@ -6711,10 +6710,15 @@ path-parse@^1.0.5, path-parse@^1.0.6:
   resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.6.tgz#d62dbb5679405d72c4737ec58600e9ddcf06d24c"
   integrity sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==
 
-path-to-regexp@0.1.7, path-to-regexp@^0.1.2:
+path-to-regexp@0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
   integrity sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=
+
+path-to-regexp@^2.2.1:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-2.4.0.tgz#35ce7f333d5616f1c1e1bfe266c3aba2e5b2e704"
+  integrity sha512-G6zHoVqC6GGTQkZwF4lkuEyMbVOjoBKAEybQUypI1WTkqinCOrq2x6U2+phkJ1XsEMTy4LjtwPI7HW+NVrRR2w==
 
 path-type@^1.0.0:
   version "1.1.0"
