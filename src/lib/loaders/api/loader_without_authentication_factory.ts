@@ -1,15 +1,13 @@
 import DataLoader from "dataloader"
 
 import { loaderInterface } from "./loader_interface"
-import cache, { CacheOptions } from "lib/cache"
+import * as cache from "lib/cache"
 import timer from "lib/timer"
 import { verbose, warn } from "lib/loggers"
 import extensionsLogger, { formatBytes } from "lib/loaders/api/extensionsLogger"
 import config from "config"
 import { API, DataLoaderKey, APIOptions } from "./index"
 import { LoaderFactory } from "../index"
-
-const { CACHE_DISABLED } = config
 
 // TODO Signatures for when we move to TypeScript (may not be 100% correct)
 //
@@ -101,12 +99,12 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
             const reduceData = ({ body, headers }) =>
               apiOptions.headers ? { body, headers } : body
 
-            const cacheData = (data, options: CacheOptions) => {
+            const cacheData = (data, options: cache.CacheOptions) => {
               cache.set(key, data, options).catch(err => warn(key, err))
               return data
             }
 
-            if (CACHE_DISABLED) {
+            if (config.CACHE_DISABLED) {
               return callApi()
                 .then(
                   finish({
@@ -129,7 +127,7 @@ export const apiLoaderWithoutAuthenticationFactory = <T = any>(
                   )
                   // Cache miss.
                   .catch(() => {
-                    const cacheOptions: CacheOptions = {}
+                    const cacheOptions: cache.CacheOptions = {}
                     if (apiOptions.requestThrottleMs) {
                       cacheOptions.cacheTtlInSeconds =
                         apiOptions.requestThrottleMs / 1000
