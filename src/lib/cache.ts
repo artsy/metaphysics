@@ -63,7 +63,6 @@ function createMockClient() {
     },
     // Just to satisfy rate-limit-memcached
     increment: (_key, _value, cb) => cb(false),
-    stats: cb => cb(),
   }
 }
 
