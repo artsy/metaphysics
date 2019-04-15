@@ -35,6 +35,71 @@ export const mockFetch = jest.fn(() =>
               },
             ],
           },
+          partnerStats: {
+            uniqueVisitors: 0,
+            artworksPublished: {
+              timeSeries: [
+                {
+                  count: 3,
+                  time: "2019-03-14T00:00:00Z",
+                  samplingFrequency: "DAILY",
+                },
+                {
+                  count: 1,
+                  time: "2019-03-18T00:00:00Z",
+                  samplingFrequency: "DAILY",
+                },
+                {
+                  count: 1,
+                  time: "2019-03-19T00:00:00Z",
+                  samplingFrequency: "DAILY",
+                },
+                {
+                  count: 6,
+                  time: "2019-03-22T00:00:00Z",
+                  samplingFrequency: "DAILY",
+                },
+                {
+                  count: 15,
+                  time: "2019-03-28T00:00:00Z",
+                  samplingFrequency: "DAILY",
+                },
+                {
+                  count: 2,
+                  time: "2019-03-29T00:00:00Z",
+                  samplingFrequency: "DAILY",
+                },
+                {
+                  count: 6,
+                  time: "2019-04-01T00:00:00Z",
+                  samplingFrequency: "DAILY",
+                },
+                {
+                  count: 5,
+                  time: "2019-04-04T00:00:00Z",
+                  samplingFrequency: "DAILY",
+                },
+              ],
+            },
+            topArtworks: {
+              edges: [
+                {
+                  node: {
+                    artworkId: "5c12d91fe55c1e2b4010df28",
+                    value: 76.0,
+                    period: "FOUR_WEEKS",
+                  },
+                },
+                {
+                  node: {
+                    artworkId: "5bfec60b2bc43f4416ec7509",
+                    value: 51.0,
+                    period: "FOUR_WEEKS",
+                  },
+                },
+              ],
+            },
+          },
         },
       })
     )

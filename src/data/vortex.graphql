@@ -8,7 +8,9 @@ type ArtworksPublishedStats {
   """
   Time series data on number of artworks published
   """
-  timeSeries(samplingFrequency: SamplingFrequencyEnum): [ArtworksPublishedTimeSeriesStats!]
+  timeSeries(
+    samplingFrequency: SamplingFrequencyEnum
+  ): [ArtworksPublishedTimeSeriesStats!]
   totalCount: Int!
 }
 
@@ -36,6 +38,31 @@ type HistogramBin {
 }
 
 """
+Information about pagination in a connection.
+"""
+type PageInfo {
+  """
+  When paginating forwards, the cursor to continue.
+  """
+  endCursor: String
+
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+
+  """
+  When paginating backwards, the cursor to continue.
+  """
+  startCursor: String
+}
+
+"""
 Partner Stats
 """
 type PartnerStatsType {
@@ -44,6 +71,32 @@ type PartnerStatsType {
   """
   artworksPublished(period: QueryPeriodEnum!): ArtworksPublishedStats
   partnerId: String!
+
+  """
+  Artworks ranked by views
+  """
+  topArtworks(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    period: QueryPeriodEnum!
+  ): TopArtworksConnection
 
   """
   Number of unique visitors
@@ -173,7 +226,12 @@ type Query {
   """
   Pricing Context Histograms
   """
-  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, heightCm: Int!, widthCm: Int!): PricingContext
+  pricingContext(
+    artistId: String!
+    category: PricingContextCategoryEnum!
+    heightCm: Int!
+    widthCm: Int!
+  ): PricingContext
 }
 
 enum QueryPeriodEnum {
@@ -208,4 +266,48 @@ enum SamplingFrequencyEnum {
   Weekly
   """
   WEEKLY
+}
+
+"""
+Top artworks from a partner
+"""
+type TopArtworks {
+  artworkId: String!
+  period: QueryPeriodEnum!
+  value: Int!
+}
+
+"""
+The connection type for TopArtworks.
+"""
+type TopArtworksConnection {
+  """
+  A list of edges.
+  """
+  edges: [TopArtworksEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [TopArtworks]
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""
+An edge in a connection.
+"""
+type TopArtworksEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: TopArtworks
 }

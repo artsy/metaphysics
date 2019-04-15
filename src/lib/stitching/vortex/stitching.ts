@@ -1,9 +1,10 @@
 import { executableVortexSchema } from "./schema"
 import { amount } from "schema/fields/money"
+import { GraphQLSchema } from "graphql/type/schema"
 
 const vortexSchema = executableVortexSchema({ removePricingContext: false })
 
-export const vortexStitchingEnvironment = () => ({
+export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: `
     extend type Artwork {
@@ -28,6 +29,9 @@ export const vortexStitchingEnvironment = () => ({
         thousand: String = ","
       ): String
     }
+    extend type AnalyticsTopArtworks {
+      artwork: Artwork
+    }    
   `,
   resolvers: {
     AnalyticsHistogramBin: {
@@ -118,6 +122,25 @@ export const vortexStitchingEnvironment = () => ({
             console.error(e)
             throw e
           }
+        },
+      },
+    },
+    AnalyticsTopArtworks: {
+      artwork: {
+        fragment: `fragment AnalyticsTopArtworksArtwork on AnalyticsTopArtworks { artworkId }`,
+        resolve: async (parent, _args, context, info) => {
+          const id = parent.artworkId
+          return await info.mergeInfo.delegateToSchema({
+            schema: localSchema,
+            operation: "query",
+            fieldName: "artwork",
+            args: {
+              id,
+            },
+            context,
+            info,
+            transforms: vortexSchema.transforms,
+          })
         },
       },
     },
