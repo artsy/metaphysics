@@ -145,6 +145,9 @@ export const batchLoader = ({
      * so the results are always formatted into an array
      */
     if (typeof key === "object" && key !== null) {
+      if (!key.id) {
+        return multipleLoader(key)
+      }
       if (key.id.length === 1) {
         return dl
           .load({ ...key, id: key.id[0] })
