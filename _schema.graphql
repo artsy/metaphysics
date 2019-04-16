@@ -7803,9 +7803,6 @@ type Query {
 
   # Find partners by ID
   _unused_gravity_partners(ids: [ID]!): [DoNotUseThisPartner]
-
-  # Find PartnerStats
-  analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
   marketingCollections(
     randomizationSeed: String
     size: Int

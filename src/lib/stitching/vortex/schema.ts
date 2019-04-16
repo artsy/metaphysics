@@ -19,14 +19,19 @@ export const executableVortexSchema = ({
     schema: vortexTypeDefs,
     link: vortexLink,
   })
-
   // Return the new modified schema
   return transformSchema(schema, [
     // we don't want pricingContext to be a root query field, it is
     // accessible through artwork
-    ...(removePricingContext
-      ? [new FilterRootFields((_operation, name) => name !== "pricingContext")]
-      : []),
+    ...[
+      new FilterRootFields(
+        (_operation, name) =>
+          !(
+            (removePricingContext && name === "pricingContext") ||
+            name === "partnerStats"
+          )
+      ),
+    ],
     new RenameTypes(name => {
       return `Analytics${name}`
     }),
