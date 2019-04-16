@@ -42,7 +42,11 @@ describe("BuyerCounterOffer Mutation", () => {
 
     return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceBuyerCounterOffer.orderOrError.order).toEqual(
-        sampleOrder({ mode: "OFFER", includeOfferFields: true })
+        sampleOrder({
+          mode: "OFFER",
+          includeOfferFields: true,
+          includeCreditCard: true,
+        })
       )
     })
   })

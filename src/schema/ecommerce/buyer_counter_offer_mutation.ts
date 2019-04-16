@@ -61,6 +61,7 @@ export const BuyerCounterOfferMutation = mutationWithClientMutationId<
             ... on EcommerceOrderWithMutationSuccess {
               order {
                 ${BuyerOrderFields}
+                creditCardId
               }
             }
             ... on EcommerceOrderWithMutationFailure {
