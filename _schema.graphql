@@ -57,7 +57,7 @@ type AnalyticsArtworksPublishedStats {
 }
 
 # Publish artwork Series Stats
-type AnalyticsArtworksPublishedTimeSeriesStats implements AnalyticsPartnerTimeSeriesStatsType {
+type AnalyticsArtworksPublishedTimeSeriesStats implements AnalyticsPartnerTimeSeriesStats {
   count: Int
   samplingFrequency: AnalyticsSamplingFrequencyEnum!
   time: AnalyticsDateTime
@@ -103,7 +103,7 @@ type AnalyticsPageInfo {
 }
 
 # Partner Stats
-type AnalyticsPartnerStatsType {
+type AnalyticsPartnerStats {
   # Time series data on number of artworks published
   artworksPublished(
     period: AnalyticsQueryPeriodEnum!
@@ -131,7 +131,7 @@ type AnalyticsPartnerStatsType {
 }
 
 # Partner Time Series Stats
-interface AnalyticsPartnerTimeSeriesStatsType {
+interface AnalyticsPartnerTimeSeriesStats {
   samplingFrequency: AnalyticsSamplingFrequencyEnum!
   time: AnalyticsDateTime
 }
@@ -6840,6 +6840,7 @@ type Partner implements Node {
 
   # The gallery partner's web address
   website: String
+  analytics: AnalyticsPartnerStats
 }
 
 type PartnerArtist {
@@ -7804,7 +7805,7 @@ type Query {
   _unused_gravity_partners(ids: [ID]!): [DoNotUseThisPartner]
 
   # Find PartnerStats
-  analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStatsType
+  analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
   marketingCollections(
     randomizationSeed: String
     size: Int

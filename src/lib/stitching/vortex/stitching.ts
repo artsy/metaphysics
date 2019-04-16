@@ -29,6 +29,9 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         thousand: String = ","
       ): String
     }
+    extend type Partner {
+      analytics: AnalyticsPartnerStats
+    }
     extend type AnalyticsTopArtworks {
       artwork: Artwork
     }    
@@ -122,6 +125,24 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             console.error(e)
             throw e
           }
+        },
+      },
+    },
+    Partner: {
+      analytics: {
+        fragment: `... on Partner {
+          _id
+        }`,
+        resolve: async (source, _, context, info) => {
+          const args = { partnerId: source._id }
+          return await info.mergeInfo.delegateToSchema({
+            schema: vortexSchema,
+            operation: "query",
+            fieldName: "analyticsPartnerStats",
+            args,
+            context,
+            info,
+          })
         },
       },
     },

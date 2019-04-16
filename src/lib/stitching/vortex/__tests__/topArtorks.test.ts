@@ -21,21 +21,25 @@ describe("TopArtworks type", () => {
       _id: "artist-id",
     })
   )
+  const partnerLoader = jest.fn(() => Promise.resolve({ _id: "lol" }))
   const context: Partial<ResolverContext> = {
     artworkLoader,
     artistLoader,
+    partnerLoader,
   }
   const query = gql`
     query {
-      analyticsPartnerStats(partnerId: "lol") {
-        topArtworks(period: FOUR_WEEKS) {
-          edges {
-            node {
-              value
-              period
-              artwork {
-                id
-                title
+      partner(id: "lol") {
+        analytics {
+          topArtworks(period: FOUR_WEEKS) {
+            edges {
+              node {
+                value
+                period
+                artwork {
+                  id
+                  title
+                }
               }
             }
           }
@@ -48,30 +52,32 @@ describe("TopArtworks type", () => {
     const result = await runQuery(query, context)
     expect(result).toMatchInlineSnapshot(`
 Object {
-  "analyticsPartnerStats": Object {
-    "topArtworks": Object {
-      "edges": Array [
-        Object {
-          "node": Object {
-            "artwork": Object {
-              "id": "lona-misa",
-              "title": "Lona Misa",
+  "partner": Object {
+    "analytics": Object {
+      "topArtworks": Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "artwork": Object {
+                "id": "lona-misa",
+                "title": "Lona Misa",
+              },
+              "period": "FOUR_WEEKS",
+              "value": 76,
             },
-            "period": "FOUR_WEEKS",
-            "value": 76,
           },
-        },
-        Object {
-          "node": Object {
-            "artwork": Object {
-              "id": "lona-misa",
-              "title": "Lona Misa",
+          Object {
+            "node": Object {
+              "artwork": Object {
+                "id": "lona-misa",
+                "title": "Lona Misa",
+              },
+              "period": "FOUR_WEEKS",
+              "value": 51,
             },
-            "period": "FOUR_WEEKS",
-            "value": 51,
           },
-        },
-      ],
+        ],
+      },
     },
   },
 }
