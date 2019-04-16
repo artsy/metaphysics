@@ -17,7 +17,7 @@ type ArtworksPublishedStats {
 """
 Publish artwork Series Stats
 """
-type ArtworksPublishedTimeSeriesStats implements PartnerTimeSeriesStatsType {
+type ArtworksPublishedTimeSeriesStats implements PartnerTimeSeriesStats {
   count: Int
   samplingFrequency: SamplingFrequencyEnum!
   time: DateTime
@@ -65,7 +65,7 @@ type PageInfo {
 """
 Partner Stats
 """
-type PartnerStatsType {
+type PartnerStats {
   """
   Time series data on number of artworks published
   """
@@ -107,7 +107,7 @@ type PartnerStatsType {
 """
 Partner Time Series Stats
 """
-interface PartnerTimeSeriesStatsType {
+interface PartnerTimeSeriesStats {
   samplingFrequency: SamplingFrequencyEnum!
   time: DateTime
 }
@@ -221,7 +221,7 @@ type Query {
   """
   Find PartnerStats
   """
-  partnerStats(partnerId: String!): PartnerStatsType
+  partnerStats(partnerId: String!): PartnerStats
 
   """
   Pricing Context Histograms
