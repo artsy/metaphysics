@@ -2,7 +2,7 @@ import { executableVortexSchema } from "./schema"
 import { amount } from "schema/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 
-const vortexSchema = executableVortexSchema({ removePricingContext: false })
+const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
