@@ -102,6 +102,7 @@ export const markdownToText = str => {
   return stripTags(formatMarkdownValue(str, "html"))
 }
 export const parseFieldASTsIntoArray = fieldASTs => {
+  // TODO: when fieldASTs[*].selectionSet.selections.kind === "InlineFragment" recursively go deeper
   return map(flatMap(fieldASTs, "selectionSet.selections"), "name.value")
 }
 export const queriedForFieldsOtherThanBlacklisted = (

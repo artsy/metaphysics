@@ -64,7 +64,7 @@ export const incrementalMergeSchemas = (testConfig?: any) => {
 
   const vortexSchema = executableVortexSchema()
   schemas.push(vortexSchema)
-  useStitchingEnvironment(vortexStitchingEnvironment())
+  useStitchingEnvironment(vortexStitchingEnvironment(localSchema))
 
   // Always stitch kaws
   const kawsSchema = executableKawsSchema()

@@ -1,9 +1,10 @@
 import { executableVortexSchema } from "./schema"
 import { amount } from "schema/fields/money"
+import { GraphQLSchema } from "graphql/type/schema"
 
-const vortexSchema = executableVortexSchema({ removePricingContext: false })
+const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
-export const vortexStitchingEnvironment = () => ({
+export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: `
     extend type Artwork {
@@ -28,6 +29,12 @@ export const vortexStitchingEnvironment = () => ({
         thousand: String = ","
       ): String
     }
+    extend type Partner {
+      analytics: AnalyticsPartnerStats
+    }
+    extend type AnalyticsTopArtworks {
+      artwork: Artwork
+    }    
   `,
   resolvers: {
     AnalyticsHistogramBin: {
@@ -133,6 +140,43 @@ export const vortexStitchingEnvironment = () => ({
             console.error(e)
             throw e
           }
+        },
+      },
+    },
+    Partner: {
+      analytics: {
+        fragment: `... on Partner {
+          _id
+        }`,
+        resolve: async (source, _, context, info) => {
+          const args = { partnerId: source._id }
+          return await info.mergeInfo.delegateToSchema({
+            schema: vortexSchema,
+            operation: "query",
+            fieldName: "analyticsPartnerStats",
+            args,
+            context,
+            info,
+          })
+        },
+      },
+    },
+    AnalyticsTopArtworks: {
+      artwork: {
+        fragment: `fragment AnalyticsTopArtworksArtwork on AnalyticsTopArtworks { artworkId }`,
+        resolve: async (parent, _args, context, info) => {
+          const id = parent.artworkId
+          return await info.mergeInfo.delegateToSchema({
+            schema: localSchema,
+            operation: "query",
+            fieldName: "artwork",
+            args: {
+              id,
+            },
+            context,
+            info,
+            transforms: vortexSchema.transforms,
+          })
         },
       },
     },

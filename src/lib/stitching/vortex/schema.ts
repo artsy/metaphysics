@@ -9,8 +9,8 @@ import {
 import { readFileSync } from "fs"
 
 export const executableVortexSchema = ({
-  removePricingContext = true,
-}: { removePricingContext?: boolean } = {}) => {
+  removeRootFields = true,
+}: { removeRootFields?: boolean } = {}) => {
   const vortexLink = createVortexLink()
   const vortexTypeDefs = readFileSync("src/data/vortex.graphql", "utf8")
 
@@ -20,12 +20,18 @@ export const executableVortexSchema = ({
     link: vortexLink,
   })
 
+  const removeRootFieldList = ["pricingContext", "partnerStat"]
+
   // Return the new modified schema
   return transformSchema(schema, [
     // we don't want pricingContext to be a root query field, it is
     // accessible through artwork
-    ...(removePricingContext
-      ? [new FilterRootFields((_operation, name) => name !== "pricingContext")]
+    ...(removeRootFields
+      ? [
+          new FilterRootFields(
+            (_operation, name) => !removeRootFieldList.includes(name)
+          ),
+        ]
       : []),
     new RenameTypes(name => {
       return `Analytics${name}`

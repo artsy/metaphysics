@@ -4,7 +4,7 @@ import { graphql } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { error } from "util"
 
-const schema = executableVortexSchema({ removePricingContext: false })
+const schema = executableVortexSchema({ removeRootFields: false })
 const query = gql`
   query artworkPricingContextQuery(
     $artistId: String!
