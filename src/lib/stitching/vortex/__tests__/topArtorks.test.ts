@@ -21,6 +21,8 @@ describe("TopArtworks type", () => {
       _id: "artist-id",
     })
   )
+  // TODO: after fixing parseFieldASTsIntoArray partnerLoader is not required
+  // unless the query is run with slug, or other partner fields TODO: add tests for both cases
   const partnerLoader = jest.fn(() => Promise.resolve({ _id: "lol" }))
   const context: Partial<ResolverContext> = {
     artworkLoader,
