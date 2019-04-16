@@ -102,8 +102,8 @@ describe("SearchableItemPresenter", () => {
       const buildSearchableItem = label => {
         return {
           ...BASE_ITEM,
-          start_at: "2018-05-16T11:28:00.000Z",
-          end_at: "2018-05-30T18:40:09.000Z",
+          start_at: "2018-05-16T10:00:00.000Z",
+          end_at: "2018-05-30T18:30:00.000Z",
           label: label,
         }
       }
@@ -120,7 +120,7 @@ describe("SearchableItemPresenter", () => {
         description = presenter.formattedDescription()
 
         expect(description).toBe(
-          "Sale running from May 16th, 2018 to May 30th, 2018"
+          "Sale running from May 16th, 2018 (at 6:00am EDT) to May 30th, 2018 (at 2:30pm EDT)"
         )
       })
 

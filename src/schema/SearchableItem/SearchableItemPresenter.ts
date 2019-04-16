@@ -1,5 +1,5 @@
 import { compact } from "lodash"
-import moment from "moment"
+import moment from "moment-timezone"
 import { stripTags } from "lib/helpers"
 import { SearchItemRawResponse } from "./SearchItemRawResponse"
 
@@ -21,7 +21,7 @@ export class SearchableItemPresenter {
       case "Fair":
         return this.formattedEventDescription("Art fair")
       case "Auction":
-        return this.formattedEventDescription("Sale")
+        return this.formattedEventDescription("Sale", "America/New_York")
       case "Artwork":
       case "Feature":
       case "Gallery":
@@ -102,11 +102,22 @@ export class SearchableItemPresenter {
     return this.item.image_url
   }
 
-  private formattedEventDescription(title: string): string {
+  private formattedEventDescription(title: string, timezone?: string): string {
     const { description, location, start_at, end_at } = this.item
 
-    const formattedStartAt = moment.utc(start_at).format(DATE_FORMAT)
-    const formattedEndAt = moment.utc(end_at).format(DATE_FORMAT)
+    const startAt = moment.utc(start_at)
+    const endAt = moment.utc(end_at)
+    let formattedStartAt = startAt.format(DATE_FORMAT)
+    let formattedEndAt = endAt.format(DATE_FORMAT)
+
+    if (timezone) {
+      formattedStartAt = `${formattedStartAt} (at ${startAt
+        .tz(timezone)
+        .format("h:mma z")})`
+      formattedEndAt = `${formattedEndAt} (at ${endAt
+        .tz(timezone)
+        .format("h:mma z")})`
+    }
 
     if (start_at && end_at) {
       let formattedDescription = `${title} running from ${formattedStartAt} to ${formattedEndAt}`
