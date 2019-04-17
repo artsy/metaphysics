@@ -66,6 +66,21 @@ describe("batchLoader", () => {
       })
     })
 
+    it("should skip batching when called without an id", async () => {
+      const multipleLoader = jest.fn()
+      const DL = jest.genMockFromModule("dataloader")
+      const dataLoaderMock = {
+        load: jest.fn(),
+      }
+      const loaderOptions = { sort: "latest" }
+      // @ts-ignore
+      DL.mockImplementation(() => dataLoaderMock)
+      const batch = batchLoader({ multipleLoader, DL })
+      await batch(loaderOptions)
+      expect(dataLoaderMock.load).not.toBeCalled()
+      expect(multipleLoader).toBeCalledWith(loaderOptions)
+    })
+
     it("should group multiple calls together", async () => {
       const multipleLoader = jest.fn(paramSet =>
         paramSet.id.map(id => ({
