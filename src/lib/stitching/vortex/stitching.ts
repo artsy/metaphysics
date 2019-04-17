@@ -101,9 +101,8 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             widthCm
             heightCm
             edition_sets {
-              dimensions {
-                cm
-              }
+              widthCm
+              heightCm
             }
             priceCents {
               min
@@ -141,11 +140,9 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           // Pull out width and height from first edition set if > 1
           let width = widthCm
           let height = heightCm
-          if (edition_sets.length > 1 && edition_sets[0].dimensions.cm) {
-            const result = parseDimensionsString(edition_sets[0].dimensions.cm)
-            if (result) {
-              ;({ width, height } = result)
-            }
+          if (edition_sets.length > 1) {
+            width = edition_sets[0].widthCm || width
+            height = edition_sets[0].heightCm || height
           }
 
           // fail if we don't have enough info to request a histogram

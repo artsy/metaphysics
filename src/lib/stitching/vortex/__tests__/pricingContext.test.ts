@@ -22,7 +22,12 @@ describe("PricingContext type", () => {
     price_hidden: false,
     width_cm: 15,
     height_cm: 15,
-    edition_sets: [{ dimensions: { cm: "15 × 15 cm" } }],
+    edition_sets: [
+      {
+        width_cm: 15,
+        height_cm: 15,
+      },
+    ],
     forsale: true,
     is_in_auction: false,
     price_currency: "USD",
@@ -149,9 +154,9 @@ Object {
     artworkLoader.mockResolvedValueOnce({
       ...artwork,
       edition_sets: [
-        { dimensions: { cm: "27.9 × 35.6 cm" } },
-        { dimensions: { cm: "50.8 × 61 cm" } },
-        { dimensions: { cm: "101.6 × 127 cm" } },
+        { width_cm: 27.9, height_cm: 35.6 },
+        { width_cm: 50.8, height_cm: 61.0 },
+        { width_cm: 101.6, height_cm: 127.0 },
       ],
     })
     await runQuery(query, context)

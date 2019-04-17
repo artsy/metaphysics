@@ -3478,6 +3478,12 @@ type EditionSet implements Sellable {
   is_sold: Boolean
   price: String @deprecated(reason: "Prefer to use `sale_message`.")
   sale_message: String
+
+  # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
+  widthCm: Float
+
+  # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
+  heightCm: Float
 }
 
 enum EditionSetSorts {

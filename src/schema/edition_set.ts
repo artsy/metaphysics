@@ -7,6 +7,7 @@ import {
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLFloat,
 } from "graphql"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import { Sellable } from "./sellable"
@@ -89,6 +90,18 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
 
         return "No longer available"
       },
+    },
+    widthCm: {
+      description:
+        "If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field",
+      type: GraphQLFloat,
+      resolve: ({ width_cm }) => width_cm,
+    },
+    heightCm: {
+      description:
+        "If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field",
+      type: GraphQLFloat,
+      resolve: ({ height_cm }) => height_cm,
     },
   },
 })
