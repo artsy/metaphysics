@@ -105,27 +105,16 @@ export class SearchableItemPresenter {
   private formattedEventDescription(title: string, timezone?: string): string {
     const { description, location, start_at, end_at } = this.item
 
-    const startAt = moment.utc(start_at)
-    const endAt = moment.utc(end_at)
-    let formattedStartAt = startAt.format(DATE_FORMAT)
-    let formattedEndAt = endAt.format(DATE_FORMAT)
+    let formattedStartAt = this.formattedTime(start_at, DATE_FORMAT, timezone)
+    let formattedEndAt = this.formattedTime(end_at, DATE_FORMAT, timezone)
 
-    if (timezone) {
-      formattedStartAt = `${formattedStartAt} (at ${startAt
-        .tz(timezone)
-        .format("h:mma z")})`
-      formattedEndAt = `${formattedEndAt} (at ${endAt
-        .tz(timezone)
-        .format("h:mma z")})`
-    }
-
-    if (start_at && end_at) {
+    if (formattedStartAt && formattedEndAt) {
       let formattedDescription = `${title} running from ${formattedStartAt} to ${formattedEndAt}`
       if (location) {
         formattedDescription += ` in ${location}`
       }
       return formattedDescription
-    } else if (start_at) {
+    } else if (formattedStartAt) {
       return `${title} opening ${formattedStartAt}`
     } else {
       return description
@@ -135,14 +124,32 @@ export class SearchableItemPresenter {
   private formattedArticleDescription(): string {
     const { description, published_at } = this.item
 
-    const formattedPublishedAt = moment.utc(published_at).format(DATE_FORMAT)
+    const formattedPublishedAt = this.formattedTime(published_at, DATE_FORMAT)
 
-    if (published_at && description) {
+    if (formattedPublishedAt && description) {
       return `${formattedPublishedAt} ... ${description}`
-    } else if (published_at) {
+    } else if (formattedPublishedAt) {
       return formattedPublishedAt
     } else {
       return description
+    }
+  }
+
+  private formattedTime(
+    timestamp: string,
+    format: string,
+    timezone?: string
+  ): string | null {
+    const momentTime = moment.utc(timestamp)
+
+    if (!momentTime.isValid()) {
+      return null
+    } else if (timezone) {
+      return `${momentTime.tz(timezone).format(format)} (at ${momentTime.format(
+        "h:mma z"
+      )})`
+    } else {
+      return momentTime.format(format)
     }
   }
 
