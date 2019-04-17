@@ -109,11 +109,17 @@ export class SearchableItemPresenter {
     const formattedEndAt = this.formattedTime(end_at, DATE_FORMAT, timezone)
 
     if (formattedStartAt && formattedEndAt) {
-      return `${title} running from ${formattedStartAt} to ${formattedEndAt}${location &&
-        ` in ${location}`}`
+      let formattedDescription = `${title} running from ${formattedStartAt} to ${formattedEndAt}`
+      if (location) {
+        formattedDescription += ` in ${location}`
+      }
+      return formattedDescription
     } else if (formattedStartAt) {
-      return `${title} opening ${formattedStartAt}${location &&
-        ` in ${location}`}`
+      let formattedDescription = `${title} opening ${formattedStartAt}`
+      if (location) {
+        formattedDescription += ` in ${location}`
+      }
+      return formattedDescription
     } else {
       return description
     }
