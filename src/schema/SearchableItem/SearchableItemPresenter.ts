@@ -1,5 +1,5 @@
 import { compact } from "lodash"
-import moment from "moment"
+import moment from "moment-timezone"
 import { stripTags } from "lib/helpers"
 import { SearchItemRawResponse } from "./SearchItemRawResponse"
 
@@ -21,7 +21,7 @@ export class SearchableItemPresenter {
       case "Fair":
         return this.formattedEventDescription("Art fair")
       case "Auction":
-        return this.formattedEventDescription("Sale")
+        return this.formattedEventDescription("Sale", "America/New_York")
       case "Artwork":
       case "Feature":
       case "Gallery":
@@ -102,20 +102,18 @@ export class SearchableItemPresenter {
     return this.item.image_url
   }
 
-  private formattedEventDescription(title: string): string {
+  private formattedEventDescription(title: string, timezone?: string): string {
     const { description, location, start_at, end_at } = this.item
 
-    const formattedStartAt = moment.utc(start_at).format(DATE_FORMAT)
-    const formattedEndAt = moment.utc(end_at).format(DATE_FORMAT)
+    const formattedStartAt = this.formattedTime(start_at, DATE_FORMAT, timezone)
+    const formattedEndAt = this.formattedTime(end_at, DATE_FORMAT, timezone)
 
-    if (start_at && end_at) {
-      let formattedDescription = `${title} running from ${formattedStartAt} to ${formattedEndAt}`
-      if (location) {
-        formattedDescription += ` in ${location}`
-      }
-      return formattedDescription
-    } else if (start_at) {
-      return `${title} opening ${formattedStartAt}`
+    if (formattedStartAt && formattedEndAt) {
+      return `${title} running from ${formattedStartAt} to ${formattedEndAt}${location &&
+        ` in ${location}`}`
+    } else if (formattedStartAt) {
+      return `${title} opening ${formattedStartAt}${location &&
+        ` in ${location}`}`
     } else {
       return description
     }
@@ -124,14 +122,32 @@ export class SearchableItemPresenter {
   private formattedArticleDescription(): string {
     const { description, published_at } = this.item
 
-    const formattedPublishedAt = moment.utc(published_at).format(DATE_FORMAT)
+    const formattedPublishedAt = this.formattedTime(published_at, DATE_FORMAT)
 
-    if (published_at && description) {
+    if (formattedPublishedAt && description) {
       return `${formattedPublishedAt} ... ${description}`
-    } else if (published_at) {
+    } else if (formattedPublishedAt) {
       return formattedPublishedAt
     } else {
       return description
+    }
+  }
+
+  private formattedTime(
+    timestamp: string,
+    format: string,
+    timezone?: string
+  ): string | null {
+    const momentTime = moment.utc(timestamp)
+
+    if (!momentTime.isValid()) {
+      return null
+    } else if (timezone) {
+      return `${momentTime.tz(timezone).format(format)} (at ${momentTime.format(
+        "h:mma z"
+      )})`
+    } else {
+      return momentTime.format(format)
     }
   }
 
