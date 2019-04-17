@@ -140,6 +140,17 @@ describe("SearchableItemPresenter", () => {
         description = presenter.formattedDescription()
 
         expect(description).toBe("Sale opening May 16th, 2018 (at 6:00am EDT)")
+
+        presenter = new SearchableItemPresenter({
+          ...buildSearchableItem("Auction"),
+          end_at: "",
+          location: "New York, NY",
+        })
+        description = presenter.formattedDescription()
+
+        expect(description).toBe(
+          "Sale opening May 16th, 2018 (at 6:00am EDT) in New York, NY"
+        )
       })
 
       it("supports a location if provided", () => {

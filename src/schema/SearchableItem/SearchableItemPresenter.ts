@@ -105,17 +105,15 @@ export class SearchableItemPresenter {
   private formattedEventDescription(title: string, timezone?: string): string {
     const { description, location, start_at, end_at } = this.item
 
-    let formattedStartAt = this.formattedTime(start_at, DATE_FORMAT, timezone)
-    let formattedEndAt = this.formattedTime(end_at, DATE_FORMAT, timezone)
+    const formattedStartAt = this.formattedTime(start_at, DATE_FORMAT, timezone)
+    const formattedEndAt = this.formattedTime(end_at, DATE_FORMAT, timezone)
 
     if (formattedStartAt && formattedEndAt) {
-      let formattedDescription = `${title} running from ${formattedStartAt} to ${formattedEndAt}`
-      if (location) {
-        formattedDescription += ` in ${location}`
-      }
-      return formattedDescription
+      return `${title} running from ${formattedStartAt} to ${formattedEndAt}${location &&
+        ` in ${location}`}`
     } else if (formattedStartAt) {
-      return `${title} opening ${formattedStartAt}`
+      return `${title} opening ${formattedStartAt}${location &&
+        ` in ${location}`}`
     } else {
       return description
     }
