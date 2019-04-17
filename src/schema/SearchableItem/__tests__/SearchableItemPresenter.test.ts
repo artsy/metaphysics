@@ -124,6 +124,24 @@ describe("SearchableItemPresenter", () => {
         )
       })
 
+      it("formats the event period if only start time is available", () => {
+        let presenter = new SearchableItemPresenter({
+          ...buildSearchableItem("Fair"),
+          end_at: "",
+        })
+        let description = presenter.formattedDescription()
+
+        expect(description).toBe("Art fair opening May 16th, 2018")
+
+        presenter = new SearchableItemPresenter({
+          ...buildSearchableItem("Auction"),
+          end_at: "",
+        })
+        description = presenter.formattedDescription()
+
+        expect(description).toBe("Sale opening May 16th, 2018 (at 6:00am EDT)")
+      })
+
       it("supports a location if provided", () => {
         const searchableItem = Object.assign(buildSearchableItem("Fair"), {
           location: "New York, NY",
