@@ -22,12 +22,7 @@ describe("PricingContext type", () => {
     price_hidden: false,
     width_cm: 15,
     height_cm: 15,
-    edition_sets: [
-      {
-        width_cm: 15,
-        height_cm: 15,
-      },
-    ],
+    edition_sets: null,
     forsale: true,
     is_in_auction: false,
     price_currency: "USD",
@@ -150,13 +145,25 @@ Object {
 `)
   })
 
-  it("uses the first edition set dimensions when there is more than one edition set", async () => {
+  it.only("uses the most expensive edition set dimensions when there is more than one edition set", async () => {
     artworkLoader.mockResolvedValueOnce({
       ...artwork,
       edition_sets: [
-        { width_cm: 27.9, height_cm: 35.6 },
-        { width_cm: 50.8, height_cm: 61.0 },
-        { width_cm: 101.6, height_cm: 127.0 },
+        {
+          width_cm: 27.9,
+          height_cm: 35.6,
+          price_cents: [124, 235],
+        },
+        {
+          width_cm: 50.8,
+          height_cm: 61.0,
+          price_cents: [154, 185],
+        },
+        {
+          width_cm: 101.6,
+          height_cm: 127.0,
+          price_cents: [12443], // THIS ONE SHOULD BE CHOSEN
+        },
       ],
     })
     await runQuery(query, context)
@@ -165,8 +172,36 @@ Object {
 Object {
   "_v0_artistId": "artist-id",
   "_v1_category": "PAINTING",
-  "_v2_heightCm": 36,
-  "_v3_widthCm": 28,
+  "_v2_heightCm": 127,
+  "_v3_widthCm": 102,
+}
+`)
+    mockFetch.mockClear()
+
+    artworkLoader.mockResolvedValueOnce({
+      ...artwork,
+      edition_sets: [
+        {
+          width_cm: 27.9,
+          height_cm: 35.6,
+          price_cents: [124, 235],
+        },
+        {
+          width_cm: 50.8,
+          height_cm: 61.0,
+          price_cents: [154, 18555], // THIS ONE SHOULD BE CHOSEN
+        },
+        { width_cm: 101.6, height_cm: 127.0, price_cents: [12443] },
+      ],
+    })
+    await runQuery(query, context)
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
+      .toMatchInlineSnapshot(`
+Object {
+  "_v0_artistId": "artist-id",
+  "_v1_category": "PAINTING",
+  "_v2_heightCm": 61,
+  "_v3_widthCm": 51,
 }
 `)
   })

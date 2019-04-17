@@ -23,6 +23,18 @@ export const parseDimensionsString = str => {
   return { width, height }
 }
 
+const getMaxPrice = (thing: {
+  priceCents: { min: number | null; max: number | null } | null
+}) => {
+  if (!thing.priceCents) {
+    return 0
+  }
+  if (thing.priceCents.max) {
+    return thing.priceCents.max
+  }
+  return thing.priceCents.min || 0
+}
+
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
@@ -103,9 +115,14 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             edition_sets {
               widthCm
               heightCm
+              priceCents {
+                min
+                max
+              }
             }
             priceCents {
               min
+              max
             }
             artist {
               _id
@@ -137,13 +154,22 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             widthCm,
           } = source
 
-          // Pull out width and height from first edition set if > 1
-          let width = widthCm
-          let height = heightCm
-          if (edition_sets.length > 1) {
-            width = edition_sets[0].widthCm || width
-            height = edition_sets[0].heightCm || height
-          }
+          // Find edition with highest price
+          const edition = (edition_sets || [])
+            .concat([{ widthCm, heightCm, priceCents }])
+            .reduce((mostExpensiveEditionSetSoFar, editionSet) => {
+              if (
+                getMaxPrice(mostExpensiveEditionSetSoFar) <
+                getMaxPrice(editionSet)
+              ) {
+                return editionSet
+              }
+              return mostExpensiveEditionSetSoFar
+            })
+
+          const price = getMaxPrice(edition)
+          const width = edition.widthCm
+          const height = edition.heightCm
 
           // fail if we don't have enough info to request a histogram
           if (
@@ -152,7 +178,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             price_currency !== "USD" ||
             (artists && artists.length > 1) ||
             !is_for_sale ||
-            !priceCents ||
+            !price ||
             !artist ||
             !width ||
             !height ||

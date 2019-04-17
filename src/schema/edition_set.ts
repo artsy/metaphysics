@@ -12,6 +12,7 @@ import {
 import { capitalizeFirstCharacter } from "lib/helpers"
 import { Sellable } from "./sellable"
 import { ResolverContext } from "types/graphql"
+import { priceCentsField } from "./fields/priceCents"
 
 export const EditionSetSorts = {
   type: new GraphQLEnumType({
@@ -65,6 +66,7 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       },
       deprecationReason: "Prefer to use `sale_message`.",
     },
+    priceCents: priceCentsField,
     sale_message: {
       type: GraphQLString,
       resolve: ({ availability, availability_hidden, price, forsale }) => {
