@@ -7637,7 +7637,7 @@ union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 
 interface Order {
   # A type-specific ID likely used as a database ID.
-  id: ID!
+  internalID: ID!
 
   # Order Mode
   mode: OrderModeEnum

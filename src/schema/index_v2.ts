@@ -1,11 +1,9 @@
 import {
   GraphQLSchema,
   GraphQLObjectType,
-  SelectionSetNode,
-  FieldNode,
   visit,
   Kind,
-  BREAK,
+  GraphQLInterfaceType,
 } from "graphql"
 import { transformSchema, Transform, Request } from "graphql-tools"
 import {
@@ -38,14 +36,8 @@ class IdRenamer implements Transform {
               type.name === "DoNotUseThisPartner"
             ) {
               newFields["gravityID"] = {
-                ...fieldToFieldConfig(
-                  {
-                    ...field,
-                    resolve: source => source.id,
-                  },
-                  resolveType,
-                  true
-                ),
+                ...fieldToFieldConfig(field, resolveType, true),
+                resolve: ({ id }) => id,
                 name: "gravityID",
               }
             } else if (
@@ -54,6 +46,7 @@ class IdRenamer implements Transform {
             ) {
               newFields["internalID"] = {
                 ...fieldToFieldConfig(field, resolveType, true),
+                resolve: ({ id }) => id,
                 name: "internalID",
               }
             } else {
@@ -71,16 +64,60 @@ class IdRenamer implements Transform {
           fields: newFields,
         })
       }) as TypeVisitor,
+
+      [VisitSchemaKind.INTERFACE_TYPE]: ((type: GraphQLInterfaceType) => {
+        const fields = type.getFields()
+        const newFields = {}
+
+        const resolveType = createResolveType((_name, type) => type)
+
+        Object.keys(fields).forEach(fieldName => {
+          const field = fields[fieldName]
+          if (field.name === "id") {
+            if (
+              field.description === GravityIDFields.id.description ||
+              type.name === "DoNotUseThisPartner"
+            ) {
+              newFields["gravityID"] = {
+                ...fieldToFieldConfig(field, resolveType, true),
+                // resolve: ({ id }) => id,
+                name: "gravityID",
+              }
+            } else if (
+              field.description === InternalIDFields.id.description ||
+              KAWSTypes.includes(type.name)
+            ) {
+              newFields["internalID"] = {
+                ...fieldToFieldConfig(field, resolveType, true),
+                // resolve: ({ id }) => id,
+                name: "internalID",
+              }
+            } else {
+              throw new Error("Do not add new id fields")
+            }
+          } else {
+            newFields[fieldName] = fieldToFieldConfig(field, resolveType, true)
+          }
+        })
+
+        return new GraphQLInterfaceType({
+          name: type.name,
+          description: type.description,
+          astNode: type.astNode,
+          fields: newFields,
+        })
+      }) as TypeVisitor,
     })
   }
 
   public transformRequest(originalRequest: Request): Request {
-    // let fromSelection: SelectionSetNode | undefined
     const newDocument = visit(originalRequest.document, {
       [Kind.FIELD]: {
-        enter: (node: FieldNode) => {
-          if (node.name.value === "gravityID") {
-            // fromSelection = node.selectionSet
+        enter: node => {
+          if (
+            node.name.value === "gravityID" ||
+            node.name.value === "internalID"
+          ) {
             return {
               ...node,
               name: {
@@ -93,23 +130,16 @@ class IdRenamer implements Transform {
       },
     })
 
-    // const newDocument = visit(originalRequest.document, {
-    //   [Kind.FIELD]: {
-    //     enter: (node: FieldNode) => {
-    //       if (node.name.value === "id" && fromSelection) {
-    //         return {
-    //           ...node,
-    //           selectionSet: fromSelection,
-    //         }
-    //       }
-    //     },
-    //   },
-    // })
     return {
       ...originalRequest,
       document: newDocument,
     }
   }
+
+  // TODO: If we want to make this generic for upstream usage, use `transformResult` instead of the inline resolver in transform schema
+  // public transformResult(result: Result): Result {
+  //   return result
+  // }
 }
 
 export const transformToV2 = (schema: GraphQLSchema): GraphQLSchema => {
