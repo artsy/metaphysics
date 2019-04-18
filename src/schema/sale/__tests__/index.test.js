@@ -412,6 +412,39 @@ describe("Sale type", () => {
     })
   })
 
+  describe("isGalleryAuction, isBenefit", () => {
+    const query = `
+      {
+        sale(id: "foo-foo") {
+          isBenefit
+          isGalleryAuction
+        }
+      }
+    `
+
+    it("returns whether the gallery is a gallery auction", async () => {
+      sale.is_benefit = false
+      sale.is_gallery_auction = true
+      expect(await execute(query)).toEqual({
+        sale: {
+          isBenefit: false,
+          isGalleryAuction: true,
+        },
+      })
+    })
+
+    it("returns whether the gallery is a benefit auction", async () => {
+      sale.is_benefit = true
+      sale.is_gallery_auction = false
+      expect(await execute(query)).toEqual({
+        sale: {
+          isBenefit: true,
+          isGalleryAuction: false,
+        },
+      })
+    })
+  })
+
   describe("display_timely_at", () => {
     const testData = [
       [
