@@ -9,17 +9,16 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { GravityIDFields } from "schema/object_identification"
 
 export const ArtworkInquiryType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkInquiry",
   description: "An inquiry on an Artwork",
   fields: () => ({
+    ...GravityIDFields,
     artwork: {
       type: new GraphQLNonNull(Artwork.type),
       resolve: ({ inquireable }) => inquireable,
-    },
-    id: {
-      type: GraphQLID,
     },
     impulse_conversation_id: {
       type: GraphQLString,

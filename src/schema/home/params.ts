@@ -5,18 +5,17 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { InternalIDFields } from "schema/object_identification"
 
 const HomePageModuleParams = new GraphQLObjectType<any, ResolverContext>({
   name: "HomePageModulesParams",
   fields: {
+    ...InternalIDFields,
     followed_artist_id: {
       type: GraphQLID,
     },
     gene_id: {
       type: GraphQLString,
-    },
-    id: {
-      type: GraphQLID,
     },
     medium: {
       type: GraphQLString,

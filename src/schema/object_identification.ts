@@ -177,6 +177,13 @@ export const GravityIDFields = {
   },
 }
 
+export const InternalIDFields = {
+  id: {
+    description: "A type-specific ID likely used as a database ID.",
+    type: new GraphQLNonNull(GraphQLID),
+  },
+}
+
 export default {
   GlobalIDField,
   GravityIDFields,

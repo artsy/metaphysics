@@ -2,13 +2,14 @@ import initials from "./fields/initials"
 import Image from "./image"
 import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { GravityIDFields } from "./object_identification"
 
 const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeaturedLink",
   fields: {
     id: {
       type: GraphQLString,
-      description: "Attempt to get the ID of the entity of the FeaturedLink",
+      description: GravityIDFields.id.description,
       resolve: ({ href }) =>
         href
           .split("/")

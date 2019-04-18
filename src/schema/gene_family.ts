@@ -7,13 +7,12 @@ import {
 } from "graphql"
 import Gene from "./gene"
 import { ResolverContext } from "types/graphql"
+import { GravityIDFields } from "./object_identification"
 
 const GeneFamilyType = new GraphQLObjectType<any, ResolverContext>({
   name: "GeneFamily",
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    ...GravityIDFields,
     name: {
       type: new GraphQLNonNull(GraphQLString),
     },

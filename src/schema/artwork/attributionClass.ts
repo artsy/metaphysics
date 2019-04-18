@@ -1,13 +1,12 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { GravityIDFields } from "schema/object_identification"
 
 const AttributionClass = new GraphQLObjectType<any, ResolverContext>({
   name: "AttributionClass",
   description: "Collection of fields that describe attribution class",
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    ...GravityIDFields,
     name: {
       type: GraphQLString,
       description: "Shortest form of attribution class display",

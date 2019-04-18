@@ -8,14 +8,12 @@ import {
 import { artistNames } from "./artwork/meta"
 import Image from "./image"
 import { ResolverContext } from "types/graphql"
+import { GravityIDFields } from "./object_identification"
 
 export const ArtworkVersion = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkVersion",
   fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: "ID of the order line item",
-    },
+    ...GravityIDFields,
 
     title: {
       type: GraphQLString,

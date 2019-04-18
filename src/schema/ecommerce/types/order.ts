@@ -21,6 +21,7 @@ import { OfferConnection, OfferType } from "./offer"
 import { OrderParticipantEnum } from "./enums/order_participant_enum"
 import { PageCursorsType } from "schema/fields/pagination"
 import { ResolverContext } from "types/graphql"
+import { InternalIDFields } from "schema/object_identification"
 
 interface BuyerSource {
   __typename: "EcommerceUser"
@@ -42,10 +43,7 @@ const orderFields: GraphQLFieldConfigMap<
   DateSource & OrderSource,
   ResolverContext
 > = {
-  id: {
-    type: GraphQLID,
-    description: "ID of the order",
-  },
+  ...InternalIDFields,
   mode: {
     type: OrderModeEnum,
     description: "Order Mode",

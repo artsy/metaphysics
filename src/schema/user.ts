@@ -15,10 +15,6 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
   fields: () => ({
     ...GravityIDFields,
     cached,
-    id: {
-      description: "User id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
     name: {
       description: "The given name of the user.",
       type: new GraphQLNonNull(GraphQLString),

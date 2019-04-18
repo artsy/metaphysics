@@ -27,9 +27,7 @@ const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "Category",
   description: "Fields of partner category (currently from Gravity).",
   fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    ...GravityIDFields,
     category_type: {
       type: GraphQLString,
     },

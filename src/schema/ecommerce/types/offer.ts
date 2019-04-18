@@ -12,14 +12,12 @@ import { UserType } from "schema/user"
 import { amount } from "schema/fields/money"
 import { OrderParticipantEnum } from "./enums/order_participant_enum"
 import { ResolverContext } from "types/graphql"
+import { InternalIDFields } from "schema/object_identification"
 
 export const OfferType = new GraphQLObjectType<any, ResolverContext>({
   name: "Offer",
   fields: () => ({
-    id: {
-      type: GraphQLID,
-      description: "ID of the offer",
-    },
+    ...InternalIDFields,
     createdAt: date,
     creatorId: {
       type: GraphQLString,

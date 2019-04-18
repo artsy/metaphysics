@@ -1,14 +1,12 @@
-import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
+import { GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { InternalIDFields } from "schema/object_identification"
 
 export const AssetType = new GraphQLObjectType<any, ResolverContext>({
   name: "Asset",
   description: "An asset which is assigned to a consignment submission",
   fields: {
-    id: {
-      description: "Convection asset ID.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    ...InternalIDFields,
     submission_id: {
       description: "The convection submission ID",
       type: GraphQLString,

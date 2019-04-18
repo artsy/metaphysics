@@ -1,13 +1,12 @@
 import { mutationWithClientMutationId, MutationConfig } from "graphql-relay"
-import { SubmissionType } from "./submission"
-import { omit } from "lodash"
+import { SharedInputOutputFields, SubmissionType } from "./submission"
 import { ResolverContext } from "types/graphql"
 
 export const config: MutationConfig<any, any, ResolverContext> = {
   name: "UpdateSubmissionMutation",
   description: "Update a consignment using Convection",
   inputFields: {
-    ...omit(SubmissionType.getFields(), ["__id", "_id", "artist"]),
+    ...SharedInputOutputFields,
   } as any,
   outputFields: {
     consignment_submission: {

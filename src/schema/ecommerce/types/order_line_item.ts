@@ -11,14 +11,12 @@ import { amount } from "schema/fields/money"
 import date from "schema/fields/date"
 import { ArtworkVersion } from "../../artwork_version"
 import { ResolverContext } from "types/graphql"
+import { InternalIDFields } from "schema/object_identification"
 
 export const OrderLineItemType = new GraphQLObjectType<any, ResolverContext>({
   name: "OrderLineItem",
   fields: () => ({
-    id: {
-      type: GraphQLID,
-      description: "ID of the order line item",
-    },
+    ...InternalIDFields,
     artwork: {
       type: Artwork.type,
       description: "Artwork that is being ordered",
