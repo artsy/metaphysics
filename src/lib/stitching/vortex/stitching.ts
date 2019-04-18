@@ -34,7 +34,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     }
     extend type AnalyticsTopArtworks {
       artwork: Artwork
-    }    
+    }
   `,
   resolvers: {
     AnalyticsHistogramBin: {
@@ -120,9 +120,19 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             return null
           }
 
+          const vortexSupportedCategory = categoryMap[category]
+
+          // Don't show the histogram if the category is "Other"
+          if (
+            !vortexSupportedCategory ||
+            vortexSupportedCategory === categoryMap.Other
+          ) {
+            return null
+          }
+
           const args = {
             artistId: artist._id,
-            category: categoryMap[category] || "OTHER",
+            category: vortexSupportedCategory,
             widthCm: Math.round(widthCm),
             heightCm: Math.round(heightCm),
           }
