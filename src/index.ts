@@ -205,12 +205,13 @@ async function startApp() {
           graphiql: true,
           context,
           rootValue: {},
-          formatError: graphqlErrorHandler(enableSentry, {
-            req,
-            // Why the checking on params? Do we reach this code if params is falsy?
-            variables: params && params.variables,
-            query: (params && params.query)!,
-          }),
+          // FIXME: This needs to be updated as per the release notes of graphql-js v14
+          // formatError: graphqlErrorHandler(enableSentry, {
+          //   req,
+          //   // Why the checking on params? Do we reach this code if params is falsy?
+          //   variables: params && params.variables,
+          //   query: (params && params.query)!,
+          // }),
           validationRules: QUERY_DEPTH_LIMIT
             ? [depthLimit(QUERY_DEPTH_LIMIT)]
             : null,

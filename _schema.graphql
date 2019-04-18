@@ -298,7 +298,7 @@ type ApproveOrderPayload {
   clientMutationId: String
 }
 
-type Article implements Node {
+type Article {
   # A globally unique ID.
   __id: ID!
 
@@ -358,7 +358,7 @@ enum ArticleSorts {
   PUBLISHED_AT_DESC
 }
 
-type Artist implements Node & Searchable {
+type Artist {
   # A globally unique ID.
   __id: ID!
 
@@ -700,7 +700,7 @@ type ArtistInsight {
   entities: [String]
 }
 
-type ArtistItem implements Node & Searchable {
+type ArtistItem {
   # A globally unique ID.
   __id: ID!
 
@@ -1006,7 +1006,7 @@ type ArtistStatuses {
   shows: Boolean
 }
 
-type Artwork implements Node & Searchable & Sellable {
+type Artwork {
   # A globally unique ID.
   __id: ID!
 
@@ -1216,7 +1216,7 @@ union ArtworkContext =
   | ArtworkContextPartnerShow
   | ArtworkContextSale
 
-type ArtworkContextAuction implements Node {
+type ArtworkContextAuction {
   # A globally unique ID.
   __id: ID!
 
@@ -1483,7 +1483,7 @@ type ArtworkContextFair {
   sponsoredContent: FairSponsoredContent
 }
 
-type ArtworkContextPartnerShow implements Node {
+type ArtworkContextPartnerShow {
   # A globally unique ID.
   __id: ID!
 
@@ -1588,7 +1588,7 @@ type ArtworkContextPartnerShow implements Node {
   type: String
 }
 
-type ArtworkContextSale implements Node {
+type ArtworkContextSale {
   # A globally unique ID.
   __id: ID!
 
@@ -1729,7 +1729,7 @@ type ArtworkEdge {
 
 union ArtworkFilterFacet = ArtworkFilterTag | ArtworkFilterGene
 
-type ArtworkFilterGene implements Node {
+type ArtworkFilterGene {
   # A globally unique ID.
   __id: ID!
 
@@ -1790,7 +1790,7 @@ type ArtworkFilterGene implements Node {
   ): FilterArtworks
 }
 
-type ArtworkFilterTag implements Node {
+type ArtworkFilterTag {
   # A globally unique ID.
   __id: ID!
 
@@ -1884,7 +1884,7 @@ type ArtworkInquiryEdge {
   cursor: String!
 }
 
-type ArtworkItem implements Node & Searchable & Sellable {
+type ArtworkItem {
   # A globally unique ID.
   __id: ID!
 
@@ -2205,7 +2205,7 @@ type AuctionLotImages {
   thumbnail: Image
 }
 
-type AuctionResult implements Node {
+type AuctionResult {
   # A globally unique ID.
   __id: ID!
 
@@ -2493,7 +2493,7 @@ type BuyersPremium {
   percent: Float
 }
 
-type BuyOrder implements Order {
+type BuyOrder {
   # ID of the order
   id: ID
 
@@ -2731,7 +2731,7 @@ type City {
     sort: PartnerShowSorts
 
     # Filter shows by chronological event status
-    status: EventStatus = CURRENT
+    status: EventStatus = null
 
     # Filter shows by partner type
     partnerType: PartnerShowPartnerType
@@ -2774,7 +2774,7 @@ type CitySponsoredContent {
   ): ShowConnection
 }
 
-type Collection implements Node {
+type Collection {
   # A globally unique ID.
   __id: ID!
 
@@ -2948,7 +2948,7 @@ type CommerceBuyerRejectOfferPayload {
   orderOrError: CommerceOrderOrFailureUnion!
 }
 
-type CommerceBuyOrder implements CommerceOrder {
+type CommerceBuyOrder {
   buyer: CommerceOrderPartyUnion!
   buyerPhoneNumber: String
   buyerTotalCents: Int
@@ -3396,7 +3396,7 @@ type CommerceOfferEdge {
   node: CommerceOffer
 }
 
-type CommerceOfferOrder implements CommerceOrder {
+type CommerceOfferOrder {
   awaitingResponseFrom: CommerceOrderParticipantEnum
   buyer: CommerceOrderPartyUnion!
   buyerPhoneNumber: String
@@ -4015,7 +4015,7 @@ type ConfirmPickupPayload {
 }
 
 # A work to be consigned to the user
-type ConsignmentSubmission implements Node {
+type ConsignmentSubmission {
   # A globally unique ID.
   __id: ID!
 
@@ -4110,7 +4110,7 @@ type Convection {
 }
 
 # A conversation.
-type Conversation implements Node {
+type Conversation {
   # A globally unique ID.
   __id: ID!
 
@@ -4643,7 +4643,7 @@ input EditableLocation {
   state_code: String
 }
 
-type EditionSet implements Sellable {
+type EditionSet {
   # A globally unique ID.
   __id: ID!
 
@@ -4964,7 +4964,7 @@ type Feedback {
   message: String!
 }
 
-type FilterArtworks implements Node {
+type FilterArtworks {
   # The ID of the object.
   __id: ID!
 
@@ -5106,7 +5106,7 @@ type FollowArtists {
   counts: FollowArtistCounts
 }
 
-type FollowedArtistsArtworksGroup implements Node {
+type FollowedArtistsArtworksGroup {
   # A globally unique ID.
   __id: ID!
   href: String
@@ -5334,7 +5334,7 @@ type GeminiEntry {
   token: String!
 }
 
-type Gene implements Node {
+type Gene {
   # A globally unique ID.
   __id: ID!
 
@@ -5526,7 +5526,7 @@ type GeneFamilyEdge {
   cursor: String!
 }
 
-type GeneItem implements Node {
+type GeneItem {
   # A globally unique ID.
   __id: ID!
 
@@ -5696,7 +5696,7 @@ type HighestBid {
 
 union Highlighted = HighlightedShow | HighlightedArticle
 
-type HighlightedArticle implements Node {
+type HighlightedArticle {
   # A globally unique ID.
   __id: ID!
 
@@ -5731,7 +5731,7 @@ type HighlightedArticle implements Node {
   ): String
 }
 
-type HighlightedShow implements Node {
+type HighlightedShow {
   # A globally unique ID.
   __id: ID!
 
@@ -5884,7 +5884,7 @@ type HomePage {
   fairs_module: HomePageFairsModule
 }
 
-type HomePageArtistModule implements Node {
+type HomePageArtistModule {
   # A globally unique ID.
   __id: ID!
 
@@ -5904,7 +5904,7 @@ enum HomePageArtistModuleTypes {
   POPULAR
 }
 
-type HomePageArtworkModule implements Node {
+type HomePageArtworkModule {
   # A globally unique ID.
   __id: ID!
   context: HomePageModuleContext
@@ -6139,7 +6139,7 @@ type HomePageModuleContextFollowedArtist {
   artist: Artist
 }
 
-type HomePageModuleContextGene implements Node {
+type HomePageModuleContextGene {
   # A globally unique ID.
   __id: ID!
 
@@ -6272,7 +6272,7 @@ type HomePageModuleContextRelatedArtist {
   based_on: Artist
 }
 
-type HomePageModuleContextSale implements Node {
+type HomePageModuleContextSale {
   # A globally unique ID.
   __id: ID!
 
@@ -6458,7 +6458,7 @@ enum Intents {
 }
 
 # Fields of an invoice (currently from Lewitt)
-type Invoice implements Node {
+type Invoice {
   # A globally unique ID.
   __id: ID!
 
@@ -6666,7 +6666,7 @@ type MarketingCollectionQuery {
 
 scalar MarketingDateTime
 
-type Me implements Node {
+type Me {
   # A globally unique ID.
   __id: ID!
 
@@ -6869,7 +6869,7 @@ type Me implements Node {
 }
 
 # A message in a conversation.
-type Message implements Node {
+type Message {
   # A globally unique ID.
   __id: ID!
 
@@ -7206,7 +7206,7 @@ interface Node {
   __id: ID!
 }
 
-type NotificationsFeedItem implements Node {
+type NotificationsFeedItem {
   # A globally unique ID.
   __id: ID!
   artists: String
@@ -7365,7 +7365,7 @@ type OfferEdge {
   cursor: String!
 }
 
-type OfferOrder implements Order {
+type OfferOrder {
   # ID of the order
   id: ID
 
@@ -8049,7 +8049,7 @@ type PageInfo {
   endCursor: String
 }
 
-type Partner implements Node {
+type Partner {
   # A globally unique ID.
   __id: ID!
 
@@ -8304,7 +8304,7 @@ type PartnersAggregationResults {
   slice: PartnersAggregation
 }
 
-type PartnerShow implements Node {
+type PartnerShow {
   # A globally unique ID.
   __id: ID!
 
@@ -9242,7 +9242,7 @@ type S3PolicyDocumentType {
   conditions: S3PolicyConditionsType!
 }
 
-type Sale implements Node {
+type Sale {
   # A globally unique ID.
   __id: ID!
 
@@ -9692,7 +9692,7 @@ type SearchableEdge {
   cursor: String!
 }
 
-type SearchableItem implements Node & Searchable {
+type SearchableItem {
   __id: ID!
 
   # A type-specific ID.
@@ -9937,7 +9937,7 @@ input ShippingInputField {
   phoneNumber: String
 }
 
-type Show implements Node {
+type Show {
   # A globally unique ID.
   __id: ID!
 
@@ -10109,7 +10109,7 @@ type Show implements Node {
     sort: PartnerShowSorts
 
     # By default show only current shows
-    status: EventStatus = CURRENT
+    status: EventStatus = null
 
     # Whether to include local discovery stubs as well as displayable shows
     discoverable: Boolean
@@ -10332,7 +10332,7 @@ type SystemTime {
   iso8601: String
 }
 
-type Tag implements Node {
+type Tag {
   # A globally unique ID.
   __id: ID!
 
