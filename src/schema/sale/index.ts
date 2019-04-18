@@ -131,10 +131,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             page: number
             size: number
           }
-          const gravityArgs: GravityArgs = {
-            page,
-            size,
-          }
+          const gravityArgs: GravityArgs = { page, size }
 
           if (options.exclude) {
             gravityArgs.exclude_ids = flatten([options.exclude])
@@ -194,7 +191,6 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       description: { type: GraphQLString },
       display_timely_at: {
         type: GraphQLString,
-
         resolve: (sale, _options, { meBiddersLoader }) => {
           return displayTimelyAt({ sale, meBiddersLoader })
         },
@@ -206,7 +202,18 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
       name: { type: GraphQLString },
       is_auction: { type: GraphQLBoolean },
-      is_benefit: { type: GraphQLBoolean },
+      is_benefit: {
+        type: GraphQLBoolean,
+        deprecationReason: "Favor `isBenefit`",
+      },
+      isBenefit: {
+        type: GraphQLBoolean,
+        resolve: ({ is_benefit }) => is_benefit,
+      },
+      isGalleryAuction: {
+        type: GraphQLBoolean,
+        resolve: ({ is_gallery_auction }) => is_gallery_auction,
+      },
       is_auction_promo: {
         type: GraphQLBoolean,
         resolve: ({ sale_type }) => sale_type === "auction promo",
