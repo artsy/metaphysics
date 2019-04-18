@@ -88,16 +88,22 @@ interface BatchLoaderArgs {
    */
   singleLoader?: any
   multipleLoader: any
+  /**
+   * A reference of the DataLoader class, used primarily for dependency injection
+   * in tests.
+   */
+  DL?: typeof DataLoader
 }
 
 export const batchLoader = ({
   singleLoader,
   multipleLoader,
+  DL = DataLoader,
 }: BatchLoaderArgs) => {
   if (!ENABLE_RESOLVER_BATCHING) {
     return singleLoader ? singleLoader : multipleLoader
   }
-  const dl = new DataLoader(
+  const dl = new DL(
     async (idWithParamsList: IdWithParams[]) => {
       const [paramGroups, groupedParams] = groupByParams(idWithParamsList)
       const data = await Promise.all(
@@ -145,6 +151,9 @@ export const batchLoader = ({
      * so the results are always formatted into an array
      */
     if (typeof key === "object" && key !== null) {
+      if (!key.id) {
+        return multipleLoader(key)
+      }
       if (key.id.length === 1) {
         return dl
           .load({ ...key, id: key.id[0] })
