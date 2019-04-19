@@ -225,4 +225,13 @@ Object {
     const result = (await runQuery(query, context)) as any
     expect(result.artwork.pricingContext).toBeNull()
   })
+
+  it("is null when category is OTHER", async () => {
+    artworkLoader.mockResolvedValueOnce({
+      ...artwork,
+      category: "OTHER",
+    })
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
+  })
 })
