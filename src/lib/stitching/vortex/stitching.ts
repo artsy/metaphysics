@@ -209,7 +209,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   },
 })
 
-const filtersDescription = ({ dimension, category }, artistNames) =>
+export const filtersDescription = ({ dimension, category }, artistNames) =>
   [
     "Price ranges of",
     dimensionStrings[dimension],

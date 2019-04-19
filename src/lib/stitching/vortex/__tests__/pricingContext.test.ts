@@ -1,6 +1,7 @@
 import { runQuery } from "test/utils"
 import gql from "lib/gql"
 import { ResolverContext } from "types/graphql"
+import { filtersDescription } from "../stitching"
 
 jest.mock("../link")
 const mockFetch = require("../link").mockFetch as jest.Mock<any>
@@ -236,5 +237,34 @@ Object {
     })
     const result = (await runQuery(query, context)) as any
     expect(result.artwork.pricingContext).toBeNull()
+  })
+})
+
+describe("filtersDescription", () => {
+  it("returns correct description with all filters", async () => {
+    expect(
+      filtersDescription(
+        { category: "ARCHITECTURE", dimension: "SMALL" },
+        "Great Artist"
+      )
+    ).toEqual("Price ranges of small architecture works by Great Artist")
+  })
+
+  it("returns correct description with category only filter", async () => {
+    expect(
+      filtersDescription(
+        { category: "ARCHITECTURE", dimension: null },
+        "Great Artist"
+      )
+    ).toEqual("Price ranges of architecture works by Great Artist")
+  })
+
+  it("returns correct description with dimension only filter", async () => {
+    expect(
+      filtersDescription(
+        { category: null, dimension: "MEDIUM" },
+        "Great Artist"
+      )
+    ).toEqual("Price ranges of medium size works by Great Artist")
   })
 })
