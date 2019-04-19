@@ -124,7 +124,7 @@ Object {
       .toMatchInlineSnapshot(`
 Object {
   "_v0_artistId": "artist-id",
-  "_v1_category": "DRAWING_COLAGE_OTHER_WORK_ON_PAPER",
+  "_v1_category": "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
   "_v2_heightCm": 15,
   "_v3_widthCm": 15,
 }
