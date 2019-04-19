@@ -209,11 +209,14 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
 
 const filtersDescription = ({ dimension, category }, artistNames) =>
   [
-    capitalizeFirstCharacter(dimensionStrings[dimension]),
+    "Price ranges of",
+    dimensionStrings[dimension],
     categoryPluralization[category],
     category ? "by" : "works by",
     artistNames,
-  ].join(" ")
+  ]
+    .filter(Boolean)
+    .join(" ")
 
 const categoryMap = {
   Architecture: "ARCHITECTURE",
