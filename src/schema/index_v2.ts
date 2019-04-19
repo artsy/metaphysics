@@ -77,6 +77,8 @@ class IdRenamer implements Transform {
           description: type.description,
           astNode: type.astNode,
           fields: newFields,
+          extensionASTNodes: type.extensionASTNodes,
+          isTypeOf: type.isTypeOf,
           interfaces: type
             .getInterfaces()
             .map(iface => newInterfaces[iface.name]),
@@ -124,6 +126,8 @@ class IdRenamer implements Transform {
           description: type.description,
           astNode: type.astNode,
           fields: newFields,
+          resolveType: type.resolveType,
+          extensionASTNodes: type.extensionASTNodes,
         })
         newInterfaces[newInterface.name] = newInterface
         return newInterface
