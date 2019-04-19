@@ -1,6 +1,7 @@
 import { runQuery } from "test/utils"
 import gql from "lib/gql"
 import { ResolverContext } from "types/graphql"
+import { filtersDescription } from "../stitching"
 
 jest.mock("../link")
 const mockFetch = require("../link").mockFetch as jest.Mock<any>
@@ -14,6 +15,7 @@ describe("PricingContext type", () => {
     artists: [
       {
         _id: "artist-1",
+        name: "Good Artist",
       },
     ],
     category: "Painting",
@@ -38,6 +40,7 @@ describe("PricingContext type", () => {
   const artistLoader = jest.fn(() =>
     Promise.resolve({
       _id: "artist-id",
+      name: "Good Artist",
     })
   )
   const salesLoader = jest.fn(() =>
@@ -58,6 +61,11 @@ describe("PricingContext type", () => {
       artwork(id: "lol") {
         pricingContext {
           filterDescription
+          appliedFilters {
+            category
+            dimension
+          }
+          appliedFiltersDisplay
           bins {
             maxPrice
             maxPriceCents
@@ -76,6 +84,11 @@ describe("PricingContext type", () => {
 Object {
   "artwork": Object {
     "pricingContext": Object {
+      "appliedFilters": Object {
+        "category": "ARCHITECTURE",
+        "dimension": "SMALL",
+      },
+      "appliedFiltersDisplay": "Price ranges of small architecture works by Good Artist",
       "bins": Array [
         Object {
           "maxPrice": "$89",
@@ -106,7 +119,7 @@ Object {
           "numArtworks": 17,
         },
       ],
-      "filterDescription": "Small mocks by David Sheldrick",
+      "filterDescription": "deprecated field",
     },
   },
 }
@@ -233,5 +246,40 @@ Object {
     })
     const result = (await runQuery(query, context)) as any
     expect(result.artwork.pricingContext).toBeNull()
+  })
+})
+
+describe("filtersDescription", () => {
+  it("returns correct description with all filters", async () => {
+    expect(
+      filtersDescription(
+        { category: "ARCHITECTURE", dimension: "SMALL" },
+        "Great Artist"
+      )
+    ).toEqual("Price ranges of small architecture works by Great Artist")
+  })
+
+  it("returns correct description with category only filter", async () => {
+    expect(
+      filtersDescription(
+        { category: "ARCHITECTURE", dimension: null },
+        "Great Artist"
+      )
+    ).toEqual("Price ranges of architecture works by Great Artist")
+  })
+
+  it("returns correct description with dimension only filter", async () => {
+    expect(
+      filtersDescription(
+        { category: null, dimension: "MEDIUM" },
+        "Great Artist"
+      )
+    ).toEqual("Price ranges of medium-sized works by Great Artist")
+  })
+
+  it("returns correct description with no applied filter", async () => {
+    expect(
+      filtersDescription({ category: null, dimension: null }, "Great Artist")
+    ).toEqual("Price ranges of works by Great Artist")
   })
 })

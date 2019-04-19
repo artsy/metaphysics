@@ -147,6 +147,7 @@ type AnalyticsPricingContext {
   appliedFilters: AnalyticsPriceContextFilterType!
   bins: [AnalyticsHistogramBin!]!
   filterDescription: String! @deprecated(reason: "switch to applied_filters")
+  appliedFiltersDisplay: String
 }
 
 enum AnalyticsPricingContextCategoryEnum {

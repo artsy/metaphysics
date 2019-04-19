@@ -11,7 +11,11 @@ export const mockFetch = jest.fn(() =>
       JSON.stringify({
         data: {
           pricingContext: {
-            filterDescription: `Small mocks by David Sheldrick`,
+            filterDescription: `deprecated field`,
+            appliedFilters: {
+              category: "ARCHITECTURE",
+              dimension: "SMALL",
+            },
             bins: [
               {
                 maxPriceCents: 8855,
