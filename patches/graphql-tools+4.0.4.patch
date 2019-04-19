@@ -1,0 +1,25 @@
+patch-package
+--- a/node_modules/graphql-tools/dist/transforms/visitSchema.js
++++ b/node_modules/graphql-tools/dist/transforms/visitSchema.js
+@@ -29,7 +29,20 @@ function visitSchema(schema, visitor, stripResolvers) {
+     var mutationType = schema.getMutationType();
+     var subscriptionType = schema.getSubscriptionType();
+     var typeMap = schema.getTypeMap();
+-    Object.keys(typeMap).map(function (typeName) {
++
++    // Move interfaces to the front of the list, as the call-site may need to
++    // transform both interface and object types and thus need to be able to
++    // refer to the transformed interface types when creating the transformed
++    // object types.
++    var typeKeys = Object.keys(typeMap).sort(function (typeName) {
++      if (typeMap[typeName] instanceof graphql_1.GraphQLInterfaceType) {
++        return -1;
++      } else {
++        return 1;
++      }
++    });
++
++    typeKeys.map(function (typeName) {
+         var type = typeMap[typeName];
+         if (graphql_1.isNamedType(type) && graphql_1.getNamedType(type).name.slice(0, 2) !== '__') {
+             var specifiers = getTypeSpecifiers(type, schema);

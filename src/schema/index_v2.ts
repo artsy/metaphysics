@@ -18,10 +18,24 @@ import {
 import { GravityIDFields, InternalIDFields } from "./object_identification"
 
 const KAWSTypes = ["MarketingCollection", "MarketingCollectionQuery"]
+const ExchangeTypes = [
+  "CommerceOrder",
+  "CommercePartner",
+  "CommerceUser",
+  "CommerceLineItem",
+  "CommerceFulfillment",
+  "CommerceBuyOrder",
+  "CommerceOffer",
+  "CommerceOfferOrder",
+]
 
 class IdRenamer implements Transform {
   transformSchema(schema: GraphQLSchema): GraphQLSchema {
-    return visitSchema(schema, {
+    // Keep a reference to all new interface types, as we'll need them to define
+    // them on the new object types.
+    const newInterfaces: { [name: string]: GraphQLInterfaceType } = {}
+
+    const newSchema = visitSchema(schema, {
       [VisitSchemaKind.OBJECT_TYPE]: ((type: GraphQLObjectType<any, any>) => {
         const fields = type.getFields()
         const newFields = {}
@@ -42,7 +56,8 @@ class IdRenamer implements Transform {
               }
             } else if (
               field.description === InternalIDFields.id.description ||
-              KAWSTypes.includes(type.name)
+              KAWSTypes.includes(type.name) ||
+              ExchangeTypes.includes(type.name)
             ) {
               newFields["internalID"] = {
                 ...fieldToFieldConfig(field, resolveType, true),
@@ -50,7 +65,7 @@ class IdRenamer implements Transform {
                 name: "internalID",
               }
             } else {
-              throw new Error("Do not add new id fields")
+              throw new Error(`Do not add new id fields (${type.name})`)
             }
           } else {
             newFields[fieldName] = fieldToFieldConfig(field, resolveType, true)
@@ -62,6 +77,9 @@ class IdRenamer implements Transform {
           description: type.description,
           astNode: type.astNode,
           fields: newFields,
+          interfaces: type
+            .getInterfaces()
+            .map(iface => newInterfaces[iface.name]),
         })
       }) as TypeVisitor,
 
@@ -85,7 +103,8 @@ class IdRenamer implements Transform {
               }
             } else if (
               field.description === InternalIDFields.id.description ||
-              KAWSTypes.includes(type.name)
+              KAWSTypes.includes(type.name) ||
+              ExchangeTypes.includes(type.name)
             ) {
               newFields["internalID"] = {
                 ...fieldToFieldConfig(field, resolveType, true),
@@ -93,21 +112,24 @@ class IdRenamer implements Transform {
                 name: "internalID",
               }
             } else {
-              throw new Error("Do not add new id fields")
+              throw new Error(`Do not add new id fields (${type.name})`)
             }
           } else {
             newFields[fieldName] = fieldToFieldConfig(field, resolveType, true)
           }
         })
 
-        return new GraphQLInterfaceType({
+        const newInterface = new GraphQLInterfaceType({
           name: type.name,
           description: type.description,
           astNode: type.astNode,
           fields: newFields,
         })
+        newInterfaces[newInterface.name] = newInterface
+        return newInterface
       }) as TypeVisitor,
     })
+    return newSchema
   }
 
   public transformRequest(originalRequest: Request): Request {
