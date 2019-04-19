@@ -265,6 +265,6 @@ describe("filtersDescription", () => {
         { category: null, dimension: "MEDIUM" },
         "Great Artist"
       )
-    ).toEqual("Price ranges of medium size works by Great Artist")
+    ).toEqual("Price ranges of medium-sized works by Great Artist")
   })
 })

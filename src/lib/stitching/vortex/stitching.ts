@@ -267,6 +267,6 @@ const categoryPluralization = {
 
 const dimensionStrings = {
   LARGE: "large",
-  MEDIUM: "medium size",
+  MEDIUM: "medium-sized",
   SMALL: "small",
 }
