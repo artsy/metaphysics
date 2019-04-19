@@ -14,6 +14,7 @@ describe("PricingContext type", () => {
     artists: [
       {
         _id: "artist-1",
+        name: "Good Artist",
       },
     ],
     category: "Painting",
@@ -38,6 +39,7 @@ describe("PricingContext type", () => {
   const artistLoader = jest.fn(() =>
     Promise.resolve({
       _id: "artist-id",
+      name: "Good Artist",
     })
   )
   const salesLoader = jest.fn(() =>
@@ -58,6 +60,11 @@ describe("PricingContext type", () => {
       artwork(id: "lol") {
         pricingContext {
           filterDescription
+          appliedFilters {
+            category
+            dimension
+          }
+          appliedFiltersDisplay
           bins {
             maxPrice
             maxPriceCents
@@ -76,6 +83,11 @@ describe("PricingContext type", () => {
 Object {
   "artwork": Object {
     "pricingContext": Object {
+      "appliedFilters": Object {
+        "category": "ARCHITECTURE",
+        "dimension": "SMALL",
+      },
+      "appliedFiltersDisplay": "Price ranges of small architecture works by Good Artist",
       "bins": Array [
         Object {
           "maxPrice": "$89",
@@ -106,7 +118,7 @@ Object {
           "numArtworks": 17,
         },
       ],
-      "filterDescription": "Small mocks by David Sheldrick",
+      "filterDescription": "deprecated field",
     },
   },
 }

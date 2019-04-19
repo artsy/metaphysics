@@ -2,7 +2,6 @@ import { executableVortexSchema } from "./schema"
 import { amount } from "schema/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
-import { capitalizeFirstCharacter } from "lib/helpers"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
@@ -10,7 +9,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
     extend type AnalyticsPricingContext {
-      appliedFilterDisplay: String
+      appliedFiltersDisplay: String
     }
     extend type Artwork {
       pricingContext: AnalyticsPricingContext
@@ -43,7 +42,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   `,
   resolvers: {
     AnalyticsPricingContext: {
-      appliedFilterDisplay: {
+      appliedFiltersDisplay: {
         fragment: gql`
           ... on AnalyticsPricingContext {
             appliedFilters{
@@ -158,6 +157,9 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               context,
               info,
             })
+            // passing it down from Artwork so it can be used in appliedFiltersDisplay
+            // as a way to work around the resolver only having access
+            // to the data in AnalyticsPricingContext and not Artwork
             vortexContext.artistNames = artist_names
             return vortexContext
           } catch (e) {
