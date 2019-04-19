@@ -1,12 +1,17 @@
 import { executableVortexSchema } from "./schema"
 import { amount } from "schema/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
+import gql from "lib/gql"
+import { capitalizeFirstCharacter } from "lib/helpers"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
-  extensionSchema: `
+  extensionSchema: gql`
+    extend type AnalyticsPricingContext {
+      appliedFilterDisplay: String
+    }
     extend type Artwork {
       pricingContext: AnalyticsPricingContext
     }
@@ -34,12 +39,27 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     }
     extend type AnalyticsTopArtworks {
       artwork: Artwork
-    }    
+    }
   `,
   resolvers: {
+    AnalyticsPricingContext: {
+      appliedFilterDisplay: {
+        fragment: gql`
+          ... on AnalyticsPricingContext {
+            appliedFilters{
+              dimension
+              category
+            }
+          }
+          ... on Artwork { artist_names }
+        `,
+        resolve: (parent, _args, _context, _info) =>
+          filtersDescription(parent.appliedFilters, parent.artistNames),
+      },
+    },
     AnalyticsHistogramBin: {
       minPrice: {
-        fragment: `
+        fragment: gql`
           ... on AnalyticsHistogramBin {
             minPriceCents
           }
@@ -48,7 +68,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           amount(_ => parent.minPriceCents).resolve({}, args),
       },
       maxPrice: {
-        fragment: `
+        fragment: gql`
           ... on AnalyticsHistogramBin {
             maxPriceCents
           }
@@ -59,7 +79,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     },
     Artwork: {
       pricingContext: {
-        fragment: `
+        fragment: gql`
           ... on Artwork {
             widthCm
             heightCm
@@ -77,12 +97,14 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             artists {
               _id
             }
+            artist_names
           }
         `,
         resolve: async (source, _, context, info) => {
           const {
             artist,
             artists,
+            artist_names,
             category,
             heightCm,
             is_for_sale,
@@ -128,7 +150,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           }
 
           try {
-            return await info.mergeInfo.delegateToSchema({
+            const vortexContext = await info.mergeInfo.delegateToSchema({
               schema: vortexSchema,
               operation: "query",
               fieldName: "analyticsPricingContext",
@@ -136,6 +158,8 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               context,
               info,
             })
+            vortexContext.artistNames = artist_names
+            return vortexContext
           } catch (e) {
             console.error(e)
             throw e
@@ -145,7 +169,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     },
     Partner: {
       analytics: {
-        fragment: `... on Partner {
+        fragment: gql`... on Partner {
           _id
         }`,
         resolve: async (source, _, context, info) => {
@@ -183,6 +207,14 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   },
 })
 
+const filtersDescription = ({ dimension, category }, artistNames) =>
+  [
+    capitalizeFirstCharacter(dimensionStrings[dimension]),
+    categoryPluralization[category],
+    category ? "by" : "works by",
+    artistNames,
+  ].join(" ")
+
 const categoryMap = {
   Architecture: "ARCHITECTURE",
   "Books and Portfolios": "BOOKS_AND_PORTFOLIOS",
@@ -204,4 +236,32 @@ const categoryMap = {
   "Textile Arts": "TEXTILE",
   "Video/Film/Animation": "VIDEO_FILM_ANIMATION",
   "Work on Paper": "WORK_ON_PAPER",
+}
+
+const categoryPluralization = {
+  ARCHITECTURE: "architecture works",
+  BOOKS_AND_PORTFOLIOS: "books and portfolios",
+  DESIGN_DECORATIVE_ART: "design objects",
+  DRAWING_COLLAGE_OTHER_WORK_ON_PAPER: "works on paper",
+  FASHION: "wearable art",
+  INSTALLATION: "installations",
+  JEWELRY: "jewelry",
+  MIXED_MEDIA: "mixed media",
+  OTHER: "works",
+  PAINTING: "paintings",
+  PERFORMANCE: "performance art",
+  PHOTOGRAPHY: "photographs",
+  POSTERS: "posters",
+  PRINT: "prints",
+  SCULPTURE: "sculptures",
+  SOUND: "sounds",
+  TEXTILE: "textile art",
+  VIDEO_FILM_ANIMATION: "video",
+  WORK_ON_PAPER: "works on paper",
+}
+
+const dimensionStrings = {
+  LARGE: "large",
+  MEDIUM: "medium size",
+  SMALL: "small",
 }
