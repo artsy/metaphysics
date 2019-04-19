@@ -267,4 +267,10 @@ describe("filtersDescription", () => {
       )
     ).toEqual("Price ranges of medium-sized works by Great Artist")
   })
+
+  it("returns correct description with no applied filter", async () => {
+    expect(
+      filtersDescription({ category: null, dimension: null }, "Great Artist")
+    ).toEqual("Price ranges of works by Great Artist")
+  })
 })
