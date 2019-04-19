@@ -113,11 +113,20 @@ interface PartnerTimeSeriesStats {
 }
 
 """
+Price Context Filter Type
+"""
+type PriceContextFilterType {
+  category: PricingContextCategoryEnum
+  dimension: PricingContextDimensionEnum
+}
+
+"""
 Pricing Context Histogram
 """
 type PricingContext {
+  appliedFilters: PriceContextFilterType!
   bins: [HistogramBin!]!
-  filterDescription: String!
+  filterDescription: String! @deprecated(reason: "switch to applied_filters")
 }
 
 enum PricingContextCategoryEnum {
@@ -139,12 +148,12 @@ enum PricingContextCategoryEnum {
   """
   Drawing, Collage or other Work on Paper
   """
-  DRAWING_COLAGE_OTHER_WORK_ON_PAPER
+  DRAWING_COLLAGE_OTHER_WORK_ON_PAPER
 
   """
   Fashion Design and Wearable Art
   """
-  FASHON
+  FASHION
 
   """
   Installation
@@ -215,6 +224,23 @@ enum PricingContextCategoryEnum {
   Work on Paper
   """
   WORK_ON_PAPER
+}
+
+enum PricingContextDimensionEnum {
+  """
+  Large
+  """
+  LARGE
+
+  """
+  Medium
+  """
+  MEDIUM
+
+  """
+  Small
+  """
+  SMALL
 }
 
 type Query {
