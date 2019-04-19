@@ -136,10 +136,17 @@ interface AnalyticsPartnerTimeSeriesStats {
   time: AnalyticsDateTime
 }
 
+# Price Context Filter Type
+type AnalyticsPriceContextFilterType {
+  category: AnalyticsPricingContextCategoryEnum
+  dimension: AnalyticsPricingContextDimensionEnum
+}
+
 # Pricing Context Histogram
 type AnalyticsPricingContext {
+  appliedFilters: AnalyticsPriceContextFilterType!
   bins: [AnalyticsHistogramBin!]!
-  filterDescription: String!
+  filterDescription: String! @deprecated(reason: "switch to applied_filters")
 }
 
 enum AnalyticsPricingContextCategoryEnum {
@@ -153,10 +160,10 @@ enum AnalyticsPricingContextCategoryEnum {
   DESIGN_DECORATIVE_ART
 
   # Drawing, Collage or other Work on Paper
-  DRAWING_COLAGE_OTHER_WORK_ON_PAPER
+  DRAWING_COLLAGE_OTHER_WORK_ON_PAPER
 
   # Fashion Design and Wearable Art
-  FASHON
+  FASHION
 
   # Installation
   INSTALLATION
@@ -199,6 +206,17 @@ enum AnalyticsPricingContextCategoryEnum {
 
   # Work on Paper
   WORK_ON_PAPER
+}
+
+enum AnalyticsPricingContextDimensionEnum {
+  # Large
+  LARGE
+
+  # Medium
+  MEDIUM
+
+  # Small
+  SMALL
 }
 
 enum AnalyticsQueryPeriodEnum {

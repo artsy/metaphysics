@@ -188,8 +188,8 @@ const categoryMap = {
   "Books and Portfolios": "BOOKS_AND_PORTFOLIOS",
   "Design/Decorative Art": "DESIGN_DECORATIVE_ART",
   "Drawing, Collage or other Work on Paper":
-    "DRAWING_COLAGE_OTHER_WORK_ON_PAPER",
-  "Fashion Design and Wearable Art": "FASHON",
+    "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
+  "Fashion Design and Wearable Art": "FASHION",
   Installation: "INSTALLATION",
   Jewelry: "JEWELRY",
   "Mixed Media": "MIXED_MEDIA",
