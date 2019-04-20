@@ -4,6 +4,7 @@ import {
   visit,
   Kind,
   GraphQLInterfaceType,
+  getNamedType,
 } from "graphql"
 import { transformSchema, Transform, Request } from "graphql-tools"
 import {
@@ -30,6 +31,8 @@ const ExchangeTypes = [
 ]
 
 class IdRenamer implements Transform {
+  private newSchema?: GraphQLSchema
+
   transformSchema(schema: GraphQLSchema): GraphQLSchema {
     // Keep a reference to all new interface types, as we'll need them to define
     // them on the new object types.
@@ -66,6 +69,12 @@ class IdRenamer implements Transform {
               }
             } else {
               throw new Error(`Do not add new id fields (${type.name})`)
+            }
+          } else if (field.name === "_id") {
+            newFields["internalID"] = {
+              ...fieldToFieldConfig(field, resolveType, true),
+              resolve: ({ _id }) => _id,
+              name: "internalID",
             }
           } else if (field.name === "__id") {
             newFields["id"] = {
@@ -122,6 +131,12 @@ class IdRenamer implements Transform {
             } else {
               throw new Error(`Do not add new id fields (${type.name})`)
             }
+          } else if (field.name === "_id") {
+            newFields["internalID"] = {
+              ...fieldToFieldConfig(field, resolveType, true),
+              // resolve: ({ _id }) => _id,
+              name: "internalID",
+            }
           } else if (field.name === "__id") {
             newFields["id"] = {
               ...fieldToFieldConfig(field, resolveType, true),
@@ -147,33 +162,63 @@ class IdRenamer implements Transform {
         return newInterface
       }) as TypeVisitor,
     })
+
+    if (this.newSchema) {
+      throw new Error("UNEXPECTED!")
+    }
+    this.newSchema = newSchema
+
     return newSchema
   }
 
   public transformRequest(originalRequest: Request): Request {
+    const typeStack: GraphQLObjectType<any, any>[] = [
+      this.newSchema!.getQueryType(),
+    ]
     const newDocument = visit(originalRequest.document, {
       [Kind.FIELD]: {
         enter: node => {
-          if (
-            node.name.value === "gravityID" ||
-            node.name.value === "internalID"
-          ) {
-            return {
-              ...node,
-              name: {
-                ...node.name,
-                value: "id",
-              },
+          const type = typeStack[typeStack.length - 1]
+          const field = type.getFields()[node.name.value]
+
+          try {
+            if (
+              node.name.value === "internalID" &&
+              field.description === GravityIDFields._id.description
+            ) {
+              return {
+                ...node,
+                name: {
+                  ...node.name,
+                  value: "_id",
+                },
+              }
+            } else if (
+              node.name.value === "gravityID" ||
+              node.name.value === "internalID"
+            ) {
+              return {
+                ...node,
+                name: {
+                  ...node.name,
+                  value: "id",
+                },
+              }
+            } else if (node.name.value === "id") {
+              return {
+                ...node,
+                name: {
+                  ...node.name,
+                  value: "__id",
+                },
+              }
             }
-          } else if (node.name.value === "id") {
-            return {
-              ...node,
-              name: {
-                ...node.name,
-                value: "__id",
-              },
-            }
+          } finally {
+            typeStack.push(getNamedType(field.type))
           }
+        },
+        leave: () => {
+          typeStack.pop()
         },
       },
     })
@@ -184,6 +229,8 @@ class IdRenamer implements Transform {
     }
   }
 
+  // FIXME: We need this nonetheless, otherwise aliasing fields breaks.
+  //
   // TODO: If we want to make this generic for upstream usage, use `transformResult` instead of the inline resolver in transform schema
   // public transformResult(result: Result): Result {
   //   return result
