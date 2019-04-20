@@ -67,6 +67,12 @@ class IdRenamer implements Transform {
             } else {
               throw new Error(`Do not add new id fields (${type.name})`)
             }
+          } else if (field.name === "__id") {
+            newFields["id"] = {
+              ...fieldToFieldConfig(field, resolveType, true),
+              resolve: ({ __id }) => __id,
+              name: "id",
+            }
           } else {
             newFields[fieldName] = fieldToFieldConfig(field, resolveType, true)
           }
@@ -116,6 +122,14 @@ class IdRenamer implements Transform {
             } else {
               throw new Error(`Do not add new id fields (${type.name})`)
             }
+          } else if (field.name === "__id") {
+            newFields["id"] = {
+              ...fieldToFieldConfig(field, resolveType, true),
+              // resolve: source => {
+              //   return source.__id
+              // },
+              name: "id",
+            }
           } else {
             newFields[fieldName] = fieldToFieldConfig(field, resolveType, true)
           }
@@ -149,6 +163,14 @@ class IdRenamer implements Transform {
               name: {
                 ...node.name,
                 value: "id",
+              },
+            }
+          } else if (node.name.value === "id") {
+            return {
+              ...node,
+              name: {
+                ...node.name,
+                value: "__id",
               },
             }
           }

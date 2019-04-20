@@ -35,7 +35,7 @@ type AddInitialOfferToOrderPayload {
 # One item in an aggregation
 type AggregationCount {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -300,7 +300,7 @@ type ApproveOrderPayload {
 
 type Article implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -360,7 +360,7 @@ enum ArticleSorts {
 
 type Artist implements Node & Searchable {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -702,7 +702,7 @@ type ArtistInsight {
 
 type ArtistItem implements Node & Searchable {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -1008,7 +1008,7 @@ type ArtistStatuses {
 
 type Artwork implements Node & Searchable & Sellable {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -1218,7 +1218,7 @@ union ArtworkContext =
 
 type ArtworkContextAuction implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -1348,7 +1348,7 @@ type ArtworkContextAuction implements Node {
 
 type ArtworkContextFair {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -1485,7 +1485,7 @@ type ArtworkContextFair {
 
 type ArtworkContextPartnerShow implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -1590,7 +1590,7 @@ type ArtworkContextPartnerShow implements Node {
 
 type ArtworkContextSale implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -1731,7 +1731,7 @@ union ArtworkFilterFacet = ArtworkFilterTag | ArtworkFilterGene
 
 type ArtworkFilterGene implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -1792,7 +1792,7 @@ type ArtworkFilterGene implements Node {
 
 type ArtworkFilterTag implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -1862,7 +1862,7 @@ type ArtworkInfoRow {
 # An inquiry on an Artwork
 type ArtworkInquiry {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -1893,7 +1893,7 @@ type ArtworkInquiryEdge {
 
 type ArtworkItem implements Node & Searchable & Sellable {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2070,7 +2070,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
 
 type ArtworkLayer {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2131,7 +2131,7 @@ enum ArtworkSorts {
 
 type ArtworkVersion {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2186,7 +2186,7 @@ type Attachment {
 # Collection of fields that describe attribution class
 type AttributionClass {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2227,7 +2227,7 @@ type AuctionLotImages {
 
 type AuctionResult implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2302,7 +2302,7 @@ enum AuctionResultSorts {
 
 type Author {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2316,7 +2316,7 @@ type Author {
 
 type Bidder {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2335,7 +2335,7 @@ type Bidder {
 
 type BidderPosition {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2491,7 +2491,7 @@ type buyerRejectOfferPayload {
 
 type BuyersPremium {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2733,7 +2733,7 @@ enum CancelReasonType {
 # Fields of partner category (currently from Gravity).
 type Category {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2803,7 +2803,7 @@ type CitySponsoredContent {
 
 type Collection implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -2833,7 +2833,7 @@ enum CollectionSorts {
 
 type CollectorProfileType {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -4044,7 +4044,7 @@ type ConfirmPickupPayload {
 # A work to be consigned to the user
 type ConsignmentSubmission implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -4139,7 +4139,7 @@ type Convection {
 # A conversation.
 type Conversation implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
@@ -4425,7 +4425,7 @@ type Credentials {
 
 type CreditCard {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -4672,7 +4672,7 @@ input EditableLocation {
 
 type EditionSet implements Sellable {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -4741,7 +4741,7 @@ type ExactPrice {
 
 type ExternalPartner {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -4751,7 +4751,7 @@ type ExternalPartner {
 
 type Fair {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -4936,7 +4936,7 @@ type FairEdge {
 
 type FairExhibitor {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -4988,7 +4988,7 @@ type FeaturedLinkItem {
 
 type Feedback {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -4999,7 +4999,7 @@ type Feedback {
 
 type FilterArtworks implements Node {
   # The ID of the object.
-  __id: ID!
+  id: ID!
 
   # Returns aggregation counts for the given filter query.
   aggregations: [ArtworksAggregationResults]
@@ -5083,7 +5083,7 @@ type FollowArtist {
   auto: Boolean
 
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -5141,7 +5141,7 @@ type FollowArtists {
 
 type FollowedArtistsArtworksGroup implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
   href: String
 
   # List of artworks in this group.
@@ -5228,7 +5228,7 @@ type FollowGene {
   gene: Gene
 
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -5369,7 +5369,7 @@ type GeminiEntry {
 
 type Gene implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -5537,7 +5537,7 @@ type GeneEdge {
 
 type GeneFamily {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -5568,7 +5568,7 @@ type GeneFamilyEdge {
 
 type GeneItem implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -5703,7 +5703,7 @@ type GravityMutationError {
 
 type HighestBid {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -5738,7 +5738,7 @@ union Highlighted = HighlightedShow | HighlightedArticle
 
 type HighlightedArticle implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -5773,7 +5773,7 @@ type HighlightedArticle implements Node {
 
 type HighlightedShow implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -5926,7 +5926,7 @@ type HomePage {
 
 type HomePageArtistModule implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # Module identifier.
   key: String
@@ -5946,7 +5946,7 @@ enum HomePageArtistModuleTypes {
 
 type HomePageArtworkModule implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
   context: HomePageModuleContext
   display: String
     @deprecated(
@@ -5983,7 +5983,7 @@ type HomePageFairsModule {
 
 type HomePageHeroUnit {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -6035,7 +6035,7 @@ union HomePageModuleContext =
 
 type HomePageModuleContextFair {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -6181,7 +6181,7 @@ type HomePageModuleContextFollowedArtist {
 
 type HomePageModuleContextGene implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -6314,7 +6314,7 @@ type HomePageModuleContextRelatedArtist {
 
 type HomePageModuleContextSale implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -6501,7 +6501,7 @@ enum Intents {
 # Fields of an invoice (currently from Lewitt)
 type Invoice implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -6548,7 +6548,7 @@ union ListPrice = PriceRange | ExactPrice
 
 type Location {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -6709,7 +6709,7 @@ scalar MarketingDateTime
 
 type Me implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -6912,7 +6912,7 @@ type Me implements Node {
 # A message in a conversation.
 type Message implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
@@ -7244,12 +7244,12 @@ input Near {
 # An object with a Globally Unique ID
 interface Node {
   # The ID of the object.
-  __id: ID!
+  id: ID!
 }
 
 type NotificationsFeedItem implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
   artists: String
 
   # List of artworks in this notification bundle
@@ -7865,7 +7865,7 @@ type OrderEdge {
 
 type OrderedSet {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -8092,7 +8092,7 @@ type PageInfo {
 
 type Partner implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -8163,7 +8163,7 @@ type Partner implements Node {
 
 type PartnerArtist {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -8208,7 +8208,7 @@ type PartnerArtistEdge {
   cursor: String!
 
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -8224,7 +8224,7 @@ type PartnerArtistEdge {
 
 type PartnerCategory {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -8347,7 +8347,7 @@ type PartnersAggregationResults {
 
 type PartnerShow implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -8554,7 +8554,7 @@ type PriceRange {
 
 type Profile {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -9285,7 +9285,7 @@ type S3PolicyDocumentType {
 
 type Sale implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -9415,7 +9415,7 @@ type Sale implements Node {
 
 type SaleArtwork {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -9521,7 +9521,7 @@ type SaleArtworkEdge {
 
 type SaleArtworkHighestBid {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -9741,7 +9741,7 @@ type SearchableEdge {
 }
 
 type SearchableItem implements Node & Searchable {
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -9987,7 +9987,7 @@ input ShippingInputField {
 
 type Show implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -10382,7 +10382,7 @@ type SystemTime {
 
 type Tag implements Node {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -10477,7 +10477,7 @@ input UpdateCollectorProfileInput {
 
 type UpdateCollectorProfilePayload {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
@@ -10634,7 +10634,7 @@ type UpdateSubmissionMutationPayload {
 
 type User {
   # A globally unique ID.
-  __id: ID!
+  id: ID!
 
   # A type-specific ID.
   gravityID: String!
