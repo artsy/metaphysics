@@ -85,7 +85,7 @@
     "marked": "^0.3.9",
     "memcached": "^2.2.2",
     "moment": "^2.14.1",
-    "moment-timezone": "^0.5.5",
+    "moment-timezone": "^0.5.25",
     "node-fetch": "^1.7.3",
     "numeral": "^1.5.3",
     "opentracing": "^0.14.1",
