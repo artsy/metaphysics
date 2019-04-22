@@ -114,7 +114,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
         },
       }),
       resolve: ({ images }) => {
-        if (images.length < 1) {
+        if (!images || images.length < 1) {
           return null
         }
         return {

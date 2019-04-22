@@ -1,53 +1,51 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "test/utils"
 
+const artist = {
+  id: "percy-z",
+  birthday: "2005",
+  artworks_count: 42,
+  _id: "4d8b92b34eb68a1b2c0003f4",
+}
+
+const context = {
+  artistLoader: jest.fn().mockReturnValue(Promise.resolve(artist)),
+}
+
+const auctionResultResponse = (item = {}) => {
+  return {
+    total_count: 35,
+    _embedded: {
+      items: [
+        {
+          dimension_text: "20 x 20",
+          organization: "Christie's",
+          category_text: "an old guitar",
+          sale_date: "yesterday",
+          id: "1",
+          images: [
+            {
+              thumbnail: "https://path.to.thumbnail.jpg",
+              larger: "https://path.to.larger.jpg",
+            },
+          ],
+          currency: "JPY",
+          price_realized_cents: 420000,
+          price_realized_cents_usd: 100000,
+          low_estimate_cents: 200000,
+          high_estimate_cents: 500000,
+          ...item,
+        },
+      ],
+    },
+  }
+}
+
 describe("Artist type", () => {
-  let artist = null
-  let context = null
-
   beforeEach(() => {
-    artist = {
-      id: "percy-z",
-      birthday: "2005",
-      artworks_count: 42,
-      _id: "4d8b92b34eb68a1b2c0003f4",
-    }
-
-    const auctionResultResponse = {
-      total_count: 35,
-      _embedded: {
-        items: [
-          {
-            dimension_text: "20 x 20",
-            organization: "Christie's",
-            category_text: "an old guitar",
-            sale_date: "yesterday",
-            id: "1",
-            images: [
-              {
-                thumbnail: "https://path.to.thumbnail.jpg",
-                larger: "https://path.to.larger.jpg",
-              },
-            ],
-            currency: "JPY",
-            price_realized_cents: 420000,
-            price_realized_cents_usd: 100000,
-            low_estimate_cents: 200000,
-            high_estimate_cents: 500000,
-          },
-        ],
-      },
-    }
-
-    context = {
-      artistLoader: sinon
-        .stub()
-        .withArgs(artist.id)
-        .returns(Promise.resolve(artist)),
-      auctionLotLoader: sinon
-        .stub()
-        .returns(Promise.resolve(auctionResultResponse)),
-    }
+    context.auctionLotLoader = jest
+      .fn()
+      .mockReturnValueOnce(Promise.resolve(auctionResultResponse()))
   })
 
   it("returns auction results for an artist", () => {
@@ -220,5 +218,49 @@ describe("Artist type", () => {
         expect(totalCount).toBe(35)
       }
     )
+  })
+
+  it("works with the downstream response lacking images", () => {
+    const query = `
+      {
+        artist(id: "percy-z") {
+          auctionResults(recordsTrusted: true, first: 1) {
+            edges {
+              node {
+                id
+                images {
+                  thumbnail {
+                    image_url
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `
+
+    context.auctionLotLoader = jest
+      .fn()
+      .mockReturnValueOnce(
+        Promise.resolve(auctionResultResponse({ images: null }))
+      )
+
+    return runQuery(query, context).then(data => {
+      expect(data).toEqual({
+        artist: {
+          auctionResults: {
+            edges: [
+              {
+                node: {
+                  id: "1",
+                  images: null,
+                },
+              },
+            ],
+          },
+        },
+      })
+    })
   })
 })
