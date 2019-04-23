@@ -466,6 +466,48 @@ describe("Artwork type", () => {
       })
     })
 
+    it("returns the proper sizeScore for edition sets", () => {
+      artwork.edition_sets = [
+        {
+          size_score: 3.4,
+        },
+        {
+          size_score: 6.2,
+        },
+        {
+          size_score: 2.7,
+        },
+      ]
+
+      const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          edition_sets {
+            sizeScore
+          }
+        }
+      }
+    `
+
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            edition_sets: [
+              {
+                sizeScore: 3.4,
+              },
+              {
+                sizeScore: 6.2,
+              },
+              {
+                sizeScore: 2.7,
+              },
+            ],
+          },
+        })
+      })
+    })
+
     it("can sort by price ascending", () => {
       artwork.edition_sets = [
         {
