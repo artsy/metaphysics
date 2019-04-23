@@ -194,8 +194,8 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           const args = {
             artistId: artist._id,
             category: vortexSupportedCategory,
-            widthCm: Math.round(widthCm),
-            heightCm: Math.round(heightCm),
+            widthCm: Math.round(width),
+            heightCm: Math.round(height),
           }
 
           try {
