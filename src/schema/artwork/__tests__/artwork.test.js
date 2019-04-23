@@ -96,6 +96,41 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("sizeScore", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          sizeScore
+        }
+      }
+    `
+
+    beforeEach(() => {
+      artwork = {
+        ...artwork,
+        size_score: 2.5,
+      }
+      context = {
+        artworkLoader: sinon
+          .stub()
+          .withArgs(artwork.id)
+          .returns(Promise.resolve(artwork)),
+      }
+    })
+
+    it("returns sizeScore", () => {
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            sizeScore: 2.5,
+          },
+        })
+      })
+    })
+  })
+
   describe("#is_contactable", () => {
     const query = `
       {
