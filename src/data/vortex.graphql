@@ -4,13 +4,7 @@ Publish artwork Series Stats
 type ArtworksPublishedStats {
   percentageChanged: Int!
   period: QueryPeriodEnum!
-
-  """
-  Time series data on number of artworks published
-  """
-  timeSeries(
-    samplingFrequency: SamplingFrequencyEnum
-  ): [ArtworksPublishedTimeSeriesStats!]
+  timeSeries: [ArtworksPublishedTimeSeriesStats!]
   totalCount: Int!
 }
 
@@ -19,7 +13,6 @@ Publish artwork Series Stats
 """
 type ArtworksPublishedTimeSeriesStats implements PartnerTimeSeriesStats {
   count: Int
-  samplingFrequency: SamplingFrequencyEnum!
   time: DateTime
 }
 
@@ -108,7 +101,6 @@ type PartnerStats {
 Partner Time Series Stats
 """
 interface PartnerTimeSeriesStats {
-  samplingFrequency: SamplingFrequencyEnum!
   time: DateTime
 }
 
@@ -126,7 +118,6 @@ Pricing Context Histogram
 type PricingContext {
   appliedFilters: PriceContextFilterType!
   bins: [HistogramBin!]!
-  filterDescription: String! @deprecated(reason: "switch to applied_filters")
 }
 
 enum PricingContextCategoryEnum {
@@ -275,23 +266,6 @@ enum QueryPeriodEnum {
   Sixteen weeks
   """
   SIXTEEN_WEEKS
-}
-
-enum SamplingFrequencyEnum {
-  """
-  Daily
-  """
-  DAILY
-
-  """
-  Monthly
-  """
-  MONTHLY
-
-  """
-  Weekly
-  """
-  WEEKLY
 }
 
 """

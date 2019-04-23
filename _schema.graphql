@@ -48,18 +48,13 @@ type AggregationCount {
 type AnalyticsArtworksPublishedStats {
   percentageChanged: Int!
   period: AnalyticsQueryPeriodEnum!
-
-  # Time series data on number of artworks published
-  timeSeries(
-    samplingFrequency: AnalyticsSamplingFrequencyEnum
-  ): [AnalyticsArtworksPublishedTimeSeriesStats!]
+  timeSeries: [AnalyticsArtworksPublishedTimeSeriesStats!]
   totalCount: Int!
 }
 
 # Publish artwork Series Stats
 type AnalyticsArtworksPublishedTimeSeriesStats implements AnalyticsPartnerTimeSeriesStats {
   count: Int
-  samplingFrequency: AnalyticsSamplingFrequencyEnum!
   time: AnalyticsDateTime
 }
 
@@ -132,7 +127,6 @@ type AnalyticsPartnerStats {
 
 # Partner Time Series Stats
 interface AnalyticsPartnerTimeSeriesStats {
-  samplingFrequency: AnalyticsSamplingFrequencyEnum!
   time: AnalyticsDateTime
 }
 
@@ -146,7 +140,6 @@ type AnalyticsPriceContextFilterType {
 type AnalyticsPricingContext {
   appliedFilters: AnalyticsPriceContextFilterType!
   bins: [AnalyticsHistogramBin!]!
-  filterDescription: String! @deprecated(reason: "switch to applied_filters")
   appliedFiltersDisplay: String
 }
 
@@ -229,17 +222,6 @@ enum AnalyticsQueryPeriodEnum {
 
   # Sixteen weeks
   SIXTEEN_WEEKS
-}
-
-enum AnalyticsSamplingFrequencyEnum {
-  # Daily
-  DAILY
-
-  # Monthly
-  MONTHLY
-
-  # Weekly
-  WEEKLY
 }
 
 # Top artworks from a partner
