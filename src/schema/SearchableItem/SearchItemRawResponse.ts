@@ -1,4 +1,5 @@
 export type SearchItemRawResponse = {
+  artist_names: string[]
   description: string
   display: string
   end_at: string
@@ -7,12 +8,12 @@ export type SearchItemRawResponse = {
   id: string
   image_url: string
   label: string
+  live_start_at: string
   location: string
   model: string
   owner_type: string
   profile_id: string
   published_at: string
   start_at: string
-  artist_names: string[]
   venue: string
 }
