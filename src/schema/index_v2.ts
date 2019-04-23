@@ -5,6 +5,9 @@ import {
   Kind,
   GraphQLInterfaceType,
   getNamedType,
+  TypeInfo,
+  visitWithTypeInfo,
+  isLeafType,
 } from "graphql"
 import { transformSchema, Transform, Request } from "graphql-tools"
 import {
@@ -172,24 +175,30 @@ class IdRenamer implements Transform {
   }
 
   public transformRequest(originalRequest: Request): Request {
-    const typeStack: GraphQLObjectType<any, any>[] = [
-      this.newSchema!.getQueryType(),
-    ]
-    const newDocument = visit(originalRequest.document, {
-      [Kind.FRAGMENT_DEFINITION]: {
-        enter: node => {
-          typeStack.push(this.newSchema!.getType(node.typeCondition.name.value))
-        },
-        leave: () => {
-          typeStack.pop()
-        },
-      },
-      [Kind.FIELD]: {
-        enter: node => {
-          const type = typeStack[typeStack.length - 1]
-          const field = type.getFields()[node.name.value]
+    const typeInfo = new TypeInfo(this.newSchema!)
 
-          try {
+    const newDocument = visit(
+      originalRequest.document,
+      visitWithTypeInfo(typeInfo, {
+        [Kind.FIELD]: {
+          enter: node => {
+            // This is the only field you can select on a unio type, which is
+            // why union types don’t have a `getFields()` method. But seeing as
+            // we don’t care about renaming that field anyways, might as well
+            // just short-cut it here.
+            if (node.name.value === "__typename") {
+              return
+            }
+
+            // FIXME: Unsure why this remains `any` when it clearly has typings
+            const currentType = getNamedType(typeInfo.getType())
+            const type = (isLeafType(currentType)
+              ? getNamedType(typeInfo.getParentType())
+              : currentType) as
+              | GraphQLObjectType<any, any>
+              | GraphQLInterfaceType
+            const field = type.getFields()[node.name.value]
+
             if (
               node.name.value === "internalID" &&
               field.description === GravityIDFields._id.description
@@ -221,15 +230,10 @@ class IdRenamer implements Transform {
                 },
               }
             }
-          } finally {
-            typeStack.push(getNamedType(field.type))
-          }
+          },
         },
-        leave: () => {
-          typeStack.pop()
-        },
-      },
-    })
+      })
+    )
 
     return {
       ...originalRequest,
