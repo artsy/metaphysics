@@ -3,6 +3,7 @@ import { IDFields } from "./object_identification"
 import Dimensions from "./dimensions"
 import {
   GraphQLString,
+  GraphQLFloat,
   GraphQLBoolean,
   GraphQLObjectType,
   GraphQLEnumType,
@@ -63,6 +64,11 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
         return !isEmpty(price) ? price : fallback
       },
       deprecationReason: "Prefer to use `sale_message`.",
+    },
+    sizeScore: {
+      description: "score assigned to an artwork based on its dimensions",
+      type: GraphQLFloat,
+      resolve: ({ size_score }) => size_score,
     },
     sale_message: {
       type: GraphQLString,

@@ -1160,6 +1160,9 @@ type Artwork implements Node & Searchable & Sellable {
 
   # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
   heightCm: Float
+
+  # score assigned to an artwork based on its dimensions
+  sizeScore: Float
   pricingContext: AnalyticsPricingContext
 }
 
@@ -2034,6 +2037,9 @@ type ArtworkItem implements Node & Searchable & Sellable {
 
   # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
   heightCm: Float
+
+  # score assigned to an artwork based on its dimensions
+  sizeScore: Float
 }
 
 type ArtworkLayer {
@@ -3477,6 +3483,9 @@ type EditionSet implements Sellable {
   is_for_sale: Boolean
   is_sold: Boolean
   price: String @deprecated(reason: "Prefer to use `sale_message`.")
+
+  # score assigned to an artwork based on its dimensions
+  sizeScore: Float
   sale_message: String
 }
 
