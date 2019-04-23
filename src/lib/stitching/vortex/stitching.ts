@@ -2,26 +2,8 @@ import { executableVortexSchema } from "./schema"
 import { amount } from "schema/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
-import { error } from "util"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
-
-export const parseDimensionsString = str => {
-  const [width, height]: Number[] = str
-    .split(/\s+/)
-    .map(Number)
-    .filter(Boolean)
-  if (!width || !height) {
-    error(
-      `Malformed dimensions string: ${JSON.stringify(
-        str
-      )}. Has the format changed?`
-    )
-    return null
-  }
-
-  return { width, height }
-}
 
 const getMaxPrice = (thing: {
   priceCents: { min: number | null; max: number | null } | null
