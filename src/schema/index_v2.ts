@@ -176,6 +176,14 @@ class IdRenamer implements Transform {
       this.newSchema!.getQueryType(),
     ]
     const newDocument = visit(originalRequest.document, {
+      [Kind.FRAGMENT_DEFINITION]: {
+        enter: node => {
+          typeStack.push(this.newSchema!.getType(node.typeCondition.name.value))
+        },
+        leave: () => {
+          typeStack.pop()
+        },
+      },
       [Kind.FIELD]: {
         enter: node => {
           const type = typeStack[typeStack.length - 1]
