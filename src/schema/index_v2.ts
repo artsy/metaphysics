@@ -4,6 +4,7 @@ import {
   visit,
   Kind,
   GraphQLInterfaceType,
+  GraphQLUnionType,
   getNamedType,
   TypeInfo,
   visitWithTypeInfo,
@@ -190,13 +191,7 @@ class IdRenamer implements Transform {
               return
             }
 
-            // FIXME: Unsure why this remains `any` when it clearly has typings
-            const currentType = getNamedType(typeInfo.getType())
-            const type = (isLeafType(currentType)
-              ? getNamedType(typeInfo.getParentType())
-              : currentType) as
-              | GraphQLObjectType<any, any>
-              | GraphQLInterfaceType
+            const type = getTypeWithSelectableFields(typeInfo)
             const field = type.getFields()[node.name.value]
 
             if (
@@ -247,6 +242,16 @@ class IdRenamer implements Transform {
   // public transformResult(result: Result): Result {
   //   return result
   // }
+}
+
+// FIXME: Unsure why the `typeInfo` methods return `any`.
+function getTypeWithSelectableFields(
+  typeInfo: TypeInfo
+): GraphQLObjectType<any, any> | GraphQLInterfaceType {
+  const type = getNamedType(typeInfo.getType())
+  return isLeafType(type) || type instanceof GraphQLUnionType
+    ? getNamedType(typeInfo.getParentType())
+    : type
 }
 
 export const transformToV2 = (schema: GraphQLSchema): GraphQLSchema => {
