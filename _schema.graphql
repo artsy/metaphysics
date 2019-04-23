@@ -1110,7 +1110,8 @@ type Artwork implements Node & Searchable & Sellable {
   ): Partner
   pickup_available: Boolean
   price: String
-  priceCents: PriceCents
+  priceCents: PriceCents @deprecated(reason: "Prefer `listPrice` instead.")
+  listPrice: ListPrice
   price_currency: String
 
   # Is this work available for shipping only within the Contenental US?
@@ -1984,7 +1985,8 @@ type ArtworkItem implements Node & Searchable & Sellable {
   ): Partner
   pickup_available: Boolean
   price: String
-  priceCents: PriceCents
+  priceCents: PriceCents @deprecated(reason: "Prefer `listPrice` instead.")
+  listPrice: ListPrice
   price_currency: String
 
   # Is this work available for shipping only within the Contenental US?
@@ -3477,7 +3479,7 @@ type EditionSet implements Sellable {
   is_for_sale: Boolean
   is_sold: Boolean
   price: String @deprecated(reason: "Prefer to use `sale_message`.")
-  priceCents: PriceCents
+  listPrice: ListPrice
   sale_message: String
 
   # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
@@ -3524,6 +3526,10 @@ enum EventStatus {
 
   # Special filtering option which is used to show running and upcoming shows
   RUNNING_AND_UPCOMING
+}
+
+type ExactPrice {
+  priceCents: Int!
 }
 
 type ExternalPartner {
@@ -5316,6 +5322,8 @@ type LatLng {
   lat: Float
   lng: Float
 }
+
+union ListPrice = PriceRange | ExactPrice
 
 type Location {
   # A globally unique ID.
@@ -7256,6 +7264,11 @@ type PriceCents {
   min: Int
   max: Int
   exact: Boolean
+}
+
+type PriceRange {
+  minPriceCents: Int!
+  maxPriceCents: Int!
 }
 
 type Profile {

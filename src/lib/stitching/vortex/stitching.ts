@@ -5,16 +5,14 @@ import gql from "lib/gql"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
-const getMaxPrice = (thing: {
-  priceCents: { min: number | null; max: number | null } | null
-}) => {
-  if (!thing.priceCents) {
+const getMaxPrice = (thing: { listPrice: any }) => {
+  if (!thing.listPrice) {
     return 0
   }
-  if (thing.priceCents.max) {
-    return thing.priceCents.max
+  if (thing.listPrice.priceCents) {
+    return thing.listPrice.priceCents
   }
-  return thing.priceCents.min || 0
+  return thing.listPrice.maxPriceCents
 }
 
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
@@ -97,14 +95,26 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             edition_sets {
               widthCm
               heightCm
-              priceCents {
-                min
-                max
+              listPrice {
+                __typename
+                ... on PriceRange {
+                  minPriceCents
+                  maxPriceCents
+                }
+                ... on ExactPrice {
+                  priceCents
+                }
               }
             }
-            priceCents {
-              min
-              max
+            listPrice {
+              __typename
+              ... on PriceRange {
+                minPriceCents
+                maxPriceCents
+              }
+              ... on ExactPrice {
+                priceCents
+              }
             }
             artist {
               _id
@@ -132,13 +142,13 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             is_in_auction,
             is_price_hidden,
             price_currency,
-            priceCents,
+            listPrice,
             widthCm,
           } = source
 
           // Find edition with highest price
           const edition = (edition_sets || [])
-            .concat([{ widthCm, heightCm, priceCents }])
+            .concat([{ widthCm, heightCm, listPrice }])
             .reduce((mostExpensiveEditionSetSoFar, editionSet) => {
               if (
                 getMaxPrice(mostExpensiveEditionSetSoFar) <
