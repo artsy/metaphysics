@@ -145,7 +145,7 @@ Object {
 `)
   })
 
-  it.only("uses the most expensive edition set dimensions when there is more than one edition set", async () => {
+  it("uses the most expensive edition set dimensions when there is more than one edition set", async () => {
     artworkLoader.mockResolvedValueOnce({
       ...artwork,
       edition_sets: [
