@@ -816,6 +816,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLFloat,
         resolve: ({ height_cm }) => height_cm,
       },
+      sizeScore: {
+        description: "score assigned to an artwork based on its dimensions",
+        type: GraphQLFloat,
+        resolve: ({ size_score }) => size_score,
+      },
     }
   },
 })
