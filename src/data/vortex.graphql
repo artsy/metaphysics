@@ -13,7 +13,8 @@ Publish artwork Series Stats
 """
 type ArtworksPublishedTimeSeriesStats implements PartnerTimeSeriesStats {
   count: Int
-  time: DateTime
+  endTime: DateTime
+  startTime: DateTime
 }
 
 """
@@ -101,7 +102,8 @@ type PartnerStats {
 Partner Time Series Stats
 """
 interface PartnerTimeSeriesStats {
-  time: DateTime
+  endTime: DateTime
+  startTime: DateTime
 }
 
 """

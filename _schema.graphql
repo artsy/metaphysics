@@ -55,7 +55,8 @@ type AnalyticsArtworksPublishedStats {
 # Publish artwork Series Stats
 type AnalyticsArtworksPublishedTimeSeriesStats implements AnalyticsPartnerTimeSeriesStats {
   count: Int
-  time: AnalyticsDateTime
+  endTime: AnalyticsDateTime
+  startTime: AnalyticsDateTime
 }
 
 # An ISO 8601 datetime
@@ -127,7 +128,8 @@ type AnalyticsPartnerStats {
 
 # Partner Time Series Stats
 interface AnalyticsPartnerTimeSeriesStats {
-  time: AnalyticsDateTime
+  endTime: AnalyticsDateTime
+  startTime: AnalyticsDateTime
 }
 
 # Price Context Filter Type
