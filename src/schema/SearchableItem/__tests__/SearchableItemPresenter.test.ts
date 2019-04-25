@@ -5,6 +5,7 @@ import { SearchItemRawResponse } from "../SearchItemRawResponse"
 
 describe("SearchableItemPresenter", () => {
   const BASE_ITEM: SearchItemRawResponse = {
+    artist_names: [""],
     description: "",
     display: "",
     end_at: "",
@@ -13,13 +14,13 @@ describe("SearchableItemPresenter", () => {
     id: "",
     image_url: "",
     label: "",
+    live_start_at: "",
     location: "",
     model: "",
     owner_type: "",
     profile_id: "",
     published_at: "",
     start_at: "",
-    artist_names: [""],
     venue: "",
   }
 
@@ -151,6 +152,17 @@ describe("SearchableItemPresenter", () => {
         expect(description).toBe(
           "Sale opening May 16th, 2018 (at 6:00am EDT) in New York, NY"
         )
+      })
+
+      it("prefers live_start_at to start_at date", () => {
+        let presenter = new SearchableItemPresenter({
+          ...buildSearchableItem("Auction"),
+          live_start_at: "2018-05-30T12:00:00.000Z",
+          end_at: "",
+        })
+        let description = presenter.formattedDescription()
+
+        expect(description).toBe("Sale opening May 30th, 2018 (at 8:00am EDT)")
       })
 
       it("supports a location if provided", () => {

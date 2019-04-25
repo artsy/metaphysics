@@ -96,6 +96,41 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("sizeScore", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          sizeScore
+        }
+      }
+    `
+
+    beforeEach(() => {
+      artwork = {
+        ...artwork,
+        size_score: 2.5,
+      }
+      context = {
+        artworkLoader: sinon
+          .stub()
+          .withArgs(artwork.id)
+          .returns(Promise.resolve(artwork)),
+      }
+    })
+
+    it("returns sizeScore", () => {
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            sizeScore: 2.5,
+          },
+        })
+      })
+    })
+  })
+
   describe("#is_contactable", () => {
     const query = `
       {
@@ -424,6 +459,48 @@ describe("Artwork type", () => {
               },
               {
                 sale_message: "Contact for price",
+              },
+            ],
+          },
+        })
+      })
+    })
+
+    it("returns the proper sizeScore for edition sets", () => {
+      artwork.edition_sets = [
+        {
+          size_score: 3.4,
+        },
+        {
+          size_score: 6.2,
+        },
+        {
+          size_score: 2.7,
+        },
+      ]
+
+      const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          edition_sets {
+            sizeScore
+          }
+        }
+      }
+    `
+
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            edition_sets: [
+              {
+                sizeScore: 3.4,
+              },
+              {
+                sizeScore: 6.2,
+              },
+              {
+                sizeScore: 2.7,
               },
             ],
           },

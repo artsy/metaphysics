@@ -67,6 +67,11 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       deprecationReason: "Prefer to use `sale_message`.",
     },
     listPrice,
+    sizeScore: {
+      description: "score assigned to an artwork based on its dimensions",
+      type: GraphQLFloat,
+      resolve: ({ size_score }) => size_score,
+    },
     sale_message: {
       type: GraphQLString,
       resolve: ({ availability, availability_hidden, price, forsale }) => {
