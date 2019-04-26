@@ -61,7 +61,6 @@ describe("PricingContext type", () => {
     query {
       artwork(id: "lol") {
         pricingContext {
-          filterDescription
           appliedFilters {
             category
             dimension
@@ -120,7 +119,6 @@ Object {
           "numArtworks": 17,
         },
       ],
-      "filterDescription": "deprecated field",
     },
   },
 }

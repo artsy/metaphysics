@@ -11,7 +11,6 @@ export const mockFetch = jest.fn(() =>
       JSON.stringify({
         data: {
           pricingContext: {
-            filterDescription: `deprecated field`,
             appliedFilters: {
               category: "ARCHITECTURE",
               dimension: "SMALL",
