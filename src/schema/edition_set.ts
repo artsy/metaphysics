@@ -3,15 +3,16 @@ import { IDFields } from "./object_identification"
 import Dimensions from "./dimensions"
 import {
   GraphQLString,
-  GraphQLFloat,
   GraphQLBoolean,
   GraphQLObjectType,
   GraphQLEnumType,
   GraphQLFieldConfig,
+  GraphQLFloat,
 } from "graphql"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import { Sellable } from "./sellable"
 import { ResolverContext } from "types/graphql"
+import { listPrice } from "./fields/listPrice"
 
 export const EditionSetSorts = {
   type: new GraphQLEnumType({
@@ -65,6 +66,7 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       },
       deprecationReason: "Prefer to use `sale_message`.",
     },
+    listPrice,
     sizeScore: {
       description: "score assigned to an artwork based on its dimensions",
       type: GraphQLFloat,
@@ -95,6 +97,18 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
 
         return "No longer available"
       },
+    },
+    widthCm: {
+      description:
+        "If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field",
+      type: GraphQLFloat,
+      resolve: ({ width_cm }) => width_cm,
+    },
+    heightCm: {
+      description:
+        "If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field",
+      type: GraphQLFloat,
+      resolve: ({ height_cm }) => height_cm,
     },
   },
 })

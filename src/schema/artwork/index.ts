@@ -42,6 +42,7 @@ import { amount } from "schema/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 import { ResolverContext } from "types/graphql"
+import { listPrice } from "schema/fields/listPrice"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -498,6 +499,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       pickup_available: { type: GraphQLBoolean },
       price: { type: GraphQLString },
       priceCents: {
+        deprecationReason: "Prefer `listPrice` instead.",
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "PriceCents",
           fields: {
@@ -524,6 +526,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
+      listPrice,
       price_currency: { type: GraphQLString },
       shipsToContinentalUSOnly: {
         type: GraphQLBoolean,

@@ -117,3 +117,7 @@ export const createVortexLink = () => {
   })
   return middlewareLink.concat(httpLink)
 }
+
+beforeEach(() => {
+  mockFetch.mockClear()
+})

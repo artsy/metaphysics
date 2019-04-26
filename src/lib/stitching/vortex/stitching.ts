@@ -5,6 +5,16 @@ import gql from "lib/gql"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
+const getMaxPrice = (thing: { listPrice: any }) => {
+  if (!thing.listPrice) {
+    return 0
+  }
+  if (thing.listPrice.priceCents) {
+    return thing.listPrice.priceCents
+  }
+  return thing.listPrice.maxPriceCents
+}
+
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
@@ -82,8 +92,29 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           ... on Artwork {
             widthCm
             heightCm
-            priceCents {
-              min
+            edition_sets {
+              widthCm
+              heightCm
+              listPrice {
+                __typename
+                ... on PriceRange {
+                  minPriceCents
+                  maxPriceCents
+                }
+                ... on ExactPrice {
+                  priceCents
+                }
+              }
+            }
+            listPrice {
+              __typename
+              ... on PriceRange {
+                minPriceCents
+                maxPriceCents
+              }
+              ... on ExactPrice {
+                priceCents
+              }
             }
             artist {
               _id
@@ -105,30 +136,49 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             artists,
             artist_names,
             category,
+            edition_sets,
             heightCm,
             is_for_sale,
             is_in_auction,
             is_price_hidden,
             price_currency,
-            priceCents,
+            listPrice,
             widthCm,
           } = source
-          // fail if we don't have enough info to request a histogram
 
+          // Find edition with highest price
+          const edition = (edition_sets || [])
+            .concat([{ widthCm, heightCm, listPrice }])
+            .reduce((mostExpensiveEditionSetSoFar, editionSet) => {
+              if (
+                getMaxPrice(mostExpensiveEditionSetSoFar) <
+                getMaxPrice(editionSet)
+              ) {
+                return editionSet
+              }
+              return mostExpensiveEditionSetSoFar
+            })
+
+          const price = getMaxPrice(edition)
+          const width = edition.widthCm
+          const height = edition.heightCm
+
+          // fail if we don't have enough info to request a histogram
           if (
             is_price_hidden ||
             is_in_auction ||
             price_currency !== "USD" ||
             (artists && artists.length > 1) ||
             !is_for_sale ||
-            !priceCents ||
+            !price ||
             !artist ||
-            !widthCm ||
-            !heightCm ||
+            !width ||
+            !height ||
             !category
           ) {
             return null
           }
+
           // this feature is only enabled for lab users right now
           if (!context.meLoader) {
             return null
@@ -154,8 +204,8 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           const args = {
             artistId: artist._id,
             category: vortexSupportedCategory,
-            widthCm: Math.round(widthCm),
-            heightCm: Math.round(heightCm),
+            widthCm: Math.round(width),
+            heightCm: Math.round(height),
           }
 
           try {

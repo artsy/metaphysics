@@ -4,7 +4,6 @@ import galaxyLoaders from "./galaxy"
 import geminiLoaders from "./gemini"
 import gravityLoaders from "./gravity"
 import positronLoaders from "./positron"
-import vortexLoaders from "./vortex"
 
 export const createLoadersWithoutAuthentication = opts => ({
   ...deltaLoaders(opts),
@@ -13,7 +12,6 @@ export const createLoadersWithoutAuthentication = opts => ({
   ...geminiLoaders(),
   ...gravityLoaders(opts),
   ...positronLoaders(opts),
-  ...vortexLoaders(),
 })
 
 export type LoadersWithoutAuthentication = ReturnType<
