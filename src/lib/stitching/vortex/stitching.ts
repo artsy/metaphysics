@@ -2,6 +2,7 @@ import { executableVortexSchema } from "./schema"
 import { amount } from "schema/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
+import { sortBy } from "lodash"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
@@ -9,10 +10,7 @@ const getMaxPrice = (thing: { listPrice: any }) => {
   if (!thing.listPrice) {
     return 0
   }
-  if (thing.listPrice.priceCents) {
-    return thing.listPrice.priceCents
-  }
-  return thing.listPrice.maxPriceCents
+  return thing.listPrice.priceCents || thing.listPrice.maxPriceCents
 }
 
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
@@ -90,11 +88,9 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
       pricingContext: {
         fragment: gql`
           ... on Artwork {
-            widthCm
-            heightCm
+            sizeScore
             edition_sets {
-              widthCm
-              heightCm
+              sizeScore
               listPrice {
                 __typename
                 ... on PriceRange {
@@ -137,31 +133,28 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             artist_names,
             category,
             edition_sets,
-            heightCm,
             is_for_sale,
             is_in_auction,
             is_price_hidden,
             price_currency,
             listPrice,
-            widthCm,
+            sizeScore: mainSizeScore,
           } = source
 
           // Find edition with highest price
-          const edition = (edition_sets || [])
-            .concat([{ widthCm, heightCm, listPrice }])
-            .reduce((mostExpensiveEditionSetSoFar, editionSet) => {
-              if (
-                getMaxPrice(mostExpensiveEditionSetSoFar) <
-                getMaxPrice(editionSet)
-              ) {
-                return editionSet
-              }
-              return mostExpensiveEditionSetSoFar
-            })
+          const edition = sortBy(
+            [{ sizeScore: mainSizeScore, listPrice }, ...edition_sets].filter(
+              e => e.sizeScore
+            ),
+            getMaxPrice
+          ).pop() as any
+
+          if (!edition) {
+            return null
+          }
 
           const price = getMaxPrice(edition)
-          const width = edition.widthCm
-          const height = edition.heightCm
+          const sizeScore = edition.sizeScore
 
           // fail if we don't have enough info to request a histogram
           if (
@@ -172,8 +165,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             !is_for_sale ||
             !price ||
             !artist ||
-            !width ||
-            !height ||
+            !sizeScore ||
             !category
           ) {
             return null
@@ -204,8 +196,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           const args = {
             artistId: artist._id,
             category: vortexSupportedCategory,
-            widthCm: Math.round(width),
-            heightCm: Math.round(height),
+            sizeScore: Math.round(sizeScore),
           }
 
           try {
