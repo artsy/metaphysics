@@ -143,9 +143,10 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
 
           // Find edition with highest price
           const edition = sortBy(
-            [{ sizeScore: mainSizeScore, listPrice }, ...edition_sets].filter(
-              e => e.sizeScore
-            ),
+            [
+              { sizeScore: mainSizeScore, listPrice },
+              ...(edition_sets || []),
+            ].filter(e => e.sizeScore),
             getMaxPrice
           ).pop() as any
 
