@@ -1,4 +1,9 @@
-import { GraphQLBoolean, GraphQLEnumType, GraphQLObjectType } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLEnumType,
+  GraphQLObjectType,
+  GraphQLInt,
+} from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { SuggestedArtistsArgs } from "schema/me/suggested_artists_args"
 import { artistConnection } from "schema/artist"
@@ -43,6 +48,9 @@ export const Related = {
             type: GraphQLBoolean,
             defaultValue: true,
           },
+          min_forsale_artworks: {
+            type: GraphQLInt,
+          },
           kind: RelatedArtistsKind,
         }),
         resolve: (
@@ -53,14 +61,22 @@ export const Related = {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )
-          const { kind, exclude_artists_without_artworks } = args
+          const {
+            kind,
+            exclude_artists_without_artworks,
+            min_forsale_artworks,
+          } = args
           const gravityArgs = {
             page,
             size,
             artist: [id],
             total_count: true,
             exclude_artists_without_artworks,
+            min_forsale_artworks,
           }
+
+          if (min_forsale_artworks)
+            delete gravityArgs.exclude_artists_without_artworks
 
           const fetch =
             kind === "main"
