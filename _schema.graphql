@@ -914,6 +914,7 @@ type ArtistRelatedData {
   genes(after: String, first: Int, before: String, last: Int): GeneConnection
   artists(
     exclude_artists_without_artworks: Boolean = true
+    min_forsale_artworks: Int
     kind: RelatedArtistsKind
     after: String
     first: Int
