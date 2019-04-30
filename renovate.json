@@ -1,0 +1,4 @@
+{
+  "extends": ["@artsy:app"],
+  "assignees": ["zephraph", "alloy"]
+}
