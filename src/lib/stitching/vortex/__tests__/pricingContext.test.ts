@@ -2,11 +2,15 @@ import { runQuery } from "test/utils"
 import gql from "lib/gql"
 import { ResolverContext } from "types/graphql"
 import { filtersDescription } from "../stitching"
+import config from "config"
 
 jest.mock("../link")
 const mockFetch = require("../link").mockFetch as jest.Mock<any>
 
 describe("PricingContext type", () => {
+  beforeEach(() => {
+    config.PRICING_CONTEXT_ARTIST_ALLOW_LIST = null
+  })
   const artwork = {
     artist: {
       id: "artist-slug",
@@ -301,6 +305,20 @@ Object {
     })
     const result = (await runQuery(query, context)) as any
     expect(result.artwork.pricingContext).toBeNull()
+  })
+
+  describe("when there is an allow list", () => {
+    it("Returns null when the artist _id is not in the list", async () => {
+      config.PRICING_CONTEXT_ARTIST_ALLOW_LIST = new Set(["bad-artist-id"])
+      const result = (await runQuery(query, context)) as any
+      expect(result.artwork.pricingContext).toBeNull()
+    })
+
+    it("works when the artist _id is in the list", async () => {
+      config.PRICING_CONTEXT_ARTIST_ALLOW_LIST = new Set(["artist-id"])
+      const result = (await runQuery(query, context)) as any
+      expect(result.artwork.pricingContext).not.toBeNull()
+    })
   })
 })
 

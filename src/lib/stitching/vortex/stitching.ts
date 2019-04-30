@@ -3,6 +3,7 @@ import { amount } from "schema/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
 import { sortBy } from "lodash"
+import config from "config"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
@@ -168,6 +169,13 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             !artist ||
             !sizeScore ||
             !category
+          ) {
+            return null
+          }
+
+          if (
+            config.PRICING_CONTEXT_ARTIST_ALLOW_LIST &&
+            !config.PRICING_CONTEXT_ARTIST_ALLOW_LIST.has(artist._id)
           ) {
             return null
           }
