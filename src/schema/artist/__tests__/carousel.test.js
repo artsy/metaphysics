@@ -33,7 +33,7 @@ describe("ArtistCarousel type", () => {
       context.artistArtworksLoader = sinon
         .stub()
         .withArgs(artist.id, {
-          size: 7,
+          size: 10,
           sort: "-iconicity",
           published: true,
         })

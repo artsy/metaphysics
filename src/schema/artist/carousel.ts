@@ -30,7 +30,7 @@ const ArtistCarousel: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
         top_tier: true,
       }),
       artistArtworksLoader(id, {
-        size: 7,
+        size: 10,
         sort: "-iconicity",
         published: true,
       }),
