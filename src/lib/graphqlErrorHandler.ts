@@ -81,7 +81,11 @@ const reportErrorToSentry = (
   })
 }
 
-type WriteablePartial<T> = { -readonly [P in keyof T]+?: T[P] }
+export type WriteablePartial<T> = { -readonly [P in keyof T]+?: T[P] }
+
+export type GraphQLErrorHandler = (
+  topLevelError: GraphQLError
+) => WriteablePartial<GraphQLFormattedError>
 
 export const formattedGraphQLError = (
   topLevelError: GraphQLError,
@@ -115,7 +119,7 @@ export const formattedGraphQLError = (
 export const graphqlErrorHandler = (
   enableSentry: boolean,
   queryContext: QueryContext
-) => {
+): GraphQLErrorHandler => {
   return (topLevelError: GraphQLError) => {
     const flattenedErrors = flattenErrors(topLevelError)
     if (enableSentry) {

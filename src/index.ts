@@ -8,18 +8,13 @@ import cors from "cors"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
-import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
-import graphqlHTTP from "express-graphql"
+import { ApolloServer } from "apollo-server-express"
 import localSchema from "./schema"
 import moment from "moment"
 import morgan from "artsy-morgan"
 import raven from "raven"
 import xapp from "artsy-xapp"
 import crunchInterceptor from "./lib/crunchInterceptor"
-import {
-  fetchLoggerSetup,
-  fetchLoggerRequestDone,
-} from "lib/loaders/api/extensionsLogger"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import { info } from "./lib/loggers"
 import {
@@ -31,7 +26,8 @@ import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
-import { ResolverContext } from "types/graphql"
+import { ErrorExtension } from "./extensions/error-extension"
+import { LoggingExtension } from "./extensions/logging-extension"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -108,19 +104,25 @@ async function startApp() {
     logQueryDetailsIfEnabled(),
     nameOldEigenQueries,
     fetchPersistedQuery,
-    crunchInterceptor,
-    graphqlHTTP((req, res, params) => {
+    crunchInterceptor
+  )
+
+  const server = new ApolloServer({
+    schema,
+    rootValue: {},
+    validationRules: QUERY_DEPTH_LIMIT
+      ? [depthLimit(QUERY_DEPTH_LIMIT)]
+      : undefined,
+    extensions: [
+      () => new LoggingExtension(enableRequestLogging),
+      () => new ErrorExtension({ enableSentry }),
+    ],
+    context: ({ req, res }) => {
       const accessToken = req.headers["x-access-token"] as string | undefined
       const userID = req.headers["x-user-id"] as string | undefined
       const timezone = req.headers["x-timezone"] as string | undefined
       const userAgent = req.headers["user-agent"]
-
       const { requestIDs } = res.locals
-      const requestID = requestIDs.requestID
-
-      if (enableRequestLogging) {
-        fetchLoggerSetup(requestID)
-      }
 
       // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
       // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
@@ -134,7 +136,7 @@ async function startApp() {
         userAgent,
       })
 
-      const context: ResolverContext = {
+      return {
         accessToken,
         userID,
         defaultTimezone,
@@ -144,27 +146,10 @@ async function startApp() {
         requestIDs,
         userAgent,
       }
+    },
+  })
 
-      return {
-        schema,
-        graphiql: true,
-        context,
-        rootValue: {},
-        formatError: graphqlErrorHandler(enableSentry, {
-          req,
-          // Why the checking on params? Do we reach this code if params is falsy?
-          variables: params && params.variables,
-          query: (params && params.query)!,
-        }),
-        validationRules: QUERY_DEPTH_LIMIT
-          ? [depthLimit(QUERY_DEPTH_LIMIT)]
-          : null,
-        extensions: enableRequestLogging
-          ? fetchLoggerRequestDone(requestID)
-          : undefined,
-      }
-    })
-  )
+  server.applyMiddleware({ app })
 
   if (enableSentry) {
     app.use(raven.errorHandler())
