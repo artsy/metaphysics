@@ -149,7 +149,7 @@ async function startApp() {
     },
   })
 
-  server.applyMiddleware({ app })
+  server.applyMiddleware({ app, path: "/" })
 
   if (enableSentry) {
     app.use(raven.errorHandler())
