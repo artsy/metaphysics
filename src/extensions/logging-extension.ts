@@ -14,10 +14,10 @@ function appendArrays(objValue, srcValue) {
 const merge = (...vals) => mergeWith({}, ...vals, appendArrays)
 
 export class LoggingExtension implements GraphQLExtension {
-  private enableRequestLogging: boolean = false
+  private enableRequestLogging: boolean
   private requestID: any
 
-  constructor(enableRequestLogging: boolean) {
+  constructor(enableRequestLogging: boolean = false) {
     this.enableRequestLogging = enableRequestLogging
   }
 
