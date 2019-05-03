@@ -26,8 +26,8 @@ import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
 
 import { logQueryDetails } from "./lib/logQueryDetails"
-import { ErrorExtension } from "./extensions/error-extension"
-import { LoggingExtension } from "./extensions/logging-extension"
+import { ErrorExtension } from "./extensions/errorExtension"
+import { LoggingExtension } from "./extensions/loggingExtension"
 
 const {
   ENABLE_REQUEST_LOGGING,
