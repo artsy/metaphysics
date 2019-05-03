@@ -110,6 +110,8 @@ async function startApp() {
   const server = new ApolloServer({
     schema,
     rootValue: {},
+    playground: true,
+    introspection: true,
     validationRules: QUERY_DEPTH_LIMIT
       ? [depthLimit(QUERY_DEPTH_LIMIT)]
       : undefined,
