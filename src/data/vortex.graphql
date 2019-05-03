@@ -248,9 +248,7 @@ type Query {
   pricingContext(
     artistId: String!
     category: PricingContextCategoryEnum!
-    heightCm: Int
-    widthCm: Int
-    sizeScore: Int
+    sizeScore: Int!
   ): PricingContext
 }
 
