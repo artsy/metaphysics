@@ -49,5 +49,6 @@ export class ErrorExtension implements GraphQLExtension {
         error => this.errorHandler!(error) as GraphQLError
       )
     }
+    return options
   }
 }
