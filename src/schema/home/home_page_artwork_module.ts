@@ -92,10 +92,16 @@ const HomePageArtworkModule: GraphQLFieldConfig<void, ResolverContext> = {
     switch (key) {
       case "generic_gene":
         return { key, display, params: find(genericGenes, ["id", id]) }
+      // Emission may include an `id` param here,
+      // but Force does not.
       case "genes":
-        return geneLoader(id).then(gene => {
-          return { key, display, params: { id, gene } }
-        })
+        if (id) {
+          return geneLoader(id).then(gene => {
+            return { key, display, params: { id, gene } }
+          })
+        }
+
+        return { key, display, params: {} }
       case "followed_artist":
         return { key, display, params: { followed_artist_id } }
       case "related_artists":

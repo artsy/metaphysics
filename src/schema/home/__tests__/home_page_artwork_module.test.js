@@ -64,6 +64,53 @@ describe("HomePageArtworkModule", () => {
     })
   })
 
+  describe("genes", () => {
+    it("fetches the gene and results if an id is provided", async () => {
+      const query = gql`
+        {
+          home_page {
+            artwork_module(key: "genes", id: "catty-art") {
+              results {
+                id
+              }
+            }
+          }
+        }
+      `
+      const data = await runQuery(query, {
+        geneLoader: id => Promise.resolve({ id }),
+        filterArtworksLoader: () =>
+          Promise.resolve({ hits: [{ id: "catty-art-work" }] }),
+      })
+      expect(data.home_page.artwork_module.results).toEqual([
+        { id: "catty-art-work" },
+      ])
+    })
+  })
+
+  it("fetches a followed gene and results without an id", async () => {
+    const query = gql`
+      {
+        home_page {
+          artwork_module(key: "genes") {
+            results {
+              id
+            }
+          }
+        }
+      }
+    `
+    const data = await runQuery(query, {
+      followedGenesLoader: () =>
+        Promise.resolve({ body: [{ gene: { id: "catty-art" } }] }),
+      filterArtworksLoader: () =>
+        Promise.resolve({ hits: [{ id: "catty-art-work" }] }),
+    })
+    expect(data.home_page.artwork_module.results).toEqual([
+      { id: "catty-art-work" },
+    ])
+  })
+
   describe("when signed out", () => {
     it("returns the proper title for popular_artists", () => {
       const query = gql`
