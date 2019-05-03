@@ -81,7 +81,7 @@ const reportErrorToSentry = (
   })
 }
 
-export type WriteablePartial<T> = { -readonly [P in keyof T]+?: T[P] }
+type WriteablePartial<T> = { -readonly [P in keyof T]+?: T[P] }
 
 export type GraphQLErrorHandler = (
   topLevelError: GraphQLError
