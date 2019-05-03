@@ -39,9 +39,15 @@ export class LoggingExtension implements GraphQLExtension {
   }) {
     if (!this.enableRequestLogging) return options
 
+    if (!options.graphqlResponse.extensions) {
+      options.graphqlResponse.extensions = {}
+    }
+
     return merge(options, {
       graphqlResponse: {
-        extensions: [fetchLoggerRequestDone(this.requestID)],
+        extensions: {
+          ...fetchLoggerRequestDone(this.requestID),
+        },
       },
     })
   }
