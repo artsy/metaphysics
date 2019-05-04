@@ -8,7 +8,6 @@ import cors from "cors"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
-import { ApolloServer } from "apollo-server-express"
 import localSchema from "./schema"
 import moment from "moment"
 import morgan from "artsy-morgan"
@@ -16,6 +15,10 @@ import raven from "raven"
 import xapp from "artsy-xapp"
 import crunchInterceptor from "./lib/crunchInterceptor"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
+import {
+  fetchLoggerSetup,
+  fetchLoggerRequestDone,
+} from "lib/loaders/api/extensionsLogger"
 import { info } from "./lib/loggers"
 import {
   executableExchangeSchema,
@@ -24,7 +27,9 @@ import {
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
+import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
 
+import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
 import { ErrorExtension } from "./extensions/errorExtension"
 import { LoggingExtension } from "./extensions/loggingExtension"
@@ -37,6 +42,7 @@ const {
   QUERY_DEPTH_LIMIT,
   RESOLVER_TIMEOUT_MS,
   SENTRY_PRIVATE_DSN,
+  ENABLE_APOLLO,
 } = config
 
 const enableSentry = !!SENTRY_PRIVATE_DSN
@@ -107,51 +113,113 @@ async function startApp() {
     crunchInterceptor
   )
 
-  const server = new ApolloServer({
-    schema,
-    rootValue: {},
-    playground: true,
-    introspection: true,
-    validationRules: QUERY_DEPTH_LIMIT
-      ? [depthLimit(QUERY_DEPTH_LIMIT)]
-      : undefined,
-    extensions: [
-      () => new LoggingExtension(enableRequestLogging),
-      () => new ErrorExtension({ enableSentry }),
-    ],
-    context: ({ req, res }) => {
-      const accessToken = req.headers["x-access-token"] as string | undefined
-      const userID = req.headers["x-user-id"] as string | undefined
-      const timezone = req.headers["x-timezone"] as string | undefined
-      const userAgent = req.headers["user-agent"]
-      const { requestIDs } = res.locals
+  if (ENABLE_APOLLO) {
+    const { ApolloServer } = require("apollo-server-express")
+    const server = new ApolloServer({
+      schema,
+      rootValue: {},
+      playground: true,
+      introspection: true,
+      validationRules: QUERY_DEPTH_LIMIT
+        ? [depthLimit(QUERY_DEPTH_LIMIT)]
+        : undefined,
+      extensions: [
+        () => new LoggingExtension(enableRequestLogging),
+        () => new ErrorExtension({ enableSentry }),
+      ],
+      context: ({ req, res }) => {
+        const accessToken = req.headers["x-access-token"] as string | undefined
+        const userID = req.headers["x-user-id"] as string | undefined
+        const timezone = req.headers["x-timezone"] as string | undefined
+        const userAgent = req.headers["user-agent"]
+        const { requestIDs } = res.locals
 
-      // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
-      // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-      let defaultTimezone
-      if (timezone && moment.tz.zone(timezone)) {
-        defaultTimezone = timezone
-      }
+        // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
+        // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        let defaultTimezone
+        if (timezone && moment.tz.zone(timezone)) {
+          defaultTimezone = timezone
+        }
 
-      const loaders = createLoaders(accessToken, userID, {
-        requestIDs,
-        userAgent,
+        const loaders = createLoaders(accessToken, userID, {
+          requestIDs,
+          userAgent,
+        })
+
+        return {
+          accessToken,
+          userID,
+          defaultTimezone,
+          ...loaders,
+          // For stitching purposes
+          exchangeSchema,
+          requestIDs,
+          userAgent,
+        }
+      },
+    })
+
+    server.applyMiddleware({ app, path: "/" })
+  } else {
+    const graphqlHTTP = require("express-graphql")
+    app.use(
+      graphqlHTTP((req, res, params) => {
+        const accessToken = req.headers["x-access-token"] as string | undefined
+        const userID = req.headers["x-user-id"] as string | undefined
+        const timezone = req.headers["x-timezone"] as string | undefined
+        const userAgent = req.headers["user-agent"]
+
+        const { requestIDs } = res.locals
+        const requestID = requestIDs.requestID
+
+        if (enableRequestLogging) {
+          fetchLoggerSetup(requestID)
+        }
+
+        // Accepts a tz database timezone string. See http://www.iana.org/time-zones,
+        // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        let defaultTimezone
+        if (timezone && moment.tz.zone(timezone)) {
+          defaultTimezone = timezone
+        }
+
+        const loaders = createLoaders(accessToken, userID, {
+          requestIDs,
+          userAgent,
+        })
+
+        const context: ResolverContext = {
+          accessToken,
+          userID,
+          defaultTimezone,
+          ...loaders,
+          // For stitching purposes
+          exchangeSchema,
+          requestIDs,
+          userAgent,
+        }
+
+        return {
+          schema,
+          graphiql: true,
+          context,
+          rootValue: {},
+          formatError: graphqlErrorHandler(enableSentry, {
+            req,
+            // Why the checking on params? Do we reach this code if params is falsy?
+            variables: params && params.variables,
+            query: (params && params.query)!,
+          }),
+          validationRules: QUERY_DEPTH_LIMIT
+            ? [depthLimit(QUERY_DEPTH_LIMIT)]
+            : null,
+          extensions: enableRequestLogging
+            ? () => fetchLoggerRequestDone(requestID)
+            : undefined,
+        }
       })
-
-      return {
-        accessToken,
-        userID,
-        defaultTimezone,
-        ...loaders,
-        // For stitching purposes
-        exchangeSchema,
-        requestIDs,
-        userAgent,
-      }
-    },
-  })
-
-  server.applyMiddleware({ app, path: "/" })
+    )
+  }
 
   if (enableSentry) {
     app.use(raven.errorHandler())

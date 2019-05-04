@@ -62,6 +62,7 @@
     "debug": "2.6.9",
     "express": "4.16.2",
     "express-force-ssl": "0.3.2",
+    "express-graphql": "0.6.11",
     "express-interceptor": "1.2.0",
     "express-ipfilter": "0.3.1",
     "express-rate-limit": "3.2.0",
