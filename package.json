@@ -108,7 +108,7 @@
     "@types/graphql": "0.13.4"
   },
   "devDependencies": {
-    "@artsy/express-reloadable": "1.4.1",
+    "@artsy/express-reloadable": "1.4.5",
     "@types/dd-trace": "0.6.0",
     "@types/express-graphql": "0.6.1",
     "@types/express-rate-limit": "2.9.3",
