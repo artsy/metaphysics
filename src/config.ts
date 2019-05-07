@@ -74,6 +74,7 @@ const {
   STATSD_PORT,
   VORTEX_API_BASE,
   VORTEX_APP_ID,
+  VORTEX_TOKEN,
   PRICING_CONTEXT_ARTIST_ALLOW_LIST,
 } = process.env
 
@@ -99,6 +100,7 @@ const mustHave = {
   KAWS_API_BASE,
   VORTEX_API_BASE,
   VORTEX_APP_ID,
+  VORTEX_TOKEN,
 }
 
 Object.keys(mustHave).forEach(key => {
@@ -201,6 +203,7 @@ export default {
   STATSD_PORT: Number(STATSD_PORT) || 8125,
   VORTEX_API_BASE,
   VORTEX_APP_ID,
+  VORTEX_TOKEN,
   PRICING_CONTEXT_ARTIST_ALLOW_LIST: PRICING_CONTEXT_ARTIST_ALLOW_LIST
     ? new Set(PRICING_CONTEXT_ARTIST_ALLOW_LIST.split(","))
     : null,

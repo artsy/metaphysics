@@ -9,7 +9,8 @@ const mockFetch = require("../link").mockFetch as jest.Mock<any>
 
 describe("PricingContext type", () => {
   beforeEach(() => {
-    config.PRICING_CONTEXT_ARTIST_ALLOW_LIST = null
+    ;(config.PRICING_CONTEXT_ARTIST_ALLOW_LIST = null),
+      (config.VORTEX_TOKEN = "vortex-token")
   })
   const artwork = {
     artist: {
@@ -233,26 +234,52 @@ Object {
     expect(result.artwork.pricingContext).toBeNull()
   })
 
-  it("is null when not authenticated", async () => {
+  it("it works when the user is not authenticated", async () => {
     const { meLoader, ...others } = context
     const result = (await runQuery(query, others)) as any
-    expect(result.artwork.pricingContext).toBeNull()
-  })
-
-  it("is null when user is not in lab feature", async () => {
-    meLoader.mockResolvedValueOnce({
-      lab_features: ["some other lab feature"],
-    })
-    const result = (await runQuery(query, context)) as any
-    expect(result.artwork.pricingContext).toBeNull()
-  })
-
-  it("is null when user has no lab features", async () => {
-    meLoader.mockResolvedValueOnce({
-      lab_features: [],
-    })
-    const result = (await runQuery(query, context)) as any
-    expect(result.artwork.pricingContext).toBeNull()
+    expect(result).toMatchInlineSnapshot(`
+Object {
+  "artwork": Object {
+    "pricingContext": Object {
+      "appliedFilters": Object {
+        "category": "ARCHITECTURE",
+        "dimension": "SMALL",
+      },
+      "appliedFiltersDisplay": "Price ranges of small architecture works by Good Artist",
+      "bins": Array [
+        Object {
+          "maxPrice": "$89",
+          "maxPriceCents": 8855,
+          "minPrice": "$9",
+          "minPriceCents": 900,
+          "numArtworks": 67,
+        },
+        Object {
+          "maxPrice": "$168",
+          "maxPriceCents": 16810,
+          "minPrice": "$89",
+          "minPriceCents": 8855,
+          "numArtworks": 57,
+        },
+        Object {
+          "maxPrice": "$248",
+          "maxPriceCents": 24765,
+          "minPrice": "$168",
+          "minPriceCents": 16810,
+          "numArtworks": 45,
+        },
+        Object {
+          "maxPrice": "$327",
+          "maxPriceCents": 32720,
+          "minPrice": "$248",
+          "minPriceCents": 24765,
+          "numArtworks": 17,
+        },
+      ],
+    },
+  },
+}
+`)
   })
 
   it("is null when there is no list price", async () => {

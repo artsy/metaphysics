@@ -10,7 +10,7 @@ import { setContext } from "apollo-link-context"
 import { headers as requestIDHeaders } from "lib/requestIDs"
 import { ResolverContext } from "types/graphql"
 
-const { VORTEX_API_BASE } = config
+const { VORTEX_API_BASE, VORTEX_TOKEN } = config
 
 export const createVortexLink = () => {
   const httpLink = createHttpLink({
@@ -36,15 +36,10 @@ export const createVortexLink = () => {
         })
       }
       return {
-        headers,
-        // TODO: if/when price summaries go public, add a new env var with a persistent jwt generated like this:
-        //    https://github.com/artsy/gravity/blob/master/doc/ApiAuthentication.md#create-an-app-trust-token
-        //
-        // Call it VORTEX_TOKEN and then use it in here:
-        // headers: {
-        //   ...headers,
-        //   Authorization: `Bearer ${config.VORTEX_TOKEN}`,
-        // },
+        headers: {
+          ...headers,
+          Authorization: `Bearer ${VORTEX_TOKEN}`,
+        },
       }
     }
   )

@@ -180,18 +180,6 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             return null
           }
 
-          // this feature is only enabled for lab users right now
-          if (!context.meLoader) {
-            return null
-          }
-          const me = await context.meLoader()
-          if (
-            !me.lab_features ||
-            !me.lab_features.includes("Pricing Context")
-          ) {
-            return null
-          }
-
           const vortexSupportedCategory = categoryMap[category]
 
           // Don't show the histogram if the category is "Other"
