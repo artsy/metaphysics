@@ -8414,7 +8414,7 @@ type PartnerShowEventType {
   datesAreSameDay: Boolean
 
   # A formatted description of the dates with hours
-  datesWithHours: String
+  dateTimeRange: String
 
   # A formatted description of the start to end dates
   exhibitionPeriod: String

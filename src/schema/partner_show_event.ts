@@ -6,7 +6,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { dateRange, datesWithHours, datesAreSameDay } from "lib/date"
+import { dateRange, dateTimeRange, datesAreSameDay } from "lib/date"
 
 const hasOldEmissionUserAgentString = (userAgent: string | string[]): boolean =>
   userAgent!.indexOf("Artsy-Mobile/4.4") > 0 ||
@@ -68,10 +68,10 @@ const PartnerShowEventType = new GraphQLObjectType<any, ResolverContext>({
       description: "Returns true if dates are on same day",
       resolve: ({ start_at, end_at }) => datesAreSameDay(start_at, end_at),
     },
-    datesWithHours: {
+    dateTimeRange: {
       type: GraphQLString,
       description: "A formatted description of the dates with hours",
-      resolve: ({ start_at, end_at }) => datesWithHours(start_at, end_at),
+      resolve: ({ start_at, end_at }) => dateTimeRange(start_at, end_at, true),
     },
     exhibitionPeriod: {
       type: GraphQLString,
