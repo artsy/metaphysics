@@ -226,7 +226,7 @@ describe("date formatting", () => {
         expect(period).toBe("Dec 5, 2019 from 8:00 – 10:00pm UTC")
       })
 
-      it("does not include year both dates are same day and the current year", () => {
+      it("does not include year when both dates are same day and the current year", () => {
         const period = dateTimeRange(
           "2018-12-05T20:00:00+00:00",
           "2018-12-05T22:00:00+00:00",
