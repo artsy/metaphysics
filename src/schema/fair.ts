@@ -142,14 +142,14 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     exhibition_period: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
-      resolve: ({ start_at, end_at }) => dateRange(start_at, end_at),
+      resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
     },
     formattedOpeningHours: {
       type: GraphQLString,
       description:
         "A formatted description of when the fair starts or closes or if it is closed",
       resolve: ({ start_at, end_at }) =>
-        formattedOpeningHours(start_at, end_at),
+        formattedOpeningHours(start_at, end_at, "UTC"),
     },
     has_full_feature: {
       type: GraphQLBoolean,

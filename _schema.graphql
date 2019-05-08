@@ -8410,9 +8410,6 @@ type PartnerShowEventType {
     timezone: String
   ): String
 
-  # Returns true if dates are on same day
-  datesAreSameDay: Boolean
-
   # A formatted description of the dates with hours
   dateTimeRange: String
 

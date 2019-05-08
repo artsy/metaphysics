@@ -4,7 +4,7 @@ import moment from "moment"
  * Jan 5 at 5:00pm
  * Jan 15 at 5:30pm
  */
-const formattedOpeningHoursDate = (date, timezone = "UTC") => {
+const formattedOpeningHoursDate = (date, timezone) => {
   const momentToUse = moment.tz(date, timezone)
   const momentDate = momentToUse.format("MMM D")
   const momentHour = momentToUse.format("h:mma z")
@@ -18,7 +18,7 @@ const formattedOpeningHoursDate = (date, timezone = "UTC") => {
 /**
  * Returns true if dates are on same day, timezone must be the same for both timestamps
  */
-export function datesAreSameDay(startAt, endAt, timezone = "UTC") {
+export function datesAreSameDay(startAt, endAt, timezone) {
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
   if (
@@ -36,7 +36,7 @@ export function datesAreSameDay(startAt, endAt, timezone = "UTC") {
  * 5:30pm
  * TODO: Use 24h clock if not Canada (except Québec), Australia, New Zealand, the Philippines, United States.
  */
-export function singleTime(date, timezone = "UTC") {
+export function singleTime(date, timezone) {
   return moment.tz(date, timezone).format("h:mma z")
 }
 
@@ -44,7 +44,7 @@ export function singleTime(date, timezone = "UTC") {
  * If within same am/pm:   9:00 – 11:30pm
  * If within across both am/pm:   9:00am – 12:30pm EST
  */
-export function timeRange(startAt, endAt, timezone = "UTC") {
+export function timeRange(startAt, endAt, timezone) {
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
   let startHour
@@ -65,7 +65,7 @@ export function timeRange(startAt, endAt, timezone = "UTC") {
  * Aug 5 at 5:00pm
  * Aug 5, 2022 at 5:00pm
  */
-export function singleDateTime(date, timezone = "UTC") {
+export function singleDateTime(date, timezone) {
   const now = moment.tz(moment(), timezone)
   const thisMoment = moment.tz(date, timezone)
   if (now.year() !== thisMoment.year()) {
@@ -81,7 +81,7 @@ export function singleDateTime(date, timezone = "UTC") {
  * Wed, Apr 24
  * if not this year:   Wed, April 24, 2022
  */
-export function singleDate(date, timezone = "UTC") {
+export function singleDate(date, timezone) {
   const thisMoment = moment.tz(date, timezone)
   const now = moment()
   if (now.year() !== thisMoment.year()) {
@@ -104,8 +104,8 @@ export function singleDate(date, timezone = "UTC") {
 export function dateTimeRange(
   startAt,
   endAt,
-  displayDayOfWeek = false,
-  timezone = "UTC"
+  timezone,
+  displayDayOfWeek = false
 ) {
   const now = moment.tz(moment(), timezone)
   const startMoment = moment.tz(startAt, timezone)
@@ -123,7 +123,7 @@ export function dateTimeRange(
     monthFormat = monthFormat.concat(", YYYY")
   }
 
-  if (datesAreSameDay(startAt, endAt)) {
+  if (datesAreSameDay(startAt, endAt, timezone)) {
     return displayDayOfWeek
       ? `${startMoment.format(dayFormat)}, ${startMoment.format(
           monthFormat
@@ -155,7 +155,7 @@ export function dateTimeRange(
  * Nov 1 – 4, 2018
  * Nov 1, 2018 – Jan 4, 2019
  */
-export function dateRange(startAt, endAt, timezone = "UTC") {
+export function dateRange(startAt, endAt, timezone) {
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
   const thisMoment = moment()
@@ -214,7 +214,7 @@ function relativeDays(prefix, today, other, max) {
  * Closing tomorrow
  * Opening in 5 days
  */
-export function exhibitionStatus(startAt, endAt, timezone = "UTC", max = 5) {
+export function exhibitionStatus(startAt, endAt, timezone, max = 5) {
   const today = moment.tz(moment(), timezone).startOf("day")
   return (
     relativeDays(
@@ -237,14 +237,14 @@ export function exhibitionStatus(startAt, endAt, timezone = "UTC", max = 5) {
  * Closes Apr 3 at 12:30pm
  * Closed
  */
-export function formattedOpeningHours(startAt, endAt, timezone = "UTC") {
+export function formattedOpeningHours(startAt, endAt, timezone) {
   const thisMoment = moment()
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
   if (thisMoment.isBefore(startMoment)) {
-    return `Opens ${formattedOpeningHoursDate(startAt)}`
+    return `Opens ${formattedOpeningHoursDate(startAt, timezone)}`
   } else if (thisMoment.isBefore(endMoment)) {
-    return `Closes ${formattedOpeningHoursDate(endAt)}`
+    return `Closes ${formattedOpeningHoursDate(endAt, timezone)}`
   } else {
     return "Closed"
   }

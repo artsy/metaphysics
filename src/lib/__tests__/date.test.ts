@@ -17,7 +17,8 @@ describe("date formatting", () => {
     it("If within same am/pm only display one am or pm", () => {
       const period = timeRange(
         "2022-12-30T08:00:00+00:00",
-        "2022-12-30T10:00:00+00:00"
+        "2022-12-30T10:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe("8:00 – 10:00am UTC")
     })
@@ -25,7 +26,8 @@ describe("date formatting", () => {
     it("If not within same am/pm show both time periods", () => {
       const period = timeRange(
         "2021-12-05T08:00:00+00:00",
-        "2022-12-30T17:00:00+00:00"
+        "2022-12-30T17:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe("8:00am – 5:00pm UTC")
     })
@@ -44,7 +46,8 @@ describe("date formatting", () => {
     it("Dates are the same day returns true", () => {
       const period = datesAreSameDay(
         "2022-12-30T20:00:00+00:00",
-        "2022-12-30T17:00:00+00:00"
+        "2022-12-30T17:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe(true)
     })
@@ -52,7 +55,8 @@ describe("date formatting", () => {
     it("Dates are not the same day returns false", () => {
       const period = datesAreSameDay(
         "2021-12-05T20:00:00+00:00",
-        "2022-12-30T17:00:00+00:00"
+        "2022-12-30T17:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe(false)
     })
@@ -88,7 +92,8 @@ describe("date formatting", () => {
     it("Event opens in the future", () => {
       const period = formattedOpeningHours(
         "2021-12-05T20:00:00+00:00",
-        "2022-12-30T17:00:00+00:00"
+        "2022-12-30T17:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe("Opens Dec 5 at 8:00pm UTC")
     })
@@ -96,7 +101,8 @@ describe("date formatting", () => {
     it("Event is running and closes in the future", () => {
       const period = formattedOpeningHours(
         "2017-12-05T20:00:00+00:00",
-        "2019-12-30T17:00:00+00:00"
+        "2019-12-30T17:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe("Closes Dec 30 at 5:00pm UTC")
     })
@@ -104,7 +110,8 @@ describe("date formatting", () => {
     it("Event ended in the past and is closed", () => {
       const period = formattedOpeningHours(
         "2016-12-05T20:00:00+00:00",
-        "2016-12-30T17:00:00+00:00"
+        "2016-12-30T17:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe("Closed")
     })
@@ -112,7 +119,7 @@ describe("date formatting", () => {
 
   describe(singleTime, () => {
     it("Return singleTime moment by the hour using default UTC timezone", () => {
-      const period = singleTime("2018-12-05T20:00:00+00:00")
+      const period = singleTime("2018-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("8:00pm UTC")
     })
 
@@ -132,12 +139,12 @@ describe("date formatting", () => {
     })
 
     it("Returns single date and time in this year", () => {
-      const period = singleDateTime("2018-12-05T20:00:00+00:00")
+      const period = singleDateTime("2018-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("Dec 5 at 8:00pm UTC")
     })
 
     it("Returns single date in different year from now", () => {
-      const period = singleDateTime("2021-12-05T20:00:00+00:00")
+      const period = singleDateTime("2021-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("Dec 5, 2021 at 8:00pm UTC")
     })
 
@@ -160,12 +167,12 @@ describe("date formatting", () => {
     })
 
     it("Returns single date in this year with day of week", () => {
-      const period = singleDate("2018-12-05T20:00:00+00:00")
+      const period = singleDate("2018-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("Wed, Dec 5")
     })
 
     it("Returns single date with day of week in different year from now", () => {
-      const period = singleDate("2021-12-05T20:00:00+00:00")
+      const period = singleDate("2021-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("Sun, Dec 5, 2021")
     })
   })
@@ -182,7 +189,8 @@ describe("date formatting", () => {
     it("Returns start and end datetimes with different years", () => {
       const period = dateTimeRange(
         "2021-12-05T20:00:00+00:00",
-        "2022-12-30T17:00:00+00:00"
+        "2022-12-30T17:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe("Dec 5, 2021 at 8:00pm – Dec 30, 2022 at 5:00pm UTC")
     })
@@ -190,7 +198,8 @@ describe("date formatting", () => {
     it("Returns the start and end date with different year from now", () => {
       const period = dateTimeRange(
         "2040-12-05T20:00:00+00:00",
-        "2040-12-30T17:00:00+00:00"
+        "2040-12-30T17:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe("Dec 5, 2040 at 8:00pm – Dec 30, 2040 at 5:00pm UTC")
     })
@@ -198,7 +207,8 @@ describe("date formatting", () => {
     it("Returns the start and end datetimes in current year", () => {
       const period = dateTimeRange(
         "2018-12-05T20:00:00+00:00",
-        "2018-12-30T17:00:00+00:00"
+        "2018-12-30T17:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe("Dec 5 at 8:00pm – Dec 30 at 5:00pm UTC")
     })
@@ -206,7 +216,8 @@ describe("date formatting", () => {
     it("Returns single datetime in different year from now", () => {
       const period = dateTimeRange(
         "2019-12-05T20:00:00+00:00",
-        "2019-12-05T22:00:00+00:00"
+        "2019-12-05T22:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe("Dec 5, 2019 from 8:00 – 10:00pm UTC")
     })
@@ -214,7 +225,8 @@ describe("date formatting", () => {
     it("Displays just date and time if dates are the same day and same year", () => {
       const period = dateTimeRange(
         "2018-12-05T20:00:00+00:00",
-        "2018-12-05T22:00:00+00:00"
+        "2018-12-05T22:00:00+00:00",
+        "UTC"
       )
       expect(period).toBe("Dec 5 from 8:00 – 10:00pm UTC")
     })
@@ -223,6 +235,7 @@ describe("date formatting", () => {
       const period = dateTimeRange(
         "2021-12-05T20:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
+        "UTC",
         true
       )
       expect(period).toBe(
@@ -234,6 +247,7 @@ describe("date formatting", () => {
       const period = dateTimeRange(
         "2020-12-05T20:00:00+00:00",
         "2020-12-30T17:00:00+00:00",
+        "UTC",
         true
       )
       expect(period).toBe(
@@ -245,6 +259,7 @@ describe("date formatting", () => {
       const period = dateTimeRange(
         "2018-12-05T20:00:00+00:00",
         "2018-12-30T17:00:00+00:00",
+        "UTC",
         true
       )
       expect(period).toBe("Wed, Dec 5 at 8:00pm – Sun, Dec 30 at 5:00pm UTC")
@@ -254,6 +269,7 @@ describe("date formatting", () => {
       const period = dateTimeRange(
         "2019-12-05T20:00:00+00:00",
         "2019-12-05T22:00:00+00:00",
+        "UTC",
         true
       )
       expect(period).toBe("Thu, Dec 5, 2019 from 8:00 – 10:00pm UTC")
@@ -263,6 +279,7 @@ describe("date formatting", () => {
       const period = dateTimeRange(
         "2018-12-05T20:00:00+00:00",
         "2018-12-05T22:00:00+00:00",
+        "UTC",
         true
       )
       expect(period).toBe("Wed, Dec 5 from 8:00 – 10:00pm UTC")
@@ -272,8 +289,8 @@ describe("date formatting", () => {
       const period = dateTimeRange(
         "2018-12-05T20:00:00+00:00",
         "2018-12-05T22:00:00+00:00",
-        true,
-        "America/Costa_Rica"
+        "America/Costa_Rica",
+        true
       )
       expect(period).toBe("Wed, Dec 5 from 2:00 – 4:00pm CST")
     })
@@ -281,29 +298,46 @@ describe("date formatting", () => {
 
   describe(dateRange, () => {
     it("Returns date range with two different dates in two different years", () => {
-      const period = dateRange(moment("2011-01-01"), moment("2014-04-19"))
+      const period = dateRange(
+        moment("2011-01-01"),
+        moment("2014-04-19"),
+        "UTC"
+      )
       expect(period).toBe("Jan 1, 2011 – Apr 19, 2014")
     })
 
     it("Returns date range with different years and same month", () => {
-      const period = dateRange(moment("2011-01-01"), moment("2014-01-04"))
+      const period = dateRange(
+        moment("2011-01-01"),
+        moment("2014-01-04"),
+        "UTC"
+      )
       expect(period).toBe("Jan 1, 2011 – Jan 4, 2014")
     })
 
     it("Returns date range with that has same year for both dates, which displays only one year", () => {
-      const period = dateRange(moment("2011-01-01"), moment("2011-04-19"))
+      const period = dateRange(
+        moment("2011-01-01"),
+        moment("2011-04-19"),
+        "UTC"
+      )
       expect(period).toBe("Jan 1 – Apr 19, 2011")
     })
 
     it("Displays one month if the start and end dates have the same month", () => {
-      const period = dateRange(moment("2011-01-01"), moment("2011-01-19"))
+      const period = dateRange(
+        moment("2011-01-01"),
+        moment("2011-01-19"),
+        "UTC"
+      )
       expect(period).toBe("Jan 1 – 19, 2011")
     })
 
     it("If years are different always show both years", () => {
       const period = dateRange(
         moment("2011-01-01"),
-        moment().format("YYYY-04-19")
+        moment().format("YYYY-04-19"),
+        "UTC"
       )
       expect(period).toBe("Jan 1, 2011 – Apr 19, 2019")
     })
@@ -311,7 +345,8 @@ describe("date formatting", () => {
     it("If both dates are within the present year don't display a year", () => {
       const period = dateRange(
         moment().format("YYYY-01-01"),
-        moment().format("YYYY-01-19")
+        moment().format("YYYY-01-19"),
+        "UTC"
       )
       expect(period).toBe("Jan 1 – 19")
     })
@@ -332,24 +367,28 @@ describe("date formatting", () => {
       })
 
       it("states that an exhibition opens today", () => {
-        const status = exhibitionStatus(today, future)
+        const status = exhibitionStatus(today, future, "UTC")
         expect(status).toBe("Opening today")
       })
 
       it("states that an exhibition opens tomorrow", () => {
-        const status = exhibitionStatus(today.add(1, "d"), future)
+        const status = exhibitionStatus(today.add(1, "d"), future, "UTC")
         expect(status).toBe("Opening tomorrow")
       })
 
       it("states that an exhibition opens in a few days", () => {
         for (let days = 2; days <= 5; days++) {
-          const status = exhibitionStatus(today.clone().add(days, "d"), future)
+          const status = exhibitionStatus(
+            today.clone().add(days, "d"),
+            future,
+            "UTC"
+          )
           expect(status).toBe(`Opening in ${days} days`)
         }
       })
 
       it("returns nothing when it opens in more than a few days", () => {
-        const status = exhibitionStatus(today.add(6, "d"), future)
+        const status = exhibitionStatus(today.add(6, "d"), future, "UTC")
         expect(isNull(status)).toBe(true)
       })
     })
@@ -362,24 +401,28 @@ describe("date formatting", () => {
       })
 
       it("states that an exhibition will close today", () => {
-        const status = exhibitionStatus(past, today)
+        const status = exhibitionStatus(past, today, "UTC")
         expect(status).toBe("Closing today")
       })
 
       it("states that an exhibition will close tomorrow", () => {
-        const status = exhibitionStatus(past, today.add(1, "d"))
+        const status = exhibitionStatus(past, today.add(1, "d"), "UTC")
         expect(status).toBe("Closing tomorrow")
       })
 
       it("states that an exhibition is about to close in a few days", () => {
         for (let days = 2; days <= 5; days++) {
-          const status = exhibitionStatus(past, today.clone().add(days, "d"))
+          const status = exhibitionStatus(
+            past,
+            today.clone().add(days, "d"),
+            "UTC"
+          )
           expect(status).toBe(`Closing in ${days} days`)
         }
       })
 
       it("returns nothing when it closes in more than a few days", () => {
-        const status = exhibitionStatus(past, today.add(6, "d"))
+        const status = exhibitionStatus(past, today.add(6, "d"), "UTC")
         expect(isNull(status)).toBe(true)
       })
     })

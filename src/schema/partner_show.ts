@@ -225,7 +225,7 @@ const PartnerShowType = new GraphQLObjectType<any, ResolverContext>({
     exhibition_period: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
-      resolve: ({ start_at, end_at }) => dateRange(start_at, end_at),
+      resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
     },
     fair: {
       type: Fair.type,

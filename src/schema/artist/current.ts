@@ -56,7 +56,7 @@ const showDetails = show => {
   if (show.location && show.location.city) {
     status += show.location.city + ", "
   }
-  status += dateRange(show.start_at, show.end_at)
+  status += dateRange(show.start_at, show.end_at, "UTC")
   return status
 }
 
