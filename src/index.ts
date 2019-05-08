@@ -114,6 +114,7 @@ async function startApp() {
   )
 
   if (ENABLE_APOLLO) {
+    console.warn("[FEATURE] Enabling Apollo Server")
     const { ApolloServer } = require("apollo-server-express")
     const server = new ApolloServer({
       schema,
