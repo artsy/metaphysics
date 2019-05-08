@@ -14,7 +14,7 @@ import {
 
 describe("date formatting", () => {
   describe(timeRange, () => {
-    it("If within same am/pm only display one am or pm", () => {
+    it("if within same am/pm only display one am or pm", () => {
       const period = timeRange(
         "2022-12-30T08:00:00+00:00",
         "2022-12-30T10:00:00+00:00",
@@ -23,7 +23,7 @@ describe("date formatting", () => {
       expect(period).toBe("8:00 – 10:00am UTC")
     })
 
-    it("If not within same am/pm show both time periods", () => {
+    it("if not within same am/pm show both time periods", () => {
       const period = timeRange(
         "2021-12-05T08:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -32,7 +32,7 @@ describe("date formatting", () => {
       expect(period).toBe("8:00am – 5:00pm UTC")
     })
 
-    it("Displays timeRange with unique timezone", () => {
+    it("returns timeRange with a specific timezone", () => {
       const period = timeRange(
         "2021-12-05T08:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -43,7 +43,7 @@ describe("date formatting", () => {
   })
 
   describe(datesAreSameDay, () => {
-    it("Dates are the same day returns true", () => {
+    it("if dates are the same day returns true", () => {
       const period = datesAreSameDay(
         "2022-12-30T20:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -52,7 +52,7 @@ describe("date formatting", () => {
       expect(period).toBe(true)
     })
 
-    it("Dates are not the same day returns false", () => {
+    it("if dates are not the same day returns false", () => {
       const period = datesAreSameDay(
         "2021-12-05T20:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -61,7 +61,7 @@ describe("date formatting", () => {
       expect(period).toBe(false)
     })
 
-    it("Dates are not the same day with timezone", () => {
+    it("if dates are not the same day with specific timezone", () => {
       const period = datesAreSameDay(
         "2021-12-05T20:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -70,7 +70,7 @@ describe("date formatting", () => {
       expect(period).toBe(false)
     })
 
-    it("Dates are not the same day with timezone", () => {
+    it("if dates are not the same day with specific timezone", () => {
       const period = datesAreSameDay(
         "2021-12-05T20:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -89,7 +89,7 @@ describe("date formatting", () => {
       Date.now = realNow
     })
 
-    it("Event opens in the future", () => {
+    it("includes 'Opens' when event opens in the future", () => {
       const period = formattedOpeningHours(
         "2021-12-05T20:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -98,7 +98,7 @@ describe("date formatting", () => {
       expect(period).toBe("Opens Dec 5 at 8:00pm UTC")
     })
 
-    it("Event is running and closes in the future", () => {
+    it("includes 'closes' when event is running and closes in the future", () => {
       const period = formattedOpeningHours(
         "2017-12-05T20:00:00+00:00",
         "2019-12-30T17:00:00+00:00",
@@ -107,7 +107,7 @@ describe("date formatting", () => {
       expect(period).toBe("Closes Dec 30 at 5:00pm UTC")
     })
 
-    it("Event ended in the past and is closed", () => {
+    it("includes 'Closed' when event ended in the past and is closed", () => {
       const period = formattedOpeningHours(
         "2016-12-05T20:00:00+00:00",
         "2016-12-30T17:00:00+00:00",
@@ -118,12 +118,12 @@ describe("date formatting", () => {
   })
 
   describe(singleTime, () => {
-    it("Return singleTime moment by the hour using default UTC timezone", () => {
+    it("includes hour using default UTC timezone", () => {
       const period = singleTime("2018-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("8:00pm UTC")
     })
 
-    it("Return singleTime in EST timezone", () => {
+    it("also includes hour using specific timezone", () => {
       const period = singleTime("2018-12-05T20:00:00+00:00", "America/New_York")
       expect(period).toBe("3:00pm EST")
     })
@@ -138,17 +138,17 @@ describe("date formatting", () => {
       Date.now = realNow
     })
 
-    it("Returns single date and time in this year", () => {
+    it("includes only the month day and time for dates in the current year", () => {
       const period = singleDateTime("2018-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("Dec 5 at 8:00pm UTC")
     })
 
-    it("Returns single date in different year from now", () => {
+    it("also includes the year for dates in a different year from now", () => {
       const period = singleDateTime("2021-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("Dec 5, 2021 at 8:00pm UTC")
     })
 
-    it("Returns single date with timezone", () => {
+    it("returns the dates with a specific timezone", () => {
       const period = singleDateTime(
         "2021-12-05T20:00:00+00:00",
         "America/Costa_Rica"
@@ -166,12 +166,12 @@ describe("date formatting", () => {
       Date.now = realNow
     })
 
-    it("Returns single date in this year with day of week", () => {
+    it("includes single date with only day of week and month day when in current year", () => {
       const period = singleDate("2018-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("Wed, Dec 5")
     })
 
-    it("Returns single date with day of week in different year from now", () => {
+    it("also includes the year when not in current year", () => {
       const period = singleDate("2021-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("Sun, Dec 5, 2021")
     })
@@ -185,119 +185,126 @@ describe("date formatting", () => {
     afterEach(() => {
       Date.now = realNow
     })
+    describe("if displayDayOfWeek param is false (the default), does not include day of week", () => {
+      it("includes month day, hour, and both years when years are different", () => {
+        const period = dateTimeRange(
+          "2021-12-05T20:00:00+00:00",
+          "2022-12-30T17:00:00+00:00",
+          "UTC"
+        )
+        expect(period).toBe(
+          "Dec 5, 2021 at 8:00pm – Dec 30, 2022 at 5:00pm UTC"
+        )
+      })
 
-    it("Returns start and end datetimes with different years", () => {
-      const period = dateTimeRange(
-        "2021-12-05T20:00:00+00:00",
-        "2022-12-30T17:00:00+00:00",
-        "UTC"
-      )
-      expect(period).toBe("Dec 5, 2021 at 8:00pm – Dec 30, 2022 at 5:00pm UTC")
+      it("also includes both years when the years are not the present year", () => {
+        const period = dateTimeRange(
+          "2040-12-05T20:00:00+00:00",
+          "2040-12-30T17:00:00+00:00",
+          "UTC"
+        )
+        expect(period).toBe(
+          "Dec 5, 2040 at 8:00pm – Dec 30, 2040 at 5:00pm UTC"
+        )
+      })
+
+      it("does not include year when the years are the present year", () => {
+        const period = dateTimeRange(
+          "2018-12-05T20:00:00+00:00",
+          "2018-12-30T17:00:00+00:00",
+          "UTC"
+        )
+        expect(period).toBe("Dec 5 at 8:00pm – Dec 30 at 5:00pm UTC")
+      })
+
+      it("includes the year when both dates are the same day but not the current year", () => {
+        const period = dateTimeRange(
+          "2019-12-05T20:00:00+00:00",
+          "2019-12-05T22:00:00+00:00",
+          "UTC"
+        )
+        expect(period).toBe("Dec 5, 2019 from 8:00 – 10:00pm UTC")
+      })
+
+      it("does not include year both dates are same day and the current year", () => {
+        const period = dateTimeRange(
+          "2018-12-05T20:00:00+00:00",
+          "2018-12-05T22:00:00+00:00",
+          "UTC"
+        )
+        expect(period).toBe("Dec 5 from 8:00 – 10:00pm UTC")
+      })
     })
 
-    it("Returns the start and end date with different year from now", () => {
-      const period = dateTimeRange(
-        "2040-12-05T20:00:00+00:00",
-        "2040-12-30T17:00:00+00:00",
-        "UTC"
-      )
-      expect(period).toBe("Dec 5, 2040 at 8:00pm – Dec 30, 2040 at 5:00pm UTC")
-    })
+    describe("if displayDayOfWeek param is true includes day of week", () => {
+      it("includes month day, hour, and both years when years are different", () => {
+        const period = dateTimeRange(
+          "2021-12-05T20:00:00+00:00",
+          "2022-12-30T17:00:00+00:00",
+          "UTC",
+          true
+        )
+        expect(period).toBe(
+          "Sun, Dec 5, 2021 at 8:00pm – Fri, Dec 30, 2022 at 5:00pm UTC"
+        )
+      })
 
-    it("Returns the start and end datetimes in current year", () => {
-      const period = dateTimeRange(
-        "2018-12-05T20:00:00+00:00",
-        "2018-12-30T17:00:00+00:00",
-        "UTC"
-      )
-      expect(period).toBe("Dec 5 at 8:00pm – Dec 30 at 5:00pm UTC")
-    })
+      it("also includes both years when the years are not the present year", () => {
+        const period = dateTimeRange(
+          "2020-12-05T20:00:00+00:00",
+          "2020-12-30T17:00:00+00:00",
+          "UTC",
+          true
+        )
+        expect(period).toBe(
+          "Sat, Dec 5, 2020 at 8:00pm – Wed, Dec 30, 2020 at 5:00pm UTC"
+        )
+      })
 
-    it("Returns single datetime in different year from now", () => {
-      const period = dateTimeRange(
-        "2019-12-05T20:00:00+00:00",
-        "2019-12-05T22:00:00+00:00",
-        "UTC"
-      )
-      expect(period).toBe("Dec 5, 2019 from 8:00 – 10:00pm UTC")
-    })
+      it("does not include year when the years are the present year", () => {
+        const period = dateTimeRange(
+          "2018-12-05T20:00:00+00:00",
+          "2018-12-30T17:00:00+00:00",
+          "UTC",
+          true
+        )
+        expect(period).toBe("Wed, Dec 5 at 8:00pm – Sun, Dec 30 at 5:00pm UTC")
+      })
 
-    it("Displays just date and time if dates are the same day and same year", () => {
-      const period = dateTimeRange(
-        "2018-12-05T20:00:00+00:00",
-        "2018-12-05T22:00:00+00:00",
-        "UTC"
-      )
-      expect(period).toBe("Dec 5 from 8:00 – 10:00pm UTC")
-    })
+      it("includes the year when both dates are the same day but not the current year", () => {
+        const period = dateTimeRange(
+          "2019-12-05T20:00:00+00:00",
+          "2019-12-05T22:00:00+00:00",
+          "UTC",
+          true
+        )
+        expect(period).toBe("Thu, Dec 5, 2019 from 8:00 – 10:00pm UTC")
+      })
 
-    it("Returns the start and end datetime range with separate years which displays both years", () => {
-      const period = dateTimeRange(
-        "2021-12-05T20:00:00+00:00",
-        "2022-12-30T17:00:00+00:00",
-        "UTC",
-        true
-      )
-      expect(period).toBe(
-        "Sun, Dec 5, 2021 at 8:00pm – Fri, Dec 30, 2022 at 5:00pm UTC"
-      )
-    })
+      it("does not include the year when the dates are the same day and the same year as the present year", () => {
+        const period = dateTimeRange(
+          "2018-12-05T20:00:00+00:00",
+          "2018-12-05T22:00:00+00:00",
+          "UTC",
+          true
+        )
+        expect(period).toBe("Wed, Dec 5 from 8:00 – 10:00pm UTC")
+      })
 
-    it("Returns date range with the start and end dates falling in a different year from now", () => {
-      const period = dateTimeRange(
-        "2020-12-05T20:00:00+00:00",
-        "2020-12-30T17:00:00+00:00",
-        "UTC",
-        true
-      )
-      expect(period).toBe(
-        "Sat, Dec 5, 2020 at 8:00pm – Wed, Dec 30, 2020 at 5:00pm UTC"
-      )
-    })
-
-    it("Returns date range in same year as now", () => {
-      const period = dateTimeRange(
-        "2018-12-05T20:00:00+00:00",
-        "2018-12-30T17:00:00+00:00",
-        "UTC",
-        true
-      )
-      expect(period).toBe("Wed, Dec 5 at 8:00pm – Sun, Dec 30 at 5:00pm UTC")
-    })
-
-    it("Returns single date in different year from now", () => {
-      const period = dateTimeRange(
-        "2019-12-05T20:00:00+00:00",
-        "2019-12-05T22:00:00+00:00",
-        "UTC",
-        true
-      )
-      expect(period).toBe("Thu, Dec 5, 2019 from 8:00 – 10:00pm UTC")
-    })
-
-    it("Returns same day in same year as now", () => {
-      const period = dateTimeRange(
-        "2018-12-05T20:00:00+00:00",
-        "2018-12-05T22:00:00+00:00",
-        "UTC",
-        true
-      )
-      expect(period).toBe("Wed, Dec 5 from 8:00 – 10:00pm UTC")
-    })
-
-    it("Returns dateTimeRange with timezone", () => {
-      const period = dateTimeRange(
-        "2018-12-05T20:00:00+00:00",
-        "2018-12-05T22:00:00+00:00",
-        "America/Costa_Rica",
-        true
-      )
-      expect(period).toBe("Wed, Dec 5 from 2:00 – 4:00pm CST")
+      it("returns the dates with a specific timezone", () => {
+        const period = dateTimeRange(
+          "2018-12-05T20:00:00+00:00",
+          "2018-12-05T22:00:00+00:00",
+          "America/Costa_Rica",
+          true
+        )
+        expect(period).toBe("Wed, Dec 5 from 2:00 – 4:00pm CST")
+      })
     })
   })
 
   describe(dateRange, () => {
-    it("Returns date range with two different dates in two different years", () => {
+    it("includes month day and both years when years are different years", () => {
       const period = dateRange(
         moment("2011-01-01"),
         moment("2014-04-19"),
@@ -306,7 +313,7 @@ describe("date formatting", () => {
       expect(period).toBe("Jan 1, 2011 – Apr 19, 2014")
     })
 
-    it("Returns date range with different years and same month", () => {
+    it("includes month twice when years are different even if the same month", () => {
       const period = dateRange(
         moment("2011-01-01"),
         moment("2014-01-04"),
@@ -315,7 +322,7 @@ describe("date formatting", () => {
       expect(period).toBe("Jan 1, 2011 – Jan 4, 2014")
     })
 
-    it("Returns date range with that has same year for both dates, which displays only one year", () => {
+    it("if the dates have the same year include the year once", () => {
       const period = dateRange(
         moment("2011-01-01"),
         moment("2011-04-19"),
@@ -324,7 +331,7 @@ describe("date formatting", () => {
       expect(period).toBe("Jan 1 – Apr 19, 2011")
     })
 
-    it("Displays one month if the start and end dates have the same month", () => {
+    it("include only one month if dates have same month and same year", () => {
       const period = dateRange(
         moment("2011-01-01"),
         moment("2011-01-19"),
@@ -333,7 +340,7 @@ describe("date formatting", () => {
       expect(period).toBe("Jan 1 – 19, 2011")
     })
 
-    it("If years are different always show both years", () => {
+    it("if the dates are not the same year always show both years even if one year is the same as the present year", () => {
       const period = dateRange(
         moment("2011-01-01"),
         moment().format("YYYY-04-19"),
@@ -342,7 +349,7 @@ describe("date formatting", () => {
       expect(period).toBe("Jan 1, 2011 – Apr 19, 2019")
     })
 
-    it("If both dates are within the present year don't display a year", () => {
+    it("dont include the year if both years are the same as the present year", () => {
       const period = dateRange(
         moment().format("YYYY-01-01"),
         moment().format("YYYY-01-19"),
