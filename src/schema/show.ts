@@ -13,7 +13,7 @@ import {
 } from "lib/helpers"
 import { HTTPError } from "lib/HTTPError"
 import numeral from "./fields/numeral"
-import { exhibitionPeriod, exhibitionStatus } from "lib/date"
+import { dateRange, exhibitionStatus } from "lib/date"
 import cached from "./fields/cached"
 import date from "./fields/date"
 import { markdown } from "./fields/markdown"
@@ -369,7 +369,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     exhibition_period: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
-      resolve: ({ start_at, end_at }) => exhibitionPeriod(start_at, end_at),
+      resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
     },
     fair: {
       description: "If the show is in a Fair, then that fair",

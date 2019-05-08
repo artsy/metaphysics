@@ -1,7 +1,7 @@
 import dateField, { date, DateSource } from "./fields/date"
 import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { exhibitionPeriod } from "lib/date"
+import { dateRange, dateTimeRange } from "lib/date"
 
 const hasOldEmissionUserAgentString = (userAgent: string | string[]): boolean =>
   userAgent!.indexOf("Artsy-Mobile/4.4") > 0 ||
@@ -58,10 +58,16 @@ const PartnerShowEventType = new GraphQLObjectType<any, ResolverContext>({
     },
     start_at: dateFieldForPartnerShowEvent,
     end_at: dateFieldForPartnerShowEvent,
+    dateTimeRange: {
+      type: GraphQLString,
+      description: "A formatted description of the dates with hours",
+      resolve: ({ start_at, end_at }) =>
+        dateTimeRange(start_at, end_at, "UTC", true),
+    },
     exhibitionPeriod: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
-      resolve: ({ start_at, end_at }) => exhibitionPeriod(start_at, end_at),
+      resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
     },
   },
 })

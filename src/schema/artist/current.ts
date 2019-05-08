@@ -7,7 +7,7 @@ import {
 } from "graphql"
 import Image, { normalizeImageData } from "schema/image"
 import { error } from "lib/loggers"
-import { exhibitionPeriod } from "lib/date"
+import { dateRange } from "lib/date"
 import { ShowType } from "../show"
 import { SaleType } from "../sale"
 import { date as DateFormat } from "schema/fields/date"
@@ -56,7 +56,7 @@ const showDetails = show => {
   if (show.location && show.location.city) {
     status += show.location.city + ", "
   }
-  status += exhibitionPeriod(show.start_at, show.end_at)
+  status += dateRange(show.start_at, show.end_at, "UTC")
   return status
 }
 

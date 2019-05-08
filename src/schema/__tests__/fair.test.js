@@ -494,7 +494,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            formattedOpeningHours: "Opens Feb 6 at 12pm",
+            formattedOpeningHours: "Opens Feb 6 at 12:00pm UTC",
           },
         })
       })
@@ -514,7 +514,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            formattedOpeningHours: "Opens Feb 6 at 12:30pm",
+            formattedOpeningHours: "Opens Feb 6 at 12:30pm UTC",
           },
         })
       })
@@ -536,7 +536,7 @@ describe("Fair", () => {
 
         expect(data).toEqual({
           fair: {
-            formattedOpeningHours: "Closes Feb 4 at 12pm",
+            formattedOpeningHours: "Closes Feb 4 at 12:00pm UTC",
           },
         })
       })

@@ -8410,6 +8410,9 @@ type PartnerShowEventType {
     timezone: String
   ): String
 
+  # A formatted description of the dates with hours
+  dateTimeRange: String
+
   # A formatted description of the start to end dates
   exhibitionPeriod: String
 }
