@@ -14,7 +14,7 @@ import {
 
 describe("date formatting", () => {
   describe(timeRange, () => {
-    it("if within same am/pm only display one am or pm", () => {
+    it("includes only one am or pm if within same am/pm", () => {
       const period = timeRange(
         "2022-12-30T08:00:00+00:00",
         "2022-12-30T10:00:00+00:00",
@@ -23,7 +23,7 @@ describe("date formatting", () => {
       expect(period).toBe("8:00 – 10:00am UTC")
     })
 
-    it("if not within same am/pm show both time periods", () => {
+    it("includes both am and pm if not within the same am/pm", () => {
       const period = timeRange(
         "2021-12-05T08:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -32,7 +32,7 @@ describe("date formatting", () => {
       expect(period).toBe("8:00am – 5:00pm UTC")
     })
 
-    it("returns timeRange with a specific timezone", () => {
+    it("includes updated time with a specific timezone", () => {
       const period = timeRange(
         "2021-12-05T08:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -43,7 +43,7 @@ describe("date formatting", () => {
   })
 
   describe(datesAreSameDay, () => {
-    it("if dates are the same day returns true", () => {
+    it("returns true if dates are the same day", () => {
       const period = datesAreSameDay(
         "2022-12-30T20:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -52,7 +52,7 @@ describe("date formatting", () => {
       expect(period).toBe(true)
     })
 
-    it("if dates are not the same day returns false", () => {
+    it("returns false if dates are not the same day", () => {
       const period = datesAreSameDay(
         "2021-12-05T20:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -61,7 +61,7 @@ describe("date formatting", () => {
       expect(period).toBe(false)
     })
 
-    it("if dates are not the same day with specific timezone", () => {
+    it("returns true if dates are the same day with specific timezone", () => {
       const period = datesAreSameDay(
         "2021-12-05T20:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -70,7 +70,7 @@ describe("date formatting", () => {
       expect(period).toBe(false)
     })
 
-    it("if dates are not the same day with specific timezone", () => {
+    it("returns false if dates are not the same day with specific timezone", () => {
       const period = datesAreSameDay(
         "2021-12-05T20:00:00+00:00",
         "2022-12-30T17:00:00+00:00",
@@ -98,7 +98,7 @@ describe("date formatting", () => {
       expect(period).toBe("Opens Dec 5 at 8:00pm UTC")
     })
 
-    it("includes 'closes' when event is running and closes in the future", () => {
+    it("includes 'Closes' when event is running and closes in the future", () => {
       const period = formattedOpeningHours(
         "2017-12-05T20:00:00+00:00",
         "2019-12-30T17:00:00+00:00",
@@ -322,7 +322,7 @@ describe("date formatting", () => {
       expect(period).toBe("Jan 1, 2011 – Jan 4, 2014")
     })
 
-    it("if the dates have the same year include the year once", () => {
+    it("only includes the year once if the dates have the same year", () => {
       const period = dateRange(
         moment("2011-01-01"),
         moment("2011-04-19"),
@@ -340,7 +340,7 @@ describe("date formatting", () => {
       expect(period).toBe("Jan 1 – 19, 2011")
     })
 
-    it("if the dates are not the same year always show both years even if one year is the same as the present year", () => {
+    it("always shows both years if the dates are not the same year, even if one year is the same as the present year", () => {
       const period = dateRange(
         moment("2011-01-01"),
         moment().format("YYYY-04-19"),
@@ -349,7 +349,7 @@ describe("date formatting", () => {
       expect(period).toBe("Jan 1, 2011 – Apr 19, 2019")
     })
 
-    it("dont include the year if both years are the same as the present year", () => {
+    it("does not include the year if both years are the same as the present year", () => {
       const period = dateRange(
         moment().format("YYYY-01-01"),
         moment().format("YYYY-01-19"),
