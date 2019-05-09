@@ -66,14 +66,12 @@ function logQueryDetailsIfEnabled() {
   return (_req, _res, next) => next()
 }
 
-async function startApp(appSchema, path: string) {
+function startApp(appSchema, path: string) {
   const app = express()
 
   config.GRAVITY_XAPP_TOKEN = xapp.token
 
-  const exchangeSchema = await executableExchangeSchema(
-    legacyTransformsForExchange
-  )
+  const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
 
   if (RESOLVER_TIMEOUT_MS > 0) {
     console.warn("[FEATURE] Enabling resolver timeouts")
@@ -229,17 +227,6 @@ async function startApp(appSchema, path: string) {
   return app
 }
 
-let startedApp: express.Express
-
-export default async (req, res, next) => {
-  try {
-    if (!startedApp) {
-      startedApp = express()
-      startedApp.use("/", await startApp(schema, "/"))
-      startedApp.use("/v2", await startApp(schemaV2, "/v2"))
-    }
-    startedApp(req, res, next)
-  } catch (err) {
-    next(err)
-  }
-}
+export default express()
+  .use("/", startApp(schema, "/"))
+  .use("/", startApp(schemaV2, "/v2"))
