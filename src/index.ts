@@ -8,7 +8,7 @@ import cors from "cors"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
-import localSchema from "./schema"
+import { schema, schemaV2 } from "./schema"
 import moment from "moment"
 import morgan from "artsy-morgan"
 import raven from "raven"
@@ -66,12 +66,10 @@ function logQueryDetailsIfEnabled() {
   return (_req, _res, next) => next()
 }
 
-async function startApp() {
+async function startApp(appSchema, path: string) {
   const app = express()
 
   config.GRAVITY_XAPP_TOKEN = xapp.token
-
-  let schema = localSchema
 
   const exchangeSchema = await executableExchangeSchema(
     legacyTransformsForExchange
@@ -79,8 +77,8 @@ async function startApp() {
 
   if (RESOLVER_TIMEOUT_MS > 0) {
     console.warn("[FEATURE] Enabling resolver timeouts")
-    schema = applyGraphQLMiddleware(
-      schema,
+    appSchema = applyGraphQLMiddleware(
+      appSchema,
       graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS)
     )
   }
@@ -96,7 +94,7 @@ async function startApp() {
   }
 
   app.use(
-    "/",
+    path,
     cors(),
     morgan,
     // Gotta parse the JSON body before passing it to logQueryDetails/fetchPersistedQuery
@@ -117,7 +115,7 @@ async function startApp() {
     console.warn("[FEATURE] Enabling Apollo Server")
     const { ApolloServer } = require("apollo-server-express")
     const server = new ApolloServer({
-      schema,
+      schema: appSchema,
       rootValue: {},
       playground: true,
       introspection: true,
@@ -160,11 +158,12 @@ async function startApp() {
       },
     })
 
-    server.applyMiddleware({ app, path: "/" })
+    server.applyMiddleware({ app, path })
   } else {
     const graphqlHTTP = require("express-graphql")
     app.use(
       graphqlHTTP((req, res /*, params */) => {
+        console.log("Request from", path)
         const accessToken = req.headers["x-access-token"] as string | undefined
         const userID = req.headers["x-user-id"] as string | undefined
         const timezone = req.headers["x-timezone"] as string | undefined
@@ -201,7 +200,7 @@ async function startApp() {
         }
 
         return {
-          schema,
+          schema: appSchema,
           graphiql: true,
           context,
           rootValue: {},
@@ -235,7 +234,9 @@ let startedApp: express.Express
 export default async (req, res, next) => {
   try {
     if (!startedApp) {
-      startedApp = await startApp()
+      startedApp = express()
+      startedApp.use("/", await startApp(schema, "/"))
+      startedApp.use("/v2", await startApp(schemaV2, "/v2"))
     }
     startedApp(req, res, next)
   } catch (err) {

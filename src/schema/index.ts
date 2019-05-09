@@ -20,5 +20,7 @@ if (enableSchemaStitching) {
     console.log("Error merging schemas:", err)
   }
 }
-exportedSchema = transformToV2(exportedSchema)
+export const schema = exportedSchema
+export const schemaV2 = transformToV2(exportedSchema)
+
 export default exportedSchema
