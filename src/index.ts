@@ -27,7 +27,7 @@ import {
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
-import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
+// import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
 
 import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
@@ -164,7 +164,7 @@ async function startApp() {
   } else {
     const graphqlHTTP = require("express-graphql")
     app.use(
-      graphqlHTTP((req, res, params) => {
+      graphqlHTTP((req, res /*, params */) => {
         const accessToken = req.headers["x-access-token"] as string | undefined
         const userID = req.headers["x-user-id"] as string | undefined
         const timezone = req.headers["x-timezone"] as string | undefined

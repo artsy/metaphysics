@@ -11,7 +11,6 @@ import { GravityIDFields } from "./object_identification"
 import {
   GraphQLFloat,
   GraphQLObjectType,
-  GraphQLID,
   GraphQLString,
   GraphQLNonNull,
   GraphQLInt,

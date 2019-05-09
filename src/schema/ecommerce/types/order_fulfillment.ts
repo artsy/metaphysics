@@ -1,4 +1,4 @@
-import { GraphQLID, GraphQLObjectType, GraphQLString } from "graphql"
+import { GraphQLObjectType, GraphQLString } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 import date from "schema/fields/date"
 import { ResolverContext } from "types/graphql"

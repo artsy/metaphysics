@@ -3,7 +3,6 @@ import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import {
   GraphQLObjectType,
-  GraphQLID,
   GraphQLNonNull,
   GraphQLString,
   GraphQLFieldConfig,

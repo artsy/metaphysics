@@ -1,9 +1,4 @@
-import {
-  GraphQLID,
-  GraphQLInt,
-  GraphQLObjectType,
-  GraphQLString,
-} from "graphql"
+import { GraphQLInt, GraphQLObjectType, GraphQLString } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 import Artwork from "schema/artwork"
 import { OrderFulfillmentConnection } from "./order_fulfillment"
