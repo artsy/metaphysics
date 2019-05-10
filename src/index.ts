@@ -227,6 +227,25 @@ function startApp(appSchema, path: string) {
   return app
 }
 
-export default express()
-  .use("/", startApp(schema, "/"))
-  .use("/", startApp(schemaV2, "/v2"))
+const app = express()
+
+let appV1: express.Express
+let appV2: express.Express
+
+app.all("/", (req, res, next) => {
+  if (!appV1) {
+    appV1 = express()
+    appV1.use("/", startApp(schema, "/"))
+  }
+  appV1(req, res, next)
+})
+
+app.all("/v2", (req, res, next) => {
+  if (!appV2) {
+    appV2 = express()
+    appV2.use("/", startApp(schemaV2, "/v2"))
+  }
+  appV2(req, res, next)
+})
+
+export default app
