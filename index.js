@@ -113,7 +113,7 @@ function bootApp() {
 
   app.all("/graphql", (_req, res) => res.redirect("/"))
 
-  if (false && isDevelopment) {
+  if (isDevelopment) {
     const { createReloadable } = require("@artsy/express-reloadable")
     const mountAndReload = createReloadable(app, require)
     mountAndReload("./src")
