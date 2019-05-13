@@ -58,6 +58,8 @@ export const OrderOrFailureUnionType = new GraphQLUnionType({
       case "EcommerceOrderWithMutationFailure": {
         return OrderWithMutationFailure
       }
+      default:
+        throw new Error("Unexpected typename on order object")
     }
   },
 })
