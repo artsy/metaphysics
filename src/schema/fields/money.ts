@@ -50,7 +50,9 @@ export const amount = centsResolver => ({
   },
   resolve: (obj, options) => {
     const cents = centsResolver(obj)
-    if (!cents) return null
+    if (typeof cents !== "number") {
+      return null
+    }
     const symbol = options.symbol || obj.symbol
     return formatMoney(
       cents / 100,

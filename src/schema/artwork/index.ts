@@ -560,11 +560,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           )
             return "Free shipping worldwide"
           var domesticShipping = amount(
-            ({ domestic_shipping_fee_cents }) => domestic_shipping_fee_cents
+            ({ domestic_shipping_fee_cents }) =>
+              domestic_shipping_fee_cents || null
           ).resolve(artwork, { precision: 0 })
           var internationalShipping = amount(
             ({ international_shipping_fee_cents }) =>
-              international_shipping_fee_cents
+              international_shipping_fee_cents || null
           ).resolve(artwork, { precision: 0 })
 
           if (
