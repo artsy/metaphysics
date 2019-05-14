@@ -1,4 +1,4 @@
-import graphqlHTTP from "express-graphql"
+import { ApolloServer } from "apollo-server-express"
 import express from "express"
 import bodyParser from "body-parser"
 import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools"
@@ -24,15 +24,13 @@ export const gqlServer = ({
     typeDefs: schema,
   })
   addMockFunctionsToSchema({ schema: execSchema, mocks })
-  app.use(
-    "/",
-    bodyParser.json(),
-    ...middleware,
-    graphqlHTTP({
-      schema: execSchema,
-      graphiql: false,
-    })
-  )
+  app.use("/", bodyParser.json(), ...middleware)
+
+  const server = new ApolloServer({
+    schema: execSchema,
+    playground: false,
+  })
+  server.applyMiddleware({ app, path: "/" })
   return app
 }
 
