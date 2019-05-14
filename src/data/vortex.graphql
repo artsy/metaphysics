@@ -4,17 +4,8 @@ Publish artwork Series Stats
 type ArtworksPublishedStats {
   percentageChanged: Int!
   period: QueryPeriodEnum!
-  timeSeries: [ArtworksPublishedTimeSeriesStats!]
+  timeSeries: [PartnerTimeSeriesStats!]!
   totalCount: Int!
-}
-
-"""
-Publish artwork Series Stats
-"""
-type ArtworksPublishedTimeSeriesStats implements PartnerTimeSeriesStats {
-  count: Int
-  endTime: DateTime
-  startTime: DateTime
 }
 
 """
@@ -57,6 +48,20 @@ type PageInfo {
 }
 
 """
+Stats for pageviews of partner content
+"""
+type PageviewStats {
+  artworkViews: Int
+  galleryViews: Int
+  percentageChanged: Int!
+  period: QueryPeriodEnum!
+  showViews: Int
+  timeSeries: [PartnerTimeSeriesStats!]!
+  totalCount: Int!
+  uniqueVisitors: Int
+}
+
+"""
 Partner Stats
 """
 type PartnerStats {
@@ -64,6 +69,11 @@ type PartnerStats {
   Time series data on number of artworks published
   """
   artworksPublished(period: QueryPeriodEnum!): ArtworksPublishedStats
+
+  """
+  Different types of partner pageviews
+  """
+  pageviews(period: QueryPeriodEnum!): PageviewStats
   partnerId: String!
 
   """
@@ -101,7 +111,8 @@ type PartnerStats {
 """
 Partner Time Series Stats
 """
-interface PartnerTimeSeriesStats {
+type PartnerTimeSeriesStats {
+  count: Int
   endTime: DateTime
   startTime: DateTime
 }
