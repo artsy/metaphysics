@@ -48,15 +48,8 @@ type AggregationCount {
 type AnalyticsArtworksPublishedStats {
   percentageChanged: Int!
   period: AnalyticsQueryPeriodEnum!
-  timeSeries: [AnalyticsArtworksPublishedTimeSeriesStats!]
+  timeSeries: [AnalyticsPartnerTimeSeriesStats!]!
   totalCount: Int!
-}
-
-# Publish artwork Series Stats
-type AnalyticsArtworksPublishedTimeSeriesStats implements AnalyticsPartnerTimeSeriesStats {
-  count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
 }
 
 # An ISO 8601 datetime
@@ -98,12 +91,27 @@ type AnalyticsPageInfo {
   startCursor: String
 }
 
+# Stats for pageviews of partner content
+type AnalyticsPageviewStats {
+  artworkViews: Int
+  galleryViews: Int
+  percentageChanged: Int!
+  period: AnalyticsQueryPeriodEnum!
+  showViews: Int
+  timeSeries: [AnalyticsPartnerTimeSeriesStats!]!
+  totalCount: Int!
+  uniqueVisitors: Int
+}
+
 # Partner Stats
 type AnalyticsPartnerStats {
   # Time series data on number of artworks published
   artworksPublished(
     period: AnalyticsQueryPeriodEnum!
   ): AnalyticsArtworksPublishedStats
+
+  # Different types of partner pageviews
+  pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
   partnerId: String!
 
   # Artworks ranked by views
@@ -127,7 +135,8 @@ type AnalyticsPartnerStats {
 }
 
 # Partner Time Series Stats
-interface AnalyticsPartnerTimeSeriesStats {
+type AnalyticsPartnerTimeSeriesStats {
+  count: Int
   endTime: AnalyticsDateTime
   startTime: AnalyticsDateTime
 }
