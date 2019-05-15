@@ -47,6 +47,24 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     extend type AnalyticsTopArtworks {
       artwork: Artwork
     }
+    extend type AnalyticsPartnerSalesStats {
+      total(
+        decimal: String = "."
+        format: String = "%s%v"
+        precision: Int = 0
+        symbol: String
+        thousand: String = ","
+      ): String
+    }
+    extend type AnalyticsPartnerSalesTimeSeriesStats {
+      total(
+        decimal: String = "."
+        format: String = "%s%v"
+        precision: Int = 0
+        symbol: String
+        thousand: String = ","
+      ): String
+    }
   `,
   resolvers: {
     AnalyticsPricingContext: {
@@ -250,6 +268,28 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             transforms: vortexSchema.transforms,
           })
         },
+      },
+    },
+    AnalyticsPartnerSalesStats: {
+      total: {
+        fragment: gql`
+          ... on AnalyticsPartnerSalesStats {
+            totalCents
+          }
+        `,
+        resolve: (parent, args, _context, _info) =>
+          amount(_ => parent.totalCents).resolve({}, args),
+      },
+    },
+    AnalyticsPartnerSalesTimeSeriesStats: {
+      total: {
+        fragment: gql`
+          ... on AnalyticsPartnerSalesStats {
+            totalCents
+          }
+        `,
+        resolve: (parent, args, _context, _info) =>
+          amount(_ => parent.totalCents).resolve({}, args),
       },
     },
   },
