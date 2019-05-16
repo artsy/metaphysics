@@ -1,4 +1,19 @@
 patch-package
+--- a/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
++++ b/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
+@@ -68,6 +68,12 @@ function recreateType(type, resolveType, keepResolvers) {
+                 astNode: value.astNode,
+             };
+         });
++        // Patch type in wrapped schema to pass-through the value as-is, so the wrapping schema's `serialize` function
++        // will be able to do its original work. Otherwise the wrapping schema will be unable to work with the already
++        // serialized value.
++        type.serialize = function patchedSerialize(value) {
++            return value;
++        }
+         return new graphql_1.GraphQLEnumType({
+             name: type.name,
+             description: type.description,
 --- a/node_modules/graphql-tools/dist/transforms/visitSchema.js
 +++ b/node_modules/graphql-tools/dist/transforms/visitSchema.js
 @@ -29,7 +29,20 @@ function visitSchema(schema, visitor, stripResolvers) {
