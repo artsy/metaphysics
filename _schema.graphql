@@ -2708,7 +2708,7 @@ type City {
     sort: PartnerShowSorts
 
     # Filter shows by chronological event status
-    status: EventStatus = CURRENT
+    status: EventStatus = null
 
     # Filter shows by partner type
     partnerType: PartnerShowPartnerType
@@ -10086,7 +10086,7 @@ type Show implements Node {
     sort: PartnerShowSorts
 
     # By default show only current shows
-    status: EventStatus = CURRENT
+    status: EventStatus = null
 
     # Whether to include local discovery stubs as well as displayable shows
     discoverable: Boolean
