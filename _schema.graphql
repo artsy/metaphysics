@@ -10565,6 +10565,9 @@ type UpdateMyProfilePayload {
 }
 
 input UpdateSubmissionMutationInput {
+  # The GUID for the submission
+  id: String!
+
   # The gravity ID for an Artist
   artist_id: String!
 
