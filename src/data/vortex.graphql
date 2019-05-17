@@ -62,6 +62,30 @@ type PageviewStats {
 }
 
 """
+Sales stats of a partner
+"""
+type PartnerSalesStats {
+  partnerId: String!
+  period: QueryPeriodEnum!
+
+  """
+  Partner sales time series
+  """
+  timeSeries(cumulative: Boolean = false): [PartnerSalesTimeSeriesStats!]
+  totalCents: Int!
+}
+
+"""
+Sales time series data of a partner
+"""
+type PartnerSalesTimeSeriesStats {
+  count: Int
+  endTime: DateTime
+  startTime: DateTime
+  totalCents: Int!
+}
+
+"""
 Partner Stats
 """
 type PartnerStats {
@@ -75,6 +99,11 @@ type PartnerStats {
   """
   pageviews(period: QueryPeriodEnum!): PageviewStats
   partnerId: String!
+
+  """
+  Sales stats
+  """
+  sales(period: QueryPeriodEnum!): PartnerSalesStats
 
   """
   Artworks ranked by views
@@ -256,11 +285,7 @@ type Query {
   """
   Pricing Context Histograms
   """
-  pricingContext(
-    artistId: String!
-    category: PricingContextCategoryEnum!
-    sizeScore: Int!
-  ): PricingContext
+  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, sizeScore: Int!): PricingContext
 }
 
 enum QueryPeriodEnum {
