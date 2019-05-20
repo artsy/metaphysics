@@ -103,6 +103,26 @@ type AnalyticsPageviewStats {
   uniqueVisitors: Int
 }
 
+# Sales stats of a partner
+type AnalyticsPartnerSalesStats {
+  partnerId: String!
+  period: AnalyticsQueryPeriodEnum!
+
+  # Partner sales time series
+  timeSeries(
+    cumulative: Boolean = false
+  ): [AnalyticsPartnerSalesTimeSeriesStats!]
+  totalCents: Int!
+}
+
+# Sales time series data of a partner
+type AnalyticsPartnerSalesTimeSeriesStats {
+  count: Int
+  endTime: AnalyticsDateTime
+  startTime: AnalyticsDateTime
+  totalCents: Int!
+}
+
 # Partner Stats
 type AnalyticsPartnerStats {
   # Time series data on number of artworks published
@@ -113,6 +133,9 @@ type AnalyticsPartnerStats {
   # Different types of partner pageviews
   pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
   partnerId: String!
+
+  # Sales stats
+  sales(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerSalesStats
 
   # Artworks ranked by views
   topArtworks(
