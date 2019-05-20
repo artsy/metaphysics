@@ -14,6 +14,7 @@ It is currently used in production all over the place in
 ### Meta
 
 - **State:** production
+- **CI/Deploys:** [CircleCi](https://circleci.com/gh/artsy/metaphysics); merged PRs to `artsy/metaphysics#master` are automatically deployed to staging; PRs from `staging` to `release` are automatically deployed to production. [Start a deploy...](https://github.com/artsy/metaphysics/compare/release...staging?expand=1)
 - **Production:**
   - [Endpoint](https://metaphysics-production.artsy.net/)
   - [Kubernetes deployment dashboard](https://kubernetes.artsy.net/#!/deployment/default/metaphysics-web?namespace=default)
@@ -163,24 +164,3 @@ this:
 
 - Or, to run tests locally: `npm test` to run the entire suite `npm run watch`
   to spin up the test watcher
-
-### Deployment
-
-PRs merged to the `master` branch are automatically deployed to staging. The
-release on staging can be promoted to production via the command `hokusai pipeline promote --git-remote [upstream|origin]`. The `--git-remote` option pushes a meaningful tag name to the git remote, so use whichever git remote points to Artsy's repository and not a fork (run `git remote -v` to see your git remotes and URLs). (If you accidentally push the git tags to the incorrect remote, you can run `git push upstream production-tag-name` to push a single tag to Artsy's repo.)
-
-See Hokusai's
-[docs on the Staging -> Production pipeline](https://github.com/artsy/hokusai/blob/master/docs/Command_Reference.md#working-with-the-staging---production-pipeline)
-for more details.
-
-## Interacting with the staging and production deployments
-
-Use `hokusai staging`
-[commands](https://github.com/artsy/hokusai/blob/master/docs/Command_Reference.md#working-with-the-kubernetes-staging-environment)
-to interact with the staging environment.
-
-Use `hokusai production`
-[commands](https://github.com/artsy/hokusai/blob/master/docs/Command_Reference.md#working-with-the-kubernetes-production-environment)
-to interact with the production environment.
-
-(To deploy, see [Deployment](#deployment) section above.)
