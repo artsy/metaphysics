@@ -65,6 +65,7 @@ type PageviewStats {
 Sales stats of a partner
 """
 type PartnerSalesStats {
+  orderResponseTime: Int!
   partnerId: String!
   period: QueryPeriodEnum!
 
@@ -285,7 +286,11 @@ type Query {
   """
   Pricing Context Histograms
   """
-  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, sizeScore: Int!): PricingContext
+  pricingContext(
+    artistId: String!
+    category: PricingContextCategoryEnum!
+    sizeScore: Int!
+  ): PricingContext
 }
 
 enum QueryPeriodEnum {
