@@ -172,7 +172,7 @@ export const IDFields = {
   __id: GlobalIDField,
   id: {
     description: "A type-specific ID.",
-    type: new GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(GraphQLID),
   },
 }
 
@@ -180,7 +180,7 @@ export const GravityIDFields = {
   ...IDFields,
   _id: {
     description: "A type-specific Gravity Mongo Document ID.",
-    type: new GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(GraphQLID),
   },
 }
 
