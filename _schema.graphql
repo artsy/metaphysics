@@ -105,6 +105,7 @@ type AnalyticsPageviewStats {
 
 # Sales stats of a partner
 type AnalyticsPartnerSalesStats {
+  orderResponseTime: Int!
   partnerId: String!
   period: AnalyticsQueryPeriodEnum!
 
