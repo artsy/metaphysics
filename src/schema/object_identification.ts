@@ -161,6 +161,13 @@ export const GlobalIDField = {
   },
 }
 
+export const SingleIDField = {
+  id: {
+    description: "A type-specific ID.",
+    type: GraphQLID,
+  },
+}
+
 export const IDFields = {
   __id: GlobalIDField,
   id: {

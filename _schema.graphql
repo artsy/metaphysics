@@ -9520,14 +9520,8 @@ type SaleArtworkEdge {
 }
 
 type SaleArtworkHighestBid {
-  # A globally unique ID.
-  __id: ID!
-
   # A type-specific ID.
-  id: String!
-
-  # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  id: ID
   created_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
