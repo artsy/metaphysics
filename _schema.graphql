@@ -38,7 +38,7 @@ type AggregationCount {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   count: Int
   name: String
   sortable_id: String
@@ -304,7 +304,7 @@ type Article implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   cached: Int
   author: Author
   channel_id: String
@@ -364,10 +364,10 @@ type Artist implements Node & Searchable {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   alternate_names: [String]
   articlesConnection(
@@ -707,10 +707,10 @@ type ArtistItem implements Node & Searchable {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   alternate_names: [String]
   articlesConnection(
@@ -1014,10 +1014,10 @@ type Artwork implements Node & Searchable & Sellable {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   additional_information(format: Format): String
   artist(
@@ -1224,10 +1224,10 @@ type ArtworkContextAuction implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artworks(
     page: Int = 1
@@ -1354,10 +1354,10 @@ type ArtworkContextFair {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   about: String
   followed_content: FollowedContent
   artists(
@@ -1491,10 +1491,10 @@ type ArtworkContextPartnerShow implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artists: [Artist]
 
@@ -1596,10 +1596,10 @@ type ArtworkContextSale implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artworks(
     page: Int = 1
@@ -1737,10 +1737,10 @@ type ArtworkFilterGene implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   description: String
   name: String
@@ -1798,10 +1798,10 @@ type ArtworkFilterTag implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   description: String
   name: String
@@ -1868,10 +1868,10 @@ type ArtworkInquiry {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   artwork: Artwork!
   impulse_conversation_id: String
 }
@@ -1899,10 +1899,10 @@ type ArtworkItem implements Node & Searchable & Sellable {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   additional_information(format: Format): String
   artist(
@@ -2076,7 +2076,7 @@ type ArtworkLayer {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   artworks: [Artwork]
 
   # A connection of artworks from a Layer.
@@ -2137,10 +2137,10 @@ type ArtworkVersion {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
 
   # Artwork title
   title: String
@@ -2192,10 +2192,10 @@ type AttributionClass {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
 
   # Shortest form of attribution class display
   name: String
@@ -2233,7 +2233,7 @@ type AuctionResult implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   title: String
   artist_id: String!
   date(
@@ -2308,7 +2308,7 @@ type Author {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   name: String
   href: String
     @deprecated(
@@ -2322,7 +2322,7 @@ type Bidder {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   created_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -2341,7 +2341,7 @@ type BidderPosition {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   created_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -2497,10 +2497,10 @@ type BuyersPremium {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
 
   # A formatted price with various currency formatting options.
   amount(
@@ -2739,10 +2739,10 @@ type Category {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   category_type: String
   internal: Boolean
   name: String
@@ -2809,10 +2809,10 @@ type Collection implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artworks_connection(
     after: String
@@ -2839,7 +2839,7 @@ type CollectorProfileType {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   email: String
   name: String
   confirmed_buyer_at(
@@ -4050,10 +4050,10 @@ type ConsignmentSubmission implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
 
   # The gravity ID for an Artist
   artist_id: String!
@@ -4431,10 +4431,10 @@ type CreditCard {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
 
   # Brand of credit card
   brand: String!
@@ -4678,7 +4678,7 @@ type EditionSet implements Sellable {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   dimensions: dimensions
   edition_of: String
   is_acquireable: Boolean
@@ -4747,7 +4747,7 @@ type ExternalPartner {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   city: String
   name: String
 }
@@ -4757,10 +4757,10 @@ type Fair {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   about: String
   followed_content: FollowedContent
   artists(
@@ -4942,10 +4942,10 @@ type FairExhibitor {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
 
   # Exhibitor name
   name: String
@@ -4994,7 +4994,7 @@ type Feedback {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # Feedback message
   message: String!
@@ -5089,7 +5089,7 @@ type FollowArtist {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 }
 
 # A connection to a list of items.
@@ -5234,7 +5234,7 @@ type FollowGene {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 }
 
 # A connection to a list of items.
@@ -5375,10 +5375,10 @@ type Gene implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artists: [Artist]
   artists_connection(
@@ -5543,10 +5543,10 @@ type GeneFamily {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   name: String!
   genes: [Gene]
 }
@@ -5574,10 +5574,10 @@ type GeneItem implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artists: [Artist]
   artists_connection(
@@ -5709,7 +5709,7 @@ type HighestBid {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   created_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -5744,7 +5744,7 @@ type HighlightedArticle implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   cached: Int
   author: Author
   channel_id: String
@@ -5779,10 +5779,10 @@ type HighlightedShow implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artists: [Artist]
 
@@ -5989,10 +5989,10 @@ type HomePageHeroUnit {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   mode: HomePageHeroUnitMode
   heading: String
@@ -6041,10 +6041,10 @@ type HomePageModuleContextFair {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   about: String
   followed_content: FollowedContent
   artists(
@@ -6187,10 +6187,10 @@ type HomePageModuleContextGene implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artists: [Artist]
   artists_connection(
@@ -6320,10 +6320,10 @@ type HomePageModuleContextSale implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artworks(
     page: Int = 1
@@ -6464,7 +6464,7 @@ type Image {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   aspect_ratio: Float!
   caption: String
   cropped(width: Int!, height: Int!, version: [String]): CroppedImageUrl
@@ -6509,7 +6509,7 @@ type Invoice implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # Lewitt's invoice id.
   lewitt_invoice_id: String!
@@ -6556,7 +6556,7 @@ type Location {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   cached: Int
   address: String
   address_2: String
@@ -6717,7 +6717,7 @@ type Me implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A list of the current user’s consignment submissions
   consignment_submissions(
@@ -7873,7 +7873,7 @@ type OrderedSet {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   cached: Int
   description: String
   key: String
@@ -8100,10 +8100,10 @@ type Partner implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artworks(
     for_sale: Boolean
@@ -8171,7 +8171,7 @@ type PartnerArtist {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   artist: Artist
   biography: String
   counts: PartnerArtistCounts
@@ -8216,7 +8216,7 @@ type PartnerArtistEdge {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   artist: Artist
   biography: String
   counts: PartnerArtistCounts
@@ -8232,7 +8232,7 @@ type PartnerCategory {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   cached: Int
   category_type: CategoryType
   name: String
@@ -8355,10 +8355,10 @@ type PartnerShow implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artists: [Artist]
 
@@ -8562,10 +8562,10 @@ type Profile {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   bio: String
   counts: ProfileCounts
@@ -9293,10 +9293,10 @@ type Sale implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artworks(
     page: Int = 1
@@ -9423,10 +9423,10 @@ type SaleArtwork {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   artwork: Artwork
   bidder_positions_count: Int
@@ -9743,10 +9743,10 @@ type SearchableItem implements Node & Searchable {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   description: String
   displayLabel: String
   imageUrl: String
@@ -9989,10 +9989,10 @@ type Show implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
 
   # The Artists presenting in this show
@@ -10384,10 +10384,10 @@ type Tag implements Node {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
   description: String
   name: String
@@ -10479,7 +10479,7 @@ type UpdateCollectorProfilePayload {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
   email: String
   name: String
   confirmed_buyer_at(
@@ -10639,10 +10639,10 @@ type User {
   __id: ID!
 
   # A type-specific ID.
-  id: String!
+  id: ID!
 
   # A type-specific Gravity Mongo Document ID.
-  _id: String!
+  _id: ID!
   cached: Int
 
   # The given name of the user.
