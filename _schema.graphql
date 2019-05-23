@@ -442,6 +442,7 @@ type Artist implements Node & Searchable {
   counts: ArtistCounts
   currentEvent: CurrentEvent
   deathday: String
+  disablePriceContext: Boolean
   display_auction_link: Boolean
     @deprecated(reason: "Favor `is_`-prefixed boolean attributes")
 
@@ -784,6 +785,7 @@ type ArtistItem implements Node & Searchable {
   counts: ArtistCounts
   currentEvent: CurrentEvent
   deathday: String
+  disablePriceContext: Boolean
   display_auction_link: Boolean
     @deprecated(reason: "Favor `is_`-prefixed boolean attributes")
 
