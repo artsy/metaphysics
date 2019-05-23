@@ -163,7 +163,7 @@ export const GlobalIDField = {
 
 export const NullableIDField = {
   id: {
-    description: "A nullable type-specific ID.",
+    description: "A type-specific ID.",
     type: GraphQLID,
   },
 }
