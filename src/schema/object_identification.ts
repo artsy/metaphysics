@@ -27,12 +27,7 @@
 import { basename } from "path"
 import _ from "lodash"
 import { fromGlobalId, toGlobalId } from "graphql-relay"
-import {
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLID,
-  GraphQLInterfaceType,
-} from "graphql"
+import { GraphQLNonNull, GraphQLID, GraphQLInterfaceType } from "graphql"
 
 /* eslint-disable no-param-reassign */
 const SupportedTypes: any = {
