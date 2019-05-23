@@ -9,8 +9,7 @@ const mockFetch = require("../link").mockFetch as jest.Mock<any>
 
 describe("PricingContext type", () => {
   beforeEach(() => {
-    ;(config.PRICING_CONTEXT_ARTIST_ALLOW_LIST = null),
-      (config.VORTEX_TOKEN = "vortex-token")
+    config.VORTEX_TOKEN = "vortex-token"
   })
   const artwork = {
     artist: {
@@ -32,6 +31,11 @@ describe("PricingContext type", () => {
     price_currency: "USD",
     price_cents: [234],
   }
+  const artist = {
+    _id: "artist-id",
+    name: "Good Artist",
+    disable_price_context: false,
+  }
   const meLoader = jest.fn(() =>
     Promise.resolve({
       lab_features: [
@@ -42,12 +46,7 @@ describe("PricingContext type", () => {
     })
   )
   const artworkLoader = jest.fn(() => Promise.resolve(artwork))
-  const artistLoader = jest.fn(() =>
-    Promise.resolve({
-      _id: "artist-id",
-      name: "Good Artist",
-    })
-  )
+  const artistLoader = jest.fn(() => Promise.resolve(artist))
   const salesLoader = jest.fn(() =>
     Promise.resolve([
       {
@@ -334,18 +333,13 @@ Object {
     expect(result.artwork.pricingContext).toBeNull()
   })
 
-  describe("when there is an allow list", () => {
-    it("Returns null when the artist _id is not in the list", async () => {
-      config.PRICING_CONTEXT_ARTIST_ALLOW_LIST = new Set(["bad-artist-id"])
-      const result = (await runQuery(query, context)) as any
-      expect(result.artwork.pricingContext).toBeNull()
+  it("is null when artist is disabled for price context", async () => {
+    artistLoader.mockResolvedValueOnce({
+      ...artist,
+      disable_price_context: true,
     })
-
-    it("works when the artist _id is in the list", async () => {
-      config.PRICING_CONTEXT_ARTIST_ALLOW_LIST = new Set(["artist-id"])
-      const result = (await runQuery(query, context)) as any
-      expect(result.artwork.pricingContext).not.toBeNull()
-    })
+    const result = (await runQuery(query, context)) as any
+    expect(result.artwork.pricingContext).toBeNull()
   })
 })
 

@@ -460,6 +460,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       currentEvent: CurrentEvent,
       deathday: { type: GraphQLString },
+      disablePriceContext: {
+        type: GraphQLBoolean,
+        resolve: ({ disable_price_context }) => disable_price_context,
+      },
       display_auction_link: {
         type: GraphQLBoolean,
         deprecationReason: "Favor `is_`-prefixed boolean attributes",
