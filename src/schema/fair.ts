@@ -312,13 +312,10 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
                 new GraphQLObjectType<any, ResolverContext>({
                   name: "FairExhibitor",
                   fields: {
+                    ...GravityIDFields,
                     name: {
                       type: GraphQLString,
                       description: "Exhibitor name",
-                    },
-                    id: {
-                      type: GraphQLString,
-                      description: "Exhibitors id",
                     },
                     partner_id: {
                       type: GraphQLString,

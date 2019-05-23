@@ -17,7 +17,11 @@ import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { ArtworkType } from "schema/artwork"
 import { ShowType } from "schema/show"
-import { GlobalIDField, NodeInterface } from "schema/object_identification"
+import {
+  GlobalIDField,
+  NodeInterface,
+  InternalIDFields,
+} from "schema/object_identification"
 import { MessageType } from "./message"
 import { ResolverContext } from "types/graphql"
 
@@ -56,10 +60,7 @@ export const ConversationInitiatorType = new GraphQLObjectType<
   description:
     "The participant who started the conversation, currently always a User",
   fields: {
-    id: {
-      description: "Impulse id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    ...InternalIDFields,
     type: {
       description: "The type of participant, e.g. Partner or User",
       type: new GraphQLNonNull(GraphQLString),
@@ -82,10 +83,7 @@ export const ConversationResponderType = new GraphQLObjectType<
   description:
     "The participant responding to the conversation, currently always a Partner",
   fields: {
-    id: {
-      description: "Impulse id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    ...InternalIDFields,
     type: {
       description: "The type of participant, e.g. Partner or User",
       type: new GraphQLNonNull(GraphQLString),
@@ -159,10 +157,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: {
     __id: GlobalIDField,
-    id: {
-      description: "Impulse id.",
-      type: GraphQLString,
-    },
+    ...InternalIDFields,
     inquiry_id: {
       description: "Gravity inquiry id.",
       type: GraphQLString,

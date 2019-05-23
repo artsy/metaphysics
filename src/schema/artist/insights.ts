@@ -57,6 +57,7 @@ const buildInsights = artist => {
   }
 
   return compact(
+    // eslint-disable-next-line array-callback-return
     Object.keys(ArtistInsightTypeMapping).map(key => {
       const entitiesString = artist[key] && artist[key].trim()
 

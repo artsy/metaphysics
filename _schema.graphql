@@ -1861,8 +1861,15 @@ type ArtworkInfoRow {
 
 # An inquiry on an Artwork
 type ArtworkInquiry {
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
+  id: String!
+
+  # A type-specific Gravity Mongo Document ID.
+  _id: String!
   artwork: Artwork!
-  id: ID
   impulse_conversation_id: String
 }
 
@@ -2123,8 +2130,14 @@ enum ArtworkSorts {
 }
 
 type ArtworkVersion {
-  # ID of the order line item
-  id: ID!
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
+  id: String!
+
+  # A type-specific Gravity Mongo Document ID.
+  _id: String!
 
   # Artwork title
   title: String
@@ -2144,8 +2157,8 @@ type ArtworkVersion {
 
 # An asset which is assigned to a consignment submission
 type Asset {
-  # Convection asset ID.
-  id: String!
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # The convection submission ID
   submission_id: String
@@ -2159,8 +2172,8 @@ type Asset {
 
 # Fields of an attachment (currently from Radiation)
 type Attachment {
-  # Attachment id.
-  id: String!
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # Content type of file.
   content_type: String!
@@ -2172,7 +2185,14 @@ type Attachment {
 
 # Collection of fields that describe attribution class
 type AttributionClass {
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
   id: String!
+
+  # A type-specific Gravity Mongo Document ID.
+  _id: String!
 
   # Shortest form of attribution class display
   name: String
@@ -2494,8 +2514,8 @@ type BuyersPremium {
 }
 
 type BuyOrder implements Order {
-  # ID of the order
-  id: ID
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # Order Mode
   mode: OrderModeEnum
@@ -2712,7 +2732,14 @@ enum CancelReasonType {
 
 # Fields of partner category (currently from Gravity).
 type Category {
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
   id: String!
+
+  # A type-specific Gravity Mongo Document ID.
+  _id: String!
   category_type: String
   internal: Boolean
   name: String
@@ -4114,8 +4141,8 @@ type Conversation implements Node {
   # A globally unique ID.
   __id: ID!
 
-  # Impulse id.
-  id: String
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # Gravity inquiry id.
   inquiry_id: String
@@ -4212,8 +4239,8 @@ type ConversationEdge {
 
 # The participant who started the conversation, currently always a User
 type ConversationInitiator {
-  # Impulse id.
-  id: String!
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # The type of participant, e.g. Partner or User
   type: String!
@@ -4232,8 +4259,8 @@ union ConversationItemType = Artwork | Show
 
 # The participant responding to the conversation, currently always a Partner
 type ConversationResponder {
-  # Impulse id.
-  id: String!
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # The type of participant, e.g. Partner or User
   type: String!
@@ -4545,8 +4572,8 @@ type DeleteCreditCardPayload {
 
 # Fields of a delivery (currently from Radiation)
 type Delivery {
-  # Delivery id.
-  id: String!
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # Masked email w/ display name.
   full_transformed_email: String!
@@ -4908,11 +4935,17 @@ type FairEdge {
 }
 
 type FairExhibitor {
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
+  id: String!
+
+  # A type-specific Gravity Mongo Document ID.
+  _id: String!
+
   # Exhibitor name
   name: String
-
-  # Exhibitors id
-  id: String
 
   # Exhibitors _id
   partner_id: String
@@ -4944,7 +4977,7 @@ type FairSponsoredContent {
 }
 
 type FeaturedLinkItem {
-  # Attempt to get the ID of the entity of the FeaturedLink
+  # A type-specific ID.
   id: String
   href: String
   image: Image
@@ -5503,7 +5536,14 @@ type GeneEdge {
 }
 
 type GeneFamily {
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
   id: String!
+
+  # A type-specific Gravity Mongo Document ID.
+  _id: String!
   name: String!
   genes: [Gene]
 }
@@ -6407,24 +6447,27 @@ type HomePageModuleContextTrending {
 }
 
 type HomePageModulesParams {
+  # A type-specific ID likely used as a database ID.
+  id: ID!
   followed_artist_id: ID
   gene_id: String
-  id: ID
   medium: String
   price_range: String
   related_artist_id: ID
 }
 
 type Image {
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
+  id: String!
   aspect_ratio: Float!
   caption: String
   cropped(width: Int!, height: Int!, version: [String]): CroppedImageUrl
   deep_zoom: DeepZoom
   href: String
   height: Int
-
-  # A type-specific ID.
-  id: String
   image_url: String
   image_versions: [String]
   is_default: Boolean
@@ -6873,8 +6916,8 @@ type Message implements Node {
   # A globally unique ID.
   __id: ID!
 
-  # Impulse message id.
-  id: String!
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # Impulse message id.
   impulse_id: String!
@@ -7250,8 +7293,8 @@ enum NotificationsFeedItemStatus {
 }
 
 type Offer {
-  # ID of the offer
-  id: ID
+  # A type-specific ID likely used as a database ID.
+  id: ID!
   createdAt(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean
@@ -7366,8 +7409,8 @@ type OfferEdge {
 }
 
 type OfferOrder implements Order {
-  # ID of the order
-  id: ID
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # Order Mode
   mode: OrderModeEnum
@@ -7595,8 +7638,8 @@ type OpeningHoursText {
 union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 
 interface Order {
-  # ID of the order
-  id: ID
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # Order Mode
   mode: OrderModeEnum
@@ -7837,8 +7880,8 @@ type OrderedSet {
 }
 
 type OrderFulfillment {
-  # ID of the fulfillment
-  id: ID
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # Fulfillment Courier
   courier: String
@@ -7879,8 +7922,8 @@ enum OrderFulfillmentType {
 }
 
 type OrderLineItem {
-  # ID of the order line item
-  id: ID
+  # A type-specific ID likely used as a database ID.
+  id: ID!
 
   # Artwork that is being ordered
   artwork: Artwork
@@ -9479,6 +9522,7 @@ type SaleArtworkEdge {
 }
 
 type SaleArtworkHighestBid {
+  # A type-specific ID.
   id: ID
   created_at(
     # This arg is deprecated, use timezone instead
@@ -10517,7 +10561,7 @@ type UpdateMyProfilePayload {
 }
 
 input UpdateSubmissionMutationInput {
-  # A type-specific ID.
+  # The GUID for the submission
   id: String!
 
   # The gravity ID for an Artist
@@ -10591,7 +10635,7 @@ type User {
   # A globally unique ID.
   __id: ID!
 
-  # User id.
+  # A type-specific ID.
   id: String!
 
   # A type-specific Gravity Mongo Document ID.

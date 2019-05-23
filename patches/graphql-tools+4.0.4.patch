@@ -1,0 +1,38 @@
+patch-package
+--- a/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
++++ b/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
+@@ -62,7 +62,9 @@ function recreateType(type, resolveType, keepResolvers) {
+         var newValues_1 = {};
+         values.forEach(function (value) {
+             newValues_1[value.name] = {
+-                value: value.value,
++                // Simply pass-through the name of the enum entry such that the enum type in the original schema will
++                // receive that and will be able to do its work as if it were never proxied.
++                value: value.name,
+                 deprecationReason: value.deprecationReason,
+                 description: value.description,
+                 astNode: value.astNode,
+--- a/node_modules/graphql-tools/dist/transforms/visitSchema.js
++++ b/node_modules/graphql-tools/dist/transforms/visitSchema.js
+@@ -29,7 +29,20 @@ function visitSchema(schema, visitor, stripResolvers) {
+     var mutationType = schema.getMutationType();
+     var subscriptionType = schema.getSubscriptionType();
+     var typeMap = schema.getTypeMap();
+-    Object.keys(typeMap).map(function (typeName) {
++
++    // Move interfaces to the front of the list, as the call-site may need to
++    // transform both interface and object types and thus need to be able to
++    // refer to the transformed interface types when creating the transformed
++    // object types.
++    var typeKeys = Object.keys(typeMap).sort(function (typeName) {
++      if (typeMap[typeName] instanceof graphql_1.GraphQLInterfaceType) {
++        return -1;
++      } else {
++        return 1;
++      }
++    });
++
++    typeKeys.map(function (typeName) {
+         var type = typeMap[typeName];
+         if (graphql_1.isNamedType(type) && graphql_1.getNamedType(type).name.slice(0, 2) !== '__') {
+             var specifiers = getTypeSpecifiers(type, schema);

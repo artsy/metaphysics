@@ -161,6 +161,13 @@ export const GlobalIDField = {
   },
 }
 
+export const SingleIDField = {
+  id: {
+    description: "A type-specific ID.",
+    type: GraphQLID,
+  },
+}
+
 export const IDFields = {
   __id: GlobalIDField,
   id: {
@@ -174,6 +181,13 @@ export const GravityIDFields = {
   _id: {
     description: "A type-specific Gravity Mongo Document ID.",
     type: new GraphQLNonNull(GraphQLString),
+  },
+}
+
+export const InternalIDFields = {
+  id: {
+    description: "A type-specific ID likely used as a database ID.",
+    type: new GraphQLNonNull(GraphQLID),
   },
 }
 
