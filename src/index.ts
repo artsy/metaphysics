@@ -13,7 +13,6 @@ import moment from "moment"
 import morgan from "artsy-morgan"
 import raven from "raven"
 import xapp from "artsy-xapp"
-import crunchInterceptor from "./lib/crunchInterceptor"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import {
   fetchLoggerSetup,
@@ -105,8 +104,7 @@ function startApp(appSchema, path: string) {
     },
     logQueryDetailsIfEnabled(),
     nameOldEigenQueries,
-    fetchPersistedQuery,
-    crunchInterceptor
+    fetchPersistedQuery
   )
 
   if (ENABLE_APOLLO) {
