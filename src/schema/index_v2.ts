@@ -44,6 +44,7 @@ const ExchangeTypes = [
 const KnownTypesWithNullableIDFields = [
   "MarketingCollectionQuery",
   "FeaturedLinkItem",
+  "HomePageModulesParams",
 ]
 
 class IdRenamer implements Transform {
