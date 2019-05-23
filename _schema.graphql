@@ -6457,15 +6457,17 @@ type HomePageModulesParams {
 }
 
 type Image {
+  # A globally unique ID.
+  __id: ID!
+
+  # A type-specific ID.
+  id: String!
   aspect_ratio: Float!
   caption: String
   cropped(width: Int!, height: Int!, version: [String]): CroppedImageUrl
   deep_zoom: DeepZoom
   href: String
   height: Int
-
-  # A type-specific ID.
-  id: String
   image_url: String
   image_versions: [String]
   is_default: Boolean

@@ -9,6 +9,7 @@ import {
   TypeInfo,
   visitWithTypeInfo,
   isLeafType,
+  isNullableType,
 } from "graphql"
 import { transformSchema, Transform, Request } from "graphql-tools"
 import {
@@ -22,6 +23,10 @@ import {
 } from "graphql-tools/dist/stitching/schemaRecreation"
 import { GravityIDFields, InternalIDFields } from "./object_identification"
 
+// TODO: These types should have their id fields renamed to internalID upstream,
+//       but that requires us to do some transformation work _back_ on the v1
+//       schema for it to remain backwards compatible, so we can do that at a
+//       later time.
 const KAWSTypes = ["MarketingCollection", "MarketingCollectionQuery"]
 const ExchangeTypes = [
   "CommerceOrder",
@@ -32,6 +37,13 @@ const ExchangeTypes = [
   "CommerceBuyOrder",
   "CommerceOffer",
   "CommerceOfferOrder",
+]
+
+// FIXME: ID fields shouldn't be nullable, so figure out what the deal is with
+//        these.
+const KnownTypesWithNullableIDFields = [
+  "MarketingCollectionQuery",
+  "FeaturedLinkItem",
 ]
 
 class IdRenamer implements Transform {
@@ -52,27 +64,39 @@ class IdRenamer implements Transform {
         Object.keys(fields).forEach(fieldName => {
           const field = fields[fieldName]
           if (field.name === "id") {
-            if (
-              field.description === GravityIDFields.id.description ||
-              type.name === "DoNotUseThisPartner"
-            ) {
-              newFields["gravityID"] = {
-                ...fieldToFieldConfig(field, resolveType, true),
-                resolve: ({ id }) => id,
-                name: "gravityID",
+            // Omit this id field entirely from the v2 schema, as it's a no-op
+            if (type.name !== "SaleArtworkHighestBid") {
+              if (
+                isNullableType(field.type) &&
+                !KnownTypesWithNullableIDFields.includes(type.name)
+              ) {
+                throw new Error(
+                  `Do not add new nullable id fields (${type.name})`
+                )
+              } else {
+                if (
+                  field.description === GravityIDFields.id.description ||
+                  type.name === "DoNotUseThisPartner"
+                ) {
+                  newFields["gravityID"] = {
+                    ...fieldToFieldConfig(field, resolveType, true),
+                    resolve: ({ id }) => id,
+                    name: "gravityID",
+                  }
+                } else if (
+                  field.description === InternalIDFields.id.description ||
+                  KAWSTypes.includes(type.name) ||
+                  ExchangeTypes.includes(type.name)
+                ) {
+                  newFields["internalID"] = {
+                    ...fieldToFieldConfig(field, resolveType, true),
+                    resolve: ({ id }) => id,
+                    name: "internalID",
+                  }
+                } else {
+                  throw new Error(`Do not add new id fields (${type.name})`)
+                }
               }
-            } else if (
-              field.description === InternalIDFields.id.description ||
-              KAWSTypes.includes(type.name) ||
-              ExchangeTypes.includes(type.name)
-            ) {
-              newFields["internalID"] = {
-                ...fieldToFieldConfig(field, resolveType, true),
-                resolve: ({ id }) => id,
-                name: "internalID",
-              }
-            } else {
-              throw new Error(`Do not add new id fields (${type.name})`)
             }
           } else if (field.name === "_id") {
             newFields["internalID"] = {
