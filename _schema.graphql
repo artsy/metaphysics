@@ -6450,8 +6450,8 @@ type HomePageModuleContextTrending {
 }
 
 type HomePageModulesParams {
-  # A type-specific ID likely used as a database ID.
-  id: ID!
+  # A type-specific ID.
+  id: ID
   followed_artist_id: ID
   gene_id: String
   medium: String
