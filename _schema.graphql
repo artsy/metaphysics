@@ -6460,11 +6460,8 @@ type HomePageModulesParams {
 }
 
 type Image {
-  # A globally unique ID.
-  __id: ID!
-
   # A type-specific ID.
-  id: ID!
+  id: ID
   aspect_ratio: Float!
   caption: String
   cropped(width: Int!, height: Int!, version: [String]): CroppedImageUrl
