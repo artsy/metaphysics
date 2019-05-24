@@ -284,7 +284,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     AnalyticsPartnerSalesTimeSeriesStats: {
       total: {
         fragment: gql`
-          ... on AnalyticsPartnerSalesStats {
+          ... on AnalyticsPartnerSalesTimeSeriesStats {
             totalCents
           }
         `,
