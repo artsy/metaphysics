@@ -9206,6 +9206,7 @@ type Query {
   # Find PartnerStats
   analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
   marketingCollections(
+    category: String
     randomizationSeed: String
     size: Int
     isFeaturedArtistContent: Boolean
