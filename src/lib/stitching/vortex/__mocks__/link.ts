@@ -102,6 +102,22 @@ export const mockFetch = jest.fn(() =>
                 },
               ],
             },
+            sales: {
+              partnerId: "5748d153cd530e2d5100031c",
+              totalCents: 3682500,
+              timeSeries: [
+                {
+                  startTime: "2019-05-04T00:00:00Z",
+                  endTime: "2019-05-05T00:00:00Z",
+                  totalCents: 0,
+                },
+                {
+                  startTime: "2019-05-05T00:00:00Z",
+                  endTime: "2019-05-06T00:00:00Z",
+                  totalCents: 280000,
+                },
+              ],
+            },
           },
         },
       })
