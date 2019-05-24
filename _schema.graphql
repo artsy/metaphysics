@@ -114,6 +114,13 @@ type AnalyticsPartnerSalesStats {
     cumulative: Boolean = false
   ): [AnalyticsPartnerSalesTimeSeriesStats!]
   totalCents: Int!
+  total(
+    decimal: String = "."
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
 }
 
 # Sales time series data of a partner
@@ -122,6 +129,13 @@ type AnalyticsPartnerSalesTimeSeriesStats {
   endTime: AnalyticsDateTime
   startTime: AnalyticsDateTime
   totalCents: Int!
+  total(
+    decimal: String = "."
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
 }
 
 # Partner Stats
