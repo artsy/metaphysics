@@ -45,6 +45,7 @@ const KnownTypesWithNullableIDFields = [
   "MarketingCollectionQuery",
   "FeaturedLinkItem",
   "HomePageModulesParams",
+  "Image",
 ]
 
 class IdRenamer implements Transform {

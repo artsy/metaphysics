@@ -15,7 +15,7 @@ import DeepZoom, { isZoomable } from "./deep_zoom"
 import { ImageData, normalize } from "./normalize"
 import ResizedUrl from "./resized"
 import VersionedUrl from "./versioned"
-import { IDFields } from "schema/object_identification"
+import { NullableIDField } from "schema/object_identification"
 
 export { normalize as normalizeImageData } from "./normalize"
 
@@ -29,7 +29,7 @@ export const getDefault = images => {
 const ImageType = new GraphQLObjectType<any, ResolverContext>({
   name: "Image",
   fields: (): any => ({
-    ...IDFields,
+    ...NullableIDField,
     aspect_ratio: {
       type: new GraphQLNonNull(GraphQLFloat),
       resolve: ({ aspect_ratio }) => {
