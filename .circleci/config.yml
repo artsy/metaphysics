@@ -28,7 +28,7 @@ jobs:
       - image: artsy/ruby:2.6.2-node-chrome
     steps:
       - checkout
-      - run: echo hi1234
+      - run: echo "$CIRCLE_JOB" 
 
 workflows:
   default:
