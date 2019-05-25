@@ -22,11 +22,16 @@ only_release: &only_release
     branches:
       only: release
 
+jobs:
+  testjob:
+    steps:
+      - run: echo hi1234
+
 workflows:
   default:
     jobs:
       # pre-staging
-      - hokusai/test:
+      - testjob:
           name: test
           <<: *not_staging_or_release
 
