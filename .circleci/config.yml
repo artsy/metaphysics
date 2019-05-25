@@ -24,7 +24,10 @@ only_release: &only_release
 
 jobs:
   testjob:
+    docker:
+      - image: artsy/ruby:2.6.2-node-chrome
     steps:
+      - checkout
       - run: echo hi1234
 
 workflows:
