@@ -4158,8 +4158,8 @@ type Conversation implements Node {
   # A globally unique ID.
   __id: ID!
 
-  # A type-specific ID likely used as a database ID.
-  id: ID!
+  # A type-specific ID.
+  id: ID
 
   # Gravity inquiry id.
   inquiry_id: String
@@ -4956,7 +4956,7 @@ type FairExhibitor {
   __id: ID!
 
   # A type-specific ID.
-  id: ID!
+  id: ID
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
