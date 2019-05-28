@@ -6,7 +6,11 @@ import {
   GraphQLString,
   GraphQLNonNull,
 } from "graphql"
-import { GlobalIDField, NodeInterface } from "schema/object_identification"
+import {
+  GlobalIDField,
+  NodeInterface,
+  InternalIDFields,
+} from "schema/object_identification"
 import { AttachmentType } from "./attachment"
 import { DeliveryType } from "./delivery"
 import { InvoiceType } from "./invoice"
@@ -36,10 +40,7 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: {
     __id: GlobalIDField,
-    id: {
-      description: "Impulse message id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    ...InternalIDFields,
     // This alias exists specifically because our fork of Relay Classic did not yet properly support using `__id`
     // instead of `id`, which lead to Relay overwriting `id` fields with the `__id` value. Thus using a completely
     // different field name works around this. You should probably not use it.

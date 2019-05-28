@@ -50,7 +50,7 @@ describe("TopArtworks type", () => {
     }
   `
 
-  it("is accessible through the artwork type", async () => {
+  it("is accessible through the partner type", async () => {
     const result = await runQuery(query, context)
     expect(result).toMatchInlineSnapshot(`
 Object {

@@ -27,12 +27,7 @@
 import { basename } from "path"
 import _ from "lodash"
 import { fromGlobalId, toGlobalId } from "graphql-relay"
-import {
-  GraphQLNonNull,
-  GraphQLString,
-  GraphQLID,
-  GraphQLInterfaceType,
-} from "graphql"
+import { GraphQLNonNull, GraphQLID, GraphQLInterfaceType } from "graphql"
 
 /* eslint-disable no-param-reassign */
 const SupportedTypes: any = {
@@ -161,11 +156,18 @@ export const GlobalIDField = {
   },
 }
 
+export const NullableIDField = {
+  id: {
+    description: "A type-specific ID.",
+    type: GraphQLID,
+  },
+}
+
 export const IDFields = {
   __id: GlobalIDField,
   id: {
     description: "A type-specific ID.",
-    type: new GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(GraphQLID),
   },
 }
 
@@ -173,7 +175,14 @@ export const GravityIDFields = {
   ...IDFields,
   _id: {
     description: "A type-specific Gravity Mongo Document ID.",
-    type: new GraphQLNonNull(GraphQLString),
+    type: new GraphQLNonNull(GraphQLID),
+  },
+}
+
+export const InternalIDFields = {
+  id: {
+    description: "A type-specific ID likely used as a database ID.",
+    type: new GraphQLNonNull(GraphQLID),
   },
 }
 

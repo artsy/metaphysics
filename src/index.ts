@@ -8,12 +8,11 @@ import cors from "cors"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
-import localSchema from "./schema"
+import { schema, schemaV2 } from "./schema"
 import moment from "moment"
 import morgan from "artsy-morgan"
 import raven from "raven"
 import xapp from "artsy-xapp"
-import crunchInterceptor from "./lib/crunchInterceptor"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import {
   fetchLoggerSetup,
@@ -27,7 +26,7 @@ import {
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
-import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
+// import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
 
 import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
@@ -66,21 +65,17 @@ function logQueryDetailsIfEnabled() {
   return (_req, _res, next) => next()
 }
 
-async function startApp() {
+function startApp(appSchema, path: string) {
   const app = express()
 
   config.GRAVITY_XAPP_TOKEN = xapp.token
 
-  let schema = localSchema
-
-  const exchangeSchema = await executableExchangeSchema(
-    legacyTransformsForExchange
-  )
+  const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
 
   if (RESOLVER_TIMEOUT_MS > 0) {
     console.warn("[FEATURE] Enabling resolver timeouts")
-    schema = applyGraphQLMiddleware(
-      schema,
+    appSchema = applyGraphQLMiddleware(
+      appSchema,
       graphqlTimeoutMiddleware(RESOLVER_TIMEOUT_MS)
     )
   }
@@ -96,7 +91,7 @@ async function startApp() {
   }
 
   app.use(
-    "/",
+    path,
     cors(),
     morgan,
     // Gotta parse the JSON body before passing it to logQueryDetails/fetchPersistedQuery
@@ -109,15 +104,14 @@ async function startApp() {
     },
     logQueryDetailsIfEnabled(),
     nameOldEigenQueries,
-    fetchPersistedQuery,
-    crunchInterceptor
+    fetchPersistedQuery
   )
 
   if (ENABLE_APOLLO) {
     console.warn("[FEATURE] Enabling Apollo Server")
     const { ApolloServer } = require("apollo-server-express")
     const server = new ApolloServer({
-      schema,
+      schema: appSchema,
       rootValue: {},
       playground: true,
       introspection: true,
@@ -160,11 +154,12 @@ async function startApp() {
       },
     })
 
-    server.applyMiddleware({ app, path: "/" })
+    server.applyMiddleware({ app, path })
   } else {
     const graphqlHTTP = require("express-graphql")
     app.use(
-      graphqlHTTP((req, res, params) => {
+      graphqlHTTP((req, res /*, params */) => {
+        console.log("Request from", path)
         const accessToken = req.headers["x-access-token"] as string | undefined
         const userID = req.headers["x-user-id"] as string | undefined
         const timezone = req.headers["x-timezone"] as string | undefined
@@ -201,16 +196,17 @@ async function startApp() {
         }
 
         return {
-          schema,
+          schema: appSchema,
           graphiql: true,
           context,
           rootValue: {},
-          formatError: graphqlErrorHandler(enableSentry, {
-            req,
-            // Why the checking on params? Do we reach this code if params is falsy?
-            variables: params && params.variables,
-            query: (params && params.query)!,
-          }),
+          // FIXME: This needs to be updated as per the release notes of graphql-js v14
+          // formatError: graphqlErrorHandler(enableSentry, {
+          //   req,
+          //   // Why the checking on params? Do we reach this code if params is falsy?
+          //   variables: params && params.variables,
+          //   query: (params && params.query)!,
+          // }),
           validationRules: QUERY_DEPTH_LIMIT
             ? [depthLimit(QUERY_DEPTH_LIMIT)]
             : null,
@@ -229,15 +225,25 @@ async function startApp() {
   return app
 }
 
-let startedApp: express.Express
+const app = express()
 
-export default async (req, res, next) => {
-  try {
-    if (!startedApp) {
-      startedApp = await startApp()
-    }
-    startedApp(req, res, next)
-  } catch (err) {
-    next(err)
+let appV1: express.Express
+let appV2: express.Express
+
+app.all("/", (req, res, next) => {
+  if (!appV1) {
+    appV1 = express()
+    appV1.use("/", startApp(schema, "/"))
   }
-}
+  appV1(req, res, next)
+})
+
+app.all("/v2", (req, res, next) => {
+  if (!appV2) {
+    appV2 = express()
+    appV2.use("/", startApp(schemaV2, "/v2"))
+  }
+  appV2(req, res, next)
+})
+
+export default app

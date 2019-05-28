@@ -3,7 +3,6 @@ import { amount } from "schema/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
 import { sortBy } from "lodash"
-import config from "config"
 
 const vortexSchema = executableVortexSchema({ removeRootFields: false })
 
@@ -47,6 +46,24 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     }
     extend type AnalyticsTopArtworks {
       artwork: Artwork
+    }
+    extend type AnalyticsPartnerSalesStats {
+      total(
+        decimal: String = "."
+        format: String = "%s%v"
+        precision: Int = 0
+        symbol: String
+        thousand: String = ","
+      ): String
+    }
+    extend type AnalyticsPartnerSalesTimeSeriesStats {
+      total(
+        decimal: String = "."
+        format: String = "%s%v"
+        precision: Int = 0
+        symbol: String
+        thousand: String = ","
+      ): String
     }
   `,
   resolvers: {
@@ -115,6 +132,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             }
             artist {
               _id
+              disablePriceContext
             }
             category
             is_for_sale
@@ -173,10 +191,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             return null
           }
 
-          if (
-            config.PRICING_CONTEXT_ARTIST_ALLOW_LIST &&
-            !config.PRICING_CONTEXT_ARTIST_ALLOW_LIST.has(artist._id)
-          ) {
+          if (artist.disablePriceContext) {
             return null
           }
 
@@ -253,6 +268,28 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             transforms: vortexSchema.transforms,
           })
         },
+      },
+    },
+    AnalyticsPartnerSalesStats: {
+      total: {
+        fragment: gql`
+          ... on AnalyticsPartnerSalesStats {
+            totalCents
+          }
+        `,
+        resolve: (parent, args, _context, _info) =>
+          amount(_ => parent.totalCents).resolve({}, args),
+      },
+    },
+    AnalyticsPartnerSalesTimeSeriesStats: {
+      total: {
+        fragment: gql`
+          ... on AnalyticsPartnerSalesTimeSeriesStats {
+            totalCents
+          }
+        `,
+        resolve: (parent, args, _context, _info) =>
+          amount(_ => parent.totalCents).resolve({}, args),
       },
     },
   },

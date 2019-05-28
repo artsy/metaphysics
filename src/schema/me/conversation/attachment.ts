@@ -1,14 +1,12 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { InternalIDFields } from "schema/object_identification"
 
 export const AttachmentType = new GraphQLObjectType<any, ResolverContext>({
   name: "Attachment",
   description: "Fields of an attachment (currently from Radiation)",
   fields: {
-    id: {
-      description: "Attachment id.",
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    ...InternalIDFields,
     content_type: {
       description: "Content type of file.",
       type: new GraphQLNonNull(GraphQLString),

@@ -49,7 +49,7 @@ export default async () => {
   )
 
   // Bail because there's no work to do
-  if (servicesWhichAreChangedInThisPR.length == 0) {
+  if (servicesWhichAreChangedInThisPR.length === 0) {
     console.log("No GraphQL schemas changed in this PR. Skipping checks.")
     return
   }

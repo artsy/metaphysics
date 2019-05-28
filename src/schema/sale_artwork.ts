@@ -7,11 +7,10 @@ import { formatMoney } from "accounting"
 import numeral from "./fields/numeral"
 import Artwork from "./artwork"
 import Sale from "./sale"
-import { GravityIDFields } from "./object_identification"
+import { GravityIDFields, NullableIDField } from "./object_identification"
 import {
   GraphQLFloat,
   GraphQLObjectType,
-  GraphQLID,
   GraphQLString,
   GraphQLNonNull,
   GraphQLInt,
@@ -165,9 +164,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "SaleArtworkHighestBid",
           fields: {
-            id: {
-              type: GraphQLID,
-            },
+            ...NullableIDField,
             created_at: date,
             is_cancelled: {
               type: GraphQLBoolean,
