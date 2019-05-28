@@ -21,6 +21,7 @@ import {
   GlobalIDField,
   NodeInterface,
   InternalIDFields,
+  NullableIDField,
 } from "schema/object_identification"
 import { MessageType } from "./message"
 import { ResolverContext } from "types/graphql"
@@ -157,7 +158,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: {
     __id: GlobalIDField,
-    ...InternalIDFields,
+    ...NullableIDField,
     inquiry_id: {
       description: "Gravity inquiry id.",
       type: GraphQLString,
