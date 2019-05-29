@@ -4158,7 +4158,7 @@ type Conversation implements Node {
   # A globally unique ID.
   __id: ID!
 
-  # A type-specific ID.
+  # An optional type-specific ID.
   id: ID
 
   # Gravity inquiry id.
@@ -4955,7 +4955,7 @@ type FairExhibitor {
   # A globally unique ID.
   __id: ID!
 
-  # A type-specific ID.
+  # An optional type-specific ID.
   id: ID
 
   # A type-specific Gravity Mongo Document ID.
@@ -6464,7 +6464,7 @@ type HomePageModuleContextTrending {
 }
 
 type HomePageModulesParams {
-  # A type-specific ID.
+  # An optional type-specific ID.
   id: ID
   followed_artist_id: ID
   gene_id: String
@@ -6474,7 +6474,7 @@ type HomePageModulesParams {
 }
 
 type Image {
-  # A type-specific ID.
+  # An optional type-specific ID.
   id: ID
   aspect_ratio: Float!
   caption: String
@@ -9536,7 +9536,7 @@ type SaleArtworkEdge {
 }
 
 type SaleArtworkHighestBid {
-  # A type-specific ID.
+  # An optional type-specific ID.
   id: ID
   created_at(
     # This arg is deprecated, use timezone instead

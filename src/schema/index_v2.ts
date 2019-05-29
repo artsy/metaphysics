@@ -21,7 +21,11 @@ import {
   createResolveType,
   fieldToFieldConfig,
 } from "graphql-tools/dist/stitching/schemaRecreation"
-import { GravityIDFields, InternalIDFields } from "./object_identification"
+import {
+  GravityIDFields,
+  InternalIDFields,
+  NullableIDField,
+} from "./object_identification"
 
 // TODO: These types should have their id fields renamed to internalID upstream,
 //       but that requires us to do some transformation work _back_ on the v1
@@ -41,13 +45,17 @@ const ExchangeTypes = [
 
 // FIXME: ID fields shouldn't be nullable, so figure out what the deal is with
 //        these.
-const KnownTypesWithNullableIDFields = [
+const KnownGravityTypesWithNullableIDFields = [
   "MarketingCollectionQuery",
   "FeaturedLinkItem",
   "HomePageModulesParams",
   "Image",
-  "Conversation",
   "FairExhibitor",
+]
+const KnownNonGravityTypesWithNullableIDFields = ["Conversation"]
+const KnownTypesWithNullableIDFields = [
+  ...KnownGravityTypesWithNullableIDFields,
+  ...KnownNonGravityTypesWithNullableIDFields,
 ]
 
 class IdRenamer implements Transform {
@@ -80,6 +88,11 @@ class IdRenamer implements Transform {
               } else {
                 if (
                   field.description === GravityIDFields.id.description ||
+                  // TODO: We transform them to non-nullable, so make sure they are!
+                  (field.description === NullableIDField.id.description &&
+                    KnownGravityTypesWithNullableIDFields.includes(
+                      type.name
+                    )) ||
                   type.name === "DoNotUseThisPartner"
                 ) {
                   newFields["gravityID"] = {
@@ -89,6 +102,11 @@ class IdRenamer implements Transform {
                   }
                 } else if (
                   field.description === InternalIDFields.id.description ||
+                  // TODO: We transform them to non-nullable, so make sure they are!
+                  (field.description === NullableIDField.id.description &&
+                    KnownNonGravityTypesWithNullableIDFields.includes(
+                      type.name
+                    )) ||
                   KAWSTypes.includes(type.name) ||
                   ExchangeTypes.includes(type.name)
                 ) {
@@ -143,6 +161,9 @@ class IdRenamer implements Transform {
           if (field.name === "id") {
             if (
               field.description === GravityIDFields.id.description ||
+              // TODO: We transform them to non-nullable, so make sure they are!
+              (field.description === NullableIDField.id.description &&
+                KnownGravityTypesWithNullableIDFields.includes(type.name)) ||
               type.name === "DoNotUseThisPartner"
             ) {
               newFields["gravityID"] = {
@@ -152,6 +173,9 @@ class IdRenamer implements Transform {
               }
             } else if (
               field.description === InternalIDFields.id.description ||
+              // TODO: We transform them to non-nullable, so make sure they are!
+              (field.description === NullableIDField.id.description &&
+                KnownNonGravityTypesWithNullableIDFields.includes(type.name)) ||
               KAWSTypes.includes(type.name) ||
               ExchangeTypes.includes(type.name)
             ) {
