@@ -81,6 +81,7 @@ scalar DateTime
 
 type Query {
   collections(
+    category: String
     randomizationSeed: String
     size: Int
     isFeaturedArtistContent: Boolean
