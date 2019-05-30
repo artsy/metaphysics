@@ -88,7 +88,6 @@ class IdRenamer implements Transform {
               } else {
                 if (
                   field.description === GravityIDFields.id.description ||
-                  // TODO: We transform them to non-nullable, so make sure they are!
                   (field.description === NullableIDField.id.description &&
                     KnownGravityTypesWithNullableIDFields.includes(
                       type.name
@@ -102,7 +101,6 @@ class IdRenamer implements Transform {
                   }
                 } else if (
                   field.description === InternalIDFields.id.description ||
-                  // TODO: We transform them to non-nullable, so make sure they are!
                   (field.description === NullableIDField.id.description &&
                     KnownNonGravityTypesWithNullableIDFields.includes(
                       type.name
@@ -161,7 +159,6 @@ class IdRenamer implements Transform {
           if (field.name === "id") {
             if (
               field.description === GravityIDFields.id.description ||
-              // TODO: We transform them to non-nullable, so make sure they are!
               (field.description === NullableIDField.id.description &&
                 KnownGravityTypesWithNullableIDFields.includes(type.name)) ||
               type.name === "DoNotUseThisPartner"
@@ -173,7 +170,6 @@ class IdRenamer implements Transform {
               }
             } else if (
               field.description === InternalIDFields.id.description ||
-              // TODO: We transform them to non-nullable, so make sure they are!
               (field.description === NullableIDField.id.description &&
                 KnownNonGravityTypesWithNullableIDFields.includes(type.name)) ||
               KAWSTypes.includes(type.name) ||
