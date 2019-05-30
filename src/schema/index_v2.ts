@@ -52,7 +52,10 @@ const KnownGravityTypesWithNullableIDFields = [
   "Image",
   "FairExhibitor",
 ]
-const KnownNonGravityTypesWithNullableIDFields = ["Conversation"]
+const KnownNonGravityTypesWithNullableIDFields = [
+  "Conversation",
+  "ConsignmentSubmission",
+]
 const KnownTypesWithNullableIDFields = [
   ...KnownGravityTypesWithNullableIDFields,
   ...KnownNonGravityTypesWithNullableIDFields,

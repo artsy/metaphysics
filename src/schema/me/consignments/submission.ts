@@ -7,7 +7,7 @@ import {
   GraphQLInt,
   GraphQLID,
 } from "graphql"
-import { GravityIDFields, NodeInterface } from "schema/object_identification"
+import { NullableIDField } from "schema/object_identification"
 import Artist from "schema/artist"
 import { ResolverContext } from "types/graphql"
 
@@ -178,9 +178,8 @@ export const SharedInputOutputFields = {
 export const SubmissionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ConsignmentSubmission",
   description: "A work to be consigned to the user",
-  interfaces: [NodeInterface],
   fields: {
-    ...GravityIDFields,
+    ...NullableIDField,
     ...SharedInputOutputFields,
     artist: {
       type: Artist.type,
