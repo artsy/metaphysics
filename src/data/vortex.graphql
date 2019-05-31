@@ -65,6 +65,7 @@ type PageviewStats {
 Sales stats of a partner
 """
 type PartnerSalesStats {
+  orderCount: Int!
   orderResponseTime: Int!
   partnerId: String!
   period: QueryPeriodEnum!
