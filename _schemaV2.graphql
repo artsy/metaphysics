@@ -105,6 +105,7 @@ type AnalyticsPageviewStats {
 
 # Sales stats of a partner
 type AnalyticsPartnerSalesStats {
+  orderCount: Int!
   orderResponseTime: Int!
   partnerId: String!
   period: AnalyticsQueryPeriodEnum!
@@ -9200,6 +9201,7 @@ type Query {
   # Find PartnerStats
   analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
   marketingCollections(
+    category: String
     randomizationSeed: String
     size: Int
     isFeaturedArtistContent: Boolean
