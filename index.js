@@ -32,6 +32,9 @@ const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
 
 let server, isShuttingDown
 
+// Always load the source on startup so any file level issues surface sooner.
+require("./src")
+
 // This needs to happen as early as possible so the plugins can hook into the
 // modules we use before any other code gets a chance to use them.
 if (enableQueryTracing) {

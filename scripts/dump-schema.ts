@@ -9,18 +9,21 @@ require("dotenv").config({
 import fs from "fs"
 import { printSchema } from "graphql/utilities"
 import path from "path"
-import schema from "schema"
+import { schema as schemaV1, schemaV2 } from "schema"
 import prettier from "prettier"
 import { graphql, introspectionQuery } from "graphql"
 
 const message =
-  "Usage: dump-schema.js /path/to/output/directory or /path/to/filename.graphql or /path/to/schema.json"
+  "Usage: dump-schema.js [v1|v2] /path/to/output/directory or /path/to/filename.graphql or /path/to/schema.json"
 
-const destination = process.argv[2]
-if (destination === undefined) {
+const schemaVersion = process.argv[2]
+const destination = process.argv[3]
+if (schemaVersion === undefined || destination === undefined) {
   console.error(message)
   process.exit(1)
 }
+
+const schema = schemaVersion === "v1" ? schemaV1 : schemaV2
 
 // Support both passing a folder or a filename
 const schemaPath =
