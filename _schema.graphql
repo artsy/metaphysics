@@ -103,6 +103,14 @@ type AnalyticsPageviewStats {
   uniqueVisitors: Int
 }
 
+# Inquiry stats of a partner
+type AnalyticsPartnerInquiryStats {
+  inquiryCount: Int!
+  inquiryResponseTime: Int
+  partnerId: String!
+  period: AnalyticsQueryPeriodEnum!
+}
+
 # Sales stats of a partner
 type AnalyticsPartnerSalesStats {
   orderCount: Int!
@@ -145,6 +153,9 @@ type AnalyticsPartnerStats {
   artworksPublished(
     period: AnalyticsQueryPeriodEnum!
   ): AnalyticsArtworksPublishedStats
+
+  # Inquiry stats
+  inquiry(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerInquiryStats
 
   # Different types of partner pageviews
   pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
