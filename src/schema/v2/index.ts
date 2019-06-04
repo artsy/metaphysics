@@ -25,7 +25,7 @@ import {
   GravityIDFields,
   InternalIDFields,
   NullableIDField,
-} from "./object_identification"
+} from "../object_identification"
 
 // TODO: These types should have their id fields renamed to internalID upstream,
 //       but that requires us to do some transformation work _back_ on the v1
