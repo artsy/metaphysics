@@ -103,6 +103,21 @@ type AnalyticsPageviewStats {
   uniqueVisitors: Int
 }
 
+# Audience stats of a partner
+type AnalyticsPartnerAudienceStats {
+  partnerId: String!
+  period: AnalyticsQueryPeriodEnum!
+  uniqueVisitors: Int!
+}
+
+# Inquiry stats of a partner
+type AnalyticsPartnerInquiryStats {
+  inquiryCount: Int!
+  inquiryResponseTime: Int
+  partnerId: String!
+  period: AnalyticsQueryPeriodEnum!
+}
+
 # Sales stats of a partner
 type AnalyticsPartnerSalesStats {
   orderCount: Int!
@@ -146,6 +161,12 @@ type AnalyticsPartnerStats {
     period: AnalyticsQueryPeriodEnum!
   ): AnalyticsArtworksPublishedStats
 
+  # Audience stats
+  audience(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerAudienceStats
+
+  # Inquiry stats
+  inquiry(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerInquiryStats
+
   # Different types of partner pageviews
   pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
   partnerId: String!
@@ -171,6 +192,7 @@ type AnalyticsPartnerStats {
 
   # Number of unique visitors
   uniqueVisitors(period: AnalyticsQueryPeriodEnum!): Int
+    @deprecated(reason: "Use audience() { uniqueVisitors } instead")
 }
 
 # Partner Time Series Stats
