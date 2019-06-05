@@ -106,7 +106,7 @@ describe("SaleArtwork type", () => {
   })
 
   describe("artwork resolver", () => {
-    it("does not include edition sets when not asking for shallow version", async () => {
+    it("does not include edition sets when asking for shallow version", async () => {
       const query = `
         {
           sale_artwork(id: "54c7ed2a7261692bfa910200") {
@@ -128,7 +128,7 @@ describe("SaleArtwork type", () => {
         },
       })
     })
-    it("does includes edition sets when asking for shallow version", async () => {
+    it("includes edition sets when asking for non-shallow version", async () => {
       const query = `
         {
           sale_artwork(id: "54c7ed2a7261692bfa910200") {
