@@ -113,7 +113,9 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
         }
       ) => {
         const relayOptions = convertConnectionArgsToGravityArgs(args)
-        if (!!gravityOptions.page) relayOptions.page = gravityOptions.page
+        if (!!gravityOptions.page && !isNaN(gravityOptions.page)) {
+          relayOptions.page = gravityOptions.page
+        }
 
         const { page, size } = relayOptions
         const {
