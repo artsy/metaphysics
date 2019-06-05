@@ -96,7 +96,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ artwork }, { shallow }, { artworkLoader }) => {
           if (!artwork) return null
           if (shallow) return artwork
-          return artworkLoader(artwork.id).catch(() => null)
+          return artworkLoader(artwork.id).catch(() => artwork)
         },
       },
       bidder_positions_count: {
