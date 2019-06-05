@@ -9457,7 +9457,10 @@ type SaleArtwork {
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
   cached: Int
-  artwork: Artwork
+  artwork(
+    # Use whatever is in the original response instead of making a request
+    shallow: Boolean = true
+  ): Artwork
   bidder_positions_count: Int
     @deprecated(reason: "Favor `counts.bidder_positions`")
   bid_increments: [Float] @deprecated(reason: "Favor `increments.cents`")

@@ -83,7 +83,22 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...GravityIDFields,
       cached,
-      artwork: { type: Artwork.type, resolve: ({ artwork }) => artwork },
+      artwork: {
+        type: Artwork.type,
+        args: {
+          shallow: {
+            type: GraphQLBoolean,
+            description:
+              "Use whatever is in the original response instead of making a request",
+            defaultValue: true,
+          },
+        },
+        resolve: ({ artwork }, { shallow }, { artworkLoader }) => {
+          if (!artwork) return null
+          if (shallow) return artwork
+          return artworkLoader(artwork.id).catch(() => null)
+        },
+      },
       bidder_positions_count: {
         type: GraphQLInt,
         deprecationReason: "Favor `counts.bidder_positions`",

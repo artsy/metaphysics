@@ -9,6 +9,10 @@ describe("SaleArtwork type", () => {
       amount_cents: 325000,
       display_amount_dollars: "€3,250",
     },
+    artwork: {
+      id: "artwork-1",
+      title: "Untitled1",
+    },
     bidder_positions_count: 7,
     highest_bid_amount_cents: 325000,
     display_highest_bid_amount_dollars: "€3,250",
@@ -25,6 +29,16 @@ describe("SaleArtwork type", () => {
     symbol: "€",
   }
 
+  const artwork = {
+    id: "artwork-1",
+    title: "Untitled 1",
+    edition_sets: [
+      {
+        id: "ed-1",
+      },
+    ],
+  }
+
   const execute = async (
     query,
     gravityResponse = saleArtwork,
@@ -32,6 +46,7 @@ describe("SaleArtwork type", () => {
   ) => {
     return await runQuery(query, {
       saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
+      artworkLoader: () => Promise.resolve(artwork),
       ...context,
     })
   }
@@ -87,6 +102,57 @@ describe("SaleArtwork type", () => {
           display: "€3,250",
         },
       },
+    })
+  })
+
+  describe("artwork resolver", () => {
+    it("does not include edition sets when not asking for shallow version", async () => {
+      const query = `
+        {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            artwork{
+              id
+              edition_sets{
+                id
+              }
+            }
+          }
+        }
+      `
+      expect(await execute(query)).toEqual({
+        sale_artwork: {
+          artwork: {
+            id: "artwork-1",
+            edition_sets: null,
+          },
+        },
+      })
+    })
+    it("does includes edition sets when asking for shallow version", async () => {
+      const query = `
+        {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            artwork(shallow: false){
+              id
+              edition_sets{
+                id
+              }
+            }
+          }
+        }
+      `
+      expect(await execute(query)).toEqual({
+        sale_artwork: {
+          artwork: {
+            id: "artwork-1",
+            edition_sets: [
+              {
+                id: "ed-1",
+              },
+            ],
+          },
+        },
+      })
     })
   })
 
