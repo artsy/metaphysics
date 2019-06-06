@@ -79,7 +79,7 @@
     "i": "0.3.6",
     "invariant": "2.2.4",
     "ip": "1.1.5",
-    "jwt-simple": "0.5.1",
+    "jwt-simple": "0.5.3",
     "lodash": "4.17.11",
     "longjohn": "0.2.12",
     "marked": "0.3.18",

@@ -5765,10 +5765,10 @@ jws@^3.2.1:
     jwa "^1.2.0"
     safe-buffer "^5.0.1"
 
-jwt-simple@0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/jwt-simple/-/jwt-simple-0.5.1.tgz#79ea01891b61de6b68e13e67c0b4b5bda937b294"
-  integrity sha1-eeoBiRth3mto4T5nwLS1vak3spQ=
+jwt-simple@0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/jwt-simple/-/jwt-simple-0.5.3.tgz#f318b066544761486151a9ea816cae1d49055f62"
+  integrity sha512-mGXp4PTJalEBh5WGe/Ow0P6g+Q4tM/9qAysX7YxCdB/xahDoBKrASZKf7hXT/qTREhOTPJvi4WWpabT2WXh1BQ==
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
