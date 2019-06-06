@@ -53,6 +53,7 @@ const KnownNonGravityTypesWithNullableIDFields = [
 class IdRenamer implements Transform {
   private newSchema?: GraphQLSchema
 
+  // eslint-disable-next-line no-useless-constructor
   constructor(
     private allowedGravityTypesWithNullableIDField: string[],
     private allowedNonGravityTypesWithNullableIDField: string[],
@@ -242,7 +243,7 @@ class IdRenamer implements Transform {
       visitWithTypeInfo(typeInfo, {
         [Kind.FIELD]: {
           enter: node => {
-            // This is the only field you can select on a unio type, which is
+            // This is the only field you can select on a union type, which is
             // why union types don’t have a `getFields()` method. But seeing as
             // we don’t care about renaming that field anyways, might as well
             // just short-cut it here.
