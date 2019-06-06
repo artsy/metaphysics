@@ -31,16 +31,9 @@ import {
 //       but that requires us to do some transformation work _back_ on the v1
 //       schema for it to remain backwards compatible, so we can do that at a
 //       later time.
-const KAWSTypes = ["MarketingCollection", "MarketingCollectionQuery"]
-const ExchangeTypes = [
-  "CommerceOrder",
-  "CommercePartner",
-  "CommerceUser",
-  "CommerceLineItem",
-  "CommerceFulfillment",
-  "CommerceBuyOrder",
-  "CommerceOffer",
-  "CommerceOfferOrder",
+const StitchedTypePrefixes = [
+  "Marketing", // KAWS
+  "Commerce", // Exchange
 ]
 
 // FIXME: ID fields shouldn't be nullable, so figure out what the deal is with
@@ -56,13 +49,22 @@ const KnownNonGravityTypesWithNullableIDFields = [
   "Conversation",
   "ConsignmentSubmission",
 ]
-const KnownTypesWithNullableIDFields = [
-  ...KnownGravityTypesWithNullableIDFields,
-  ...KnownNonGravityTypesWithNullableIDFields,
-]
 
 class IdRenamer implements Transform {
   private newSchema?: GraphQLSchema
+
+  constructor(
+    private allowedGravityTypesWithNullableIDField: string[],
+    private allowedNonGravityTypesWithNullableIDField: string[],
+    private stitchedTypePrefixes: string[]
+  ) {}
+
+  get allowedTypesWithNullableIDField() {
+    return [
+      ...this.allowedGravityTypesWithNullableIDField,
+      ...this.allowedNonGravityTypesWithNullableIDField,
+    ]
+  }
 
   transformSchema(schema: GraphQLSchema): GraphQLSchema {
     // Keep a reference to all new interface types, as we'll need them to define
@@ -83,7 +85,7 @@ class IdRenamer implements Transform {
             if (type.name !== "SaleArtworkHighestBid") {
               if (
                 isNullableType(field.type) &&
-                !KnownTypesWithNullableIDFields.includes(type.name)
+                !this.allowedTypesWithNullableIDField.includes(type.name)
               ) {
                 throw new Error(
                   `Do not add new nullable id fields (${type.name})`
@@ -92,7 +94,7 @@ class IdRenamer implements Transform {
                 if (
                   field.description === GravityIDFields.id.description ||
                   (field.description === NullableIDField.id.description &&
-                    KnownGravityTypesWithNullableIDFields.includes(
+                    this.allowedGravityTypesWithNullableIDField.includes(
                       type.name
                     )) ||
                   type.name === "DoNotUseThisPartner"
@@ -105,11 +107,12 @@ class IdRenamer implements Transform {
                 } else if (
                   field.description === InternalIDFields.id.description ||
                   (field.description === NullableIDField.id.description &&
-                    KnownNonGravityTypesWithNullableIDFields.includes(
+                    this.allowedNonGravityTypesWithNullableIDField.includes(
                       type.name
                     )) ||
-                  KAWSTypes.includes(type.name) ||
-                  ExchangeTypes.includes(type.name)
+                  this.stitchedTypePrefixes.some(prefix =>
+                    type.name.startsWith(prefix)
+                  )
                 ) {
                   newFields["internalID"] = {
                     ...fieldToFieldConfig(field, resolveType, true),
@@ -163,7 +166,9 @@ class IdRenamer implements Transform {
             if (
               field.description === GravityIDFields.id.description ||
               (field.description === NullableIDField.id.description &&
-                KnownGravityTypesWithNullableIDFields.includes(type.name)) ||
+                this.allowedGravityTypesWithNullableIDField.includes(
+                  type.name
+                )) ||
               type.name === "DoNotUseThisPartner"
             ) {
               newFields["gravityID"] = {
@@ -174,9 +179,12 @@ class IdRenamer implements Transform {
             } else if (
               field.description === InternalIDFields.id.description ||
               (field.description === NullableIDField.id.description &&
-                KnownNonGravityTypesWithNullableIDFields.includes(type.name)) ||
-              KAWSTypes.includes(type.name) ||
-              ExchangeTypes.includes(type.name)
+                this.allowedNonGravityTypesWithNullableIDField.includes(
+                  type.name
+                )) ||
+              this.stitchedTypePrefixes.some(prefix =>
+                type.name.startsWith(prefix)
+              )
             ) {
               newFields["internalID"] = {
                 ...fieldToFieldConfig(field, resolveType, true),
@@ -305,6 +313,17 @@ function getTypeWithSelectableFields(
     : type
 }
 
-export const transformToV2 = (schema: GraphQLSchema): GraphQLSchema => {
-  return transformSchema(schema, [new IdRenamer()])
+export const transformToV2 = (
+  schema: GraphQLSchema,
+  allowedGravityTypesWithNullableIDField: string[] = KnownGravityTypesWithNullableIDFields,
+  allowedNonGravityTypesWithNullableIDField: string[] = KnownNonGravityTypesWithNullableIDFields,
+  stitchedTypePrefixes: string[] = StitchedTypePrefixes
+): GraphQLSchema => {
+  return transformSchema(schema, [
+    new IdRenamer(
+      allowedGravityTypesWithNullableIDField,
+      allowedNonGravityTypesWithNullableIDField,
+      stitchedTypePrefixes
+    ),
+  ])
 }
