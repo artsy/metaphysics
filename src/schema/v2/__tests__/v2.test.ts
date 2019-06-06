@@ -1,7 +1,12 @@
 import { transformToV2 } from "../index"
-import { GravityIDFields, InternalIDFields } from "schema/object_identification"
+import {
+  GravityIDFields,
+  InternalIDFields,
+  IDFields,
+} from "schema/object_identification"
 import { GraphQLSchema, GraphQLObjectType, graphql } from "graphql"
 import gql from "lib/gql"
+import { toGlobalId } from "graphql-relay"
 
 const schema = transformToV2(
   new GraphQLSchema({
@@ -21,6 +26,14 @@ const schema = transformToV2(
             name: "NonGravityType",
             fields: {
               ...InternalIDFields,
+            },
+          }),
+        },
+        fieldWithGlobalID: {
+          type: new GraphQLObjectType({
+            name: "AnyType",
+            fields: {
+              ...IDFields,
             },
           }),
         },
@@ -92,5 +105,27 @@ describe(transformToV2, () => {
       })
       expect(data.fieldWithNonGravityResolver.internalID).toEqual("db id")
     })
+  })
+
+  it("renames __id to id", async () => {
+    const rootValue = {
+      fieldWithGlobalID: {
+        id: "global id",
+      },
+    }
+    const { data } = await graphql({
+      schema,
+      rootValue,
+      source: gql`
+        query {
+          fieldWithGlobalID {
+            id
+          }
+        }
+      `,
+    })
+    expect(data.fieldWithGlobalID.id).toEqual(
+      toGlobalId("AnyType", "global id")
+    )
   })
 })
