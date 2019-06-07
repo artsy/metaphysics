@@ -71,6 +71,15 @@ type PartnerAudienceStats {
 }
 
 """
+Inquiry count time series data of a partner
+"""
+type PartnerInquiryCountTimeSeriesStats {
+  count: Int
+  endTime: DateTime
+  startTime: DateTime
+}
+
+"""
 Inquiry stats of a partner
 """
 type PartnerInquiryStats {
@@ -78,6 +87,11 @@ type PartnerInquiryStats {
   inquiryResponseTime: Int
   partnerId: String!
   period: QueryPeriodEnum!
+
+  """
+  Partner inquiry count time series
+  """
+  timeSeries(cumulative: Boolean = false): [PartnerInquiryCountTimeSeriesStats!]
 }
 
 """
