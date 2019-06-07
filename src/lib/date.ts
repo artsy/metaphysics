@@ -158,7 +158,7 @@ export function dateTimeRange(
 export function dateRange(startAt, endAt, timezone) {
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
-  const thisMoment = moment()
+  const thisMoment = moment.tz(moment(), timezone)
   let startFormat = "MMM D"
   let endFormat = "D"
   let singleDateFormat = "MMM D"
