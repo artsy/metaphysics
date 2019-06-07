@@ -11,7 +11,7 @@ import {
   isLeafType,
   isNullableType,
 } from "graphql"
-import { transformSchema, Transform, Request } from "graphql-tools"
+import { transformSchema, Transform, Request, FilterTypes } from "graphql-tools"
 import {
   visitSchema,
   VisitSchemaKind,
@@ -26,6 +26,9 @@ import {
   InternalIDFields,
   NullableIDField,
 } from "../object_identification"
+
+// These should not show up in v2 at all.
+const FilterTypeNames = ["DoNotUseThisPartner"]
 
 // TODO: These types should have their id fields renamed to internalID upstream,
 //       but that requires us to do some transformation work _back_ on the v1
@@ -50,7 +53,7 @@ const KnownNonGravityTypesWithNullableIDFields = [
   "ConsignmentSubmission",
 ]
 
-class IdRenamer implements Transform {
+class IDRenamer implements Transform {
   private newSchema?: GraphQLSchema
 
   // eslint-disable-next-line no-useless-constructor
@@ -97,8 +100,7 @@ class IdRenamer implements Transform {
                   (field.description === NullableIDField.id.description &&
                     this.allowedGravityTypesWithNullableIDField.includes(
                       type.name
-                    )) ||
-                  type.name === "DoNotUseThisPartner"
+                    ))
                 ) {
                   newFields["gravityID"] = {
                     ...fieldToFieldConfig(field, resolveType, true),
@@ -167,10 +169,7 @@ class IdRenamer implements Transform {
             if (
               field.description === GravityIDFields.id.description ||
               (field.description === NullableIDField.id.description &&
-                this.allowedGravityTypesWithNullableIDField.includes(
-                  type.name
-                )) ||
-              type.name === "DoNotUseThisPartner"
+                this.allowedGravityTypesWithNullableIDField.includes(type.name))
             ) {
               newFields["gravityID"] = {
                 ...fieldToFieldConfig(field, resolveType, true),
@@ -314,17 +313,30 @@ function getTypeWithSelectableFields(
     : type
 }
 
+export interface TransformToV2Options {
+  stitchedTypePrefixes: string[]
+  allowedGravityTypesWithNullableIDField: string[]
+  allowedNonGravityTypesWithNullableIDField: string[]
+  filterTypes: string[]
+}
+
 export const transformToV2 = (
   schema: GraphQLSchema,
-  allowedGravityTypesWithNullableIDField: string[] = KnownGravityTypesWithNullableIDFields,
-  allowedNonGravityTypesWithNullableIDField: string[] = KnownNonGravityTypesWithNullableIDFields,
-  stitchedTypePrefixes: string[] = StitchedTypePrefixes
+  options: Partial<TransformToV2Options>
 ): GraphQLSchema => {
+  const opt = {
+    allowedGravityTypesWithNullableIDField: KnownGravityTypesWithNullableIDFields,
+    allowedNonGravityTypesWithNullableIDField: KnownNonGravityTypesWithNullableIDFields,
+    stitchedTypePrefixes: StitchedTypePrefixes,
+    filterTypes: FilterTypeNames,
+    ...options,
+  }
   return transformSchema(schema, [
-    new IdRenamer(
-      allowedGravityTypesWithNullableIDField,
-      allowedNonGravityTypesWithNullableIDField,
-      stitchedTypePrefixes
+    new FilterTypes(type => !opt.filterTypes.includes(type.name)),
+    new IDRenamer(
+      opt.allowedGravityTypesWithNullableIDField,
+      opt.allowedNonGravityTypesWithNullableIDField,
+      opt.stitchedTypePrefixes
     ),
   ])
 }
