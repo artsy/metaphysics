@@ -44,8 +44,9 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     extend type Partner {
       analytics: AnalyticsPartnerStats
     }
-    extend type AnalyticsTopArtworks {
+    extend type AnalyticsRankedStats {
       artwork: Artwork
+      show: Show
     }
     extend type AnalyticsPartnerSalesStats {
       total(
@@ -251,17 +252,37 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         },
       },
     },
-    AnalyticsTopArtworks: {
+    AnalyticsRankedStats: {
       artwork: {
-        fragment: `fragment AnalyticsTopArtworksArtwork on AnalyticsTopArtworks { artworkId }`,
+        fragment: `fragment AnalyticsRankedStatsArtwork on AnalyticsRankedStats { objectId, objectType }`,
         resolve: async (parent, _args, context, info) => {
-          const id = parent.artworkId
+          const objectId = parent.objectId
+          const objectType = parent.objectType
           return await info.mergeInfo.delegateToSchema({
             schema: localSchema,
             operation: "query",
-            fieldName: "artwork",
+            fieldName: objectType,
             args: {
-              id,
+              id: objectId,
+            },
+            context,
+            info,
+            transforms: vortexSchema.transforms,
+          })
+        },
+      },
+
+      show: {
+        fragment: `fragment AnalyticsRankedStatsShow on AnalyticsRankedStats { objectId, objectType }`,
+        resolve: async (parent, _args, context, info) => {
+          const objectId = parent.objectId
+          const objectType = parent.objectType
+          return await info.mergeInfo.delegateToSchema({
+            schema: localSchema,
+            operation: "query",
+            fieldName: objectType,
+            args: {
+              id: objectId,
             },
             context,
             info,
