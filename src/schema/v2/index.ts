@@ -279,7 +279,7 @@ export interface TransformToV2Options {
 
 export const transformToV2 = (
   schema: GraphQLSchema,
-  options: Partial<TransformToV2Options>
+  options: Partial<TransformToV2Options> = {}
 ): GraphQLSchema => {
   const opt = {
     allowedGravityTypesWithNullableIDField: KnownGravityTypesWithNullableIDFields,
