@@ -67,109 +67,31 @@ class IDTransforms implements Transform {
     private filterIDFieldFromTypes: string[]
   ) {}
 
-  get allowedTypesWithNullableIDField() {
+  private get allowedTypesWithNullableIDField() {
     return [
       ...this.allowedGravityTypesWithNullableIDField,
       ...this.allowedNonGravityTypesWithNullableIDField,
     ]
   }
 
-  transformSchema(schema: GraphQLSchema): GraphQLSchema {
-    // Keep a reference to all new interface types, as we'll need them to define
-    // them on the new object types.
-    const newInterfaces: { [name: string]: GraphQLInterfaceType } = {}
+  private transformFields(
+    type: GraphQLObjectType<any, any> | GraphQLInterfaceType
+  ) {
+    const fields = type.getFields()
+    const newFields = {}
 
-    const newSchema = visitSchema(schema, {
-      [VisitSchemaKind.OBJECT_TYPE]: ((type: GraphQLObjectType<any, any>) => {
-        const fields = type.getFields()
-        const newFields = {}
+    const resolveType = createResolveType((_name, type) => type)
 
-        const resolveType = createResolveType((_name, type) => type)
-
-        Object.keys(fields).forEach(fieldName => {
-          const field = fields[fieldName]
-          if (field.name === "id") {
-            if (!this.filterIDFieldFromTypes.includes(type.name)) {
-              if (
-                isNullableType(field.type) &&
-                !this.allowedTypesWithNullableIDField.includes(type.name)
-              ) {
-                throw new Error(
-                  `Do not add new nullable id fields (${type.name})`
-                )
-              } else {
-                if (
-                  field.description === GravityIDFields.id.description ||
-                  (field.description === NullableIDField.id.description &&
-                    this.allowedGravityTypesWithNullableIDField.includes(
-                      type.name
-                    ))
-                ) {
-                  newFields["gravityID"] = {
-                    ...fieldToFieldConfig(field, resolveType, true),
-                    resolve: ({ id }) => id,
-                    name: "gravityID",
-                  }
-                } else if (
-                  field.description === InternalIDFields.id.description ||
-                  (field.description === NullableIDField.id.description &&
-                    this.allowedNonGravityTypesWithNullableIDField.includes(
-                      type.name
-                    )) ||
-                  this.stitchedTypePrefixes.some(prefix =>
-                    type.name.startsWith(prefix)
-                  )
-                ) {
-                  newFields["internalID"] = {
-                    ...fieldToFieldConfig(field, resolveType, true),
-                    resolve: ({ id }) => id,
-                    name: "internalID",
-                  }
-                } else {
-                  throw new Error(`Do not add new id fields (${type.name})`)
-                }
-              }
-            }
-          } else if (field.name === "_id") {
-            newFields["internalID"] = {
-              ...fieldToFieldConfig(field, resolveType, true),
-              resolve: ({ _id }) => _id,
-              name: "internalID",
-            }
-          } else if (field.name === "__id") {
-            newFields["id"] = {
-              ...fieldToFieldConfig(field, resolveType, true),
-              resolve: ({ __id }) => __id,
-              name: "id",
-            }
+    Object.keys(fields).forEach(fieldName => {
+      const field = fields[fieldName]
+      if (field.name === "id") {
+        if (!this.filterIDFieldFromTypes.includes(type.name)) {
+          if (
+            isNullableType(field.type) &&
+            !this.allowedTypesWithNullableIDField.includes(type.name)
+          ) {
+            throw new Error(`Do not add new nullable id fields (${type.name})`)
           } else {
-            newFields[fieldName] = fieldToFieldConfig(field, resolveType, true)
-          }
-        })
-
-        return new GraphQLObjectType({
-          name: type.name,
-          description: type.description,
-          astNode: type.astNode,
-          fields: newFields,
-          extensionASTNodes: type.extensionASTNodes,
-          isTypeOf: type.isTypeOf,
-          interfaces: type
-            .getInterfaces()
-            .map(iface => newInterfaces[iface.name]),
-        })
-      }) as TypeVisitor,
-
-      [VisitSchemaKind.INTERFACE_TYPE]: ((type: GraphQLInterfaceType) => {
-        const fields = type.getFields()
-        const newFields = {}
-
-        const resolveType = createResolveType((_name, type) => type)
-
-        Object.keys(fields).forEach(fieldName => {
-          const field = fields[fieldName]
-          if (field.name === "id") {
-            // TODO Some nullable conditions from the object treatment is missing here
             if (
               field.description === GravityIDFields.id.description ||
               (field.description === NullableIDField.id.description &&
@@ -177,7 +99,7 @@ class IDTransforms implements Transform {
             ) {
               newFields["gravityID"] = {
                 ...fieldToFieldConfig(field, resolveType, true),
-                // resolve: ({ id }) => id,
+                resolve: ({ id }) => id,
                 name: "gravityID",
               }
             } else if (
@@ -192,36 +114,67 @@ class IDTransforms implements Transform {
             ) {
               newFields["internalID"] = {
                 ...fieldToFieldConfig(field, resolveType, true),
-                // resolve: ({ id }) => id,
+                resolve: ({ id }) => id,
                 name: "internalID",
               }
             } else {
               throw new Error(`Do not add new id fields (${type.name})`)
             }
-          } else if (field.name === "_id") {
-            newFields["internalID"] = {
-              ...fieldToFieldConfig(field, resolveType, true),
-              // resolve: ({ _id }) => _id,
-              name: "internalID",
-            }
-          } else if (field.name === "__id") {
-            newFields["id"] = {
-              ...fieldToFieldConfig(field, resolveType, true),
-              // resolve: source => {
-              //   return source.__id
-              // },
-              name: "id",
-            }
-          } else {
-            newFields[fieldName] = fieldToFieldConfig(field, resolveType, true)
           }
-        })
+        }
+      } else if (field.name === "_id") {
+        newFields["internalID"] = {
+          ...fieldToFieldConfig(field, resolveType, true),
+          resolve: ({ _id }) => _id,
+          name: "internalID",
+        }
+      } else if (field.name === "__id") {
+        newFields["id"] = {
+          ...fieldToFieldConfig(field, resolveType, true),
+          resolve: ({ __id }) => __id,
+          name: "id",
+        }
+      } else {
+        newFields[fieldName] = fieldToFieldConfig(field, resolveType, true)
+      }
+    })
 
+    return newFields
+  }
+
+  /**
+   * Rename ID fields in object and interface types.
+   */
+  public transformSchema(schema: GraphQLSchema): GraphQLSchema {
+    if (this.newSchema) {
+      throw new Error("Did not expect to be ran twice!")
+    }
+
+    // Keep a reference to all new interface types, as we'll need them to define
+    // them on the new object types.
+    const newInterfaces: { [name: string]: GraphQLInterfaceType } = {}
+
+    const newSchema = visitSchema(schema, {
+      [VisitSchemaKind.OBJECT_TYPE]: ((type: GraphQLObjectType<any, any>) => {
+        return new GraphQLObjectType({
+          name: type.name,
+          description: type.description,
+          astNode: type.astNode,
+          fields: this.transformFields(type),
+          extensionASTNodes: type.extensionASTNodes,
+          isTypeOf: type.isTypeOf,
+          interfaces: type
+            .getInterfaces()
+            .map(iface => newInterfaces[iface.name]),
+        })
+      }) as TypeVisitor,
+
+      [VisitSchemaKind.INTERFACE_TYPE]: ((type: GraphQLInterfaceType) => {
         const newInterface = new GraphQLInterfaceType({
           name: type.name,
           description: type.description,
           astNode: type.astNode,
-          fields: newFields,
+          fields: this.transformFields(type),
           resolveType: type.resolveType,
           extensionASTNodes: type.extensionASTNodes,
         })
@@ -230,14 +183,13 @@ class IDTransforms implements Transform {
       }) as TypeVisitor,
     })
 
-    if (this.newSchema) {
-      throw new Error("UNEXPECTED!")
-    }
     this.newSchema = newSchema
-
     return newSchema
   }
 
+  /**
+   * Map source data to renamed ID fields.
+   */
   public transformRequest(originalRequest: Request): Request {
     const typeInfo = new TypeInfo(this.newSchema!)
 
