@@ -10,6 +10,7 @@ import {
   visitWithTypeInfo,
   isLeafType,
   isNullableType,
+  GraphQLFieldConfigMap,
 } from "graphql"
 import { Transform, Request } from "graphql-tools"
 import {
@@ -27,7 +28,7 @@ import {
   NullableIDField,
 } from "../object_identification"
 
-export class IDTransforms implements Transform {
+export class RenameIDFields implements Transform {
   private newSchema?: GraphQLSchema
 
   // eslint-disable-next-line no-useless-constructor
@@ -49,7 +50,7 @@ export class IDTransforms implements Transform {
     type: GraphQLObjectType<any, any> | GraphQLInterfaceType
   ) {
     const fields = type.getFields()
-    const newFields = {}
+    const newFields: GraphQLFieldConfigMap<any, any> = {}
 
     const resolveType = createResolveType((_name, type) => type)
 
@@ -71,7 +72,6 @@ export class IDTransforms implements Transform {
               newFields["gravityID"] = {
                 ...fieldToFieldConfig(field, resolveType, true),
                 resolve: ({ id }) => id,
-                name: "gravityID",
               }
             } else if (
               field.description === InternalIDFields.id.description ||
@@ -86,7 +86,6 @@ export class IDTransforms implements Transform {
               newFields["internalID"] = {
                 ...fieldToFieldConfig(field, resolveType, true),
                 resolve: ({ id }) => id,
-                name: "internalID",
               }
             } else {
               throw new Error(`Do not add new id fields (${type.name})`)
@@ -97,13 +96,11 @@ export class IDTransforms implements Transform {
         newFields["internalID"] = {
           ...fieldToFieldConfig(field, resolveType, true),
           resolve: ({ _id }) => _id,
-          name: "internalID",
         }
       } else if (field.name === "__id") {
         newFields["id"] = {
           ...fieldToFieldConfig(field, resolveType, true),
           resolve: ({ __id }) => __id,
-          name: "id",
         }
       } else {
         newFields[fieldName] = fieldToFieldConfig(field, resolveType, true)

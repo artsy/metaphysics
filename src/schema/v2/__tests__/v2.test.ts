@@ -4,6 +4,7 @@ import {
   InternalIDFields,
   IDFields,
   NullableIDField,
+  GlobalIDField,
 } from "schema/object_identification"
 import {
   GraphQLSchema,
@@ -13,9 +14,14 @@ import {
   GraphQLNonNull,
   GraphQLID,
   GraphQLInterfaceType,
+  GraphQLArgs,
 } from "graphql"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
+import {
+  ExecutionResultDataDefault,
+  ExecutionResult,
+} from "graphql/execution/execute"
 
 function createSchema({
   fields,
@@ -34,6 +40,16 @@ function createSchema({
     }),
     options
   )
+}
+
+async function runQuery<TData = ExecutionResultDataDefault>(
+  args: GraphQLArgs
+): Promise<ExecutionResult<TData>> {
+  const res = await graphql<TData>(args)
+  if (res.errors) {
+    throw new Error(res.errors.map(e => e.message).join("\n"))
+  }
+  return res
 }
 
 describe(transformToV2, () => {
@@ -73,14 +89,63 @@ describe(transformToV2, () => {
     })
   })
 
-  describe("concerning ID field renaming", () => {
-    it("renames __id to id", async () => {
+  describe("concerning ID renaming", () => {
+    it("renames __id arg to id", async () => {
+      const rootValue = {
+        node: {
+          id: "global id",
+        },
+      }
+      const iface = new GraphQLInterfaceType({
+        name: "Node",
+        fields: {
+          __id: GlobalIDField,
+        },
+        resolveType: () => "AnyType",
+      })
+      const AnyType = new GraphQLObjectType({
+        name: "AnyType",
+        fields: {
+          __id: GlobalIDField,
+        },
+        interfaces: () => [iface],
+      })
+      const { data } = await runQuery({
+        schema: createSchema({
+          fields: {
+            node: {
+              type: iface,
+              args: {
+                __id: {
+                  type: new GraphQLNonNull(GraphQLID),
+                  description: "The ID of the object",
+                },
+              },
+            },
+            thisIsJustSoAnyTypeExists: {
+              type: AnyType,
+            },
+          },
+        }),
+        rootValue,
+        source: gql`
+          query {
+            node(id: "global id") {
+              id
+            }
+          }
+        `,
+      })
+      expect(data.node.id).toEqual(toGlobalId("AnyType", "global id"))
+    })
+
+    it("renames __id field to id", async () => {
       const rootValue = {
         fieldWithGlobalID: {
           id: "global id",
         },
       }
-      const { data } = await graphql({
+      const { data } = await runQuery({
         schema: createSchema({
           fields: {
             fieldWithGlobalID: {
@@ -138,13 +203,13 @@ describe(transformToV2, () => {
     })
 
     describe("on Gravity backed types", () => {
-      it("renames id to gravityID", async () => {
+      it("renames id field to gravityID", async () => {
         const rootValue = {
           fieldWithGravityResolver: {
             id: "slug or id",
           },
         }
-        const { data } = await graphql({
+        const { data } = await runQuery({
           schema: createSchema({
             fields: {
               fieldWithGravityResolver: {
@@ -180,13 +245,13 @@ describe(transformToV2, () => {
         expect(data.fieldWithGravityResolver.gravityID).toEqual("slug or id")
       })
 
-      it("renames _id to internalID", async () => {
+      it("renames _id field to internalID", async () => {
         const rootValue = {
           fieldWithGravityResolver: {
             _id: "mongo id",
           },
         }
-        const { data } = await graphql({
+        const { data } = await runQuery({
           schema: createSchema({
             fields: {
               fieldWithGravityResolver: {
@@ -253,13 +318,13 @@ describe(transformToV2, () => {
     })
 
     describe("on types backed by data from other places than Gravity", () => {
-      it("renames id to internalID", async () => {
+      it("renames id field to internalID", async () => {
         const rootValue = {
           fieldWithNonGravityResolver: {
             id: "db id",
           },
         }
-        const { data } = await graphql({
+        const { data } = await runQuery({
           schema: createSchema({
             fields: {
               fieldWithNonGravityResolver: {
@@ -295,13 +360,13 @@ describe(transformToV2, () => {
         expect(data.fieldWithNonGravityResolver.internalID).toEqual("db id")
       })
 
-      it("renames id to internalID on stitched types that match a prefix", async () => {
+      it("renames id field to internalID on stitched types that match a prefix", async () => {
         const rootValue = {
           fieldWithStitchedResolver: {
             id: "db id",
           },
         }
-        const { data } = await graphql({
+        const { data } = await runQuery({
           schema: createSchema({
             stitchedTypePrefixes: ["Stitched"],
             fields: {
@@ -371,13 +436,13 @@ describe(transformToV2, () => {
         }).not.toThrow()
       })
 
-      it("renames nullable id to internalID", async () => {
+      it("renames nullable id field to internalID", async () => {
         const rootValue = {
           fieldWithNonGravityResolver: {
             id: null,
           },
         }
-        const { data } = await graphql({
+        const { data } = await runQuery({
           schema: createSchema({
             allowedNonGravityTypesWithNullableIDField: [
               "NonGravityType",
