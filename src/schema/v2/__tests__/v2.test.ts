@@ -51,6 +51,25 @@ describe(transformToV2, () => {
       })
       expect(schema.getType("GetRidOfMe")).toBeUndefined()
     })
+
+    it("filters out ID fields", () => {
+      const schema = createSchema({
+        fields: {
+          foo: {
+            type: new GraphQLObjectType({
+              name: "GetRidOfID",
+              fields: {
+                ...InternalIDFields,
+              },
+            }),
+          },
+        },
+        filterIDFieldFromTypes: ["GetRidOfID"],
+      })
+      expect(
+        schema.getType("GetRidOfID").getFields().internalID
+      ).toBeUndefined()
+    })
   })
 
   describe("concerning ID field renaming", () => {

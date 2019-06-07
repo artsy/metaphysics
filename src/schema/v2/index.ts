@@ -30,6 +30,9 @@ import {
 // These should not show up in v2 at all.
 const FilterTypeNames = ["DoNotUseThisPartner"]
 
+// Omit this id field entirely from the v2 schema, as it's a no-op
+const FilterIDFieldFromTypeNames = ["SaleArtworkHighestBid"]
+
 // TODO: These types should have their id fields renamed to internalID upstream,
 //       but that requires us to do some transformation work _back_ on the v1
 //       schema for it to remain backwards compatible, so we can do that at a
@@ -53,14 +56,15 @@ const KnownNonGravityTypesWithNullableIDFields = [
   "ConsignmentSubmission",
 ]
 
-class IDRenamer implements Transform {
+class IDTransforms implements Transform {
   private newSchema?: GraphQLSchema
 
   // eslint-disable-next-line no-useless-constructor
   constructor(
     private allowedGravityTypesWithNullableIDField: string[],
     private allowedNonGravityTypesWithNullableIDField: string[],
-    private stitchedTypePrefixes: string[]
+    private stitchedTypePrefixes: string[],
+    private filterIDFieldFromTypes: string[]
   ) {}
 
   get allowedTypesWithNullableIDField() {
@@ -85,8 +89,7 @@ class IDRenamer implements Transform {
         Object.keys(fields).forEach(fieldName => {
           const field = fields[fieldName]
           if (field.name === "id") {
-            // Omit this id field entirely from the v2 schema, as it's a no-op
-            if (type.name !== "SaleArtworkHighestBid") {
+            if (!this.filterIDFieldFromTypes.includes(type.name)) {
               if (
                 isNullableType(field.type) &&
                 !this.allowedTypesWithNullableIDField.includes(type.name)
@@ -166,6 +169,7 @@ class IDRenamer implements Transform {
         Object.keys(fields).forEach(fieldName => {
           const field = fields[fieldName]
           if (field.name === "id") {
+            // TODO Some stuff from the object treatment is missing here
             if (
               field.description === GravityIDFields.id.description ||
               (field.description === NullableIDField.id.description &&
@@ -318,6 +322,7 @@ export interface TransformToV2Options {
   allowedGravityTypesWithNullableIDField: string[]
   allowedNonGravityTypesWithNullableIDField: string[]
   filterTypes: string[]
+  filterIDFieldFromTypes: string[]
 }
 
 export const transformToV2 = (
@@ -329,14 +334,16 @@ export const transformToV2 = (
     allowedNonGravityTypesWithNullableIDField: KnownNonGravityTypesWithNullableIDFields,
     stitchedTypePrefixes: StitchedTypePrefixes,
     filterTypes: FilterTypeNames,
+    filterIDFieldFromTypes: FilterIDFieldFromTypeNames,
     ...options,
   }
   return transformSchema(schema, [
     new FilterTypes(type => !opt.filterTypes.includes(type.name)),
-    new IDRenamer(
+    new IDTransforms(
       opt.allowedGravityTypesWithNullableIDField,
       opt.allowedNonGravityTypesWithNullableIDField,
-      opt.stitchedTypePrefixes
+      opt.stitchedTypePrefixes,
+      opt.filterIDFieldFromTypes
     ),
   ])
 }
