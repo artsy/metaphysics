@@ -12,6 +12,7 @@ import {
   GraphQLFieldConfigMap,
   GraphQLNonNull,
   GraphQLID,
+  GraphQLInterfaceType,
 } from "graphql"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
@@ -88,6 +89,14 @@ describe(transformToV2, () => {
                 fields: {
                   ...IDFields,
                 },
+                interfaces: [
+                  new GraphQLInterfaceType({
+                    name: "AnInterface",
+                    fields: {
+                      ...IDFields,
+                    },
+                  }),
+                ],
               }),
             },
           },
@@ -97,6 +106,9 @@ describe(transformToV2, () => {
           query {
             fieldWithGlobalID {
               id
+              ... on AnInterface {
+                id
+              }
             }
           }
         `,
@@ -141,6 +153,14 @@ describe(transformToV2, () => {
                   fields: {
                     ...GravityIDFields,
                   },
+                  interfaces: [
+                    new GraphQLInterfaceType({
+                      name: "AnInterface",
+                      fields: {
+                        ...GravityIDFields,
+                      },
+                    }),
+                  ],
                 }),
               },
             },
@@ -150,6 +170,9 @@ describe(transformToV2, () => {
             query {
               fieldWithGravityResolver {
                 gravityID
+                ... on AnInterface {
+                  gravityID
+                }
               }
             }
           `,
@@ -172,6 +195,14 @@ describe(transformToV2, () => {
                   fields: {
                     ...GravityIDFields,
                   },
+                  interfaces: [
+                    new GraphQLInterfaceType({
+                      name: "AnInterface",
+                      fields: {
+                        ...GravityIDFields,
+                      },
+                    }),
+                  ],
                 }),
               },
             },
@@ -181,6 +212,9 @@ describe(transformToV2, () => {
             query {
               fieldWithGravityResolver {
                 internalID
+                ... on AnInterface {
+                  internalID
+                }
               }
             }
           `,
@@ -191,7 +225,10 @@ describe(transformToV2, () => {
       it("does not throw when the nullable id field is a known allowed type", () => {
         expect(() => {
           createSchema({
-            allowedGravityTypesWithNullableIDField: ["NullableID"],
+            allowedGravityTypesWithNullableIDField: [
+              "NullableID",
+              "AnInterface",
+            ],
             fields: {
               fieldWithNullableID: {
                 type: new GraphQLObjectType({
@@ -199,6 +236,14 @@ describe(transformToV2, () => {
                   fields: {
                     ...NullableIDField,
                   },
+                  interfaces: [
+                    new GraphQLInterfaceType({
+                      name: "AnInterface",
+                      fields: {
+                        ...NullableIDField,
+                      },
+                    }),
+                  ],
                 }),
               },
             },
@@ -223,6 +268,14 @@ describe(transformToV2, () => {
                   fields: {
                     ...InternalIDFields,
                   },
+                  interfaces: [
+                    new GraphQLInterfaceType({
+                      name: "AnInterface",
+                      fields: {
+                        ...InternalIDFields,
+                      },
+                    }),
+                  ],
                 }),
               },
             },
@@ -232,6 +285,9 @@ describe(transformToV2, () => {
             query {
               fieldWithNonGravityResolver {
                 internalID
+                ... on AnInterface {
+                  internalID
+                }
               }
             }
           `,
@@ -257,6 +313,16 @@ describe(transformToV2, () => {
                       type: new GraphQLNonNull(GraphQLID),
                     },
                   },
+                  interfaces: [
+                    new GraphQLInterfaceType({
+                      name: "StitchedInterface",
+                      fields: {
+                        id: {
+                          type: new GraphQLNonNull(GraphQLID),
+                        },
+                      },
+                    }),
+                  ],
                 }),
               },
             },
@@ -266,6 +332,9 @@ describe(transformToV2, () => {
             query {
               fieldWithStitchedResolver {
                 internalID
+                ... on StitchedInterface {
+                  internalID
+                }
               }
             }
           `,
@@ -276,7 +345,10 @@ describe(transformToV2, () => {
       it("does not throw when the nullable id field is a known non-gravity type", () => {
         expect(() => {
           createSchema({
-            allowedNonGravityTypesWithNullableIDField: ["NullableID"],
+            allowedNonGravityTypesWithNullableIDField: [
+              "NullableID",
+              "AnInterface",
+            ],
             fields: {
               fieldWithNullableID: {
                 type: new GraphQLObjectType({
@@ -284,6 +356,14 @@ describe(transformToV2, () => {
                   fields: {
                     ...NullableIDField,
                   },
+                  interfaces: [
+                    new GraphQLInterfaceType({
+                      name: "AnInterface",
+                      fields: {
+                        ...NullableIDField,
+                      },
+                    }),
+                  ],
                 }),
               },
             },
@@ -299,7 +379,10 @@ describe(transformToV2, () => {
         }
         const { data } = await graphql({
           schema: createSchema({
-            allowedNonGravityTypesWithNullableIDField: ["NonGravityType"],
+            allowedNonGravityTypesWithNullableIDField: [
+              "NonGravityType",
+              "AnInterface",
+            ],
             fields: {
               fieldWithNonGravityResolver: {
                 type: new GraphQLObjectType({
@@ -307,6 +390,14 @@ describe(transformToV2, () => {
                   fields: {
                     ...NullableIDField,
                   },
+                  interfaces: [
+                    new GraphQLInterfaceType({
+                      name: "AnInterface",
+                      fields: {
+                        ...NullableIDField,
+                      },
+                    }),
+                  ],
                 }),
               },
             },
@@ -316,6 +407,9 @@ describe(transformToV2, () => {
             query {
               fieldWithNonGravityResolver {
                 internalID
+                ... on AnInterface {
+                  internalID
+                }
               }
             }
           `,

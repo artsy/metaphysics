@@ -169,7 +169,7 @@ class IDTransforms implements Transform {
         Object.keys(fields).forEach(fieldName => {
           const field = fields[fieldName]
           if (field.name === "id") {
-            // TODO Some stuff from the object treatment is missing here
+            // TODO Some nullable conditions from the object treatment is missing here
             if (
               field.description === GravityIDFields.id.description ||
               (field.description === NullableIDField.id.description &&
