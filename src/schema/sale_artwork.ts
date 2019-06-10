@@ -17,11 +17,14 @@ import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLFieldConfig,
+  FieldNode,
+  visit,
 } from "graphql"
 import config from "config"
 import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 import { deprecate } from "lib/deprecation"
+import _ from "lodash"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -84,7 +87,22 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...GravityIDFields,
       cached,
-      artwork: { type: Artwork.type, resolve: ({ artwork }) => artwork },
+      artwork: {
+        type: Artwork.type,
+        resolve: (
+          { artwork },
+          _options,
+          { artworkLoader },
+          { fieldNodes, fragments }
+        ) => {
+          if (!fieldNodes) return artwork
+          if (shouldFetchArtwork(fieldNodes[0], fragments)) {
+            return artworkLoader(artwork.id).catch(() => artwork)
+          } else {
+            return artwork
+          }
+        },
+      },
       bidder_positions_count: {
         type: GraphQLInt,
         deprecationReason: deprecate({
@@ -387,6 +405,26 @@ const SaleArtwork: GraphQLFieldConfig<void, ResolverContext> = {
     const data = await saleArtworkRootLoader(id)
     return data
   },
+}
+
+const shouldFetchArtwork = (
+  fieldNode: Readonly<FieldNode>,
+  fragments: any
+): boolean => {
+  const fetchArtworkFields = ["edition_of", "edition_sets"]
+  const requestedArtworkFields: string[] = []
+  visit(fieldNode, {
+    Field(node) {
+      requestedArtworkFields.push(node.name.value)
+    },
+    FragmentSpread(node) {
+      const fragmentDef = fragments[node.name.value]
+      requestedArtworkFields.push(
+        ...fragmentDef.selectionSet.selections.map(s => s.name.value)
+      )
+    },
+  })
+  return requestedArtworkFields.some(f => fetchArtworkFields.includes(f))
 }
 
 export default SaleArtwork

@@ -90,6 +90,35 @@ describe("SaleArtwork type", () => {
     })
   })
 
+  describe("artwork resolver", () => {
+    it("fetches artwork when edition_set data is requested", async () => {
+      const query = `
+        {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            artwork{
+              id
+              edition_sets{
+                id
+              }
+            }
+          }
+        }
+      `
+      expect(await execute(query)).toEqual({
+        sale_artwork: {
+          artwork: {
+            id: "artwork-1",
+            edition_sets: [
+              {
+                id: "ed-1",
+              },
+            ],
+          },
+        },
+      })
+    })
+  })
+
   describe("bid_increments", () => {
     it("requires an increment strategy in order to retrieve increments", async () => {
       const query = `
