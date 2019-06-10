@@ -1,6 +1,6 @@
 import "moment-timezone"
 import Bluebird from "bluebird"
-import xapp from "artsy-xapp"
+import xapp from "@artsy/xapp"
 import compression from "compression"
 import forceSSL from "express-force-ssl"
 import bodyParser from "body-parser"
@@ -30,7 +30,7 @@ const isDevelopment = NODE_ENV === "development"
 const enableAsyncStackTraces = ENABLE_ASYNC_STACK_TRACES === "true"
 const enableQueryTracing = ENABLE_QUERY_TRACING === "true"
 
-let server, isShuttingDown
+let server, isShuttingDown, hasBooted
 
 // Always load the source on startup so any file level issues surface sooner.
 require("./src")
@@ -73,7 +73,12 @@ const xappConfig = {
   secret: GRAVITY_SECRET,
 }
 
-xapp.init(xappConfig, bootApp) // eslint-disable-line
+xapp.init(xappConfig, (_unused, token) => {
+  config.GRAVITY_XAPP_TOKEN = token
+  if (hasBooted) return
+  bootApp()
+  hasBooted = true
+}) // eslint-disable-line
 
 function bootApp() {
   if (PRODUCTION_ENV) {
