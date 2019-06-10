@@ -23,6 +23,13 @@
     chokidar "^3.0.0"
     decache "^4.4.0"
 
+"@artsy/xapp@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@artsy/xapp/-/xapp-1.0.5.tgz#cf3271367a71a5dc3d103e1787e627bb655bea70"
+  integrity sha512-m/YDOkgDCjOox7rBpdSuP4x9WEv1LeRnQiEJCZAFY+P1PfvXafw/pttaHw+C2OpYqJj2BjEvpUBFu/xi7IBEqw==
+  dependencies:
+    superagent "^1.2.0"
+
 "@babel/cli@7.4.4":
   version "7.4.4"
   resolved "https://registry.yarnpkg.com/@babel/cli/-/cli-7.4.4.tgz#5454bb7112f29026a4069d8e6f0e1794e651966c"
@@ -1870,13 +1877,6 @@ arrify@^1.0.0, arrify@^1.0.1:
   dependencies:
     chalk "^1.1.3"
     morgan "^1.8.1"
-
-artsy-xapp@1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/artsy-xapp/-/artsy-xapp-1.0.4.tgz#13cc772122d1f8b8aeef6ad6555a792dffa9c3aa"
-  integrity sha1-E8x3ISLR+Liu72rWVVp5Lf+pw6o=
-  dependencies:
-    superagent "^1.2.0"
 
 asap@~2.0.3:
   version "2.0.6"
