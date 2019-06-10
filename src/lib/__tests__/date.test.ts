@@ -305,45 +305,29 @@ describe("date formatting", () => {
 
   describe(dateRange, () => {
     it("includes month day and both years when years are different years", () => {
-      const period = dateRange(
-        moment("2011-01-01"),
-        moment("2014-04-19"),
-        "UTC"
-      )
+      const period = dateRange("2011-01-01", "2014-04-19", "UTC")
       expect(period).toBe("Jan 1, 2011 – Apr 19, 2014")
     })
 
     it("includes month twice when years are different even if the same month", () => {
-      const period = dateRange(
-        moment("2011-01-01"),
-        moment("2014-01-04"),
-        "UTC"
-      )
+      const period = dateRange("2011-01-01", "2014-01-04", "UTC")
       expect(period).toBe("Jan 1, 2011 – Jan 4, 2014")
     })
 
     it("only includes the year once if the dates have the same year", () => {
-      const period = dateRange(
-        moment("2011-01-01"),
-        moment("2011-04-19"),
-        "UTC"
-      )
+      const period = dateRange("2011-01-01", "2011-04-19", "UTC")
       expect(period).toBe("Jan 1 – Apr 19, 2011")
     })
 
     it("include only one month if dates have same month and same year", () => {
-      const period = dateRange(
-        moment("2011-01-01"),
-        moment("2011-01-19"),
-        "UTC"
-      )
+      const period = dateRange("2011-01-01", "2011-01-19", "UTC")
       expect(period).toBe("Jan 1 – 19, 2011")
     })
 
     it("always shows both years if the dates are not the same year, even if one year is the same as the present year", () => {
       const period = dateRange(
-        moment("2011-01-01"),
-        moment().format("YYYY-04-19"),
+        "2011-01-01",
+        moment.tz("UTC").format("YYYY-04-19"),
         "UTC"
       )
       expect(period).toBe("Jan 1, 2011 – Apr 19, 2019")
@@ -351,8 +335,8 @@ describe("date formatting", () => {
 
     it("does not include the year if both years are the same as the present year", () => {
       const period = dateRange(
-        moment().format("YYYY-01-01"),
-        moment().format("YYYY-01-19"),
+        moment.tz("UTC").format("YYYY-01-01"),
+        moment.tz("UTC").format("YYYY-01-19"),
         "UTC"
       )
       expect(period).toBe("Jan 1 – 19")

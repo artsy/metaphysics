@@ -176,7 +176,7 @@ export default {
   // Gets set from src/index.js
   GRAVITY_XAPP_TOKEN: null as string | null,
   KAWS_API_BASE,
-  HMAC_SECRET,
+  HMAC_SECRET: HMAC_SECRET as string,
   IMPULSE_API_BASE,
   IMPULSE_APPLICATION_ID,
   IP_BLACKLIST: IP_BLACKLIST || "",

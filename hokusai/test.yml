@@ -10,7 +10,6 @@ services:
       - CI_PULL_REQUEST=$CI_PULL_REQUEST
       - CIRCLE_PULL_REQUEST=$CIRCLE_PULL_REQUEST
       - CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM
-      - DANGER_GITHUB_API_TOKEN=$DANGER_GITHUB_API_TOKEN
     env_file: ../.env.test
     depends_on:
       - metaphysics-memcached

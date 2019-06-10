@@ -62,6 +62,39 @@ type PageviewStats {
 }
 
 """
+Audience stats of a partner
+"""
+type PartnerAudienceStats {
+  partnerId: String!
+  period: QueryPeriodEnum!
+  uniqueVisitors: Int!
+}
+
+"""
+Inquiry count time series data of a partner
+"""
+type PartnerInquiryCountTimeSeriesStats {
+  count: Int
+  endTime: DateTime
+  startTime: DateTime
+}
+
+"""
+Inquiry stats of a partner
+"""
+type PartnerInquiryStats {
+  inquiryCount: Int!
+  inquiryResponseTime: Int
+  partnerId: String!
+  period: QueryPeriodEnum!
+
+  """
+  Partner inquiry count time series
+  """
+  timeSeries(cumulative: Boolean = false): [PartnerInquiryCountTimeSeriesStats!]
+}
+
+"""
 Sales stats of a partner
 """
 type PartnerSalesStats {
@@ -95,6 +128,16 @@ type PartnerStats {
   Time series data on number of artworks published
   """
   artworksPublished(period: QueryPeriodEnum!): ArtworksPublishedStats
+
+  """
+  Audience stats
+  """
+  audience(period: QueryPeriodEnum!): PartnerAudienceStats
+
+  """
+  Inquiry stats
+  """
+  inquiry(period: QueryPeriodEnum!): PartnerInquiryStats
 
   """
   Different types of partner pageviews
@@ -137,6 +180,7 @@ type PartnerStats {
   Number of unique visitors
   """
   uniqueVisitors(period: QueryPeriodEnum!): Int
+    @deprecated(reason: "Use audience() { uniqueVisitors } instead")
 }
 
 """
