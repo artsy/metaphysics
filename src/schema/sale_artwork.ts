@@ -414,20 +414,24 @@ const shouldFetchArtwork = (
   const fetchArtworkFields = ["edition_of", "edition_sets"]
   let needsArtworkFetch: boolean = false
   visit(fieldNode, {
-    Field(node) {
-      if (!needsArtworkFetch && fetchArtworkFields.includes(node.name.value)) {
+    Field(node, _key, _parent, path, _ancestors) {
+      // we want to only check first level fields so ignoring paths > 3
+      // path = 3 since when we use a fragment to access fields path includes
+      // selectionSet and selectionFields
+      if (path.length <= 3 && fetchArtworkFields.includes(node.name.value)) {
         needsArtworkFetch = true
+        return false
       }
     },
     FragmentSpread(node) {
       const fragmentDef = fragments[node.name.value]
       if (
-        !needsArtworkFetch &&
         fragmentDef.selectionSet.selections.some(s =>
           fetchArtworkFields.includes(s.name.value)
         )
       ) {
         needsArtworkFetch = true
+        return false
       }
     },
   })

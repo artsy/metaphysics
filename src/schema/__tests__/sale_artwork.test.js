@@ -32,6 +32,7 @@ describe("SaleArtwork type", () => {
   const artwork = {
     id: "artwork-1",
     title: "Untitled1",
+    unique: true,
     edition_sets: [
       {
         id: "ed-1",
@@ -113,6 +114,7 @@ describe("SaleArtwork type", () => {
           sale_artwork(id: "54c7ed2a7261692bfa910200") {
             artwork{
               id
+              edition_of
               edition_sets{
                 id
               }
@@ -125,6 +127,41 @@ describe("SaleArtwork type", () => {
         sale_artwork: {
           artwork: {
             id: "artwork-1",
+            edition_of: "Unique",
+            edition_sets: [
+              {
+                id: "ed-1",
+              },
+            ],
+          },
+        },
+      })
+      expect(artworkLoaderMock).toHaveBeenCalledWith("artwork-1")
+    })
+
+    it("fetches artwork when edition_set data is requested via fragment spread", async () => {
+      const query = `
+        fragment TestEditionSet on Artwork{
+          edition_of
+          edition_sets{
+            id
+          }
+        }
+        query {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            artwork{
+              id
+              ... TestEditionSet
+            }
+          }
+        }
+      `
+      const artworkLoaderMock = jest.fn(() => Promise.resolve(artwork))
+      expect(await execute(query, saleArtwork, artworkLoaderMock)).toEqual({
+        sale_artwork: {
+          artwork: {
+            id: "artwork-1",
+            edition_of: "Unique",
             edition_sets: [
               {
                 id: "ed-1",
