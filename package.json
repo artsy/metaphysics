@@ -19,7 +19,7 @@
     "dev": "DEBUG=info,warn,error nf start --procfile Procfile.dev -w",
     "dump-remote-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-remote-schema.ts",
     "dump-schema": "babel-node --extensions '.ts,.js' ./scripts/dump-schema.ts",
-    "dump:local": "yarn dump-schema v1 _schema.graphql && yarn dump-schema v2 _schemaV2.graphql",
+    "dump:local": "yarn dump-schema v1 _schema.graphql & yarn dump-schema v2 _schemaV2.graphql & wait",
     "lint": "eslint . --ext ts",
     "lint:fix": "eslint . --fix --ext ts",
     "prepare": "patch-package",
