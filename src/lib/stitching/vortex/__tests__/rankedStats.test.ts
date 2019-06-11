@@ -5,7 +5,7 @@ import { ResolverContext } from "types/graphql"
 jest.mock("../link")
 require("../link").mockFetch as jest.Mock<any>
 
-describe("TopArtworks type", () => {
+describe("RankedStats type", () => {
   const artwork = {
     id: "lona-misa",
     artist: {
@@ -15,7 +15,11 @@ describe("TopArtworks type", () => {
     category: "Painting",
     title: "Lona Misa",
   }
+  const show = {
+    id: "show-id",
+  }
   const artworkLoader = jest.fn(() => Promise.resolve(artwork))
+  const showLoader = jest.fn(() => Promise.resolve(show))
   const artistLoader = jest.fn(() =>
     Promise.resolve({
       _id: "artist-id",
@@ -28,12 +32,13 @@ describe("TopArtworks type", () => {
     artworkLoader,
     artistLoader,
     partnerLoader,
+    showLoader,
   }
   const query = gql`
     query {
       partner(id: "lol") {
         analytics {
-          topArtworks(period: FOUR_WEEKS) {
+          rankedStats(objectType: ARTWORK, period: FOUR_WEEKS) {
             edges {
               node {
                 value
