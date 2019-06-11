@@ -412,19 +412,26 @@ const shouldFetchArtwork = (
   fragments: any
 ): boolean => {
   const fetchArtworkFields = ["edition_of", "edition_sets"]
-  const requestedArtworkFields: string[] = []
+  let needsArtworkFetch: boolean = false
   visit(fieldNode, {
     Field(node) {
-      requestedArtworkFields.push(node.name.value)
+      if (!needsArtworkFetch && fetchArtworkFields.includes(node.name.value)) {
+        needsArtworkFetch = true
+      }
     },
     FragmentSpread(node) {
       const fragmentDef = fragments[node.name.value]
-      requestedArtworkFields.push(
-        ...fragmentDef.selectionSet.selections.map(s => s.name.value)
-      )
+      if (
+        !needsArtworkFetch &&
+        fragmentDef.selectionSet.selections.some(s =>
+          fetchArtworkFields.includes(s.name.value)
+        )
+      ) {
+        needsArtworkFetch = true
+      }
     },
   })
-  return requestedArtworkFields.some(f => fetchArtworkFields.includes(f))
+  return needsArtworkFetch
 }
 
 export default SaleArtwork
