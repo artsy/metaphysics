@@ -2253,10 +2253,16 @@ type AttributionClass {
   info: String
 
   # Longer version of attribution class display
-  short_description: String
+  short_description: String @deprecated(reason: "Prefer shortDescription")
 
   # Long descriptive phrase used as companion for short_description
-  long_description: String
+  long_description: String @deprecated(reason: "Prefer longDescription")
+
+  # Longer version of attribution class display
+  shortDescription: String
+
+  # Long descriptive phrase used as companion for short_description
+  longDescription: String
 }
 
 # In centimeters.
@@ -8629,6 +8635,9 @@ type ProfileCounts {
 }
 
 type Query {
+  # List of all artwork attribution classes
+  artworkAttributionClasses: [AttributionClass]
+
   # An Article
   article(
     # The ID of the Article
@@ -10708,6 +10717,9 @@ type User {
 
 # A wildcard used to support complex root queries in Relay
 type Viewer {
+  # List of all artwork attribution classes
+  artworkAttributionClasses: [AttributionClass]
+
   # An Article
   article(
     # The ID of the Article
