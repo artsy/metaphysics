@@ -6657,6 +6657,7 @@ type MarketingCollection {
 
   # Collection has prioritized connection to artist
   is_featured_artist_content: Boolean!
+  relatedCollections: [MarketingCollection!]!
   artworks(
     acquireable: Boolean
     offerable: Boolean
@@ -8880,7 +8881,7 @@ type Query {
   # Fetches an object given its Globally Unique ID
   node(
     # The ID of the object
-    __id: ID!
+    id: ID!
   ): Node
 
   # An OrderedSet
@@ -10946,7 +10947,7 @@ type Viewer {
   # Fetches an object given its Globally Unique ID
   node(
     # The ID of the object
-    __id: ID!
+    id: ID!
   ): Node
 
   # An OrderedSet

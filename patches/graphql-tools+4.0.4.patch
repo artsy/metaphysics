@@ -1,4 +1,17 @@
 patch-package
+--- a/node_modules/graphql-tools/dist/stitching/resolvers.js
++++ b/node_modules/graphql-tools/dist/stitching/resolvers.js
+@@ -51,7 +51,9 @@ function createProxyingResolver(schema, operation, fieldName, transforms) {
+         schema: schema,
+         operation: operation,
+         fieldName: fieldName,
+-        args: {},
++        // It is unclear if passing on `args` here is without downsides or this
++        // _has_ to be `{}`.
++        args: args,
+         context: context,
+         info: info,
+         transforms: transforms,
 --- a/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
 +++ b/node_modules/graphql-tools/dist/stitching/schemaRecreation.js
 @@ -62,7 +62,9 @@ function recreateType(type, resolveType, keepResolvers) {

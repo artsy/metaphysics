@@ -4,7 +4,7 @@ import { unescape } from "querystring"
 import { uncachedLoaderFactory } from "../api/loader_without_cache_factory"
 
 const toBase64 = string =>
-  new Buffer(unescape(encodeURIComponent(string)), "binary").toString("base64")
+  Buffer.from(unescape(encodeURIComponent(string)), "binary").toString("base64")
 const geminiUncachedLoader = uncachedLoaderFactory(gemini, "gemini")
 
 export default () => ({
