@@ -84,48 +84,48 @@ describe("PricingContext type", () => {
   it("is accessible through the artwork type", async () => {
     const result = await runQuery(query, context)
     expect(result).toMatchInlineSnapshot(`
-Object {
-  "artwork": Object {
-    "pricingContext": Object {
-      "appliedFilters": Object {
-        "category": "ARCHITECTURE",
-        "dimension": "SMALL",
-      },
-      "appliedFiltersDisplay": "Price ranges of small architecture works by Good Artist",
-      "bins": Array [
-        Object {
-          "maxPrice": "$89",
-          "maxPriceCents": 8855,
-          "minPrice": "$9",
-          "minPriceCents": 900,
-          "numArtworks": 67,
+      Object {
+        "artwork": Object {
+          "pricingContext": Object {
+            "appliedFilters": Object {
+              "category": "ARCHITECTURE",
+              "dimension": "SMALL",
+            },
+            "appliedFiltersDisplay": "Price ranges of small architecture works by Good Artist",
+            "bins": Array [
+              Object {
+                "maxPrice": "$89",
+                "maxPriceCents": 8855,
+                "minPrice": "$9",
+                "minPriceCents": 900,
+                "numArtworks": 67,
+              },
+              Object {
+                "maxPrice": "$168",
+                "maxPriceCents": 16810,
+                "minPrice": "$89",
+                "minPriceCents": 8855,
+                "numArtworks": 57,
+              },
+              Object {
+                "maxPrice": "$248",
+                "maxPriceCents": 24765,
+                "minPrice": "$168",
+                "minPriceCents": 16810,
+                "numArtworks": 45,
+              },
+              Object {
+                "maxPrice": "$327",
+                "maxPriceCents": 32720,
+                "minPrice": "$248",
+                "minPriceCents": 24765,
+                "numArtworks": 17,
+              },
+            ],
+          },
         },
-        Object {
-          "maxPrice": "$168",
-          "maxPriceCents": 16810,
-          "minPrice": "$89",
-          "minPriceCents": 8855,
-          "numArtworks": 57,
-        },
-        Object {
-          "maxPrice": "$248",
-          "maxPriceCents": 24765,
-          "minPrice": "$168",
-          "minPriceCents": 16810,
-          "numArtworks": 45,
-        },
-        Object {
-          "maxPrice": "$327",
-          "maxPriceCents": 32720,
-          "minPrice": "$248",
-          "minPriceCents": 24765,
-          "numArtworks": 17,
-        },
-      ],
-    },
-  },
-}
-`)
+      }
+    `)
   })
 
   it("maps categories correctly", async () => {
@@ -137,12 +137,12 @@ Object {
     await runQuery(query, context)
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
-Object {
-  "_v0_artistId": "artist-id",
-  "_v1_category": "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
-  "_v2_sizeScore": 225,
-}
-`)
+      Object {
+        "_v1_artistId": "artist-id",
+        "_v2_category": "DRAWING_COLLAGE_OTHER_WORK_ON_PAPER",
+        "_v3_sizeScore": 225,
+      }
+    `)
   })
 
   it("uses the most expensive edition set dimensions when there is more than one edition set", async () => {
@@ -167,12 +167,12 @@ Object {
     await runQuery(query, context)
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
-Object {
-  "_v0_artistId": "artist-id",
-  "_v1_category": "PAINTING",
-  "_v2_sizeScore": 10300,
-}
-`)
+      Object {
+        "_v1_artistId": "artist-id",
+        "_v2_category": "PAINTING",
+        "_v3_sizeScore": 10300,
+      }
+    `)
     mockFetch.mockClear()
 
     artworkLoader.mockResolvedValueOnce({
@@ -195,12 +195,12 @@ Object {
     await runQuery(query, context)
     expect(JSON.parse(mockFetch.mock.calls[0][1].body).variables)
       .toMatchInlineSnapshot(`
-Object {
-  "_v0_artistId": "artist-id",
-  "_v1_category": "PAINTING",
-  "_v2_sizeScore": 3000,
-}
-`)
+      Object {
+        "_v1_artistId": "artist-id",
+        "_v2_category": "PAINTING",
+        "_v3_sizeScore": 3000,
+      }
+    `)
   })
 
   it("is null when dimensions not present", async () => {
@@ -237,48 +237,48 @@ Object {
     const { meLoader, ...others } = context
     const result = (await runQuery(query, others)) as any
     expect(result).toMatchInlineSnapshot(`
-Object {
-  "artwork": Object {
-    "pricingContext": Object {
-      "appliedFilters": Object {
-        "category": "ARCHITECTURE",
-        "dimension": "SMALL",
-      },
-      "appliedFiltersDisplay": "Price ranges of small architecture works by Good Artist",
-      "bins": Array [
-        Object {
-          "maxPrice": "$89",
-          "maxPriceCents": 8855,
-          "minPrice": "$9",
-          "minPriceCents": 900,
-          "numArtworks": 67,
+      Object {
+        "artwork": Object {
+          "pricingContext": Object {
+            "appliedFilters": Object {
+              "category": "ARCHITECTURE",
+              "dimension": "SMALL",
+            },
+            "appliedFiltersDisplay": "Price ranges of small architecture works by Good Artist",
+            "bins": Array [
+              Object {
+                "maxPrice": "$89",
+                "maxPriceCents": 8855,
+                "minPrice": "$9",
+                "minPriceCents": 900,
+                "numArtworks": 67,
+              },
+              Object {
+                "maxPrice": "$168",
+                "maxPriceCents": 16810,
+                "minPrice": "$89",
+                "minPriceCents": 8855,
+                "numArtworks": 57,
+              },
+              Object {
+                "maxPrice": "$248",
+                "maxPriceCents": 24765,
+                "minPrice": "$168",
+                "minPriceCents": 16810,
+                "numArtworks": 45,
+              },
+              Object {
+                "maxPrice": "$327",
+                "maxPriceCents": 32720,
+                "minPrice": "$248",
+                "minPriceCents": 24765,
+                "numArtworks": 17,
+              },
+            ],
+          },
         },
-        Object {
-          "maxPrice": "$168",
-          "maxPriceCents": 16810,
-          "minPrice": "$89",
-          "minPriceCents": 8855,
-          "numArtworks": 57,
-        },
-        Object {
-          "maxPrice": "$248",
-          "maxPriceCents": 24765,
-          "minPrice": "$168",
-          "minPriceCents": 16810,
-          "numArtworks": 45,
-        },
-        Object {
-          "maxPrice": "$327",
-          "maxPriceCents": 32720,
-          "minPrice": "$248",
-          "minPriceCents": 24765,
-          "numArtworks": 17,
-        },
-      ],
-    },
-  },
-}
-`)
+      }
+    `)
   })
 
   it("is null when there is no list price", async () => {
