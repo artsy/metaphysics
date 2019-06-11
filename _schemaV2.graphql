@@ -6657,6 +6657,7 @@ type MarketingCollection {
 
   # Collection has prioritized connection to artist
   is_featured_artist_content: Boolean!
+  relatedCollections: [MarketingCollection!]!
   artworks(
     acquireable: Boolean
     offerable: Boolean
@@ -8611,6 +8612,9 @@ type ProfileCounts {
 }
 
 type Query {
+  # List of all artwork attribution classes
+  artworkAttributionClasses: [AttributionClass]
+
   # An Article
   article(
     # The ID of the Article
@@ -10677,6 +10681,9 @@ type User {
 
 # A wildcard used to support complex root queries in Relay
 type Viewer {
+  # List of all artwork attribution classes
+  artworkAttributionClasses: [AttributionClass]
+
   # An Article
   article(
     # The ID of the Article
