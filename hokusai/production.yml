@@ -21,7 +21,7 @@ spec:
         - name: metaphysics-web
           env:
             - name: PORT
-              value: "8080"
+              value: "3000"
             - name: DD_TRACER_HOSTNAME
               valueFrom:
                 fieldRef:
