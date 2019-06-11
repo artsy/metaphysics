@@ -15,6 +15,7 @@ import {
   GraphQLID,
   GraphQLInterfaceType,
   GraphQLArgs,
+  GraphQLString,
 } from "graphql"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
@@ -22,6 +23,7 @@ import {
   ExecutionResultDataDefault,
   ExecutionResult,
 } from "graphql/execution/execute"
+import { deprecate } from "lib/deprecation"
 
 function createSchema({
   fields,
@@ -85,6 +87,23 @@ describe(transformToV2, () => {
       })
       expect(
         schema.getType("GetRidOfID").getFields().internalID
+      ).toBeUndefined()
+    })
+
+    it("removes previously deprecated fields", () => {
+      const schema = createSchema({
+        fields: {
+          deprecatedField: {
+            type: GraphQLString,
+            deprecationReason: deprecate({
+              inVersion: 2,
+              preferUsageOf: "bar",
+            }),
+          },
+        },
+      })
+      expect(
+        schema.getQueryType().getFields()["deprecatedField"]
       ).toBeUndefined()
     })
   })

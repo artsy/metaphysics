@@ -2,6 +2,7 @@ import { GraphQLSchema } from "graphql"
 import { transformSchema, FilterTypes } from "graphql-tools"
 import { RenameIDFields } from "./RenameIDFields"
 import { RenameArguments } from "./RenameArguments"
+import { RemoveDeprecatedFields } from "./RemoveDeprecatedFields"
 
 // These should not show up in v2 at all.
 const FilterTypeNames = ["DoNotUseThisPartner"]
@@ -61,5 +62,6 @@ export const transformToV2 = (
       opt.filterIDFieldFromTypes
     ),
     new RenameArguments((_field, arg) => (arg.name === "__id" ? "id" : null)),
+    new RemoveDeprecatedFields({ fromVersion: 2 }),
   ])
 }
