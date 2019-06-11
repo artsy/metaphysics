@@ -114,14 +114,6 @@ export class RenameIDFields implements Transform {
    * Rename ID fields in object and interface types.
    */
   public transformSchema(schema: GraphQLSchema): GraphQLSchema {
-    if (this.newSchema) {
-      throw new Error("Did not expect to be ran twice!")
-    }
-
-    // Keep a reference to all new interface types, as we'll need them to define
-    // them on the new object types.
-    const newInterfaces: { [name: string]: GraphQLInterfaceType } = {}
-
     const newSchema = visitSchema(schema, {
       [VisitSchemaKind.OBJECT_TYPE]: ((type: GraphQLObjectType<any, any>) => {
         return new GraphQLObjectType({
@@ -131,14 +123,12 @@ export class RenameIDFields implements Transform {
           fields: this.transformFields(type),
           extensionASTNodes: type.extensionASTNodes,
           isTypeOf: type.isTypeOf,
-          interfaces: type
-            .getInterfaces()
-            .map(iface => newInterfaces[iface.name]),
+          interfaces: type.getInterfaces(),
         })
       }) as TypeVisitor,
 
       [VisitSchemaKind.INTERFACE_TYPE]: ((type: GraphQLInterfaceType) => {
-        const newInterface = new GraphQLInterfaceType({
+        return new GraphQLInterfaceType({
           name: type.name,
           description: type.description,
           astNode: type.astNode,
@@ -146,8 +136,6 @@ export class RenameIDFields implements Transform {
           resolveType: type.resolveType,
           extensionASTNodes: type.extensionASTNodes,
         })
-        newInterfaces[newInterface.name] = newInterface
-        return newInterface
       }) as TypeVisitor,
     })
 
