@@ -36,6 +36,7 @@ type Collection {
 
   # Collection has prioritized connection to artist
   is_featured_artist_content: Boolean!
+  relatedCollections: [Collection!]!
 }
 
 type CollectionCategory {

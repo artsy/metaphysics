@@ -1,6 +1,7 @@
 import { GraphQLSchema } from "graphql"
 import { transformSchema, FilterTypes } from "graphql-tools"
-import { IDTransforms } from "./IDTransforms"
+import { RenameIDFields } from "./RenameIDFields"
+import { RenameArguments } from "./RenameArguments"
 
 // These should not show up in v2 at all.
 const FilterTypeNames = ["DoNotUseThisPartner"]
@@ -53,11 +54,12 @@ export const transformToV2 = (
   }
   return transformSchema(schema, [
     new FilterTypes(type => !opt.filterTypes.includes(type.name)),
-    new IDTransforms(
+    new RenameIDFields(
       opt.allowedGravityTypesWithNullableIDField,
       opt.allowedNonGravityTypesWithNullableIDField,
       opt.stitchedTypePrefixes,
       opt.filterIDFieldFromTypes
     ),
+    new RenameArguments((_field, arg) => (arg.name === "__id" ? "id" : null)),
   ])
 }

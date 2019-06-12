@@ -12,7 +12,6 @@ import { schema, schemaV2 } from "./schema"
 import moment from "moment"
 import morgan from "artsy-morgan"
 import raven from "raven"
-import xapp from "artsy-xapp"
 import { fetchPersistedQuery } from "./lib/fetchPersistedQuery"
 import {
   fetchLoggerSetup,
@@ -67,8 +66,6 @@ function logQueryDetailsIfEnabled() {
 
 function startApp(appSchema, path: string) {
   const app = express()
-
-  config.GRAVITY_XAPP_TOKEN = xapp.token
 
   const exchangeSchema = executableExchangeSchema(legacyTransformsForExchange)
 

@@ -43,3 +43,9 @@ global.expectPromiseRejectionToMatch = expectPromiseRejectionToMatch
  *  at __mocks__/node-uuid.js which has it's console muted
  * */
 jest.mock("node-uuid")
+
+/**
+ * Silence all logging, regardless of what levels the dev may have configured in
+ * their env file.
+ */
+jest.mock("debug", () => () => jest.fn())

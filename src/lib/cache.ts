@@ -111,7 +111,7 @@ function _get<T>(key) {
         if (CACHE_COMPRESSION_DISABLED) {
           resolve(JSON.parse(data.toString()))
         } else {
-          zlib.inflate(new Buffer(data, "base64"), (er, inflatedData) => {
+          zlib.inflate(Buffer.from(data, "base64"), (er, inflatedData) => {
             if (er) {
               reject(er)
             } else {

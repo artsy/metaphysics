@@ -175,7 +175,7 @@ describe("Sale type", () => {
     })
   })
 
-  describe("sale_artworks_connection", async () => {
+  describe("sale_artworks_connection", () => {
     it("returns data from gravity", () => {
       const query = `
         {
@@ -636,7 +636,7 @@ describe("Sale type", () => {
     })
   })
 
-  describe("artworksConnection", async () => {
+  describe("artworksConnection", () => {
     it("returns data from gravity", () => {
       const query = `
           {
