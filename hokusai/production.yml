@@ -36,7 +36,7 @@ spec:
           image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:production
           imagePullPolicy: Always
           ports:
-            - name: metaphysics-http
+            - name: mp-http
               containerPort: 3000
           resources:
             requests:
@@ -46,7 +46,7 @@ spec:
               memory: 1536Mi
           readinessProbe:
             httpGet:
-              port: metaphysics-http
+              port: mp-http
               path: /health
               httpHeaders:
                 - name: X-FORWARDED-PROTO
@@ -137,11 +137,11 @@ spec:
     - port: 443
       protocol: TCP
       name: https
-      targetPort: metaphysics-http
+      targetPort: mp-http
     - port: 80
       protocol: TCP
       name: http
-      targetPort: metaphysics-http
+      targetPort: mp-http
   selector:
     app: metaphysics
     layer: application
