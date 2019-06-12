@@ -1,4 +1,5 @@
 import { GraphQLEnumType } from "graphql"
+import { deprecate } from "lib/deprecation"
 
 const EventStatus = {
   type: new GraphQLEnumType({
@@ -6,19 +7,31 @@ const EventStatus = {
     values: {
       closed: {
         value: "closed",
-        deprecationReason: "use capital enums",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "CLOSED",
+        }),
       },
       current: {
         value: "current",
-        deprecationReason: "use capital enums",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "CURRENT",
+        }),
       },
       running: {
         value: "running",
-        deprecationReason: "use capital enums",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "RUNNING",
+        }),
       },
       upcoming: {
         value: "upcoming",
-        deprecationReason: "use capital enums",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "UPCOMING",
+        }),
       },
       CLOSED: {
         value: "closed",

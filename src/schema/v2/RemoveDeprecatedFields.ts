@@ -1,9 +1,10 @@
-import { Transform, defaultMergedResolver } from "graphql-tools"
+import { Transform } from "graphql-tools"
 import {
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLInterfaceType,
   GraphQLFieldConfigMap,
+  GraphQLField,
 } from "graphql"
 import {
   visitSchema,
@@ -18,7 +19,15 @@ import { shouldBeRemoved } from "lib/deprecation"
 
 export class RemoveDeprecatedFields implements Transform {
   // eslint-disable-next-line no-useless-constructor
-  constructor(private options: { fromVersion: number }) {}
+  constructor(
+    private options: {
+      fromVersion: number
+      filter: (
+        type: GraphQLObjectType<any, any> | GraphQLInterfaceType,
+        field: GraphQLField<any, any>
+      ) => boolean
+    }
+  ) {}
 
   public transformSchema(schema: GraphQLSchema): GraphQLSchema {
     const newSchema = visitSchema(schema, {
@@ -58,12 +67,14 @@ export class RemoveDeprecatedFields implements Transform {
     Object.keys(fields).forEach(fieldName => {
       const field = fields[fieldName]
       if (
-        !shouldBeRemoved({
-          inVersion: this.options.fromVersion,
-          deprecationReason: field.deprecationReason,
-          typeName: type.name,
-          fieldName,
-        })
+        !field.deprecationReason ||
+        (this.options.filter(type, field) &&
+          !shouldBeRemoved({
+            inVersion: this.options.fromVersion,
+            deprecationReason: field.deprecationReason,
+            typeName: type.name,
+            fieldName,
+          }))
       ) {
         newFields[fieldName] = fieldToFieldConfig(field, resolveType, true)
       }

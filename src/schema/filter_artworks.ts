@@ -35,6 +35,7 @@ import {
 
 import { NodeInterface } from "schema/object_identification"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",
@@ -175,7 +176,10 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
     followed_artists_total: {
       type: GraphQLInt,
       resolve: ({ aggregations }) => aggregations.followed_artists.value,
-      deprecationReason: "Favor `favor counts.followed_artists`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "counts.followed_artists",
+      }),
     },
     hits: {
       description: "Artwork results.",
@@ -197,7 +201,10 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
     total: {
       type: GraphQLInt,
       resolve: ({ aggregations }) => aggregations.total.value,
-      deprecationReason: "Favor `counts.total`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "counts.total",
+      }),
     },
     facet: {
       type: ArtworkFilterFacetType,

@@ -9,6 +9,7 @@ import { Searchable } from "schema/searchable"
 import { NodeInterface, GravityIDFields } from "schema/object_identification"
 import { ResolverContext } from "types/graphql"
 import { SearchableItemPresenter } from "./SearchableItemPresenter"
+import { deprecate } from "lib/deprecation"
 
 export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
   name: "SearchableItem",
@@ -37,7 +38,10 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
     },
     searchableType: {
       type: GraphQLString,
-      deprecationReason: "Switch to use `displayType`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "displayType",
+      }),
       resolve: item => new SearchableItemPresenter(item).displayType(),
     },
     displayType: {

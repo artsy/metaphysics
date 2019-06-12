@@ -31,6 +31,7 @@ import {
 
 import config from "config"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 const { PREDICTION_ENDPOINT } = config
 
@@ -159,7 +160,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       auction_state: {
         type: GraphQLString,
         resolve: ({ auction_state }) => auction_state,
-        deprecationReason: "Favor `status` for consistency with other models",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "status",
+        }),
       },
       bid_increments: {
         type: new GraphQLList(BidIncrement),
@@ -204,7 +208,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       is_auction: { type: GraphQLBoolean },
       is_benefit: {
         type: GraphQLBoolean,
-        deprecationReason: "Favor `isBenefit`",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "isBenefit",
+        }),
       },
       isBenefit: {
         type: GraphQLBoolean,

@@ -15,6 +15,7 @@ import {
   SaleArtworksAggregation,
 } from "./aggregations/filter_sale_artworks_aggregation"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 /**
  * NOTE: This type has been deprecated in favor of `SaleArtworks`.
@@ -102,7 +103,10 @@ export const FilterSaleArtworksType = new GraphQLObjectType<
 const FilterSaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: FilterSaleArtworksType,
   description: "Sale Artworks Elastic Search results",
-  deprecationReason: "This type has been superceded by `sale_artworks`",
+  deprecationReason: deprecate({
+    inVersion: 2,
+    preferUsageOf: "sale_artworks",
+  }),
   args: filterSaleArtworksArgs,
   resolve: (_root, options, { saleArtworksFilterLoader }) => {
     return saleArtworksFilterLoader(options)

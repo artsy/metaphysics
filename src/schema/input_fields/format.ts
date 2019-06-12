@@ -1,4 +1,5 @@
 import { GraphQLEnumType } from "graphql"
+import { deprecate } from "lib/deprecation"
 
 const Format = {
   type: new GraphQLEnumType({
@@ -11,9 +12,12 @@ const Format = {
         value: "plain",
       },
       markdown: {
-        // Deprecated
         value: "markdown",
-        deprecationReason: "deprecated",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          reason:
+            "Deprecated when we deprecated lower-case enum entries, but no alternative was provided. Add an alternative to MP if this is still needed.",
+        }),
       },
     },
   }),

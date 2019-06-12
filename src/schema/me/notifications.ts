@@ -14,6 +14,7 @@ import { omit } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { GlobalIDField, NodeInterface } from "schema/object_identification"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 const NotificationsFeedItemType = new GraphQLObjectType<any, ResolverContext>({
   name: "NotificationsFeedItem",
@@ -62,7 +63,10 @@ const Notifications: GraphQLFieldConfig<void, ResolverContext> = {
   description:
     "A list of feed items, indicating published artworks (grouped by date and artists).",
   args: pageable({}),
-  deprecationReason: "Prefer to use followed_artists_artwork_groups.",
+  deprecationReason: deprecate({
+    inVersion: 2,
+    preferUsageOf: "followed_artists_artwork_groups",
+  }),
   resolve: (_root, options, { notificationsFeedLoader }) => {
     if (!notificationsFeedLoader) return null
     const gravityOptions = convertConnectionArgsToGravityArgs(options)
