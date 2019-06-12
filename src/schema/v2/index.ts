@@ -4,8 +4,21 @@ import { RenameIDFields } from "./RenameIDFields"
 import { RenameArguments } from "./RenameArguments"
 import { RemoveDeprecatedFields } from "./RemoveDeprecatedFields"
 
+// TODO: Flip this switch before we go public with v2 and update clients. Until
+//       then this gives clients an extra window of opportunity to update.
+const FILTER_DEPRECATIONS = true
+
 // These should not show up in v2 at all.
-const FilterTypeNames = ["DoNotUseThisPartner"]
+const FilterTypeNames = [
+  "DoNotUseThisPartner",
+  "PartnerShow",
+  ...(FILTER_DEPRECATIONS
+    ? [
+        // TODO: This type is empty after removing PartnerShow.
+        "ArtworkContextPartnerShow",
+      ]
+    : []),
+]
 
 // Omit this id field entirely from the v2 schema, as it's a no-op
 const FilterIDFieldFromTypeNames = ["SaleArtworkHighestBid"]
@@ -17,6 +30,12 @@ const FilterIDFieldFromTypeNames = ["SaleArtworkHighestBid"]
 const StitchedTypePrefixes = [
   "Marketing", // KAWS
   "Commerce", // Exchange
+]
+
+// TODO: What shall we do here? Have them conform to our formal description?
+const SkipDeprecatedFieldsOfTypes = [
+  "AnalyticsPartnerStats",
+  "CommerceLineItem",
 ]
 
 // FIXME: ID fields shouldn't be nullable, so figure out what the deal is with
@@ -54,7 +73,9 @@ export const transformToV2 = (
     ...options,
   }
   return transformSchema(schema, [
-    new FilterTypes(type => !opt.filterTypes.includes(type.name)),
+    new FilterTypes(type => {
+      return !opt.filterTypes.includes(type.name)
+    }),
     new RenameIDFields(
       opt.allowedGravityTypesWithNullableIDField,
       opt.allowedNonGravityTypesWithNullableIDField,
@@ -62,6 +83,15 @@ export const transformToV2 = (
       opt.filterIDFieldFromTypes
     ),
     new RenameArguments((_field, arg) => (arg.name === "__id" ? "id" : null)),
-    new RemoveDeprecatedFields({ fromVersion: 2 }),
+    ...(FILTER_DEPRECATIONS
+      ? [
+          new RemoveDeprecatedFields({
+            fromVersion: 2,
+            filter: (type, _field) => {
+              return !SkipDeprecatedFieldsOfTypes.includes(type.name)
+            },
+          }),
+        ]
+      : []),
   ])
 }
