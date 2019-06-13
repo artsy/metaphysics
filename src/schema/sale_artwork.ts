@@ -17,9 +17,6 @@ import {
   GraphQLBoolean,
   GraphQLList,
   GraphQLFieldConfig,
-  FieldNode,
-  visit,
-  FragmentDefinitionNode,
 } from "graphql"
 import config from "config"
 import { ResolverContext } from "types/graphql"
@@ -98,7 +95,14 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           { fieldNodes, fragments }
         ) => {
           if (!fieldNodes) return artwork
-          if (shouldFetchArtwork(fieldNodes[0], fragments)) {
+          const fetchArtworkFields = ["edition_of", "edition_sets"]
+          if (
+            includesFieldsSelection(
+              fieldNodes[0],
+              fragments,
+              fetchArtworkFields
+            )
+          ) {
             return artworkLoader(artwork.id).catch(() => artwork)
           } else {
             return artwork
@@ -407,14 +411,6 @@ const SaleArtwork: GraphQLFieldConfig<void, ResolverContext> = {
     const data = await saleArtworkRootLoader(id)
     return data
   },
-}
-
-const shouldFetchArtwork = (
-  fieldNode: Readonly<FieldNode>,
-  fragments: [FragmentDefinitionNode]
-): boolean => {
-  const fetchArtworkFields = ["edition_of", "edition_sets"]
-  return includesFieldsSelection(fieldNode, fragments, fetchArtworkFields)
 }
 
 export default SaleArtwork

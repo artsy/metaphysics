@@ -3,12 +3,13 @@
 import { FieldNode, visit, FragmentDefinitionNode } from "graphql"
 
 export const hasFieldSelection = (
-  fieldNode: Readonly<FieldNode>,
-  fragments: [FragmentDefinitionNode],
+  fieldNode: Readonly<FieldNode | FragmentDefinitionNode>,
+  fragments: { [key: string]: FragmentDefinitionNode },
   match: (nodeName: string, depth: number) => boolean
 ): boolean => {
+  if (!fieldNode) return false
   let matched: boolean = false
-  visit(fieldNode, {
+  visit(fieldNode.selectionSet!.selections, {
     Field(node, _key, _parent, path, _ancestors) {
       if (match(node.name.value, path.length)) {
         matched = true
@@ -24,11 +25,25 @@ export const hasFieldSelection = (
 }
 
 export const includesFieldsSelection = (
-  fieldNode: Readonly<FieldNode>,
-  fragments: [FragmentDefinitionNode],
+  fieldNode: Readonly<FieldNode | FragmentDefinitionNode>,
+  fragments: { [key: string]: FragmentDefinitionNode },
   fields: string[]
 ): boolean => {
-  return hasFieldSelection(fieldNode, fragments, (nodeName, _depth) =>
-    fields.includes(nodeName)
+  return hasFieldSelection(
+    fieldNode,
+    fragments,
+    (nodeName, depth) => depth <= 1 && fields.includes(nodeName)
+  )
+}
+
+export const includesOtherFieldsSelection = (
+  fieldNode: Readonly<FieldNode | FragmentDefinitionNode>,
+  fragments: { [key: string]: FragmentDefinitionNode },
+  fields: string[]
+): boolean => {
+  return hasFieldSelection(
+    fieldNode,
+    fragments,
+    (nodeName, depth) => depth <= 1 && !fields.includes(nodeName)
   )
 }
