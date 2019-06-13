@@ -47,6 +47,7 @@ import EventStatus from "./input_fields/event_status"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
+import { deprecate } from "lib/deprecation"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -105,7 +106,10 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     },
     artworks: {
       description: "The artworks featured in this show",
-      deprecationReason: "Use artworks_connection instead",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "artworks_connection",
+      }),
       type: new GraphQLList(Artwork.type),
       args: {
         ...artworksArgs,
@@ -353,7 +357,10 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     },
     displayable: {
       type: GraphQLBoolean,
-      deprecationReason: "Prefix Boolean returning fields with `is_`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "is_displayable",
+      }),
     },
 
     end_at: date,
@@ -442,7 +449,10 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ is_reference }) => is_reference,
     },
     is_local_discovery: {
-      deprecationReason: "Prefer isStubShow",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "isStubShow",
+      }),
       type: GraphQLBoolean,
     },
     isStubShow: {

@@ -15,6 +15,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 let possibleArgs
 
@@ -40,8 +41,10 @@ export const HomePageArtworkModuleType = new GraphQLObjectType<
     context: Context,
     display: {
       type: GraphQLString,
-      deprecationReason:
-        "Favor `is_`-prefixed Booleans (*and* this should be a Boolean)",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "is_displayable",
+      }),
     },
     is_displayable: {
       type: GraphQLBoolean,

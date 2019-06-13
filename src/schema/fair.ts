@@ -30,6 +30,7 @@ import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
+import { deprecate } from "lib/deprecation"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -176,7 +177,10 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     image: Image,
     is_active: {
       type: GraphQLBoolean,
-      deprecationReason: "Prefer isActive instead",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "isActive",
+      }),
       resolve: ({ autopublish_artworks_at, end_at }) => {
         const start = moment.utc(autopublish_artworks_at).subtract(7, "days")
         const end = moment.utc(end_at).add(14, "days")
@@ -287,7 +291,10 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     },
     published: {
       type: GraphQLBoolean,
-      deprecationReason: "Prefix Boolean returning fields with `is_`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "is_published",
+      }),
     },
     tagline: {
       type: GraphQLString,

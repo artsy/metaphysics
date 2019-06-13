@@ -16,6 +16,7 @@ import { DeliveryType } from "./delivery"
 import { InvoiceType } from "./invoice"
 import { isExisty } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 const MessageInitiatorType = new GraphQLObjectType<any, ResolverContext>({
   name: "MessageInitiator",
@@ -68,7 +69,10 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
     },
     from_email_address: {
       type: GraphQLString,
-      deprecationReason: "Prefer to use the structured `from` field.",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "from",
+      }),
     },
 
     from: {
@@ -93,7 +97,10 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
     raw_text: {
       description: "Full unsanitized text.",
       type: new GraphQLNonNull(GraphQLString),
-      deprecationReason: "Prefer to use the parsed/cleaned-up `body`.",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "body",
+      }),
     },
 
     body: {

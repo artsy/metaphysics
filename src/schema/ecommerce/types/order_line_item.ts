@@ -7,6 +7,7 @@ import date from "schema/fields/date"
 import { ArtworkVersion } from "../../artwork_version"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "schema/object_identification"
+import { deprecate } from "lib/deprecation"
 
 export const OrderLineItemType = new GraphQLObjectType<any, ResolverContext>({
   name: "OrderLineItem",
@@ -41,7 +42,10 @@ export const OrderLineItemType = new GraphQLObjectType<any, ResolverContext>({
     priceCents: {
       type: GraphQLInt,
       description: "Unit price in cents",
-      deprecationReason: "Switched to `listPriceCents`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "listPriceCents",
+      }),
     },
     price: amount(({ priceCents }) => priceCents),
     listPriceCents: {
