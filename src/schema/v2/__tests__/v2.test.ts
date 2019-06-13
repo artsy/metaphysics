@@ -1,4 +1,8 @@
-import { transformToV2, TransformToV2Options } from "../index"
+import {
+  transformToV2,
+  TransformToV2Options,
+  FILTER_DEPRECATIONS,
+} from "../index"
 import {
   GravityIDFields,
   InternalIDFields,
@@ -102,14 +106,19 @@ describe(transformToV2, () => {
           },
         },
       })
-      expect(
-        schema.getQueryType().getFields()["deprecatedField"]
-      ).toBeUndefined()
+      const deprecatedField = schema.getQueryType().getFields()[
+        "deprecatedField"
+      ]
+      if (FILTER_DEPRECATIONS) {
+        expect(deprecatedField).toBeUndefined()
+      } else {
+        expect(deprecatedField).not.toBeUndefined()
+      }
     })
   })
 
   describe("concerning ID renaming", () => {
-    it("renames __id arg to id", async () => {
+    it.only("renames __id arg to id", async () => {
       const rootValue = {
         node: {
           id: "global id",

@@ -6,7 +6,7 @@ import { RemoveDeprecatedFields } from "./RemoveDeprecatedFields"
 
 // TODO: Flip this switch before we go public with v2 and update clients. Until
 //       then this gives clients an extra window of opportunity to update.
-const FILTER_DEPRECATIONS = false
+export const FILTER_DEPRECATIONS = false
 
 // These should not show up in v2 at all.
 const FilterTypeNames = [
