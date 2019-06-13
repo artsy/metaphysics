@@ -97,9 +97,6 @@ export class RenameFields implements Transform {
         const changedFields = this.changedFields[newName] || [oldName, []]
         changedFields[1].push(type.name)
         this.changedFields[newName] = changedFields
-      } else if (newName === null) {
-        // Omit this field
-        madeChanges = true
       } else {
         newFields[oldName] = newField
       }

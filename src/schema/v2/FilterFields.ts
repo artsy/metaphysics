@@ -29,33 +29,45 @@ export class FilterFields implements Transform {
     const newSchema = visitSchema(schema, {
       [VisitSchemaKind.OBJECT_TYPE]: ((type: GraphQLObjectType<any, any>) => {
         const fields = this.transformFields(type)
-        return (
-          fields &&
-          new GraphQLObjectType({
-            fields,
-            name: type.name,
-            description: type.description,
-            astNode: type.astNode,
-            extensionASTNodes: type.extensionASTNodes,
-            isTypeOf: type.isTypeOf,
-            interfaces: type.getInterfaces(),
-          })
-        )
+        if (fields) {
+          // Leave type out if it's entirely empty after filtering fields.
+          if (Object.keys(fields).length === 0) {
+            return null
+          } else {
+            return new GraphQLObjectType({
+              fields,
+              name: type.name,
+              description: type.description,
+              astNode: type.astNode,
+              extensionASTNodes: type.extensionASTNodes,
+              isTypeOf: type.isTypeOf,
+              interfaces: type.getInterfaces(),
+            })
+          }
+        } else {
+          return undefined
+        }
       }) as TypeVisitor,
 
       [VisitSchemaKind.INTERFACE_TYPE]: ((type: GraphQLInterfaceType) => {
         const fields = this.transformFields(type)
-        return (
-          fields &&
-          new GraphQLInterfaceType({
-            fields,
-            name: type.name,
-            description: type.description,
-            astNode: type.astNode,
-            resolveType: type.resolveType,
-            extensionASTNodes: type.extensionASTNodes,
-          })
-        )
+        if (fields) {
+          // Leave type out if it's entirely empty after filtering fields.
+          if (Object.keys(fields).length === 0) {
+            return null
+          } else {
+            return new GraphQLInterfaceType({
+              fields,
+              name: type.name,
+              description: type.description,
+              astNode: type.astNode,
+              resolveType: type.resolveType,
+              extensionASTNodes: type.extensionASTNodes,
+            })
+          }
+        } else {
+          return undefined
+        }
       }) as TypeVisitor,
     })
 
