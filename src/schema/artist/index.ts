@@ -65,6 +65,7 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -406,7 +407,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       consignable: {
         type: GraphQLBoolean,
-        deprecationReason: "Favor `is_`-prefixed boolean attributes",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "is_*",
+        }),
       },
       counts: {
         type: new GraphQLObjectType<any, ResolverContext>({
@@ -466,7 +470,10 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       },
       display_auction_link: {
         type: GraphQLBoolean,
-        deprecationReason: "Favor `is_`-prefixed boolean attributes",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "is_*",
+        }),
       },
       exhibition_highlights: {
         args: {
@@ -619,11 +626,17 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       partner_shows: {
         ...ShowField,
         type: new GraphQLList(PartnerShow.type),
-        deprecationReason: "Prefer to use shows attribute",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "shows",
+        }),
       },
       public: {
         type: GraphQLBoolean,
-        deprecationReason: "Favor `is_`-prefixed boolean attributes",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "is_*",
+        }),
       },
       related: Related,
       sales: {

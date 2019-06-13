@@ -1,5 +1,5 @@
 import { create } from "lodash"
-import Show from "schema/partner_show"
+import Show from "schema/show"
 import Article from "schema/article"
 import { GraphQLUnionType } from "graphql"
 

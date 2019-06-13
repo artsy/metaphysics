@@ -22,6 +22,7 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "Category",
@@ -130,8 +131,10 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       contact_message: {
         type: GraphQLString,
-        deprecationReason:
-          "Prefer artwork contact_message to handle availability-based prompts.",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "Artwork.contact_message",
+        }),
         resolve: ({ type }) => {
           if (type === "Auction") {
             return [
@@ -204,8 +207,11 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       is_limited_fair_partner: {
         type: GraphQLBoolean,
-        deprecationReason:
-          "This field no longer exists, this is for backwards compatibility",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          reason:
+            "This field no longer exists, this is for backwards compatibility",
+        }),
         resolve: () => false,
       },
       is_linkable: {

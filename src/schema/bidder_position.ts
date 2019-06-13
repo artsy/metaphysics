@@ -11,6 +11,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
   name: "BidderPosition",
@@ -21,11 +22,17 @@ const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
     processed_at: date,
     display_max_bid_amount_dollars: {
       type: GraphQLString,
-      deprecationReason: "Favor `max_bid`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "max_bid",
+      }),
     },
     display_suggested_next_bid_dollars: {
       type: GraphQLString,
-      deprecationReason: "Favor `suggested_next_bid`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "suggested_next_bid",
+      }),
     },
     highest_bid: {
       type: new GraphQLObjectType<any, ResolverContext>({
@@ -51,11 +58,17 @@ const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
           },
           amount_cents: {
             type: GraphQLInt,
-            deprecationReason: "Favor `cents`",
+            deprecationReason: deprecate({
+              inVersion: 2,
+              preferUsageOf: "cents",
+            }),
           },
           display_amount_dollars: {
             type: GraphQLString,
-            deprecationReason: "Favor `display`",
+            deprecationReason: deprecate({
+              inVersion: 2,
+              preferUsageOf: "display",
+            }),
           },
         },
       }),
@@ -91,7 +104,10 @@ const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
     }),
     max_bid_amount_cents: {
       type: GraphQLInt,
-      deprecationReason: "Favor `max_bid`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "max_bid",
+      }),
     },
     sale_artwork: {
       type: SaleArtwork.type,
@@ -110,7 +126,10 @@ const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
     }),
     suggested_next_bid_cents: {
       type: GraphQLInt,
-      deprecationReason: "Favor `suggested_next_bid`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "suggested_next_bid",
+      }),
     },
   }),
 })

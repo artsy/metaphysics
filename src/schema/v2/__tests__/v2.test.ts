@@ -1,4 +1,8 @@
-import { transformToV2, TransformToV2Options } from "../index"
+import {
+  transformToV2,
+  TransformToV2Options,
+  FILTER_DEPRECATIONS,
+} from "../index"
 import {
   GravityIDFields,
   InternalIDFields,
@@ -15,6 +19,7 @@ import {
   GraphQLID,
   GraphQLInterfaceType,
   GraphQLArgs,
+  GraphQLString,
 } from "graphql"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
@@ -22,6 +27,7 @@ import {
   ExecutionResultDataDefault,
   ExecutionResult,
 } from "graphql/execution/execute"
+import { deprecate } from "lib/deprecation"
 
 function createSchema({
   fields,
@@ -87,10 +93,32 @@ describe(transformToV2, () => {
         schema.getType("GetRidOfID").getFields().internalID
       ).toBeUndefined()
     })
+
+    it("removes previously deprecated fields", () => {
+      const schema = createSchema({
+        fields: {
+          deprecatedField: {
+            type: GraphQLString,
+            deprecationReason: deprecate({
+              inVersion: 2,
+              preferUsageOf: "bar",
+            }),
+          },
+        },
+      })
+      const deprecatedField = schema.getQueryType().getFields()[
+        "deprecatedField"
+      ]
+      if (FILTER_DEPRECATIONS) {
+        expect(deprecatedField).toBeUndefined()
+      } else {
+        expect(deprecatedField).not.toBeUndefined()
+      }
+    })
   })
 
   describe("concerning ID renaming", () => {
-    it("renames __id arg to id", async () => {
+    it.only("renames __id arg to id", async () => {
       const rootValue = {
         node: {
           id: "global id",

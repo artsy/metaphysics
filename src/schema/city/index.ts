@@ -30,6 +30,7 @@ import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
+import { deprecate } from "lib/deprecation"
 
 const PartnerShowPartnerType = new GraphQLEnumType({
   name: "PartnerShowPartnerType",
@@ -80,7 +81,10 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         discoverable: {
           type: GraphQLBoolean,
           description: "Whether to include stub shows or not",
-          deprecationReason: "Use `includeStubShows`",
+          deprecationReason: deprecate({
+            inVersion: 2,
+            preferUsageOf: "includeStubShows",
+          }),
         },
       }),
       resolve: async (city, args, { showsWithHeadersLoader }) =>

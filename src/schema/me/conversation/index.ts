@@ -25,6 +25,7 @@ import {
 } from "schema/object_identification"
 import { MessageType } from "./message"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -194,8 +195,10 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     created_at: date,
     purchase_request: {
       type: GraphQLBoolean,
-      deprecationReason:
-        "Purchase requests are not supported. Replaced by buy now.",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        reason: "Purchase requests are not supported. Replaced by buy now.",
+      }),
       resolve: () => null,
     },
     from_last_viewed_message_id: {
@@ -234,7 +237,10 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     // If the user is a recipient of the last message, return their timestamped
     // 'read' event, otherwise null.
     last_message_open: {
-      deprecationReason: "Prefer to use `unread`",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "unread",
+      }),
       type: GraphQLString,
       description:
         "Timestamp if the user opened the last message, null in all other cases",

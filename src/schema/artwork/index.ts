@@ -43,6 +43,7 @@ import { capitalizeFirstCharacter } from "lib/helpers"
 import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "schema/fields/listPrice"
+import { deprecate } from "lib/deprecation"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -109,7 +110,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
 
       can_share_image: {
         type: GraphQLBoolean,
-        deprecationReason: "Favor `is_`-prefixed boolean attributes",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "is_*",
+        }),
       },
       category: { type: GraphQLString },
       attribution_class: {
@@ -218,7 +222,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       height: {
         type: GraphQLString,
         // See note on `metric` field.
-        deprecationReason: "Prefer dimensions instead.",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "dimensions",
+        }),
       },
       highlights: {
         type: new GraphQLList(Highlight),
@@ -334,7 +341,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       is_contactable: {
         type: GraphQLBoolean,
         description: "Are we able to display a contact form on artwork pages?",
-        deprecationReason: "Prefer to use is_inquireable",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "is_inquireable",
+        }),
         resolve: (artwork, _options, { relatedSalesLoader }) => {
           return relatedSalesLoader({
             size: 1,
@@ -360,7 +370,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       is_embeddable_video: { type: GraphQLBoolean, resolve: isEmbeddedVideo },
       is_ecommerce: {
         type: GraphQLBoolean,
-        deprecationReason: "Should not be used to determine anything UI-level",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          reason: "Should not be used to determine anything UI-level.",
+        }),
         resolve: ({ ecommerce }) => ecommerce,
       },
       is_for_sale: { type: GraphQLBoolean, resolve: ({ forsale }) => forsale },
@@ -422,8 +435,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       is_purchasable: {
         type: GraphQLBoolean,
-        deprecationReason:
-          "Purchase requests are not supported. Replaced by buy now.",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          reason: "Purchase requests are not supported. Replaced by buy now.",
+        }),
         resolve: () => null,
       },
       is_saved: {
@@ -460,8 +475,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       medium: { type: GraphQLString },
       metric: {
         type: GraphQLString,
-        // Used for Eigen compatibility, see converation at: https://github.com/artsy/metaphysics/pull/1350
-        deprecationReason: "Prefer dimensions instead.",
+        // Used for Eigen compatibility, see conversation at: https://github.com/artsy/metaphysics/pull/1350
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "dimensions",
+        }),
       },
       meta: Meta,
       myLotStanding: {
@@ -475,10 +493,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       pageviews: {
         type: GraphQLInt,
         description: "[DO NOT USE] Weekly pageview data (static).",
-        // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
-        // has been addressed.
-        // deprecationReason:
-        //   "Do not use! This is for an AB test and will be imminently deprecated.",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          reason: "This is for an AB test and will be imminently deprecated.",
+        }),
         resolve: ({ _id }) => artworkPageviews[_id],
       },
       partner: {
@@ -499,7 +517,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       pickup_available: { type: GraphQLBoolean },
       price: { type: GraphQLString },
       priceCents: {
-        deprecationReason: "Prefer `listPrice` instead.",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "listPrice",
+        }),
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "PriceCents",
           fields: {
@@ -745,7 +766,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       width: {
         type: GraphQLString,
         // See note on `metric` field.
-        deprecationReason: "Prefer dimensions instead.",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "dimensions",
+        }),
       },
       framed: {
         type: ArtworkInfoRowType,

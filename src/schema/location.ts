@@ -12,6 +12,7 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { deprecate } from "lib/deprecation"
 
 export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
   name: "LatLng",
@@ -91,7 +92,10 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLList(FormattedDaySchedules.type),
       resolve: ({ day_schedules }) =>
         FormattedDaySchedules.resolve(day_schedules),
-      deprecationReason: "Use openingHours instead",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "openingHours",
+      }),
     },
     openingHours: {
       type: OpeningHoursUnion,
