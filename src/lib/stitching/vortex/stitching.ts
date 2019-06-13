@@ -16,7 +16,7 @@ const getMaxPrice = (thing: { listPrice: any }) => {
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
-    union AnalyticsEntityUnion = Artwork | PartnerShow | Artist
+    union AnalyticsEntityUnion = Artwork | Show | Artist
     extend type AnalyticsPricingContext {
       appliedFiltersDisplay: String
     }
@@ -293,24 +293,9 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           }
         `,
         resolve: (parent, _args, context, info) => {
-          const toSnakeCase = s =>
-            s
-              .replace(/\.?([A-Z])/g, (_x, y) => "_" + y.toLowerCase())
-              .replace(/^_/, "")
-          const getMPNameFromTypeName = (typename: string): string => {
-            switch (typename) {
-              case "AnalyticsArtwork":
-                return "Artwork"
-              case "AnalyticsArtist":
-                return "Artist"
-              case "AnalyticsShow":
-                return "PartnerShow"
-              default:
-                return ""
-            }
-          }
+          const removeVortexPrefix = name => name.replace("Analytics", "")
           const typename = parent.rankedEntity.__typename
-          const fieldName = toSnakeCase(getMPNameFromTypeName(typename))
+          const fieldName = removeVortexPrefix(typename).toLowerCase()
           const id = parent.rankedEntity.entityId
           return info.mergeInfo
             .delegateToSchema({
@@ -325,7 +310,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               transforms: vortexSchema.transforms,
             })
             .then(response => {
-              response.__typename = getMPNameFromTypeName(typename)
+              response.__typename = removeVortexPrefix(typename)
               return response
             })
         },

@@ -63,7 +63,7 @@ type AnalyticsArtworksPublishedStats {
 # An ISO 8601 datetime
 scalar AnalyticsDateTime
 
-union AnalyticsEntityUnion = Artwork | PartnerShow | Artist
+union AnalyticsEntityUnion = Artwork | Show | Artist
 
 # A histogram bin
 type AnalyticsHistogramBin {
