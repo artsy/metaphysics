@@ -11,10 +11,10 @@ export const FILTER_DEPRECATIONS = false
 // These should not show up in v2 at all.
 const FilterTypeNames = [
   "DoNotUseThisPartner",
-  "PartnerShow",
   ...(FILTER_DEPRECATIONS
     ? [
-        // TODO: This type is empty after removing PartnerShow.
+        // TODO: These are empty after removing all fields from PartnerShow.
+        "PartnerShow",
         "ArtworkContextPartnerShow",
       ]
     : []),
