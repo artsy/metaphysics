@@ -16,7 +16,7 @@ const getMaxPrice = (thing: { listPrice: any }) => {
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
-    union AnalyticsEntityUnion = Artwork | Show | Artist
+    union AnalyticsRankedEntityUnion = Artwork | Show | Artist
     extend type AnalyticsPricingContext {
       appliedFiltersDisplay: String
     }
@@ -64,7 +64,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
       ): String
     }
     extend type AnalyticsRankedStats {
-      entity: AnalyticsEntityUnion
+      entity: AnalyticsRankedEntityUnion
     }
   `,
   resolvers: {
@@ -280,7 +280,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           ... on AnalyticsRankedStats {
             rankedEntity{
               __typename
-              ... on AnalyticsArtwork{
+              ... on AnalyticsArtwork {
                 entityId
               }
               ... on AnalyticsShow {

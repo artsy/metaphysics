@@ -63,8 +63,6 @@ type AnalyticsArtworksPublishedStats {
 # An ISO 8601 datetime
 scalar AnalyticsDateTime
 
-union AnalyticsEntityUnion = Artwork | Show | Artist
-
 # A histogram bin
 type AnalyticsHistogramBin {
   maxPriceCents: Int!
@@ -323,12 +321,14 @@ enum AnalyticsQueryPeriodEnum {
   SIXTEEN_WEEKS
 }
 
+union AnalyticsRankedEntityUnion = Artwork | Show | Artist
+
 # Top artworks, shows, or artists from a partner
 type AnalyticsRankedStats {
   period: AnalyticsQueryPeriodEnum!
   rankedEntity: AnalyticsRankedStatsUnion!
   value: Int!
-  entity: AnalyticsEntityUnion
+  entity: AnalyticsRankedEntityUnion
 }
 
 # The connection type for RankedStats.
