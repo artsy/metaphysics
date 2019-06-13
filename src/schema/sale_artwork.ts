@@ -19,12 +19,14 @@ import {
   GraphQLFieldConfig,
   FieldNode,
   visit,
+  FragmentDefinitionNode,
 } from "graphql"
 import config from "config"
 import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 import { deprecate } from "lib/deprecation"
 import _ from "lodash"
+import { includesFieldsSelection } from "lib/fieldSelectionHelpers"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -409,33 +411,10 @@ const SaleArtwork: GraphQLFieldConfig<void, ResolverContext> = {
 
 const shouldFetchArtwork = (
   fieldNode: Readonly<FieldNode>,
-  fragments: any
+  fragments: [FragmentDefinitionNode]
 ): boolean => {
   const fetchArtworkFields = ["edition_of", "edition_sets"]
-  let needsArtworkFetch: boolean = false
-  visit(fieldNode, {
-    Field(node, _key, _parent, path, _ancestors) {
-      // we want to only check first level fields so ignoring paths > 3
-      // path = 3 since when we use a fragment to access fields path includes
-      // selectionSet and selectionFields
-      if (path.length <= 3 && fetchArtworkFields.includes(node.name.value)) {
-        needsArtworkFetch = true
-        return false
-      }
-    },
-    FragmentSpread(node) {
-      const fragmentDef = fragments[node.name.value]
-      if (
-        fragmentDef.selectionSet.selections.some(s =>
-          fetchArtworkFields.includes(s.name.value)
-        )
-      ) {
-        needsArtworkFetch = true
-        return false
-      }
-    },
-  })
-  return needsArtworkFetch
+  return includesFieldsSelection(fieldNode, fragments, fetchArtworkFields)
 }
 
 export default SaleArtwork
