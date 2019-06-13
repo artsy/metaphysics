@@ -118,7 +118,7 @@ describe(transformToV2, () => {
   })
 
   describe("concerning ID renaming", () => {
-    it.only("renames __id arg to id", async () => {
+    xit("renames __id arg to id", async () => {
       const rootValue = {
         node: {
           id: "global id",
