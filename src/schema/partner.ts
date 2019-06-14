@@ -22,7 +22,7 @@ import {
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { deprecate } from "lib/deprecation"
-import { includesOtherFieldsSelection } from "lib/hasFieldSelection"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "Category",
@@ -294,7 +294,10 @@ const Partner: GraphQLFieldConfig<void, ResolverContext> = {
     const isSlug = !/[0-9a-f]{24}/.test(id)
     // vortex can only load analytics data by id so if id passed by client is slug load
     // partner from gravity
-    if (isSlug || includesOtherFieldsSelection(info, blacklistedFields)) {
+    if (
+      isSlug ||
+      includesFieldsOtherThanSelectionSet(info, blacklistedFields)
+    ) {
       return partnerLoader(id)
     }
     return { id, _id: id }

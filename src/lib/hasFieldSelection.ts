@@ -23,6 +23,9 @@ export const hasFieldSelection = (
   ): void => {
     visit(fieldNode, {
       Field(node, _key, _parent, path, _ancestors) {
+        if (path.length > 3) {
+          return false
+        }
         if (path.length === 3 && match(node.name.value)) {
           matched = true
           return BREAK
@@ -38,14 +41,14 @@ export const hasFieldSelection = (
   return matched
 }
 
-export const includesFieldsSelection = (
+export const hasIntersectionWithSelectionSet = (
   resolveInfo: GraphQLResolveInfo,
   fields: string[]
 ): boolean => {
   return hasFieldSelection(resolveInfo, nodeName => fields.includes(nodeName))
 }
 
-export const includesOtherFieldsSelection = (
+export const includesFieldsOtherThanSelectionSet = (
   resolveInfo: GraphQLResolveInfo,
   fields: string[]
 ): boolean => {

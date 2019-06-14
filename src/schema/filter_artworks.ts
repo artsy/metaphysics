@@ -32,7 +32,7 @@ import {
 import { NodeInterface } from "schema/object_identification"
 import { ResolverContext } from "types/graphql"
 import { deprecate } from "lib/deprecation"
-import { includesOtherFieldsSelection } from "lib/hasFieldSelection"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",
@@ -383,7 +383,7 @@ const filterArtworksTypeFactory = (
     const blacklistedFields = ["artworks_connection", "__id"]
     if (
       info.fieldNodes &&
-      includesOtherFieldsSelection(info, blacklistedFields)
+      includesFieldsOtherThanSelectionSet(info, blacklistedFields)
     ) {
       return loader(gravityOptions).then(response =>
         Object.assign({}, response, { options: gravityOptions })
