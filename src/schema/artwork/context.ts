@@ -1,9 +1,9 @@
 import { assign, create, first, flow, compact } from "lodash"
 import Fair from "schema/fair"
 import Sale from "schema/sale/index"
-import PartnerShow from "schema/partner_show"
 import { GraphQLUnionType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import Show from "schema/show"
 
 export const ArtworkContextFairType = create(Fair.type, {
   name: "ArtworkContextFair",
@@ -20,9 +20,9 @@ export const ArtworkContextAuctionType = create(Sale.type, {
   isTypeOf: ({ context_type }) => context_type === "Auction",
 })
 
-export const ArtworkContextPartnerShowType = create(PartnerShow.type, {
-  name: "ArtworkContextPartnerShow",
-  isTypeOf: ({ context_type }) => context_type === "PartnerShow",
+export const ArtworkContextPartnerShowType = create(Show.type, {
+  name: "ArtworkContextShow",
+  isTypeOf: ({ context_type }) => context_type === "Show",
 })
 
 export const ArtworkContextType = new GraphQLUnionType({

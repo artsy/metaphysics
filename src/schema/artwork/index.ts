@@ -9,6 +9,7 @@ import Image, { getDefault, normalizeImageData } from "schema/image"
 import { setVersion } from "schema/image/normalize"
 import Fair from "schema/fair"
 import Sale from "schema/sale"
+import Show from "schema/show"
 import SaleArtwork from "schema/sale_artwork"
 import { connectionWithCursorInfo } from "schema/fields/pagination"
 import PartnerShow from "schema/partner_show"
@@ -692,7 +693,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       series: markdown(),
       show: {
-        type: PartnerShow.type,
+        type: Show.type,
         args: {
           size: { type: GraphQLInt },
           active: { type: GraphQLBoolean },
