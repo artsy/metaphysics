@@ -90,7 +90,15 @@ export class RenameFields implements Transform {
         madeChanges = true
         newFields[newName] = {
           ...newField,
-          resolve: source => source[oldName],
+          resolve: (source, _args, _context, info) => {
+            // console.log(info.fieldNodes)
+            const alias = info.fieldNodes.find(node => node.alias)
+            if (alias) {
+              return source[alias.name.value]
+            } else {
+              return source[oldName]
+            }
+          },
         }
 
         // Store for transformRequest: newName => [oldName, [..., type.name]]
@@ -126,13 +134,16 @@ export class RenameFields implements Transform {
             if (changedField) {
               const [oldName, typeNames] = changedField
               if (typeNames.includes(type.name)) {
-                return {
+                const newNode = {
                   ...node,
                   name: {
                     ...node.name,
                     value: oldName,
                   },
                 }
+                console.log(node)
+                console.log(newNode)
+                return newNode
               }
             }
             return undefined

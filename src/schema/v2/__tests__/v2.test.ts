@@ -214,6 +214,40 @@ describe(transformToV2, () => {
       )
     })
 
+    it.only("supports aliasing of a renamed field", async () => {
+      const rootValue = {
+        fieldWithGlobalID: {
+          id: "global id",
+        },
+      }
+      const { data } = await runQuery({
+        schema: createSchema({
+          fields: {
+            fieldWithGlobalID: {
+              type: new GraphQLObjectType({
+                name: "AnyType",
+                fields: {
+                  ...IDFields,
+                },
+              }),
+            },
+          },
+        }),
+        rootValue,
+        source: gql`
+          query {
+            fieldWithGlobalID {
+              # id
+              someOtherName: id
+            }
+          }
+        `,
+      })
+      expect(data.fieldWithGlobalID.someOtherName).toEqual(
+        toGlobalId("AnyType", "global id")
+      )
+    })
+
     it("throws when new id fields are added", () => {
       expect(() => {
         createSchema({
