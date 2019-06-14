@@ -4,7 +4,7 @@ import {
   hasFieldSelection,
   includesFieldsSelection,
   includesOtherFieldsSelection,
-} from "lib/fieldSelectionHelpers"
+} from "lib/hasFieldSelection"
 
 describe("hasFieldSelection", () => {
   it("returns correct response based on match function", () => {
@@ -26,16 +26,18 @@ describe("hasFieldSelection", () => {
     otherNodes.map(node => {
       fragments[node.name.value] = node
     })
-    const matchByName = (nodeName, _depth) => nodeName === "edition_of"
-    expect(hasFieldSelection(firstNode, fragments, matchByName)).toEqual(true)
+    const matchByName = nodeName => nodeName === "edition_of"
+    expect(
+      hasFieldSelection({ fieldNodes: [firstNode], fragments }, matchByName)
+    ).toEqual(true)
 
-    const matchByRandomName = (nodeName, _depth) => nodeName === "random"
-    expect(hasFieldSelection(firstNode, fragments, matchByRandomName)).toEqual(
-      false
-    )
-
-    const matchByDepth = (_nodeName, depth) => depth > 6
-    expect(hasFieldSelection(firstNode, fragments, matchByDepth)).toEqual(false)
+    const matchByRandomName = nodeName => nodeName === "random"
+    expect(
+      hasFieldSelection(
+        { fieldNodes: [firstNode], fragments },
+        matchByRandomName
+      )
+    ).toEqual(false)
   })
 })
 
@@ -60,12 +62,17 @@ describe("includesFieldsSelection", () => {
       fragments[node.name.value] = node
     })
     expect(
-      includesFieldsSelection(firstNode, fragments, ["edition_of", "random"])
+      includesFieldsSelection({ fieldNodes: [firstNode], fragments }, [
+        "edition_of",
+        "random",
+      ])
     ).toEqual(true)
 
-    expect(includesFieldsSelection(firstNode, fragments, ["random"])).toEqual(
-      false
-    )
+    expect(
+      includesFieldsSelection({ fieldNodes: [firstNode], fragments }, [
+        "random",
+      ])
+    ).toEqual(false)
   })
 })
 
@@ -90,14 +97,14 @@ describe("includesOtherFieldsSelection", () => {
       fragments[node.name.value] = node
     })
     expect(
-      includesOtherFieldsSelection(firstNode, fragments, [
+      includesOtherFieldsSelection({ fieldNodes: [firstNode], fragments }, [
         "edition_of",
         "random",
       ])
     ).toEqual(true)
   })
 
-  it.only("returns false when not asked for other fields other than filters", () => {
+  it("returns false when not asked for other fields other than filters", () => {
     const ast = parse(gql`
       fragment Start on Artwork {
         ...TestEditionSet
@@ -116,7 +123,7 @@ describe("includesOtherFieldsSelection", () => {
       fragments[node.name.value] = node
     })
     expect(
-      includesOtherFieldsSelection(firstNode, fragments, [
+      includesOtherFieldsSelection({ fieldNodes: [firstNode], fragments }, [
         "edition_of",
         "edition_sets",
       ])

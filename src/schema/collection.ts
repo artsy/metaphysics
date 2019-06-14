@@ -15,7 +15,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { includesOtherFieldsSelection } from "lib/fieldSelectionHelpers"
+import { includesOtherFieldsSelection } from "lib/hasFieldSelection"
 
 // Note to developers working on collections, the staging server does not get a copy
 // of all artwork saves, so you will need to add some each week in order to have data
@@ -87,15 +87,13 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
 export const collectionResolverFactory = (
   collection_id
 ): GraphQLFieldResolver<void, ResolverContext> => {
-  return (_root, options, { collectionLoader }, { fieldNodes, fragments }) => {
+  return (_root, options, { collectionLoader }, info) => {
     if (!collectionLoader) return null
 
     const id = collection_id || options.id
     const blacklistedFields = ["artworks_connection", "id", "__id"]
 
-    if (
-      includesOtherFieldsSelection(fieldNodes[0], fragments, blacklistedFields)
-    ) {
+    if (includesOtherFieldsSelection(info, blacklistedFields)) {
       return collectionLoader(id)
     }
 

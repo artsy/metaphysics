@@ -23,7 +23,7 @@ import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 import { deprecate } from "lib/deprecation"
 import _ from "lodash"
-import { includesFieldsSelection } from "lib/fieldSelectionHelpers"
+import { includesFieldsSelection } from "lib/hasFieldSelection"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -88,21 +88,10 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
       cached,
       artwork: {
         type: Artwork.type,
-        resolve: (
-          { artwork },
-          _options,
-          { artworkLoader },
-          { fieldNodes, fragments }
-        ) => {
-          if (!fieldNodes) return artwork
+        resolve: ({ artwork }, _options, { artworkLoader }, info) => {
+          if (!info.fieldNodes) return artwork
           const fetchArtworkFields = ["edition_of", "edition_sets"]
-          if (
-            includesFieldsSelection(
-              fieldNodes[0],
-              fragments,
-              fetchArtworkFields
-            )
-          ) {
+          if (includesFieldsSelection(info, fetchArtworkFields)) {
             return artworkLoader(artwork.id).catch(() => artwork)
           } else {
             return artwork

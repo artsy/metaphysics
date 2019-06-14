@@ -39,7 +39,7 @@ import SuggestedArtists from "./suggested_artists"
 import Submissions from "./consignments/submissions"
 import config from "config"
 import { ResolverContext } from "types/graphql"
-import { includesOtherFieldsSelection } from "lib/fieldSelectionHelpers"
+import { includesOtherFieldsSelection } from "lib/hasFieldSelection"
 
 // @ts-ignore
 const { ENABLE_CONVECTION_STITCHING } = config
@@ -131,12 +131,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
 
 const MeField: GraphQLFieldConfig<void, ResolverContext> = {
   type: Me,
-  resolve: (
-    _root,
-    _options,
-    { userID, meLoader },
-    { fieldNodes, fragments }
-  ) => {
+  resolve: (_root, _options, { userID, meLoader }, info) => {
     if (!meLoader) return null
     const blacklistedFields = [
       "id",
@@ -164,9 +159,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "followsAndSaves",
       "saved_artworks",
     ]
-    if (
-      includesOtherFieldsSelection(fieldNodes[0], fragments, blacklistedFields)
-    ) {
+    if (includesOtherFieldsSelection(info, blacklistedFields)) {
       return meLoader().catch(() => null)
     }
     // The email and is_collector are here so that the type system's `isTypeOf`

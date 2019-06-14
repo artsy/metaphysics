@@ -22,7 +22,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { includesOtherFieldsSelection } from "lib/fieldSelectionHelpers"
+import { includesOtherFieldsSelection } from "lib/hasFieldSelection"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -206,13 +206,11 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, { geneLoader }, { fieldNodes, fragments }) => {
+  resolve: (_root, { id }, { geneLoader }, info) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ["filtered_artworks", "id", "__id"]
-    if (
-      includesOtherFieldsSelection(fieldNodes[0], fragments, blacklistedFields)
-    ) {
+    if (includesOtherFieldsSelection(info, blacklistedFields)) {
       return geneLoader(id)
     }
 

@@ -32,7 +32,7 @@ import {
 import { NodeInterface } from "schema/object_identification"
 import { ResolverContext } from "types/graphql"
 import { deprecate } from "lib/deprecation"
-import { includesOtherFieldsSelection } from "lib/fieldSelectionHelpers"
+import { includesOtherFieldsSelection } from "lib/hasFieldSelection"
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",
@@ -346,7 +346,7 @@ const filterArtworksTypeFactory = (
       unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
       authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
     },
-    { fieldNodes, fragments }
+    info
   ) => {
     const { include_artworks_by_followed_artists, aggregations } = options
     const requestedPersonalizedAggregation = aggregations.includes(
@@ -382,8 +382,8 @@ const filterArtworksTypeFactory = (
 
     const blacklistedFields = ["artworks_connection", "__id"]
     if (
-      fieldNodes &&
-      includesOtherFieldsSelection(fieldNodes[0], fragments, blacklistedFields)
+      info.fieldNodes &&
+      includesOtherFieldsSelection(info, blacklistedFields)
     ) {
       return loader(gravityOptions).then(response =>
         Object.assign({}, response, { options: gravityOptions })
