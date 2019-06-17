@@ -118,12 +118,24 @@ type AnalyticsPartnerAudienceStats {
   uniqueVisitors: Int!
 }
 
+# Inquiry count time series data of a partner
+type AnalyticsPartnerInquiryCountTimeSeriesStats {
+  count: Int
+  endTime: AnalyticsDateTime
+  startTime: AnalyticsDateTime
+}
+
 # Inquiry stats of a partner
 type AnalyticsPartnerInquiryStats {
   inquiryCount: Int!
   inquiryResponseTime: Int
   partnerId: String!
   period: AnalyticsQueryPeriodEnum!
+
+  # Partner inquiry count time series
+  timeSeries(
+    cumulative: Boolean = false
+  ): [AnalyticsPartnerInquiryCountTimeSeriesStats!]
 }
 
 # Sales stats of a partner
@@ -179,7 +191,7 @@ type AnalyticsPartnerStats {
   pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
   partnerId: String!
 
-  # Artworks, shows, and artists ranked by views
+  # Artworks, shows, or artists ranked by views. Capped at 10 by the underlying sql query.
   rankedStats(
     # Returns the elements in the list that come after the specified cursor.
     after: String
