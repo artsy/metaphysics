@@ -2,14 +2,11 @@ import {
   assign,
   camelCase,
   compact,
-  difference,
-  flatMap,
   flow,
   includes,
   isEmpty,
   isObject,
   isString,
-  map,
   omit,
   reject,
   trim,
@@ -100,21 +97,6 @@ export const stripTags = (str?: string) => {
 }
 export const markdownToText = str => {
   return stripTags(formatMarkdownValue(str, "html"))
-}
-export const parseFieldASTsIntoArray = fieldASTs => {
-  // TODO: when fieldASTs[*].selectionSet.selections.kind === "InlineFragment" recursively go deeper
-  return map(flatMap(fieldASTs, "selectionSet.selections"), "name.value")
-}
-export const queriedForFieldsOtherThanBlacklisted = (
-  fieldASTs,
-  blacklistedFields
-) => {
-  if (!fieldASTs) return true
-  const queriedFields = parseFieldASTsIntoArray(fieldASTs)
-  return difference(queriedFields, blacklistedFields).length > 0
-}
-export const queryContainsField = (fieldASTs, soughtField) => {
-  return parseFieldASTsIntoArray(fieldASTs).includes(soughtField)
 }
 
 export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(

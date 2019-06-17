@@ -9,6 +9,10 @@ describe("SaleArtwork type", () => {
       amount_cents: 325000,
       display_amount_dollars: "€3,250",
     },
+    artwork: {
+      id: "artwork-1",
+      title: "Untitled1",
+    },
     bidder_positions_count: 7,
     highest_bid_amount_cents: 325000,
     display_highest_bid_amount_dollars: "€3,250",
@@ -25,13 +29,26 @@ describe("SaleArtwork type", () => {
     symbol: "€",
   }
 
+  const artwork = {
+    id: "artwork-1",
+    title: "Untitled1",
+    unique: true,
+    edition_sets: [
+      {
+        id: "ed-1",
+      },
+    ],
+  }
+
   const execute = async (
     query,
-    gravityResponse = saleArtwork,
+    saleArtworkResponse = saleArtwork,
+    artworkLoader = jest.fn(),
     context = {}
   ) => {
     return await runQuery(query, {
-      saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
+      saleArtworkRootLoader: () => Promise.resolve(saleArtworkResponse),
+      artworkLoader: artworkLoader,
       ...context,
     })
   }
@@ -90,6 +107,96 @@ describe("SaleArtwork type", () => {
     })
   })
 
+  describe("artwork resolver", () => {
+    it("fetches artwork when edition_set data is requested", async () => {
+      const query = `
+        {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            artwork{
+              id
+              edition_of
+              edition_sets{
+                id
+              }
+            }
+          }
+        }
+      `
+      const artworkLoaderMock = jest.fn(() => Promise.resolve(artwork))
+      expect(await execute(query, saleArtwork, artworkLoaderMock)).toEqual({
+        sale_artwork: {
+          artwork: {
+            id: "artwork-1",
+            edition_of: "Unique",
+            edition_sets: [
+              {
+                id: "ed-1",
+              },
+            ],
+          },
+        },
+      })
+      expect(artworkLoaderMock).toHaveBeenCalledWith("artwork-1")
+    })
+
+    it("fetches artwork when edition_set data is requested via fragment spread", async () => {
+      const query = `
+        fragment TestEditionSet on Artwork{
+          edition_of
+          edition_sets{
+            id
+          }
+        }
+        query {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            artwork{
+              id
+              ... TestEditionSet
+            }
+          }
+        }
+      `
+      const artworkLoaderMock = jest.fn(() => Promise.resolve(artwork))
+      expect(await execute(query, saleArtwork, artworkLoaderMock)).toEqual({
+        sale_artwork: {
+          artwork: {
+            id: "artwork-1",
+            edition_of: "Unique",
+            edition_sets: [
+              {
+                id: "ed-1",
+              },
+            ],
+          },
+        },
+      })
+      expect(artworkLoaderMock).toHaveBeenCalledWith("artwork-1")
+    })
+
+    it("does not fetch artwork if non of detail fields are requested", async () => {
+      const query = `
+        {
+          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+            artwork{
+              id
+              title
+            }
+          }
+        }
+      `
+      const artworkLoaderMock = jest.fn(() => Promise.resolve(artwork))
+      expect(await execute(query, saleArtwork, artworkLoaderMock)).toEqual({
+        sale_artwork: {
+          artwork: {
+            id: "artwork-1",
+            title: "Untitled1",
+          },
+        },
+      })
+      expect(artworkLoaderMock).not.toHaveBeenCalled()
+    })
+  })
+
   describe("bid_increments", () => {
     it("requires an increment strategy in order to retrieve increments", async () => {
       const query = `
@@ -111,7 +218,7 @@ describe("SaleArtwork type", () => {
       }
 
       await expect(
-        execute(query, gravityResponse, context)
+        execute(query, gravityResponse, null, context)
       ).rejects.toHaveProperty(
         "message",
         "schema/sale_artwork - Missing increment strategy"
@@ -155,7 +262,7 @@ describe("SaleArtwork type", () => {
         },
       }
 
-      const data = await execute(query, gravityResponse, context)
+      const data = await execute(query, gravityResponse, null, context)
       expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
         2400000000,
         2400001000,
@@ -216,7 +323,7 @@ describe("SaleArtwork type", () => {
         },
       }
 
-      const data = await execute(query, saleArtwork, context)
+      const data = await execute(query, saleArtwork, null, context)
       expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
         351000,
         355000,
@@ -280,7 +387,7 @@ describe("SaleArtwork type", () => {
         },
       }
 
-      const data = await execute(query, saleArtwork, context)
+      const data = await execute(query, saleArtwork, null, context)
       expect(data.sale_artwork.increments.slice(0, 2)).toEqual([
         {
           cents: 351000,
@@ -374,7 +481,7 @@ describe("SaleArtwork type", () => {
         ]
       }
 
-      const data = await execute(query, saleArtwork, {
+      const data = await execute(query, saleArtwork, null, {
         ...context,
         lotStandingLoader: lotStandingLoader,
       })
@@ -412,7 +519,7 @@ describe("SaleArtwork type", () => {
         ]
       }
 
-      const data = await execute(query, saleArtwork, {
+      const data = await execute(query, saleArtwork, null, {
         ...context,
         lotStandingLoader: lotStandingLoader,
       })

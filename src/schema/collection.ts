@@ -4,10 +4,7 @@ import { warn } from "lib/loggers"
 import cached from "./fields/cached"
 import CollectionSorts from "./sorts/collection_sorts"
 import { artworkConnection } from "./artwork"
-import {
-  queriedForFieldsOtherThanBlacklisted,
-  convertConnectionArgsToGravityArgs,
-} from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -18,6 +15,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 // Note to developers working on collections, the staging server does not get a copy
 // of all artwork saves, so you will need to add some each week in order to have data
@@ -89,13 +87,13 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
 export const collectionResolverFactory = (
   collection_id
 ): GraphQLFieldResolver<void, ResolverContext> => {
-  return (_root, options, { collectionLoader }, { fieldNodes }) => {
+  return (_root, options, { collectionLoader }, info) => {
     if (!collectionLoader) return null
 
     const id = collection_id || options.id
     const blacklistedFields = ["artworks_connection", "id", "__id"]
 
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    if (includesFieldsOtherThanSelectionSet(info, blacklistedFields)) {
       return collectionLoader(id)
     }
 

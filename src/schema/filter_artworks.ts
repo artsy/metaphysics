@@ -11,11 +11,7 @@ import {
 } from "./fields/pagination"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
-import {
-  convertConnectionArgsToGravityArgs,
-  queriedForFieldsOtherThanBlacklisted,
-  removeNulls,
-} from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, removeNulls } from "lib/helpers"
 import { connectionFromArraySlice, toGlobalId } from "graphql-relay"
 import {
   ArtworksAggregationResultsType,
@@ -36,6 +32,7 @@ import {
 import { NodeInterface } from "schema/object_identification"
 import { ResolverContext } from "types/graphql"
 import { deprecate } from "lib/deprecation"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",
@@ -349,7 +346,7 @@ const filterArtworksTypeFactory = (
       unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
       authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
     },
-    { fieldNodes }
+    info
   ) => {
     const { include_artworks_by_followed_artists, aggregations } = options
     const requestedPersonalizedAggregation = aggregations.includes(
@@ -384,7 +381,10 @@ const filterArtworksTypeFactory = (
     }
 
     const blacklistedFields = ["artworks_connection", "__id"]
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    if (
+      info.fieldNodes &&
+      includesFieldsOtherThanSelectionSet(info, blacklistedFields)
+    ) {
       return loader(gravityOptions).then(response =>
         Object.assign({}, response, { options: gravityOptions })
       )

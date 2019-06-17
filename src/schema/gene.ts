@@ -10,10 +10,7 @@ import filterArtworks, {
   filterArtworksArgs,
   FilterArtworksCounts,
 } from "./filter_artworks"
-import {
-  queriedForFieldsOtherThanBlacklisted,
-  convertConnectionArgsToGravityArgs,
-} from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { GravityIDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -25,6 +22,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -208,11 +206,11 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, { geneLoader }, { fieldNodes }) => {
+  resolve: (_root, { id }, { geneLoader }, info) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ["filtered_artworks", "id", "__id"]
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    if (includesFieldsOtherThanSelectionSet(info, blacklistedFields)) {
       return geneLoader(id)
     }
 
