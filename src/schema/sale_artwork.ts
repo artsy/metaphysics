@@ -92,7 +92,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           if (!info.fieldNodes) return artwork
           const fetchArtworkFields = ["edition_of", "edition_sets"]
           if (hasIntersectionWithSelectionSet(info, fetchArtworkFields)) {
-            return artworkLoader(artwork.id).catch(() => artwork)
+            return artworkLoader(artwork.id)
           } else {
             return artwork
           }
