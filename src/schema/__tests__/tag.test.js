@@ -8,7 +8,7 @@ describe("Tag", () => {
     // is not working correctly. This test is to make sure we don't
     // request to gravity.
 
-    it.only("returns filtered artworks", () => {
+    it("returns filtered artworks", () => {
       const context = {
         authenticatedLoaders: {},
         unauthenticatedLoaders: {
