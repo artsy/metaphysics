@@ -5,7 +5,7 @@ import { ResolverContext } from "types/graphql"
 jest.mock("../link")
 require("../link").mockFetch as jest.Mock<any>
 
-describe("TopArtworks type", () => {
+describe("AnalyticsRankedStats type", () => {
   const artwork = {
     id: "lona-misa",
     artist: {
@@ -33,14 +33,17 @@ describe("TopArtworks type", () => {
     query {
       partner(id: "lol") {
         analytics {
-          topArtworks(period: FOUR_WEEKS) {
+          topArtworks: rankedStats(
+            first: 1
+            objectType: ARTWORK
+            period: ONE_YEAR
+          ) {
             edges {
               node {
-                value
-                period
-                artwork {
-                  id
-                  title
+                entity {
+                  ... on Artwork {
+                    title
+                  }
                 }
               }
             }
@@ -53,36 +56,23 @@ describe("TopArtworks type", () => {
   it("is accessible through the partner type", async () => {
     const result = await runQuery(query, context)
     expect(result).toMatchInlineSnapshot(`
-Object {
-  "partner": Object {
-    "analytics": Object {
-      "topArtworks": Object {
-        "edges": Array [
-          Object {
-            "node": Object {
-              "artwork": Object {
-                "id": "lona-misa",
-                "title": "Lona Misa",
-              },
-              "period": "FOUR_WEEKS",
-              "value": 76,
+      Object {
+        "partner": Object {
+          "analytics": Object {
+            "topArtworks": Object {
+              "edges": Array [
+                Object {
+                  "node": Object {
+                    "entity": Object {
+                      "title": "Lona Misa",
+                    },
+                  },
+                },
+              ],
             },
           },
-          Object {
-            "node": Object {
-              "artwork": Object {
-                "id": "lona-misa",
-                "title": "Lona Misa",
-              },
-              "period": "FOUR_WEEKS",
-              "value": 51,
-            },
-          },
-        ],
-      },
-    },
-  },
-}
-`)
+        },
+      }
+    `)
   })
 })

@@ -1,3 +1,11 @@
+type Artist {
+  entityId: String!
+}
+
+type Artwork {
+  entityId: String!
+}
+
 """
 Publish artwork Series Stats
 """
@@ -71,15 +79,6 @@ type PartnerAudienceStats {
 }
 
 """
-Inquiry count time series data of a partner
-"""
-type PartnerInquiryCountTimeSeriesStats {
-  count: Int
-  endTime: DateTime
-  startTime: DateTime
-}
-
-"""
 Inquiry stats of a partner
 """
 type PartnerInquiryStats {
@@ -87,11 +86,6 @@ type PartnerInquiryStats {
   inquiryResponseTime: Int
   partnerId: String!
   period: QueryPeriodEnum!
-
-  """
-  Partner inquiry count time series
-  """
-  timeSeries(cumulative: Boolean = false): [PartnerInquiryCountTimeSeriesStats!]
 }
 
 """
@@ -146,12 +140,39 @@ type PartnerStats {
   partnerId: String!
 
   """
+  Artworks, shows, and artists ranked by views
+  """
+  rankedStats(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    objectType: RankedStatsObjectTypeEnum!
+    period: QueryPeriodEnum!
+  ): RankedStatsConnection
+
+  """
   Sales stats
   """
   sales(period: QueryPeriodEnum!): PartnerSalesStats
 
   """
-  Artworks ranked by views
+  Top artworks ranked by views
   """
   topArtworks(
     """
@@ -173,8 +194,8 @@ type PartnerStats {
     Returns the last _n_ elements from the list.
     """
     last: Int
-    period: QueryPeriodEnum!
-  ): TopArtworksConnection
+  ): RankedStatsConnection
+    @deprecated(reason: "Use rankedStats(objectType: ) instead")
 
   """
   Number of unique visitors
@@ -356,27 +377,27 @@ enum QueryPeriodEnum {
 }
 
 """
-Top artworks from a partner
+Top artworks, shows, or artists from a partner
 """
-type TopArtworks {
-  artworkId: String!
+type RankedStats {
   period: QueryPeriodEnum!
+  rankedEntity: RankedStatsUnion!
   value: Int!
 }
 
 """
-The connection type for TopArtworks.
+The connection type for RankedStats.
 """
-type TopArtworksConnection {
+type RankedStatsConnection {
   """
   A list of edges.
   """
-  edges: [TopArtworksEdge]
+  edges: [RankedStatsEdge]
 
   """
   A list of nodes.
   """
-  nodes: [TopArtworks]
+  nodes: [RankedStats]
 
   """
   Information to aid in pagination.
@@ -387,7 +408,7 @@ type TopArtworksConnection {
 """
 An edge in a connection.
 """
-type TopArtworksEdge {
+type RankedStatsEdge {
   """
   A cursor for use in pagination.
   """
@@ -396,5 +417,31 @@ type TopArtworksEdge {
   """
   The item at the end of the edge.
   """
-  node: TopArtworks
+  node: RankedStats
+}
+
+enum RankedStatsObjectTypeEnum {
+  """
+  Artist
+  """
+  ARTIST
+
+  """
+  Artwork
+  """
+  ARTWORK
+
+  """
+  Show
+  """
+  SHOW
+}
+
+"""
+An artwork, artist, or show
+"""
+union RankedStatsUnion = Artist | Artwork | Show
+
+type Show {
+  entityId: String!
 }
