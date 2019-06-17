@@ -10,9 +10,11 @@ import {
 
 export const hasFieldSelection = (
   resolveInfo: GraphQLResolveInfo,
-  match: (nodeName: string) => boolean
+  match: (fieldName: string) => boolean
 ): boolean => {
   if (!resolveInfo.fieldNodes) return false
+  // TODO: we only check first field node from the fields
+  // this is fine in general but to fully support we may need to revisit later
   const firstFieldNode = resolveInfo.fieldNodes[0]
 
   let matched: boolean = false
@@ -43,14 +45,19 @@ export const hasFieldSelection = (
 
 export const hasIntersectionWithSelectionSet = (
   resolveInfo: GraphQLResolveInfo,
-  fields: string[]
+  fieldNames: string[]
 ): boolean => {
-  return hasFieldSelection(resolveInfo, nodeName => fields.includes(nodeName))
+  return hasFieldSelection(resolveInfo, nodeName =>
+    fieldNames.includes(nodeName)
+  )
 }
 
 export const includesFieldsOtherThanSelectionSet = (
   resolveInfo: GraphQLResolveInfo,
-  fields: string[]
+  fieldNames: string[]
 ): boolean => {
-  return hasFieldSelection(resolveInfo, nodeName => !fields.includes(nodeName))
+  return hasFieldSelection(
+    resolveInfo,
+    nodeName => !fieldNames.includes(nodeName)
+  )
 }
