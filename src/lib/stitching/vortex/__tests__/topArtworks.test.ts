@@ -5,7 +5,7 @@ import { ResolverContext } from "types/graphql"
 jest.mock("../link")
 require("../link").mockFetch as jest.Mock<any>
 
-describe("AnalyticsRankedStats type", () => {
+describe("TopArtworks type", () => {
   const artwork = {
     id: "lona-misa",
     artist: {
@@ -33,17 +33,14 @@ describe("AnalyticsRankedStats type", () => {
     query {
       partner(id: "lol") {
         analytics {
-          topArtworks: rankedStats(
-            first: 1
-            objectType: ARTWORK
-            period: ONE_YEAR
-          ) {
+          topArtworks(period: FOUR_WEEKS) {
             edges {
               node {
-                entity {
-                  ... on Artwork {
-                    title
-                  }
+                value
+                period
+                artwork {
+                  id
+                  title
                 }
               }
             }
@@ -56,23 +53,36 @@ describe("AnalyticsRankedStats type", () => {
   it("is accessible through the partner type", async () => {
     const result = await runQuery(query, context)
     expect(result).toMatchInlineSnapshot(`
-      Object {
-        "partner": Object {
-          "analytics": Object {
-            "topArtworks": Object {
-              "edges": Array [
-                Object {
-                  "node": Object {
-                    "entity": Object {
-                      "title": "Lona Misa",
-                    },
-                  },
-                },
-              ],
+Object {
+  "partner": Object {
+    "analytics": Object {
+      "topArtworks": Object {
+        "edges": Array [
+          Object {
+            "node": Object {
+              "artwork": Object {
+                "id": "lona-misa",
+                "title": "Lona Misa",
+              },
+              "period": "FOUR_WEEKS",
+              "value": 76,
             },
           },
-        },
-      }
-    `)
+          Object {
+            "node": Object {
+              "artwork": Object {
+                "id": "lona-misa",
+                "title": "Lona Misa",
+              },
+              "period": "FOUR_WEEKS",
+              "value": 51,
+            },
+          },
+        ],
+      },
+    },
+  },
+}
+`)
   })
 })

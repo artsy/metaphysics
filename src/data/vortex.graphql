@@ -1,11 +1,3 @@
-type Artist {
-  entityId: String!
-}
-
-type Artwork {
-  entityId: String!
-}
-
 """
 Publish artwork Series Stats
 """
@@ -154,39 +146,12 @@ type PartnerStats {
   partnerId: String!
 
   """
-  Artworks, shows, or artists ranked by views. Capped at 10 by the underlying sql query.
-  """
-  rankedStats(
-    """
-    Returns the elements in the list that come after the specified cursor.
-    """
-    after: String
-
-    """
-    Returns the elements in the list that come before the specified cursor.
-    """
-    before: String
-
-    """
-    Returns the first _n_ elements from the list.
-    """
-    first: Int
-
-    """
-    Returns the last _n_ elements from the list.
-    """
-    last: Int
-    objectType: RankedStatsObjectTypeEnum!
-    period: QueryPeriodEnum!
-  ): RankedStatsConnection
-
-  """
   Sales stats
   """
   sales(period: QueryPeriodEnum!): PartnerSalesStats
 
   """
-  Top artworks ranked by views
+  Artworks ranked by views
   """
   topArtworks(
     """
@@ -208,8 +173,8 @@ type PartnerStats {
     Returns the last _n_ elements from the list.
     """
     last: Int
-  ): RankedStatsConnection
-    @deprecated(reason: "Use rankedStats(objectType: ) instead")
+    period: QueryPeriodEnum!
+  ): TopArtworksConnection
 
   """
   Number of unique visitors
@@ -391,27 +356,27 @@ enum QueryPeriodEnum {
 }
 
 """
-Top artworks, shows, or artists from a partner
+Top artworks from a partner
 """
-type RankedStats {
+type TopArtworks {
+  artworkId: String!
   period: QueryPeriodEnum!
-  rankedEntity: RankedStatsUnion!
   value: Int!
 }
 
 """
-The connection type for RankedStats.
+The connection type for TopArtworks.
 """
-type RankedStatsConnection {
+type TopArtworksConnection {
   """
   A list of edges.
   """
-  edges: [RankedStatsEdge]
+  edges: [TopArtworksEdge]
 
   """
   A list of nodes.
   """
-  nodes: [RankedStats]
+  nodes: [TopArtworks]
 
   """
   Information to aid in pagination.
@@ -422,7 +387,7 @@ type RankedStatsConnection {
 """
 An edge in a connection.
 """
-type RankedStatsEdge {
+type TopArtworksEdge {
   """
   A cursor for use in pagination.
   """
@@ -431,31 +396,5 @@ type RankedStatsEdge {
   """
   The item at the end of the edge.
   """
-  node: RankedStats
-}
-
-enum RankedStatsObjectTypeEnum {
-  """
-  Artist
-  """
-  ARTIST
-
-  """
-  Artwork
-  """
-  ARTWORK
-
-  """
-  Show
-  """
-  SHOW
-}
-
-"""
-An artwork, artist, or show
-"""
-union RankedStatsUnion = Artist | Artwork | Show
-
-type Show {
-  entityId: String!
+  node: TopArtworks
 }

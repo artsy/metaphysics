@@ -44,14 +44,6 @@ type AggregationCount {
   sortable_id: String
 }
 
-type AnalyticsArtist {
-  entityId: String!
-}
-
-type AnalyticsArtwork {
-  entityId: String!
-}
-
 # Publish artwork Series Stats
 type AnalyticsArtworksPublishedStats {
   percentageChanged: Int!
@@ -191,27 +183,10 @@ type AnalyticsPartnerStats {
   pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
   partnerId: String!
 
-  # Artworks, shows, or artists ranked by views. Capped at 10 by the underlying sql query.
-  rankedStats(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-    objectType: AnalyticsRankedStatsObjectTypeEnum!
-    period: AnalyticsQueryPeriodEnum!
-  ): AnalyticsRankedStatsConnection
-
   # Sales stats
   sales(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerSalesStats
 
-  # Top artworks ranked by views
+  # Artworks ranked by views
   topArtworks(
     # Returns the elements in the list that come after the specified cursor.
     after: String
@@ -224,8 +199,8 @@ type AnalyticsPartnerStats {
 
     # Returns the last _n_ elements from the list.
     last: Int
-  ): AnalyticsRankedStatsConnection
-    @deprecated(reason: "Use rankedStats(objectType: ) instead")
+    period: AnalyticsQueryPeriodEnum!
+  ): AnalyticsTopArtworksConnection
 
   # Number of unique visitors
   uniqueVisitors(period: AnalyticsQueryPeriodEnum!): Int
@@ -333,56 +308,33 @@ enum AnalyticsQueryPeriodEnum {
   SIXTEEN_WEEKS
 }
 
-union AnalyticsRankedEntityUnion = Artwork | Show | Artist
-
-# Top artworks, shows, or artists from a partner
-type AnalyticsRankedStats {
+# Top artworks from a partner
+type AnalyticsTopArtworks {
+  artworkId: String!
   period: AnalyticsQueryPeriodEnum!
-  rankedEntity: AnalyticsRankedStatsUnion!
   value: Int!
-  entity: AnalyticsRankedEntityUnion
+  artwork: Artwork
 }
 
-# The connection type for RankedStats.
-type AnalyticsRankedStatsConnection {
+# The connection type for TopArtworks.
+type AnalyticsTopArtworksConnection {
   # A list of edges.
-  edges: [AnalyticsRankedStatsEdge]
+  edges: [AnalyticsTopArtworksEdge]
 
   # A list of nodes.
-  nodes: [AnalyticsRankedStats]
+  nodes: [AnalyticsTopArtworks]
 
   # Information to aid in pagination.
   pageInfo: AnalyticsPageInfo!
 }
 
 # An edge in a connection.
-type AnalyticsRankedStatsEdge {
+type AnalyticsTopArtworksEdge {
   # A cursor for use in pagination.
   cursor: String!
 
   # The item at the end of the edge.
-  node: AnalyticsRankedStats
-}
-
-enum AnalyticsRankedStatsObjectTypeEnum {
-  # Artist
-  ARTIST
-
-  # Artwork
-  ARTWORK
-
-  # Show
-  SHOW
-}
-
-# An artwork, artist, or show
-union AnalyticsRankedStatsUnion =
-    AnalyticsArtist
-  | AnalyticsArtwork
-  | AnalyticsShow
-
-type AnalyticsShow {
-  entityId: String!
+  node: AnalyticsTopArtworks
 }
 
 input ApproveOrderInput {
@@ -2468,16 +2420,10 @@ type AttributionClass {
   info: String
 
   # Longer version of attribution class display
-  short_description: String
-    @deprecated(
-      reason: "Prefer to use `shortDescription`. [Will be removed in v2]"
-    )
+  short_description: String @deprecated(reason: "Prefer shortDescription")
 
   # Long descriptive phrase used as companion for short_description
-  long_description: String
-    @deprecated(
-      reason: "Prefer to use `longDescription`. [Will be removed in v2]"
-    )
+  long_description: String @deprecated(reason: "Prefer longDescription")
 
   # Longer version of attribution class display
   shortDescription: String

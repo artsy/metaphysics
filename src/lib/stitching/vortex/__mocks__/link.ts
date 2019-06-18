@@ -84,15 +84,19 @@ export const mockFetch = jest.fn(() =>
                 },
               ],
             },
-            rankedStats: {
+            topArtworks: {
               edges: [
                 {
                   node: {
-                    rankedEntity: {
-                      __typename: "Artwork",
-                      entityId: "5bfec60b2bc43f4416ec7509",
-                    },
+                    artworkId: "5c12d91fe55c1e2b4010df28",
                     value: 76.0,
+                    period: "FOUR_WEEKS",
+                  },
+                },
+                {
+                  node: {
+                    artworkId: "5bfec60b2bc43f4416ec7509",
+                    value: 51.0,
                     period: "FOUR_WEEKS",
                   },
                 },

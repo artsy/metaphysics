@@ -16,7 +16,6 @@ const getMaxPrice = (thing: { listPrice: any }) => {
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
-    union AnalyticsRankedEntityUnion = Artwork | Show | Artist
     extend type AnalyticsPricingContext {
       appliedFiltersDisplay: String
     }
@@ -45,6 +44,9 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     extend type Partner {
       analytics: AnalyticsPartnerStats
     }
+    extend type AnalyticsTopArtworks {
+      artwork: Artwork
+    }
     extend type AnalyticsPartnerSalesStats {
       total(
         decimal: String = "."
@@ -62,9 +64,6 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         symbol: String
         thousand: String = ","
       ): String
-    }
-    extend type AnalyticsRankedStats {
-      entity: AnalyticsRankedEntityUnion
     }
   `,
   resolvers: {
@@ -252,6 +251,25 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         },
       },
     },
+    AnalyticsTopArtworks: {
+      artwork: {
+        fragment: `fragment AnalyticsTopArtworksArtwork on AnalyticsTopArtworks { artworkId }`,
+        resolve: async (parent, _args, context, info) => {
+          const id = parent.artworkId
+          return await info.mergeInfo.delegateToSchema({
+            schema: localSchema,
+            operation: "query",
+            fieldName: "artwork",
+            args: {
+              id,
+            },
+            context,
+            info,
+            transforms: vortexSchema.transforms,
+          })
+        },
+      },
+    },
     AnalyticsPartnerSalesStats: {
       total: {
         fragment: gql`
@@ -272,48 +290,6 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         `,
         resolve: (parent, args, _context, _info) =>
           amount(_ => parent.totalCents).resolve({}, args),
-      },
-    },
-    AnalyticsRankedStats: {
-      entity: {
-        fragment: gql`
-          ... on AnalyticsRankedStats {
-            rankedEntity{
-              __typename
-              ... on AnalyticsArtwork {
-                entityId
-              }
-              ... on AnalyticsShow {
-                entityId
-              }
-              ... on AnalyticsArtist {
-                entityId
-              }
-            }
-          }
-        `,
-        resolve: (parent, _args, context, info) => {
-          const removeVortexPrefix = name => name.replace("Analytics", "")
-          const typename = parent.rankedEntity.__typename
-          const fieldName = removeVortexPrefix(typename).toLowerCase()
-          const id = parent.rankedEntity.entityId
-          return info.mergeInfo
-            .delegateToSchema({
-              schema: localSchema,
-              operation: "query",
-              fieldName,
-              args: {
-                id,
-              },
-              context,
-              info,
-              transforms: vortexSchema.transforms,
-            })
-            .then(response => {
-              response.__typename = removeVortexPrefix(typename)
-              return response
-            })
-        },
       },
     },
   },
