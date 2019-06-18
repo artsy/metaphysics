@@ -83,6 +83,9 @@ describe(transformToV2, () => {
               name: "GetRidOfID",
               fields: {
                 ...InternalIDFields,
+                thisIsJustSoGetRidOfIDExists: {
+                  type: GraphQLString,
+                },
               },
             }),
           },
@@ -118,7 +121,7 @@ describe(transformToV2, () => {
   })
 
   describe("concerning ID renaming", () => {
-    it.only("renames __id arg to id", async () => {
+    it("renames __id arg to id", async () => {
       const rootValue = {
         node: {
           id: "global id",
