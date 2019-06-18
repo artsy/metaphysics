@@ -22,8 +22,6 @@ import config from "config"
 import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 import { deprecate } from "lib/deprecation"
-import _ from "lodash"
-import { hasIntersectionWithSelectionSet } from "lib/hasFieldSelection"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -86,18 +84,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...GravityIDFields,
       cached,
-      artwork: {
-        type: Artwork.type,
-        resolve: ({ artwork }, _options, { artworkLoader }, info) => {
-          if (!info.fieldNodes) return artwork
-          const fetchArtworkFields = ["edition_of", "edition_sets"]
-          if (hasIntersectionWithSelectionSet(info, fetchArtworkFields)) {
-            return artworkLoader(artwork.id)
-          } else {
-            return artwork
-          }
-        },
-      },
+      artwork: { type: Artwork.type, resolve: ({ artwork }) => artwork },
       bidder_positions_count: {
         type: GraphQLInt,
         deprecationReason: deprecate({
