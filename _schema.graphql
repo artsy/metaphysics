@@ -2468,16 +2468,10 @@ type AttributionClass {
   info: String
 
   # Longer version of attribution class display
-  short_description: String
-    @deprecated(
-      reason: "Prefer to use `shortDescription`. [Will be removed in v2]"
-    )
+  short_description: String @deprecated(reason: "Prefer shortDescription")
 
   # Long descriptive phrase used as companion for short_description
-  long_description: String
-    @deprecated(
-      reason: "Prefer to use `longDescription`. [Will be removed in v2]"
-    )
+  long_description: String @deprecated(reason: "Prefer longDescription")
 
   # Longer version of attribution class display
   shortDescription: String
