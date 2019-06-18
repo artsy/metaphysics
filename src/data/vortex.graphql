@@ -16,6 +16,10 @@ type ArtworksPublishedStats {
   totalCount: Int!
 }
 
+type Country {
+  country: String!
+}
+
 """
 An ISO 8601 datetime
 """
@@ -446,6 +450,11 @@ enum RankedStatsObjectTypeEnum {
   ARTWORK
 
   """
+  Country
+  """
+  COUNTRY
+
+  """
   Show
   """
   SHOW
@@ -454,7 +463,7 @@ enum RankedStatsObjectTypeEnum {
 """
 An artwork, artist, or show
 """
-union RankedStatsUnion = Artist | Artwork | Show
+union RankedStatsUnion = Artist | Artwork | Country | Show
 
 type Show {
   entityId: String!

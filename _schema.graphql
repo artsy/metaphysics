@@ -60,6 +60,10 @@ type AnalyticsArtworksPublishedStats {
   totalCount: Int!
 }
 
+type AnalyticsCountry {
+  country: String!
+}
+
 # An ISO 8601 datetime
 scalar AnalyticsDateTime
 
@@ -333,7 +337,7 @@ enum AnalyticsQueryPeriodEnum {
   SIXTEEN_WEEKS
 }
 
-union AnalyticsRankedEntityUnion = Artwork | Show | Artist
+union AnalyticsRankedEntityUnion = Artwork | Show | Artist | AnalyticsCountry
 
 # Top artworks, shows, or artists from a partner
 type AnalyticsRankedStats {
@@ -371,6 +375,9 @@ enum AnalyticsRankedStatsObjectTypeEnum {
   # Artwork
   ARTWORK
 
+  # Country
+  COUNTRY
+
   # Show
   SHOW
 }
@@ -379,6 +386,7 @@ enum AnalyticsRankedStatsObjectTypeEnum {
 union AnalyticsRankedStatsUnion =
     AnalyticsArtist
   | AnalyticsArtwork
+  | AnalyticsCountry
   | AnalyticsShow
 
 type AnalyticsShow {

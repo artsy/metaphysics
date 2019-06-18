@@ -16,7 +16,11 @@ const getMaxPrice = (thing: { listPrice: any }) => {
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
   // The SDL used to declare how to stitch an object
   extensionSchema: gql`
-    union AnalyticsRankedEntityUnion = Artwork | Show | Artist
+    union AnalyticsRankedEntityUnion =
+        Artwork
+      | Show
+      | Artist
+      | AnalyticsCountry
     extend type AnalyticsPricingContext {
       appliedFiltersDisplay: String
     }
@@ -289,11 +293,21 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               ... on AnalyticsArtist {
                 entityId
               }
+              ... on AnalyticsCountry {
+                country
+              }
             }
           }
         `,
         resolve: (parent, _args, context, info) => {
+          console.log("!!!!", parent)
           const removeVortexPrefix = name => name.replace("Analytics", "")
+          console.log(parent.rankedEntity.__typename)
+          if (parent.rankedEntity.__typename === "AnalyticsCountry") {
+            console.log(info)
+            //return info
+            return context
+          }
           const typename = parent.rankedEntity.__typename
           const fieldName = removeVortexPrefix(typename).toLowerCase()
           const id = parent.rankedEntity.entityId
@@ -310,6 +324,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               transforms: vortexSchema.transforms,
             })
             .then(response => {
+              console.log("RESPONSE", removeVortexPrefix(typename))
               response.__typename = removeVortexPrefix(typename)
               return response
             })
