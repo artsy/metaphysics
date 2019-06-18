@@ -13,8 +13,6 @@ export const hasFieldSelection = (
   match: (fieldName: string) => boolean
 ): boolean => {
   if (!resolveInfo.fieldNodes) return false
-  // TODO: we only check first field node from the fields
-  // this is fine in general but to fully support we may need to revisit later
   let matched: boolean = false
 
   const visitor = (
