@@ -9,6 +9,7 @@ import Artwork, { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
 import ArtworkSorts from "./sorts/artwork_sorts"
 import { pageable } from "relay-cursor-paging"
+import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 
 import {
   GraphQLString,
@@ -22,7 +23,6 @@ import {
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { deprecate } from "lib/deprecation"
-import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "Category",
@@ -289,14 +289,14 @@ const Partner: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (_root, { id }, { partnerLoader }, info) => {
+  resolve: (_root, { id }, { partnerLoader }, { fieldNodes }) => {
     const blacklistedFields = ["analytics"]
     const isSlug = !/[0-9a-f]{24}/.test(id)
     // vortex can only load analytics data by id so if id passed by client is slug load
     // partner from gravity
     if (
       isSlug ||
-      includesFieldsOtherThanSelectionSet(info, blacklistedFields)
+      queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)
     ) {
       return partnerLoader(id)
     }

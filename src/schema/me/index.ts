@@ -9,6 +9,7 @@ import {
 } from "graphql"
 
 import { IDFields, NodeInterface } from "schema/object_identification"
+import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 
 import date from "schema/fields/date"
 import initials from "schema/fields/initials"
@@ -39,7 +40,6 @@ import SuggestedArtists from "./suggested_artists"
 import Submissions from "./consignments/submissions"
 import config from "config"
 import { ResolverContext } from "types/graphql"
-import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 // @ts-ignore
 const { ENABLE_CONVECTION_STITCHING } = config
@@ -131,7 +131,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
 
 const MeField: GraphQLFieldConfig<void, ResolverContext> = {
   type: Me,
-  resolve: (_root, _options, { userID, meLoader }, info) => {
+  resolve: (_root, _options, { userID, meLoader }, { fieldNodes }) => {
     if (!meLoader) return null
     const blacklistedFields = [
       "id",
@@ -159,7 +159,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "followsAndSaves",
       "saved_artworks",
     ]
-    if (includesFieldsOtherThanSelectionSet(info, blacklistedFields)) {
+    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return meLoader().catch(() => null)
     }
     // The email and is_collector are here so that the type system's `isTypeOf`
