@@ -1,4 +1,9 @@
-import { parse, GraphQLResolveInfo } from "graphql"
+import {
+  parse,
+  GraphQLResolveInfo,
+  FragmentDefinitionNode,
+  FieldNode,
+} from "graphql"
 import gql from "lib/gql"
 import {
   hasFieldSelection,
@@ -6,112 +11,79 @@ import {
   includesFieldsOtherThanSelectionSet,
 } from "lib/hasFieldSelection"
 
-const ast = parse(gql`
-  fragment Start on Artwork {
-    id
-    ...TestEditionSet
-  }
-  fragment TestEditionSet on Artwork {
-    edition_of
-    edition_sets {
+const fragments = parse(gql`
+  fragment Start on Artist {
+    artwork {
       id
+      ...TestFragmentVisitation
+    }
+    ...TestMergedFieldSelection
+  }
+  fragment TestMergedFieldSelection on Artist {
+    artwork {
+      edition_sets {
+        id
+        testField
+      }
     }
   }
-`)
-
-const [firstNode, ...otherNodes] = ast.definitions as any
-let fragments = {}
-otherNodes.map(node => {
-  fragments[node.name.value] = node
-})
+  fragment TestFragmentVisitation on Artwork {
+    edition_of
+  }
+`).definitions as FragmentDefinitionNode[]
 
 const info: GraphQLResolveInfo = {
-  fieldNodes: [firstNode],
-  fragments: fragments,
-} as any
-
-const multipleFieldNodes = parse(gql`
-  query {
-    viewer {
-      ...CollectApp_viewer_3XOIsA
-    }
-  }
-
-  fragment CollectApp_viewer_3XOIsA on Viewer {
-    filter_artworks(aggregations: [MEDIUM, TOTAL], size: 0) {
-      __id
-    }
-    ...CollectFilterContainer_viewer_3XOIsA
-  }
-
-  fragment CollectFilterContainer_viewer_3XOIsA on Viewer {
-    filter_artworks(aggregations: [MEDIUM, TOTAL], size: 0) {
-      aggregations {
-        slice
-        counts {
-          name
-          id
-          __id
-        }
-      }
-      __id
-    }
-  }
-`)
-
-const [
-  query,
-  firstFragment,
-  secondFragment,
-] = multipleFieldNodes.definitions as any
-
-let fragmentDefs = [firstFragment, secondFragment]
-let multipleFieldNodesFragments = {}
-
-fragmentDefs.map(node => {
-  multipleFieldNodesFragments[node.name.value] = node
-})
-
-const multipleFieldNodesInfo: GraphQLResolveInfo = {
-  fieldNodes: [query, secondFragment],
-  fragments: multipleFieldNodesFragments,
+  fieldNodes: [
+    fragments[0].selectionSet.selections[0] as FieldNode,
+    fragments[1].selectionSet.selections[0] as FieldNode,
+  ],
+  fragments: fragments.reduce(
+    (acc, fragment) => ({ ...acc, [fragment.name.value]: fragment }),
+    {}
+  ),
 } as any
 
 describe("hasFieldSelection", () => {
-  it("returns correct response based on match function", () => {
-    const matchByName = nodeName => nodeName === "edition_of"
-    expect(hasFieldSelection(info, matchByName)).toEqual(true)
+  it("returns if it has selections from the received field nodes", () => {
+    expect(hasFieldSelection(info, n => n === "id")).toEqual(true)
+    expect(hasFieldSelection(info, n => n === "edition_sets")).toEqual(true)
+  })
 
-    const matchByRandomName = nodeName => nodeName === "random"
-    expect(hasFieldSelection(info, matchByRandomName)).toEqual(false)
+  it("returns if it has selections from any spread in fragments", () => {
+    expect(hasFieldSelection(info, n => n === "edition_of")).toEqual(true)
+  })
+
+  it("returns that no such field selection exists", () => {
+    expect(hasFieldSelection(info, n => n === "something-else")).toEqual(false)
   })
 })
 
 describe("hasIntersectionWithSelectionSet", () => {
-  it("returns correct response based on match function", () => {
+  it("returns true when any of the entries in the specified set exist in the selection set", () => {
     expect(
-      hasIntersectionWithSelectionSet(info, ["edition_of", "random"])
+      hasIntersectionWithSelectionSet(info, ["edition_of", "something-else"])
     ).toEqual(true)
-
-    expect(hasIntersectionWithSelectionSet(info, ["random"])).toEqual(false)
+  })
+  it("returns false when none of the entries in the specified set exist in the selection set", () => {
+    expect(hasIntersectionWithSelectionSet(info, ["something-else"])).toEqual(
+      false
+    )
   })
 })
 
 describe("includesFieldsOtherThanSelectionSet", () => {
-  it("returns true when asked for other fields other than filtered", () => {
+  it("returns true when the specified set contains entries that do not exist in the selection set", () => {
     expect(
-      includesFieldsOtherThanSelectionSet(multipleFieldNodesInfo, [
-        "edition_of",
-        "random",
-      ])
+      includesFieldsOtherThanSelectionSet(info, ["edition_of", "random"])
     ).toEqual(true)
   })
 
   it("returns false when not asked for other fields other than filters", () => {
     expect(
-      includesFieldsOtherThanSelectionSet(multipleFieldNodesInfo, [
-        "__id",
-        "aggregations",
+      includesFieldsOtherThanSelectionSet(info, [
+        "id",
+        "edition_of",
+        "edition_sets",
       ])
     ).toEqual(false)
   })
