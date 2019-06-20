@@ -3089,11 +3089,9 @@ type CitySponsoredContent {
 type Collection implements Node {
   # A globally unique ID.
   id: ID!
+  slug: String!
 
-  # A type-specific ID.
-  gravityID: ID!
-
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
   artworks_connection(
@@ -3108,7 +3106,6 @@ type Collection implements Node {
   default: Boolean!
   name: String!
   private: Boolean!
-  slug: String!
 }
 
 enum CollectionSorts {
