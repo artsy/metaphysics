@@ -2400,11 +2400,8 @@ type ArtworkVersion {
   # A globally unique ID.
   __id: ID!
 
-  # A type-specific ID.
+  # A type-specific ID likely used as a database ID.
   id: ID!
-
-  # A type-specific Gravity Mongo Document ID.
-  _id: ID!
 
   # Artwork title
   title: String
