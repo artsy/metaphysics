@@ -26,6 +26,7 @@ import {
   GravityIDFields,
   InternalIDFields,
   NullableIDField,
+  SlugAndInternalIDFields,
 } from "../object_identification"
 
 export class RenameIDFields implements Transform {
@@ -64,7 +65,12 @@ export class RenameIDFields implements Transform {
           ) {
             throw new Error(`Do not add new nullable id fields (${type.name})`)
           } else {
-            if (
+            if (field.description === SlugAndInternalIDFields.id.description) {
+              newFields["slug"] = {
+                ...fieldToFieldConfig(field, resolveType, true),
+                resolve: ({ id }) => id,
+              }
+            } else if (
               field.description === GravityIDFields.id.description ||
               (field.description === NullableIDField.id.description &&
                 this.allowedGravityTypesWithNullableIDField.includes(type.name))
@@ -75,6 +81,7 @@ export class RenameIDFields implements Transform {
               }
             } else if (
               field.description === InternalIDFields.id.description ||
+              field.description === SlugAndInternalIDFields.id.description ||
               (field.description === NullableIDField.id.description &&
                 this.allowedNonGravityTypesWithNullableIDField.includes(
                   type.name

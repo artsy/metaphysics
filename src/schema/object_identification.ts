@@ -179,7 +179,7 @@ export const GravityIDFields = {
   },
 }
 
-export const InternalIDWithSlugFields = {
+export const SlugAndInternalIDFields = {
   __id: GlobalIDField,
   id: {
     description: "A slug ID.",

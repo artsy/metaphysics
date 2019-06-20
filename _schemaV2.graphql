@@ -460,10 +460,10 @@ type Artist implements Node & Searchable {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
-  gravityID: ID!
+  # A slug ID.
+  slug: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
   alternate_names: [String]
@@ -805,10 +805,10 @@ type ArtistItem implements Node & Searchable {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
-  gravityID: ID!
+  # A slug ID.
+  slug: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
   alternate_names: [String]
