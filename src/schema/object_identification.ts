@@ -192,6 +192,7 @@ export const SlugAndInternalIDFields = {
 }
 
 export const InternalIDFields = {
+  __id: GlobalIDField,
   id: {
     description: "A type-specific ID likely used as a database ID.",
     type: new GraphQLNonNull(GraphQLID),

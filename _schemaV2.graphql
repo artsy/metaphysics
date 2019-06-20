@@ -2424,6 +2424,9 @@ type ArtworkVersion {
 
 # An asset which is assigned to a consignment submission
 type Asset {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
@@ -2439,6 +2442,9 @@ type Asset {
 
 # Fields of an attachment (currently from Radiation)
 type Attachment {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
@@ -2793,6 +2799,9 @@ type BuyersPremium {
 }
 
 type BuyOrder implements Order {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
@@ -4513,6 +4522,9 @@ type ConversationEdge {
 
 # The participant who started the conversation, currently always a User
 type ConversationInitiator {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
@@ -4533,6 +4545,9 @@ union ConversationItemType = Artwork | Show
 
 # The participant responding to the conversation, currently always a Partner
 type ConversationResponder {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
@@ -4849,6 +4864,9 @@ type DeleteCreditCardPayload {
 
 # Fields of a delivery (currently from Radiation)
 type Delivery {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
@@ -7694,6 +7712,9 @@ enum NotificationsFeedItemStatus {
 }
 
 type Offer {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   createdAt(
@@ -7810,6 +7831,9 @@ type OfferEdge {
 }
 
 type OfferOrder implements Order {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
@@ -8039,6 +8063,9 @@ type OpeningHoursText {
 union OpeningHoursUnion = OpeningHoursArray | OpeningHoursText
 
 interface Order {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
@@ -8281,6 +8308,9 @@ type OrderedSet {
 }
 
 type OrderFulfillment {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
@@ -8323,6 +8353,9 @@ enum OrderFulfillmentType {
 }
 
 type OrderLineItem {
+  # A globally unique ID.
+  id: ID!
+
   # A type-specific ID likely used as a database ID.
   internalID: ID!
 
