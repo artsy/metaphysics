@@ -2613,8 +2613,8 @@ type BidderPosition {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
-  gravityID: ID!
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
   created_at(
     # This arg is deprecated, use timezone instead
     convert_to_utc: Boolean

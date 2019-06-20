@@ -2613,7 +2613,7 @@ type BidderPosition {
   # A globally unique ID.
   __id: ID!
 
-  # A type-specific ID.
+  # A type-specific ID likely used as a database ID.
   id: ID!
   created_at(
     # This arg is deprecated, use timezone instead
