@@ -23,7 +23,10 @@ import { Sellable } from "schema/sellable"
 import { Searchable } from "schema/searchable"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
-import { GravityIDFields, NodeInterface } from "schema/object_identification"
+import {
+  NodeInterface,
+  SlugAndInternalIDFields,
+} from "schema/object_identification"
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -58,7 +61,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface, Searchable, Sellable],
   fields: () => {
     return {
-      ...GravityIDFields,
+      ...SlugAndInternalIDFields,
       cached,
       additional_information: markdown(),
       artist: {

@@ -1123,10 +1123,10 @@ type Artwork implements Node & Searchable & Sellable {
   # A globally unique ID.
   __id: ID!
 
-  # A type-specific ID.
+  # A slug ID.
   id: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   _id: ID!
   cached: Int
   additional_information(format: Format): String
@@ -2118,10 +2118,10 @@ type ArtworkItem implements Node & Searchable & Sellable {
   # A globally unique ID.
   __id: ID!
 
-  # A type-specific ID.
+  # A slug ID.
   id: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   _id: ID!
   cached: Int
   additional_information(format: Format): String
