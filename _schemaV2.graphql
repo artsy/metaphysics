@@ -3117,8 +3117,8 @@ type CollectorProfileType {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
-  gravityID: ID!
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
   email: String
   name: String
   confirmed_buyer_at(
@@ -11037,8 +11037,8 @@ type UpdateCollectorProfilePayload {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
-  gravityID: ID!
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
   email: String
   name: String
   confirmed_buyer_at(
