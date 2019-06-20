@@ -7,7 +7,10 @@ import SaleArtwork from "schema/sale_artwork"
 import cached from "schema/fields/cached"
 import date from "schema/fields/date"
 import moment from "moment"
-import { GravityIDFields } from "schema/object_identification"
+import {
+  GravityIDFields,
+  SlugAndInternalIDFields,
+} from "schema/object_identification"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { amount } from "schema/fields/money"
@@ -53,7 +56,7 @@ const BidIncrement = new GraphQLObjectType<any, ResolverContext>({
 const BuyersPremium = new GraphQLObjectType<any, ResolverContext>({
   name: "BuyersPremium",
   fields: {
-    ...GravityIDFields,
+    ...SlugAndInternalIDFields,
     amount: amount(({ cents }) => cents),
     cents: {
       type: GraphQLInt,
