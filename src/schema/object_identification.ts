@@ -179,6 +179,18 @@ export const GravityIDFields = {
   },
 }
 
+export const InternalIDWithSlugFields = {
+  __id: GlobalIDField,
+  id: {
+    description: "A slug ID.",
+    type: new GraphQLNonNull(GraphQLID),
+  },
+  _id: {
+    description: "A type-specific ID likely used as a database ID.",
+    type: new GraphQLNonNull(GraphQLID),
+  },
+}
+
 export const InternalIDFields = {
   id: {
     description: "A type-specific ID likely used as a database ID.",
