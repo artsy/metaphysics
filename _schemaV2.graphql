@@ -5657,10 +5657,10 @@ type Gene implements Node {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
-  gravityID: ID!
+  # A slug ID.
+  slug: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
   artists: [Artist]
@@ -5856,10 +5856,10 @@ type GeneItem implements Node {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
-  gravityID: ID!
+  # A slug ID.
+  slug: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
   artists: [Artist]
@@ -6598,10 +6598,10 @@ type HomePageModuleContextGene implements Node {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
-  gravityID: ID!
+  # A slug ID.
+  slug: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
   artists: [Artist]
