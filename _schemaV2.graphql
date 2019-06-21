@@ -4946,8 +4946,8 @@ type EditionSet implements Sellable {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
-  gravityID: ID!
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
   dimensions: dimensions
   edition_of: String
   is_acquireable: Boolean
