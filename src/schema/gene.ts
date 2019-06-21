@@ -14,11 +14,7 @@ import {
   queriedForFieldsOtherThanBlacklisted,
   convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
-import {
-  GravityIDFields,
-  NodeInterface,
-  SlugAndInternalIDFields,
-} from "./object_identification"
+import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLObjectType,
   GraphQLString,
