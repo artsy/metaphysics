@@ -14,7 +14,11 @@ import Artist from "./artist"
 import Partner from "./partner"
 import { showConnection } from "./show"
 import Location from "./location"
-import { GravityIDFields, NullableIDField } from "./object_identification"
+import {
+  GravityIDFields,
+  NullableIDField,
+  SlugAndInternalIDFields,
+} from "./object_identification"
 import filterArtworks from "./filter_artworks"
 import {
   GraphQLObjectType,
@@ -65,7 +69,7 @@ const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
 export const FairType = new GraphQLObjectType<any, ResolverContext>({
   name: "Fair",
   fields: () => ({
-    ...GravityIDFields,
+    ...SlugAndInternalIDFields,
     about: {
       type: GraphQLString,
     },
