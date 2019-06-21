@@ -5254,8 +5254,11 @@ type FairSponsoredContent {
 }
 
 type FeaturedLinkItem {
-  # A type-specific ID.
-  gravityID: String
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: String
   href: String
   image: Image
   initials(length: Int = 3): String
