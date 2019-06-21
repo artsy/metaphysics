@@ -5368,8 +5368,8 @@ type FollowArtist {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID.
-  gravityID: ID!
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
 }
 
 # A connection to a list of items.

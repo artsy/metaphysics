@@ -5388,7 +5388,7 @@ type FollowArtist {
   # A globally unique ID.
   __id: ID!
 
-  # A type-specific ID.
+  # A type-specific ID likely used as a database ID.
   id: ID!
 }
 

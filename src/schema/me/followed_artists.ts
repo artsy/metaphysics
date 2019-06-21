@@ -1,5 +1,5 @@
 import Artist from "schema/artist"
-import { IDFields } from "schema/object_identification"
+import { InternalIDFields } from "schema/object_identification"
 
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions } from "graphql-relay"
@@ -16,7 +16,7 @@ const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
     auto: {
       type: GraphQLBoolean,
     },
-    ...IDFields,
+    ...InternalIDFields,
   },
 })
 
