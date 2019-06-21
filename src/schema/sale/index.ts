@@ -8,7 +8,7 @@ import initials from "schema/fields/initials"
 import cached from "schema/fields/cached"
 import date from "schema/fields/date"
 import moment from "moment"
-import { formattedStartingHours } from "lib/date"
+import { formattedStartDateTime } from "lib/date"
 import { GravityIDFields } from "schema/object_identification"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
@@ -205,12 +205,12 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       end_at: date,
       event_start_at: date,
       event_end_at: date,
-      formattedStartingHours: {
+      formattedStartDateTime: {
         type: GraphQLString,
         description:
           "A formatted description of when the auction starts or ends or if it has ended",
         resolve: ({ start_at, end_at }) =>
-          formattedStartingHours(start_at, end_at, "UTC"),
+          formattedStartDateTime(start_at, end_at, "UTC"),
       },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
       name: { type: GraphQLString },

@@ -1,21 +1,6 @@
 import moment from "moment"
 
 /**
- * Jan 5 at 5:00pm
- * Jan 15 at 5:30pm
- */
-const formattedOpeningHoursDate = (date, timezone) => {
-  const momentToUse = moment.tz(date, timezone)
-  const momentDate = momentToUse.format("MMM D")
-  const momentHour = momentToUse.format("h:mma z")
-  if (momentHour && momentDate) {
-    return `${momentDate} at ${momentHour}`
-  } else if (momentDate) {
-    return momentDate
-  }
-}
-
-/**
  * Returns true if dates are on same day, timezone must be the same for both timestamps
  */
 export function datesAreSameDay(startAt, endAt, timezone) {
@@ -256,9 +241,9 @@ export function formattedOpeningHours(startAt, endAt, timezone) {
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
   if (thisMoment.isBefore(startMoment)) {
-    return `Opens ${formattedOpeningHoursDate(startAt, timezone)}`
+    return `Opens ${singleDateTime(startAt, timezone)}`
   } else if (thisMoment.isBefore(endMoment)) {
-    return `Closes ${formattedOpeningHoursDate(endAt, timezone)}`
+    return `Closes ${singleDateTime(endAt, timezone)}`
   } else {
     return "Closed"
   }
@@ -267,17 +252,17 @@ export function formattedOpeningHours(startAt, endAt, timezone) {
 /**
  * Starts Mar 29 at 4:00pm
  * Ends Apr 3 at 12:30pm
- * Ended
+ * Ended Apr 3 2017
  */
-export function formattedStartingHours(startAt, endAt, timezone) {
+export function formattedStartDateTime(startAt, endAt, timezone) {
   const thisMoment = moment()
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
   if (thisMoment.isBefore(startMoment)) {
-    return `Starts ${formattedOpeningHoursDate(startAt, timezone)}`
+    return `Starts ${singleDateTime(startAt, timezone)}`
   } else if (thisMoment.isBefore(endMoment)) {
-    return `Ends ${formattedOpeningHoursDate(endAt, timezone)}`
+    return `Ends ${singleDateTime(endAt, timezone)}`
   } else {
-    return "Ended"
+    return `Ended ${singleDate(endAt, timezone)}`
   }
 }
