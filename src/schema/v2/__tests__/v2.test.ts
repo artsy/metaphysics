@@ -13,21 +13,16 @@ import {
 import {
   GraphQLSchema,
   GraphQLObjectType,
-  graphql,
   GraphQLFieldConfigMap,
   GraphQLNonNull,
   GraphQLID,
   GraphQLInterfaceType,
-  GraphQLArgs,
   GraphQLString,
 } from "graphql"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
-import {
-  ExecutionResultDataDefault,
-  ExecutionResult,
-} from "graphql/execution/execute"
 import { deprecate } from "lib/deprecation"
+import { runQueryOrThrow } from "test/utils"
 
 function createSchema({
   fields,
@@ -46,16 +41,6 @@ function createSchema({
     }),
     options
   )
-}
-
-async function runQuery<TData = ExecutionResultDataDefault>(
-  args: GraphQLArgs
-): Promise<ExecutionResult<TData>> {
-  const res = await graphql<TData>(args)
-  if (res.errors) {
-    throw new Error(res.errors.map(e => e.message).join("\n"))
-  }
-  return res
 }
 
 describe(transformToV2, () => {
@@ -141,7 +126,7 @@ describe(transformToV2, () => {
         },
         interfaces: () => [iface],
       })
-      const { data } = await runQuery({
+      const data = await runQueryOrThrow({
         schema: createSchema({
           fields: {
             node: {
@@ -176,7 +161,7 @@ describe(transformToV2, () => {
           id: "global id",
         },
       }
-      const { data } = await runQuery({
+      const data = await runQueryOrThrow({
         schema: createSchema({
           fields: {
             fieldWithGlobalID: {
@@ -240,7 +225,7 @@ describe(transformToV2, () => {
             id: "slug or id",
           },
         }
-        const { data } = await runQuery({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             fields: {
               fieldWithGravityResolver: {
@@ -282,7 +267,7 @@ describe(transformToV2, () => {
             _id: "mongo id",
           },
         }
-        const { data } = await runQuery({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             fields: {
               fieldWithGravityResolver: {
@@ -355,7 +340,7 @@ describe(transformToV2, () => {
             id: "db id",
           },
         }
-        const { data } = await runQuery({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             fields: {
               fieldWithNonGravityResolver: {
@@ -397,7 +382,7 @@ describe(transformToV2, () => {
             id: "db id",
           },
         }
-        const { data } = await runQuery({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             stitchedTypePrefixes: ["Stitched"],
             fields: {
@@ -473,7 +458,7 @@ describe(transformToV2, () => {
             id: null,
           },
         }
-        const { data } = await runQuery({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             allowedNonGravityTypesWithNullableIDField: [
               "NonGravityType",

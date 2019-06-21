@@ -23,13 +23,17 @@ import {
   fieldToFieldConfig,
 } from "graphql-tools/dist/stitching/schemaRecreation"
 
+type TypeWithSelectableFields =
+  | GraphQLObjectType<any, any>
+  | GraphQLInterfaceType
+
 export class RenameFields implements Transform {
   private newSchema?: GraphQLSchema
-  private changedFields: { [fieldName: string]: [string, string[]] }
+  private changedFields: { [fieldName: string]: string }
 
   constructor(
     private renamer: (
-      type: GraphQLObjectType<any, any> | GraphQLInterfaceType,
+      type: TypeWithSelectableFields,
       field: GraphQLField<any, any>
     ) => string | null | undefined
   ) {
@@ -74,9 +78,7 @@ export class RenameFields implements Transform {
     return newSchema
   }
 
-  private transformFields(
-    type: GraphQLObjectType<any, any> | GraphQLInterfaceType
-  ) {
+  private transformFields(type: TypeWithSelectableFields) {
     let madeChanges = false
     const fields = type.getFields()
     const newFields: GraphQLFieldConfigMap<any, any> = {}
@@ -93,10 +95,7 @@ export class RenameFields implements Transform {
           resolve: source => source[oldName],
         }
 
-        // Store for transformRequest: newName => [oldName, [..., type.name]]
-        const changedFields = this.changedFields[newName] || [oldName, []]
-        changedFields[1].push(type.name)
-        this.changedFields[newName] = changedFields
+        this.changedFields[fieldKey(type, newName)] = oldName
       } else {
         newFields[oldName] = newField
       }
@@ -122,17 +121,14 @@ export class RenameFields implements Transform {
             }
 
             const type = getTypeWithSelectableFields(typeInfo)
-            const changedField = this.changedFields[node.name.value]
-            if (changedField) {
-              const [oldName, typeNames] = changedField
-              if (typeNames.includes(type.name)) {
-                return {
-                  ...node,
-                  name: {
-                    ...node.name,
-                    value: oldName,
-                  },
-                }
+            const oldName = this.changedFields[fieldKey(type, node.name.value)]
+            if (oldName) {
+              return {
+                ...node,
+                name: {
+                  ...node.name,
+                  value: oldName,
+                },
               }
             }
             return undefined
@@ -148,10 +144,14 @@ export class RenameFields implements Transform {
   }
 }
 
+function fieldKey(type: TypeWithSelectableFields, fieldName: string) {
+  return `${type.name}.${fieldName}`
+}
+
 // FIXME: Unsure why the `typeInfo` methods return `any`.
 function getTypeWithSelectableFields(
   typeInfo: TypeInfo
-): GraphQLObjectType<any, any> | GraphQLInterfaceType {
+): TypeWithSelectableFields {
   const type = getNamedType(typeInfo.getType())
   return isLeafType(type) || type instanceof GraphQLUnionType
     ? getNamedType(typeInfo.getParentType())
