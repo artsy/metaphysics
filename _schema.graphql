@@ -5845,10 +5845,10 @@ type GeneFamily {
   # A globally unique ID.
   __id: ID!
 
-  # A type-specific ID.
+  # A slug ID.
   id: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   _id: ID!
   name: String!
   genes: [Gene]
