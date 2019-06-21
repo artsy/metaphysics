@@ -78,10 +78,24 @@ export function singleDateTime(date, timezone) {
 }
 
 /**
+ * Apr 24
+ * if not this year:  April 24, 2022
+ */
+export function singleDate(date, timezone) {
+  const thisMoment = moment.tz(date, timezone)
+  const now = moment()
+  if (now.year() !== thisMoment.year()) {
+    return `${thisMoment.format("MMM D, YYYY")}`
+  } else {
+    return `${thisMoment.format("MMM D")}`
+  }
+}
+
+/**
  * Wed, Apr 24
  * if not this year:   Wed, April 24, 2022
  */
-export function singleDate(date, timezone) {
+export function singleDateWithDay(date, timezone) {
   const thisMoment = moment.tz(date, timezone)
   const now = moment()
   if (now.year() !== thisMoment.year()) {
@@ -247,5 +261,23 @@ export function formattedOpeningHours(startAt, endAt, timezone) {
     return `Closes ${formattedOpeningHoursDate(endAt, timezone)}`
   } else {
     return "Closed"
+  }
+}
+
+/**
+ * Starts Mar 29 at 4:00pm
+ * Ends Apr 3 at 12:30pm
+ * Ended
+ */
+export function formattedStartingHours(startAt, endAt, timezone) {
+  const thisMoment = moment()
+  const startMoment = moment.tz(startAt, timezone)
+  const endMoment = moment.tz(endAt, timezone)
+  if (thisMoment.isBefore(startMoment)) {
+    return `Starts ${formattedOpeningHoursDate(startAt, timezone)}`
+  } else if (thisMoment.isBefore(endMoment)) {
+    return `Ends ${formattedOpeningHoursDate(endAt, timezone)}`
+  } else {
+    return "Ended"
   }
 }
