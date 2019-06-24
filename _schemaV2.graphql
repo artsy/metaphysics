@@ -1275,13 +1275,13 @@ type Artwork implements Node & Searchable & Sellable {
     active: Boolean
     at_a_fair: Boolean
     sort: PartnerShowSorts
-  ): PartnerShow
+  ): Show
   shows(
     size: Int
     active: Boolean
     at_a_fair: Boolean
     sort: PartnerShowSorts
-  ): [PartnerShow]
+  ): [Show]
   signature(format: Format): String
   title: String
   to_s: String
@@ -1407,8 +1407,12 @@ type ArtworkContextAuction implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
@@ -1876,8 +1880,12 @@ type ArtworkContextSale implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
@@ -2270,13 +2278,13 @@ type ArtworkItem implements Node & Searchable & Sellable {
     active: Boolean
     at_a_fair: Boolean
     sort: PartnerShowSorts
-  ): PartnerShow
+  ): Show
   shows(
     size: Int
     active: Boolean
     at_a_fair: Boolean
     sort: PartnerShowSorts
-  ): [PartnerShow]
+  ): [Show]
   signature(format: Format): String
   title: String
   to_s: String
@@ -6784,8 +6792,12 @@ type HomePageModuleContextSale implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
@@ -9427,7 +9439,7 @@ type Query {
   partner_show(
     # The slug or ID of the PartnerShow
     id: String!
-  ): PartnerShow
+  ): Show
 
   # A list of PartnerShows
   partner_shows(
@@ -9446,7 +9458,7 @@ type Query {
     size: Int
     sort: PartnerShowSorts
     status: EventStatus
-  ): [PartnerShow]
+  ): [Show]
 
   # A list of Partners
   partners(
@@ -9871,8 +9883,12 @@ type Sale implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
@@ -11521,7 +11537,7 @@ type Viewer {
   partner_show(
     # The slug or ID of the PartnerShow
     id: String!
-  ): PartnerShow
+  ): Show
 
   # A list of PartnerShows
   partner_shows(
@@ -11540,7 +11556,7 @@ type Viewer {
     size: Int
     sort: PartnerShowSorts
     status: EventStatus
-  ): [PartnerShow]
+  ): [Show]
 
   # A list of Partners
   partners(

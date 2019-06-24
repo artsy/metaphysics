@@ -1407,8 +1407,12 @@ type ArtworkContextAuction implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
@@ -1876,8 +1880,12 @@ type ArtworkContextSale implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
@@ -6801,8 +6809,12 @@ type HomePageModuleContextSale implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
@@ -9899,8 +9911,12 @@ type Sale implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")

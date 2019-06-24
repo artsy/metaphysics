@@ -9,6 +9,7 @@ import {
   NullableIDField,
   InternalIDFields,
 } from "schema/object_identification"
+import { ReplaceType } from "./ReplaceType"
 
 // TODO: Flip this switch before we go public with v2 and update clients. Until
 //       then this gives clients an extra window of opportunity to update.
@@ -83,6 +84,12 @@ export const transformToV2 = (
     ...opt.allowedNonGravityTypesWithNullableIDField,
   ]
   return transformSchema(schema, [
+    new ReplaceType({
+      PartnerShow: {
+        newTypeName: "Show",
+        type: schema.getType("Show"),
+      },
+    }),
     new FilterTypes(type => {
       return !opt.filterTypes.includes(type.name)
     }),
