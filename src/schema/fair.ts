@@ -14,12 +14,7 @@ import Artist from "./artist"
 import Partner from "./partner"
 import { showConnection } from "./show"
 import Location from "./location"
-import {
-  GravityIDFields,
-  NullableIDField,
-  SlugAndInternalIDFields,
-  SlugIDField,
-} from "./object_identification"
+import { SlugAndInternalIDFields, SlugIDField } from "./object_identification"
 import filterArtworks from "./filter_artworks"
 import {
   GraphQLObjectType,

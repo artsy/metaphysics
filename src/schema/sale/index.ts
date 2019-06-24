@@ -7,10 +7,7 @@ import SaleArtwork from "schema/sale_artwork"
 import cached from "schema/fields/cached"
 import date from "schema/fields/date"
 import moment from "moment"
-import {
-  GravityIDFields,
-  SlugAndInternalIDFields,
-} from "schema/object_identification"
+import { SlugAndInternalIDFields } from "schema/object_identification"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { amount } from "schema/fields/money"

@@ -6,11 +6,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { amount } from "../../fields/money"
-import {
-  IDFields,
-  NodeInterface,
-  InternalIDFields,
-} from "../../object_identification"
+import { NodeInterface, InternalIDFields } from "../../object_identification"
 import { ResolverContext } from "types/graphql"
 
 const InvoiceState = new GraphQLEnumType({

@@ -2,7 +2,7 @@ import { get } from "lodash"
 import date from "./fields/date"
 import money, { amount } from "./fields/money"
 import SaleArtwork from "./sale_artwork"
-import { IDFields, InternalIDFields } from "./object_identification"
+import { InternalIDFields } from "./object_identification"
 import {
   GraphQLInt,
   GraphQLBoolean,

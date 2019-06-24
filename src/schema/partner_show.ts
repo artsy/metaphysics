@@ -18,11 +18,7 @@ import Artwork, { artworkConnection } from "./artwork"
 import Location from "./location"
 import Image, { getDefault, normalizeImageData } from "./image"
 import PartnerShowEventType from "./partner_show_event"
-import {
-  GravityIDFields,
-  NodeInterface,
-  SlugAndInternalIDFields,
-} from "./object_identification"
+import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import { pageable } from "relay-cursor-paging"
 import {
   GraphQLObjectType,
