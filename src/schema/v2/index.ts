@@ -1,8 +1,14 @@
-import { GraphQLSchema } from "graphql"
+import { GraphQLSchema, isNullableType } from "graphql"
 import { transformSchema, FilterTypes } from "graphql-tools"
-import { RenameIDFields } from "./RenameIDFields"
 import { RenameArguments } from "./RenameArguments"
-import { RemoveDeprecatedFields } from "./RemoveDeprecatedFields"
+import { shouldBeRemoved } from "lib/deprecation"
+import { FilterFields } from "./FilterFields"
+import { RenameFields } from "./RenameFields"
+import {
+  GravityIDFields,
+  NullableIDField,
+  InternalIDFields,
+} from "schema/object_identification"
 
 // TODO: Flip this switch before we go public with v2 and update clients. Until
 //       then this gives clients an extra window of opportunity to update.
@@ -72,25 +78,68 @@ export const transformToV2 = (
     filterIDFieldFromTypes: FilterIDFieldFromTypeNames,
     ...options,
   }
+  const allowedTypesWithNullableIDField = [
+    ...opt.allowedGravityTypesWithNullableIDField,
+    ...opt.allowedNonGravityTypesWithNullableIDField,
+  ]
   return transformSchema(schema, [
     new FilterTypes(type => {
       return !opt.filterTypes.includes(type.name)
     }),
-    new RenameIDFields(
-      opt.allowedGravityTypesWithNullableIDField,
-      opt.allowedNonGravityTypesWithNullableIDField,
-      opt.stitchedTypePrefixes,
-      opt.filterIDFieldFromTypes
+    new FilterFields(
+      (type, field) =>
+        field.name !== "id" || !opt.filterIDFieldFromTypes.includes(type.name)
     ),
+    new RenameFields((type, field) => {
+      if (field.name === "id") {
+        if (
+          isNullableType(field.type) &&
+          !allowedTypesWithNullableIDField.includes(type.name)
+        ) {
+          throw new Error(`Do not add new nullable id fields (${type.name})`)
+        } else {
+          if (
+            field.description === GravityIDFields.id.description ||
+            (field.description === NullableIDField.id.description &&
+              opt.allowedGravityTypesWithNullableIDField.includes(type.name))
+          ) {
+            return "gravityID"
+          } else if (
+            field.description === InternalIDFields.id.description ||
+            (field.description === NullableIDField.id.description &&
+              opt.allowedNonGravityTypesWithNullableIDField.includes(
+                type.name
+              )) ||
+            opt.stitchedTypePrefixes.some(prefix =>
+              type.name.startsWith(prefix)
+            )
+          ) {
+            return "internalID"
+          } else {
+            throw new Error(`Do not add new id fields (${type.name})`)
+          }
+        }
+      } else if (field.name === "_id") {
+        return "internalID"
+      } else if (field.name === "__id") {
+        return "id"
+      }
+      return undefined
+    }),
     new RenameArguments((_field, arg) => (arg.name === "__id" ? "id" : null)),
     ...(FILTER_DEPRECATIONS
       ? [
-          new RemoveDeprecatedFields({
-            fromVersion: 2,
-            filter: (type, _field) => {
-              return !SkipDeprecatedFieldsOfTypes.includes(type.name)
-            },
-          }),
+          new FilterFields(
+            (type, field) =>
+              !field.deprecationReason ||
+              (!SkipDeprecatedFieldsOfTypes.includes(type.name) &&
+                !shouldBeRemoved({
+                  inVersion: 2,
+                  deprecationReason: field.deprecationReason,
+                  typeName: type.name,
+                  fieldName: field.name,
+                }))
+          ),
         ]
       : []),
   ])

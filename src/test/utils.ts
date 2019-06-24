@@ -1,8 +1,35 @@
 // Please do not add schema imports here while stitching is an ENV flag
 //
-import { graphql, GraphQLError } from "graphql"
+import { graphql, GraphQLError, GraphQLArgs } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { createLoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
+
+export const runQueryOrThrow = (args: GraphQLArgs) => {
+  return graphql(args).then(result => {
+    if (result.errors) {
+      const errors = result.errors.reduce(
+        (acc, gqlError) => {
+          const error = unpackGraphQLError(gqlError) as Error | CombinedError
+          return isCombinedError(error)
+            ? [...acc, ...error.errors.map(unpackGraphQLError)]
+            : [...acc, error]
+        },
+        [] as Error[]
+      )
+      if (errors.length === 1) {
+        throw errors[0]
+      } else {
+        const combinedError = new Error("Multiple errors occurred.")
+        combinedError.stack = errors
+          .map(e => `${e.message}:\n${e.stack}`)
+          .join("\n")
+        throw combinedError
+      }
+    } else {
+      return result.data!
+    }
+  })
+}
 
 /**
  * Performs a GraphQL query against our schema.
@@ -24,36 +51,17 @@ export const runQuery = (
   }
 ) => {
   const schema = require("schema").default
-  return graphql(schema, query, null, {
-    requestIDs: {
-      requestID: "123456789",
-      xForwardedFor: "123.456.789",
-      ...context.requestIDs,
+  return runQueryOrThrow({
+    schema,
+    source: query,
+    contextValue: {
+      requestIDs: {
+        requestID: "123456789",
+        xForwardedFor: "123.456.789",
+        ...context.requestIDs,
+      },
+      ...context,
     },
-    ...context,
-  }).then(result => {
-    if (result.errors) {
-      const errors = result.errors.reduce(
-        (acc, gqlError) => {
-          const error = unpackGraphQLError(gqlError) as Error | CombinedError
-          return isCombinedError(error)
-            ? [...acc, ...error.errors.map(unpackGraphQLError)]
-            : [...acc, error]
-        },
-        [] as Error[]
-      )
-      if (errors.length === 1) {
-        throw errors[0]
-      } else {
-        const combinedError = new Error("Multiple errors occurred.")
-        combinedError.stack = errors
-          .map(e => `${e.message}:\n${e.stack}`)
-          .join("\n")
-        throw combinedError
-      }
-    } else {
-      return result.data
-    }
   })
 }
 
