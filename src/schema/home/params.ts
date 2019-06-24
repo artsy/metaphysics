@@ -5,7 +5,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { NullableIDField } from "schema/object_identification"
+import { NullableIDField, InternalIDFields } from "schema/object_identification"
 
 const HomePageModuleParams = new GraphQLObjectType<any, ResolverContext>({
   name: "HomePageModulesParams",

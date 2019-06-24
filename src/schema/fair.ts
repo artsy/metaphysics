@@ -18,6 +18,7 @@ import {
   GravityIDFields,
   NullableIDField,
   SlugAndInternalIDFields,
+  SlugIDField,
 } from "./object_identification"
 import filterArtworks from "./filter_artworks"
 import {
@@ -323,8 +324,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
                 new GraphQLObjectType<any, ResolverContext>({
                   name: "FairExhibitor",
                   fields: {
-                    ...GravityIDFields,
-                    ...NullableIDField,
+                    ...SlugIDField,
                     name: {
                       type: GraphQLString,
                       description: "Exhibitor name",

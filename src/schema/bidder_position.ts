@@ -38,7 +38,7 @@ const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "HighestBid",
         fields: {
-          ...IDFields,
+          ...InternalIDFields,
           created_at: date,
           number: {
             type: GraphQLInt,

@@ -75,7 +75,7 @@ export class RenameIDFields implements Transform {
               (field.description === NullableIDField.id.description &&
                 this.allowedGravityTypesWithNullableIDField.includes(type.name))
             ) {
-              newFields["gravityID"] = {
+              newFields["internalID"] = {
                 ...fieldToFieldConfig(field, resolveType, true),
                 resolve: ({ id }) => id,
               }

@@ -17,6 +17,7 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     ...GravityIDFields,
     __id: {
+      ...GravityIDFields.__id,
       type: new GraphQLNonNull(GraphQLID),
       resolve: item => toGlobalId("SearchableItem", item._id),
     },

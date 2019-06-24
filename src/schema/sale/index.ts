@@ -77,7 +77,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: () => {
     return {
-      ...GravityIDFields,
+      ...SlugAndInternalIDFields,
       cached,
       artworks: {
         type: new GraphQLList(Artwork.type),
