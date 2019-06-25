@@ -8473,6 +8473,14 @@ type OrderWithMutationSuccess {
 }
 
 type organizer {
+  # A globally unique ID.
+  id: ID!
+
+  # A slug ID.
+  slug: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
   profile_id: ID
   profile: Profile
   website: String

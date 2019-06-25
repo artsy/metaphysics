@@ -47,6 +47,7 @@ const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
 const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
   name: "organizer",
   fields: {
+    ...SlugAndInternalIDFields,
     profile_id: {
       type: GraphQLID,
     },
