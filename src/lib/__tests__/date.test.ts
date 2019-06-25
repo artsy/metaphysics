@@ -5,9 +5,11 @@ import {
   exhibitionStatus,
   dateTimeRange,
   singleDate,
+  singleDateWithDay,
   singleDateTime,
   singleTime,
   formattedOpeningHours,
+  formattedStartDateTime,
   datesAreSameDay,
   timeRange,
 } from "lib/date"
@@ -80,6 +82,43 @@ describe("date formatting", () => {
     })
   })
 
+  describe(formattedStartDateTime, () => {
+    const realNow = Date.now
+    beforeEach(() => {
+      Date.now = () => new Date("2018-01-30T03:24:00") as any
+    })
+    afterEach(() => {
+      Date.now = realNow
+    })
+
+    it("includes 'Starts' when event starts in the future", () => {
+      const period = formattedStartDateTime(
+        "2045-12-05T20:00:00+00:00",
+        "2050-12-30T17:00:00+00:00",
+        "UTC"
+      )
+      expect(period).toBe("Starts Dec 5, 2045 at 8:00pm UTC")
+    })
+
+    it("includes 'Ends' when event is running and terminates in the future", () => {
+      const period = formattedStartDateTime(
+        "2017-12-05T20:00:00+00:00",
+        "2045-12-30T17:00:00+00:00",
+        "UTC"
+      )
+      expect(period).toBe("Ends Dec 30, 2045 at 5:00pm UTC")
+    })
+
+    it("includes 'Ended on date' when event ended in the past and is now closed", () => {
+      const period = formattedStartDateTime(
+        "2016-12-05T20:00:00+00:00",
+        "2016-12-30T17:00:00+00:00",
+        "UTC"
+      )
+      expect(period).toBe("Ended Dec 30, 2016")
+    })
+  })
+
   describe(formattedOpeningHours, () => {
     const realNow = Date.now
     beforeEach(() => {
@@ -91,20 +130,20 @@ describe("date formatting", () => {
 
     it("includes 'Opens' when event opens in the future", () => {
       const period = formattedOpeningHours(
-        "2021-12-05T20:00:00+00:00",
-        "2022-12-30T17:00:00+00:00",
+        "2045-12-05T20:00:00+00:00",
+        "2046-12-30T17:00:00+00:00",
         "UTC"
       )
-      expect(period).toBe("Opens Dec 5 at 8:00pm UTC")
+      expect(period).toBe("Opens Dec 5, 2045 at 8:00pm UTC")
     })
 
     it("includes 'Closes' when event is running and closes in the future", () => {
       const period = formattedOpeningHours(
         "2017-12-05T20:00:00+00:00",
-        "2019-12-30T17:00:00+00:00",
+        "2045-12-30T17:00:00+00:00",
         "UTC"
       )
-      expect(period).toBe("Closes Dec 30 at 5:00pm UTC")
+      expect(period).toBe("Closes Dec 30, 2045 at 5:00pm UTC")
     })
 
     it("includes 'Closed' when event ended in the past and is closed", () => {
@@ -166,13 +205,33 @@ describe("date formatting", () => {
       Date.now = realNow
     })
 
-    it("includes single date with only day of week and month day when in current year", () => {
+    it("includes single date with month day when in current year", () => {
       const period = singleDate("2018-12-05T20:00:00+00:00", "UTC")
-      expect(period).toBe("Wed, Dec 5")
+      expect(period).toBe("Dec 5")
     })
 
     it("also includes the year when not in current year", () => {
       const period = singleDate("2021-12-05T20:00:00+00:00", "UTC")
+      expect(period).toBe("Dec 5, 2021")
+    })
+  })
+
+  describe(singleDateWithDay, () => {
+    const realNow = Date.now
+    beforeEach(() => {
+      Date.now = () => new Date("2018-01-30T03:24:00") as any
+    })
+    afterEach(() => {
+      Date.now = realNow
+    })
+
+    it("includes single date with only day of week and month day when in current year", () => {
+      const period = singleDateWithDay("2018-12-05T20:00:00+00:00", "UTC")
+      expect(period).toBe("Wed, Dec 5")
+    })
+
+    it("also includes the year when not in current year", () => {
+      const period = singleDateWithDay("2021-12-05T20:00:00+00:00", "UTC")
       expect(period).toBe("Sun, Dec 5, 2021")
     })
   })

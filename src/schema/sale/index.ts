@@ -4,10 +4,12 @@ import Image from "schema/image/index"
 import Profile from "schema/profile"
 import Partner from "schema/partner"
 import SaleArtwork from "schema/sale_artwork"
+import initials from "schema/fields/initials"
 import cached from "schema/fields/cached"
 import date from "schema/fields/date"
 import moment from "moment"
 import { SlugAndInternalIDFields } from "schema/object_identification"
+import { formattedStartDateTime } from "lib/date"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { amount } from "schema/fields/money"
@@ -203,8 +205,16 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       end_at: date,
       event_start_at: date,
       event_end_at: date,
+      formattedStartDateTime: {
+        type: GraphQLString,
+        description:
+          "A formatted description of when the auction starts or ends or if it has ended",
+        resolve: ({ start_at, end_at }) =>
+          formattedStartDateTime(start_at, end_at, "UTC"),
+      },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
       name: { type: GraphQLString },
+      initials: initials("name"),
       is_auction: { type: GraphQLBoolean },
       is_benefit: {
         type: GraphQLBoolean,

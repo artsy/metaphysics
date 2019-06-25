@@ -1,6 +1,7 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { GravityIDFields } from "schema/object_identification"
+import { deprecate } from "lib/deprecation"
 
 const AttributionClass = new GraphQLObjectType<any, ResolverContext>({
   name: "AttributionClass",
@@ -18,12 +19,18 @@ const AttributionClass = new GraphQLObjectType<any, ResolverContext>({
     },
     short_description: {
       type: GraphQLString,
-      deprecationReason: "Prefer shortDescription",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "shortDescription",
+      }),
       description: "Longer version of attribution class display",
     },
     long_description: {
       type: GraphQLString,
-      deprecationReason: "Prefer longDescription",
+      deprecationReason: deprecate({
+        inVersion: 2,
+        preferUsageOf: "longDescription",
+      }),
       description:
         "Long descriptive phrase used as companion for short_description",
     },
