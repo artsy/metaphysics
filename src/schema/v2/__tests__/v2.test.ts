@@ -9,6 +9,7 @@ import {
   IDFields,
   NullableIDField,
   GlobalIDField,
+  SlugAndInternalIDFields,
 } from "schema/object_identification"
 import {
   GraphQLSchema,
@@ -219,10 +220,10 @@ describe(transformToV2, () => {
     })
 
     describe("on Gravity backed types", () => {
-      it("renames id field to gravityID", async () => {
+      it("renames id field to internalID", async () => {
         const rootValue = {
           fieldWithGravityResolver: {
-            id: "slug or id",
+            id: "id value from gravity",
           },
         }
         const data = await runQueryOrThrow({
@@ -232,13 +233,13 @@ describe(transformToV2, () => {
                 type: new GraphQLObjectType({
                   name: "GravityType",
                   fields: {
-                    ...GravityIDFields,
+                    ...InternalIDFields,
                   },
                   interfaces: [
                     new GraphQLInterfaceType({
                       name: "AnInterface",
                       fields: {
-                        ...GravityIDFields,
+                        ...InternalIDFields,
                       },
                     }),
                   ],
@@ -250,15 +251,66 @@ describe(transformToV2, () => {
           source: gql`
             query {
               fieldWithGravityResolver {
-                gravityID
+                internalID
                 ... on AnInterface {
-                  gravityID
+                  internalID
                 }
               }
             }
           `,
         })
-        expect(data.fieldWithGravityResolver.gravityID).toEqual("slug or id")
+        expect(data.fieldWithGravityResolver.internalID).toEqual(
+          "id value from gravity"
+        )
+      })
+      it("renames id field to slug", async () => {
+        const rootValue = {
+          fieldWithGravityResolver: {
+            id: "slug value from gravity",
+            _id: "internal id value from gravity",
+          },
+        }
+        const data = await runQueryOrThrow({
+          schema: createSchema({
+            fields: {
+              fieldWithGravityResolver: {
+                type: new GraphQLObjectType({
+                  name: "GravityType",
+                  fields: {
+                    ...SlugAndInternalIDFields,
+                  },
+                  interfaces: [
+                    new GraphQLInterfaceType({
+                      name: "AnInterface",
+                      fields: {
+                        ...SlugAndInternalIDFields,
+                      },
+                    }),
+                  ],
+                }),
+              },
+            },
+          }),
+          rootValue,
+          source: gql`
+            query {
+              fieldWithGravityResolver {
+                internalID
+                slug
+                ... on AnInterface {
+                  internalID
+                  slug
+                }
+              }
+            }
+          `,
+        })
+        expect(data.fieldWithGravityResolver.slug).toEqual(
+          "slug value from gravity"
+        )
+        expect(data.fieldWithGravityResolver.internalID).toEqual(
+          "internal id value from gravity"
+        )
       })
 
       it("renames _id field to internalID", async () => {
