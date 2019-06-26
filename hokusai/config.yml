@@ -1,7 +1,4 @@
----
-aws-account-id: '585031190124'
-aws-ecr-region: us-east-1
 project-name: metaphysics
 git-remote: git@github.com:artsy/metaphysics.git
 post-deploy: .circleci/deploy_event.sh
-hokusai-required-version: ">=0.5.3"
+hokusai-required-version: "~=0.5"
