@@ -44,6 +44,7 @@ import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "schema/fields/listPrice"
 import { deprecate } from "lib/deprecation"
+import Show from "schema/show"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -713,6 +714,30 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           })
             .then(({ body }) => body)
             .then(_.first),
+      },
+      v2Shows: {
+        type: new GraphQLList(Show.type),
+        args: {
+          size: { type: GraphQLInt },
+          active: { type: GraphQLBoolean },
+          at_a_fair: { type: GraphQLBoolean },
+          sort: { type: PartnerShowSorts.type },
+        },
+        resolve: (
+          { id },
+          { size, active, sort, at_a_fair },
+          { relatedShowsLoader }
+        ) => {
+          return relatedShowsLoader({
+            artwork: [id],
+            active,
+            size,
+            sort,
+            at_a_fair,
+          }).then(({ body }) => {
+            return body
+          })
+        },
       },
       shows: {
         type: new GraphQLList(PartnerShow.type),

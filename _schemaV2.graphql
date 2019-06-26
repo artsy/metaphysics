@@ -1281,6 +1281,12 @@ type Artwork implements Node & Searchable & Sellable {
     active: Boolean
     at_a_fair: Boolean
     sort: PartnerShowSorts
+  ): [Show]
+  deprecatedShows(
+    size: Int
+    active: Boolean
+    at_a_fair: Boolean
+    sort: PartnerShowSorts
   ): [PartnerShow]
   signature(format: Format): String
   title: String
@@ -2279,6 +2285,12 @@ type ArtworkItem implements Node & Searchable & Sellable {
     at_a_fair: Boolean
     sort: PartnerShowSorts
   ): PartnerShow
+  v2Shows(
+    size: Int
+    active: Boolean
+    at_a_fair: Boolean
+    sort: PartnerShowSorts
+  ): [Show]
   shows(
     size: Int
     active: Boolean
