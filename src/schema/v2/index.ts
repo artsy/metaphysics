@@ -91,6 +91,9 @@ export const transformToV2 = (
         field.name !== "id" || !opt.filterIDFieldFromTypes.includes(type.name)
     ),
     new RenameFields((type, field) => {
+      if (field.name.startsWith("v2_")) {
+        return field.name.substring(3)
+      }
       if (field.name === "id") {
         if (
           isNullableType(field.type) &&
