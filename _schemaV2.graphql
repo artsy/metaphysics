@@ -1709,7 +1709,7 @@ type ArtworkContextPartnerShow implements Node {
     @deprecated(
       reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
     )
-  events: [PartnerShowEventType]
+  events: [PartnerShowEvent]
     @deprecated(
       reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
     )
@@ -6131,7 +6131,7 @@ type HighlightedShow implements Node {
   ): String
 
   # Events from the partner that runs this show
-  events: [PartnerShowEventType]
+  events: [PartnerShowEvent]
 
   # A formatted description of the start to end dates
   exhibition_period: String
@@ -8890,7 +8890,7 @@ type PartnerShow implements Node {
     @deprecated(
       reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
     )
-  events: [PartnerShowEventType]
+  events: [PartnerShowEvent]
     @deprecated(
       reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
     )
@@ -9007,7 +9007,7 @@ type PartnerShowCounts {
   ): FormattedNumber
 }
 
-type PartnerShowEventType {
+type PartnerShowEvent {
   event_type: String
   description: String
   title: String
@@ -10629,7 +10629,7 @@ type Show implements Node {
   ): String
 
   # Events from the partner that runs this show
-  events: [PartnerShowEventType]
+  events: [PartnerShowEvent]
 
   # A formatted description of the start to end dates
   exhibition_period: String
