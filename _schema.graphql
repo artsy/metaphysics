@@ -7064,6 +7064,9 @@ type MarketingCollection {
 
   # Collection has prioritized connection to artist
   is_featured_artist_content: Boolean!
+
+  # CollectionGroups of this collection
+  linkedCollections: [MarketingCollectionGroup!]!
   relatedCollections: [MarketingCollection!]!
   artworks(
     acquireable: Boolean
@@ -7108,6 +7111,13 @@ type MarketingCollectionCategory {
   collections: [MarketingCollection!]!
 }
 
+type MarketingCollectionGroup {
+  id: ID!
+  groupType: MarketingGroupTypes!
+  name: String!
+  members: [String!]!
+}
+
 type MarketingCollectionQuery {
   id: ID
   acquireable: Boolean
@@ -7142,6 +7152,13 @@ type MarketingCollectionQuery {
 }
 
 scalar MarketingDateTime
+
+# Available types of CollectionGroup
+enum MarketingGroupTypes {
+  ArtistSeries
+  FeaturedCollections
+  OtherCollections
+}
 
 type Me implements Node {
   # A globally unique ID.
