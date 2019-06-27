@@ -91,12 +91,6 @@ export const transformToV2 = (
         field.name !== "id" || !opt.filterIDFieldFromTypes.includes(type.name)
     ),
     new RenameFields((type, field) => {
-      if (field.name === "v2Shows" && type.name === "Artwork") {
-        return "shows"
-      }
-      if (field.name === "shows" && type.name === "Artwork") {
-        return "deprecatedShows"
-      }
       if (field.name === "id") {
         if (
           isNullableType(field.type) &&

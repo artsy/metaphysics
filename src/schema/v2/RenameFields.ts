@@ -9,6 +9,9 @@ import {
   visit,
   visitWithTypeInfo,
   Kind,
+  getNamedType,
+  isLeafType,
+  GraphQLUnionType,
 } from "graphql"
 import {
   visitSchema,
@@ -91,7 +94,8 @@ export class RenameFields implements Transform {
           ...newField,
           resolve: source => source[oldName],
         }
-        this.changedFields[newName] = oldName
+
+        this.changedFields[fieldKey(type, newName)] = oldName
       } else {
         newFields[oldName] = newField
       }
@@ -116,7 +120,8 @@ export class RenameFields implements Transform {
               return
             }
 
-            const oldName = this.changedFields[node.name.value]
+            const type = getTypeWithSelectableFields(typeInfo)
+            const oldName = this.changedFields[fieldKey(type, node.name.value)]
             if (oldName) {
               return {
                 ...node,
@@ -137,4 +142,18 @@ export class RenameFields implements Transform {
       document: newDocument,
     }
   }
+}
+
+function fieldKey(type: TypeWithSelectableFields, fieldName: string) {
+  return `${type.name}.${fieldName}`
+}
+
+// FIXME: Unsure why the `typeInfo` methods return `any`.
+function getTypeWithSelectableFields(
+  typeInfo: TypeInfo
+): TypeWithSelectableFields {
+  const type = getNamedType(typeInfo.getType())
+  return isLeafType(type) || type instanceof GraphQLUnionType
+    ? getNamedType(typeInfo.getParentType())
+    : type
 }
