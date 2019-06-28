@@ -63,6 +63,46 @@ type AnalyticsArtworksPublishedStats {
 # An ISO 8601 datetime
 scalar AnalyticsDateTime
 
+# Visitor countries, device, referals and session page
+type AnalyticsGroupedStats {
+  groupedEntity: AnalyticsGroupedStatsUnion!
+  period: AnalyticsQueryPeriodEnum!
+}
+
+# The connection type for GroupedStats.
+type AnalyticsGroupedStatsConnection {
+  # A list of edges.
+  edges: [AnalyticsGroupedStatsEdge]
+
+  # A list of nodes.
+  nodes: [AnalyticsGroupedStats]
+
+  # Information to aid in pagination.
+  pageInfo: AnalyticsPageInfo!
+}
+
+# An edge in a connection.
+type AnalyticsGroupedStatsEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: AnalyticsGroupedStats
+}
+
+enum AnalyticsGroupedStatsMetricEnum {
+  # visitor_by_location
+  VISITOR_BY_LOCATION
+}
+
+enum AnalyticsGroupedStatsObjectTypeEnum {
+  # country
+  COUNTRY
+}
+
+# A grouped stat item: country or device etc.
+union AnalyticsGroupedStatsUnion = AnalyticsVisitorsByCountry
+
 # A histogram bin
 type AnalyticsHistogramBin {
   maxPriceCents: Int!
@@ -183,6 +223,24 @@ type AnalyticsPartnerStats {
 
   # Audience stats
   audience(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerAudienceStats
+
+  # Visitor countries, device, referals and session page
+  groupedStats(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    metric: AnalyticsGroupedStatsMetricEnum!
+    objectType: AnalyticsGroupedStatsObjectTypeEnum!
+    period: AnalyticsQueryPeriodEnum!
+  ): AnalyticsGroupedStatsConnection
 
   # Inquiry stats
   inquiry(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerInquiryStats
@@ -383,6 +441,14 @@ union AnalyticsRankedStatsUnion =
 
 type AnalyticsShow {
   entityId: String!
+}
+
+type AnalyticsVisitorsByCountry {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
 }
 
 input ApproveOrderInput {
@@ -1407,8 +1473,12 @@ type ArtworkContextAuction implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
@@ -1876,8 +1946,12 @@ type ArtworkContextSale implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
@@ -6784,8 +6858,12 @@ type HomePageModuleContextSale implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
@@ -9871,8 +9949,12 @@ type Sale implements Node {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+
+  # A formatted description of when the auction starts or ends or if it has ended
+  formattedStartDateTime: String
   href: String
   name: String
+  initials(length: Int = 3): String
   is_auction: Boolean
   is_benefit: Boolean
     @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
