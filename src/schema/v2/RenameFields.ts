@@ -153,13 +153,12 @@ function fieldKey(type: TypeWithSelectableFields, fieldName: string) {
 function getTypeWithSelectableFields(
   typeInfo: TypeInfo
 ): TypeWithSelectableFields {
-  let type
   if (typeInfo.getType() instanceof GraphQLList) {
     return getNamedType(typeInfo.getParentType())
   } else {
-    type = getNamedType(typeInfo.getType())
+    const type = getNamedType(typeInfo.getType())
+    return isLeafType(type) || type instanceof GraphQLUnionType
+      ? getNamedType(typeInfo.getParentType())
+      : type
   }
-  return isLeafType(type) || type instanceof GraphQLUnionType
-    ? getNamedType(typeInfo.getParentType())
-    : type
 }
