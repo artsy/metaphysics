@@ -774,10 +774,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       framed: {
         type: ArtworkInfoRowType,
         resolve: ({ framed }) => {
-          if (!framed) {
+          if (framed) {
+            return { label: "Framed", details: "Included" }
+          } else if (framed === false) {
+            return { label: "Framed", details: "Not included" }
+          } else {
             return null
           }
-          return { label: "Framed", details: null }
         },
       },
       signatureInfo: {
@@ -826,10 +829,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       certificateOfAuthenticity: {
         type: ArtworkInfoRowType,
         resolve: ({ certificate_of_authenticity }) => {
-          if (!certificate_of_authenticity) {
+          if (certificate_of_authenticity) {
+            return { label: "Certificate of authenticity", details: "Included" }
+          } else if (certificate_of_authenticity === false) {
+            return {
+              label: "Certificate of authenticity",
+              details: "Not included",
+            }
+          } else {
             return null
           }
-          return { label: "Certificate of authenticity", details: null }
         },
       },
       widthCm: {

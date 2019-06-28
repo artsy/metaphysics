@@ -1666,18 +1666,22 @@ describe("Artwork type", () => {
         expect(data).toEqual({ artwork: { framed: null } })
       })
     })
-    it("is null when framed is false", () => {
-      artwork.framed = false
-      return runQuery(query, context).then(data => {
-        expect(data).toEqual({ artwork: { framed: null } })
-      })
-    })
     it("is set to proper object when framed is true", () => {
       artwork.framed = true
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            framed: { label: "Framed", details: null },
+            framed: { label: "Framed", details: "Included" },
+          },
+        })
+      })
+    })
+    it("is set to proper object when framed is false", () => {
+      artwork.framed = false
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            framed: { label: "Framed", details: "Not included" },
           },
         })
       })
@@ -1848,16 +1852,6 @@ describe("Artwork type", () => {
         })
       })
     })
-    it("is null when certificate_of_authenticity is false", () => {
-      artwork.certificate_of_authenticity = false
-      return runQuery(query, context).then(data => {
-        expect(data).toEqual({
-          artwork: {
-            certificateOfAuthenticity: null,
-          },
-        })
-      })
-    })
     it("is set to proper object when certificate_of_authenticity is true", () => {
       artwork.certificate_of_authenticity = true
       return runQuery(query, context).then(data => {
@@ -1865,7 +1859,20 @@ describe("Artwork type", () => {
           artwork: {
             certificateOfAuthenticity: {
               label: "Certificate of authenticity",
-              details: null,
+              details: "Included",
+            },
+          },
+        })
+      })
+    })
+    it("is set to proper object when certificate_of_authenticity is false", () => {
+      artwork.certificate_of_authenticity = false
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            certificateOfAuthenticity: {
+              label: "Certificate of authenticity",
+              details: "Not included",
             },
           },
         })
