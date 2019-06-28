@@ -45,6 +45,7 @@ import { ResolverContext } from "types/graphql"
 import { listPrice } from "schema/fields/listPrice"
 import { deprecate } from "lib/deprecation"
 import Show from "schema/show"
+import ShowSort from "schema/sorts/show_sort"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -721,7 +722,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           size: { type: GraphQLInt },
           active: { type: GraphQLBoolean },
           at_a_fair: { type: GraphQLBoolean },
-          sort: { type: PartnerShowSorts.type },
+          sort: { type: ShowSort },
         },
         resolve: (
           { id },
