@@ -10,9 +10,6 @@ import {
   visitWithTypeInfo,
   Kind,
   getNamedType,
-  GraphQLList,
-  isLeafType,
-  GraphQLUnionType,
 } from "graphql"
 import {
   visitSchema,
@@ -86,23 +83,28 @@ export class RenameFields implements Transform {
     const resolveType = createResolveType((_name, type) => type)
 
     Object.keys(fields).forEach(oldName => {
-      /**
-       * If the key already exists, it means another field got renamed to this
-       * `oldName` and we should not override it with an old implementation.
-       * I.e. the old implementation got replaced by the newly renamed one.
-       */
-      if (!this.changedFields[fieldKey(type, oldName)]) {
-        const field = fields[oldName]
-        const newField = fieldToFieldConfig(field, resolveType, true)
-        const newName = this.renamer(type, field)
-        if (newName) {
-          madeChanges = true
-          newFields[newName] = {
-            ...newField,
-            resolve: source => source[oldName],
-          }
-          this.changedFields[fieldKey(type, newName)] = oldName
-        } else {
+      const field = fields[oldName]
+      const newField = fieldToFieldConfig(field, resolveType, true)
+      const newName = this.renamer(type, field)
+      if (newName) {
+        if (this.changedFields[fieldKey(type, newName)] !== undefined) {
+          throw new Error(
+            `Cannot rename two fields to the same name: ${newName}`
+          )
+        }
+        madeChanges = true
+        newFields[newName] = {
+          ...newField,
+          resolve: source => source[oldName],
+        }
+        this.changedFields[fieldKey(type, newName)] = oldName
+      } else {
+        /**
+         * If the key already exists, it means another field got renamed to this
+         * `oldName` and we should not override it with an old implementation.
+         * I.e. the old implementation got replaced by the newly renamed one.
+         */
+        if (this.changedFields[fieldKey(type, oldName)] === undefined) {
           newFields[oldName] = newField
         }
       }
@@ -160,12 +162,5 @@ function fieldKey(type: TypeWithSelectableFields, fieldName: string) {
 function getTypeWithSelectableFields(
   typeInfo: TypeInfo
 ): TypeWithSelectableFields {
-  if (typeInfo.getType() instanceof GraphQLList) {
-    return getNamedType(typeInfo.getParentType())
-  } else {
-    const type = getNamedType(typeInfo.getType())
-    return isLeafType(type) || type instanceof GraphQLUnionType
-      ? getNamedType(typeInfo.getParentType())
-      : type
-  }
+  return getNamedType(typeInfo.getParentType())
 }
