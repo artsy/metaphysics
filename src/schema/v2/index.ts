@@ -126,6 +126,11 @@ export const transformToV2 = (
       }
       return undefined
     }),
+    new RenameFields((_type, field) => {
+      if (field.name.startsWith("v2_")) {
+        return field.name.substring(3)
+      }
+    }),
     new RenameArguments((_field, arg) => (arg.name === "__id" ? "id" : null)),
     ...(FILTER_DEPRECATIONS
       ? [
@@ -142,10 +147,5 @@ export const transformToV2 = (
           ),
         ]
       : []),
-    new RenameFields((_type, field) => {
-      if (field.name.startsWith("v2_")) {
-        return field.name.substring(3)
-      }
-    }),
   ])
 }
