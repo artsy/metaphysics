@@ -39,12 +39,22 @@ type MarketingCollection {
 
   # Collection has prioritized connection to artist
   is_featured_artist_content: Boolean!
+
+  # CollectionGroups of this collection
+  linkedCollections: [MarketingCollectionGroup!]!
   relatedCollections: [MarketingCollection!]!
 }
 
 type MarketingCollectionCategory {
   name: String!
   collections: [MarketingCollection!]!
+}
+
+type MarketingCollectionGroup {
+  id: ID!
+  groupType: MarketingGroupTypes!
+  name: String!
+  members: [String!]!
 }
 
 type MarketingCollectionQuery {
@@ -81,6 +91,13 @@ type MarketingCollectionQuery {
 }
 
 scalar MarketingDateTime
+
+# Available types of CollectionGroup
+enum MarketingGroupTypes {
+  ArtistSeries
+  FeaturedCollections
+  OtherCollections
+}
 
 type Query {
   marketingCollections(category: String, randomizationSeed: String, size: Int, isFeaturedArtistContent: Boolean, showOnEditorial: Boolean, artistID: String): [MarketingCollection!]!
