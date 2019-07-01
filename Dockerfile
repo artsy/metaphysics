@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install \
 
 # Install the packages
 COPY package.json yarn.lock ./
+COPY patches ./patches
 RUN yarn install
 
 # Copy application code
