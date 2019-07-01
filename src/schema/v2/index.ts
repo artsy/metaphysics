@@ -142,12 +142,9 @@ export const transformToV2 = (
           ),
         ]
       : []),
-    new RenameFields((type, field) => {
-      if (field.name === "v2Shows" && type.name === "Artwork") {
-        return "shows"
-      }
-      if (field.name === "shows" && type.name === "Artwork") {
-        return "deprecatedShows"
+    new RenameFields((_type, field) => {
+      if (field.name.startsWith("v2_")) {
+        return field.name.substring(3)
       }
     }),
   ])

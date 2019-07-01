@@ -716,7 +716,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             .then(({ body }) => body)
             .then(_.first),
       },
-      v2Shows: {
+      v2_shows: {
         type: new GraphQLList(Show.type),
         args: {
           size: { type: GraphQLInt },
