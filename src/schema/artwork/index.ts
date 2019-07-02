@@ -47,6 +47,8 @@ import artworkPageviews from ".././../data/weeklyArtworkPageviews.json"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "schema/fields/listPrice"
 import { deprecate } from "lib/deprecation"
+import Show from "schema/show"
+import ShowSort from "schema/sorts/show_sort"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -717,6 +719,30 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             .then(({ body }) => body)
             .then(_.first),
       },
+      v2_shows: {
+        type: new GraphQLList(Show.type),
+        args: {
+          size: { type: GraphQLInt },
+          active: { type: GraphQLBoolean },
+          at_a_fair: { type: GraphQLBoolean },
+          sort: { type: ShowSort },
+        },
+        resolve: (
+          { id },
+          { size, active, sort, at_a_fair },
+          { relatedShowsLoader }
+        ) => {
+          return relatedShowsLoader({
+            artwork: [id],
+            active,
+            size,
+            sort,
+            at_a_fair,
+          }).then(({ body }) => {
+            return body
+          })
+        },
+      },
       shows: {
         type: new GraphQLList(PartnerShow.type),
         args: {
@@ -777,10 +803,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       framed: {
         type: ArtworkInfoRowType,
         resolve: ({ framed }) => {
-          if (!framed) {
+          if (framed) {
+            return { label: "Framed", details: "Included" }
+          } else if (framed === false) {
+            return { label: "Framed", details: "Not included" }
+          } else {
             return null
           }
-          return { label: "Framed", details: null }
         },
       },
       signatureInfo: {
@@ -829,10 +858,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       certificateOfAuthenticity: {
         type: ArtworkInfoRowType,
         resolve: ({ certificate_of_authenticity }) => {
-          if (!certificate_of_authenticity) {
+          if (certificate_of_authenticity) {
+            return { label: "Certificate of authenticity", details: "Included" }
+          } else if (certificate_of_authenticity === false) {
+            return {
+              label: "Certificate of authenticity",
+              details: "Not included",
+            }
+          } else {
             return null
           }
-          return { label: "Certificate of authenticity", details: null }
         },
       },
       widthCm: {

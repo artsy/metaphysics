@@ -14,6 +14,9 @@ type Collection {
   # Background image for the header of the collection page
   headerImage: String
 
+  # URL for Thumbnail image to be used when this collection is displayed.
+  thumbnail: String
+
   # Set of keywords used for SEO purposes
   keywords: String!
 
@@ -36,12 +39,22 @@ type Collection {
 
   # Collection has prioritized connection to artist
   is_featured_artist_content: Boolean!
+
+  # CollectionGroups of this collection
+  linkedCollections: [CollectionGroup!]!
   relatedCollections: [Collection!]!
 }
 
 type CollectionCategory {
   name: String!
   collections: [Collection!]!
+}
+
+type CollectionGroup {
+  id: ID!
+  groupType: GroupTypes!
+  name: String!
+  members: [String!]!
 }
 
 type CollectionQuery {
@@ -79,6 +92,13 @@ type CollectionQuery {
 
 # The javascript `Date` as string. Type represents date and time as the ISO Date string.
 scalar DateTime
+
+# Available types of CollectionGroup
+enum GroupTypes {
+  ArtistSeries
+  FeaturedCollections
+  OtherCollections
+}
 
 type Query {
   collections(

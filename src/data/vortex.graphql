@@ -22,6 +22,68 @@ An ISO 8601 datetime
 scalar DateTime
 
 """
+Visitor countries, device, referals and session page
+"""
+type GroupedStats {
+  groupedEntity: GroupedStatsUnion!
+  period: QueryPeriodEnum!
+}
+
+"""
+The connection type for GroupedStats.
+"""
+type GroupedStatsConnection {
+  """
+  A list of edges.
+  """
+  edges: [GroupedStatsEdge]
+
+  """
+  A list of nodes.
+  """
+  nodes: [GroupedStats]
+
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
+}
+
+"""
+An edge in a connection.
+"""
+type GroupedStatsEdge {
+  """
+  A cursor for use in pagination.
+  """
+  cursor: String!
+
+  """
+  The item at the end of the edge.
+  """
+  node: GroupedStats
+}
+
+enum GroupedStatsMetricEnum {
+  """
+  visitor_by_location
+  """
+  VISITOR_BY_LOCATION
+}
+
+enum GroupedStatsObjectTypeEnum {
+  """
+  country
+  """
+  COUNTRY
+}
+
+"""
+A grouped stat item: country or device etc.
+"""
+union GroupedStatsUnion = VisitorsByCountry
+
+"""
 A histogram bin
 """
 type HistogramBin {
@@ -141,6 +203,34 @@ type PartnerStats {
   Audience stats
   """
   audience(period: QueryPeriodEnum!): PartnerAudienceStats
+
+  """
+  Visitor countries, device, referals and session page
+  """
+  groupedStats(
+    """
+    Returns the elements in the list that come after the specified cursor.
+    """
+    after: String
+
+    """
+    Returns the elements in the list that come before the specified cursor.
+    """
+    before: String
+
+    """
+    Returns the first _n_ elements from the list.
+    """
+    first: Int
+
+    """
+    Returns the last _n_ elements from the list.
+    """
+    last: Int
+    metric: GroupedStatsMetricEnum!
+    objectType: GroupedStatsObjectTypeEnum!
+    period: QueryPeriodEnum!
+  ): GroupedStatsConnection
 
   """
   Inquiry stats
@@ -458,4 +548,12 @@ union RankedStatsUnion = Artist | Artwork | Show
 
 type Show {
   entityId: String!
+}
+
+type VisitorsByCountry {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
 }

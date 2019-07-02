@@ -19,6 +19,7 @@ import {
   GraphQLID,
   GraphQLInterfaceType,
   GraphQLString,
+  GraphQLInt,
 } from "graphql"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
@@ -104,6 +105,59 @@ describe(transformToV2, () => {
         expect(deprecatedField).not.toBeUndefined()
       }
     })
+  })
+
+  it("puts fields with the v2 prefix in place", async () => {
+    const rootValue = {
+      fieldForV2: {
+        someField: 42,
+        v2_someField: "a v2 value",
+      },
+    }
+    const data = await runQueryOrThrow({
+      schema: createSchema({
+        fields: {
+          fieldForV2: {
+            type: new GraphQLObjectType({
+              name: "AnyType",
+              fields: {
+                v2_someField: {
+                  type: GraphQLString,
+                },
+                someField: {
+                  type: GraphQLInt,
+                },
+              },
+              interfaces: [
+                new GraphQLInterfaceType({
+                  name: "AnInterface",
+                  fields: {
+                    someField: {
+                      type: GraphQLInt,
+                    },
+                    v2_someField: {
+                      type: GraphQLString,
+                    },
+                  },
+                }),
+              ],
+            }),
+          },
+        },
+      }),
+      rootValue,
+      source: gql`
+        query {
+          fieldForV2 {
+            someField
+            ... on AnInterface {
+              someField
+            }
+          }
+        }
+      `,
+    })
+    expect(data.fieldForV2.someField).toEqual("a v2 value")
   })
 
   describe("concerning ID renaming", () => {

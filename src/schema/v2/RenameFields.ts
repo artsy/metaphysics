@@ -10,8 +10,6 @@ import {
   visitWithTypeInfo,
   Kind,
   getNamedType,
-  isLeafType,
-  GraphQLUnionType,
 } from "graphql"
 import {
   visitSchema,
@@ -89,15 +87,26 @@ export class RenameFields implements Transform {
       const newField = fieldToFieldConfig(field, resolveType, true)
       const newName = this.renamer(type, field)
       if (newName) {
+        if (this.changedFields[fieldKey(type, newName)] !== undefined) {
+          throw new Error(
+            `Cannot rename two fields to the same name: ${newName}`
+          )
+        }
         madeChanges = true
         newFields[newName] = {
           ...newField,
           resolve: source => source[oldName],
         }
-
         this.changedFields[fieldKey(type, newName)] = oldName
       } else {
-        newFields[oldName] = newField
+        /**
+         * If the key already exists, it means another field got renamed to this
+         * `oldName` and we should not override it with an old implementation.
+         * I.e. the old implementation got replaced by the newly renamed one.
+         */
+        if (this.changedFields[fieldKey(type, oldName)] === undefined) {
+          newFields[oldName] = newField
+        }
       }
     })
 
@@ -121,7 +130,8 @@ export class RenameFields implements Transform {
             }
 
             const type = getTypeWithSelectableFields(typeInfo)
-            const oldName = this.changedFields[fieldKey(type, node.name.value)]
+            const oldName =
+              type && this.changedFields[fieldKey(type, node.name.value)]
             if (oldName) {
               return {
                 ...node,
@@ -131,7 +141,7 @@ export class RenameFields implements Transform {
                 },
               }
             }
-            return undefined
+            return
           },
         },
       })
@@ -152,8 +162,5 @@ function fieldKey(type: TypeWithSelectableFields, fieldName: string) {
 function getTypeWithSelectableFields(
   typeInfo: TypeInfo
 ): TypeWithSelectableFields {
-  const type = getNamedType(typeInfo.getType())
-  return isLeafType(type) || type instanceof GraphQLUnionType
-    ? getNamedType(typeInfo.getParentType())
-    : type
+  return getNamedType(typeInfo.getParentType())
 }
