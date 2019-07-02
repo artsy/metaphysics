@@ -2156,7 +2156,7 @@ type ArtworkInquiry {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   artwork: Artwork!
   impulse_conversation_id: String
@@ -2519,7 +2519,7 @@ type AttributionClass {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
 
   # Shortest form of attribution class display
@@ -3153,7 +3153,9 @@ type CitySponsoredContent {
 type Collection implements Node {
   # A globally unique ID.
   id: ID!
-  slug: String!
+
+  # A slug ID.
+  slug: ID!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
@@ -4774,7 +4776,7 @@ type CreditCard {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
 
   # Brand of credit card
@@ -10389,11 +10391,11 @@ type SearchableEdge {
 }
 
 type SearchableItem implements Node & Searchable {
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+
   # A globally unique ID.
   id: ID!
-
-  # A type-specific Gravity Mongo Document ID.
-  internalID: ID!
   description: String
   displayLabel: String
   imageUrl: String
@@ -11292,7 +11294,7 @@ type User {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific Gravity Mongo Document ID.
+  # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
 

@@ -1,13 +1,13 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { GravityIDFields } from "schema/object_identification"
+import { InternalIDFields } from "schema/object_identification"
 import { deprecate } from "lib/deprecation"
 
 const AttributionClass = new GraphQLObjectType<any, ResolverContext>({
   name: "AttributionClass",
   description: "Collection of fields that describe attribution class",
   fields: {
-    ...GravityIDFields,
+    ...InternalIDFields,
     name: {
       type: GraphQLString,
       description: "Shortest form of attribution class display",
