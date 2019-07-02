@@ -1342,6 +1342,12 @@ type Artwork implements Node & Searchable & Sellable {
     at_a_fair: Boolean
     sort: PartnerShowSorts
   ): PartnerShow
+  v2_shows(
+    size: Int
+    active: Boolean
+    at_a_fair: Boolean
+    sort: ShowSort
+  ): [Show]
   shows(
     size: Int
     active: Boolean
@@ -2345,6 +2351,12 @@ type ArtworkItem implements Node & Searchable & Sellable {
     at_a_fair: Boolean
     sort: PartnerShowSorts
   ): PartnerShow
+  v2_shows(
+    size: Int
+    active: Boolean
+    at_a_fair: Boolean
+    sort: ShowSort
+  ): [Show]
   shows(
     size: Int
     active: Boolean
