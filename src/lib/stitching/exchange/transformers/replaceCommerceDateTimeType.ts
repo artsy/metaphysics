@@ -20,7 +20,7 @@ type TypeWithSelectableFields =
   | GraphQLObjectType<any, any>
   | GraphQLInterfaceType
 
-export class ReplaceCommerceTimeDateType implements Transform {
+export class ReplaceCommerceDateTimeType implements Transform {
   public transformSchema(schema: GraphQLSchema): GraphQLSchema {
     const newSchema = visitSchema(schema, {
       [VisitSchemaKind.OBJECT_TYPE]: ((type: GraphQLObjectType<any, any>) => {
@@ -78,9 +78,7 @@ export class ReplaceCommerceTimeDateType implements Transform {
         madeChanges = true
         newFields[fieldName] = {
           ...fieldConfig,
-          type: dateField.type,
-          args: { ...dateField.args },
-          resolve: dateField.resolve,
+          ...dateField,
         }
       }
     })

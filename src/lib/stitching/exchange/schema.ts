@@ -6,7 +6,7 @@ import {
   RenameRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
-import { ReplaceCommerceTimeDateType } from "./transformers/replaceCommerceDateTimeType"
+import { ReplaceCommerceDateTimeType } from "./transformers/replaceCommerceDateTimeType"
 
 export const executableExchangeSchema = transforms => {
   const exchangeSDL = readFileSync("src/data/exchange.graphql", "utf8")
@@ -33,7 +33,7 @@ export const transformsForExchange = [
       `commerce${name.charAt(0).toUpperCase() + name.slice(1)}`
   ),
   // replace CommerceDateTime field with MP's dateField
-  new ReplaceCommerceTimeDateType(),
+  new ReplaceCommerceDateTimeType(),
 ]
 
 export const legacyTransformsForExchange = [
