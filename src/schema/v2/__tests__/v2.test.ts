@@ -367,7 +367,8 @@ describe(transformToV2, () => {
         )
       })
 
-      it("renames _id field to internalID", async () => {
+      // TODO: I'm in progress on completely removing this type
+      xit("renames _id field to internalID", async () => {
         const rootValue = {
           fieldWithGravityResolver: {
             _id: "mongo id",

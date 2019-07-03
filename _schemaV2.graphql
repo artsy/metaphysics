@@ -10391,11 +10391,14 @@ type SearchableEdge {
 }
 
 type SearchableItem implements Node & Searchable {
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-
   # A globally unique ID.
   id: ID!
+
+  # A slug ID.
+  slug: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
   description: String
   displayLabel: String
   imageUrl: String
