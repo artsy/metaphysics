@@ -3353,7 +3353,7 @@ type CommerceBuyOrder implements CommerceOrder {
   code: String!
   commissionFeeCents: Int
   commissionRate: Float
-  createdAt: CommerceDateTime!
+  createdAt: String!
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
@@ -3361,8 +3361,22 @@ type CommerceBuyOrder implements CommerceOrder {
 
   # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int
-  lastApprovedAt: CommerceDateTime
-  lastSubmittedAt: CommerceDateTime
+  lastApprovedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  lastSubmittedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   lastTransactionFailed: Boolean
   lineItems(
     # Returns the elements in the list that come after the specified cursor.
@@ -3383,13 +3397,27 @@ type CommerceBuyOrder implements CommerceOrder {
   sellerTotalCents: Int
   shippingTotalCents: Int
   state: CommerceOrderStateEnum!
-  stateExpiresAt: CommerceDateTime
+  stateExpiresAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   stateReason: String
-  stateUpdatedAt: CommerceDateTime
+  stateUpdatedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   taxTotalCents: Int
   totalListPriceCents: Int!
   transactionFeeCents: Int
-  updatedAt: CommerceDateTime!
+  updatedAt: String!
   buyerDetails: OrderParty
   sellerDetails: OrderParty
   itemsTotal(
@@ -3723,7 +3751,7 @@ type CommerceLineItemEdge {
 type CommerceOffer {
   amountCents: Int!
   buyerTotalCents: Int
-  createdAt: CommerceDateTime!
+  createdAt: String!
   creatorId: String!
   from: CommerceOrderPartyUnion!
   fromParticipant: CommerceOrderParticipantEnum
@@ -3732,7 +3760,14 @@ type CommerceOffer {
   order: CommerceOrder!
   respondsTo: CommerceOffer
   shippingTotalCents: Int
-  submittedAt: CommerceDateTime
+  submittedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   taxTotalCents: Int
   fromDetails: OrderParty
   amount(
@@ -3802,7 +3837,7 @@ type CommerceOfferOrder implements CommerceOrder {
   code: String!
   commissionFeeCents: Int
   commissionRate: Float
-  createdAt: CommerceDateTime!
+  createdAt: String!
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
@@ -3810,11 +3845,25 @@ type CommerceOfferOrder implements CommerceOrder {
 
   # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int
-  lastApprovedAt: CommerceDateTime
+  lastApprovedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
 
   # Last submitted offer
   lastOffer: CommerceOffer
-  lastSubmittedAt: CommerceDateTime
+  lastSubmittedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   lastTransactionFailed: Boolean
   lineItems(
     # Returns the elements in the list that come after the specified cursor.
@@ -3851,13 +3900,27 @@ type CommerceOfferOrder implements CommerceOrder {
   sellerTotalCents: Int
   shippingTotalCents: Int
   state: CommerceOrderStateEnum!
-  stateExpiresAt: CommerceDateTime
+  stateExpiresAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   stateReason: String
-  stateUpdatedAt: CommerceDateTime
+  stateUpdatedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   taxTotalCents: Int
   totalListPriceCents: Int!
   transactionFeeCents: Int
-  updatedAt: CommerceDateTime!
+  updatedAt: String!
   buyerDetails: OrderParty
   sellerDetails: OrderParty
   itemsTotal(
@@ -3951,7 +4014,7 @@ interface CommerceOrder {
   code: String!
   commissionFeeCents: Int
   commissionRate: Float
-  createdAt: CommerceDateTime!
+  createdAt: String!
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
@@ -3959,8 +4022,22 @@ interface CommerceOrder {
 
   # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int
-  lastApprovedAt: CommerceDateTime
-  lastSubmittedAt: CommerceDateTime
+  lastApprovedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  lastSubmittedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   lastTransactionFailed: Boolean
   lineItems(
     # Returns the elements in the list that come after the specified cursor.
@@ -3981,13 +4058,27 @@ interface CommerceOrder {
   sellerTotalCents: Int
   shippingTotalCents: Int
   state: CommerceOrderStateEnum!
-  stateExpiresAt: CommerceDateTime
+  stateExpiresAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   stateReason: String
-  stateUpdatedAt: CommerceDateTime
+  stateUpdatedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   taxTotalCents: Int
   totalListPriceCents: Int!
   transactionFeeCents: Int
-  updatedAt: CommerceDateTime!
+  updatedAt: String!
   buyerDetails: OrderParty
   sellerDetails: OrderParty
   itemsTotal(
