@@ -28,6 +28,7 @@ const FilterTypeNames = [
         "Highlighted",
         "HighlightedArticle",
         "HighlightedShow",
+        "PriceCents",
       ]
     : []),
 ]
