@@ -1679,27 +1679,27 @@ type ArtworkContextPartnerShow implements Node {
   # A globally unique ID.
   id: ID!
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # A type-specific ID.
   gravityID: ID!
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # A type-specific Gravity Mongo Document ID.
   internalID: ID!
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   cached: Int
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   artists: [Artist]
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # The artworks featured in the show
@@ -1715,7 +1715,7 @@ type ArtworkContextPartnerShow implements Node {
     size: Int = 25
   ): [Artwork]
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # A connection of artworks featured in the show
@@ -1730,15 +1730,15 @@ type ArtworkContextPartnerShow implements Node {
     last: Int
   ): ArtworkConnection
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   counts: PartnerShowCounts
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   cover_image: Image
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   created_at(
     # This arg is deprecated, use timezone instead
@@ -1749,15 +1749,15 @@ type ArtworkContextPartnerShow implements Node {
     timezone: String
   ): String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   description: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   displayable: Boolean
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   end_at(
     # This arg is deprecated, use timezone instead
@@ -1768,25 +1768,25 @@ type ArtworkContextPartnerShow implements Node {
     timezone: String
   ): String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   events: [PartnerShowEventType]
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # A formatted description of the start to end dates
   exhibition_period: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   fair: Fair
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   href: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   images(
     # Number of images to return
@@ -1797,53 +1797,53 @@ type ArtworkContextPartnerShow implements Node {
     page: Int
   ): [Image]
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # Flag showing if show has any location.
   has_location: Boolean
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.
   is_active: Boolean
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   is_displayable: Boolean
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   is_fair_booth: Boolean
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   kind: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   location: Location
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   meta_image: Image
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # The exhibition title
   name: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   partner: Partner
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   press_release(format: Format): String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   start_at(
     # This arg is deprecated, use timezone instead
@@ -1854,11 +1854,11 @@ type ArtworkContextPartnerShow implements Node {
     timezone: String
   ): String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   status: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # A formatted update on upcoming status changes
@@ -1867,11 +1867,11 @@ type ArtworkContextPartnerShow implements Node {
     max_days: Int
   ): String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   type: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 }
 
@@ -8849,27 +8849,27 @@ type PartnerShow implements Node {
   # A globally unique ID.
   id: ID!
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # A type-specific ID.
   gravityID: ID!
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # A type-specific Gravity Mongo Document ID.
   internalID: ID!
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   cached: Int
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   artists: [Artist]
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # The artworks featured in the show
@@ -8885,7 +8885,7 @@ type PartnerShow implements Node {
     size: Int = 25
   ): [Artwork]
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # A connection of artworks featured in the show
@@ -8900,15 +8900,15 @@ type PartnerShow implements Node {
     last: Int
   ): ArtworkConnection
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   counts: PartnerShowCounts
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   cover_image: Image
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   created_at(
     # This arg is deprecated, use timezone instead
@@ -8919,15 +8919,15 @@ type PartnerShow implements Node {
     timezone: String
   ): String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   description: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   displayable: Boolean
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   end_at(
     # This arg is deprecated, use timezone instead
@@ -8938,25 +8938,25 @@ type PartnerShow implements Node {
     timezone: String
   ): String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   events: [PartnerShowEventType]
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # A formatted description of the start to end dates
   exhibition_period: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   fair: Fair
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   href: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   images(
     # Number of images to return
@@ -8967,53 +8967,53 @@ type PartnerShow implements Node {
     page: Int
   ): [Image]
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # Flag showing if show has any location.
   has_location: Boolean
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.
   is_active: Boolean
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   is_displayable: Boolean
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   is_fair_booth: Boolean
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   kind: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   location: Location
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   meta_image: Image
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # The exhibition title
   name: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   partner: Partner
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   press_release(format: Format): String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   start_at(
     # This arg is deprecated, use timezone instead
@@ -9024,11 +9024,11 @@ type PartnerShow implements Node {
     timezone: String
   ): String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   status: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 
   # A formatted update on upcoming status changes
@@ -9037,11 +9037,11 @@ type PartnerShow implements Node {
     max_days: Int
   ): String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   type: String
     @deprecated(
-      reason: "The `PartnerShow` type is deprecated in favor of the `Show` type. [Will be removed in v2]"
+      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
 }
 
