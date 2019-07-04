@@ -5,11 +5,11 @@ import {
 } from "graphql"
 import { assign, create } from "lodash"
 import Artist from "schema/artist/index"
-import Trending from "schema/artists/trending"
-import Fair from "schema/fair"
-import Gene from "schema/gene"
-import FollowArtists from "schema/me/follow_artists"
-import Sale from "schema/sale/index"
+import Trending, { TrendingArtistsType } from "schema/artists/trending"
+import Fair, { FairType } from "schema/fair"
+import Gene, { GeneType } from "schema/gene"
+import FollowArtists, { FollowArtistsType } from "schema/me/follow_artists"
+import Sale, { SaleType } from "schema/sale/index"
 import { ResolverContext } from "types/graphql"
 import {
   featuredAuction,
@@ -25,6 +25,7 @@ import {
   isGenericGeneArtworkModuleParams,
   HomePageArtworkModuleResolvers,
 } from "./types"
+import { deprecate } from "lib/deprecation"
 
 export const HomePageModuleContextFairType = create(Fair.type, {
   name: "HomePageModuleContextFair",
@@ -164,7 +165,7 @@ export const moduleContext: HomePageArtworkModuleResolvers = {
   },
 }
 
-const Context: GraphQLFieldConfig<
+export const Context: GraphQLFieldConfig<
   { key: string; params: HomePageArtworkModuleDetails["params"] },
   ResolverContext
 > = {
@@ -180,9 +181,78 @@ const Context: GraphQLFieldConfig<
       HomePageModuleContextTrendingType,
     ],
   }),
+  deprecationReason: deprecate({ inVersion: 2, preferUsageOf: "v2_context" }),
   resolve: ({ key, params }, _options, context) => {
     return moduleContext[key](context, params)
   },
 }
 
-export default Context
+const HomePageArtworkOfRelatedToFollowedArtistModuleType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "HomePageArtworkOfRelatedToFollowedArtistModule",
+  fields: () => ({
+    artist: {
+      type: Artist.type,
+    },
+    basedOn: {
+      type: Artist.type,
+      resolve: ({ based_on }) => based_on,
+    },
+  }),
+})
+
+const HomePageArtworkOfFollowedArtistModuleType = new GraphQLObjectType<
+  any,
+  ResolverContext
+>({
+  name: "HomePageArtworkOfFollowedArtistModule",
+  fields: () => ({
+    artist: {
+      type: Artist.type,
+    },
+  }),
+})
+
+export const HomePageArtworkModuleContextType = new GraphQLUnionType({
+  name: "HomePageArtworkModuleContext",
+  types: [
+    FairType,
+    GeneType,
+    SaleType,
+    FollowArtistsType,
+    TrendingArtistsType,
+    HomePageArtworkOfFollowedArtistModuleType,
+    HomePageArtworkOfRelatedToFollowedArtistModuleType,
+  ],
+  resolveType: (value, _context, _info) => {
+    switch (value.context_type) {
+      case "Fair":
+        return FairType
+      case "Sale":
+        return SaleType
+      case "Gene":
+        return GeneType
+      case "FollowArtists":
+        return FollowArtistsType
+      case "Trending":
+        return TrendingArtistsType
+      case "FollowedArtist":
+        return HomePageArtworkOfFollowedArtistModuleType
+      case "RelatedArtist":
+        return HomePageArtworkOfRelatedToFollowedArtistModuleType
+      default:
+        throw new Error(`Unknown context type: ${value.context_type}`)
+    }
+  },
+})
+
+export const HomePageArtworkModuleContextField: GraphQLFieldConfig<
+  { key: string; params: HomePageArtworkModuleDetails["params"] },
+  ResolverContext
+> = {
+  ...Context,
+  deprecationReason: undefined,
+  type: HomePageArtworkModuleContextType,
+}

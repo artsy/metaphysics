@@ -2,7 +2,7 @@ import { chain, find } from "lodash"
 import { params as genericGenes } from "./add_generic_genes"
 import Results from "./results"
 import Title from "./title"
-import Context from "./context"
+import { Context, HomePageArtworkModuleContextField } from "./context"
 import Params from "./params"
 import { NodeInterface } from "schema/object_identification"
 import { toGlobalId } from "graphql-relay"
@@ -39,6 +39,7 @@ export const HomePageArtworkModuleType = new GraphQLObjectType<
       },
     },
     context: Context,
+    v2_context: HomePageArtworkModuleContextField,
     display: {
       type: GraphQLString,
       deprecationReason: deprecate({

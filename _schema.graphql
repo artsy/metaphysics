@@ -6482,6 +6482,8 @@ type HomePageArtworkModule implements Node {
   # A globally unique ID.
   __id: ID!
   context: HomePageModuleContext
+    @deprecated(reason: "Prefer to use `v2_context`. [Will be removed in v2]")
+  v2_context: HomePageArtworkModuleContext
   display: String
     @deprecated(
       reason: "Prefer to use `is_displayable`. [Will be removed in v2]"
@@ -6492,6 +6494,15 @@ type HomePageArtworkModule implements Node {
   results: [Artwork]
   title: String
 }
+
+union HomePageArtworkModuleContext =
+    Fair
+  | Gene
+  | Sale
+  | FollowArtists
+  | TrendingArtists
+  | HomePageArtworkOfFollowedArtistModule
+  | HomePageArtworkOfRelatedToFollowedArtistModule
 
 enum HomePageArtworkModuleTypes {
   FOLLOWED_GENES
@@ -6509,6 +6520,15 @@ enum HomePageArtworkModuleTypes {
   RECENTLY_VIEWED_WORKS
   SIMILAR_TO_RECENTLY_VIEWED
   SIMILAR_TO_SAVED_WORKS
+}
+
+type HomePageArtworkOfFollowedArtistModule {
+  artist: Artist
+}
+
+type HomePageArtworkOfRelatedToFollowedArtistModule {
+  artist: Artist
+  basedOn: Artist
 }
 
 type HomePageFairsModule {
