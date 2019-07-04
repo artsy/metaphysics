@@ -1678,21 +1678,12 @@ type ArtworkContextFair {
 type ArtworkContextPartnerShow implements Node {
   # A globally unique ID.
   id: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   gravityID: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   internalID: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
   cached: Int
     @deprecated(
       reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"

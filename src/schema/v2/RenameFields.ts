@@ -93,6 +93,7 @@ export class RenameFields implements Transform {
           )
         }
         madeChanges = true
+        delete newField.deprecationReason
         newFields[newName] = {
           ...newField,
           resolve: source => source[oldName],

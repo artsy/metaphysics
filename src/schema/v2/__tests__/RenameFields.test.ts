@@ -19,6 +19,7 @@ const originalSchema = new GraphQLSchema({
           fields: {
             id: {
               type: GraphQLID,
+              deprecationReason: "Just not good enough",
             },
           },
           interfaces: [
@@ -27,6 +28,7 @@ const originalSchema = new GraphQLSchema({
               fields: {
                 id: {
                   type: GraphQLID,
+                  deprecationReason: "Just not good enough",
                 },
               },
             }),
@@ -39,6 +41,10 @@ const originalSchema = new GraphQLSchema({
           fields: {
             id: {
               type: GraphQLID,
+            },
+            deprecatedField: {
+              type: GraphQLID,
+              deprecationReason: "Just not good enough",
             },
           },
         }),
@@ -112,6 +118,19 @@ describe(RenameFields, () => {
       },
     })
     expect(data.someRootField.someID).toEqual("some-id")
+  })
+
+  it("marks a renamed field as no longer deprecated", () => {
+    expect(
+      schema.getType("SomeType").getFields().someID.deprecationReason
+    ).toBeUndefined()
+    expect(
+      schema.getType("SomeInterface").getFields().someID.deprecationReason
+    ).toBeUndefined()
+    expect(
+      schema.getType("SomeOtherType").getFields().deprecatedField
+        .deprecationReason
+    ).not.toBeUndefined()
   })
 
   // TODO: https://artsyproduct.atlassian.net/browse/PLATFORM-1442
