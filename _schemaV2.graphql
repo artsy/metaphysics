@@ -1236,7 +1236,7 @@ type Artwork implements Node & Searchable & Sellable {
     @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
 
   # Returns the highlighted shows and articles
-  highlights: [Highlighted]
+  highlights: [ArtworkHighlight]
   href: String
   image: Image
   imageUrl: String
@@ -2135,6 +2135,8 @@ type ArtworkFilterTag implements Node {
   ): FilterArtworks
 }
 
+union ArtworkHighlight = Show | Article
+
 type ArtworkInfoRow {
   # Label for information row
   label: String
@@ -2226,7 +2228,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
     @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
 
   # Returns the highlighted shows and articles
-  highlights: [Highlighted]
+  highlights: [ArtworkHighlight]
   href: String
   image: Image
   imageUrl: String

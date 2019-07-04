@@ -19,13 +19,15 @@ const FilterTypeNames = [
   "DoNotUseThisPartner",
   ...(FILTER_DEPRECATIONS
     ? [
-        // TODO: These are empty after removing all fields from PartnerShow.
         "PartnerShow",
         "ArtworkContext",
         "ArtworkContextFair",
         "ArtworkContextSale",
         "ArtworkContextAuction",
         "ArtworkContextPartnerShow",
+        "Highlighted",
+        "HighlightedArticle",
+        "HighlightedShow",
       ]
     : []),
 ]

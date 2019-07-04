@@ -113,7 +113,7 @@ export const ArtworkLocationContextType = new GraphQLUnionType({
   },
 })
 
-export const LocationContext = {
+export const LocationContext: GraphQLFieldConfig<any, ResolverContext> = {
   ...Context,
   deprecationReason: undefined,
   type: ArtworkLocationContextType,

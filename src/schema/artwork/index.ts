@@ -1,6 +1,6 @@
 import _ from "lodash"
 import { isTwoDimensional, isTooBig, isEmbeddedVideo, embed } from "./utilities"
-import { enhance, existyValue } from "lib/helpers"
+import { existyValue } from "lib/helpers"
 import cached from "schema/fields/cached"
 import { markdown } from "schema/fields/markdown"
 import Article from "schema/article"
@@ -16,7 +16,7 @@ import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import Partner from "schema/partner"
 import Context, { LocationContext } from "./context"
 import Meta, { artistNames } from "./meta"
-import Highlight from "./highlight"
+import { HighlightsField, ArtworkHighlightsField } from "./highlight"
 import Dimensions from "schema/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/edition_set"
 import { Sellable } from "schema/sellable"
@@ -230,33 +230,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           preferUsageOf: "dimensions",
         }),
       },
-      highlights: {
-        type: new GraphQLList(Highlight),
-        description: "Returns the highlighted shows and articles",
-        resolve: (
-          { id, _id },
-          _options,
-          { relatedShowsLoader, articlesLoader }
-        ) =>
-          Promise.all([
-            relatedShowsLoader({
-              artwork: [id],
-              size: 1,
-              at_a_fair: false,
-            }),
-            articlesLoader({
-              artwork_id: _id,
-              published: true,
-              limit: 1,
-            }).then(({ results }) => results),
-          ]).then(([{ body: shows }, articles]) => {
-            const highlightedShows = enhance(shows, { highlight_type: "Show" })
-            const highlightedArticles = enhance(articles, {
-              highlight_type: "Article",
-            })
-            return highlightedShows.concat(highlightedArticles)
-          }),
-      },
+      highlights: HighlightsField,
+      v2_highlights: ArtworkHighlightsField,
       href: { type: GraphQLString, resolve: ({ id }) => `/artwork/${id}` },
       image: {
         type: Image.type,
