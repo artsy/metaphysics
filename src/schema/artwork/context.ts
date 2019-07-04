@@ -4,6 +4,8 @@ import Sale from "schema/sale/index"
 import PartnerShow from "schema/partner_show"
 import { GraphQLUnionType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import Show from "schema/show"
+import { deprecate } from "lib/deprecation"
 
 export const ArtworkContextFairType = create(Fair.type, {
   name: "ArtworkContextFair",
@@ -44,6 +46,7 @@ const choose = flow(
 const Context: GraphQLFieldConfig<any, ResolverContext> = {
   type: ArtworkContextType,
   description: "Returns the associated Fair/Sale/PartnerShow",
+  deprecationReason: deprecate({ inVersion: 2, preferUsageOf: "v2_context" }),
   resolve: (
     { id, sale_ids },
     _options,
@@ -91,3 +94,27 @@ const Context: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 export default Context
+
+export const ArtworkLocationContextType = new GraphQLUnionType({
+  name: "ArtworkLocationContext",
+  types: [Fair.type, Sale.type, Show.type],
+  resolveType: (value, _context, _info) => {
+    switch (value.context_type) {
+      case "Fair":
+        return Fair.type
+      case "PartnerShow":
+        return Show.type
+      case "Sale":
+      case "Auction":
+        return Sale.type
+      default:
+        throw new Error(`Unknown context type: ${value.context_type}`)
+    }
+  },
+})
+
+export const LocationContext = {
+  ...Context,
+  deprecationReason: undefined,
+  type: ArtworkLocationContextType,
+}

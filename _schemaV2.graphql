@@ -1220,7 +1220,7 @@ type Artwork implements Node & Searchable & Sellable {
   contact_message: String
 
   # Returns the associated Fair/Sale/PartnerShow
-  context: ArtworkContext
+  context: ArtworkLocationContext
   cultural_maker: String
   date: String
   description(format: Format): String
@@ -2209,7 +2209,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
   contact_message: String
 
   # Returns the associated Fair/Sale/PartnerShow
-  context: ArtworkContext
+  context: ArtworkLocationContext
   cultural_maker: String
   date: String
   description(format: Format): String
@@ -2378,6 +2378,8 @@ type ArtworkLayer {
   name: String
   type: String
 }
+
+union ArtworkLocationContext = Fair | Sale | Show
 
 type ArtworkMeta {
   description(limit: Int = 155): String
@@ -8839,21 +8841,12 @@ type PartnersAggregationResults {
 type PartnerShow implements Node {
   # A globally unique ID.
   id: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   gravityID: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   internalID: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
   cached: Int
     @deprecated(
       reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"

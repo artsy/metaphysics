@@ -14,7 +14,7 @@ import { connectionWithCursorInfo } from "schema/fields/pagination"
 import PartnerShow from "schema/partner_show"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import Partner from "schema/partner"
-import Context from "./context"
+import Context, { LocationContext } from "./context"
 import Meta, { artistNames } from "./meta"
 import Highlight from "./highlight"
 import Dimensions from "schema/dimensions"
@@ -166,6 +166,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       context: Context,
+      v2_context: LocationContext,
       cultural_maker: { type: GraphQLString },
       date: { type: GraphQLString },
       description: markdown(({ blurb }) => blurb),
