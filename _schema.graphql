@@ -1320,6 +1320,7 @@ type Artwork implements Node & Searchable & Sellable {
   ): Partner
   pickup_available: Boolean
   price: String
+    @deprecated(reason: "Prefer to use `sale_message`. [Will be removed in v2]")
   priceCents: PriceCents
     @deprecated(reason: "Prefer to use `listPrice`. [Will be removed in v2]")
   listPrice: ListPrice
@@ -2333,6 +2334,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
   ): Partner
   pickup_available: Boolean
   price: String
+    @deprecated(reason: "Prefer to use `sale_message`. [Will be removed in v2]")
   priceCents: PriceCents
     @deprecated(reason: "Prefer to use `listPrice`. [Will be removed in v2]")
   listPrice: ListPrice
@@ -10486,6 +10488,7 @@ interface Sellable {
   is_for_sale: Boolean
   is_sold: Boolean
   price: String
+    @deprecated(reason: "Prefer to use `sale_message`. [Will be removed in v2]")
   sale_message: String
 }
 
