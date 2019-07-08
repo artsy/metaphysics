@@ -1,5 +1,5 @@
 import { GraphQLSchema, isNullableType } from "graphql"
-import { transformSchema, FilterTypes, RenameTypes } from "graphql-tools"
+import { transformSchema, FilterTypes } from "graphql-tools"
 import { RenameArguments } from "./RenameArguments"
 import { shouldBeRemoved } from "lib/deprecation"
 import { FilterFields } from "./FilterFields"
@@ -86,9 +86,6 @@ export const transformToV2 = (
   return transformSchema(schema, [
     new FilterTypes(type => {
       return !opt.filterTypes.includes(type.name)
-    }),
-    new RenameTypes(type => {
-      return type === "PartnerShowEventType" ? "PartnerShowEvent" : undefined
     }),
     new FilterFields(
       (type, field) =>
