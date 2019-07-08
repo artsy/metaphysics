@@ -14,6 +14,9 @@ type Collection {
   # Background image for the header of the collection page
   headerImage: String
 
+  # URL for Thumbnail image to be used when this collection is displayed.
+  thumbnail: String
+
   # Set of keywords used for SEO purposes
   keywords: String!
 

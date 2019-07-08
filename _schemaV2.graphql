@@ -1342,12 +1342,7 @@ type Artwork implements Node & Searchable & Sellable {
     at_a_fair: Boolean
     sort: PartnerShowSorts
   ): PartnerShow
-  shows(
-    size: Int
-    active: Boolean
-    at_a_fair: Boolean
-    sort: PartnerShowSorts
-  ): [PartnerShow]
+  shows(size: Int, active: Boolean, at_a_fair: Boolean, sort: ShowSort): [Show]
   signature(format: Format): String
   title: String
   to_s: String
@@ -2345,12 +2340,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
     at_a_fair: Boolean
     sort: PartnerShowSorts
   ): PartnerShow
-  shows(
-    size: Int
-    active: Boolean
-    at_a_fair: Boolean
-    sort: PartnerShowSorts
-  ): [PartnerShow]
+  shows(size: Int, active: Boolean, at_a_fair: Boolean, sort: ShowSort): [Show]
   signature(format: Format): String
   title: String
   to_s: String
@@ -7090,6 +7080,9 @@ type MarketingCollection {
 
   # Background image for the header of the collection page
   headerImage: String
+
+  # URL for Thumbnail image to be used when this collection is displayed.
+  thumbnail: String
 
   # Set of keywords used for SEO purposes
   keywords: String!
