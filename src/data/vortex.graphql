@@ -169,6 +169,7 @@ type PageviewStats {
 Audience stats of a partner
 """
 type PartnerAudienceStats {
+  commercialVisitors: Int!
   partnerId: String!
   period: QueryPeriodEnum!
   uniqueVisitors: Int!
