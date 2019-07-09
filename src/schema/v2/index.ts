@@ -19,6 +19,7 @@ const FilterTypeNames = [
   "DoNotUseThisPartner",
   ...(FILTER_DEPRECATIONS
     ? [
+        "Category",
         "PartnerShow",
         "ArtworkContext",
         "ArtworkContextFair",

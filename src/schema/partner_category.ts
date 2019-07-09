@@ -1,6 +1,5 @@
 import _ from "lodash"
 import cached from "./fields/cached"
-import Partners from "./partners"
 import CategoryType from "./input_fields/category_type"
 import { IDFields } from "./object_identification"
 import {
@@ -13,24 +12,27 @@ import { ResolverContext } from "types/graphql"
 
 const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerCategory",
-  fields: () => ({
-    ...IDFields,
-    cached,
-    category_type: CategoryType,
-    name: {
-      type: GraphQLString,
-    },
-    partners: {
-      type: Partners.type,
-      args: Partners.args,
-      resolve: ({ id }, options, { partnersLoader }) =>
-        partnersLoader(
-          _.defaults(options, {
-            partner_categories: [id],
-          })
-        ),
-    },
-  }),
+  fields: () => {
+    const Partners = require("./partners").default
+    return {
+      ...IDFields,
+      cached,
+      category_type: CategoryType,
+      name: {
+        type: GraphQLString,
+      },
+      partners: {
+        type: Partners.type,
+        args: Partners.args,
+        resolve: ({ id }, options, { partnersLoader }) =>
+          partnersLoader(
+            _.defaults(options, {
+              partner_categories: [id],
+            })
+          ),
+      },
+    }
+  },
 })
 
 const PartnerCategory: GraphQLFieldConfig<void, ResolverContext> = {

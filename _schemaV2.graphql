@@ -3087,8 +3087,17 @@ type Category {
   # A type-specific Gravity Mongo Document ID.
   internalID: ID!
   category_type: String
+    @deprecated(
+      reason: "The `Category` type has been deprecated. Prefer to use the `PartnerCategory` type instead. [Will be removed in v2]"
+    )
   internal: Boolean
+    @deprecated(
+      reason: "The `Category` type has been deprecated. Prefer to use the `PartnerCategory` type instead. [Will be removed in v2]"
+    )
   name: String
+    @deprecated(
+      reason: "The `Category` type has been deprecated. Prefer to use the `PartnerCategory` type instead. [Will be removed in v2]"
+    )
 }
 
 enum CategoryType {
@@ -8632,7 +8641,15 @@ type Partner implements Node {
     before: String
     last: Int
   ): ArtworkConnection
-  categories: [Category]
+
+  # A list of PartnerCategories
+  categories(
+    category_type: CategoryType
+
+    # Filter by whether category is internal
+    internal: Boolean = false
+    size: Int
+  ): [PartnerCategory]
   collecting_institution: String
   contact_message: String
     @deprecated(

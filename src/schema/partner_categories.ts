@@ -9,7 +9,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const PartnerCategories: GraphQLFieldConfig<void, ResolverContext> = {
+export const PartnerCategories: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(PartnerCategory.type),
   description: "A list of PartnerCategories",
   args: {

@@ -10,7 +10,6 @@ import numeral from "./fields/numeral"
 import ArtworkSorts from "./sorts/artwork_sorts"
 import { pageable } from "relay-cursor-paging"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
-
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -22,24 +21,28 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
+import { deprecate, deprecateType } from "lib/deprecation"
+import PartnerCategories from "./partner_categories"
 
-const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
-  name: "Category",
-  description: "Fields of partner category (currently from Gravity).",
-  fields: {
-    ...GravityIDFields,
-    category_type: {
-      type: GraphQLString,
+const CategoryType = deprecateType(
+  { inVersion: 2, preferUsageOf: "PartnerCategory" },
+  new GraphQLObjectType<any, ResolverContext>({
+    name: "Category",
+    description: "Fields of partner category (currently from Gravity).",
+    fields: {
+      ...GravityIDFields,
+      category_type: {
+        type: GraphQLString,
+      },
+      internal: {
+        type: GraphQLBoolean,
+      },
+      name: {
+        type: GraphQLString,
+      },
     },
-    internal: {
-      type: GraphQLBoolean,
-    },
-    name: {
-      type: GraphQLString,
-    },
-  },
-})
+  })
+)
 
 const artworksArgs = {
   for_sale: {
@@ -123,7 +126,11 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       categories: {
-        type: new GraphQLList(PartnerCategoryType),
+        type: new GraphQLList(CategoryType),
+        resolve: ({ partner_categories }) => partner_categories,
+      },
+      v2_categories: {
+        ...PartnerCategories,
         resolve: ({ partner_categories }) => partner_categories,
       },
       collecting_institution: {
