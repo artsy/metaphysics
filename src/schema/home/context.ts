@@ -134,6 +134,9 @@ export const moduleContext: HomePageArtworkModuleResolvers = {
   },
   related_artists: ({ artistLoader }, params) => {
     if (!isRelatedArtistArtworkModuleParams(params)) return null
+    // TODO: This should just move to the resolver of the respective `artist`
+    //       and `based_on` fields, as they may not actually get selected but
+    //       still fetched here.
     return Promise.all([
       artistLoader(params.related_artist_id),
       artistLoader(params.followed_artist_id),
@@ -195,6 +198,7 @@ const HomePageArtworkOfRelatedToFollowedArtistModuleType = new GraphQLObjectType
   fields: () => ({
     artist: {
       type: Artist.type,
+      resolve: artist => artist,
     },
     basedOn: {
       type: Artist.type,
@@ -211,6 +215,7 @@ const HomePageArtworkOfFollowedArtistModuleType = new GraphQLObjectType<
   fields: () => ({
     artist: {
       type: Artist.type,
+      resolve: artist => artist,
     },
   }),
 })
