@@ -66,9 +66,24 @@ type GroupedStatsEdge {
 
 enum GroupedStatsMetricEnum {
   """
+  visitor_by_device
+  """
+  VISITOR_BY_DEVICE
+
+  """
+  visitor_by_landing_page
+  """
+  VISITOR_BY_LANDING_PAGE
+
+  """
   visitor_by_location
   """
   VISITOR_BY_LOCATION
+
+  """
+  visitor_by_referral
+  """
+  VISITOR_BY_REFERRAL
 }
 
 enum GroupedStatsObjectTypeEnum {
@@ -76,12 +91,31 @@ enum GroupedStatsObjectTypeEnum {
   country
   """
   COUNTRY
+
+  """
+  device type
+  """
+  DEVICE
+
+  """
+  landing page
+  """
+  LANDING_PAGE
+
+  """
+  referral
+  """
+  REFERRAL
 }
 
 """
 A grouped stat item: country or device etc.
 """
-union GroupedStatsUnion = VisitorsByCountry
+union GroupedStatsUnion =
+    VisitorsByCountry
+  | VisitorsByDevice
+  | VisitorsByLandingPage
+  | VisitorsByReferral
 
 """
 A histogram bin
@@ -135,6 +169,7 @@ type PageviewStats {
 Audience stats of a partner
 """
 type PartnerAudienceStats {
+  commercialVisitors: Int!
   partnerId: String!
   period: QueryPeriodEnum!
   uniqueVisitors: Int!
@@ -551,6 +586,30 @@ type Show {
 }
 
 type VisitorsByCountry {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
+}
+
+type VisitorsByDevice {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
+}
+
+type VisitorsByLandingPage {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
+}
+
+type VisitorsByReferral {
   metric: String!
   name: String!
   percent: Float!

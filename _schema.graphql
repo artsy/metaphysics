@@ -91,17 +91,39 @@ type AnalyticsGroupedStatsEdge {
 }
 
 enum AnalyticsGroupedStatsMetricEnum {
+  # visitor_by_device
+  VISITOR_BY_DEVICE
+
+  # visitor_by_landing_page
+  VISITOR_BY_LANDING_PAGE
+
   # visitor_by_location
   VISITOR_BY_LOCATION
+
+  # visitor_by_referral
+  VISITOR_BY_REFERRAL
 }
 
 enum AnalyticsGroupedStatsObjectTypeEnum {
   # country
   COUNTRY
+
+  # device type
+  DEVICE
+
+  # landing page
+  LANDING_PAGE
+
+  # referral
+  REFERRAL
 }
 
 # A grouped stat item: country or device etc.
-union AnalyticsGroupedStatsUnion = AnalyticsVisitorsByCountry
+union AnalyticsGroupedStatsUnion =
+    AnalyticsVisitorsByCountry
+  | AnalyticsVisitorsByDevice
+  | AnalyticsVisitorsByLandingPage
+  | AnalyticsVisitorsByReferral
 
 # A histogram bin
 type AnalyticsHistogramBin {
@@ -153,6 +175,7 @@ type AnalyticsPageviewStats {
 
 # Audience stats of a partner
 type AnalyticsPartnerAudienceStats {
+  commercialVisitors: Int!
   partnerId: String!
   period: AnalyticsQueryPeriodEnum!
   uniqueVisitors: Int!
@@ -444,6 +467,30 @@ type AnalyticsShow {
 }
 
 type AnalyticsVisitorsByCountry {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
+}
+
+type AnalyticsVisitorsByDevice {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
+}
+
+type AnalyticsVisitorsByLandingPage {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
+}
+
+type AnalyticsVisitorsByReferral {
   metric: String!
   name: String!
   percent: Float!
