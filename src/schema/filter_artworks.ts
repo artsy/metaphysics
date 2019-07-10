@@ -35,21 +35,46 @@ import {
 
 import { NodeInterface } from "schema/object_identification"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
+import { deprecate, deprecateType } from "lib/deprecation"
+import Gene from "./gene"
 
-const ArtworkFilterTagType = create(Tag.type, {
-  name: "ArtworkFilterTag",
-  isTypeOf: ({ context_type }) => context_type === "Tag",
-})
+const ArtworkFilterTagType = deprecateType(
+  { inVersion: 2, preferUsageOf: "FilterArtworksFacet" },
+  create(Tag.type, {
+    name: "ArtworkFilterTag",
+    isTypeOf: ({ context_type }) => context_type === "Tag",
+  })
+)
 
-const ArtworkFilterGeneType = create(Tag.type, {
-  name: "ArtworkFilterGene",
-  isTypeOf: ({ context_type }) => context_type === "Gene",
-})
+const ArtworkFilterGeneType = deprecateType(
+  { inVersion: 2, preferUsageOf: "FilterArtworksFacet" },
+  create(Tag.type, {
+    name: "ArtworkFilterGene",
+    isTypeOf: ({ context_type }) => context_type === "Gene",
+  })
+)
 
-export const ArtworkFilterFacetType = new GraphQLUnionType({
-  name: "ArtworkFilterFacet",
-  types: [ArtworkFilterTagType, ArtworkFilterGeneType],
+export const ArtworkFilterFacetType = deprecateType(
+  { inVersion: 2, preferUsageOf: "FilterArtworksFacet" },
+  new GraphQLUnionType({
+    name: "ArtworkFilterFacet",
+    types: [ArtworkFilterTagType, ArtworkFilterGeneType],
+  })
+)
+
+const FilterArtworksFacetType = new GraphQLUnionType({
+  name: "FilterArtworksFacet",
+  types: [Tag.type, Gene.type],
+  resolveType: value => {
+    switch (value.context_type) {
+      case "Tag":
+        return Tag.type
+      case "Gene":
+        return Gene.type
+      default:
+        throw new Error(`Unknown context type: ${value.context_type}`)
+    }
+  },
 })
 
 export const ArtworkFilterAggregations: GraphQLFieldConfig<
@@ -208,6 +233,23 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
     },
     facet: {
       type: ArtworkFilterFacetType,
+      resolve: ({ options }, _options, { geneLoader, tagLoader }) => {
+        const { tag_id, gene_id } = options
+        if (tag_id) {
+          return tagLoader(tag_id).then(tag =>
+            assign({ context_type: "Tag" }, tag)
+          )
+        }
+        if (gene_id) {
+          return geneLoader(gene_id).then(gene =>
+            assign({ context_type: "Gene" }, gene)
+          )
+        }
+        return null
+      },
+    },
+    v2_facet: {
+      type: FilterArtworksFacetType,
       resolve: ({ options }, _options, { geneLoader, tagLoader }) => {
         const { tag_id, gene_id } = options
         if (tag_id) {

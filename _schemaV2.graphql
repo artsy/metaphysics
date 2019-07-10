@@ -2618,11 +2618,29 @@ type ArtworkFilterGene implements Node {
   # A type-specific Gravity Mongo Document ID.
   internalID: ID!
   cached: Int
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   description: String
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   name: String
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   href: String
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   image: Image
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   count: Int
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -2667,6 +2685,9 @@ type ArtworkFilterGene implements Node {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
 }
 
 type ArtworkFilterTag implements Node {
@@ -2679,11 +2700,29 @@ type ArtworkFilterTag implements Node {
   # A type-specific Gravity Mongo Document ID.
   internalID: ID!
   cached: Int
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   description: String
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   name: String
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   href: String
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   image: Image
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   count: Int
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -2728,6 +2767,9 @@ type ArtworkFilterTag implements Node {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
 }
 
 union ArtworkHighlight = Show | Article
@@ -6260,7 +6302,7 @@ type FilterArtworks implements Node {
   merchandisable_artists: [Artist]
   total: Int
     @deprecated(reason: "Prefer to use `counts.total`. [Will be removed in v2]")
-  facet: ArtworkFilterFacet
+  facet: FilterArtworksFacet
 }
 
 type FilterArtworksCounts {
@@ -6275,6 +6317,8 @@ type FilterArtworksCounts {
     label: String
   ): FormattedNumber
 }
+
+union FilterArtworksFacet = Tag | Gene
 
 type FilterPartners {
   aggregations: [PartnersAggregationResults]
@@ -12076,11 +12120,29 @@ type Tag implements Node {
   # A type-specific Gravity Mongo Document ID.
   internalID: ID!
   cached: Int
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   description: String
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   name: String
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   href: String
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   image: Image
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
   count: Int
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -12125,6 +12187,9 @@ type Tag implements Node {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
+    @deprecated(
+      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
+    )
 }
 
 type TrendingArtists {

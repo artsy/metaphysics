@@ -42,6 +42,9 @@ const FilterTypeNames = [
         "ArtistItem",
         "ArtworkItem",
         "GeneItem",
+        "ArtworkFilterFacet",
+        "ArtworkFilterTag",
+        "ArtworkFilterGene",
         "PriceCents",
       ]
     : []),
