@@ -7,7 +7,7 @@ import { GraphQLUnionType } from "graphql"
 import { deprecateType } from "lib/deprecation"
 
 export const FeaturedLinkItemType = deprecateType(
-  { inVersion: 2, preferUsageOf: "OrderedSetItem" },
+  { inVersion: 2, preferUsageOf: "OrderedSetItem", deprecateFields: false },
   _.create(FeaturedLink.type, {
     name: "FeaturedLinkItem",
     isTypeOf: ({ item_type }) => item_type === "FeaturedLink",
@@ -15,7 +15,7 @@ export const FeaturedLinkItemType = deprecateType(
 )
 
 export const ArtistItemType = deprecateType(
-  { inVersion: 2, preferUsageOf: "OrderedSetItem" },
+  { inVersion: 2, preferUsageOf: "OrderedSetItem", deprecateFields: false },
   _.create(Artist.type, {
     name: "ArtistItem",
     isTypeOf: ({ item_type }) => item_type === "Artist",
@@ -23,7 +23,7 @@ export const ArtistItemType = deprecateType(
 )
 
 export const ArtworkItemType = deprecateType(
-  { inVersion: 2, preferUsageOf: "OrderedSetItem" },
+  { inVersion: 2, preferUsageOf: "OrderedSetItem", deprecateFields: false },
   _.create(Artwork.type, {
     name: "ArtworkItem",
     isTypeOf: ({ item_type }) => item_type === "Artwork",
@@ -31,18 +31,25 @@ export const ArtworkItemType = deprecateType(
 )
 
 export const GeneItemType = deprecateType(
-  { inVersion: 2, preferUsageOf: "OrderedSetItem" },
+  { inVersion: 2, preferUsageOf: "OrderedSetItem", deprecateFields: false },
   _.create(Gene.type, {
     name: "GeneItem",
     isTypeOf: ({ item_type }) => item_type === "Gene",
   })
 )
 
-// Deprecated, remove in v2.
-export const ItemType = new GraphQLUnionType({
-  name: "Item",
-  types: [ArtistItemType, ArtworkItemType, FeaturedLinkItemType, GeneItemType],
-})
+export const ItemType = deprecateType(
+  { inVersion: 2, preferUsageOf: "OrderedSetItem" },
+  new GraphQLUnionType({
+    name: "Item",
+    types: [
+      ArtistItemType,
+      ArtworkItemType,
+      FeaturedLinkItemType,
+      GeneItemType,
+    ],
+  })
+)
 
 export default ItemType
 

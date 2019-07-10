@@ -25,64 +25,104 @@ import {
   isGenericGeneArtworkModuleParams,
   HomePageArtworkModuleResolvers,
 } from "./types"
-import { deprecate } from "lib/deprecation"
+import { deprecate, deprecateType } from "lib/deprecation"
 
-export const HomePageModuleContextFairType = create(Fair.type, {
-  name: "HomePageModuleContextFair",
-  isTypeOf: ({ context_type }) => context_type === "Fair",
-})
-
-export const HomePageModuleContextSaleType = create(Sale.type, {
-  name: "HomePageModuleContextSale",
-  isTypeOf: ({ context_type }) => context_type === "Sale",
-})
-
-export const HomePageModuleContextGeneType = create(Gene.type, {
-  name: "HomePageModuleContextGene",
-  isTypeOf: ({ context_type }) => context_type === "Gene",
-})
-
-export const HomePageModuleContextTrendingType = create(Trending.type, {
-  name: "HomePageModuleContextTrending",
-  isTypeOf: ({ context_type }) => context_type === "Trending",
-})
-
-export const HomePageModuleContextFollowArtistsType = create(
-  FollowArtists.type,
+export const HomePageModuleContextFairType = deprecateType(
   {
-    name: "HomePageModuleContextFollowArtists",
-    isTypeOf: ({ context_type }) => context_type === "FollowArtists",
-  }
+    inVersion: 2,
+    preferUsageOf: "HomePageArtworkModuleContext",
+    deprecateFields: false,
+  },
+  create(Fair.type, {
+    name: "HomePageModuleContextFair",
+    isTypeOf: ({ context_type }) => context_type === "Fair",
+  })
 )
 
-export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "HomePageModuleContextRelatedArtist",
-  fields: () => ({
-    artist: {
-      type: Artist.type,
-    },
-    based_on: {
-      type: Artist.type,
-    },
-  }),
-  isTypeOf: ({ context_type }) => context_type === "RelatedArtist",
-})
+export const HomePageModuleContextSaleType = deprecateType(
+  {
+    inVersion: 2,
+    preferUsageOf: "HomePageArtworkModuleContext",
+    deprecateFields: false,
+  },
+  create(Sale.type, {
+    name: "HomePageModuleContextSale",
+    isTypeOf: ({ context_type }) => context_type === "Sale",
+  })
+)
 
-export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType<
-  any,
-  ResolverContext
->({
-  name: "HomePageModuleContextFollowedArtist",
-  fields: () => ({
-    artist: {
-      type: Artist.type,
-    },
-  }),
-  isTypeOf: ({ context_type }) => context_type === "FollowedArtist",
-})
+export const HomePageModuleContextGeneType = deprecateType(
+  {
+    inVersion: 2,
+    preferUsageOf: "HomePageArtworkModuleContext",
+    deprecateFields: false,
+  },
+  create(Gene.type, {
+    name: "HomePageModuleContextGene",
+    isTypeOf: ({ context_type }) => context_type === "Gene",
+  })
+)
+
+export const HomePageModuleContextTrendingType = deprecateType(
+  {
+    inVersion: 2,
+    preferUsageOf: "HomePageArtworkModuleContext",
+    deprecateFields: false,
+  },
+  create(Trending.type, {
+    name: "HomePageModuleContextTrending",
+    isTypeOf: ({ context_type }) => context_type === "Trending",
+  })
+)
+
+export const HomePageModuleContextFollowArtistsType = deprecateType(
+  {
+    inVersion: 2,
+    preferUsageOf: "HomePageArtworkModuleContext",
+    deprecateFields: false,
+  },
+  create(FollowArtists.type, {
+    name: "HomePageModuleContextFollowArtists",
+    isTypeOf: ({ context_type }) => context_type === "FollowArtists",
+  })
+)
+
+export const HomePageModuleContextRelatedArtistType = deprecateType(
+  {
+    inVersion: 2,
+    preferUsageOf: "HomePageArtworkModuleContext",
+    deprecateFields: false,
+  },
+  new GraphQLObjectType<any, ResolverContext>({
+    name: "HomePageModuleContextRelatedArtist",
+    fields: () => ({
+      artist: {
+        type: Artist.type,
+      },
+      based_on: {
+        type: Artist.type,
+      },
+    }),
+    isTypeOf: ({ context_type }) => context_type === "RelatedArtist",
+  })
+)
+
+export const HomePageModuleContextFollowedArtistType = deprecateType(
+  {
+    inVersion: 2,
+    preferUsageOf: "HomePageArtworkModuleContext",
+    deprecateFields: false,
+  },
+  new GraphQLObjectType<any, ResolverContext>({
+    name: "HomePageModuleContextFollowedArtist",
+    fields: () => ({
+      artist: {
+        type: Artist.type,
+      },
+    }),
+    isTypeOf: ({ context_type }) => context_type === "FollowedArtist",
+  })
+)
 
 // interface Params {
 //   followed_artist_id?: string
@@ -172,18 +212,25 @@ export const Context: GraphQLFieldConfig<
   { key: string; params: HomePageArtworkModuleDetails["params"] },
   ResolverContext
 > = {
-  type: new GraphQLUnionType({
-    name: "HomePageModuleContext",
-    types: [
-      HomePageModuleContextFairType,
-      HomePageModuleContextFollowArtistsType,
-      HomePageModuleContextFollowedArtistType,
-      HomePageModuleContextGeneType,
-      HomePageModuleContextRelatedArtistType,
-      HomePageModuleContextSaleType,
-      HomePageModuleContextTrendingType,
-    ],
-  }),
+  type: deprecateType(
+    {
+      inVersion: 2,
+      preferUsageOf: "HomePageArtworkModuleContext",
+      deprecateFields: false,
+    },
+    new GraphQLUnionType({
+      name: "HomePageModuleContext",
+      types: [
+        HomePageModuleContextFairType,
+        HomePageModuleContextFollowArtistsType,
+        HomePageModuleContextFollowedArtistType,
+        HomePageModuleContextGeneType,
+        HomePageModuleContextRelatedArtistType,
+        HomePageModuleContextSaleType,
+        HomePageModuleContextTrendingType,
+      ],
+    })
+  ),
   deprecationReason: deprecate({ inVersion: 2, preferUsageOf: "v2_context" }),
   resolve: ({ key, params }, _options, context) => {
     return moduleContext[key](context, params)

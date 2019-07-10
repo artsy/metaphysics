@@ -525,29 +525,14 @@ enum ArticleSorts {
 type Artist implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   id: ID!
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   alternate_names: [String]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   articlesConnection(
     sort: ArticleSorts
     limit: Int
@@ -557,25 +542,16 @@ type Artist implements Node & Searchable {
     before: String
     last: Int
   ): ArticleConnection
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   articles(
     sort: ArticleSorts
     limit: Int
     in_editorial_feed: Boolean
   ): [Article]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artists(
     # The number of Artists to return
     size: Int
     exclude_artists_without_artworks: Boolean = true
   ): [Artist]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artworks(
     # The number of Artworks to return
     size: Int
@@ -585,9 +561,6 @@ type Artist implements Node & Searchable {
     filter: [ArtistArtworksFilters]
     exclude: [String]
   ): [Artwork]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artworks_connection(
     # List of artwork IDs to exclude from the response.
     exclude: [String]
@@ -599,9 +572,6 @@ type Artist implements Node & Searchable {
     before: String
     last: Int
   ): ArtworkConnection
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   auctionResults(
     sort: AuctionResultSorts
 
@@ -612,84 +582,38 @@ type Artist implements Node & Searchable {
     before: String
     last: Int
   ): AuctionResultConnection
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   bio: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # The Artist biography article written by Artsy
   biography: Article
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   biography_blurb(
     # If true, will return featured bio over Artsy one.
     partner_bio: Boolean = false
     format: Format
   ): ArtistBlurb
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   birthday: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   blurb(format: Format): String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   carousel: ArtistCarousel
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   collections: [String]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   contemporary(
     # The number of Artists to return
     size: Int
     exclude_artists_without_artworks: Boolean = true
   ): [Artist]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   consignable: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   counts: ArtistCounts
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   currentEvent: CurrentEvent
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   deathday: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   disablePriceContext: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   display_auction_link: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
 
   # Custom-sorted list of shows for an artist, in order of significance.
   exhibition_highlights(
     # The number of Shows to return
     size: Int = 5
   ): [Show]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -734,101 +658,35 @@ type Artist implements Node & Searchable {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A string showing the total number of works and those for sale
   formatted_artworks_count: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A string of the form "Nationality, Birthday (or Birthday-Deathday)"
   formatted_nationality_and_birthday: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A list of genes associated with an artist
   genes: [Gene]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   gender: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   has_metadata: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   hometown: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   imageUrl: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   initials(length: Int = 3): String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   insights: [ArtistInsight]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_consignable: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Only specific Artists should show a link to auction results.
   is_display_auction_link: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_followed: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_public: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_shareable: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   displayLabel: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   location: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   meta: ArtistMeta
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   nationality: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   name: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   partners(
     represented_by: Boolean
     partner_category: [String]
@@ -837,16 +695,10 @@ type Artist implements Node & Searchable {
     before: String
     last: Int
   ): PartnerArtistConnection
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   partner_artists(
     # The number of PartnerArtists to return
     size: Int
   ): [PartnerArtist]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   partner_shows(
     active: Boolean
     at_a_fair: Boolean
@@ -860,17 +712,10 @@ type Artist implements Node & Searchable {
     visible_to_public: Boolean
     sort: PartnerShowSorts
   ): [PartnerShow]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `shows`. [Will be removed in v2]")
   public: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   related: ArtistRelatedData
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   sales(
     live: Boolean
     is_auction: Boolean
@@ -879,9 +724,6 @@ type Artist implements Node & Searchable {
     size: Int
     sort: SaleSorts
   ): [Sale]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   shows(
     active: Boolean
     at_a_fair: Boolean
@@ -895,9 +737,6 @@ type Artist implements Node & Searchable {
     visible_to_public: Boolean
     sort: PartnerShowSorts
   ): [Show]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   showsConnection(
     active: Boolean
     at_a_fair: Boolean
@@ -915,27 +754,12 @@ type Artist implements Node & Searchable {
     before: String
     last: Int
   ): ShowConnection
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Use this attribute to sort by when sorting a collection of Artists
   sortable_id: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   statuses: ArtistStatuses
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   highlights: ArtistHighlights
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   years: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   marketingCollections(size: Int): [MarketingCollection]
 }
 
@@ -1046,29 +870,14 @@ type ArtistInsight {
 type ArtistItem implements Node & Searchable {
   # A globally unique ID.
   __id: ID!
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   id: ID!
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   alternate_names: [String]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   articlesConnection(
     sort: ArticleSorts
     limit: Int
@@ -1078,25 +887,16 @@ type ArtistItem implements Node & Searchable {
     before: String
     last: Int
   ): ArticleConnection
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   articles(
     sort: ArticleSorts
     limit: Int
     in_editorial_feed: Boolean
   ): [Article]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artists(
     # The number of Artists to return
     size: Int
     exclude_artists_without_artworks: Boolean = true
   ): [Artist]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artworks(
     # The number of Artworks to return
     size: Int
@@ -1106,9 +906,6 @@ type ArtistItem implements Node & Searchable {
     filter: [ArtistArtworksFilters]
     exclude: [String]
   ): [Artwork]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artworks_connection(
     # List of artwork IDs to exclude from the response.
     exclude: [String]
@@ -1120,9 +917,6 @@ type ArtistItem implements Node & Searchable {
     before: String
     last: Int
   ): ArtworkConnection
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   auctionResults(
     sort: AuctionResultSorts
 
@@ -1133,84 +927,38 @@ type ArtistItem implements Node & Searchable {
     before: String
     last: Int
   ): AuctionResultConnection
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   bio: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # The Artist biography article written by Artsy
   biography: Article
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   biography_blurb(
     # If true, will return featured bio over Artsy one.
     partner_bio: Boolean = false
     format: Format
   ): ArtistBlurb
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   birthday: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   blurb(format: Format): String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   carousel: ArtistCarousel
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   collections: [String]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   contemporary(
     # The number of Artists to return
     size: Int
     exclude_artists_without_artworks: Boolean = true
   ): [Artist]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   consignable: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   counts: ArtistCounts
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   currentEvent: CurrentEvent
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   deathday: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   disablePriceContext: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   display_auction_link: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
 
   # Custom-sorted list of shows for an artist, in order of significance.
   exhibition_highlights(
     # The number of Shows to return
     size: Int = 5
   ): [Show]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -1255,101 +1003,35 @@ type ArtistItem implements Node & Searchable {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A string showing the total number of works and those for sale
   formatted_artworks_count: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A string of the form "Nationality, Birthday (or Birthday-Deathday)"
   formatted_nationality_and_birthday: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A list of genes associated with an artist
   genes: [Gene]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   gender: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   has_metadata: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   hometown: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   imageUrl: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   initials(length: Int = 3): String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   insights: [ArtistInsight]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_consignable: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Only specific Artists should show a link to auction results.
   is_display_auction_link: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_followed: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_public: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_shareable: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   displayLabel: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   location: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   meta: ArtistMeta
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   nationality: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   name: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   partners(
     represented_by: Boolean
     partner_category: [String]
@@ -1358,16 +1040,10 @@ type ArtistItem implements Node & Searchable {
     before: String
     last: Int
   ): PartnerArtistConnection
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   partner_artists(
     # The number of PartnerArtists to return
     size: Int
   ): [PartnerArtist]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   partner_shows(
     active: Boolean
     at_a_fair: Boolean
@@ -1381,17 +1057,10 @@ type ArtistItem implements Node & Searchable {
     visible_to_public: Boolean
     sort: PartnerShowSorts
   ): [PartnerShow]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `shows`. [Will be removed in v2]")
   public: Boolean
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   related: ArtistRelatedData
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   sales(
     live: Boolean
     is_auction: Boolean
@@ -1400,9 +1069,6 @@ type ArtistItem implements Node & Searchable {
     size: Int
     sort: SaleSorts
   ): [Sale]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   shows(
     active: Boolean
     at_a_fair: Boolean
@@ -1416,9 +1082,6 @@ type ArtistItem implements Node & Searchable {
     visible_to_public: Boolean
     sort: PartnerShowSorts
   ): [Show]
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   showsConnection(
     active: Boolean
     at_a_fair: Boolean
@@ -1436,27 +1099,12 @@ type ArtistItem implements Node & Searchable {
     before: String
     last: Int
   ): ShowConnection
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Use this attribute to sort by when sorting a collection of Artists
   sortable_id: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   statuses: ArtistStatuses
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   highlights: ArtistHighlights
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   years: String
-    @deprecated(
-      reason: "The `ArtistItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 }
 
 type ArtistMeta {
@@ -1540,491 +1188,207 @@ type ArtistStatuses {
 type Artwork implements Node & Searchable & Sellable {
   # A globally unique ID.
   __id: ID!
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   id: ID!
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   additional_information(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artist(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): Artist
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artists(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): [Artist]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artist_names: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   articles(size: Int): [Article]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   availability: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   can_share_image: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   category: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Attribution class object
   attribution_class: AttributionClass
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   collecting_institution: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   contact_label: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Pre-filled inquiry text
   contact_message: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Returns the associated Fair/Sale/PartnerShow
   context: ArtworkContext
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `v2_context`. [Will be removed in v2]")
 
   # Returns the associated Fair/Sale/PartnerShow
   v2_context: ArtworkLocationContext
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   cultural_maker: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   date: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   description(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   dimensions: dimensions
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Returns an HTML string representing the embedded content (video)
   embed(width: Int = 853, height: Int = 450, autoplay: Boolean = false): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   edition_of: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   edition_sets(sort: EditionSetSorts): [EditionSet]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   exhibition_history(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   fair: Fair
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   height: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
 
   # Returns the highlighted shows and articles
   highlights: [Highlighted]
     @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
+      reason: "Prefer to use `v2_highlights`. [Will be removed in v2]"
     )
 
   # Returns the highlighted shows and articles
   v2_highlights: [ArtworkHighlight]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   imageUrl: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image_rights: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image_title: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   images(size: Int): [Image]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Private text field for partner use
   inventoryId: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Whether a work can be purchased through e-commerce
   is_acquireable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Whether a user can make an offer on a work
   is_offerable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Is this artwork part of an auction that is currently running?
   is_biddable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # When in an auction, can the work be bought immediately
   is_buy_nowable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_comparable_with_auction_results: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Are we able to display a contact form on artwork pages?
   is_contactable: Boolean
     @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
+      reason: "Prefer to use `is_inquireable`. [Will be removed in v2]"
     )
   is_downloadable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_embeddable_video: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_ecommerce: Boolean
     @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
+      reason: "Should not be used to determine anything UI-level. [Will be removed in v2]"
     )
   is_for_sale: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_hangable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Do we want to encourage inquiries on this work?
   is_inquireable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Is this artwork part of an auction?
   is_in_auction: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Is this artwork part of a current show
   is_in_show: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_not_for_sale: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_on_hold: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_price_hidden: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_price_range: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_purchasable: Boolean
     @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
+      reason: "Purchase requests are not supported. Replaced by buy now. [Will be removed in v2]"
     )
   is_saved: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_shareable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_sold: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_unique: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   displayLabel: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   layer(id: String): ArtworkLayer
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   layers: [ArtworkLayer]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   literature(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   manufacturer(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   medium: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   metric: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
   meta: ArtworkMeta
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   myLotStanding(live: Boolean = null): [LotStanding!]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # [DO NOT USE] Weekly pageview data (static).
   pageviews: Int
     @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
+      reason: "This is for an AB test and will be imminently deprecated. [Will be removed in v2]"
     )
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): Partner
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   pickup_available: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   price: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `sale_message`. [Will be removed in v2]")
   priceCents: PriceCents
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `listPrice`. [Will be removed in v2]")
   listPrice: ListPrice
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   price_currency: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Is this work available for shipping only within the Contenental US?
   shipsToContinentalUSOnly: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # The string that describes domestic and international shipping.
   shippingInfo: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Minimal location information describing from where artwork will be shipped.
   shippingOrigin: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   provenance(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   publisher(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   related(size: Int): [Artwork]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   sale: Sale
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   sale_artwork(sale_id: String = null): SaleArtwork
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   sale_message: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   series(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   show(
     size: Int
     active: Boolean
     at_a_fair: Boolean
     sort: PartnerShowSorts
   ): PartnerShow
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   v2_shows(
     size: Int
     active: Boolean
     at_a_fair: Boolean
     sort: ShowSort
   ): [Show]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   shows(
     size: Int
     active: Boolean
     at_a_fair: Boolean
     sort: PartnerShowSorts
   ): [PartnerShow]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   signature(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   title: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   to_s: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Whether this Artwork is Published of not
   published: Boolean!
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   width: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
   framed: ArtworkInfoRow
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   signatureInfo: ArtworkInfoRow
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   conditionDescription: ArtworkInfoRow
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   certificateOfAuthenticity: ArtworkInfoRow
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
   widthCm: Float
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
   heightCm: Float
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # score assigned to an artwork based on its dimensions
   sizeScore: Float
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   pricingContext: AnalyticsPricingContext
 }
 
@@ -2682,45 +2046,18 @@ union ArtworkFilterFacet = ArtworkFilterTag | ArtworkFilterGene
 type ArtworkFilterGene implements Node {
   # A globally unique ID.
   __id: ID!
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   id: ID!
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   description: String
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   name: String
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   count: Int
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -2765,53 +2102,23 @@ type ArtworkFilterGene implements Node {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 }
 
 type ArtworkFilterTag implements Node {
   # A globally unique ID.
   __id: ID!
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   id: ID!
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   description: String
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   name: String
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   count: Int
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -2856,9 +2163,6 @@ type ArtworkFilterTag implements Node {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 }
 
 union ArtworkHighlight = Show | Article
@@ -2906,491 +2210,207 @@ type ArtworkInquiryEdge {
 type ArtworkItem implements Node & Searchable & Sellable {
   # A globally unique ID.
   __id: ID!
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   id: ID!
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   additional_information(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artist(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): Artist
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artists(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): [Artist]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artist_names: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   articles(size: Int): [Article]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   availability: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   can_share_image: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   category: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Attribution class object
   attribution_class: AttributionClass
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   collecting_institution: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   contact_label: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Pre-filled inquiry text
   contact_message: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Returns the associated Fair/Sale/PartnerShow
   context: ArtworkContext
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `v2_context`. [Will be removed in v2]")
 
   # Returns the associated Fair/Sale/PartnerShow
   v2_context: ArtworkLocationContext
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   cultural_maker: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   date: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   description(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   dimensions: dimensions
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Returns an HTML string representing the embedded content (video)
   embed(width: Int = 853, height: Int = 450, autoplay: Boolean = false): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   edition_of: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   edition_sets(sort: EditionSetSorts): [EditionSet]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   exhibition_history(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   fair: Fair
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   height: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
 
   # Returns the highlighted shows and articles
   highlights: [Highlighted]
     @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
+      reason: "Prefer to use `v2_highlights`. [Will be removed in v2]"
     )
 
   # Returns the highlighted shows and articles
   v2_highlights: [ArtworkHighlight]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   imageUrl: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image_rights: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image_title: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   images(size: Int): [Image]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Private text field for partner use
   inventoryId: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Whether a work can be purchased through e-commerce
   is_acquireable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Whether a user can make an offer on a work
   is_offerable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Is this artwork part of an auction that is currently running?
   is_biddable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # When in an auction, can the work be bought immediately
   is_buy_nowable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_comparable_with_auction_results: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Are we able to display a contact form on artwork pages?
   is_contactable: Boolean
     @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
+      reason: "Prefer to use `is_inquireable`. [Will be removed in v2]"
     )
   is_downloadable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_embeddable_video: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_ecommerce: Boolean
     @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
+      reason: "Should not be used to determine anything UI-level. [Will be removed in v2]"
     )
   is_for_sale: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_hangable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Do we want to encourage inquiries on this work?
   is_inquireable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Is this artwork part of an auction?
   is_in_auction: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Is this artwork part of a current show
   is_in_show: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_not_for_sale: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_on_hold: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_price_hidden: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_price_range: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_purchasable: Boolean
     @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
+      reason: "Purchase requests are not supported. Replaced by buy now. [Will be removed in v2]"
     )
   is_saved: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_shareable: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_sold: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_unique: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   displayLabel: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   layer(id: String): ArtworkLayer
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   layers: [ArtworkLayer]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   literature(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   manufacturer(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   medium: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   metric: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
   meta: ArtworkMeta
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   myLotStanding(live: Boolean = null): [LotStanding!]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # [DO NOT USE] Weekly pageview data (static).
   pageviews: Int
     @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
+      reason: "This is for an AB test and will be imminently deprecated. [Will be removed in v2]"
     )
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): Partner
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   pickup_available: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   price: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `sale_message`. [Will be removed in v2]")
   priceCents: PriceCents
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `listPrice`. [Will be removed in v2]")
   listPrice: ListPrice
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   price_currency: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Is this work available for shipping only within the Contenental US?
   shipsToContinentalUSOnly: Boolean
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # The string that describes domestic and international shipping.
   shippingInfo: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Minimal location information describing from where artwork will be shipped.
   shippingOrigin: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   provenance(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   publisher(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   related(size: Int): [Artwork]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   sale: Sale
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   sale_artwork(sale_id: String = null): SaleArtwork
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   sale_message: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   series(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   show(
     size: Int
     active: Boolean
     at_a_fair: Boolean
     sort: PartnerShowSorts
   ): PartnerShow
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   v2_shows(
     size: Int
     active: Boolean
     at_a_fair: Boolean
     sort: ShowSort
   ): [Show]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   shows(
     size: Int
     active: Boolean
     at_a_fair: Boolean
     sort: PartnerShowSorts
   ): [PartnerShow]
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   signature(format: Format): String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   title: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   to_s: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Whether this Artwork is Published of not
   published: Boolean!
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   width: String
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
+    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
   framed: ArtworkInfoRow
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   signatureInfo: ArtworkInfoRow
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   conditionDescription: ArtworkInfoRow
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   certificateOfAuthenticity: ArtworkInfoRow
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
   widthCm: Float
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # If you need to render artwork dimensions as a string, prefer the `Artwork#dimensions` field
   heightCm: Float
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # score assigned to an artwork based on its dimensions
   sizeScore: Float
-    @deprecated(
-      reason: "The `ArtworkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 }
 
 type ArtworkLayer {
@@ -6377,57 +5397,21 @@ type FairSponsoredContent {
 type FeaturedLink {
   # A type-specific ID.
   id: String
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   initials(length: Int = 3): String
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   subtitle: String
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   title: String
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 }
 
 type FeaturedLinkItem {
   # A type-specific ID.
   id: String
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   initials(length: Int = 3): String
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   subtitle: String
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   title: String
-    @deprecated(
-      reason: "The `FeaturedLinkItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 }
 
 type Feedback {
@@ -6823,38 +5807,20 @@ type GeminiEntry {
 type Gene implements Node {
   # A globally unique ID.
   __id: ID!
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   id: ID!
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artists: [Artist]
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artists_connection(
     after: String
     first: Int
     before: String
     last: Int
   ): ArtistConnection
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artworks_connection(
     acquireable: Boolean
     offerable: Boolean
@@ -6901,17 +5867,8 @@ type Gene implements Node {
     before: String
     last: Int
   ): GeneArtworksConnection
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   description: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   display_name: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -6956,33 +5913,12 @@ type Gene implements Node {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_published: Boolean
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_followed: Boolean
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   mode: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   name: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A list of genes similar to the specified gene
   similar(
@@ -6993,13 +5929,7 @@ type Gene implements Node {
     before: String
     last: Int
   ): GeneConnection
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   trending_artists(sample: Int): [Artist]
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 }
 
 # A connection to a list of items.
@@ -7076,38 +6006,20 @@ type GeneFamilyEdge {
 type GeneItem implements Node {
   # A globally unique ID.
   __id: ID!
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   id: ID!
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artists: [Artist]
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artists_connection(
     after: String
     first: Int
     before: String
     last: Int
   ): ArtistConnection
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artworks_connection(
     acquireable: Boolean
     offerable: Boolean
@@ -7154,17 +6066,8 @@ type GeneItem implements Node {
     before: String
     last: Int
   ): GeneArtworksConnection
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   description: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   display_name: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -7209,33 +6112,12 @@ type GeneItem implements Node {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_published: Boolean
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_followed: Boolean
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   mode: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   name: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A list of genes similar to the specified gene
   similar(
@@ -7246,13 +6128,7 @@ type GeneItem implements Node {
     before: String
     last: Int
   ): GeneConnection
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   trending_artists(sample: Int): [Artist]
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 }
 
 type GravityMutationError {
@@ -7892,38 +6768,20 @@ type HomePageModuleContextFollowedArtist {
 type HomePageModuleContextGene implements Node {
   # A globally unique ID.
   __id: ID!
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   id: ID!
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artists: [Artist]
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artists_connection(
     after: String
     first: Int
     before: String
     last: Int
   ): ArtistConnection
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   artworks_connection(
     acquireable: Boolean
     offerable: Boolean
@@ -7970,17 +6828,8 @@ type HomePageModuleContextGene implements Node {
     before: String
     last: Int
   ): GeneArtworksConnection
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   description: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   display_name: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -8025,33 +6874,12 @@ type HomePageModuleContextGene implements Node {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_published: Boolean
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   is_followed: Boolean
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   mode: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   name: String
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 
   # A list of genes similar to the specified gene
   similar(
@@ -8062,13 +6890,7 @@ type HomePageModuleContextGene implements Node {
     before: String
     last: Int
   ): GeneConnection
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
   trending_artists(sample: Int): [Artist]
-    @deprecated(
-      reason: "The `GeneItem` type has been deprecated. Prefer to use the `OrderedSetItem` type instead. [Will be removed in v2]"
-    )
 }
 
 type HomePageModuleContextRelatedArtist {
@@ -12332,45 +11154,18 @@ type SystemTime {
 type Tag implements Node {
   # A globally unique ID.
   __id: ID!
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID.
   id: ID!
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific Gravity Mongo Document ID.
   _id: ID!
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   description: String
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   name: String
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   href: String
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   image: Image
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
   count: Int
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 
   # Artworks Elastic Search results
   filtered_artworks(
@@ -12415,9 +11210,6 @@ type Tag implements Node {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-    @deprecated(
-      reason: "The `ArtworkFilterGene` type has been deprecated. Prefer to use the `FilterArtworksFacet` type instead. [Will be removed in v2]"
-    )
 }
 
 type TrendingArtists {

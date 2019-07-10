@@ -39,7 +39,11 @@ import { deprecate, deprecateType } from "lib/deprecation"
 import Gene from "./gene"
 
 const ArtworkFilterTagType = deprecateType(
-  { inVersion: 2, preferUsageOf: "FilterArtworksFacet" },
+  {
+    inVersion: 2,
+    preferUsageOf: "FilterArtworksFacet",
+    deprecateFields: false,
+  },
   create(Tag.type, {
     name: "ArtworkFilterTag",
     isTypeOf: ({ context_type }) => context_type === "Tag",
@@ -47,7 +51,11 @@ const ArtworkFilterTagType = deprecateType(
 )
 
 const ArtworkFilterGeneType = deprecateType(
-  { inVersion: 2, preferUsageOf: "FilterArtworksFacet" },
+  {
+    inVersion: 2,
+    preferUsageOf: "FilterArtworksFacet",
+    deprecateFields: false,
+  },
   create(Tag.type, {
     name: "ArtworkFilterGene",
     isTypeOf: ({ context_type }) => context_type === "Gene",

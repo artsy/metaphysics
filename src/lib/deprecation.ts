@@ -1,8 +1,8 @@
 import {
   GraphQLObjectType,
-  GraphQLFieldMap,
   Thunk,
   GraphQLUnionType,
+  GraphQLFieldConfigMap,
 } from "graphql"
 
 type DeprecationOptions = { inVersion: 2 } & (
@@ -40,9 +40,9 @@ export function shouldBeRemoved(options: {
 
 export function deprecateType<
   T extends GraphQLObjectType<any, any> | GraphQLUnionType
->(options: DeprecationOptions, type: T): T {
+>(options: DeprecationOptions & { deprecateFields?: boolean }, type: T): T {
   // This is only so that codemods can easily recognize and drop types.
-  if (type instanceof GraphQLUnionType) {
+  if (type instanceof GraphQLUnionType || options.deprecateFields === false) {
     return type
   }
 
@@ -67,7 +67,7 @@ export function deprecateType<
   //   ;(type as any)._fields = deprecateFields(fields)
   // }
   const fields = (type as any)._typeConfig.fields as Thunk<
-    GraphQLFieldMap<any, any>
+    GraphQLFieldConfigMap<any, any>
   >
   if (typeof fields === "function") {
     ;(type as any)._typeConfig.fields = () =>
@@ -81,12 +81,16 @@ export function deprecateType<
   return type
 }
 
-function deprecateFields(
+function deprecateFields<T extends GraphQLFieldConfigMap<any, any>>(
   deprecationReason: string,
-  fields: GraphQLFieldMap<any, any>
-) {
+  fields: T
+): T {
+  const newFields = {}
   Object.keys(fields).forEach(fieldName => {
-    fields[fieldName] = { ...fields[fieldName], deprecationReason }
+    newFields[fieldName] = {
+      ...fields[fieldName],
+      deprecationReason,
+    }
   })
-  return fields
+  return newFields as T
 }
