@@ -1,6 +1,6 @@
 import cached from "./fields/cached"
 import Image from "./image"
-import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
+import { GravityIDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -17,7 +17,7 @@ const TagType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: () => {
     return {
-      ...SlugAndInternalIDFields,
+      ...GravityIDFields,
       cached,
       description: {
         type: GraphQLString,

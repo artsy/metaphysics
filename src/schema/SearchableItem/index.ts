@@ -6,10 +6,7 @@ import {
 } from "graphql"
 import { toGlobalId } from "graphql-relay"
 import { Searchable } from "schema/searchable"
-import {
-  NodeInterface,
-  SlugAndInternalIDFields,
-} from "schema/object_identification"
+import { NodeInterface, GravityIDFields } from "schema/object_identification"
 import { ResolverContext } from "types/graphql"
 import { SearchableItemPresenter } from "./SearchableItemPresenter"
 import { deprecate } from "lib/deprecation"
@@ -18,9 +15,8 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
   name: "SearchableItem",
   interfaces: [NodeInterface, Searchable],
   fields: {
-    ...SlugAndInternalIDFields,
+    ...GravityIDFields,
     __id: {
-      ...SlugAndInternalIDFields.__id,
       type: new GraphQLNonNull(GraphQLID),
       resolve: item => toGlobalId("SearchableItem", item._id),
     },

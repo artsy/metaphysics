@@ -51,10 +51,7 @@ import {
   showsWithBLacklistedPartnersRemoved,
   ShowsConnectionField,
 } from "./shows"
-import {
-  NodeInterface,
-  SlugAndInternalIDFields,
-} from "schema/object_identification"
+import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -92,7 +89,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface, Searchable],
   fields: () => {
     return {
-      ...SlugAndInternalIDFields,
+      ...GravityIDFields,
       cached,
       alternate_names: { type: new GraphQLList(GraphQLString) },
       articlesConnection: {

@@ -11,12 +11,12 @@ import {
   GravityMutationErrorType,
   formatGravityError,
 } from "lib/gravityErrorHandler"
-import { InternalIDFields } from "./object_identification"
+import { IDFields } from "./object_identification"
 
 const FeedbackType = new GraphQLObjectType<any, ResolverContext>({
   name: "Feedback",
   fields: () => ({
-    ...InternalIDFields,
+    ...IDFields,
     message: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Feedback message",
