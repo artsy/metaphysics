@@ -6,7 +6,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { amount } from "../../fields/money"
-import { IDFields, NodeInterface } from "../../object_identification"
+import { NodeInterface, InternalIDFields } from "../../object_identification"
 import { ResolverContext } from "types/graphql"
 
 const InvoiceState = new GraphQLEnumType({
@@ -32,7 +32,7 @@ export const InvoiceType = new GraphQLObjectType<any, ResolverContext>({
   description: "Fields of an invoice (currently from Lewitt)",
   interfaces: [NodeInterface],
   fields: {
-    ...IDFields,
+    ...InternalIDFields,
     lewitt_invoice_id: {
       description: "Lewitt's invoice id.",
       type: new GraphQLNonNull(GraphQLString),
