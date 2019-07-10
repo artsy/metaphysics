@@ -7,12 +7,12 @@ import {
 import { artistNames } from "./artwork/meta"
 import Image from "./image"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "./object_identification"
+import { GravityIDFields } from "./object_identification"
 
 export const ArtworkVersion = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkVersion",
   fields: () => ({
-    ...InternalIDFields,
+    ...GravityIDFields,
 
     title: {
       type: GraphQLString,

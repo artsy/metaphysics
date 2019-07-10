@@ -1,5 +1,5 @@
 import date from "schema/fields/date"
-import { InternalIDFields } from "schema/object_identification"
+import { IDFields } from "schema/object_identification"
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -10,7 +10,7 @@ import {
 import { ResolverContext } from "types/graphql"
 
 export const CollectorProfileFields = {
-  ...InternalIDFields,
+  ...IDFields,
   email: {
     type: GraphQLString,
   },

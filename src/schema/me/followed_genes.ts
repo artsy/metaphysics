@@ -1,5 +1,5 @@
 import Gene from "schema/gene"
-import { InternalIDFields } from "schema/object_identification"
+import { IDFields } from "schema/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
@@ -12,7 +12,7 @@ export const FollowGeneType = new GraphQLObjectType<any, ResolverContext>({
     gene: {
       type: Gene.type,
     },
-    ...InternalIDFields,
+    ...IDFields,
   },
 })
 
