@@ -1,4 +1,9 @@
-import { GraphQLObjectType, GraphQLFieldMap, Thunk } from "graphql"
+import {
+  GraphQLObjectType,
+  GraphQLFieldMap,
+  Thunk,
+  GraphQLUnionType,
+} from "graphql"
 
 type DeprecationOptions = { inVersion: 2 } & (
   | { preferUsageOf: string; reason?: undefined }
@@ -33,10 +38,14 @@ export function shouldBeRemoved(options: {
   }
 }
 
-export function deprecateType<T extends GraphQLObjectType<any, any>>(
-  options: DeprecationOptions,
-  type: T
-): T {
+export function deprecateType<
+  T extends GraphQLObjectType<any, any> | GraphQLUnionType
+>(options: DeprecationOptions, type: T): T {
+  // This is only so that codemods can easily recognize and drop types.
+  if (type instanceof GraphQLUnionType) {
+    return type
+  }
+
   const deprecationReason = deprecate(
     options.preferUsageOf
       ? {
