@@ -1,5 +1,5 @@
 import cached from "./fields/cached"
-import ItemType from "./item"
+import ItemType, { OrderedSetItemType } from "./item"
 import { IDFields } from "./object_identification"
 import {
   GraphQLString,
@@ -30,6 +30,17 @@ const OrderedSetType = new GraphQLObjectType<any, ResolverContext>({
         return setItemsLoader(id).then(items => {
           return items.map(item => {
             item.item_type = item_type // eslint-disable-line no-param-reassign
+            return item
+          })
+        })
+      },
+    },
+    v2_items: {
+      type: new GraphQLList(OrderedSetItemType),
+      resolve: (source, _options, { setItemsLoader }) => {
+        return setItemsLoader(source.id).then(items => {
+          return items.map(item => {
+            item.item_type = source.item_type // eslint-disable-line no-param-reassign
             return item
           })
         })

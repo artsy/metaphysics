@@ -37,6 +37,11 @@ const FilterTypeNames = [
         "HomePageModuleContextRelatedArtist",
         "HomePageModuleContextSale",
         "HomePageModuleContextTrending",
+        "Item",
+        "FeaturedLinkItem",
+        "ArtistItem",
+        "ArtworkItem",
+        "GeneItem",
         "PriceCents",
       ]
     : []),
@@ -64,6 +69,7 @@ const SkipDeprecatedFieldsOfTypes = [
 //        these.
 const KnownGravityTypesWithNullableIDFields = [
   "MarketingCollectionQuery",
+  "FeaturedLink",
   "FeaturedLinkItem",
   "HomePageModulesParams",
   "Image",
