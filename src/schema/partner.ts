@@ -4,7 +4,7 @@ import cached from "./fields/cached"
 import initials from "./fields/initials"
 import Profile from "./profile"
 import Location from "./location"
-import { GravityIDFields, NodeInterface } from "./object_identification"
+import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import Artwork, { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
 import ArtworkSorts from "./sorts/artwork_sorts"
@@ -28,7 +28,7 @@ const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "Category",
   description: "Fields of partner category (currently from Gravity).",
   fields: {
-    ...GravityIDFields,
+    ...SlugAndInternalIDFields,
     category_type: {
       type: GraphQLString,
     },
@@ -59,7 +59,7 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     const PartnerShows = require("./partner_shows").default
 
     return {
-      ...GravityIDFields,
+      ...SlugAndInternalIDFields,
       cached,
       artworks: {
         type: new GraphQLList(Artwork.type),

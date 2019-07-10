@@ -1,5 +1,5 @@
 import cached from "schema/fields/cached"
-import { GravityIDFields } from "schema/object_identification"
+import { SlugAndInternalIDFields } from "schema/object_identification"
 import {
   GraphQLEnumType,
   GraphQLList,
@@ -14,7 +14,7 @@ import { ResolverContext } from "types/graphql"
 const HomePageHeroUnitType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomePageHeroUnit",
   fields: {
-    ...GravityIDFields,
+    ...SlugAndInternalIDFields,
     cached,
     mode: {
       type: new GraphQLEnumType({
