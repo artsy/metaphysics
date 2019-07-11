@@ -175,6 +175,7 @@ type AnalyticsPageviewStats {
 
 # Audience stats of a partner
 type AnalyticsPartnerAudienceStats {
+  commercialVisitors: Int!
   partnerId: String!
   period: AnalyticsQueryPeriodEnum!
   uniqueVisitors: Int!

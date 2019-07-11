@@ -1705,6 +1705,8 @@ describe("Artwork type", () => {
       artwork.stamped_by_artist_estate = null
       artwork.sticker_label = null
       artwork.signed_other = null
+      artwork.not_signed = null
+
       return runQuery(query, context).then(data => {
         expect(data).toEqual({ artwork: { signatureInfo: null } })
       })
@@ -1715,6 +1717,7 @@ describe("Artwork type", () => {
       artwork.stamped_by_artist_estate = false
       artwork.sticker_label = false
       artwork.signed_other = false
+      artwork.not_signed = false
       return runQuery(query, context).then(data => {
         expect(data).toEqual({ artwork: { signatureInfo: null } })
       })
@@ -1725,13 +1728,29 @@ describe("Artwork type", () => {
       artwork.stamped_by_artist_estate = false
       artwork.sticker_label = false
       artwork.signed_other = true
+      artwork.not_signed = false
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: { signatureInfo: { label: "Signature", details: "" } },
         })
       })
     })
-    it("is set to proper object when several fileds are true", () => {
+    it("is set to proper object when not_signed is true", () => {
+      artwork.signature = ""
+      artwork.signed_by_artist = false
+      artwork.stamped_by_artist_estate = false
+      artwork.sticker_label = false
+      artwork.signed_other = false
+      artwork.not_signed = true
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            signatureInfo: { label: "Signature", details: "Not signed" },
+          },
+        })
+      })
+    })
+    it("is set to proper object when several fields are true", () => {
       artwork.signature = "some details about signature"
       artwork.signed_by_artist = true
       artwork.stamped_by_artist_estate = true
