@@ -1745,7 +1745,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            signatureInfo: { label: "Signature", details: "Not included" },
+            signatureInfo: { label: "Signature", details: "Not signed" },
           },
         })
       })
