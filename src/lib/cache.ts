@@ -12,6 +12,7 @@ const {
   MEMCACHED_MAX_POOL,
   CACHE_COMPRESSION_DISABLED,
   CACHE_LIFETIME_IN_SECONDS,
+  CACHE_NAMESPACE,
   CACHE_QUERY_LOGGING_THRESHOLD_MS,
   CACHE_RETRIEVAL_TIMEOUT_MS,
 } = config
@@ -31,9 +32,9 @@ const cacheVersion = "v1"
 
 export const cacheKey = key => {
   if (CACHE_COMPRESSION_DISABLED) {
-    return uncompressedKeyPrefix + key
+    return CACHE_NAMESPACE + uncompressedKeyPrefix + key
   } else {
-    return cacheVersion + key
+    return CACHE_NAMESPACE + cacheVersion + key
   }
 }
 
