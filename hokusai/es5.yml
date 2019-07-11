@@ -1,4 +1,3 @@
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -40,6 +39,8 @@ spec:
               value: https://stagingapi-es5.artsy.net/
             - name: GRAVITY_GRAPHQL_ENDPOINT
               value: https://stagingapi-es5.artsy.net/api
+            - name: CACHE_NAMESPACE
+              value: es5
           envFrom:
             - configMapRef:
                 name: metaphysics-environment
