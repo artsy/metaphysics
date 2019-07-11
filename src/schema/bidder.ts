@@ -6,13 +6,13 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import date from "./fields/date"
-import { IDFields } from "./object_identification"
+import { InternalIDFields } from "./object_identification"
 import Sale from "./sale/index"
 
 const BidderType = new GraphQLObjectType<any, ResolverContext>({
   name: "Bidder",
   fields: () => ({
-    ...IDFields,
+    ...InternalIDFields,
     created_at: date,
     pin: {
       type: GraphQLString,

@@ -2,7 +2,7 @@ import { get } from "lodash"
 import date from "./fields/date"
 import money, { amount } from "./fields/money"
 import SaleArtwork from "./sale_artwork"
-import { IDFields } from "./object_identification"
+import { InternalIDFields } from "./object_identification"
 import {
   GraphQLInt,
   GraphQLBoolean,
@@ -16,7 +16,7 @@ import { deprecate } from "lib/deprecation"
 const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
   name: "BidderPosition",
   fields: () => ({
-    ...IDFields,
+    ...InternalIDFields,
     created_at: date,
     updated_at: date,
     processed_at: date,
@@ -38,7 +38,7 @@ const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "HighestBid",
         fields: {
-          ...IDFields,
+          ...InternalIDFields,
           created_at: date,
           number: {
             type: GraphQLInt,

@@ -8,8 +8,8 @@ import initials from "schema/fields/initials"
 import cached from "schema/fields/cached"
 import date from "schema/fields/date"
 import moment from "moment"
+import { SlugAndInternalIDFields } from "schema/object_identification"
 import { formattedStartDateTime } from "lib/date"
-import { GravityIDFields } from "schema/object_identification"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { amount } from "schema/fields/money"
@@ -55,7 +55,7 @@ const BidIncrement = new GraphQLObjectType<any, ResolverContext>({
 const BuyersPremium = new GraphQLObjectType<any, ResolverContext>({
   name: "BuyersPremium",
   fields: {
-    ...GravityIDFields,
+    ...SlugAndInternalIDFields,
     amount: amount(({ cents }) => cents),
     cents: {
       type: GraphQLInt,
@@ -76,7 +76,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: () => {
     return {
-      ...GravityIDFields,
+      ...SlugAndInternalIDFields,
       cached,
       artworks: {
         type: new GraphQLList(Artwork.type),
