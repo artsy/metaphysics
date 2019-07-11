@@ -1,0 +1,145 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: metaphysics-web-es5
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 20%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: metaphysics-es5
+        layer: application
+        component: web
+      name: metaphysics-web-es5
+    spec:
+      containers:
+        - name: metaphysics-web-es5
+          env:
+            - name: PORT
+              value: "3000"
+            - name: DD_TRACER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: STATSD_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: DD_TRACER_SERVICE_NAME
+              value: metaphysics-es5
+            - name: GRAVITY_API_BASE
+              value: https://stagingapi-es5.artsy.net/api/v1
+            - name: GRAVITY_API_URL
+              value: https://stagingapi-es5.artsy.net/
+            - name: GRAVITY_GRAPHQL_ENDPOINT
+              value: https://stagingapi-es5.artsy.net/api
+          envFrom:
+            - configMapRef:
+                name: metaphysics-environment
+          image: 585031190124.dkr.ecr.us-east-1.amazonaws.com/metaphysics:staging
+          imagePullPolicy: Always
+          ports:
+            - name: mp-http
+              containerPort: 3000
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              port: mp-http
+              path: /health
+              httpHeaders:
+                - name: X-FORWARDED-PROTO
+                  value: https
+            initialDelaySeconds: 5
+            periodSeconds: 5
+        - name: metaphysics-nginx
+          image: artsy/docker-nginx:1.14.2
+          ports:
+            - name: nginx-http
+              containerPort: 80
+            - name: nginx-https
+              containerPort: 443
+          readinessProbe:
+            tcpSocket:
+              port: nginx-http
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 10
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/sbin/nginx", "-s", "quit"]
+          env:
+            - name: "NGINX_DEFAULT_CONF"
+              valueFrom:
+                configMapKeyRef:
+                  name: nginx-config
+                  key: metaphysics
+          volumeMounts:
+            - name: nginx-secrets
+              mountPath: /etc/nginx/ssl
+      volumes:
+        - name: nginx-secrets
+          secret:
+            secretName: nginx-secrets
+            defaultMode: 420
+      dnsPolicy: ClusterFirst
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: tier
+                    operator: In
+                    values:
+                      - foreground
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: metaphysics-es5
+    layer: application
+    component: web
+  name: metaphysics-web-es5
+  namespace: default
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:iam::585031190124:server-certificate/2018-01-17_artsy-net-wildcard"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-connection-draining-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+    service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+spec:
+  ports:
+    - port: 443
+      protocol: TCP
+      name: https
+      targetPort: mp-http
+    - port: 80
+      protocol: TCP
+      name: http
+      targetPort: mp-http
+  selector:
+    app: metaphysics-es5
+    layer: application
+    component: web
+  sessionAffinity: None
+  type: LoadBalancer
