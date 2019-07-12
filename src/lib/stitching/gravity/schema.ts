@@ -19,7 +19,14 @@ export const executableGravitySchema = () => {
 
   // Types which come from Gravity which MP already has copies of.
   // In the future, these could get merged into the MP types.
-  const removeTypes = ["Artist", "Artwork"]
+  const removeTypes = [
+    "Artist",
+    "Artwork",
+    "ArtistEdge",
+    "ArtworkEdge",
+    "ArtworkConnection",
+    "ArtistConnection",
+  ]
 
   // Return the new modified schema
   return transformSchema(schema, [
