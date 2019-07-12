@@ -827,13 +827,15 @@ type ArtistCarousel {
   images: [Image]
 }
 
-# The connection type for Artist.
+# A connection to a list of items.
 type ArtistConnection {
-  # A list of edges.
-  edges: [ArtistEdge]
-
   # Information to aid in pagination.
   pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [ArtistEdge]
+  pageCursors: PageCursors
+  totalCount: Int
 }
 
 type ArtistCounts {
@@ -874,7 +876,10 @@ type ArtistCounts {
 
 # An edge in a connection.
 type ArtistEdge {
-  # A cursor for use in pagination.
+  # The item at the end of the edge
+  node: Artist
+
+  # A cursor for use in pagination
   cursor: String!
 }
 
@@ -1438,13 +1443,15 @@ enum ArtworkAggregation {
   TOTAL
 }
 
-# The connection type for Artwork.
+# A connection to a list of items.
 type ArtworkConnection {
-  # A list of edges.
-  edges: [ArtworkEdge]
-
   # Information to aid in pagination.
   pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [ArtworkEdge]
+  pageCursors: PageCursors
+  totalCount: Int
 }
 
 union ArtworkContext =
@@ -2063,7 +2070,10 @@ type ArtworkContextSale implements Node {
 
 # An edge in a connection.
 type ArtworkEdge {
-  # A cursor for use in pagination.
+  # The item at the end of the edge
+  node: Artwork
+
+  # A cursor for use in pagination
   cursor: String!
 }
 
@@ -5023,19 +5033,6 @@ type dimensions {
 }
 
 type DoNotUseThisPartner {
-  artworksConnection(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): ArtworkConnection
   displayName: String
   display_name: String @deprecated(reason: "Use displayName")
   givenName: String
