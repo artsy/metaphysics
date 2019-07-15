@@ -89,9 +89,7 @@ export class RenameFields implements Transform {
       if (newName) {
         if (this.changedFields[fieldKey(type, newName)] !== undefined) {
           throw new Error(
-            `Cannot rename two fields (${
-              this.changedFields[fieldKey(type, newName)]
-            }, ${oldName}) to the same name ${newName} on type ${type.name}`
+            `Cannot rename two fields to the same name: ${newName}`
           )
         }
         madeChanges = true

@@ -2,7 +2,7 @@ import cached from "./fields/cached"
 import initials from "./fields/initials"
 import numeral from "./fields/numeral"
 import Image, { normalizeImageData } from "./image"
-import { SlugAndInternalIDFields } from "./object_identification"
+import { GravityIDFields } from "./object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -15,7 +15,7 @@ import { ResolverContext } from "types/graphql"
 export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
   name: "Profile",
   fields: () => ({
-    ...SlugAndInternalIDFields,
+    ...GravityIDFields,
     cached,
     bio: {
       type: GraphQLString,

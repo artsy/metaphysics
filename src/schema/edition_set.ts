@@ -1,5 +1,5 @@
 import { isEmpty, includes } from "lodash"
-import { InternalIDFields } from "./object_identification"
+import { IDFields } from "./object_identification"
 import Dimensions from "./dimensions"
 import {
   GraphQLString,
@@ -37,7 +37,7 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
   name: "EditionSet",
   interfaces: [Sellable],
   fields: {
-    ...InternalIDFields,
+    ...IDFields,
     dimensions: Dimensions,
     edition_of: {
       type: GraphQLString,

@@ -14,7 +14,7 @@ import {
   queriedForFieldsOtherThanBlacklisted,
   convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
-import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
+import { GravityIDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -43,7 +43,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: () => {
     return {
-      ...SlugAndInternalIDFields,
+      ...GravityIDFields,
       cached,
       artists: {
         type: new GraphQLList(Artist.type),

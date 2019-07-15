@@ -8,13 +8,13 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "schema/object_identification"
+import { GravityIDFields } from "schema/object_identification"
 
 export const ArtworkInquiryType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkInquiry",
   description: "An inquiry on an Artwork",
   fields: () => ({
-    ...InternalIDFields,
+    ...GravityIDFields,
     artwork: {
       type: new GraphQLNonNull(Artwork.type),
       resolve: ({ inquireable }) => inquireable,

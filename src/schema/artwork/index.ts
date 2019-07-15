@@ -23,10 +23,7 @@ import { Sellable } from "schema/sellable"
 import { Searchable } from "schema/searchable"
 import ArtworkLayer from "./layer"
 import ArtworkLayers, { artworkLayers } from "./layers"
-import {
-  NodeInterface,
-  SlugAndInternalIDFields,
-} from "schema/object_identification"
+import { GravityIDFields, NodeInterface } from "schema/object_identification"
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -63,7 +60,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface, Searchable, Sellable],
   fields: () => {
     return {
-      ...SlugAndInternalIDFields,
+      ...GravityIDFields,
       cached,
       additional_information: markdown(),
       artist: {
@@ -820,6 +817,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           stamped_by_artist_estate,
           sticker_label,
           signed_other,
+          not_signed,
         }) => {
           let detailsParts: string[] = []
           if (signed_by_artist) {
@@ -833,6 +831,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
           if (signature && signature.length > 0) {
             detailsParts.push(signature)
+          }
+          if (not_signed) {
+            detailsParts.push("not signed")
           }
           if (detailsParts.length === 0 && !signed_other) {
             return null

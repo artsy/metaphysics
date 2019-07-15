@@ -8,7 +8,6 @@ import {
   GravityIDFields,
   NullableIDField,
   InternalIDFields,
-  SlugAndInternalIDFields,
 } from "schema/object_identification"
 
 // TODO: Flip this switch before we go public with v2 and update clients. Until
@@ -99,17 +98,14 @@ export const transformToV2 = (
         ) {
           throw new Error(`Do not add new nullable id fields (${type.name})`)
         } else {
-          if (field.description === SlugAndInternalIDFields.id.description) {
-            return "slug"
-          } else if (
+          if (
             field.description === GravityIDFields.id.description ||
             (field.description === NullableIDField.id.description &&
               opt.allowedGravityTypesWithNullableIDField.includes(type.name))
           ) {
-            return "internalID"
+            return "gravityID"
           } else if (
             field.description === InternalIDFields.id.description ||
-            field.description === SlugAndInternalIDFields.id.description ||
             (field.description === NullableIDField.id.description &&
               opt.allowedNonGravityTypesWithNullableIDField.includes(
                 type.name

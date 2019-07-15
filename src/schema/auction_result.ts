@@ -1,6 +1,6 @@
 import date from "./fields/date"
 import numeral from "numeral"
-import { NodeInterface, InternalIDFields } from "./object_identification"
+import { IDFields, NodeInterface } from "./object_identification"
 import {
   GraphQLFloat,
   GraphQLNonNull,
@@ -38,7 +38,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
   name: "AuctionResult",
   interfaces: [NodeInterface],
   fields: () => ({
-    ...InternalIDFields,
+    ...IDFields,
     title: {
       type: GraphQLString,
     },
