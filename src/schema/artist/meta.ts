@@ -1,4 +1,3 @@
-import descriptions from "./maps/artist_meta_descriptions"
 import { stripTags, truncate, markdownToText } from "lib/helpers"
 import { compact } from "lodash"
 import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
@@ -15,12 +14,10 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
     description: {
       type: GraphQLString,
       resolve: artist => {
-        if (descriptions[artist.id]) {
-          return descriptions[artist.id]
-        }
         const blurb = artist.blurb.length
           ? markdownToText(artist.blurb)
           : undefined
+
         const description = compact([
           `Find the latest shows, biography, and artworks for sale by ${metaName(
             artist
