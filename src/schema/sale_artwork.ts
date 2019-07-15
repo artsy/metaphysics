@@ -7,7 +7,11 @@ import { formatMoney } from "accounting"
 import numeral from "./fields/numeral"
 import Artwork from "./artwork"
 import Sale from "./sale"
-import { GravityIDFields, NullableIDField } from "./object_identification"
+import {
+  GravityIDFields,
+  NullableIDField,
+  SlugAndInternalIDFields,
+} from "./object_identification"
 import {
   GraphQLFloat,
   GraphQLObjectType,
@@ -82,7 +86,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "SaleArtwork",
   fields: () => {
     return {
-      ...GravityIDFields,
+      ...SlugAndInternalIDFields,
       cached,
       artwork: { type: Artwork.type, resolve: ({ artwork }) => artwork },
       bidder_positions_count: {
