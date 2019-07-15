@@ -44,10 +44,5 @@ workflows:
             - push-staging-image
 
       # release
-      - hokusai/push:
-          name: push-production-image
-          <<: *only_release
       - hokusai/deploy-production:
           <<: *only_release
-          requires:
-            - push-production-image
