@@ -2,7 +2,7 @@ import gql from "lib/gql"
 import { runAuthenticatedQuery } from "test/utils"
 import { assign } from "lodash"
 
-describe("Show Context", () => {
+describe("Default Context", () => {
   let context: any
   let parentArtwork = {} as any
 
@@ -12,7 +12,7 @@ describe("Show Context", () => {
         contextGrids {
           title
           ctaTitle
-          ctaDestination
+          ctaHref
           artworks(first: 2) {
             edges {
               node {
@@ -55,33 +55,14 @@ describe("Show Context", () => {
       { id: "partnerArtwork3", title: "Partner Artwork 3" },
     ]
 
-    const showArtworks = [
-      { id: "showArtwork1", title: "Show Artwork 1" },
-      { id: "showArtwork2", title: "Show Artwork 2" },
-      { id: "showArtwork3", title: "Show Artwork 3" },
-    ]
-
     context = {
       artworkLoader: () => Promise.resolve(parentArtwork),
       artistArtworksLoader: () => Promise.resolve(artistArtworks),
       relatedFairsLoader: () => Promise.resolve(null),
-      relatedShowsLoader: () => {
-        return Promise.resolve({
-          body: [
-            { id: "cool-show", name: "Cool Show", partner: { id: "partner" } },
-          ],
-          headers: { "x-total-count": "10" },
-        })
-      },
+      relatedShowsLoader: () => Promise.resolve(null),
       partnerArtworksLoader: () => {
         return Promise.resolve({
           body: partnerArtworks,
-          headers: { "x-total-count": "10" },
-        })
-      },
-      partnerShowArtworksLoader: () => {
-        return Promise.resolve({
-          body: showArtworks,
           headers: { "x-total-count": "10" },
         })
       },
@@ -90,14 +71,11 @@ describe("Show Context", () => {
     }
   })
 
-  it("Returns the correct values for metadata fields when there is just show data", () => {
+  it("Returns the correct values for metadata fields when there is just artist data", () => {
     expect.assertions(6)
 
     parentArtwork.partner = null
-    context.partnerArtworksLoader = () => Promise.resolve(null)
-
-    parentArtwork.artist = null
-    context.artistArtworksLoader = () => Promise.resolve(null)
+    context.partnerArtworksLoader = Promise.resolve(null)
 
     return runAuthenticatedQuery(query, context).then(data => {
       // Should have one artist grid and one related grid with 0 works
@@ -105,13 +83,13 @@ describe("Show Context", () => {
       const {
         title,
         ctaTitle,
-        ctaDestination,
+        ctaHref,
         artworks,
       } = data.artwork.contextGrids[0]
 
-      expect(title).toEqual("Other works from Cool Show")
-      expect(ctaTitle).toEqual("View all works from the show")
-      expect(ctaDestination).toEqual("/show/cool-show")
+      expect(title).toEqual("Other works by Andy Warhol")
+      expect(ctaTitle).toEqual("View all works by Andy Warhol")
+      expect(ctaHref).toEqual("/artist/andy-warhol")
       expect(artworks.edges.length).toEqual(2)
 
       // Related artworks grid should have no artworks
@@ -123,8 +101,7 @@ describe("Show Context", () => {
     expect.assertions(6)
 
     parentArtwork.artist = null
-    context.artistArtworksLoader = () => Promise.resolve(null)
-    context.relatedShowsLoader = () => Promise.resolve(null)
+    context.artistArtworksLoader = Promise.resolve(null)
 
     return runAuthenticatedQuery(query, context).then(data => {
       // Should have one partner grid and one related grid with 0 works
@@ -132,13 +109,13 @@ describe("Show Context", () => {
       const {
         title,
         ctaTitle,
-        ctaDestination,
+        ctaHref,
         artworks,
       } = data.artwork.contextGrids[0]
 
       expect(title).toEqual("Other works from CAMA Gallery")
       expect(ctaTitle).toEqual("View all works from CAMA Gallery")
-      expect(ctaDestination).toEqual("/cama-gallery")
+      expect(ctaHref).toEqual("/cama-gallery")
       expect(artworks.edges.length).toEqual(2)
 
       // Related artworks grid should have no artworks
@@ -147,7 +124,7 @@ describe("Show Context", () => {
   })
 
   it("Returns the correct values for metadata fields when there is all data", () => {
-    expect.assertions(17)
+    expect.assertions(13)
 
     context.relatedLayersLoader = () => Promise.resolve([{ id: "main" }])
     context.relatedLayerArtworksLoader = () =>
@@ -159,67 +136,51 @@ describe("Show Context", () => {
 
     return runAuthenticatedQuery(query, context).then(data => {
       // Should have one artist grid and one related grid with 0 works
-      expect(data.artwork.contextGrids.length).toEqual(4)
+      expect(data.artwork.contextGrids.length).toEqual(3)
 
-      // The first grid should include show-related metadata
-      const {
-        title: showTitle,
-        ctaTitle: showCtaTitle,
-        ctaDestination: showCtaDestination,
-        artworks: showArtworks,
-      } = data.artwork.contextGrids[0]
-
-      expect(showTitle).toEqual("Other works from Cool Show")
-      expect(showCtaTitle).toEqual("View all works from the show")
-      expect(showCtaDestination).toEqual("/show/cool-show")
-      expect(showArtworks.edges.map(({ node }) => node.id)).toEqual([
-        "showArtwork1",
-        "showArtwork2",
-      ])
-
-      // The second grid should include artist-related metadata
+      // The first grid should include artist-related metadata
       const {
         title: artistTitle,
         ctaTitle: artistCtaTitle,
-        ctaDestination: artistCtaDestination,
+        ctaHref: artistctaHref,
         artworks: artistArtworks,
-      } = data.artwork.contextGrids[1]
+      } = data.artwork.contextGrids[0]
 
       expect(artistTitle).toEqual("Other works by Andy Warhol")
       expect(artistCtaTitle).toEqual("View all works by Andy Warhol")
-      expect(artistCtaDestination).toEqual("/artist/andy-warhol")
+      expect(artistctaHref).toEqual("/artist/andy-warhol")
       expect(artistArtworks.edges.map(({ node }) => node.id)).toEqual([
         "artwork1",
         "artwork2",
       ])
 
-      // The third grid should include partner-related metadata
+      // The second grid should include partner-related metadata
       const {
         title: partnerTitle,
         ctaTitle: partnerCtaTitle,
-        ctaDestination: partnerCtaDestination,
+        ctaHref: partnerctaHref,
         artworks: partnerArtworks,
-      } = data.artwork.contextGrids[2]
+      } = data.artwork.contextGrids[1]
 
       expect(partnerTitle).toEqual("Other works from CAMA Gallery")
       expect(partnerCtaTitle).toEqual("View all works from CAMA Gallery")
-      expect(partnerCtaDestination).toEqual("/cama-gallery")
+      expect(partnerctaHref).toEqual("/cama-gallery")
       expect(partnerArtworks.edges.map(({ node }) => node.id)).toEqual([
         "partnerArtwork1",
         "partnerArtwork2",
       ])
 
-      // The fourth grid should include related artworks
+      // The third grid should include related artworks
       const {
         title: relatedTitle,
         ctaTitle: relatedCtaTitle,
-        ctaDestination: relatedCtaDestination,
+        ctaHref: relatedctaHref,
         artworks: relatedArtworks,
-      } = data.artwork.contextGrids[3]
+      } = data.artwork.contextGrids[2]
 
       expect(relatedTitle).toEqual("Related works")
       expect(relatedCtaTitle).toEqual(null)
-      expect(relatedCtaDestination).toEqual(null)
+      expect(relatedctaHref).toEqual(null)
       expect(relatedArtworks.edges.map(({ node }) => node.id)).toEqual([
         "relatedArtwork1",
         "relatedArtwork2",

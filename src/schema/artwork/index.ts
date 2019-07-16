@@ -46,7 +46,7 @@ import { listPrice } from "schema/fields/listPrice"
 import { deprecate } from "lib/deprecation"
 import Show from "schema/show"
 import ShowSort from "schema/sorts/show_sort"
-import { ContextGrids } from "./contextGrids"
+import { ArtworkContextGrids } from "./artworkContextGrids"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -166,7 +166,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       context: Context,
-      contextGrids: ContextGrids,
+      contextGrids: ArtworkContextGrids,
       cultural_maker: { type: GraphQLString },
       date: { type: GraphQLString },
       description: markdown(({ blurb }) => blurb),

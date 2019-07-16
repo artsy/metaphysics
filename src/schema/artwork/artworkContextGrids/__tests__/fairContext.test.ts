@@ -12,7 +12,7 @@ describe("Show Context", () => {
         contextGrids {
           title
           ctaTitle
-          ctaDestination
+          ctaHref
           artworks(first: 2) {
             edges {
               node {
@@ -102,13 +102,13 @@ describe("Show Context", () => {
       const {
         title,
         ctaTitle,
-        ctaDestination,
+        ctaHref,
         artworks,
       } = data.artwork.contextGrids[0]
 
       expect(title).toEqual("Other works from Cool Show")
       expect(ctaTitle).toEqual("View all works from the booth")
-      expect(ctaDestination).toEqual("/show/cool-show")
+      expect(ctaHref).toEqual("/show/cool-show")
       expect(artworks.edges.length).toEqual(2)
 
       // Related artworks grid should have no artworks
@@ -135,13 +135,13 @@ describe("Show Context", () => {
       const {
         title: showTitle,
         ctaTitle: showCtaTitle,
-        ctaDestination: showCtaDestination,
+        ctaHref: showctaHref,
         artworks: showArtworks,
       } = data.artwork.contextGrids[0]
 
       expect(showTitle).toEqual("Other works from Cool Show")
       expect(showCtaTitle).toEqual("View all works from the booth")
-      expect(showCtaDestination).toEqual("/show/cool-show")
+      expect(showctaHref).toEqual("/show/cool-show")
       expect(showArtworks.edges.map(({ node }) => node.id)).toEqual([
         "showArtwork1",
         "showArtwork2",
@@ -151,13 +151,13 @@ describe("Show Context", () => {
       const {
         title: artistTitle,
         ctaTitle: artistCtaTitle,
-        ctaDestination: artistCtaDestination,
+        ctaHref: artistctaHref,
         artworks: artistArtworks,
       } = data.artwork.contextGrids[1]
 
       expect(artistTitle).toEqual("Other works by Andy Warhol")
       expect(artistCtaTitle).toEqual("View all works by Andy Warhol")
-      expect(artistCtaDestination).toEqual("/artist/andy-warhol")
+      expect(artistctaHref).toEqual("/artist/andy-warhol")
       expect(artistArtworks.edges.map(({ node }) => node.id)).toEqual([
         "artwork1",
         "artwork2",
@@ -167,13 +167,13 @@ describe("Show Context", () => {
       const {
         title: relatedTitle,
         ctaTitle: relatedCtaTitle,
-        ctaDestination: relatedCtaDestination,
+        ctaHref: relatedctaHref,
         artworks: relatedArtworks,
       } = data.artwork.contextGrids[2]
 
       expect(relatedTitle).toEqual("Related works")
       expect(relatedCtaTitle).toEqual(null)
-      expect(relatedCtaDestination).toEqual(null)
+      expect(relatedctaHref).toEqual(null)
       expect(relatedArtworks.edges.map(({ node }) => node.id)).toEqual([
         "relatedArtwork1",
         "relatedArtwork2",

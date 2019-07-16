@@ -1,8 +1,8 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 import {
-  ContextGridType,
+  ArtworkContextGridType,
   formDefaultGravityArgs,
-} from "schema/artwork/contextGrids"
+} from "schema/artwork/artworkContextGrids"
 import { artworkConnection } from "schema/artwork"
 import { connectionFromArraySlice } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
@@ -12,7 +12,7 @@ export const ShowArtworkGridType = new GraphQLObjectType<
   any
 >({
   name: "ShowArtworkGrid",
-  interfaces: [ContextGridType],
+  interfaces: [ArtworkContextGridType],
   fields: () => ({
     title: {
       type: GraphQLString,
@@ -28,7 +28,7 @@ export const ShowArtworkGridType = new GraphQLObjectType<
           : "View all works from the show"
       },
     },
-    ctaDestination: {
+    ctaHref: {
       type: GraphQLString,
       resolve: ({ show }) => {
         return `/show/${show.id}`

@@ -1,8 +1,8 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 import {
-  ContextGridType,
+  ArtworkContextGridType,
   formDefaultGravityArgs,
-} from "schema/artwork/contextGrids"
+} from "schema/artwork/artworkContextGrids"
 import { artworkConnection } from "schema/artwork"
 import { connectionFromArraySlice } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
@@ -13,7 +13,7 @@ export const AuctionArtworkGridType = new GraphQLObjectType<
   any
 >({
   name: "AuctionArtworkGrid",
-  interfaces: [ContextGridType],
+  interfaces: [ArtworkContextGridType],
   fields: () => ({
     title: {
       type: GraphQLString,
@@ -27,7 +27,7 @@ export const AuctionArtworkGridType = new GraphQLObjectType<
         return "View all works from the auction"
       },
     },
-    ctaDestination: {
+    ctaHref: {
       type: GraphQLString,
       resolve: ({ sale }) => {
         return `/auction/${sale.id}`
@@ -45,8 +45,8 @@ export const AuctionArtworkGridType = new GraphQLObjectType<
 
         return saleArtworksLoader(id, gravityArgs)
           .then(({ body }) => map(body, "artwork"))
-          .then(body => {
-            return connectionFromArraySlice(body, options, {
+          .then(artworks => {
+            return connectionFromArraySlice(artworks, options, {
               arrayLength: eligible_sale_artworks_count,
               sliceStart: offset,
             })

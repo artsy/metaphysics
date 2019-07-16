@@ -810,10 +810,10 @@ type Artist implements Node & Searchable {
   marketingCollections(size: Int): [MarketingCollection]
 }
 
-type ArtistArtworkGrid implements ContextGrid {
+type ArtistArtworkGrid implements ArtworkContextGrid {
   title: String
   ctaTitle: String
-  ctaDestination: String
+  ctaHref: String
   artworks(
     after: String
     first: Int
@@ -1280,7 +1280,7 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Returns the associated Fair/Sale/PartnerShow
   context: ArtworkContext
-  contextGrids: [ContextGrid]
+  contextGrids: [ArtworkContextGrid]
   cultural_maker: String
   date: String
   description(format: Format): String
@@ -1744,6 +1744,19 @@ type ArtworkContextFair {
     keyword_match_exact: Boolean
   ): FilterArtworks
   sponsoredContent: FairSponsoredContent
+}
+
+# A specific grid.
+interface ArtworkContextGrid {
+  title: String
+  ctaTitle: String
+  ctaHref: String
+  artworks(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
 }
 
 type ArtworkContextPartnerShow implements Node {
@@ -2290,7 +2303,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
 
   # Returns the associated Fair/Sale/PartnerShow
   context: ArtworkContext
-  contextGrids: [ContextGrid]
+  contextGrids: [ArtworkContextGrid]
   cultural_maker: String
   date: String
   description(format: Format): String
@@ -2633,10 +2646,10 @@ type AttributionClass {
   longDescription: String
 }
 
-type AuctionArtworkGrid implements ContextGrid {
+type AuctionArtworkGrid implements ArtworkContextGrid {
   title: String
   ctaTitle: String
-  ctaDestination: String
+  ctaHref: String
   artworks(
     after: String
     first: Int
@@ -4568,19 +4581,6 @@ type ConsignmentSubmissionEdge {
 
   # A cursor for use in pagination
   cursor: String!
-}
-
-# A specific grid.
-interface ContextGrid {
-  title: String
-  ctaTitle: String
-  ctaDestination: String
-  artworks(
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): ArtworkConnection
 }
 
 type Convection {
@@ -8847,10 +8847,10 @@ type PartnerArtistEdge {
   sortable_id: String
 }
 
-type PartnerArtworkGrid implements ContextGrid {
+type PartnerArtworkGrid implements ArtworkContextGrid {
   title: String
   ctaTitle: String
-  ctaDestination: String
+  ctaHref: String
   artworks(
     after: String
     first: Int
@@ -9989,10 +9989,10 @@ enum RelatedArtistsKind {
   CONTEMPORARY
 }
 
-type RelatedArtworkGrid implements ContextGrid {
+type RelatedArtworkGrid implements ArtworkContextGrid {
   title: String
   ctaTitle: String
-  ctaDestination: String
+  ctaHref: String
   artworks(
     after: String
     first: Int
@@ -11001,10 +11001,10 @@ type Show implements Node {
   ): ShowFollowArtistConnection
 }
 
-type ShowArtworkGrid implements ContextGrid {
+type ShowArtworkGrid implements ArtworkContextGrid {
   title: String
   ctaTitle: String
-  ctaDestination: String
+  ctaHref: String
   artworks(
     after: String
     first: Int

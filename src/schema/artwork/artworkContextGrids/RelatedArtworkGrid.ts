@@ -1,5 +1,5 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
-import { ContextGridType } from "schema/artwork/contextGrids"
+import { ArtworkContextGridType } from "schema/artwork/artworkContextGrids"
 import { artworkConnection } from "schema/artwork"
 import { connectionFromArraySlice } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
@@ -12,7 +12,7 @@ export const RelatedArtworkGridType = new GraphQLObjectType<
   any
 >({
   name: "RelatedArtworkGrid",
-  interfaces: [ContextGridType],
+  interfaces: [ArtworkContextGridType],
   fields: () => ({
     title: {
       type: GraphQLString,
@@ -26,7 +26,7 @@ export const RelatedArtworkGridType = new GraphQLObjectType<
         return null
       },
     },
-    ctaDestination: {
+    ctaHref: {
       type: GraphQLString,
       resolve: () => {
         return null

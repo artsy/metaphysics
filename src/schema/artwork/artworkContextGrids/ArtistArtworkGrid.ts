@@ -1,8 +1,8 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 import {
-  ContextGridType,
+  ArtworkContextGridType,
   formDefaultGravityArgs,
-} from "schema/artwork/contextGrids"
+} from "schema/artwork/artworkContextGrids"
 import { artworkConnection } from "schema/artwork"
 import { connectionFromArraySlice } from "graphql-relay"
 import { artistArtworkArrayLength } from "schema/artist"
@@ -13,7 +13,7 @@ export const ArtistArtworkGridType = new GraphQLObjectType<
   any
 >({
   name: "ArtistArtworkGrid",
-  interfaces: [ContextGridType],
+  interfaces: [ArtworkContextGridType],
   fields: () => ({
     title: {
       type: GraphQLString,
@@ -29,7 +29,7 @@ export const ArtistArtworkGridType = new GraphQLObjectType<
         return `View all works by ${artist.name}`
       },
     },
-    ctaDestination: {
+    ctaHref: {
       type: GraphQLString,
       resolve: ({ artist }) => {
         if (!artist) return null

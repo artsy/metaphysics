@@ -38,8 +38,8 @@ const resolveType = data => {
   return data.gridType
 }
 
-export const ContextGridType = new GraphQLInterfaceType({
-  name: "ContextGrid",
+export const ArtworkContextGridType = new GraphQLInterfaceType({
+  name: "ArtworkContextGrid",
   description: "A specific grid.",
   fields: () => ({
     title: {
@@ -48,7 +48,7 @@ export const ContextGridType = new GraphQLInterfaceType({
     ctaTitle: {
       type: GraphQLString,
     },
-    ctaDestination: {
+    ctaHref: {
       type: GraphQLString,
     },
     artworks: {
@@ -59,8 +59,8 @@ export const ContextGridType = new GraphQLInterfaceType({
   resolveType,
 })
 
-export const ContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
-  type: new GraphQLList(ContextGridType),
+export const ArtworkContextGrids: GraphQLFieldConfig<any, ResolverContext> = {
+  type: new GraphQLList(ArtworkContextGridType),
   resolve: async (
     artwork,
     _options,

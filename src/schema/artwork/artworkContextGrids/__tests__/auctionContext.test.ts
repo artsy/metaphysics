@@ -12,7 +12,7 @@ describe("Default Context", () => {
         contextGrids {
           title
           ctaTitle
-          ctaDestination
+          ctaHref
           artworks(first: 2) {
             edges {
               node {
@@ -115,13 +115,13 @@ describe("Default Context", () => {
       const {
         title,
         ctaTitle,
-        ctaDestination,
+        ctaHref,
         artworks,
       } = data.artwork.contextGrids[0]
 
       expect(title).toEqual("Other works from Phillips Auction")
       expect(ctaTitle).toEqual("View all works from the auction")
-      expect(ctaDestination).toEqual("/auction/phillips-auction")
+      expect(ctaHref).toEqual("/auction/phillips-auction")
       expect(artworks.edges.length).toEqual(2)
     })
   })
@@ -142,13 +142,13 @@ describe("Default Context", () => {
       const {
         title,
         ctaTitle,
-        ctaDestination,
+        ctaHref,
         artworks,
       } = data.artwork.contextGrids[0]
 
       expect(title).toEqual("Other works by Andy Warhol")
       expect(ctaTitle).toEqual("View all works by Andy Warhol")
-      expect(ctaDestination).toEqual("/artist/andy-warhol")
+      expect(ctaHref).toEqual("/artist/andy-warhol")
       expect(artworks.edges.map(({ node }) => node.id)).toEqual([
         "artwork1",
         "artwork2",

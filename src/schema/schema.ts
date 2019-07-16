@@ -98,11 +98,11 @@ import { BuyOrderType, OfferOrderType } from "./ecommerce/types/order"
 import { AddInitialOfferToOrderMutation } from "./ecommerce/add_initial_offer_to_order_mutation"
 import { SearchableItem } from "./SearchableItem"
 import ArtworkAttributionClasses from "./artworkAttributionClasses"
-import { ArtistArtworkGridType } from "./artwork/contextGrids/ArtistArtworkGrid"
-import { AuctionArtworkGridType } from "./artwork/contextGrids/AuctionArtworkGrid"
-import { PartnerArtworkGridType } from "./artwork/contextGrids/PartnerArtworkGrid"
-import { RelatedArtworkGridType } from "./artwork/contextGrids/RelatedArtworkGrid"
-import { ShowArtworkGridType } from "./artwork/contextGrids/ShowArtworkGrid"
+import { ArtistArtworkGridType } from "./artwork/artworkContextGrids/ArtistArtworkGrid"
+import { AuctionArtworkGridType } from "./artwork/artworkContextGrids/AuctionArtworkGrid"
+import { PartnerArtworkGridType } from "./artwork/artworkContextGrids/PartnerArtworkGrid"
+import { RelatedArtworkGridType } from "./artwork/artworkContextGrids/RelatedArtworkGrid"
+import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGrid"
 const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
 // TODO: Remove this any
