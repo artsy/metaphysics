@@ -6,14 +6,14 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import cached from "./fields/cached"
-import { GravityIDFields } from "./object_identification"
+import { InternalIDFields } from "./object_identification"
 import { LocationType } from "schema/location"
 import { ResolverContext } from "types/graphql"
 
 export const UserType = new GraphQLObjectType<any, ResolverContext>({
   name: "User",
   fields: () => ({
-    ...GravityIDFields,
+    ...InternalIDFields,
     cached,
     name: {
       description: "The given name of the user.",

@@ -2,7 +2,7 @@ import _ from "lodash"
 import cached from "./fields/cached"
 import Partners from "./partners"
 import CategoryType from "./input_fields/category_type"
-import { IDFields } from "./object_identification"
+import { SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -14,7 +14,7 @@ import { ResolverContext } from "types/graphql"
 const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerCategory",
   fields: () => ({
-    ...IDFields,
+    ...SlugAndInternalIDFields,
     cached,
     category_type: CategoryType,
     name: {

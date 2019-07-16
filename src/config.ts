@@ -1,4 +1,5 @@
 import chalk from "chalk"
+import xapp from "@artsy/xapp"
 
 require("dotenv").config({
   path: require("path").join(process.cwd(), ".env"),
@@ -175,8 +176,9 @@ export default {
   GRAVITY_API_URL,
   GRAVITY_ID,
   GRAVITY_SECRET,
-  // Gets set from src/index.js
-  GRAVITY_XAPP_TOKEN: null as string | null,
+  // Gets set (+ refreshed) from src/index.js.
+  // Initially set from library for hot-reloading.
+  GRAVITY_XAPP_TOKEN: xapp.token,
   KAWS_API_BASE,
   HMAC_SECRET: HMAC_SECRET as string,
   IMPULSE_API_BASE,

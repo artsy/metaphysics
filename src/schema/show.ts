@@ -27,7 +27,7 @@ import Image, { getDefault, normalizeImageData } from "./image"
 import PartnerShowEventType from "./partner_show_event"
 import { connectionWithCursorInfo } from "schema/fields/pagination"
 import { filterArtworksWithParams } from "schema/filter_artworks"
-import { GravityIDFields, NodeInterface } from "./object_identification"
+import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -95,7 +95,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
   name: "Show",
   interfaces: [NodeInterface],
   fields: () => ({
-    ...GravityIDFields,
+    ...SlugAndInternalIDFields,
     cached,
     artists: {
       description: "The Artists presenting in this show",
