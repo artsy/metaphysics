@@ -30,7 +30,7 @@ const schema = transformSchema(originalSchema, [
 ])
 
 describe(ReplaceCommerceDateTimeType, () => {
-  it("renames fields on object types", async () => {
+  it("replaces CommerceDateTime fields", async () => {
     const data = await runQueryOrThrow({
       schema,
       source: gql`
