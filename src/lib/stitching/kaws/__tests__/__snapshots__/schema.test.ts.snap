@@ -106,6 +106,7 @@ type Query {
   marketingCollections(category: String, randomizationSeed: String, size: Int, isFeaturedArtistContent: Boolean, showOnEditorial: Boolean, artistID: String): [MarketingCollection!]!
   marketingCategories: [MarketingCollectionCategory!]!
   marketingCollection(slug: String!): MarketingCollection
+  marketingHubCollections: [MarketingCollection!]!
 }
 "
 `;

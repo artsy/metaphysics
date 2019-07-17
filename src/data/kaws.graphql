@@ -111,4 +111,5 @@ type Query {
   ): [Collection!]!
   categories: [CollectionCategory!]!
   collection(slug: String!): Collection
+  hubCollections: [Collection!]!
 }
