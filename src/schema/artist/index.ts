@@ -75,7 +75,7 @@ import { deprecate } from "lib/deprecation"
 const auctionRecordsTrusted = require("lib/auction_records_trusted.json")
   .artists
 
-const artistArtworkArrayLength = (artist, filter) => {
+export const artistArtworkArrayLength = (artist, filter) => {
   let length
   if (first(filter) === "for_sale") {
     length = artist.forsale_artworks_count

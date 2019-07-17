@@ -49,6 +49,7 @@ import { listPrice } from "schema/fields/listPrice"
 import { deprecate } from "lib/deprecation"
 import Show from "schema/show"
 import ShowSort from "schema/sorts/show_sort"
+import { ArtworkContextGrids } from "./artworkContextGrids"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -112,7 +113,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }).then(({ results }) => results),
       },
       availability: { type: GraphQLString },
-
       can_share_image: {
         type: GraphQLBoolean,
         deprecationReason: deprecate({
@@ -169,6 +169,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       context: Context,
+      contextGrids: ArtworkContextGrids,
       cultural_maker: { type: GraphQLString },
       date: { type: GraphQLString },
       description: markdown(({ blurb }) => blurb),
@@ -196,9 +197,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       edition_sets: {
         type: new GraphQLList(EditionSet.type),
-        args: {
-          sort: EditionSetSorts,
-        },
+        args: { sort: EditionSetSorts },
         resolve: ({ edition_sets }, { sort }) => {
           if (sort) {
             // Only ascending price sort supported currently.
@@ -221,12 +220,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       fair: {
         type: Fair.type,
         resolve: ({ id }, _options, { relatedFairsLoader }) => {
-          return relatedFairsLoader({ artwork: [id], size: 1 }).then(_.first)
+          return relatedFairsLoader({
+            artwork: [id],
+            size: 1,
+          }).then(_.first)
         },
       },
       height: {
-        type: GraphQLString,
-        // See note on `metric` field.
+        type: GraphQLString, // See note on `metric` field.
         deprecationReason: deprecate({
           inVersion: 2,
           preferUsageOf: "dimensions",
@@ -252,7 +253,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
               limit: 1,
             }).then(({ results }) => results),
           ]).then(([{ body: shows }, articles]) => {
-            const highlightedShows = enhance(shows, { highlight_type: "Show" })
+            const highlightedShows = enhance(shows, {
+              highlight_type: "Show",
+            })
             const highlightedArticles = enhance(articles, {
               highlight_type: "Article",
             })
@@ -479,8 +482,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       manufacturer: markdown(),
       medium: { type: GraphQLString },
       metric: {
-        type: GraphQLString,
-        // Used for Eigen compatibility, see conversation at: https://github.com/artsy/metaphysics/pull/1350
+        type: GraphQLString, // Used for Eigen compatibility, see conversation at: https://github.com/artsy/metaphysics/pull/1350
         deprecationReason: deprecate({
           inVersion: 2,
           preferUsageOf: "dimensions",
@@ -793,8 +795,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: artwork => (isEmbeddedVideo(artwork) ? null : artwork.website),
       },
       width: {
-        type: GraphQLString,
-        // See note on `metric` field.
+        type: GraphQLString, // See note on `metric` field.
         deprecationReason: deprecate({
           inVersion: 2,
           preferUsageOf: "dimensions",
@@ -918,7 +919,9 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The slug or ID of the Artwork",
     },
   },
-  resolve: (_source, { id }, { artworkLoader }) => artworkLoader(id),
+  resolve: (_source, { id }, { artworkLoader }) => {
+    return artworkLoader(id)
+  },
 }
 
 export default Artwork

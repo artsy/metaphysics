@@ -810,6 +810,18 @@ type Artist implements Node & Searchable {
   marketingCollections(size: Int): [MarketingCollection]
 }
 
+type ArtistArtworkGrid implements ArtworkContextGrid {
+  title: String
+  ctaTitle: String
+  ctaHref: String
+  artworks(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
+}
+
 enum ArtistArtworksFilters {
   IS_FOR_SALE
   IS_NOT_FOR_SALE
@@ -1268,6 +1280,7 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Returns the associated Fair/Sale/PartnerShow
   context: ArtworkContext
+  contextGrids: [ArtworkContextGrid]
   cultural_maker: String
   date: String
   description(format: Format): String
@@ -1720,6 +1733,19 @@ type ArtworkContextFair {
     keyword_match_exact: Boolean
   ): FilterArtworks
   sponsoredContent: FairSponsoredContent
+}
+
+# A specific grid.
+interface ArtworkContextGrid {
+  title: String
+  ctaTitle: String
+  ctaHref: String
+  artworks(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
 }
 
 type ArtworkContextPartnerShow implements Node {
@@ -2263,6 +2289,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
 
   # Returns the associated Fair/Sale/PartnerShow
   context: ArtworkContext
+  contextGrids: [ArtworkContextGrid]
   cultural_maker: String
   date: String
   description(format: Format): String
@@ -2592,6 +2619,18 @@ type AttributionClass {
 
   # Long descriptive phrase used as companion for short_description
   longDescription: String
+}
+
+type AuctionArtworkGrid implements ArtworkContextGrid {
+  title: String
+  ctaTitle: String
+  ctaHref: String
+  artworks(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
 }
 
 # In centimeters.
@@ -8794,6 +8833,18 @@ type PartnerArtistEdge {
   sortable_id: String
 }
 
+type PartnerArtworkGrid implements ArtworkContextGrid {
+  title: String
+  ctaTitle: String
+  ctaHref: String
+  artworks(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
+}
+
 type PartnerCategory {
   # A globally unique ID.
   id: ID!
@@ -9921,6 +9972,18 @@ enum RelatedArtistsKind {
   CONTEMPORARY
 }
 
+type RelatedArtworkGrid implements ArtworkContextGrid {
+  title: String
+  ctaTitle: String
+  ctaHref: String
+  artworks(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
+}
+
 input RequestCredentialsForAssetUploadInput {
   # The gemini template you want to request
   name: String!
@@ -10918,6 +10981,18 @@ type Show implements Node {
     before: String
     last: Int
   ): ShowFollowArtistConnection
+}
+
+type ShowArtworkGrid implements ArtworkContextGrid {
+  title: String
+  ctaTitle: String
+  ctaHref: String
+  artworks(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtworkConnection
 }
 
 # A connection to a list of items.
