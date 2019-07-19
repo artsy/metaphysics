@@ -775,6 +775,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       to_s: {
         type: GraphQLString,
+        deprecationReason: deprecate({
+          inVersion: 2,
+          reason: "Unused field named using Ruby idiom.",
+        }),
         resolve: ({ artist, title, date, partner }) => {
           return _.compact([
             artist && artist.name,
