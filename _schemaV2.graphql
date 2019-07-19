@@ -1406,6 +1406,9 @@ type Artwork implements Node & Searchable & Sellable {
   signature(format: Format): String
   title: String
   to_s: String
+    @deprecated(
+      reason: "Unused field named using Ruby idiom. [Will be removed in v2]"
+    )
 
   # Whether this Artwork is Published of not
   published: Boolean!
@@ -2415,6 +2418,9 @@ type ArtworkItem implements Node & Searchable & Sellable {
   signature(format: Format): String
   title: String
   to_s: String
+    @deprecated(
+      reason: "Unused field named using Ruby idiom. [Will be removed in v2]"
+    )
 
   # Whether this Artwork is Published of not
   published: Boolean!

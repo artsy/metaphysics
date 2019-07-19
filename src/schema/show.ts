@@ -362,7 +362,6 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         preferUsageOf: "is_displayable",
       }),
     },
-
     end_at: date,
     events: {
       description: "Events from the partner that runs this show",
