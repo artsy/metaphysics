@@ -17,7 +17,7 @@
   "path-intellisense.mappings": {
     "/": "${workspaceRoot}",
     "lib": "${workspaceRoot}/lib",
-    "schema": "${workspaceRoot}/schema",
+    "schema": "${workspaceRoot}/schema/v1",
     "test": "${workspaceRoot}/test"
   },
   "typescript.tsdk": "./node_modules/typescript/lib",

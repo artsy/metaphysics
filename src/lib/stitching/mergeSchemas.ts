@@ -10,7 +10,7 @@ import { executableKawsSchema } from "lib/stitching/kaws/schema"
 import { kawsStitchingEnvironment } from "lib/stitching/kaws/stitching"
 import config from "config"
 
-import localSchema from "schema/schema"
+import localSchema from "schema/v1/schema"
 import { GraphQLSchema } from "graphql"
 import { exchangeStitchingEnvironment } from "./exchange/stitching"
 import { executableVortexSchema } from "lib/stitching/vortex/schema"
