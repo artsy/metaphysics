@@ -64,7 +64,7 @@ const HomePageHeroUnitType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       type: GraphQLString,
-      resolve: ({ title_image_url, title_image_retina_url, retina }) => {
+      resolve: ({ title_image_url, title_image_retina_url }, { retina }) => {
         return retina ? title_image_retina_url : title_image_url
       },
     },
