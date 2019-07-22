@@ -1,6 +1,5 @@
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import {
-  assign,
   compact,
   defaults,
   first,
