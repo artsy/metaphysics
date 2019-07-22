@@ -7369,10 +7369,9 @@ type MarketingCollectionCategory {
 }
 
 type MarketingCollectionGroup {
-  id: ID!
   groupType: MarketingGroupTypes!
   name: String!
-  members: [String!]!
+  members: [MarketingCollection!]!
 }
 
 type MarketingCollectionQuery {
@@ -7415,6 +7414,13 @@ enum MarketingGroupTypes {
   ArtistSeries
   FeaturedCollections
   OtherCollections
+}
+
+type MarketingImage {
+  id: ID!
+  small: String!
+  medium: String!
+  large: String!
 }
 
 type Me implements Node {
