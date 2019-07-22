@@ -28,6 +28,7 @@ import {
   GraphQLInt,
   GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
@@ -41,7 +42,7 @@ const kind = ({ artists, fair }) => {
   if (artists.length === 1) return "solo"
 }
 
-const artworksArgs = {
+const artworksArgs: GraphQLFieldConfigArgumentMap = {
   exclude: {
     type: new GraphQLList(GraphQLString),
     description:
@@ -49,7 +50,7 @@ const artworksArgs = {
   },
   for_sale: {
     type: GraphQLBoolean,
-    default: false,
+    defaultValue: false,
   },
   published: {
     type: GraphQLBoolean,
