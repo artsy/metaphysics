@@ -204,7 +204,7 @@ type AnalyticsPartnerInquiryStats {
 # Sales stats of a partner
 type AnalyticsPartnerSalesStats {
   orderCount: Int!
-  orderResponseTime: Int!
+  orderResponseTime: Int
   partnerId: String!
   period: AnalyticsQueryPeriodEnum!
 
@@ -272,7 +272,7 @@ type AnalyticsPartnerStats {
   pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
   partnerId: String!
 
-  # Artworks, shows, or artists ranked by views. Capped at 10 by the underlying sql query.
+  # Artworks, shows, or artists ranked by views. Capped at 20 by the underlying sql query.
   rankedStats(
     # Returns the elements in the list that come after the specified cursor.
     after: String
