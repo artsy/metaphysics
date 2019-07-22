@@ -1793,7 +1793,7 @@ type ArtworkContextPartnerShow implements Node {
   artworks(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
-    for_sale: Boolean
+    for_sale: Boolean = false
     published: Boolean = true
     all: Boolean
     page: Int = 1
@@ -1809,7 +1809,7 @@ type ArtworkContextPartnerShow implements Node {
   artworksConnection(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
-    for_sale: Boolean
+    for_sale: Boolean = false
     published: Boolean = true
     after: String
     first: Int
@@ -6353,7 +6353,7 @@ type HighlightedShow implements Node {
   artworks(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
-    for_sale: Boolean
+    for_sale: Boolean = false
     published: Boolean = true
     all: Boolean
     page: Int = 1
@@ -6369,7 +6369,7 @@ type HighlightedShow implements Node {
   artworks_connection(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
-    for_sale: Boolean
+    for_sale: Boolean = false
     published: Boolean = true
     after: String
     first: Int
@@ -9141,7 +9141,7 @@ type PartnerShow implements Node {
   artworks(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
-    for_sale: Boolean
+    for_sale: Boolean = false
     published: Boolean = true
     all: Boolean
     page: Int = 1
@@ -9157,7 +9157,7 @@ type PartnerShow implements Node {
   artworksConnection(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
-    for_sale: Boolean
+    for_sale: Boolean = false
     published: Boolean = true
     after: String
     first: Int
@@ -10931,7 +10931,7 @@ type Show implements Node {
   artworks(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
-    for_sale: Boolean
+    for_sale: Boolean = false
     published: Boolean = true
     all: Boolean
     page: Int = 1
@@ -10947,7 +10947,7 @@ type Show implements Node {
   artworks_connection(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
-    for_sale: Boolean
+    for_sale: Boolean = false
     published: Boolean = true
     after: String
     first: Int

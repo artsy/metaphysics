@@ -316,16 +316,14 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           }).then(articles => first(articles.results)),
       },
       biography_blurb: {
-        args: assign(
-          {
-            partner_bio: {
-              type: GraphQLBoolean,
-              description: "If true, will return featured bio over Artsy one.",
-              defaultValue: false,
-            },
+        args: {
+          partner_bio: {
+            type: GraphQLBoolean,
+            description: "If true, will return featured bio over Artsy one.",
+            defaultValue: false,
           },
-          markdown().args
-        ),
+          ...markdown().args,
+        },
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "ArtistBlurb",
           fields: {
