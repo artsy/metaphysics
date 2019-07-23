@@ -1,8 +1,15 @@
-export function deprecate(
-  options: { inVersion: 2 } & (
-    | { preferUsageOf: string; reason?: undefined }
-    | { reason: string; preferUsageOf?: undefined })
-) {
+import {
+  GraphQLObjectType,
+  GraphQLFieldMap,
+  Thunk,
+  GraphQLUnionType,
+} from "graphql"
+
+type DeprecationOptions = { inVersion: 2 } & (
+  | { preferUsageOf: string; reason?: undefined }
+  | { reason: string; preferUsageOf?: undefined })
+
+export function deprecate(options: DeprecationOptions) {
   const reason = options.reason || `Prefer to use \`${options.preferUsageOf}\`.`
   return `${reason} [Will be removed in v${options.inVersion}]`
 }
@@ -29,4 +36,57 @@ export function shouldBeRemoved(options: {
   } else {
     return false
   }
+}
+
+export function deprecateType<
+  T extends GraphQLObjectType<any, any> | GraphQLUnionType
+>(options: DeprecationOptions, type: T): T {
+  // This is only so that codemods can easily recognize and drop types.
+  if (type instanceof GraphQLUnionType) {
+    return type
+  }
+
+  const deprecationReason = deprecate(
+    options.preferUsageOf
+      ? {
+          inVersion: options.inVersion,
+          reason: `The \`${
+            type.name
+          }\` type has been deprecated. Prefer to use the \`${
+            options.preferUsageOf
+          }\` type instead.`,
+        }
+      : options
+  )
+  // TODO: This is the code for newer graphql-js versions.
+  // const fields =
+  //   (type as any)._fields as Thunk<GraphQLFieldMap<any, any>>)
+  // if (typeof fields === "function") {
+  //   ;(type as any)._fields = () => deprecateFields(fields())
+  // } else {
+  //   ;(type as any)._fields = deprecateFields(fields)
+  // }
+  const fields = (type as any)._typeConfig.fields as Thunk<
+    GraphQLFieldMap<any, any>
+  >
+  if (typeof fields === "function") {
+    ;(type as any)._typeConfig.fields = () =>
+      deprecateFields(deprecationReason, fields())
+  } else {
+    ;(type as any)._typeConfig.fields = deprecateFields(
+      deprecationReason,
+      fields
+    )
+  }
+  return type
+}
+
+function deprecateFields(
+  deprecationReason: string,
+  fields: GraphQLFieldMap<any, any>
+) {
+  Object.keys(fields).forEach(fieldName => {
+    fields[fieldName] = { ...fields[fieldName], deprecationReason }
+  })
+  return fields
 }

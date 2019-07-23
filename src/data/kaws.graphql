@@ -51,10 +51,9 @@ type CollectionCategory {
 }
 
 type CollectionGroup {
-  id: ID!
   groupType: GroupTypes!
   name: String!
-  members: [String!]!
+  members: [Collection!]!
 }
 
 type CollectionQuery {
@@ -98,6 +97,13 @@ enum GroupTypes {
   ArtistSeries
   FeaturedCollections
   OtherCollections
+}
+
+type Image {
+  id: ID!
+  small: String!
+  medium: String!
+  large: String!
 }
 
 type Query {

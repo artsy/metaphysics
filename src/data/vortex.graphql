@@ -111,11 +111,7 @@ enum GroupedStatsObjectTypeEnum {
 """
 A grouped stat item: country or device etc.
 """
-union GroupedStatsUnion =
-    VisitorsByCountry
-  | VisitorsByDevice
-  | VisitorsByLandingPage
-  | VisitorsByReferral
+union GroupedStatsUnion = VisitorsByCountry | VisitorsByDevice | VisitorsByLandingPage | VisitorsByReferral
 
 """
 A histogram bin
@@ -204,7 +200,7 @@ Sales stats of a partner
 """
 type PartnerSalesStats {
   orderCount: Int!
-  orderResponseTime: Int!
+  orderResponseTime: Int
   partnerId: String!
   period: QueryPeriodEnum!
 
@@ -279,7 +275,7 @@ type PartnerStats {
   partnerId: String!
 
   """
-  Artworks, shows, or artists ranked by views. Capped at 10 by the underlying sql query.
+  Artworks, shows, or artists ranked by views. Capped at 20 by the underlying sql query.
   """
   rankedStats(
     """
@@ -333,14 +329,12 @@ type PartnerStats {
     Returns the last _n_ elements from the list.
     """
     last: Int
-  ): RankedStatsConnection
-    @deprecated(reason: "Use rankedStats(objectType: ) instead")
+  ): RankedStatsConnection @deprecated(reason: "Use rankedStats(objectType: ) instead")
 
   """
   Number of unique visitors
   """
-  uniqueVisitors(period: QueryPeriodEnum!): Int
-    @deprecated(reason: "Use audience() { uniqueVisitors } instead")
+  uniqueVisitors(period: QueryPeriodEnum!): Int @deprecated(reason: "Use audience() { uniqueVisitors } instead")
 }
 
 """
@@ -491,11 +485,7 @@ type Query {
   """
   Pricing Context Histograms
   """
-  pricingContext(
-    artistId: String!
-    category: PricingContextCategoryEnum!
-    sizeScore: Int!
-  ): PricingContext
+  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, sizeScore: Int!): PricingContext
 }
 
 enum QueryPeriodEnum {

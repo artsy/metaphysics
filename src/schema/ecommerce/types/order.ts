@@ -159,13 +159,13 @@ export const OrderInterface = new GraphQLInterfaceType({
     if (mode === "BUY") return BuyOrderType
     else if (mode === "OFFER") return OfferOrderType
   },
-  fields: () => orderFields,
+  fields: orderFields,
 })
 
 export const OfferOrderType = new GraphQLObjectType<any, ResolverContext>({
   name: "OfferOrder",
   interfaces: () => [OrderInterface],
-  fields: () => ({
+  fields: {
     ...orderFields,
     myLastOffer: {
       type: OfferType,
@@ -183,7 +183,7 @@ export const OfferOrderType = new GraphQLObjectType<any, ResolverContext>({
       type: OfferConnection,
       description: "List of submitted offers made on this order so far",
     },
-  }),
+  },
   isTypeOf: () => true,
 })
 
