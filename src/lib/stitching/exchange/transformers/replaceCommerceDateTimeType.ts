@@ -14,7 +14,7 @@ import {
   createResolveType,
   fieldToFieldConfig,
 } from "graphql-tools/dist/stitching/schemaRecreation"
-import dateField from "schema/fields/date"
+import dateField from "schema/v1/fields/date"
 
 type TypeWithSelectableFields =
   | GraphQLObjectType<any, any>

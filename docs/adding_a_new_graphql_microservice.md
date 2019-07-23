@@ -31,7 +31,7 @@ Let's pretend we're mapping a GraphQL API called `Three Body` but provides its o
    import fetch from "node-fetch"
    import urljoin from "url-join"
 
-   import { middlewareLink } from "../lib/middlewareLink"
+   import { middlewareLink } from "lib/middlewareLink"
    import { responseLoggerLink } from "../logLinkMiddleware"
 
    const { KAWS_API_BASE } = config

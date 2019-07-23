@@ -17,7 +17,7 @@ import {
 import now from "performance-now"
 import { stringify } from "qs"
 import { getPagingParameters } from "relay-cursor-paging"
-import { formatMarkdownValue } from "schema/fields/markdown"
+import { formatMarkdownValue } from "schema/v1/fields/markdown"
 
 // These are copied from the relay-cursor-paging lib
 // https://github.com/darthtrevino/relay-cursor-paging/blob/master/src/interfaces.ts

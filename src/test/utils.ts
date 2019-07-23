@@ -50,7 +50,7 @@ export const runQuery = (
     userID: undefined,
   }
 ) => {
-  const schema = require("schema").default
+  const schema = require("schema/v1").default
   return runQueryOrThrow({
     schema,
     source: query,
