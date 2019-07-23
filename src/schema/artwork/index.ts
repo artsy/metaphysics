@@ -522,7 +522,13 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       pickup_available: { type: GraphQLBoolean },
-      price: { type: GraphQLString },
+      price: {
+        type: GraphQLString,
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "sale_message",
+        }),
+      },
       priceCents: {
         deprecationReason: deprecate({
           inVersion: 2,
