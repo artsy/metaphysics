@@ -1,6 +1,5 @@
 import localSchema from "./schema"
 import { incrementalMergeSchemas } from "lib/stitching/mergeSchemas"
-import { transformToV2 } from "./v2"
 
 import config from "config"
 const { DISABLE_SCHEMA_STITCHING } = config
@@ -21,6 +20,5 @@ if (enableSchemaStitching) {
   }
 }
 export const schema = exportedSchema
-export const schemaV2 = transformToV2(exportedSchema)
 
 export default exportedSchema
