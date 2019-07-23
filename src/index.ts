@@ -8,7 +8,8 @@ import cors from "cors"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
-import { schema, schemaV2 } from "./schema/v1"
+import { schema } from "./schema/v1"
+import { schema as schemaV2 } from "./schema/v2"
 import moment from "moment"
 import morgan from "artsy-morgan"
 import raven from "raven"
@@ -156,7 +157,6 @@ function startApp(appSchema, path: string) {
     const graphqlHTTP = require("express-graphql")
     app.use(
       graphqlHTTP((req, res /*, params */) => {
-        console.log("Request from", path)
         const accessToken = req.headers["x-access-token"] as string | undefined
         const userID = req.headers["x-user-id"] as string | undefined
         const timezone = req.headers["x-timezone"] as string | undefined
