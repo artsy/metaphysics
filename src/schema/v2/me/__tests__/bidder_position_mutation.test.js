@@ -1,4 +1,4 @@
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import config from "config"
 
 const query = `

@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("ArtworkAttributionClasses type", () => {
   it("fetches artworkAttributionClasses", () => {
@@ -15,7 +15,7 @@ describe("ArtworkAttributionClasses type", () => {
       }
     `
 
-    return runV1Query(query).then(data => {
+    return runQuery(query).then(data => {
       expect(data!.artworkAttributionClasses[0].id).toBe("unique")
       expect(data!.artworkAttributionClasses[0].name).toBe("Unique")
       expect(data!.artworkAttributionClasses[0].shortDescription).toBe(

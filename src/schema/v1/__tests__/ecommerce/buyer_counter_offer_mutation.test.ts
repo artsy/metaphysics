@@ -1,4 +1,4 @@
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import gql from "lib/gql"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
@@ -40,7 +40,7 @@ describe("BuyerCounterOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runV1Query(mutation, context).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceBuyerCounterOffer.orderOrError.order).toEqual(
         sampleOrder({
           mode: "OFFER",
@@ -67,7 +67,7 @@ describe("BuyerCounterOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runV1Query(mutation, context).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceBuyerCounterOffer.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v1/test/utils"
 
 describe("UpdateConversationMutation", () => {
   it("sets from_last_viewed_message_id", () => {

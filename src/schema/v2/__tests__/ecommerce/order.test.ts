@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
@@ -24,7 +24,7 @@ describe("Order query", () => {
       }
     `
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.order).toEqual(
         sampleOrder({
           fulfillments: true,

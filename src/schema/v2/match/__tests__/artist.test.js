@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("MatchArtist", () => {
   it("queries match/artist for the term 'ok'", () => {
@@ -22,7 +22,7 @@ describe("MatchArtist", () => {
         },
       ])
 
-    return runV2Query(query, { matchArtistsLoader }).then(data => {
+    return runQuery(query, { matchArtistsLoader }).then(data => {
       expect(data).toEqual({
         match_artist: [
           { birthday: "1958", id: "han-myung-ok", name: "Han Myung-Ok" },

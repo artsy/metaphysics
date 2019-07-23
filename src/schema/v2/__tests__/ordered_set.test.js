@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("OrderedSet type", () => {
   it("fetches set by id", () => {
@@ -41,7 +41,7 @@ describe("OrderedSet type", () => {
       ),
     }
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         ordered_set: {
           id: "52dd3c2e4b8480091700027f",

@@ -24,7 +24,7 @@ import {
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
 import { deprecate } from "lib/deprecation"
-import { runV2QueryOrThrow } from "test/utils"
+import { runQueryOrThrow } from "schema/v2/test/utils"
 
 function createSchema({
   fields,
@@ -114,7 +114,7 @@ describe(transformToV2, () => {
         v2_someField: "a v2 value",
       },
     }
-    const data = await runV2QueryOrThrow({
+    const data = await runQueryOrThrow({
       schema: createSchema({
         fields: {
           fieldForV2: {
@@ -181,7 +181,7 @@ describe(transformToV2, () => {
         },
         interfaces: () => [iface],
       })
-      const data = await runV2QueryOrThrow({
+      const data = await runQueryOrThrow({
         schema: createSchema({
           fields: {
             node: {
@@ -216,7 +216,7 @@ describe(transformToV2, () => {
           id: "global id",
         },
       }
-      const data = await runV2QueryOrThrow({
+      const data = await runQueryOrThrow({
         schema: createSchema({
           fields: {
             fieldWithGlobalID: {
@@ -280,7 +280,7 @@ describe(transformToV2, () => {
             id: "id value from gravity",
           },
         }
-        const data = await runV2QueryOrThrow({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             fields: {
               fieldWithGravityResolver: {
@@ -324,7 +324,7 @@ describe(transformToV2, () => {
             _id: "internal id value from gravity",
           },
         }
-        const data = await runV2QueryOrThrow({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             fields: {
               fieldWithGravityResolver: {
@@ -374,7 +374,7 @@ describe(transformToV2, () => {
             _id: "mongo id",
           },
         }
-        const data = await runV2QueryOrThrow({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             fields: {
               fieldWithGravityResolver: {
@@ -447,7 +447,7 @@ describe(transformToV2, () => {
             id: "db id",
           },
         }
-        const data = await runV2QueryOrThrow({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             fields: {
               fieldWithNonGravityResolver: {
@@ -489,7 +489,7 @@ describe(transformToV2, () => {
             id: "db id",
           },
         }
-        const data = await runV2QueryOrThrow({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             stitchedTypePrefixes: ["Stitched"],
             fields: {
@@ -565,7 +565,7 @@ describe(transformToV2, () => {
             id: null,
           },
         }
-        const data = await runV2QueryOrThrow({
+        const data = await runQueryOrThrow({
           schema: createSchema({
             allowedNonGravityTypesWithNullableIDField: [
               "NonGravityType",

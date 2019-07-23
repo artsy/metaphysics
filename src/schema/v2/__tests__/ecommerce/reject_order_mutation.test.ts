@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
@@ -41,7 +41,7 @@ describe("Reject Order Mutation", () => {
       }
     `
 
-    return runV2Query(mutation, context).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.rejectOrder.orderOrError.order).toEqual(sampleOrder())
     })
   })

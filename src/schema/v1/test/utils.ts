@@ -43,13 +43,14 @@ export const runQueryOrThrow = (args: GraphQLArgs) => {
  *
  * @todo This assumes there will always be just 1 error, not sure how to handle this differently.
  */
-export const runQueryWithSchema = schema => (
+export const runQuery = (
   query,
   context: Partial<ResolverContext> = {
     accessToken: undefined,
     userID: undefined,
   }
 ) => {
+  const schema = require("schema/v1").default
   return runQueryOrThrow({
     schema,
     source: query,
@@ -63,9 +64,6 @@ export const runQueryWithSchema = schema => (
     },
   })
 }
-
-export const runV1Query = runQueryWithSchema(require("schema/v1").default)
-export const runV2Query = runQueryWithSchema(require("schema/v2").default)
 
 // This is an error class defined in https://github.com/apollographql/graphql-tools/blob/3f87d907af2ac97a32b5ab375bb97198ebfe9e2c/src/stitching/errors.ts#L87-L93
 declare class CombinedError extends Error {

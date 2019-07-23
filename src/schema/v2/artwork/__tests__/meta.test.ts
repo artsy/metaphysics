@@ -1,4 +1,4 @@
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("Meta", () => {
   const artworkData = {
@@ -37,7 +37,7 @@ describe("Meta", () => {
         }
       `
 
-      const data = await runV2Query(query, context as any)
+      const data = await runQuery(query, context as any)
 
       expect(data).toEqual({
         artwork: {
@@ -62,7 +62,7 @@ describe("Meta", () => {
         }
       `
 
-      const data = await runV2Query(query, context as any)
+      const data = await runQuery(query, context as any)
 
       expect(data).toEqual({
         artwork: {

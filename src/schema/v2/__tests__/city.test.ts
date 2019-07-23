@@ -26,7 +26,7 @@ jest.mock("../city/cityDataSortedByDisplayPreference.json", () => mockCities)
 jest.mock("lib/all.ts")
 jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
 
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import { MAX_GRAPHQL_INT, allViaLoader as _allViaLoader } from "lib/all"
 
@@ -47,7 +47,7 @@ describe("City", () => {
         }
       `
 
-      return runV2Query(query).then(result => {
+      return runQuery(query).then(result => {
         expect(result!.city).toEqual({
           name: "Sacramende",
         })
@@ -63,7 +63,7 @@ describe("City", () => {
           }
         }
       `
-      return runV2Query(query).catch(e =>
+      return runQuery(query).catch(e =>
         expect(e.message).toMatch(/City sacramundo not found in:/)
       )
     })
@@ -80,7 +80,7 @@ describe("City", () => {
         }
       `
 
-      return runV2Query(query).then(result => {
+      return runQuery(query).then(result => {
         expect(result!.city).toEqual({
           name: "Smallville",
         })
@@ -97,7 +97,7 @@ describe("City", () => {
         }
       `
 
-      return runV2Query(query).then(result => {
+      return runQuery(query).then(result => {
         expect(result!.city).toBeNull()
       })
     })
@@ -134,7 +134,7 @@ describe("City", () => {
     })
 
     it("resolves nearby shows", () => {
-      return runV2Query(query, context).then(result => {
+      return runQuery(query, context).then(result => {
         expect(result!.city).toEqual({
           name: "Sacramende",
           shows: {
@@ -156,7 +156,7 @@ describe("City", () => {
     })
 
     it("requests displayable shows, by default", async () => {
-      await runV2Query(query, context)
+      await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
       expect(gravityOptions).toMatchObject({ displayable: true })
@@ -164,20 +164,20 @@ describe("City", () => {
     })
 
     it("requests non-blocked discovery shows, by default", async () => {
-      await runV2Query(query, context)
+      await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
       expect(gravityOptions).toMatchObject({ include_discovery_blocked: false })
     })
 
     it("requests shows with location, by default", async () => {
-      await runV2Query(query, context)
+      await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
       expect(gravityOptions).toMatchObject({ has_location: true })
     })
     it("excludes fair booths, by default", async () => {
-      await runV2Query(query, context)
+      await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
       expect(gravityOptions).toMatchObject({ at_a_fair: false })
@@ -198,7 +198,7 @@ describe("City", () => {
           }
         }
       `
-      await runV2Query(query, context)
+      await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
       expect(gravityOptions).toMatchObject({
@@ -222,7 +222,7 @@ describe("City", () => {
           }
         }
       `
-      await runV2Query(query, context)
+      await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
       expect(gravityOptions).toMatchObject({
@@ -246,7 +246,7 @@ describe("City", () => {
           }
         }
       `
-      await runV2Query(query, context)
+      await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
       expect(gravityOptions).toMatchObject({
@@ -270,7 +270,7 @@ describe("City", () => {
           }
         }
       `
-      await runV2Query(query, context)
+      await runQuery(query, context)
 
       expect(context.showsWithHeadersLoader).not.toHaveBeenCalledWith(
         expect.objectContaining({
@@ -296,7 +296,7 @@ describe("City", () => {
             }
           }
         `
-        await runV2Query(query, context)
+        await runQuery(query, context)
         const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
         expect(gravityOptions).toMatchObject({ partner_types: ["Gallery"] })
@@ -317,7 +317,7 @@ describe("City", () => {
             }
           }
         `
-        await runV2Query(query, context)
+        await runQuery(query, context)
         const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
         expect(gravityOptions).toMatchObject({
@@ -340,7 +340,7 @@ describe("City", () => {
             }
           }
         `
-        await runV2Query(query, context)
+        await runQuery(query, context)
         const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
         expect(gravityOptions.partner_types).toBeUndefined()
@@ -363,7 +363,7 @@ describe("City", () => {
           }
         }
       `
-      await runV2Query(query, context)
+      await runQuery(query, context)
 
       expect(allViaLoader).toHaveBeenCalledWith(
         mockShowsLoader,
@@ -403,7 +403,7 @@ describe("City", () => {
         }
       `
 
-      return runV2Query(query, context).then(result => {
+      return runQuery(query, context).then(result => {
         expect(result!.city).toEqual({
           name: "Sacramende",
           fairs: {
@@ -436,7 +436,7 @@ describe("City", () => {
           }
         }
       `
-      await runV2Query(query, context)
+      await runQuery(query, context)
 
       expect(allViaLoader).toHaveBeenCalledWith(
         mockFairsLoader,
@@ -458,7 +458,7 @@ describe("City", () => {
         }
       `
 
-      const result = await runV2Query(query)
+      const result = await runQuery(query)
 
       expect(result!.city.sponsoredContent).toEqual({
         introText: "Lorem ipsum dolot sit amet",
@@ -496,7 +496,7 @@ describe("City", () => {
         }
       `
 
-      const result = await runV2Query(query, context)
+      const result = await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.mock.calls[0][0]
 
       expect(result!.city.sponsoredContent).toEqual({
@@ -531,7 +531,7 @@ describe("City", () => {
         }
       `
 
-      const result = await runV2Query(query, context)
+      const result = await runQuery(query, context)
       const gravityOptions = context.showsLoader.mock.calls[0][0]
 
       expect(result!.city.sponsoredContent).toEqual({

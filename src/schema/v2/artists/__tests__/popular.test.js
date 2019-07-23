@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("Popular Artists", () => {
   it("makes a call for popular artists", () => {
@@ -23,7 +23,7 @@ describe("Popular Artists", () => {
     }
 
     expect.assertions(1)
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toMatchSnapshot()
     })
   })

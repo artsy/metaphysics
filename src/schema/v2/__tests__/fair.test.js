@@ -10,7 +10,7 @@ const mockSponsoredContent = {
 jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
 
 /* eslint-disable promise/always-return */
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import moment from "moment"
 
@@ -57,7 +57,7 @@ describe("Fair type", () => {
 
     context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -85,7 +85,7 @@ describe("Fair type", () => {
 
     context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -113,7 +113,7 @@ describe("Fair type", () => {
 
     context.profileLoader = sinon.stub().returns(Promise.resolve(profile))
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
           id: "the-armory-show-2017",
@@ -144,7 +144,7 @@ describe("Fair type", () => {
       }
     `
 
-    const result = await runV2Query(query, context)
+    const result = await runQuery(query, context)
 
     expect(result.fair.sponsoredContent).toEqual({
       activationText: "Lorem ipsum dolor sit amet",
@@ -253,7 +253,7 @@ describe("Fair", () => {
       }
     `
 
-    const data = await runV2Query(query, context)
+    const data = await runQuery(query, context)
 
     expect(data).toEqual({
       fair: {
@@ -290,7 +290,7 @@ describe("Fair", () => {
       }
     `
 
-    const data = await runV2Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       fair: {
         shows: {
@@ -312,7 +312,7 @@ describe("Fair", () => {
       }
     `
 
-    const data = await runV2Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       fair: {
         exhibition_period: "Feb 15 – 17",
@@ -336,7 +336,7 @@ describe("Fair", () => {
       }
     `
 
-    const data = await runV2Query(query, context)
+    const data = await runQuery(query, context)
 
     expect(data).toEqual({
       fair: {
@@ -380,7 +380,7 @@ describe("Fair", () => {
           }
         `
 
-        const data = await runV2Query(query, context)
+        const data = await runQuery(query, context)
 
         expect(data).toEqual({
           fair: {
@@ -415,7 +415,7 @@ describe("Fair", () => {
           }
         `
 
-        const data = await runV2Query(query, context)
+        const data = await runQuery(query, context)
 
         expect(data).toEqual({
           fair: {
@@ -450,7 +450,7 @@ describe("Fair", () => {
           }
         `
 
-        const data = await runV2Query(query, context)
+        const data = await runQuery(query, context)
 
         expect(data).toEqual({
           fair: {
@@ -490,7 +490,7 @@ describe("Fair", () => {
           fairLoader: mockFairLoader,
         }
 
-        const data = await runV2Query(query, context)
+        const data = await runQuery(query, context)
 
         expect(data).toEqual({
           fair: {
@@ -510,7 +510,7 @@ describe("Fair", () => {
           fairLoader: mockFairLoader,
         }
 
-        const data = await runV2Query(query, context)
+        const data = await runQuery(query, context)
 
         expect(data).toEqual({
           fair: {
@@ -532,7 +532,7 @@ describe("Fair", () => {
           fairLoader: mockFairLoader,
         }
 
-        const data = await runV2Query(query, context)
+        const data = await runQuery(query, context)
 
         expect(data).toEqual({
           fair: {
@@ -554,7 +554,7 @@ describe("Fair", () => {
           fairLoader: mockFairLoader,
         }
 
-        const data = await runV2Query(query, context)
+        const data = await runQuery(query, context)
 
         expect(data).toEqual({
           fair: {
@@ -582,7 +582,7 @@ describe("Fair", () => {
         }
       `
 
-      const data = await runV2Query(query, context)
+      const data = await runQuery(query, context)
       counts = data.fair.counts
     })
 

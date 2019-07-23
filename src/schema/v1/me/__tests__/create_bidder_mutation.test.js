@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery, runV1Query } from "test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v1/test/utils"
 
 describe("Bidder mutation", () => {
   const bidder = {
@@ -65,7 +65,7 @@ describe("Bidder mutation", () => {
   })
 
   it("requires an access token", () => {
-    return runV1Query(mutation, context).catch(error => {
+    return runQuery(mutation, context).catch(error => {
       expect(error.message).toEqual(
         "You need to be signed in to perform this action"
       )

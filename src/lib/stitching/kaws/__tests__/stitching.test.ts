@@ -1,4 +1,5 @@
-import { runQuery } from "test/utils"
+// TODO: Switch to v2
+import { runQuery } from "schema/v1/test/utils"
 
 // TODO: The tests in this file make _actual_ requests to KAWS.
 xdescribe("MarketingCollectionArtwork", () => {

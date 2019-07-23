@@ -1,5 +1,5 @@
 import gql from "lib/gql"
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("Trending Artists", () => {
   it("makes a call for trending artists", async () => {
@@ -27,7 +27,7 @@ describe("Trending Artists", () => {
 
     const {
       trending_artists: { artists },
-    } = await runV2Query(query, context)
+    } = await runQuery(query, context)
     expect(artists).toMatchSnapshot()
   })
 })

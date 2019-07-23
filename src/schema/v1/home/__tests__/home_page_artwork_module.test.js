@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 
 describe("HomePageArtworkModule", () => {
@@ -27,7 +27,7 @@ describe("HomePageArtworkModule", () => {
           }
         }
       `
-      const data = await runV1Query(query, {
+      const data = await runQuery(query, {
         artistLoader: id => Promise.resolve({ id }),
       })
       expect(data.home_page.artwork_module.context).toEqual({
@@ -55,7 +55,7 @@ describe("HomePageArtworkModule", () => {
           }
         }
       `
-      const data = await runV1Query(query, {
+      const data = await runQuery(query, {
         artistLoader: id => Promise.resolve({ id }),
       })
       expect(data.home_page.artwork_module.context).toEqual({
@@ -77,7 +77,7 @@ describe("HomePageArtworkModule", () => {
           }
         }
       `
-      const data = await runV1Query(query, {
+      const data = await runQuery(query, {
         geneLoader: id => Promise.resolve({ id }),
         filterArtworksLoader: () =>
           Promise.resolve({ hits: [{ id: "catty-art-work" }] }),
@@ -100,7 +100,7 @@ describe("HomePageArtworkModule", () => {
         }
       }
     `
-    const data = await runV1Query(query, {
+    const data = await runQuery(query, {
       followedGenesLoader: () =>
         Promise.resolve({ body: [{ gene: { id: "catty-art" } }] }),
       filterArtworksLoader: () =>
@@ -123,7 +123,7 @@ describe("HomePageArtworkModule", () => {
           }
         }
       `
-      return runV1Query(query).then(({ home_page }) => {
+      return runQuery(query).then(({ home_page }) => {
         expect(home_page.artwork_module.title).toEqual(
           "Works by popular artists"
         )

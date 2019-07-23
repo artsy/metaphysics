@@ -3,7 +3,7 @@ import config from "config"
 // This is the key to this one file:
 config.BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT = 400000
 
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("SaleArtwork type", () => {
   const saleArtwork = {
@@ -35,7 +35,7 @@ describe("SaleArtwork type", () => {
     gravityResponse = saleArtwork,
     context = {}
   ) => {
-    return await runV1Query(query, {
+    return await runQuery(query, {
       saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
       ...context,
     })

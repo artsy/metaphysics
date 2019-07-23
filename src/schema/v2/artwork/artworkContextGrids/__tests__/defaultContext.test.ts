@@ -1,5 +1,5 @@
 import gql from "lib/gql"
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { assign } from "lodash"
 
 describe("Default Context", () => {

@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("Partner type", () => {
@@ -41,7 +41,7 @@ describe("Partner type", () => {
         }
       }
     `
-    const data = await runV2Query(query, context)
+    const data = await runQuery(query, context)
 
     expect(data).toEqual({
       partner: {
@@ -64,7 +64,7 @@ describe("Partner type", () => {
       }
     `
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         partner: {
           name: "Catty Partner",
@@ -122,7 +122,7 @@ describe("Partner type", () => {
         }
       `
 
-      const data = await runV2Query(query, context)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         partner: {
@@ -162,7 +162,7 @@ describe("Partner type", () => {
         }
       `
 
-      const data = await runV2Query(query, context)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         partner: {
@@ -188,7 +188,7 @@ describe("Partner type", () => {
         }
       `
 
-      const data = await runV2Query(query, context)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         partner: {

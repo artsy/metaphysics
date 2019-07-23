@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/offer_order.json"
@@ -39,7 +39,7 @@ describe("AddInitialOfferToOrder Mutation", () => {
       },
     }
     context = mockxchange(resolvers)
-    return runV1Query(mutation, context).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceAddInitialOfferToOrder.orderOrError.order).toEqual(
         sampleOrder({ mode: "OFFER", includeOfferFields: true })
       )
@@ -55,7 +55,7 @@ describe("AddInitialOfferToOrder Mutation", () => {
       },
     }
     context = mockxchange(resolvers)
-    return runV1Query(mutation, context).then(data => {
+    return runQuery(mutation, context).then(data => {
       expect(data!.ecommerceAddInitialOfferToOrder.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

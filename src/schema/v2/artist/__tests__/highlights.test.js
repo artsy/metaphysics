@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("Artist Statuses", () => {
   let context = null
@@ -77,7 +77,7 @@ describe("Artist Statuses", () => {
       },
     }
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual(expectedHighlightData)
     })
   })

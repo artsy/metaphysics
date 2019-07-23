@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("Profile type", () => {
   let profileData = null
@@ -27,7 +27,7 @@ describe("Profile type", () => {
   `
 
   it("is_publically_visible returns true when profile is published", () => {
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         profile: {
           id: "the-armory-show",
@@ -39,7 +39,7 @@ describe("Profile type", () => {
 
   it("is_publically_visible returns false when profile is private", () => {
     profileData.private = true
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         profile: {
           id: "the-armory-show",

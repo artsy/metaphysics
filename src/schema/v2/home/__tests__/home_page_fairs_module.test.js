@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("HomePageFairsModule", () => {
   it("works", () => {
@@ -51,7 +51,7 @@ describe("HomePageFairsModule", () => {
       }
     `
 
-    return runV2Query(query, {
+    return runQuery(query, {
       fairsLoader: options =>
         Promise.resolve({ body: options.active ? runningFairs : pastFairs }),
     }).then(fairsModule => {
@@ -95,7 +95,7 @@ describe("HomePageFairsModule", () => {
       }
     `
 
-    return runV2Query(query, {
+    return runQuery(query, {
       fairsLoader: options =>
         Promise.resolve({ body: options.active ? runningFairs : pastFairs }),
     }).then(fairsModule => {
@@ -141,7 +141,7 @@ describe("HomePageFairsModule", () => {
       }
     `
 
-    return runV2Query(query, {
+    return runQuery(query, {
       fairsLoader: options =>
         Promise.resolve({ body: options.active ? aFair : pastFairs }),
     }).then(fairsModule => {

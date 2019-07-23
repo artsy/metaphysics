@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import { config as createSubmissionMutation } from "schema/v2/me/consignments/create_submission_mutation"
 
 import gql from "lib/gql"

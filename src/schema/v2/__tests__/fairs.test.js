@@ -1,4 +1,4 @@
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("Fairs", () => {
@@ -16,7 +16,7 @@ describe("Fairs", () => {
         }
       }
     `
-    const { fairs } = await runV2Query(query, { fairsLoader })
+    const { fairs } = await runQuery(query, { fairsLoader })
     expect(fairs[0]._id).toEqual("5a9075da8b3b817ede4f8767")
   })
 })

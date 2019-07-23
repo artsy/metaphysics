@@ -2,7 +2,7 @@
 import { map } from "lodash"
 import gql from "lib/gql"
 
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Me type", () => {
   let context

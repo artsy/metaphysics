@@ -2,7 +2,7 @@
 import moment from "moment"
 import _ from "lodash"
 import { fill } from "lodash"
-import { runV1Query, runAuthenticatedQuery } from "test/utils"
+import { runQuery, runAuthenticatedQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 
 describe("Sale type", () => {
@@ -15,7 +15,7 @@ describe("Sale type", () => {
   }
 
   const execute = async (query, gravityResponse = sale, context = {}) => {
-    return await runV1Query(query, {
+    return await runQuery(query, {
       saleLoader: () => Promise.resolve(gravityResponse),
       ...context,
     })

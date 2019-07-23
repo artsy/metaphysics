@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import exchangeOrdersJSON from "test/fixtures/exchange/orders.json"
@@ -51,7 +51,7 @@ describe("Orders query", () => {
       }
     `
 
-    return runV1Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.orders.totalCount).toEqual(100)
       expect(data!.orders.totalPages).toEqual(10)
       expect(data!.orders.pageCursors).not.toBeNull

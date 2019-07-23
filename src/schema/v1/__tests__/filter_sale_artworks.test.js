@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("Filter Sale Artworks", () => {
   let context = null
@@ -71,7 +71,7 @@ describe("Filter Sale Artworks", () => {
       }
     `
 
-    return runV1Query(query, context).then(
+    return runQuery(query, context).then(
       ({ filter_sale_artworks: { aggregations, counts } }) => {
         expect(counts).toEqual({ followed_artists: 2, total: 400 })
         expect(aggregations).toEqual([

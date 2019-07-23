@@ -2,7 +2,7 @@
 import gql from "lib/gql"
 import { resolve } from "path"
 import { readFileSync } from "fs"
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("me { saved_artwork", () => {
   describe("Handles getting collection metadata", () => {

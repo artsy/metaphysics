@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import jwt from "jwt-simple"
 import { omit } from "lodash"
-import { runV2Query, runAuthenticatedQuery } from "test/utils"
+import { runQuery, runAuthenticatedQuery } from "schema/v2/test/utils"
 import config from "config"
 
 const { HMAC_SECRET } = config
@@ -76,7 +76,7 @@ describe("CausalityJWT", () => {
     const query = `{
       causality_jwt(role: PARTICIPANT, sale_id: "slug")
     }`
-    return runV2Query(query, { saleLoader: context.saleLoader }).then(data => {
+    return runQuery(query, { saleLoader: context.saleLoader }).then(data => {
       expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",

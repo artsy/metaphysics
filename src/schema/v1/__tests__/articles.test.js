@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("Articles type", () => {
   let context = null
@@ -32,7 +32,7 @@ describe("Articles type", () => {
       }
     `
 
-    return runV1Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data.articles[0].id).toBe("foo-bar")
       expect(data.articles[0].title).toBe("My Awesome Article")
     })

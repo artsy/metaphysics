@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("HomePageHeroUnits", () => {
   const payload = [
@@ -37,19 +37,15 @@ describe("HomePageHeroUnits", () => {
         }
       `
 
-      return runV1Query(query, context).then(
-        ({ home_page: { hero_units } }) => {
-          if (platform === "desktop") {
-            expect(hero_units[0].subtitle).toEqual(
-              "Discover works on your laptop"
-            )
-          } else {
-            expect(hero_units[0].subtitle).toEqual(
-              "Discover works on your phone"
-            )
-          }
+      return runQuery(query, context).then(({ home_page: { hero_units } }) => {
+        if (platform === "desktop") {
+          expect(hero_units[0].subtitle).toEqual(
+            "Discover works on your laptop"
+          )
+        } else {
+          expect(hero_units[0].subtitle).toEqual("Discover works on your phone")
         }
-      )
+      })
     })
 
     it(`returns enabled hero units for ${platform} only`, () => {
@@ -77,21 +73,19 @@ describe("HomePageHeroUnits", () => {
         }
       `
 
-      return runV1Query(query, context).then(
-        ({ home_page: { hero_units } }) => {
-          expect(hero_units).toEqual([
-            {
-              _id: "57e2ec9b8b3b817dc10015f7",
-              id: "artrio-2016-number-3",
-              href: "/artrio-2016",
-              heading: "Featured Fair",
-              title: "ArtRio 2016",
-              background_image_url:
-                platform === "desktop" ? "wide.jpg" : "narrow.jpg",
-            },
-          ])
-        }
-      )
+      return runQuery(query, context).then(({ home_page: { hero_units } }) => {
+        expect(hero_units).toEqual([
+          {
+            _id: "57e2ec9b8b3b817dc10015f7",
+            id: "artrio-2016-number-3",
+            href: "/artrio-2016",
+            heading: "Featured Fair",
+            title: "ArtRio 2016",
+            background_image_url:
+              platform === "desktop" ? "wide.jpg" : "narrow.jpg",
+          },
+        ])
+      })
     })
   })
 
@@ -110,7 +104,7 @@ describe("HomePageHeroUnits", () => {
       }
     `
 
-    return runV1Query(query, context).then(({ home_page: { hero_units } }) => {
+    return runQuery(query, context).then(({ home_page: { hero_units } }) => {
       expect(hero_units).toEqual([
         {
           background_image_url: "wide.jpg",

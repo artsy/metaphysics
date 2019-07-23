@@ -1,5 +1,5 @@
 import { find } from "lodash"
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("Genes", () => {
@@ -29,7 +29,7 @@ describe("Genes", () => {
         }
       }
     `
-    const { genes } = await runV2Query(query, { geneLoader })
+    const { genes } = await runQuery(query, { geneLoader })
     expect(genes[0].id).toEqual("futurism")
   })
 })

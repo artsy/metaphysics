@@ -1,4 +1,5 @@
-import { runQuery } from "test/utils"
+// TODO: switch to v2
+import { runQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 import { ResolverContext } from "types/graphql"
 import { filtersDescription } from "../stitching"

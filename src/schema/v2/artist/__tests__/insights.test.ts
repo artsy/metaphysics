@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 
 describe("ArtistInsights type", () => {
   let artist = null as any
@@ -29,7 +29,7 @@ describe("ArtistInsights type", () => {
         }
       `
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.artist.insights).toEqual([])
     })
   })
@@ -50,7 +50,7 @@ describe("ArtistInsights type", () => {
         }
       `
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.artist.insights).toEqual([])
     })
   })
@@ -75,7 +75,7 @@ describe("ArtistInsights type", () => {
           }
         `
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.artist.insights).toEqual([
         {
           type: "SOLO_SHOW",
@@ -122,7 +122,7 @@ describe("ArtistInsights type", () => {
           }
         `
 
-    return runV2Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.artist.insights).toEqual([
         {
           type: "COLLECTED",

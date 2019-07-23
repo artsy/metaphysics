@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("MatchGene", () => {
   it("queries match/genes for the term 'pop'", () => {
@@ -38,7 +38,7 @@ describe("MatchGene", () => {
 
     const matchGeneLoader = () => Promise.resolve(response)
 
-    return runV1Query(query, { matchGeneLoader }).then(data => {
+    return runQuery(query, { matchGeneLoader }).then(data => {
       expect(data).toEqual({
         match_gene: [{ id: "pop-art", name: "Pop Art", _id: "123456" }],
       })

@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 const artist = {
   id: "percy-z",
@@ -80,7 +80,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runV1Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           auctionResults: {
@@ -140,7 +140,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runV1Query(query, context).then(
+    return runQuery(query, context).then(
       ({
         artist: {
           auctionResults: { pageCursors, edges },
@@ -180,7 +180,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runV1Query(query, context).then(
+    return runQuery(query, context).then(
       ({
         artist: {
           auctionResults: {
@@ -209,7 +209,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runV1Query(query, context).then(
+    return runQuery(query, context).then(
       ({
         artist: {
           auctionResults: { totalCount },
@@ -246,7 +246,7 @@ describe("Artist type", () => {
         Promise.resolve(auctionResultResponse({ images: null }))
       )
 
-    return runV1Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           auctionResults: {

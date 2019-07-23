@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
 describe("Gene", () => {
@@ -49,7 +49,7 @@ describe("Gene", () => {
         }
       `
 
-      return runV1Query(query, context).then(
+      return runQuery(query, context).then(
         ({
           gene: {
             filtered_artworks: { hits },
@@ -98,7 +98,7 @@ describe("Gene", () => {
         }
       `
 
-      return runV1Query(query, context).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -124,7 +124,7 @@ describe("Gene", () => {
         }
       `
 
-      return runV1Query(query, context).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -158,7 +158,7 @@ describe("Gene", () => {
         }
       `
 
-      return runV1Query(query, context).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             artworks_connection: {
@@ -217,7 +217,7 @@ describe("Gene", () => {
         }
       `
 
-      return runV1Query(query, context).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             artists_connection: {
@@ -243,7 +243,7 @@ describe("Gene", () => {
         }
       `
 
-      return runV1Query(query, context).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             artists_connection: {
@@ -307,7 +307,7 @@ describe("Gene", () => {
         })
       )
 
-      return runV1Query(query, context).then(data => {
+      return runQuery(query, context).then(data => {
         expect(data).toEqual({
           gene: {
             similar: {
@@ -377,7 +377,7 @@ describe("Gene", () => {
         }
       `
 
-      return runV1Query(query, context).then(
+      return runQuery(query, context).then(
         ({
           gene: {
             filtered_artworks: { hits },

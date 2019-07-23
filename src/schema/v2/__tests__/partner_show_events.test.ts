@@ -1,4 +1,4 @@
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import moment from "moment"
 import { ResolverContext } from "types/graphql"
@@ -61,7 +61,7 @@ describe("date resolving", () => {
     it("returns dates with UTC offset", async () => {
       context.userAgent = "some browser"
 
-      const data = await runV2Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           events: [
@@ -80,7 +80,7 @@ describe("date resolving", () => {
       context.userAgent =
         "iPhone9,1 Mozilla/5.0 Artsy-Mobile/4.4.1 Eigen/2019.03.15.11/4.4.1 (iPhone; iOS 12.1.4; Scale/2.00) AppleWebKit/601.1.46 (KHTML, like Gecko)"
 
-      const data = await runV2Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           events: [
@@ -99,7 +99,7 @@ describe("date resolving", () => {
       context.userAgent =
         "iPhone11,6 Mozilla/5.0 Artsy-Mobile/5.0.0 Eigen/2019.03.20.14/5.0.0 (iPhone; iOS 12.1.4; Scale/3.00) AppleWebKit/601.1.46 (KHTML, like Gecko)"
 
-      const data = await runV2Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           events: [
@@ -118,7 +118,7 @@ describe("date resolving", () => {
       context.userAgent =
         "x86_64 Mozilla/5.0 Artsy-Mobile/5.0.1 Eigen/2019.02.28.17/5.0.1 (iPhone; iOS 12.2; Scale/2.00) AppleWebKit/60 1.1.46 (KHTML, like Gecko)"
 
-      const data = await runV2Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           events: [
@@ -138,7 +138,7 @@ describe("date resolving", () => {
         "x86_64 Mozilla/5.0 Artsy-Mobile/5.0.1 Eigen/2019.02.28.17/5.0.1 (iPhone; iOS 12.2; Scale/2.00) AppleWebKit/60 1.1.46 (KHTML, like Gecko)",
       ]
 
-      const data = await runV2Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           events: [

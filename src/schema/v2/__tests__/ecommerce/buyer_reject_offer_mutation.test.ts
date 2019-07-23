@@ -2,7 +2,7 @@ import gql from "lib/gql"
 import { OrderBuyerFields } from "./order_fields"
 import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
-import { runV2Query } from "test/utils"
+import { runQuery } from "schema/v2/test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 
 let context
@@ -61,7 +61,7 @@ describe("BuyerRejectOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runV2Query(mutationWithRejectReason, context).then(data => {
+    return runQuery(mutationWithRejectReason, context).then(data => {
       expect(data!.ecommerceBuyerRejectOffer.orderOrError.order).toEqual(
         sampleOrder()
       )
@@ -79,7 +79,7 @@ describe("BuyerRejectOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runV2Query(mutationWithoutRejectReason, context).then(data => {
+    return runQuery(mutationWithoutRejectReason, context).then(data => {
       expect(data!.ecommerceBuyerRejectOffer.orderOrError.order).toEqual(
         sampleOrder()
       )
@@ -102,7 +102,7 @@ describe("BuyerRejectOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runV2Query(mutationWithoutRejectReason, context).then(data => {
+    return runQuery(mutationWithoutRejectReason, context).then(data => {
       expect(data!.ecommerceBuyerRejectOffer.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

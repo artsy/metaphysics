@@ -1,4 +1,4 @@
-import { runAuthenticatedQuery, runV1Query } from "test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v1/test/utils"
 
 describe("SaleArtwork type", () => {
   const saleArtwork = {
@@ -30,7 +30,7 @@ describe("SaleArtwork type", () => {
     gravityResponse = saleArtwork,
     context = {}
   ) => {
-    return await runV1Query(query, {
+    return await runQuery(query, {
       saleArtworkRootLoader: () => Promise.resolve(gravityResponse),
       ...context,
     })

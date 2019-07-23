@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("Search", () => {
   let searchResults: any
@@ -116,7 +116,7 @@ describe("Search", () => {
     `
 
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
-    return runV1Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       const artistSearchableItemNode = data!.search.edges[0].node
 
       expect(artistSearchableItemNode.__typename).toBe("SearchableItem")
@@ -183,7 +183,7 @@ describe("Search", () => {
     `
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
-    return runV1Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       expect(data!.search.pageInfo.hasNextPage).toBeTruthy()
     })
   })
@@ -200,7 +200,7 @@ describe("Search", () => {
     `
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
-    return runV1Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       const { page, size } = context.searchLoader.mock.calls[0][0]
       expect(page).toEqual(30)
       expect(size).toEqual(20)
@@ -234,7 +234,7 @@ describe("Search", () => {
       .fn()
       .mockImplementation(() => Promise.resolve(searchResponseWithAggregations))
 
-    return runV1Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       const typeAggregation = data!.search.aggregations.find(
         agg => agg.slice === "TYPE"
       ).counts
@@ -266,7 +266,7 @@ describe("Search", () => {
     `
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
-    return runV1Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       const artistNode = data!.search.edges[0].node
 
       expect(artistNode.__typename).toBe("Artist")
@@ -292,7 +292,7 @@ describe("Search", () => {
     `
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
-    return runV1Query(query, context).then(data => {
+    return runQuery(query, context).then(data => {
       const artworkNode = data!.search.edges[1].node
 
       expect(artworkNode.__typename).toBe("Artwork")

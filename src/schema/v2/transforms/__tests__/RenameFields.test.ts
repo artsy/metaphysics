@@ -5,7 +5,7 @@ import {
   GraphQLID,
   GraphQLInterfaceType,
 } from "graphql"
-import { runV2QueryOrThrow } from "test/utils"
+import { runQueryOrThrow } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import { transformSchema } from "graphql-tools"
 
@@ -62,7 +62,7 @@ const schema = transformSchema(originalSchema, [
 
 describe(RenameFields, () => {
   it("renames fields on object types", async () => {
-    const data = await runV2QueryOrThrow({
+    const data = await runQueryOrThrow({
       schema,
       source: gql`
         query {
@@ -94,7 +94,7 @@ describe(RenameFields, () => {
   })
 
   it("renames fields on interface types", async () => {
-    const data = await runV2QueryOrThrow({
+    const data = await runQueryOrThrow({
       schema,
       source: gql`
         query {
@@ -116,7 +116,7 @@ describe(RenameFields, () => {
 
   // TODO: https://artsyproduct.atlassian.net/browse/PLATFORM-1442
   xit("handles aliasing", async () => {
-    const data = await runV2QueryOrThrow({
+    const data = await runQueryOrThrow({
       schema,
       source: gql`
         query {

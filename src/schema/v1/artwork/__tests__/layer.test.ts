@@ -1,4 +1,4 @@
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("Layer type", () => {
   let artworksResponse
@@ -37,7 +37,7 @@ describe("Layer type", () => {
       }
     `
 
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       artwork: {
         layers: [
@@ -67,7 +67,7 @@ describe("Layer type", () => {
         }
       `
 
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         artwork: {
@@ -113,7 +113,7 @@ describe("Layer type", () => {
         }
       `
 
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         artwork: {
@@ -145,7 +145,7 @@ describe("Layer type", () => {
         }
       `
 
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         artwork: {

@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import moment from "moment"
 import gql from "lib/gql"
-import { runV1Query } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
 describe("Show type", () => {
@@ -70,7 +70,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         has_location: true,
@@ -87,7 +87,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         has_location: true,
@@ -104,7 +104,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         has_location: true,
@@ -120,7 +120,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         has_location: false,
@@ -140,7 +140,7 @@ describe("Show type", () => {
       }
     `
     try {
-      await runV1Query(query, context)
+      await runQuery(query, context)
       throw new Error("Did not expect query to not throw an error")
     } catch (error) {
       expect(error.message).toEqual("Show Not Found")
@@ -165,7 +165,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data.show.fair.id).toEqual("the-art-show-2019")
   })
 
@@ -180,7 +180,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data.show.name).toEqual("Whitespace Abounds")
   })
 
@@ -206,7 +206,7 @@ describe("Show type", () => {
           },
         ])
       )
-      const data = await runV1Query(
+      const data = await runQuery(
         gql`
       {
         show(id: "${showData._id}") {
@@ -221,7 +221,7 @@ describe("Show type", () => {
 
     it("returns false if the show is not returned", async () => {
       gravityLoader.mockReturnValue(Promise.resolve([]))
-      const data = await runV1Query(
+      const data = await runQuery(
         gql`
           {
             show(id: "some_other_id") {
@@ -244,7 +244,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           name: "Whitespace Abounds",
@@ -261,7 +261,7 @@ describe("Show type", () => {
         }
       `
       showData.name = null
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           name: null,
@@ -283,7 +283,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           city: "Quonochontaug",
@@ -301,7 +301,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           city: "Quonochontaug",
@@ -323,7 +323,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           city: "Quonochontaug",
@@ -344,7 +344,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "fair",
@@ -366,7 +366,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "solo",
@@ -391,7 +391,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "group",
@@ -413,7 +413,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "solo",
@@ -438,7 +438,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "group",
@@ -461,7 +461,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           kind: "group",
@@ -480,7 +480,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           href: "/show/new-museum-1-2015-triennial-surround-audience",
@@ -496,7 +496,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           href: null,
@@ -519,7 +519,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         partner: {
@@ -543,7 +543,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         partner: null,
@@ -562,7 +562,7 @@ describe("Show type", () => {
       }
     `
 
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         id: "new-museum-1-2015-triennial-surround-audience",
@@ -581,7 +581,7 @@ describe("Show type", () => {
       }
     `
 
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         exhibition_period: "Feb 25 – May 24, 2015",
@@ -598,7 +598,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         status_update: "Closing tomorrow",
@@ -614,7 +614,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         press_release: "<p><strong>foo</strong> <em>bar</em></p>\n",
@@ -646,7 +646,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         counts: {
@@ -673,7 +673,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         counts: {
@@ -693,7 +693,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         counts: {
@@ -720,7 +720,7 @@ describe("Show type", () => {
         }
       }
     `
-    const data = await runV1Query(query, context)
+    const data = await runQuery(query, context)
     expect(data).toEqual({
       show: {
         counts: {
@@ -745,7 +745,7 @@ describe("Show type", () => {
         }
       }
     `
-    return runV1Query(query, context).then(({ show }) => {
+    return runQuery(query, context).then(({ show }) => {
       expect(show).toEqual({
         cover_image: null,
       })
@@ -773,7 +773,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           nearbyShows: {
@@ -803,7 +803,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           nearbyShows: {
@@ -833,7 +833,7 @@ describe("Show type", () => {
           }
         }
       `
-      await runV1Query(query, context)
+      await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.args[0][0]
 
       expect(gravityOptions).toMatchObject({
@@ -862,7 +862,7 @@ describe("Show type", () => {
           }
         }
       `
-      await runV1Query(query, context)
+      await runQuery(query, context)
       const gravityOptions = context.showsWithHeadersLoader.args[0][0]
 
       expect(gravityOptions).toMatchObject({
@@ -885,7 +885,7 @@ describe("Show type", () => {
         }
       `
 
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           artists: [
@@ -921,7 +921,7 @@ describe("Show type", () => {
         }
       `
 
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(data).toEqual({
         show: {
           artists_grouped_by_name: [
@@ -1000,7 +1000,7 @@ describe("Show type", () => {
         }
       `
 
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         show: {
@@ -1040,7 +1040,7 @@ describe("Show type", () => {
         }
       `
 
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         show: {
@@ -1066,7 +1066,7 @@ describe("Show type", () => {
         }
       `
 
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
 
       expect(data).toEqual({
         show: {
@@ -1123,7 +1123,7 @@ describe("Show type", () => {
           }
         }
       `
-      const data = await runV1Query(query, context)
+      const data = await runQuery(query, context)
       expect(
         context.unauthenticatedLoaders.filterArtworksLoader
       ).toHaveBeenCalledWith(
