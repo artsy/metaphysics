@@ -74,7 +74,7 @@ export const ConversationInitiatorType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLString),
     },
     initials: initials("name"),
-  } as any,
+  },
 })
 
 export const ConversationResponderType = new GraphQLObjectType<
