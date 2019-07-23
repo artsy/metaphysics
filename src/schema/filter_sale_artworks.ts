@@ -9,7 +9,6 @@ import {
   GraphQLInt,
   GraphQLID,
   GraphQLFieldConfig,
-  GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import {
   SaleArtworksAggregationResultsType,
@@ -22,7 +21,7 @@ import { deprecate } from "lib/deprecation"
  * NOTE: This type has been deprecated in favor of `SaleArtworks`.
  */
 
-export const filterSaleArtworksArgs: GraphQLFieldConfigArgumentMap = {
+export const filterSaleArtworksArgs = {
   aggregations: {
     type: new GraphQLList(SaleArtworksAggregation),
   },

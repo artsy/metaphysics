@@ -74,6 +74,7 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
         preferUsageOf: "from",
       }),
     },
+
     from: {
       type: MessageInitiatorType,
       resolve: ({ from, from_email_address }) => {
@@ -92,6 +93,7 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
+
     raw_text: {
       description: "Full unsanitized text.",
       type: new GraphQLNonNull(GraphQLString),
@@ -100,6 +102,7 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
         preferUsageOf: "body",
       }),
     },
+
     body: {
       description:
         "Unaltered text if possible, otherwise `body`: a parsed/sanitized version from Sendgrid.",
@@ -111,12 +114,15 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
         return body
       },
     },
+
     deliveries: {
       type: new GraphQLList(DeliveryType),
     },
+
     attachments: {
       type: new GraphQLList(AttachmentType),
     },
+
     invoice: {
       type: InvoiceType,
       resolve: (
@@ -133,6 +139,7 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
         })
       },
     },
+
     is_invoice: {
       description: "True if message is an invoice message",
       type: GraphQLBoolean,

@@ -43,33 +43,35 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
 
 const fields: Thunk<
   GraphQLFieldConfigMap<PartnerArtistDetails, ResolverContext>
-> = () => ({
-  ...IDFields,
-  artist: {
-    type: Artist.type,
-  },
-  biography: {
-    type: GraphQLString,
-  },
-  counts,
-  is_display_on_partner_profile: {
-    type: GraphQLBoolean,
-    resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
-  },
-  is_represented_by: {
-    type: GraphQLBoolean,
-    resolve: ({ represented_by }) => represented_by,
-  },
-  is_use_default_biography: {
-    type: GraphQLBoolean,
-  },
-  partner: {
-    type: Partner.type,
-  },
-  sortable_id: {
-    type: GraphQLString,
-  },
-})
+> = () => {
+  return {
+    ...IDFields,
+    artist: {
+      type: Artist.type,
+    },
+    biography: {
+      type: GraphQLString,
+    },
+    counts,
+    is_display_on_partner_profile: {
+      type: GraphQLBoolean,
+      resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
+    },
+    is_represented_by: {
+      type: GraphQLBoolean,
+      resolve: ({ represented_by }) => represented_by,
+    },
+    is_use_default_biography: {
+      type: GraphQLBoolean,
+    },
+    partner: {
+      type: Partner.type,
+    },
+    sortable_id: {
+      type: GraphQLString,
+    },
+  }
+}
 
 export const PartnerArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerArtist",

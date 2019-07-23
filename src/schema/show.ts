@@ -37,7 +37,6 @@ import {
   GraphQLBoolean,
   GraphQLUnionType,
   GraphQLFieldConfig,
-  GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { allViaLoader } from "../lib/all"
 import { totalViaLoader } from "lib/total"
@@ -76,7 +75,7 @@ const kind = ({ artists, fair, artists_without_artworks, group }) => {
   }
 }
 
-const artworksArgs: GraphQLFieldConfigArgumentMap = {
+const artworksArgs = {
   exclude: {
     type: new GraphQLList(GraphQLString),
     description:
@@ -84,7 +83,7 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   },
   for_sale: {
     type: GraphQLBoolean,
-    defaultValue: false,
+    default: false,
   },
   published: {
     type: GraphQLBoolean,
@@ -363,6 +362,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         preferUsageOf: "is_displayable",
       }),
     },
+
     end_at: date,
     events: {
       description: "Events from the partner that runs this show",

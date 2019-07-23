@@ -65,7 +65,7 @@ const Notifications: GraphQLFieldConfig<void, ResolverContext> = {
   args: pageable({}),
   deprecationReason: deprecate({
     inVersion: 2,
-    preferUsageOf: "followsAndSaves",
+    preferUsageOf: "followed_artists_artwork_groups",
   }),
   resolve: (_root, options, { notificationsFeedLoader }) => {
     if (!notificationsFeedLoader) return null
