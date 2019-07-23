@@ -37,7 +37,7 @@ describe("Send Feedback", () => {
       sendFeedbackLoader: () =>
         Promise.reject(
           new Error(
-            `https://stagingapi.artsy.net/api/v1/feedback - {"error":"Message Cant Not Be Blank"}`
+            `https://stagingapi.artsy.net/api/v2/feedback - {"error":"Message Cant Not Be Blank"}`
           )
         ),
     }

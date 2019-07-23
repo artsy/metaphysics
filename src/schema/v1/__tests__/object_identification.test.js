@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import _ from "lodash"
 import { toGlobalId } from "graphql-relay"
-import { runQuery, runAuthenticatedQuery } from "test/utils"
+import { runV1Query, runAuthenticatedQuery } from "test/utils"
 
 describe("Object Identification", () => {
   // TODO As we add more loaders, remove the old tests at the bottom of this file and add them here.
@@ -67,7 +67,7 @@ describe("Object Identification", () => {
           }
         `
 
-        return runQuery(query, context).then(data => {
+        return runV1Query(query, context).then(data => {
           const expectedData = {}
           expectedData[fieldName] = { __id: toGlobalId(typeName, "foo-bar") }
           expect(data).toEqual(expectedData)
@@ -86,7 +86,7 @@ describe("Object Identification", () => {
           }
         `
 
-        return runQuery(query, context).then(data => {
+        return runV1Query(query, context).then(data => {
           expect(data).toEqual({
             node: {
               __typename: typeName,
@@ -152,7 +152,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runV1Query(query).then(data => {
           expect(data).toEqual({
             home_page: {
               artwork_module: {
@@ -173,7 +173,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runV1Query(query).then(data => {
           expect(data).toEqual({
             node: {
               __typename: "HomePageArtworkModule",
@@ -198,7 +198,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runV1Query(query).then(data => {
           expect(data).toEqual({
             home_page: {
               artwork_module: {
@@ -222,7 +222,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runV1Query(query).then(data => {
           expect(data).toEqual({
             node: {
               __typename: "HomePageArtworkModule",
@@ -256,7 +256,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runV1Query(query).then(data => {
           expect(data).toEqual({
             home_page: {
               artwork_module: {
@@ -281,7 +281,7 @@ describe("Object Identification", () => {
             }
           }
         `
-        return runQuery(query).then(data => {
+        return runV1Query(query).then(data => {
           expect(data).toEqual({
             node: {
               __typename: "HomePageArtworkModule",
@@ -311,7 +311,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runV1Query(query).then(data => {
         expect(data).toEqual({
           home_page: {
             artist_module: {
@@ -332,7 +332,7 @@ describe("Object Identification", () => {
           }
         }
       `
-      return runQuery(query).then(data => {
+      return runV1Query(query).then(data => {
         expect(data).toEqual({
           node: {
             __typename: "HomePageArtistModule",

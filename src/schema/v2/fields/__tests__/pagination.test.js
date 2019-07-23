@@ -1,4 +1,4 @@
-import { createPageCursors } from "schema/v1/fields/pagination"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import { fromGlobalId } from "graphql-relay"
 
 function offsetFromCursor({ cursor }) {

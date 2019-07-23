@@ -1,4 +1,4 @@
-import { runQuery } from "test/utils"
+import { runV2Query } from "test/utils"
 
 describe("Layer type", () => {
   let artworksResponse
@@ -37,7 +37,7 @@ describe("Layer type", () => {
       }
     `
 
-    const data = await runQuery(query, context)
+    const data = await runV2Query(query, context)
     expect(data).toEqual({
       artwork: {
         layers: [
@@ -67,7 +67,7 @@ describe("Layer type", () => {
         }
       `
 
-      const data = await runQuery(query, context)
+      const data = await runV2Query(query, context)
 
       expect(data).toEqual({
         artwork: {
@@ -113,7 +113,7 @@ describe("Layer type", () => {
         }
       `
 
-      const data = await runQuery(query, context)
+      const data = await runV2Query(query, context)
 
       expect(data).toEqual({
         artwork: {
@@ -145,7 +145,7 @@ describe("Layer type", () => {
         }
       `
 
-      const data = await runQuery(query, context)
+      const data = await runV2Query(query, context)
 
       expect(data).toEqual({
         artwork: {

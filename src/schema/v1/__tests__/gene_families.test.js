@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV1Query } from "test/utils"
 
 describe("GeneFamilies", () => {
   const api_data = [
@@ -28,7 +28,7 @@ describe("GeneFamilies", () => {
       }
     `
 
-    return runQuery(query, { geneFamiliesLoader }).then(geneFamilies => {
+    return runV1Query(query, { geneFamiliesLoader }).then(geneFamilies => {
       expect(geneFamilies).toMatchSnapshot()
     })
   })

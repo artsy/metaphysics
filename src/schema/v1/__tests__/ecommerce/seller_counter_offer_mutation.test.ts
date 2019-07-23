@@ -1,4 +1,4 @@
-import { runQuery } from "test/utils"
+import { runV1Query } from "test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import gql from "lib/gql"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
@@ -40,7 +40,7 @@ describe("SellerCounterOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then(data => {
+    return runV1Query(mutation, context).then(data => {
       expect(data!.ecommerceSellerCounterOffer.orderOrError.order).toEqual(
         sampleOrder({ mode: "OFFER", includeOfferFields: true })
       )
@@ -63,7 +63,7 @@ describe("SellerCounterOffer Mutation", () => {
 
     context = mockxchange(resolvers)
 
-    return runQuery(mutation, context).then(data => {
+    return runV1Query(mutation, context).then(data => {
       expect(data!.ecommerceSellerCounterOffer.orderOrError.error).toEqual({
         type: "application_error",
         code: "404",

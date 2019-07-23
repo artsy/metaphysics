@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV1Query } from "test/utils"
 
 describe("Artist Statuses", () => {
   let artist = null
@@ -37,7 +37,7 @@ describe("Artist Statuses", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runV1Query(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           statuses: {
@@ -62,7 +62,7 @@ describe("Artist Statuses", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runV1Query(query, context).then(data => {
       expect(data).toEqual({
         artist: {
           statuses: {

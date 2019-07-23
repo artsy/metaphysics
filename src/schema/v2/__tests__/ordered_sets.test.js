@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV2Query } from "test/utils"
 
 describe("OrderedSets type", () => {
   const query = `
@@ -39,7 +39,7 @@ describe("OrderedSets type", () => {
   }
 
   it("fetches sets by key", () => {
-    return runQuery(query, context).then(data => {
+    return runV2Query(query, context).then(data => {
       expect(data).toEqual({
         ordered_sets: [
           {

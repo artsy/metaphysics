@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV2Query } from "test/utils"
 
 describe("Article type", () => {
   let article = null
@@ -47,7 +47,7 @@ describe("Article type", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runV2Query(query, context).then(data => {
       expect(data.article.id).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
     })
@@ -67,7 +67,7 @@ describe("Article type", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runV2Query(query, context).then(data => {
       expect(data.article.id).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
       expect(data.article.contributing_authors).toEqual([

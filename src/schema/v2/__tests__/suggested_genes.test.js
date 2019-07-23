@@ -1,4 +1,4 @@
-import { runQuery } from "test/utils"
+import { runV2Query } from "test/utils"
 
 jest.mock("lib/apis/fetch", () => jest.fn())
 import fetch from "lib/apis/fetch"
@@ -31,7 +31,7 @@ describe("SuggestedGenes type", () => {
       }
     `
 
-    const data = await runQuery(query, {})
+    const data = await runV2Query(query, {})
 
     expect(data.suggested_genes[0]._id).toBe("123456")
     expect(data.suggested_genes[0].image.url).toBe("photography.jpg")

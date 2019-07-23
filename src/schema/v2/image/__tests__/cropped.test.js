@@ -1,5 +1,5 @@
-import normalize from "schema/v1/image/normalize"
-import { croppedImageUrl } from "schema/v1/image/cropped"
+import normalize from "schema/v2/image/normalize"
+import { croppedImageUrl } from "schema/v2/image/cropped"
 
 describe("Image", () => {
   describe("croppedImageUrl", () => {

@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV2Query } from "test/utils"
 import { removeReproductionsFromArtworks } from "../carousel"
 
 describe("ArtistCarousel type", () => {
@@ -74,7 +74,7 @@ describe("ArtistCarousel type", () => {
         }
       `
 
-      return runQuery(query, context).then(data => {
+      return runV2Query(query, context).then(data => {
         expect(data.artist.carousel).toEqual({
           images: [
             {

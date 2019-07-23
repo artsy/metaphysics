@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery, runQuery } from "test/utils"
+import { runAuthenticatedQuery, runV1Query } from "test/utils"
 
 describe("UpdateCollectorProfile", () => {
   it("updates and returns a collector profile", () => {
@@ -63,7 +63,7 @@ describe("UpdateCollectorProfile", () => {
       "Missing Update Collector Profile Loader. Check your access token."
 
     expect.assertions(1)
-    return runQuery(mutation)
+    return runV1Query(mutation)
       .then(() => {
         throw new Error("An error was not thrown but was expected.")
       })

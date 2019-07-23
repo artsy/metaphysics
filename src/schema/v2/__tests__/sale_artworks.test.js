@@ -1,10 +1,10 @@
 import _ from "lodash"
 import gql from "lib/gql"
-import { runQuery } from "test/utils"
+import { runV2Query } from "test/utils"
 
 describe("Sale Artworks", () => {
   const execute = async (gravityResponse, query, context = {}) => {
-    return await runQuery(query, {
+    return await runV2Query(query, {
       saleArtworksFilterLoader: () => Promise.resolve(gravityResponse),
       ...context,
     })

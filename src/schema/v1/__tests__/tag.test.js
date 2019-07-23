@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV1Query } from "test/utils"
 
 describe("Tag", () => {
   describe("For just querying the tag artworks", () => {
@@ -44,7 +44,7 @@ describe("Tag", () => {
         }
       `
 
-      return runQuery(query, context).then(
+      return runV1Query(query, context).then(
         ({
           tag: {
             filtered_artworks: { hits },

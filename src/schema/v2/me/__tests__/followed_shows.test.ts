@@ -1,8 +1,8 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "test/utils"
 import gql from "lib/gql"
-import cityData from "schema/v1/city/cityDataSortedByDisplayPreference.json"
-import { LOCAL_DISCOVERY_RADIUS_KM } from "schema/v1/city/constants"
+import cityData from "schema/v2/city/cityDataSortedByDisplayPreference.json"
+import { LOCAL_DISCOVERY_RADIUS_KM } from "schema/v2/city/constants"
 
 const stubResolver = () => Promise.resolve({ body: [], headers: {} })
 

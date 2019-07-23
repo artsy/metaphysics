@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV2Query } from "test/utils"
 import { toGlobalId } from "graphql-relay"
 
 describe("Filter Artworks", () => {
@@ -49,7 +49,7 @@ describe("Filter Artworks", () => {
         }
       `
 
-      return runQuery(query, context).then(
+      return runV2Query(query, context).then(
         ({
           gene: {
             filtered_artworks: { hits },
@@ -80,7 +80,7 @@ describe("Filter Artworks", () => {
         "FilterArtworks",
         JSON.stringify(filterOptions)
       )
-      return runQuery(query, context).then(
+      return runV2Query(query, context).then(
         ({
           gene: {
             filtered_artworks: { __id },
@@ -109,7 +109,7 @@ describe("Filter Artworks", () => {
           }
         }
       `
-      return runQuery(query, context).then(({ node: { __id } }) => {
+      return runV2Query(query, context).then(({ node: { __id } }) => {
         expect(__id).toEqual(generatedId)
       })
     })
@@ -169,7 +169,7 @@ describe("Filter Artworks", () => {
         }
       `
 
-      return runQuery(query, context).then(
+      return runV2Query(query, context).then(
         ({
           gene: {
             filtered_artworks: {
@@ -245,7 +245,7 @@ describe("Filter Artworks", () => {
         }
       `
 
-      return runQuery(query, context).then(({ filter_artworks }) => {
+      return runV2Query(query, context).then(({ filter_artworks }) => {
         expect(filter_artworks.artworks_connection.pageInfo).toEqual({
           hasNextPage: false,
         })
@@ -290,7 +290,7 @@ describe("Filter Artworks", () => {
         }
       `
 
-      return runQuery(query, context).then(({ filter_artworks }) => {
+      return runV2Query(query, context).then(({ filter_artworks }) => {
         expect(filter_artworks.artworks_connection.edges).toEqual([
           {
             node: { id: "oseberg-norway-queens-ship-0" },

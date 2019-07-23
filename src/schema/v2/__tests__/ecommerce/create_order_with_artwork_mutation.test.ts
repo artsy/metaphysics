@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV2Query } from "test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
@@ -45,7 +45,7 @@ describe("Create Buy Order Mutation", () => {
       }
     `
 
-    return runQuery(mutation, context).then(data => {
+    return runV2Query(mutation, context).then(data => {
       expect(data!.ecommerceCreateOrderWithArtwork.orderOrError.order).toEqual(
         sampleOrder()
       )

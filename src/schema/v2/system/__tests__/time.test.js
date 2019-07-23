@@ -1,4 +1,4 @@
-import { runQuery } from "test/utils"
+import { runV2Query } from "test/utils"
 
 jest.mock("lib/apis/fetch", () => jest.fn())
 
@@ -45,7 +45,7 @@ describe("SystemTime type", () => {
       }
     `
 
-    const { system } = await runQuery(query, context)
+    const { system } = await runV2Query(query, context)
     expect(system.time.day).toEqual(2)
     expect(system.time.iso8601).toEqual("2018-07-02T20:58:58Z")
   })

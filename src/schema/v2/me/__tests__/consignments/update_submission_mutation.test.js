@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "test/utils"
-import { config as updateSubmissionMutation } from "schema/v1/me/consignments/update_submission_mutation"
+import { config as updateSubmissionMutation } from "schema/v2/me/consignments/update_submission_mutation"
 import gql from "lib/gql"
 
 describe("UpdateSubmissionMutation", () => {

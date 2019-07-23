@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV1Query } from "test/utils"
 
 describe("CreditCard type", () => {
   let creditCard: any
@@ -28,7 +28,7 @@ describe("CreditCard type", () => {
       }
     `
 
-    return runQuery(query, context).then(data => {
+    return runV1Query(query, context).then(data => {
       expect(data!.credit_card.id).toBe("card123")
       expect(data!.credit_card.brand).toBe("Visa")
       expect(data!.credit_card.last_digits).toBe("4242")

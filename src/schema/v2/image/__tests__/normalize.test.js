@@ -1,5 +1,5 @@
 import { first, isNull, isUndefined } from "lodash"
-import normalize, { grab, setVersion } from "schema/v1/image/normalize"
+import normalize, { grab, setVersion } from "schema/v2/image/normalize"
 
 describe("grab", () => {
   it("grabs the first value for a set of possible keys", () => {

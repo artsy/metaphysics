@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 
-import { runQuery } from "test/utils"
+import { runV2Query } from "test/utils"
 import gql from "lib/gql"
 
 describe("PartnerShows type", () => {
@@ -63,7 +63,7 @@ describe("PartnerShows type", () => {
           ),
       }
 
-      return runQuery(query, context).then(data => {
+      return runV2Query(query, context).then(data => {
         expect(data).toEqual({
           partner_shows: [
             { id: "new-museum-solo-show", kind: "solo" },
@@ -97,7 +97,7 @@ describe("PartnerShows type", () => {
         }
       }
     `
-    const { partner_shows } = await runQuery(query, { showsLoader })
+    const { partner_shows } = await runV2Query(query, { showsLoader })
     expect(partner_shows[0]._id).toEqual("52c721e5b202a3edf1000072")
   })
 })

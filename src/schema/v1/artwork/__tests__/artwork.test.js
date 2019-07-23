@@ -2,7 +2,7 @@
 import { assign } from "lodash"
 import moment from "moment"
 
-import { runQuery } from "test/utils"
+import { runV1Query } from "test/utils"
 import gql from "lib/gql"
 
 describe("Artwork type", () => {
@@ -83,7 +83,7 @@ describe("Artwork type", () => {
     })
 
     it("returns width and height", () => {
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -120,7 +120,7 @@ describe("Artwork type", () => {
     })
 
     it("returns sizeScore", () => {
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -149,7 +149,7 @@ describe("Artwork type", () => {
       const noSales = Promise.resolve([])
       context.relatedSalesLoader = sinon.stub().returns(noSales)
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -163,7 +163,7 @@ describe("Artwork type", () => {
       const sales = Promise.resolve([sale])
       context.relatedSalesLoader = sinon.stub().returns(sales)
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -195,7 +195,7 @@ describe("Artwork type", () => {
           downloadable: false,
         },
       ]
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -219,7 +219,7 @@ describe("Artwork type", () => {
       const sales = Promise.resolve([sale])
       context.relatedSalesLoader = sinon.stub().returns(sales)
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -233,7 +233,7 @@ describe("Artwork type", () => {
       const sales = Promise.resolve([sale])
       context.relatedSalesLoader = sinon.stub().returns(sales)
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -258,7 +258,7 @@ describe("Artwork type", () => {
       artwork.inquireable = true
       artwork.price = "$420"
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -282,7 +282,7 @@ describe("Artwork type", () => {
     it("will return the value of offerable", () => {
       artwork.offerable = true
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -309,7 +309,7 @@ describe("Artwork type", () => {
     it("returns correct data for an exact priced work", () => {
       // Exact priced at $420
       artwork.price_cents = [42000]
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             priceCents: {
@@ -325,7 +325,7 @@ describe("Artwork type", () => {
     it("returns correct data for an 'Under X' priced work", () => {
       // Priced at Under $420
       artwork.price_cents = [null, 42000]
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             priceCents: {
@@ -341,7 +341,7 @@ describe("Artwork type", () => {
     it("returns correct data for an 'Starting at X' priced work", () => {
       // Priced at Starting at $420
       artwork.price_cents = [42000, null]
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             priceCents: {
@@ -368,7 +368,7 @@ describe("Artwork type", () => {
     it("passes true from gravity", () => {
       artwork.pickup_available = true
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -393,7 +393,7 @@ describe("Artwork type", () => {
     it("returns the first default image", () => {
       artwork.images = artworkImages
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             image: {
@@ -438,7 +438,7 @@ describe("Artwork type", () => {
         { forsale: true },
       ]
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             edition_sets: [
@@ -489,7 +489,7 @@ describe("Artwork type", () => {
       }
     `
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             edition_sets: [
@@ -541,7 +541,7 @@ describe("Artwork type", () => {
         }
       }
     `
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             edition_sets: [
@@ -584,7 +584,7 @@ describe("Artwork type", () => {
       ]
       context.salesLoader = sinon.stub().returns(Promise.resolve(sales))
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -597,7 +597,7 @@ describe("Artwork type", () => {
     it("is false if the artwork is not in any sales that are auctions", () => {
       context.salesLoader = sinon.stub().returns(Promise.resolve([]))
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -623,7 +623,7 @@ describe("Artwork type", () => {
       artwork.price = null
       artwork.availability = "on hold"
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -638,7 +638,7 @@ describe("Artwork type", () => {
       artwork.price = "$420,000"
       artwork.availability = "on hold"
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -651,7 +651,7 @@ describe("Artwork type", () => {
     it("returns 'Sold' if work is sold", () => {
       artwork.sale_message = "$420,000 - Sold"
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -664,7 +664,7 @@ describe("Artwork type", () => {
     it("returns null if work is not for sale", () => {
       artwork.availability = "not for sale"
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -678,7 +678,7 @@ describe("Artwork type", () => {
       artwork.sale_message = "Not for sale"
       artwork.availability = "on loan"
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -693,7 +693,7 @@ describe("Artwork type", () => {
       artwork.availability = "on loan"
       artwork.availability_hidden = true
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -707,7 +707,7 @@ describe("Artwork type", () => {
       artwork.sale_message = "for sale"
       artwork.availability = "permanent collection"
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -721,7 +721,7 @@ describe("Artwork type", () => {
       artwork.availability = "for sale"
       artwork.sale_message = "something from gravity"
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -745,7 +745,7 @@ describe("Artwork type", () => {
     it("returns bid text for an auction partner type", () => {
       artwork.partner = { type: "Auction" }
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -760,7 +760,7 @@ describe("Artwork type", () => {
       artwork.availability = "sold"
       artwork.availability_hidden = true
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -773,7 +773,7 @@ describe("Artwork type", () => {
     it("returns similar work text for a sold work", () => {
       artwork.availability = "sold"
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -786,7 +786,7 @@ describe("Artwork type", () => {
     it("returns similar work text for a on loan work", () => {
       artwork.availability = "on loan"
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -798,7 +798,7 @@ describe("Artwork type", () => {
     })
     it("returns purchase text for an on hold work", () => {
       artwork.availability = "on hold"
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -810,7 +810,7 @@ describe("Artwork type", () => {
     })
     it("returns nothing for a not for sale work", () => {
       artwork.availability = "not for sale"
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -840,7 +840,7 @@ describe("Artwork type", () => {
         artwork: {
           sale_artwork: { sale_id },
         },
-      } = await runQuery(query, context)
+      } = await runV1Query(query, context)
       expect(sale_id).toEqual(artwork.sale_ids[0])
     })
 
@@ -862,7 +862,7 @@ describe("Artwork type", () => {
         artwork: {
           sale_artwork: { sale_id },
         },
-      } = await runQuery(query, context)
+      } = await runV1Query(query, context)
       expect(sale_id).toEqual(artwork.sale_ids[1])
     })
   })
@@ -879,7 +879,7 @@ describe("Artwork type", () => {
 
     it("is true if the artwork has any sales that are open auctions", () => {
       context.salesLoader = sinon.stub().returns(Promise.resolve([{}]))
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -891,7 +891,7 @@ describe("Artwork type", () => {
 
     it("is false if the artwork is not in any sales that are auctions", () => {
       context.salesLoader = sinon.stub().returns(Promise.resolve([]))
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -921,7 +921,7 @@ describe("Artwork type", () => {
           },
         ])
       )
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -940,7 +940,7 @@ describe("Artwork type", () => {
           },
         ])
       )
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -953,7 +953,7 @@ describe("Artwork type", () => {
     it("is false if the artwork is acquireable but not in any open sales", () => {
       artwork.acquireable = false
       context.salesLoader = sinon.stub().returns(Promise.resolve([]))
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -992,7 +992,7 @@ describe("Artwork type", () => {
           }
         }
       `
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data.artwork.banner).toEqual({
           __typename: "ArtworkContextAuction",
           name: "Y2K",
@@ -1016,7 +1016,7 @@ describe("Artwork type", () => {
 
       it("returns false if the artwork is not shareable", () => {
         artwork.can_share_image = false
-        return runQuery(query, context).then(data => {
+        return runV1Query(query, context).then(data => {
           expect(data.artwork.is_shareable).toBe(false)
         })
       })
@@ -1037,7 +1037,7 @@ describe("Artwork type", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.category = "ink"
-          return runQuery(query, context).then(data => {
+          return runV1Query(query, context).then(data => {
             expect(data.artwork.is_hangable).toBe(true)
           })
         })
@@ -1047,7 +1047,7 @@ describe("Artwork type", () => {
           artwork.height = 100
           artwork.depth = 0.5
           artwork.category = "ink"
-          return runQuery(query, context).then(data => {
+          return runV1Query(query, context).then(data => {
             expect(data.artwork.is_hangable).toBe(true)
           })
         })
@@ -1056,7 +1056,7 @@ describe("Artwork type", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.category = "painting"
-          return runQuery(query, context).then(data => {
+          return runV1Query(query, context).then(data => {
             expect(data.artwork.is_hangable).toBe(true)
           })
         })
@@ -1067,7 +1067,7 @@ describe("Artwork type", () => {
           artwork.category = "sculpture"
           artwork.width = 100
           artwork.height = 100
-          return runQuery(query, context).then(data => {
+          return runV1Query(query, context).then(data => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
@@ -1076,7 +1076,7 @@ describe("Artwork type", () => {
           artwork.category = "installation"
           artwork.width = 100
           artwork.height = 100
-          return runQuery(query, context).then(data => {
+          return runV1Query(query, context).then(data => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
@@ -1085,7 +1085,7 @@ describe("Artwork type", () => {
           artwork.width = 100
           artwork.height = 100
           artwork.depth = 100
-          return runQuery(query, context).then(data => {
+          return runV1Query(query, context).then(data => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
@@ -1094,14 +1094,14 @@ describe("Artwork type", () => {
           artwork.width = "10000"
           artwork.height = "10000"
           artwork.metric = "cm"
-          return runQuery(query, context).then(data => {
+          return runV1Query(query, context).then(data => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
 
         it("is not hangable if there is no dimensions", () => {
           artwork.dimensions = {}
-          return runQuery(query, context).then(data => {
+          return runV1Query(query, context).then(data => {
             expect(data.artwork.is_hangable).toBe(false)
           })
         })
@@ -1120,7 +1120,7 @@ describe("Artwork type", () => {
       it("returns false for ecommerce works regardless of work inquireable status", () => {
         artwork.inquireable = true
         artwork.ecommerce = true
-        return runQuery(query, context).then(data => {
+        return runV1Query(query, context).then(data => {
           expect(data.artwork.is_inquireable).toBe(false)
         })
       })
@@ -1128,7 +1128,7 @@ describe("Artwork type", () => {
       it("returns true for inquireable non ecommerce works", () => {
         artwork.inquireable = true
         artwork.ecommerce = false
-        return runQuery(query, context).then(data => {
+        return runV1Query(query, context).then(data => {
           expect(data.artwork.is_inquireable).toBe(true)
         })
       })
@@ -1136,7 +1136,7 @@ describe("Artwork type", () => {
       it("returns false for non inquireable non ecommerce works", () => {
         artwork.inquireable = false
         artwork.ecommerce = false
-        return runQuery(query, context).then(data => {
+        return runV1Query(query, context).then(data => {
           expect(data.artwork.is_inquireable).toBe(false)
         })
       })
@@ -1155,7 +1155,7 @@ describe("Artwork type", () => {
 
       it("removes the hardcoded signature label if present", () => {
         artwork.signature = "Signature: Foo *bar*"
-        return runQuery(query, context).then(({ artwork: { signature } }) => {
+        return runV1Query(query, context).then(({ artwork: { signature } }) => {
           expect(signature).toBe("<p>Foo <em>bar</em></p>\n")
         })
       })
@@ -1174,7 +1174,7 @@ describe("Artwork type", () => {
 
     it("returns true if artwork price is a range.", () => {
       artwork.price = "$200 - $300"
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -1186,7 +1186,7 @@ describe("Artwork type", () => {
 
     it("returns false if artwork price is not a range.", () => {
       artwork.price = "$1000"
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -1199,7 +1199,7 @@ describe("Artwork type", () => {
     it("returns false if artwork price with single edition is not a range.", () => {
       artwork.price = "$200"
       artwork.edition_sets = [{}]
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -1212,7 +1212,7 @@ describe("Artwork type", () => {
     it("returns true if artwork price with single edition is a range.", () => {
       artwork.price = "$200 - $300"
       artwork.edition_sets = [{}]
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -1225,7 +1225,7 @@ describe("Artwork type", () => {
     it("returns false if artwork price with multiple editions is a range.", () => {
       artwork.price = "$200 - $300"
       artwork.edition_sets = [{}, {}]
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             id: "richard-prince-untitled-portrait",
@@ -1247,7 +1247,7 @@ describe("Artwork type", () => {
 
     it("is Untitled when its title is null", () => {
       artwork.title = null
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             title: "Untitled",
@@ -1258,7 +1258,7 @@ describe("Artwork type", () => {
 
     it("is Untitled title when its title is empty", () => {
       artwork.title = ""
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             title: "Untitled",
@@ -1300,7 +1300,7 @@ describe("Artwork type", () => {
     })
 
     it("returns all lot standings by default", () => {
-      return runQuery(query(undefined), context).then(
+      return runV1Query(query(undefined), context).then(
         ({ artwork: { myLotStanding } }) => {
           expect(myLotStanding).toEqual([
             { sale_artwork: { id: "past" } },
@@ -1311,7 +1311,7 @@ describe("Artwork type", () => {
     })
 
     it("returns all lot standings", () => {
-      return runQuery(query(null), context).then(
+      return runV1Query(query(null), context).then(
         ({ artwork: { myLotStanding } }) => {
           expect(myLotStanding).toEqual([
             { sale_artwork: { id: "past" } },
@@ -1322,7 +1322,7 @@ describe("Artwork type", () => {
     })
 
     it("returns only lot standings for live sales", () => {
-      return runQuery(query(true), context).then(
+      return runV1Query(query(true), context).then(
         ({ artwork: { myLotStanding } }) => {
           expect(myLotStanding).toEqual([{ sale_artwork: { id: "live" } }])
         }
@@ -1330,7 +1330,7 @@ describe("Artwork type", () => {
     })
 
     it("returns only lot standings for not-live sales", () => {
-      return runQuery(query(false), context).then(
+      return runV1Query(query(false), context).then(
         ({ artwork: { myLotStanding } }) => {
           expect(myLotStanding).toEqual([{ sale_artwork: { id: "past" } }])
         }
@@ -1349,7 +1349,7 @@ describe("Artwork type", () => {
           }
         }
       `
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
@@ -1370,7 +1370,7 @@ describe("Artwork type", () => {
           }
         }
       `
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
@@ -1391,7 +1391,7 @@ describe("Artwork type", () => {
           }
         }
       `
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
@@ -1412,7 +1412,7 @@ describe("Artwork type", () => {
           }
         }
       `
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             attribution_class: {
@@ -1441,7 +1441,7 @@ describe("Artwork type", () => {
     it("returns null appropriately and doesnt error", () => {
       artwork.partner = null
       artwork.title = "A Cat"
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             partner: null,
@@ -1466,7 +1466,7 @@ describe("Artwork type", () => {
     it("is set to prompt string when its domestic_shipping_fee_cents is null and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = null
       artwork.international_shipping_fee_cents = null
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shippingInfo: "Shipping, tax, and service quoted by seller",
@@ -1478,7 +1478,7 @@ describe("Artwork type", () => {
     it("is set to free domestic shipping only when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = null
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shippingInfo: "Free shipping within continental US only",
@@ -1490,7 +1490,7 @@ describe("Artwork type", () => {
     it("is set to free shipping string when its domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is 0", () => {
       artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = 0
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shippingInfo: "Free shipping worldwide",
@@ -1502,7 +1502,7 @@ describe("Artwork type", () => {
     it("is set to domestic shipping only when its domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = null
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shippingInfo: "Shipping: $10 continental US only",
@@ -1514,7 +1514,7 @@ describe("Artwork type", () => {
     it("is set to free international shipping when domestic_shipping_fee_cents is 0 and domestic_shipping_fee_cents is present", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = 0
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shippingInfo: "Shipping: $10 continental US, free rest of world",
@@ -1526,7 +1526,7 @@ describe("Artwork type", () => {
     it("is set to free domestic shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
       artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = 10000
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shippingInfo: "Shipping: Free continental US, $100 rest of world",
@@ -1538,7 +1538,7 @@ describe("Artwork type", () => {
     it("is set to free domestic shipping when domestic_shipping_fee_cents is 0 and international_shipping_fee_cents is present", () => {
       artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = 10000
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shippingInfo: "Shipping: Free continental US, $100 rest of world",
@@ -1550,7 +1550,7 @@ describe("Artwork type", () => {
     it("is set to domestic and intermational shipping when both domestic_shipping_fee_cents and present and international_shipping_fee_cents are set", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = 2000
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shippingInfo: "Shipping: $10 continental US, $20 rest of world",
@@ -1571,7 +1571,7 @@ describe("Artwork type", () => {
     it("is true when domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = null
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shipsToContinentalUSOnly: true,
@@ -1583,7 +1583,7 @@ describe("Artwork type", () => {
     it("is false when work ships free internationally", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = 0
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shipsToContinentalUSOnly: false,
@@ -1595,7 +1595,7 @@ describe("Artwork type", () => {
     it("is false when work ships free worldwide", () => {
       artwork.domestic_shipping_fee_cents = 0
       artwork.international_shipping_fee_cents = 0
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shipsToContinentalUSOnly: false,
@@ -1607,7 +1607,7 @@ describe("Artwork type", () => {
     it("is false when work ships worldwide", () => {
       artwork.domestic_shipping_fee_cents = 1000
       artwork.international_shipping_fee_cents = 1000
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shipsToContinentalUSOnly: false,
@@ -1628,7 +1628,7 @@ describe("Artwork type", () => {
 
     it("is null when shipping_origin is null", () => {
       artwork.shipping_origin = null
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shippingOrigin: null,
@@ -1639,7 +1639,7 @@ describe("Artwork type", () => {
 
     it("is set to concatinated values from shipping_origin when shipping origin is present", () => {
       artwork.shipping_origin = ["Kharkov", "Ukraine"]
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             shippingOrigin: "Kharkov, Ukraine",
@@ -1662,13 +1662,13 @@ describe("Artwork type", () => {
     `
     it("is null when framed is null", () => {
       artwork.framed = null
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({ artwork: { framed: null } })
       })
     })
     it("is set to proper object when framed is true", () => {
       artwork.framed = true
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             framed: { label: "Framed", details: "Included" },
@@ -1678,7 +1678,7 @@ describe("Artwork type", () => {
     })
     it("is set to proper object when framed is false", () => {
       artwork.framed = false
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             framed: { label: "Framed", details: "Not included" },
@@ -1707,7 +1707,7 @@ describe("Artwork type", () => {
       artwork.signed_other = null
       artwork.not_signed = null
 
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({ artwork: { signatureInfo: null } })
       })
     })
@@ -1718,7 +1718,7 @@ describe("Artwork type", () => {
       artwork.sticker_label = false
       artwork.signed_other = false
       artwork.not_signed = false
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({ artwork: { signatureInfo: null } })
       })
     })
@@ -1729,7 +1729,7 @@ describe("Artwork type", () => {
       artwork.sticker_label = false
       artwork.signed_other = true
       artwork.not_signed = false
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: { signatureInfo: { label: "Signature", details: "" } },
         })
@@ -1742,7 +1742,7 @@ describe("Artwork type", () => {
       artwork.sticker_label = false
       artwork.signed_other = false
       artwork.not_signed = true
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             signatureInfo: { label: "Signature", details: "Not signed" },
@@ -1756,7 +1756,7 @@ describe("Artwork type", () => {
       artwork.stamped_by_artist_estate = true
       artwork.sticker_label = true
       artwork.signed_other = true
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             signatureInfo: {
@@ -1774,7 +1774,7 @@ describe("Artwork type", () => {
       artwork.stamped_by_artist_estate = false
       artwork.sticker_label = false
       artwork.signed_other = true
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             signatureInfo: {
@@ -1800,19 +1800,19 @@ describe("Artwork type", () => {
     `
     it("is null when condition_description is null", () => {
       artwork.condition_description = null
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({ artwork: { conditionDescription: null } })
       })
     })
     it("is null when condition_description is blank", () => {
       artwork.condition_description = ""
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({ artwork: { conditionDescription: null } })
       })
     })
     it("is set to proper object when condition_description is present", () => {
       artwork.condition_description = "very detailed description of condition"
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             conditionDescription: {
@@ -1835,7 +1835,7 @@ describe("Artwork type", () => {
     `
     it("returns the pageviews if found", () => {
       artwork._id = "4d8b93ba4eb68a1b2c001c5b"
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: { pageviews: 7 },
         })
@@ -1844,7 +1844,7 @@ describe("Artwork type", () => {
 
     it("returns null if not found", () => {
       artwork._id = "invalid"
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: { pageviews: null },
         })
@@ -1865,7 +1865,7 @@ describe("Artwork type", () => {
     `
     it("is null when certificate_of_authenticity is null", () => {
       artwork.certificate_of_authenticity = null
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: { certificateOfAuthenticity: null },
         })
@@ -1873,7 +1873,7 @@ describe("Artwork type", () => {
     })
     it("is set to proper object when certificate_of_authenticity is true", () => {
       artwork.certificate_of_authenticity = true
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             certificateOfAuthenticity: {
@@ -1886,7 +1886,7 @@ describe("Artwork type", () => {
     })
     it("is set to proper object when certificate_of_authenticity is false", () => {
       artwork.certificate_of_authenticity = false
-      return runQuery(query, context).then(data => {
+      return runV1Query(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             certificateOfAuthenticity: {

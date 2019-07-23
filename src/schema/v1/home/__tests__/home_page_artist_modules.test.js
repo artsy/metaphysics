@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { map } from "lodash"
-import { runQuery, runAuthenticatedQuery } from "test/utils"
+import { runV1Query, runAuthenticatedQuery } from "test/utils"
 
 describe("HomePageArtistModules", () => {
   let context = null
@@ -62,7 +62,7 @@ describe("HomePageArtistModules", () => {
     describe("when signed-out", () => {
       it("only shows the trending and popular artists modules", () => {
         delete context.suggestedSimilarArtistsLoader
-        return runQuery(query, context).then(({ home_page }) => {
+        return runV1Query(query, context).then(({ home_page }) => {
           const keys = map(home_page.artist_modules, "key")
           expect(keys).toEqual(["TRENDING", "POPULAR"])
         })

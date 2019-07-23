@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV1Query } from "test/utils"
 
 describe("Artist type", () => {
   const artist = {
@@ -62,7 +62,7 @@ describe("Artist type", () => {
       }
     `
 
-      return runQuery(query, context).then(
+      return runV1Query(query, context).then(
         ({
           artist: {
             currentEvent: { status, partner, details, name, href, event },
@@ -104,7 +104,7 @@ describe("Artist type", () => {
             name: "Catty Sale",
           },
         ])
-      return runQuery(query, context).then(
+      return runV1Query(query, context).then(
         ({
           artist: {
             currentEvent: { status, partner, details, name, href, event },
@@ -143,7 +143,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, context).then(
+    return runV1Query(query, context).then(
       ({
         artist: {
           currentEvent: { name, status, details, href, partner, event },
@@ -172,7 +172,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, context).then(({ artist: { currentEvent } }) => {
+    return runV1Query(query, context).then(({ artist: { currentEvent } }) => {
       expect(currentEvent).toBeNull()
     })
   })

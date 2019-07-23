@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runV1Query } from "test/utils"
 
 describe("Artist type", () => {
   const artist = {
@@ -59,7 +59,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, context).then(
+    return runV1Query(query, context).then(
       ({
         artist: {
           related: {
@@ -110,7 +110,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, context).then(
+    return runV1Query(query, context).then(
       ({
         artist: {
           related: {
@@ -150,7 +150,7 @@ describe("Artist type", () => {
       }
     `
 
-    return runQuery(query, context).then(
+    return runV1Query(query, context).then(
       ({
         artist: {
           related: {

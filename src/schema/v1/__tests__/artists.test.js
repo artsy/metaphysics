@@ -1,4 +1,4 @@
-import { runQuery } from "test/utils"
+import { runV1Query } from "test/utils"
 import gql from "lib/gql"
 import { find } from "lodash"
 
@@ -24,7 +24,7 @@ describe("Artists", () => {
       }
       throw new Error("Unexpected invocation")
     }
-    const { artists } = await runQuery(query, { artistsLoader })
+    const { artists } = await runV1Query(query, { artistsLoader })
     expect(artists).toEqual([{ name: "Han Myung-Ok" }])
   })
 
@@ -42,7 +42,7 @@ describe("Artists", () => {
         }
       }
     `
-    const { artists } = await runQuery(query, { artistsLoader })
+    const { artists } = await runV1Query(query, { artistsLoader })
     expect(artists[0]._id).toEqual("52c721e5b202a3edf1000072")
   })
 
@@ -73,7 +73,7 @@ describe("Artists", () => {
       }
     `
 
-    const { artists } = await runQuery(query, { artistLoader })
+    const { artists } = await runV1Query(query, { artistLoader })
     expect(artists[0].id).toEqual("andy-warhol")
   })
 })
