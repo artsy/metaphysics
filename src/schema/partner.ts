@@ -19,6 +19,7 @@ import {
   GraphQLList,
   GraphQLBoolean,
   GraphQLFieldConfig,
+  GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
@@ -41,7 +42,7 @@ const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const artworksArgs = {
+const artworksArgs: GraphQLFieldConfigArgumentMap = {
   for_sale: {
     type: GraphQLBoolean,
   },
