@@ -27,13 +27,7 @@
 import { basename } from "path"
 import _ from "lodash"
 import { fromGlobalId, toGlobalId } from "graphql-relay"
-import {
-  GraphQLNonNull,
-  GraphQLID,
-  GraphQLInterfaceType,
-  GraphQLFieldConfig,
-} from "graphql"
-import { ResolverContext } from "types/graphql"
+import { GraphQLNonNull, GraphQLID, GraphQLInterfaceType } from "graphql"
 
 /* eslint-disable no-param-reassign */
 const SupportedTypes: any = {
@@ -116,7 +110,8 @@ export const NodeInterface = new GraphQLInterfaceType({
   resolveType: ({ __type }) => __type,
 })
 
-const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
+const NodeField = {
+  name: "node",
   description: "Fetches an object given its Globally Unique ID",
   type: NodeInterface,
   args: {

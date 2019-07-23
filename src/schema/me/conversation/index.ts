@@ -74,7 +74,7 @@ export const ConversationInitiatorType = new GraphQLObjectType<
       type: new GraphQLNonNull(GraphQLString),
     },
     initials: initials("name"),
-  },
+  } as any,
 })
 
 export const ConversationResponderType = new GraphQLObjectType<
@@ -99,7 +99,7 @@ export const ConversationResponderType = new GraphQLObjectType<
         "An array of Impulse IDs that correspond to all email addresses that messages should be sent to",
     },
     initials: initials("name"),
-  },
+  } as any,
 })
 
 const ConversationItemType = new GraphQLUnionType({

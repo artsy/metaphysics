@@ -6,14 +6,10 @@ import {
   GraphQLInt,
   GraphQLList,
   GraphQLFieldConfig,
-  GraphQLFieldConfigMap,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-export const CollectorProfileFields: GraphQLFieldConfigMap<
-  any,
-  ResolverContext
-> = {
+export const CollectorProfileFields = {
   ...InternalIDFields,
   email: {
     type: GraphQLString,

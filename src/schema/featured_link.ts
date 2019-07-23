@@ -28,7 +28,7 @@ const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: GraphQLString,
     },
-  },
+  } as any,
 })
 
 const FeaturedLink: GraphQLFieldConfig<void, ResolverContext> = {

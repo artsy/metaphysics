@@ -90,11 +90,7 @@ import { sendFeedbackMutation } from "./sendFeedbackMutation"
 
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
-import {
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLFieldConfigMap,
-} from "graphql"
+import { GraphQLSchema, GraphQLObjectType } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 import config from "config"
@@ -109,7 +105,8 @@ import { RelatedArtworkGridType } from "./artwork/artworkContextGrids/RelatedArt
 import { ShowArtworkGridType } from "./artwork/artworkContextGrids/ShowArtworkGrid"
 const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
-const rootFields: GraphQLFieldConfigMap<any, ResolverContext> = {
+// TODO: Remove this any
+const rootFields: any = {
   artworkAttributionClasses: ArtworkAttributionClasses,
   article: Article,
   articles: Articles,

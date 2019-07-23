@@ -4,7 +4,6 @@ import {
   GraphQLString,
   GraphQLBoolean,
   GraphQLFieldConfig,
-  GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import PartnerShowSorts from "schema/sorts/partner_show_sorts"
 import { merge, defaults, reject, includes, omit } from "lodash"
@@ -32,7 +31,7 @@ export function showsWithBLacklistedPartnersRemoved(shows) {
   })
 }
 
-const ShowArgs: GraphQLFieldConfigArgumentMap = {
+const ShowArgs = {
   active: {
     type: GraphQLBoolean,
   },
