@@ -5,7 +5,7 @@ import {
   GraphQLInt,
   GraphQLFieldConfig,
 } from "graphql"
-import Gene from "schema/v1/gene"
+import Gene from "schema/v2/gene"
 import { ResolverContext } from "types/graphql"
 
 const GeneMatch: GraphQLFieldConfig<void, ResolverContext> = {

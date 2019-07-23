@@ -8,11 +8,11 @@ import {
   GraphQLFieldConfigMap,
 } from "graphql"
 
-import { IDFields, NodeInterface } from "schema/v1/object_identification"
+import { IDFields, NodeInterface } from "schema/v2/object_identification"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
 
-import date from "schema/v1/fields/date"
-import initials from "schema/v1/fields/initials"
+import date from "schema/v2/fields/date"
+import initials from "schema/v2/fields/initials"
 
 import ArtworkInquiries from "./artwork_inquiries"
 import BidderPositions from "./bidder_positions"

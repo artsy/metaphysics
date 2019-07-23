@@ -1,5 +1,5 @@
 import _ from "lodash"
-import Image from "schema/v1/image"
+import Image from "schema/v2/image"
 import { error } from "lib/loggers"
 import { GraphQLObjectType, GraphQLList, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"

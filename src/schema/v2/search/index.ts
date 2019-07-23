@@ -8,14 +8,14 @@ import {
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
 
-import { connectionWithCursorInfo } from "schema/v1/fields/pagination"
-import { Searchable } from "schema/v1/searchable"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import { Searchable } from "schema/v2/searchable"
 import { SearchEntity } from "./SearchEntity"
 import { ResolverContext } from "types/graphql"
 import {
   SearchAggregationResultsType,
   SearchAggregation,
-} from "schema/v1/search/SearchAggregation"
+} from "schema/v2/search/SearchAggregation"
 import { map } from "lodash"
 import { SearchResolver } from "./SearchResolver"
 

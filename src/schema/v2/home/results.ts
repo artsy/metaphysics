@@ -7,7 +7,7 @@ import {
   popularArtists,
 } from "./fetch"
 import { map, assign, keys, without, shuffle, slice } from "lodash"
-import Artwork from "schema/v1/artwork/index"
+import Artwork from "schema/v2/artwork/index"
 import { GraphQLList, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import {

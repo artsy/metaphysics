@@ -1,7 +1,7 @@
 import { assign, create, first, flow, compact } from "lodash"
-import Fair from "schema/v1/fair"
-import Sale from "schema/v1/sale/index"
-import PartnerShow from "schema/v1/partner_show"
+import Fair from "schema/v2/fair"
+import Sale from "schema/v2/sale/index"
+import PartnerShow from "schema/v2/partner_show"
 import { GraphQLUnionType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 

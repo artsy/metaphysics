@@ -4,7 +4,7 @@ import {
   GraphQLFieldConfig,
   GraphQLList,
 } from "graphql"
-import { artworkConnection } from "schema/v1/artwork"
+import { artworkConnection } from "schema/v2/artwork"
 import { pageable } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { first } from "lodash"

@@ -5,12 +5,12 @@ import {
   GraphQLUnionType,
   GraphQLFieldConfig,
 } from "graphql"
-import Image, { normalizeImageData } from "schema/v1/image"
+import Image, { normalizeImageData } from "schema/v2/image"
 import { error } from "lib/loggers"
 import { dateRange } from "lib/date"
 import { ShowType } from "../show"
 import { SaleType } from "../sale"
-import { date as DateFormat } from "schema/v1/fields/date"
+import { date as DateFormat } from "schema/v2/fields/date"
 import { ResolverContext } from "types/graphql"
 
 const UnderlyingCurrentEventType = new GraphQLUnionType({

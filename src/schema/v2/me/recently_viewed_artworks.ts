@@ -1,7 +1,7 @@
 import { connectionFromArray, connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters, pageable } from "relay-cursor-paging"
 
-import { artworkConnection } from "schema/v1/artwork"
+import { artworkConnection } from "schema/v2/artwork"
 import { GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 

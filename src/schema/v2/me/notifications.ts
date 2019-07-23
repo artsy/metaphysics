@@ -1,8 +1,8 @@
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import date from "schema/v1/fields/date"
-import Artwork from "schema/v1/artwork"
-import Image, { normalizeImageData } from "schema/v1/image"
+import date from "schema/v2/fields/date"
+import Artwork from "schema/v2/artwork"
+import Image, { normalizeImageData } from "schema/v2/image"
 import {
   GraphQLEnumType,
   GraphQLList,
@@ -12,7 +12,7 @@ import {
 } from "graphql"
 import { omit } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { GlobalIDField, NodeInterface } from "schema/v1/object_identification"
+import { GlobalIDField, NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import { deprecate } from "lib/deprecation"
 

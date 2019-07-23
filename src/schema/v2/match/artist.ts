@@ -5,7 +5,7 @@ import {
   GraphQLInt,
   GraphQLFieldConfig,
 } from "graphql"
-import Artist from "schema/v1/artist"
+import Artist from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
 
 const ArtistMatch: GraphQLFieldConfig<void, ResolverContext> = {

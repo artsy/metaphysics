@@ -1,6 +1,6 @@
 import { create } from "lodash"
-import Show from "schema/v1/show"
-import Article from "schema/v1/article"
+import Show from "schema/v2/show"
+import Article from "schema/v2/article"
 import { GraphQLUnionType } from "graphql"
 
 export const HighlightedShowType = create(Show.type, {

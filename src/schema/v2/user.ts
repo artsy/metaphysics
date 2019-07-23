@@ -7,7 +7,7 @@ import {
 } from "graphql"
 import cached from "./fields/cached"
 import { InternalIDFields } from "./object_identification"
-import { LocationType } from "schema/v1/location"
+import { LocationType } from "schema/v2/location"
 import { ResolverContext } from "types/graphql"
 
 export const UserType = new GraphQLObjectType<any, ResolverContext>({

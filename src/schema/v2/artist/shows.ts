@@ -6,9 +6,9 @@ import {
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
-import PartnerShowSorts from "schema/v1/sorts/partner_show_sorts"
+import PartnerShowSorts from "schema/v2/sorts/partner_show_sorts"
 import { merge, defaults, reject, includes, omit } from "lodash"
-import { createPageCursors } from "schema/v1/fields/pagination"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"

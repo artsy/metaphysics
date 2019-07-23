@@ -1,10 +1,10 @@
 import { pageable } from "relay-cursor-paging"
 import moment from "moment"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import Artwork, { artworkConnection } from "schema/v1/artwork"
-import ArtworkSorts from "schema/v1/sorts/artwork_sorts"
-import Image, { normalizeImageData } from "schema/v1/image"
-import date from "schema/v1/fields/date"
+import Artwork, { artworkConnection } from "schema/v2/artwork"
+import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
+import Image, { normalizeImageData } from "schema/v2/image"
+import date from "schema/v2/fields/date"
 import {
   GraphQLBoolean,
   GraphQLList,
@@ -14,7 +14,7 @@ import {
 } from "graphql"
 import { omit, groupBy, map } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { GlobalIDField, NodeInterface } from "schema/v1/object_identification"
+import { GlobalIDField, NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 
 const FollowedArtistsArtworksGroupType = new GraphQLObjectType<

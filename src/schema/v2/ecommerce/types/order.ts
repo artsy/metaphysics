@@ -9,18 +9,18 @@ import {
 } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
 
-import { amount } from "schema/v1/fields/money"
-import date, { DateSource } from "schema/v1/fields/date"
-import { CreditCard } from "schema/v1/credit_card"
+import { amount } from "schema/v2/fields/money"
+import date, { DateSource } from "schema/v2/fields/date"
+import { CreditCard } from "schema/v2/credit_card"
 import { OrderLineItemConnection } from "./order_line_item"
 import { RequestedFulfillmentUnionType } from "./requested_fulfillment_union_type"
 import { OrderPartyUnionType } from "./order_party_union"
 import { OrderModeEnum } from "./enums/order_mode_enum"
 import { OfferConnection, OfferType } from "./offer"
 import { OrderParticipantEnum } from "./enums/order_participant_enum"
-import { PageCursorsType } from "schema/v1/fields/pagination"
+import { PageCursorsType } from "schema/v2/fields/pagination"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "schema/v1/object_identification"
+import { InternalIDFields } from "schema/v2/object_identification"
 
 interface BuyerSource {
   __typename: "EcommerceUser"

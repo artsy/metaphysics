@@ -1,4 +1,4 @@
-import { CollectionType, collectionResolverFactory } from "schema/v1/collection"
+import { CollectionType, collectionResolverFactory } from "schema/v2/collection"
 import { GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 

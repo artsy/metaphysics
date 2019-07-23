@@ -1,6 +1,6 @@
 import { map } from "lodash"
 import { totalViaLoader } from "lib/total"
-import Artist from "schema/v1/artist"
+import Artist from "schema/v2/artist"
 import {
   GraphQLInt,
   GraphQLList,

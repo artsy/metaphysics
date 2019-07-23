@@ -1,5 +1,5 @@
 import { GraphQLString, GraphQLObjectType, GraphQLNonNull } from "graphql"
-import BidderPosition from "schema/v1/bidder_position"
+import BidderPosition from "schema/v2/bidder_position"
 import { ResolverContext } from "types/graphql"
 
 export const BidderPositionResultType = new GraphQLObjectType<

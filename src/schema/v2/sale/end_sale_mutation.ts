@@ -1,6 +1,6 @@
 import { GraphQLString } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { SaleType } from "schema/v1/sale/index"
+import { SaleType } from "schema/v2/sale/index"
 import { ResolverContext } from "types/graphql"
 
 export const endSaleMutation = mutationWithClientMutationId<

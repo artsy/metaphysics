@@ -4,7 +4,7 @@ import {
   GraphQLString,
   GraphQLFieldConfig,
 } from "graphql"
-import { OrderInterface } from "schema/v1/ecommerce/types/order"
+import { OrderInterface } from "schema/v2/ecommerce/types/order"
 import { AllOrderFields } from "./query_helpers"
 import gql from "lib/gql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"

@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
-import { ArtworkContextGridType } from "schema/v1/artwork/artworkContextGrids"
-import { artworkConnection } from "schema/v1/artwork"
+import { ArtworkContextGridType } from "schema/v2/artwork/artworkContextGrids"
+import { artworkConnection } from "schema/v2/artwork"
 import { connectionFromArraySlice } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
 import { artworkLayers } from "../layers"

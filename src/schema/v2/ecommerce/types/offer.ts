@@ -1,13 +1,13 @@
 import { GraphQLObjectType, GraphQLString, GraphQLInt } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
-import date from "schema/v1/fields/date"
+import date from "schema/v2/fields/date"
 import { OrderPartyUnionType } from "./order_party_union"
 import { OrderInterface, resolveOrderParty } from "./order"
-import { UserType } from "schema/v1/user"
-import { amount } from "schema/v1/fields/money"
+import { UserType } from "schema/v2/user"
+import { amount } from "schema/v2/fields/money"
 import { OrderParticipantEnum } from "./enums/order_participant_enum"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "schema/v1/object_identification"
+import { InternalIDFields } from "schema/v2/object_identification"
 
 export const OfferType = new GraphQLObjectType<any, ResolverContext>({
   name: "Offer",

@@ -15,7 +15,7 @@ import DeepZoom, { isZoomable } from "./deep_zoom"
 import { ImageData, normalize } from "./normalize"
 import ResizedUrl from "./resized"
 import VersionedUrl from "./versioned"
-import { NullableIDField } from "schema/v1/object_identification"
+import { NullableIDField } from "schema/v2/object_identification"
 
 export { normalize as normalizeImageData } from "./normalize"
 

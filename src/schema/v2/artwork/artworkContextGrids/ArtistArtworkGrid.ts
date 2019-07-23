@@ -2,10 +2,10 @@ import { GraphQLObjectType, GraphQLString } from "graphql"
 import {
   ArtworkContextGridType,
   formDefaultGravityArgs,
-} from "schema/v1/artwork/artworkContextGrids"
-import { artworkConnection } from "schema/v1/artwork"
+} from "schema/v2/artwork/artworkContextGrids"
+import { artworkConnection } from "schema/v2/artwork"
 import { connectionFromArraySlice } from "graphql-relay"
-import { artistArtworkArrayLength } from "schema/v1/artist"
+import { artistArtworkArrayLength } from "schema/v2/artist"
 import { pageable } from "relay-cursor-paging"
 
 export const ArtistArtworkGridType = new GraphQLObjectType<

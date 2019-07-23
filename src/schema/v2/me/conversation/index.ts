@@ -1,6 +1,6 @@
 import { isExisty } from "lib/helpers"
-import date from "schema/v1/fields/date"
-import initials from "schema/v1/fields/initials"
+import date from "schema/v2/fields/date"
+import initials from "schema/v2/fields/initials"
 import { get, merge } from "lodash"
 import {
   GraphQLBoolean,
@@ -15,14 +15,14 @@ import {
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice, connectionDefinitions } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { ArtworkType } from "schema/v1/artwork"
-import { ShowType } from "schema/v1/show"
+import { ArtworkType } from "schema/v2/artwork"
+import { ShowType } from "schema/v2/show"
 import {
   GlobalIDField,
   NodeInterface,
   InternalIDFields,
   NullableIDField,
-} from "schema/v1/object_identification"
+} from "schema/v2/object_identification"
 import { MessageType } from "./message"
 import { ResolverContext } from "types/graphql"
 import { deprecate } from "lib/deprecation"

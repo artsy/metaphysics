@@ -1,5 +1,5 @@
 import cached from "./fields/cached"
-import { connectionWithCursorInfo } from "schema/v1/fields/pagination"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import AuthorType from "./author"
 import Image, { normalizeImageData } from "./image"
 import date from "./fields/date"

@@ -1,10 +1,10 @@
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { createPageCursors, pageToCursor } from "schema/v1/fields/pagination"
+import { createPageCursors, pageToCursor } from "schema/v2/fields/pagination"
 import { connectionFromArraySlice } from "graphql-relay"
 import { GraphQLResolveInfo, visit } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { Searchable } from "schema/v1/searchable"
-import { SearchableItem } from "schema/v1/SearchableItem"
+import { Searchable } from "schema/v2/searchable"
+import { SearchableItem } from "schema/v2/SearchableItem"
 
 export class SearchResolver {
   private args: { [argName: string]: any }

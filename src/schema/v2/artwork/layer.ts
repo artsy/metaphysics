@@ -1,5 +1,5 @@
 import Artwork, { artworkConnection } from "./index"
-import { IDFields } from "schema/v1/object_identification"
+import { IDFields } from "schema/v2/object_identification"
 import {
   GraphQLObjectType,
   GraphQLString,

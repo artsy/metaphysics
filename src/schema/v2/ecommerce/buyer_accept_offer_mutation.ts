@@ -1,6 +1,6 @@
 import { graphql } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { OfferMutationInputType } from "schema/v1/ecommerce/types/offer_mutation_input_type"
+import { OfferMutationInputType } from "schema/v2/ecommerce/types/offer_mutation_input_type"
 import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 import { SellerOrderFields } from "./query_helpers"
 import gql from "lib/gql"

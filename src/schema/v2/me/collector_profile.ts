@@ -1,5 +1,5 @@
-import date from "schema/v1/fields/date"
-import { InternalIDFields } from "schema/v1/object_identification"
+import date from "schema/v2/fields/date"
+import { InternalIDFields } from "schema/v2/object_identification"
 import {
   GraphQLObjectType,
   GraphQLString,

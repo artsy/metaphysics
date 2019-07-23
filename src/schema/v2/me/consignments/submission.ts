@@ -7,8 +7,8 @@ import {
   GraphQLInt,
   GraphQLID,
 } from "graphql"
-import { NullableIDField } from "schema/v1/object_identification"
-import Artist from "schema/v1/artist"
+import { NullableIDField } from "schema/v2/object_identification"
+import Artist from "schema/v2/artist"
 import { ResolverContext } from "types/graphql"
 
 export const SubmissionDimensionAggregation = new GraphQLEnumType({

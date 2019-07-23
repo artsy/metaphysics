@@ -9,8 +9,8 @@ import {
   GraphQLEnumType,
 } from "graphql"
 import { indexOf } from "lodash"
-import { connectionWithCursorInfo } from "schema/v1/fields/pagination"
-import Image, { normalizeImageData } from "schema/v1/image"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import Image, { normalizeImageData } from "schema/v2/image"
 import { ResolverContext } from "types/graphql"
 
 // Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json

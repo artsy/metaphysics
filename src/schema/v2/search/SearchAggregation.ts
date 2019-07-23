@@ -1,5 +1,5 @@
 import { map } from "lodash"
-import AggregationCount from "schema/v1/aggregations/aggregation_count"
+import AggregationCount from "schema/v2/aggregations/aggregation_count"
 import { GraphQLObjectType, GraphQLEnumType, GraphQLList } from "graphql"
 import { ResolverContext } from "types/graphql"
 

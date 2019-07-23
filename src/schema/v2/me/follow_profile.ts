@@ -1,6 +1,6 @@
 import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ProfileType } from "schema/v1/profile"
+import { ProfileType } from "schema/v2/profile"
 import { ResolverContext } from "types/graphql"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({

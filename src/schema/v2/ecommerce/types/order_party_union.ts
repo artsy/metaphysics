@@ -1,6 +1,6 @@
 import { GraphQLUnionType } from "graphql"
-import Partner from "schema/v1/partner"
-import { UserType } from "schema/v1/user"
+import Partner from "schema/v2/partner"
+import { UserType } from "schema/v2/user"
 
 export const OrderPartyUnionType = new GraphQLUnionType({
   name: "OrderParty",

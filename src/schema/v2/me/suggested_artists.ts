@@ -1,6 +1,6 @@
-import { ArtistType } from "schema/v1/artist"
+import { ArtistType } from "schema/v2/artist"
 import { GraphQLList, GraphQLFieldConfig } from "graphql"
-import { SuggestedArtistsArgs } from "schema/v1/me/suggested_artists_args"
+import { SuggestedArtistsArgs } from "schema/v2/me/suggested_artists_args"
 import { ResolverContext } from "types/graphql"
 
 const SuggestedArtists: GraphQLFieldConfig<void, ResolverContext> = {

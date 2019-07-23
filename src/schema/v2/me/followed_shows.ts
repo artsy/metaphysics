@@ -1,5 +1,5 @@
-import { ShowType } from "schema/v1/show"
-import { IDFields } from "schema/v1/object_identification"
+import { ShowType } from "schema/v2/show"
+import { IDFields } from "schema/v2/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
@@ -10,7 +10,7 @@ import {
   GraphQLInt,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import EventStatus from "schema/v1/input_fields/event_status"
+import EventStatus from "schema/v2/input_fields/event_status"
 import cityData from "../city/cityDataSortedByDisplayPreference.json"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "../city/constants"
 

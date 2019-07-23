@@ -1,4 +1,4 @@
-import Fair from "schema/v1/fair"
+import Fair from "schema/v2/fair"
 import { GraphQLList, GraphQLObjectType, GraphQLNonNull } from "graphql"
 import { ResolverContext } from "types/graphql"
 

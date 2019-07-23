@@ -1,7 +1,7 @@
 import { graphql } from "graphql"
 
 import { mutationWithClientMutationId } from "graphql-relay"
-import { OrderOrFailureUnionType } from "schema/v1/ecommerce/types/order_or_error_union"
+import { OrderOrFailureUnionType } from "schema/v2/ecommerce/types/order_or_error_union"
 import gql from "lib/gql"
 import { BuyerOrderFields } from "./query_helpers"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"

@@ -9,27 +9,27 @@ import {
   merge,
 } from "lodash"
 import { exclude } from "lib/helpers"
-import cached from "schema/v1/fields/cached"
-import initials from "schema/v1/fields/initials"
-import { markdown, formatMarkdownValue } from "schema/v1/fields/markdown"
-import numeral from "schema/v1/fields/numeral"
-import Image, { getDefault } from "schema/v1/image"
-import { setVersion } from "schema/v1/image/normalize"
-import Article, { articleConnection } from "schema/v1/article"
-import Artwork, { artworkConnection } from "schema/v1/artwork"
-import PartnerArtist from "schema/v1/partner_artist"
+import cached from "schema/v2/fields/cached"
+import initials from "schema/v2/fields/initials"
+import { markdown, formatMarkdownValue } from "schema/v2/fields/markdown"
+import numeral from "schema/v2/fields/numeral"
+import Image, { getDefault } from "schema/v2/image"
+import { setVersion } from "schema/v2/image/normalize"
+import Article, { articleConnection } from "schema/v2/article"
+import Artwork, { artworkConnection } from "schema/v2/artwork"
+import PartnerArtist from "schema/v2/partner_artist"
 import Meta from "./meta"
-import PartnerShow from "schema/v1/partner_show"
+import PartnerShow from "schema/v2/partner_show"
 import {
   PartnerArtistConnection,
   partnersForArtist,
-} from "schema/v1/partner_artist"
+} from "schema/v2/partner_artist"
 import { GeneType } from "../gene"
-import Show, { showConnection } from "schema/v1/show"
-import Sale from "schema/v1/sale/index"
-import ArtworkSorts from "schema/v1/sorts/artwork_sorts"
-import ArticleSorts from "schema/v1/sorts/article_sorts"
-import SaleSorts from "schema/v1/sale/sorts"
+import Show, { showConnection } from "schema/v2/show"
+import Sale from "schema/v2/sale/index"
+import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
+import ArticleSorts from "schema/v2/sorts/article_sorts"
+import SaleSorts from "schema/v2/sale/sorts"
 import ArtistCarousel from "./carousel"
 import ArtistStatuses from "./statuses"
 import ArtistHighlights from "./highlights"
@@ -38,13 +38,13 @@ import { CurrentEvent } from "./current"
 import {
   auctionResultConnection,
   AuctionResultSorts,
-} from "schema/v1/auction_result"
+} from "schema/v2/auction_result"
 import ArtistArtworksFilters from "./artwork_filters"
-import { Searchable } from "schema/v1/searchable"
-import filterArtworks from "schema/v1/filter_artworks"
-import { connectionWithCursorInfo } from "schema/v1/fields/pagination"
+import { Searchable } from "schema/v2/searchable"
+import filterArtworks from "schema/v2/filter_artworks"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { Related } from "./related"
-import { createPageCursors } from "schema/v1/fields/pagination"
+import { createPageCursors } from "schema/v2/fields/pagination"
 import {
   ShowField,
   showsWithBLacklistedPartnersRemoved,
@@ -53,7 +53,7 @@ import {
 import {
   NodeInterface,
   SlugAndInternalIDFields,
-} from "schema/v1/object_identification"
+} from "schema/v2/object_identification"
 import {
   GraphQLObjectType,
   GraphQLBoolean,

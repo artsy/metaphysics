@@ -1,4 +1,4 @@
-import Format from "schema/v1/input_fields/format"
+import Format from "schema/v2/input_fields/format"
 import { GraphQLString, GraphQLFieldConfig } from "graphql"
 import { isExisty } from "lib/helpers"
 import marked from "marked"

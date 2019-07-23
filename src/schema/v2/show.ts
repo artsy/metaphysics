@@ -25,8 +25,8 @@ import Artwork, { artworkConnection } from "./artwork"
 import Location from "./location"
 import Image, { getDefault, normalizeImageData } from "./image"
 import PartnerShowEventType from "./partner_show_event"
-import { connectionWithCursorInfo } from "schema/v1/fields/pagination"
-import { filterArtworksWithParams } from "schema/v1/filter_artworks"
+import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import { filterArtworksWithParams } from "schema/v2/filter_artworks"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLObjectType,

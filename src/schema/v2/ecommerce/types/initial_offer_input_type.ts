@@ -4,7 +4,7 @@ import {
   GraphQLID,
   GraphQLString,
 } from "graphql"
-import { MoneyInput } from "schema/v1/fields/money"
+import { MoneyInput } from "schema/v2/fields/money"
 
 export const InitialOfferInputType = new GraphQLInputObjectType({
   name: "InitialOfferOrderInput",

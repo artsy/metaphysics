@@ -1,5 +1,5 @@
 import _ from "lodash"
-import BidderPosition from "schema/v1/bidder_position"
+import BidderPosition from "schema/v2/bidder_position"
 import {
   GraphQLList,
   GraphQLBoolean,

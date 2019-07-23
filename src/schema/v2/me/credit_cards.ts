@@ -1,4 +1,4 @@
-import { CreditCardConnection } from "schema/v1/credit_card"
+import { CreditCardConnection } from "schema/v2/credit_card"
 import { pageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"

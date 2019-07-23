@@ -5,11 +5,11 @@ import {
   GraphQLNonNull,
 } from "graphql"
 import { toGlobalId } from "graphql-relay"
-import { Searchable } from "schema/v1/searchable"
+import { Searchable } from "schema/v2/searchable"
 import {
   NodeInterface,
   SlugAndInternalIDFields,
-} from "schema/v1/object_identification"
+} from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import { SearchableItemPresenter } from "./SearchableItemPresenter"
 import { deprecate } from "lib/deprecation"

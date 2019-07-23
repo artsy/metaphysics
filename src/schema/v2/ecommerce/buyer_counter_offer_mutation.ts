@@ -9,7 +9,7 @@ import { OrderOrFailureUnionType } from "./types/order_or_error_union"
 import { BuyerOrderFields } from "./query_helpers"
 import gql from "lib/gql"
 import { extractEcommerceResponse } from "./extractEcommerceResponse"
-import { MoneyInput } from "schema/v1/fields/money"
+import { MoneyInput } from "schema/v2/fields/money"
 import { moneyFieldToUnit } from "lib/moneyHelper"
 import { ResolverContext } from "types/graphql"
 

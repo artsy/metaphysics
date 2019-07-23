@@ -1,7 +1,7 @@
 import { isEmpty, map } from "lodash"
 import { join, truncate } from "lib/helpers"
-import { getDefault } from "schema/v1/image"
-import { setVersion } from "schema/v1/image/normalize"
+import { getDefault } from "schema/v2/image"
+import { setVersion } from "schema/v2/image/normalize"
 import {
   GraphQLInt,
   GraphQLString,

@@ -6,7 +6,7 @@ import {
   GraphQLUnionType,
   GraphQLFieldConfig,
 } from "graphql"
-import { InternalIDFields } from "schema/v1/object_identification"
+import { InternalIDFields } from "schema/v2/object_identification"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import {
   connectionDefinitions,

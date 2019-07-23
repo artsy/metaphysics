@@ -1,5 +1,5 @@
-import Fair from "schema/v1/fair"
-import { IDFields } from "schema/v1/object_identification"
+import Fair from "schema/v2/fair"
+import { IDFields } from "schema/v2/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"

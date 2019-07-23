@@ -5,7 +5,7 @@ import {
   GraphQLString,
 } from "graphql"
 
-import { OrderInterface } from "schema/v1/ecommerce/types/order"
+import { OrderInterface } from "schema/v2/ecommerce/types/order"
 import { ResolverContext } from "types/graphql"
 
 export const OrderWithMutationSuccess = new GraphQLObjectType<

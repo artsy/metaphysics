@@ -1,8 +1,8 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
-import date from "schema/v1/fields/date"
+import date from "schema/v2/fields/date"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "schema/v1/object_identification"
+import { InternalIDFields } from "schema/v2/object_identification"
 
 export const OrderFulfillmentType = new GraphQLObjectType<any, ResolverContext>(
   {

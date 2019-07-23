@@ -1,5 +1,5 @@
-import cached from "schema/v1/fields/cached"
-import { SlugAndInternalIDFields } from "schema/v1/object_identification"
+import cached from "schema/v2/fields/cached"
+import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import {
   GraphQLEnumType,
   GraphQLList,

@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLString, GraphQLNonNull } from "graphql"
 import date from "../../fields/date"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "schema/v1/object_identification"
+import { InternalIDFields } from "schema/v2/object_identification"
 
 export const DeliveryType = new GraphQLObjectType<any, ResolverContext>({
   name: "Delivery",

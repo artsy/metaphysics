@@ -2,8 +2,8 @@ import { GraphQLObjectType, GraphQLString } from "graphql"
 import {
   ArtworkContextGridType,
   formDefaultGravityArgs,
-} from "schema/v1/artwork/artworkContextGrids"
-import { artworkConnection } from "schema/v1/artwork"
+} from "schema/v2/artwork/artworkContextGrids"
+import { artworkConnection } from "schema/v2/artwork"
 import { connectionFromArraySlice } from "graphql-relay"
 import { pageable } from "relay-cursor-paging"
 import { map } from "lodash"

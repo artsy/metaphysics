@@ -1,5 +1,5 @@
 import { graphql } from "graphql"
-import { OrderMutationInputType } from "schema/v1/ecommerce/types/order_mutation_input"
+import { OrderMutationInputType } from "schema/v2/ecommerce/types/order_mutation_input"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { SellerOrderFields } from "./query_helpers"
 import gql from "lib/gql"

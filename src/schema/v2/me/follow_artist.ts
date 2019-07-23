@@ -1,7 +1,7 @@
 import { GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
-import { ArtistType } from "schema/v1/artist/index"
-import PopularArtists from "schema/v1/artists/popular"
+import { ArtistType } from "schema/v2/artist/index"
+import PopularArtists from "schema/v2/artists/popular"
 import { ResolverContext } from "types/graphql"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({

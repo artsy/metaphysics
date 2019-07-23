@@ -4,7 +4,7 @@ import Results from "./results"
 import Title from "./title"
 import Context from "./context"
 import Params from "./params"
-import { NodeInterface } from "schema/v1/object_identification"
+import { NodeInterface } from "schema/v2/object_identification"
 import { toGlobalId } from "graphql-relay"
 import {
   GraphQLObjectType,

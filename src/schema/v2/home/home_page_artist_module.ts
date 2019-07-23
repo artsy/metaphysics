@@ -1,6 +1,6 @@
 import { map } from "lodash"
-import Artist from "schema/v1/artist"
-import { NodeInterface } from "schema/v1/object_identification"
+import Artist from "schema/v2/artist"
+import { NodeInterface } from "schema/v2/object_identification"
 import { toGlobalId } from "graphql-relay"
 import {
   GraphQLEnumType,

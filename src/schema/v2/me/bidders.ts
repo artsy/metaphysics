@@ -1,4 +1,4 @@
-import Bidder from "schema/v1/bidder"
+import Bidder from "schema/v2/bidder"
 import { GraphQLList, GraphQLString, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 

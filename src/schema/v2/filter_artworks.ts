@@ -34,7 +34,7 @@ import {
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
 
-import { NodeInterface } from "schema/v1/object_identification"
+import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import { deprecate } from "lib/deprecation"
 

@@ -1,12 +1,12 @@
 import { GraphQLInt, GraphQLObjectType, GraphQLString } from "graphql"
 import { connectionDefinitions } from "graphql-relay"
-import Artwork from "schema/v1/artwork"
+import Artwork from "schema/v2/artwork"
 import { OrderFulfillmentConnection } from "./order_fulfillment"
-import { amount } from "schema/v1/fields/money"
-import date from "schema/v1/fields/date"
+import { amount } from "schema/v2/fields/money"
+import date from "schema/v2/fields/date"
 import { ArtworkVersion } from "../../artwork_version"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "schema/v1/object_identification"
+import { InternalIDFields } from "schema/v2/object_identification"
 import { deprecate } from "lib/deprecation"
 
 export const OrderLineItemType = new GraphQLObjectType<any, ResolverContext>({

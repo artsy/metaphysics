@@ -1,8 +1,8 @@
 import { isExisty } from "lib/helpers"
-import BidderPosition from "schema/v1/bidder_position"
-import Bidder from "schema/v1/bidder"
-import Sale from "schema/v1/sale"
-import SaleArtwork from "schema/v1/sale_artwork"
+import BidderPosition from "schema/v2/bidder_position"
+import Bidder from "schema/v2/bidder"
+import Sale from "schema/v2/sale"
+import SaleArtwork from "schema/v2/sale_artwork"
 import {
   GraphQLObjectType,
   GraphQLString,

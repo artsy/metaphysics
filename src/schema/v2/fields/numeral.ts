@@ -1,6 +1,6 @@
 import inflect from "i"
 import numeral from "numeral"
-import FormattedNumber from "schema/v1/types/formatted_number"
+import FormattedNumber from "schema/v2/types/formatted_number"
 import { GraphQLString } from "graphql"
 
 const { pluralize, singularize } = inflect()

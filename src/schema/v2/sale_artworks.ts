@@ -2,11 +2,11 @@ import { SaleArtworkType } from "./sale_artwork"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import { filterSaleArtworksArgs } from "schema/v1/filter_sale_artworks"
+import { filterSaleArtworksArgs } from "schema/v2/filter_sale_artworks"
 import {
   SaleArtworkAggregations,
   SaleArtworkCounts,
-} from "schema/v1/filter_sale_artworks"
+} from "schema/v2/filter_sale_artworks"
 import { GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 

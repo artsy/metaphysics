@@ -4,12 +4,12 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { assign, create } from "lodash"
-import Artist from "schema/v1/artist/index"
-import Trending from "schema/v1/artists/trending"
-import Fair from "schema/v1/fair"
-import Gene from "schema/v1/gene"
-import FollowArtists from "schema/v1/me/follow_artists"
-import Sale from "schema/v1/sale/index"
+import Artist from "schema/v2/artist/index"
+import Trending from "schema/v2/artists/trending"
+import Fair from "schema/v2/fair"
+import Gene from "schema/v2/gene"
+import FollowArtists from "schema/v2/me/follow_artists"
+import Sale from "schema/v2/sale/index"
 import { ResolverContext } from "types/graphql"
 import {
   featuredAuction,

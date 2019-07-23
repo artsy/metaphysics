@@ -1,5 +1,5 @@
-import Gene from "schema/v1/gene"
-import { InternalIDFields } from "schema/v1/object_identification"
+import Gene from "schema/v2/gene"
+import { InternalIDFields } from "schema/v2/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"

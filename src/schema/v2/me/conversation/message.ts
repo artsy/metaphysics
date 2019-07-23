@@ -1,4 +1,4 @@
-import date from "schema/v1/fields/date"
+import date from "schema/v2/fields/date"
 import {
   GraphQLBoolean,
   GraphQLList,
@@ -10,7 +10,7 @@ import {
   GlobalIDField,
   NodeInterface,
   InternalIDFields,
-} from "schema/v1/object_identification"
+} from "schema/v2/object_identification"
 import { AttachmentType } from "./attachment"
 import { DeliveryType } from "./delivery"
 import { InvoiceType } from "./invoice"

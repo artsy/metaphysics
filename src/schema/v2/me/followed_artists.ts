@@ -1,5 +1,5 @@
-import Artist from "schema/v1/artist"
-import { InternalIDFields } from "schema/v1/object_identification"
+import Artist from "schema/v2/artist"
+import { InternalIDFields } from "schema/v2/object_identification"
 
 import { pageable } from "relay-cursor-paging"
 import { connectionDefinitions } from "graphql-relay"

@@ -1,7 +1,7 @@
 import { first } from "lodash"
-import Sale from "schema/v1/sale/index"
-import Sales from "schema/v1/sales"
-import Bidder from "schema/v1/bidder"
+import Sale from "schema/v2/sale/index"
+import Sales from "schema/v2/sales"
+import Bidder from "schema/v2/bidder"
 import {
   GraphQLList,
   GraphQLBoolean,

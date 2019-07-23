@@ -1,4 +1,4 @@
-import Artwork from "schema/v1/artwork/index"
+import Artwork from "schema/v2/artwork/index"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import {
@@ -8,7 +8,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { InternalIDFields } from "schema/v1/object_identification"
+import { InternalIDFields } from "schema/v2/object_identification"
 
 export const ArtworkInquiryType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkInquiry",
