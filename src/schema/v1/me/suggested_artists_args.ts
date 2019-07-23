@@ -1,6 +1,12 @@
-import { GraphQLBoolean, GraphQLString, GraphQLInt, GraphQLList } from "graphql"
+import {
+  GraphQLBoolean,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLFieldConfigArgumentMap,
+} from "graphql"
 
-export const SuggestedArtistsArgs = {
+export const SuggestedArtistsArgs: GraphQLFieldConfigArgumentMap = {
   artist_id: {
     type: GraphQLString,
     description: "The slug or ID of an artist",
