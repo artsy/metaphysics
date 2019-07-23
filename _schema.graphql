@@ -7577,7 +7577,7 @@ type Me implements Node {
     last: Int
   ): NotificationsFeedItemConnection
     @deprecated(
-      reason: "Prefer to use `followed_artists_artwork_groups`. [Will be removed in v2]"
+      reason: "Prefer to use `followsAndSaves`. [Will be removed in v2]"
     )
   paddle_number: String
   recentlyViewedArtworkIds: [String]!
