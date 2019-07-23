@@ -31,6 +31,7 @@ import {
   GraphQLUnionType,
   GraphQLNonNull,
   GraphQLFieldConfig,
+  GraphQLFieldConfigArgumentMap,
 } from "graphql"
 
 import { NodeInterface } from "schema/object_identification"
@@ -226,7 +227,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-export const filterArtworksArgs = {
+export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   acquireable: {
     type: GraphQLBoolean,
   },
