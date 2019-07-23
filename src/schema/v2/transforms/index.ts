@@ -9,7 +9,7 @@ import {
   NullableIDField,
   InternalIDFields,
   SlugAndInternalIDFields,
-} from "schema/v1/object_identification"
+} from "schema/v2/object_identification"
 
 // TODO: Flip this switch before we go public with v2 and update clients. Until
 //       then this gives clients an extra window of opportunity to update.
