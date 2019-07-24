@@ -11,11 +11,7 @@ import {
 } from "./fields/pagination"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
-import {
-  convertConnectionArgsToGravityArgs,
-  queriedForFieldsOtherThanBlacklisted,
-  removeNulls,
-} from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, removeNulls } from "lib/helpers"
 import { connectionFromArraySlice, toGlobalId } from "graphql-relay"
 import {
   ArtworksAggregationResultsType,
@@ -33,6 +29,7 @@ import {
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 import { NodeInterface } from "schema/v1/object_identification"
 import { ResolverContext } from "types/graphql"
@@ -350,7 +347,7 @@ const filterArtworksTypeFactory = (
       unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
       authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
     },
-    { fieldNodes }
+    info
   ) => {
     const { include_artworks_by_followed_artists, aggregations } = options
     const requestedPersonalizedAggregation = aggregations.includes(
@@ -384,8 +381,18 @@ const filterArtworksTypeFactory = (
       loader = loaderWithCache
     }
 
-    const blacklistedFields = ["artworks_connection", "__id"]
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    const fieldsNotRequiringFetching = [
+      "filter_artworks", // this field itself
+      "artworks_connection",
+      "__id",
+      "edges", // comes from nested under `artworks_connection`
+    ]
+    const requireFetch = includesFieldsOtherThanSelectionSet(
+      info,
+      fieldsNotRequiringFetching
+    )
+
+    if (requireFetch) {
       return loader(gravityOptions).then(response =>
         Object.assign({}, response, { options: gravityOptions })
       )
