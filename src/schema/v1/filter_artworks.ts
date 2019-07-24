@@ -11,11 +11,7 @@ import {
 } from "./fields/pagination"
 import { artworkConnection } from "./artwork"
 import { pageable } from "relay-cursor-paging"
-import {
-  convertConnectionArgsToGravityArgs,
-  queriedForFieldsOtherThanBlacklisted,
-  removeNulls,
-} from "lib/helpers"
+import { convertConnectionArgsToGravityArgs, removeNulls } from "lib/helpers"
 import { connectionFromArraySlice, toGlobalId } from "graphql-relay"
 import {
   ArtworksAggregationResultsType,
@@ -37,6 +33,10 @@ import {
 import { NodeInterface } from "schema/v1/object_identification"
 import { ResolverContext } from "types/graphql"
 import { deprecate } from "lib/deprecation"
+import {
+  includesFieldsOtherThanSelectionSet,
+  parseConnectionArgsFromConnection,
+} from "lib/hasFieldSelection"
 
 const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",
@@ -107,69 +107,40 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
         },
       }),
       resolve: (
-        { options: gravityOptions },
+        { options: gravityOptions, aggregations, hits },
         args,
-        {
-          unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
-          authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
-        }
+        _context
       ) => {
-        const relayOptions = convertConnectionArgsToGravityArgs(args)
-        if (!!gravityOptions.page) relayOptions.page = gravityOptions.page
+        if (!aggregations || !aggregations.total) {
+          throw new Error("This query must contain the total aggregation")
+        }
 
-        const { page, size } = relayOptions
-        const {
-          include_artworks_by_followed_artists,
-          aggregations,
-        } = gravityOptions
-        const requestedPersonalizedAggregation = aggregations.includes(
-          "followed_artists"
+        const totalPages = computeTotalPages(
+          aggregations.total.value,
+          gravityOptions.size
         )
 
-        let loader
-        if (
-          include_artworks_by_followed_artists ||
-          requestedPersonalizedAggregation
-        ) {
-          if (!loaderWithoutCache) {
-            throw new Error("You must be logged in to request these params.")
-          }
-          loader = loaderWithoutCache
-        } else {
-          loader = loaderWithCache
-        }
+        const connection = connectionFromArraySlice(hits, args, {
+          arrayLength: Math.min(
+            aggregations.total.value,
+            totalPages * gravityOptions.size
+          ),
+          sliceStart: gravityOptions.offset,
+        })
 
-        return loader(Object.assign(gravityOptions, relayOptions, {})).then(
-          ({ aggregations, hits }) => {
-            if (!aggregations || !aggregations.total) {
-              throw new Error("This query must contain the total aggregation")
-            }
+        connection.pageInfo.endCursor = pageToCursor(
+          gravityOptions.page + 1,
+          gravityOptions.size
+        )
 
-            const totalPages = computeTotalPages(
-              aggregations.total.value,
-              relayOptions.size
-            )
-
-            const connection = connectionFromArraySlice(hits, args, {
-              arrayLength: Math.min(
-                aggregations.total.value,
-                totalPages * relayOptions.size
-              ),
-              sliceStart: relayOptions.offset,
-            })
-
-            connection.pageInfo.endCursor = pageToCursor(page + 1, size)
-
-            return Object.assign(
-              {
-                pageCursors: createPageCursors(
-                  relayOptions,
-                  aggregations.total.value
-                ),
-              },
-              connection
-            )
-          }
+        return Object.assign(
+          {
+            pageCursors: createPageCursors(
+              gravityOptions,
+              aggregations.total.value
+            ),
+          },
+          connection
         )
       },
     },
@@ -350,7 +321,7 @@ const filterArtworksTypeFactory = (
       unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
       authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
     },
-    { fieldNodes }
+    info
   ) => {
     const { include_artworks_by_followed_artists, aggregations } = options
     const requestedPersonalizedAggregation = aggregations.includes(
@@ -384,13 +355,30 @@ const filterArtworksTypeFactory = (
       loader = loaderWithCache
     }
 
-    const blacklistedFields = ["artworks_connection", "__id"]
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
-      return loader(gravityOptions).then(response =>
-        Object.assign({}, response, { options: gravityOptions })
-      )
+    // Introspect connection args for `artworks_connection`.
+    // Use those and fetch all data in one request.
+    // Resolver for `artworks_connection` just creates a connection
+    // from the already fetched data, instead of re-fetching.
+    const connectionArgs = parseConnectionArgsFromConnection(
+      info,
+      "artworks_connection"
+    )
+
+    let relayOptions: any = {}
+    if (Object.keys(connectionArgs).length) {
+      relayOptions = convertConnectionArgsToGravityArgs(connectionArgs)
     }
-    return { hits: null, aggregations: null, options: gravityOptions }
+
+    if (!!gravityOptions.page) relayOptions.page = gravityOptions.page
+
+    // If only queried for __id, can just return w/o fetching.
+    if (!includesFieldsOtherThanSelectionSet(info, ["__id"])) {
+      return { hits: null, aggregations: null, options: gravityOptions }
+    }
+
+    return loader(Object.assign(gravityOptions, relayOptions, {})).then(
+      response => Object.assign({}, response, { options: gravityOptions })
+    )
   },
 })
 

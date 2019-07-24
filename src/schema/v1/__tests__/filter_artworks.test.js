@@ -27,7 +27,11 @@ describe("Filter Artworks", () => {
                     artists: [],
                   },
                 ],
-                aggregations: [],
+                aggregations: {
+                  total: {
+                    value: 10,
+                  },
+                },
               })
             ),
         },
@@ -56,6 +60,44 @@ describe("Filter Artworks", () => {
           },
         }) => {
           expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+        }
+      )
+    })
+
+    it("returns a connection, and makes one gravity call", () => {
+      const query = `
+        {
+          gene(id: "500-1000-ce") {
+            name
+            filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true){
+              hits {
+                id
+              }
+              artworks_connection(first: 10, after: "") { 
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, context).then(
+        ({
+          gene: {
+            filtered_artworks: {
+              hits,
+              artworks_connection: { edges },
+            },
+          },
+        }) => {
+          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+          expect(edges).toEqual([
+            { node: { id: "oseberg-norway-queens-ship" } },
+          ])
         }
       )
     })
