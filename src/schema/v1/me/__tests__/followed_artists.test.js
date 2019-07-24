@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { resolve } from "path"
 import { readFileSync } from "fs"
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 
 it("returns artists for a user", () => {

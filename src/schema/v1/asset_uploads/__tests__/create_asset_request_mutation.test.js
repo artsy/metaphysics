@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v1/test/utils"
 
 describe("addAssetToConsignmentSubmission", () => {
   it("creates a submission and returns its new data payload", () => {

@@ -1,4 +1,4 @@
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import gql from "lib/gql"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"

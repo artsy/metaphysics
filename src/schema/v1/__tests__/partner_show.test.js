@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import moment from "moment"
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("PartnerShow type", () => {
   let showData = null

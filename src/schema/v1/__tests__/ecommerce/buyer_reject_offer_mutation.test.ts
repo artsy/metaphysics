@@ -2,7 +2,7 @@ import gql from "lib/gql"
 import { OrderBuyerFields } from "./order_fields"
 import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 
 let context

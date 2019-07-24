@@ -24,7 +24,7 @@ import {
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
 import { deprecate } from "lib/deprecation"
-import { runQueryOrThrow } from "test/utils"
+import { runQueryOrThrow } from "schema/v1/test/utils"
 
 function createSchema({
   fields,

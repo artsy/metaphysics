@@ -2,7 +2,7 @@
 import { assign } from "lodash"
 import moment from "moment"
 
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 
 describe("Artwork type", () => {

@@ -1,6 +1,6 @@
 import _ from "lodash"
 import gql from "lib/gql"
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("Sale Artworks", () => {
   const execute = async (gravityResponse, query, context = {}) => {
