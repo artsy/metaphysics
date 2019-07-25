@@ -66,8 +66,10 @@ const createCommand = (command: string) => <T>(
   )
 }
 
-export const cacheTracer = {
-  get: createCommand("get"),
-  set: createCommand("set"),
-  delete: createCommand("delete"),
+export function createCacheTracer() {
+  return {
+    get: createCommand("get"),
+    set: createCommand("set"),
+    delete: createCommand("delete"),
+  }
 }
