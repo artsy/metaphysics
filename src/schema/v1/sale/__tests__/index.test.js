@@ -2,7 +2,7 @@
 import moment from "moment"
 import _ from "lodash"
 import { fill } from "lodash"
-import { runQuery, runAuthenticatedQuery } from "test/utils"
+import { runQuery, runAuthenticatedQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 
 describe("Sale type", () => {

@@ -26,7 +26,7 @@ jest.mock("../city/cityDataSortedByDisplayPreference.json", () => mockCities)
 jest.mock("lib/all.ts")
 jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
 
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 import { MAX_GRAPHQL_INT, allViaLoader as _allViaLoader } from "lib/all"
 

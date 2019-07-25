@@ -1,4 +1,4 @@
-import { runAuthenticatedQuery, runQuery } from "test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v1/test/utils"
 
 describe("SaleArtwork type", () => {
   const saleArtwork = {

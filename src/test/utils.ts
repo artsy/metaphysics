@@ -3,6 +3,7 @@
 import { graphql, GraphQLError, GraphQLArgs } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { createLoadersWithAuthentication } from "lib/loaders/loaders_with_authentication"
+import localSchema from "schema/v1/schema"
 
 export const runQueryOrThrow = (args: GraphQLArgs) => {
   return graphql(args).then(result => {
@@ -121,7 +122,7 @@ export const runQueryMerged = async (
   const { incrementalMergeSchemas } = require("lib/stitching/mergeSchemas")
 
   if (!mergedSchema) {
-    mergedSchema = await incrementalMergeSchemas({
+    mergedSchema = await incrementalMergeSchemas(localSchema, {
       ENABLE_COMMERCE_STITCHING: true,
       ENABLE_CONSIGNMENTS_STITCHING: true,
     })

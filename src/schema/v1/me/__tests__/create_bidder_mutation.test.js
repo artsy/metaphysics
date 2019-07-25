@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runAuthenticatedQuery, runQuery } from "test/utils"
+import { runAuthenticatedQuery, runQuery } from "schema/v1/test/utils"
 
 describe("Bidder mutation", () => {
   const bidder = {

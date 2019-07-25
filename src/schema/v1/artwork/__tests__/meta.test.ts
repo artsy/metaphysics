@@ -1,4 +1,4 @@
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("Meta", () => {
   const artworkData = {

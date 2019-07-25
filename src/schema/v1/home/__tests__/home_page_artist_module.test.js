@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { graphql } from "graphql"
 import schema from "schema/v1"
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v1/test/utils"
 
 describe("HomePageArtistModule", () => {
   const query = key => {

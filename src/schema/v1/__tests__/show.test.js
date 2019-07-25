@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import moment from "moment"
 import gql from "lib/gql"
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
 describe("Show type", () => {

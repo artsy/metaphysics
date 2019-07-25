@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import { mockxchange } from "test/fixtures/exchange/mockxchange"
 import { sampleOrder } from "test/fixtures/results/sample_order"
 import exchangeOrderJSON from "test/fixtures/exchange/buy_order.json"

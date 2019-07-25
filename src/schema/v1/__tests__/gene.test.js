@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import trackedEntityLoaderFactory from "lib/loaders/loaders_with_authentication/tracked_entity"
 
 describe("Gene", () => {

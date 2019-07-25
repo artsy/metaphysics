@@ -5,7 +5,7 @@ import {
   GraphQLID,
   GraphQLInterfaceType,
 } from "graphql"
-import { runQueryOrThrow } from "test/utils"
+import { runQueryOrThrow } from "schema/v1/test/utils"
 import gql from "lib/gql"
 import { transformSchema } from "graphql-tools"
 
