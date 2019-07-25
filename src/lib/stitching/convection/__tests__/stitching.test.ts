@@ -2,9 +2,10 @@ import { incrementalMergeSchemas } from "../../mergeSchemas"
 import { graphql } from "graphql"
 import gql from "lib/gql"
 import { addMockFunctionsToSchema } from "graphql-tools"
+import schema from "schema/v1/schema"
 
 it("resolves an Artist on a Consignment Submission", async () => {
-  const allMergedSchemas = await incrementalMergeSchemas({
+  const allMergedSchemas = await incrementalMergeSchemas(schema, {
     ENABLE_CONSIGNMENTS_STITCHING: true,
   })
 

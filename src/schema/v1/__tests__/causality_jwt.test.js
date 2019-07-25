@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import jwt from "jwt-simple"
 import { omit } from "lodash"
-import { runQuery, runAuthenticatedQuery } from "test/utils"
+import { runQuery, runAuthenticatedQuery } from "schema/v1/test/utils"
 import config from "config"
 
 const { HMAC_SECRET } = config

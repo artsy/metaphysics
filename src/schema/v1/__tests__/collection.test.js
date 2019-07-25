@@ -1,6 +1,6 @@
 import { resolve } from "path"
 import { readFileSync } from "fs"
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 import { isEqual } from "lodash"
 

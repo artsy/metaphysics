@@ -2,7 +2,7 @@
 import { assign } from "lodash"
 import { getDefault } from "schema/v1/image"
 
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("getDefault", () => {
   it("returns the default image", () => {

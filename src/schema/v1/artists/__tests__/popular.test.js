@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import gql from "lib/gql"
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("Popular Artists", () => {
   it("makes a call for popular artists", () => {

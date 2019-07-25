@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { assign } from "lodash"
-import { runAuthenticatedQuery } from "test/utils"
+import { runAuthenticatedQuery } from "schema/v1/test/utils"
 
 describe("Me", () => {
   describe("Followed Artists Artwork Groups", () => {

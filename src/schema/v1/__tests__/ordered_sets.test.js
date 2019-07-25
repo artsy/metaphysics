@@ -1,5 +1,5 @@
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 
 describe("OrderedSets type", () => {
   const query = `

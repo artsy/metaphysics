@@ -1,6 +1,6 @@
 /* eslint-disable promise/always-return */
 import { map } from "lodash"
-import { runQuery, runAuthenticatedQuery } from "test/utils"
+import { runQuery, runAuthenticatedQuery } from "schema/v1/test/utils"
 
 describe("HomePageArtistModules", () => {
   let context = null

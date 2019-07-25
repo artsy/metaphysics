@@ -10,7 +10,7 @@ const mockSponsoredContent = {
 jest.mock("lib/sponsoredContent/data.json", () => mockSponsoredContent)
 
 /* eslint-disable promise/always-return */
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 import moment from "moment"
 

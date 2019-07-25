@@ -1,5 +1,5 @@
 import { find } from "lodash"
-import { runQuery } from "test/utils"
+import { runQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 
 describe("Genes", () => {
