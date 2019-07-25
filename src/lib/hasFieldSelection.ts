@@ -102,9 +102,10 @@ export const parseConnectionArgsFromConnection = (
                       arg.name.value
                     )
                   ) {
-                    const val = (arg as any).value.value
-                      ? (arg as any).value.value
-                      : 0
+                    const val =
+                      (arg as any).value.value ||
+                      info.variableValues[arg.name.value] ||
+                      0
 
                     connectionArgs[arg.name.value] = parseInt(val) || val
                   }

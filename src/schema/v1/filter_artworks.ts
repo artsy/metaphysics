@@ -92,7 +92,10 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(GraphQLID),
       description: "The ID of the object.",
       resolve: ({ options }) =>
-        toGlobalId("FilterArtworks", JSON.stringify(omit(options, "page"))),
+        toGlobalId(
+          "FilterArtworks",
+          JSON.stringify(omit(options, "page", "offset", "size"))
+        ),
     },
     aggregations: ArtworkFilterAggregations,
     artworks_connection: {
@@ -376,8 +379,9 @@ const filterArtworksTypeFactory = (
       return { hits: null, aggregations: null, options: gravityOptions }
     }
 
-    return loader(Object.assign(gravityOptions, relayOptions, {})).then(
-      response => Object.assign({}, response, { options: gravityOptions })
+    const allOptions = Object.assign({}, gravityOptions, relayOptions)
+    return loader(allOptions).then(response =>
+      Object.assign({}, response, { options: allOptions })
     )
   },
 })
