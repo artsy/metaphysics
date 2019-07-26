@@ -5404,13 +5404,22 @@ enum HomePageArtistModuleTypes {
 type HomePageArtworkModule implements Node {
   # A globally unique ID.
   id: ID!
-  context: HomePageModuleContext
+  context: HomePageArtworkModuleContext
   is_displayable: Boolean
   key: String
   params: HomePageModulesParams
   results: [Artwork]
   title: String
 }
+
+union HomePageArtworkModuleContext =
+    Fair
+  | Gene
+  | Sale
+  | FollowArtists
+  | TrendingArtists
+  | HomePageFollowedArtistArtworkModule
+  | HomePageRelatedArtistArtworkModule
 
 enum HomePageArtworkModuleTypes {
   FOLLOWED_GENES
@@ -5432,6 +5441,10 @@ enum HomePageArtworkModuleTypes {
 
 type HomePageFairsModule {
   results: [Fair]!
+}
+
+type HomePageFollowedArtistArtworkModule {
+  artist: Artist
 }
 
 type HomePageHeroUnit {
@@ -5477,408 +5490,6 @@ enum HomePageHeroUnitPlatform {
   MARTSY
 }
 
-union HomePageModuleContext =
-    HomePageModuleContextFair
-  | HomePageModuleContextFollowArtists
-  | HomePageModuleContextFollowedArtist
-  | HomePageModuleContextGene
-  | HomePageModuleContextRelatedArtist
-  | HomePageModuleContextSale
-  | HomePageModuleContextTrending
-
-type HomePageModuleContextFair {
-  # A globally unique ID.
-  id: ID!
-
-  # A slug ID.
-  slug: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-  about: String
-  followed_content: FollowedContent
-  artists(
-    # Sorts for artists in a fair
-    sort: FairArtistSorts
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): ArtistConnection
-  cached: Int
-  banner_size: String
-  counts: FairCounts
-
-  # A formatted description of the start to end dates
-  exhibition_period: String
-
-  # A formatted description of when the fair starts or closes or if it is closed
-  formattedOpeningHours: String
-  has_full_feature: Boolean
-  has_homepage_section: Boolean
-  has_large_banner: Boolean
-  has_listing: Boolean
-  hours: String
-  href: String
-  image: Image
-
-  # Are we currently in the fair's active period?
-  isActive: Boolean
-  links: String
-  mobile_image: Image
-  is_published: Boolean
-  location: Location
-  name: String
-  profile: Profile
-
-  # This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.
-  shows_connection(
-    # Number of artworks to return
-    section: String
-
-    # Sorts for shows in a fair
-    sort: ShowSorts
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): ShowConnection
-  start_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  end_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  active_start_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  organizer: organizer
-  tagline: String
-  ticketsLink: String
-
-  # The exhibitors with booths in this fair with letter.
-  exhibitors_grouped_by_name: [FairExhibitorsGroup]
-
-  # Artworks Elastic Search results
-  filteredArtworks(
-    acquireable: Boolean
-    offerable: Boolean
-    aggregation_partner_cities: [String]
-    aggregations: [ArtworkAggregation]
-    artist_id: String
-    artist_ids: [String]
-    at_auction: Boolean
-    attribution_class: [String]
-    color: String
-    dimension_range: String
-    extra_aggregation_gene_ids: [String]
-    include_artworks_by_followed_artists: Boolean
-    include_medium_filter_in_aggregation: Boolean
-    inquireable_only: Boolean
-    for_sale: Boolean
-    gene_id: String
-    gene_ids: [String]
-    height: String
-    width: String
-
-    # When true, will only return `marketable` works (not nude or provocative).
-    marketable: Boolean
-
-    # A string from the list of allocations, or * to denote all mediums
-    medium: String
-    period: String
-    periods: [String]
-    major_periods: [String]
-    partner_id: ID
-    partner_cities: [String]
-    price_range: String
-    page: Int
-    sale_id: ID
-    size: Int
-    sort: String
-    tag_id: String
-    keyword: String
-
-    # When true, will only return exact keyword match
-    keyword_match_exact: Boolean
-  ): FilterArtworks
-  sponsoredContent: FairSponsoredContent
-}
-
-type HomePageModuleContextFollowArtists {
-  artists: [Artist]
-  counts: FollowArtistCounts
-}
-
-type HomePageModuleContextFollowedArtist {
-  artist: Artist
-}
-
-type HomePageModuleContextGene implements Node {
-  # A globally unique ID.
-  id: ID!
-
-  # A slug ID.
-  slug: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-  cached: Int
-  artists: [Artist]
-  artists_connection(
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): ArtistConnection
-  artworks_connection(
-    acquireable: Boolean
-    offerable: Boolean
-    aggregation_partner_cities: [String]
-    aggregations: [ArtworkAggregation]
-    artist_id: String
-    artist_ids: [String]
-    at_auction: Boolean
-    attribution_class: [String]
-    color: String
-    dimension_range: String
-    extra_aggregation_gene_ids: [String]
-    include_artworks_by_followed_artists: Boolean
-    include_medium_filter_in_aggregation: Boolean
-    inquireable_only: Boolean
-    for_sale: Boolean
-    gene_id: String
-    gene_ids: [String]
-    height: String
-    width: String
-
-    # When true, will only return `marketable` works (not nude or provocative).
-    marketable: Boolean
-
-    # A string from the list of allocations, or * to denote all mediums
-    medium: String
-    period: String
-    periods: [String]
-    major_periods: [String]
-    partner_id: ID
-    partner_cities: [String]
-    price_range: String
-    page: Int
-    sale_id: ID
-    size: Int
-    sort: String
-    tag_id: String
-    keyword: String
-
-    # When true, will only return exact keyword match
-    keyword_match_exact: Boolean
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): GeneArtworksConnection
-  description: String
-  display_name: String
-
-  # Artworks Elastic Search results
-  filtered_artworks(
-    acquireable: Boolean
-    offerable: Boolean
-    aggregation_partner_cities: [String]
-    aggregations: [ArtworkAggregation]
-    artist_id: String
-    artist_ids: [String]
-    at_auction: Boolean
-    attribution_class: [String]
-    color: String
-    dimension_range: String
-    extra_aggregation_gene_ids: [String]
-    include_artworks_by_followed_artists: Boolean
-    include_medium_filter_in_aggregation: Boolean
-    inquireable_only: Boolean
-    for_sale: Boolean
-    gene_id: String
-    gene_ids: [String]
-    height: String
-    width: String
-
-    # When true, will only return `marketable` works (not nude or provocative).
-    marketable: Boolean
-
-    # A string from the list of allocations, or * to denote all mediums
-    medium: String
-    period: String
-    periods: [String]
-    major_periods: [String]
-    partner_id: ID
-    partner_cities: [String]
-    price_range: String
-    page: Int
-    sale_id: ID
-    size: Int
-    sort: String
-    tag_id: String
-    keyword: String
-
-    # When true, will only return exact keyword match
-    keyword_match_exact: Boolean
-  ): FilterArtworks
-  href: String
-  image: Image
-  is_published: Boolean
-  is_followed: Boolean
-  mode: String
-  name: String
-
-  # A list of genes similar to the specified gene
-  similar(
-    # Array of gene ids (not slugs) to exclude, may result in all genes being excluded.
-    exclude_gene_ids: [String]
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): GeneConnection
-  trending_artists(sample: Int): [Artist]
-}
-
-type HomePageModuleContextRelatedArtist {
-  artist: Artist
-  based_on: Artist
-}
-
-type HomePageModuleContextSale implements Node {
-  # A globally unique ID.
-  id: ID!
-
-  # A slug ID.
-  slug: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-  cached: Int
-  artworks(
-    page: Int = 1
-    size: Int = 25
-    all: Boolean = false
-
-    # List of artwork IDs to exclude from the response (irrespective of size)
-    exclude: [String]
-  ): [Artwork]
-
-  # Returns a connection of artworks for a sale.
-  artworksConnection(
-    # List of artwork IDs to exclude from the response (irrespective of size)
-    exclude: [String]
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): ArtworkConnection
-  associated_sale: Sale
-
-  # A bid increment policy that explains minimum bids in ranges.
-  bid_increments: [BidIncrement]
-
-  # Auction's buyer's premium policy.
-  buyers_premium: [BuyersPremium]
-  cover_image: Image
-  currency: String
-  description: String
-  display_timely_at: String
-  eligible_sale_artworks_count: Int
-  end_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  event_start_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  event_end_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-
-  # A formatted description of when the auction starts or ends or if it has ended
-  formattedStartDateTime: String
-  href: String
-  name: String
-  initials(length: Int = 3): String
-  is_auction: Boolean
-  isBenefit: Boolean
-  isGalleryAuction: Boolean
-  is_auction_promo: Boolean
-  is_closed: Boolean
-  is_open: Boolean
-  is_live_open: Boolean
-  is_preview: Boolean
-  is_registration_closed: Boolean
-  is_with_buyers_premium: Boolean
-  live_start_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-
-  # Returns a live auctions url if the sale is open and start time is after now
-  live_url_if_open: String
-  partner: Partner
-  profile: Profile
-  promoted_sale: Sale
-  registration_ends_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-
-  # A registration for this sale or null
-  registrationStatus: Bidder
-  require_bidder_approval: Boolean
-  sale_artworks(
-    page: Int = 1
-    size: Int = 25
-    all: Boolean = false
-  ): [SaleArtwork]
-  sale_artworks_connection(
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): SaleArtworkConnection
-  sale_type: String
-  start_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  status: String
-  sale_artwork(id: String!): SaleArtwork
-  symbol: String
-}
-
-type HomePageModuleContextTrending {
-  artists: [Artist]
-}
-
 type HomePageModulesParams {
   # An optional type-specific ID.
   internalID: ID
@@ -5887,6 +5498,11 @@ type HomePageModulesParams {
   medium: String
   price_range: String
   related_artist_id: ID
+}
+
+type HomePageRelatedArtistArtworkModule {
+  artist: Artist
+  based_on: Artist
 }
 
 type Image {

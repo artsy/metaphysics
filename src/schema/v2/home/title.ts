@@ -10,7 +10,7 @@ import {
 } from "./types"
 import { ResolverContext } from "types/graphql"
 
-const moduleTitle: HomePageArtworkModuleResolvers = {
+const moduleTitle: HomePageArtworkModuleResolvers<string> = {
   active_bids: () => "Your active bids",
   current_fairs: ({ fairsLoader }) => {
     return featuredFair(fairsLoader).then(fair => fair && fair.name)
