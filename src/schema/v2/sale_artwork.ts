@@ -178,7 +178,6 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "SaleArtworkHighestBid",
           fields: {
-            ...NullableIDField,
             created_at: date,
             is_cancelled: {
               type: GraphQLBoolean,

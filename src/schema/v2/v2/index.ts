@@ -27,9 +27,6 @@ const FilterTypeNames = [
     : []),
 ]
 
-// Omit this id field entirely from the v2 schema, as it's a no-op
-const FilterIDFieldFromTypeNames = ["SaleArtworkHighestBid"]
-
 // TODO: These types should have their id fields renamed to internalID upstream,
 //       but that requires us to do some transformation work _back_ on the v1
 //       schema for it to remain backwards compatible, so we can do that at a
@@ -76,7 +73,6 @@ export const transformToV2 = (
     allowedNonGravityTypesWithNullableIDField: KnownNonGravityTypesWithNullableIDFields,
     stitchedTypePrefixes: StitchedTypePrefixes,
     filterTypes: FilterTypeNames,
-    filterIDFieldFromTypes: FilterIDFieldFromTypeNames,
     ...options,
   }
   const allowedTypesWithNullableIDField = [
@@ -87,10 +83,6 @@ export const transformToV2 = (
     new FilterTypes(type => {
       return !opt.filterTypes.includes(type.name)
     }),
-    new FilterFields(
-      (type, field) =>
-        field.name !== "id" || !opt.filterIDFieldFromTypes.includes(type.name)
-    ),
     new RenameFields((type, field) => {
       if (field.name === "id") {
         if (
