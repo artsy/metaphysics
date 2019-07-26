@@ -155,7 +155,8 @@
       "/src/test/helper.js",
       "/src/test/utils.js",
       "/src/test/gql.js",
-      "/src/test/__mocks__"
+      "/src/test/__mocks__",
+      "/src/schema/v2"
     ],
     "transform": {
       "^.+\\.(js|ts)$": "babel-jest"
