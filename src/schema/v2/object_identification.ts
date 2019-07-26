@@ -32,6 +32,7 @@ import {
   GraphQLID,
   GraphQLInterfaceType,
   GraphQLFieldConfig,
+  GraphQLFieldConfigMap,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -120,14 +121,14 @@ const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "Fetches an object given its Globally Unique ID",
   type: NodeInterface,
   args: {
-    __id: {
+    id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: "The ID of the object",
+      description: "The globally unique ID of the node",
     },
   },
   // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
-  resolve: (_root, { __id }, context, rootValue) => {
-    const { type: typeName, id } = fromGlobalId(__id)
+  resolve: (_root, { id: globalID }, context, rootValue) => {
+    const { type: typeName, id } = fromGlobalId(globalID)
     if (isSupportedType(typeName)) {
       let exported = SupportedTypes.typeModules[typeName]
       if (typeof exported === "function") {
@@ -150,8 +151,7 @@ const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
-export const GlobalIDField = {
-  name: "__id",
+export const GlobalIDField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "A globally unique ID.",
   type: new GraphQLNonNull(GraphQLID),
   // Ensure we never encode a null `id`, as it would silently work. Instead return `null`, so that
@@ -161,14 +161,14 @@ export const GlobalIDField = {
   },
 }
 
-export const NullableIDField = {
+export const NullableIDField: GraphQLFieldConfigMap<any, ResolverContext> = {
   id: {
     description: "An optional type-specific ID.",
     type: GraphQLID,
   },
 }
 
-export const IDFields = {
+export const IDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   __id: GlobalIDField,
   id: {
     description: "A type-specific ID.",
@@ -176,7 +176,7 @@ export const IDFields = {
   },
 }
 
-export const GravityIDFields = {
+export const GravityIDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   ...IDFields,
   _id: {
     description: "A type-specific Gravity Mongo Document ID.",
@@ -184,14 +184,17 @@ export const GravityIDFields = {
   },
 }
 
-export const SlugIDField = {
+export const SlugIDField: GraphQLFieldConfigMap<any, ResolverContext> = {
   id: {
     description: "A slug ID.",
     type: new GraphQLNonNull(GraphQLID),
   },
 }
 
-export const SlugAndInternalIDFields = {
+export const SlugAndInternalIDFields: GraphQLFieldConfigMap<
+  any,
+  ResolverContext
+> = {
   __id: GlobalIDField,
   id: {
     description: "A slug ID.",
@@ -203,7 +206,7 @@ export const SlugAndInternalIDFields = {
   },
 }
 
-export const InternalIDFields = {
+export const InternalIDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   __id: GlobalIDField,
   id: {
     description: "A type-specific ID likely used as a database ID.",

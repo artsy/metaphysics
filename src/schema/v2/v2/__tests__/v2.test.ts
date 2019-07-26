@@ -139,55 +139,6 @@ describe(transformToV2, () => {
   })
 
   describe("concerning ID renaming", () => {
-    it("renames __id arg to id", async () => {
-      const rootValue = {
-        node: {
-          id: "global id",
-        },
-      }
-      const iface = new GraphQLInterfaceType({
-        name: "Node",
-        fields: {
-          __id: GlobalIDField,
-        },
-        resolveType: () => "AnyType",
-      })
-      const AnyType = new GraphQLObjectType({
-        name: "AnyType",
-        fields: {
-          __id: GlobalIDField,
-        },
-        interfaces: () => [iface],
-      })
-      const data = await runQueryOrThrow({
-        schema: createSchema({
-          fields: {
-            node: {
-              type: iface,
-              args: {
-                __id: {
-                  type: new GraphQLNonNull(GraphQLID),
-                  description: "The ID of the object",
-                },
-              },
-            },
-            thisIsJustSoAnyTypeExists: {
-              type: AnyType,
-            },
-          },
-        }),
-        rootValue,
-        source: gql`
-          query {
-            node(id: "global id") {
-              id
-            }
-          }
-        `,
-      })
-      expect(data.node.id).toEqual(toGlobalId("AnyType", "global id"))
-    })
-
     it("renames __id field to id", async () => {
       const rootValue = {
         fieldWithGlobalID: {

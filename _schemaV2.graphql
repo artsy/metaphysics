@@ -9702,7 +9702,7 @@ type Query {
 
   # Fetches an object given its Globally Unique ID
   node(
-    # The ID of the object
+    # The globally unique ID of the node
     id: ID!
   ): Node
 
@@ -11829,7 +11829,7 @@ type Viewer {
 
   # Fetches an object given its Globally Unique ID
   node(
-    # The ID of the object
+    # The globally unique ID of the node
     id: ID!
   ): Node
 

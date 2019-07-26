@@ -127,7 +127,6 @@ export const transformToV2 = (
         return field.name.substring(3)
       }
     }),
-    new RenameArguments((_field, arg) => (arg.name === "__id" ? "id" : null)),
     ...(FILTER_DEPRECATIONS
       ? [
           new FilterFields(

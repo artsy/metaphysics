@@ -77,7 +77,7 @@ describe("Object Identification", () => {
       it("resolves a node", () => {
         const query = `
           {
-            node(__id: "${toGlobalId(typeName, "foo-bar")}") {
+            node(id: "${toGlobalId(typeName, "foo-bar")}") {
               __typename
               ... on ${typeName} {
                 id
@@ -118,7 +118,7 @@ describe("Object Identification", () => {
     it("resolves a node", () => {
       const query = `
         {
-          node(__id: "${globalId}") {
+          node(id: "${globalId}") {
             __typename
             ... on Me {
               id
@@ -165,7 +165,7 @@ describe("Object Identification", () => {
       it("resolves a node", () => {
         const query = `
           {
-            node(__id: "${globalId}") {
+            node(id: "${globalId}") {
               __typename
               ... on HomePageArtworkModule {
                 key
@@ -211,7 +211,7 @@ describe("Object Identification", () => {
       it("resolves a node", () => {
         const query = `
           {
-            node(__id: "${globalId}") {
+            node(id: "${globalId}") {
               __typename
               ... on HomePageArtworkModule {
                 key
@@ -269,7 +269,7 @@ describe("Object Identification", () => {
       it("resolves a node", () => {
         const query = `
           {
-            node(__id: "${globalId}") {
+            node(id: "${globalId}") {
               __typename
               ... on HomePageArtworkModule {
                 key
@@ -324,7 +324,7 @@ describe("Object Identification", () => {
     it("resolves a node", () => {
       const query = `
         {
-          node(__id: "${globalId}") {
+          node(id: "${globalId}") {
             __typename
             ... on HomePageArtistModule {
               key
@@ -352,7 +352,7 @@ describe("Object Identification", () => {
     it("should pass the proper inline fragment AST", () => {
       const query = `
         {
-          node(__id: "${globalId}") {
+          node(id: "${globalId}") {
             ... on Me {
               id
             }
@@ -370,7 +370,7 @@ describe("Object Identification", () => {
     it("should pass the proper spread fragment AST", () => {
       const query = `
         {
-          node(__id: "${globalId}") {
+          node(id: "${globalId}") {
             ... fields
           }
         }
