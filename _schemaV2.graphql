@@ -3247,7 +3247,9 @@ type CitySponsoredContent {
 type Collection implements Node {
   # A globally unique ID.
   id: ID!
-  slug: String!
+
+  # A slug ID.
+  slug: ID!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
