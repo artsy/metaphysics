@@ -10,6 +10,7 @@ import numeral from "./fields/numeral"
 import ArtworkSorts from "./sorts/artwork_sorts"
 import { pageable } from "relay-cursor-paging"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+import { PartnerCategoryType } from "./partner_category"
 
 import {
   GraphQLString,
@@ -25,23 +26,6 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 import { deprecate } from "lib/deprecation"
 
-const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
-  name: "Category",
-  description: "Fields of partner category (currently from Gravity).",
-  fields: {
-    ...SlugAndInternalIDFields,
-    category_type: {
-      type: GraphQLString,
-    },
-    internal: {
-      type: GraphQLBoolean,
-    },
-    name: {
-      type: GraphQLString,
-    },
-  },
-})
-
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   for_sale: {
     type: GraphQLBoolean,
@@ -52,7 +36,7 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   },
 }
 
-const PartnerType = new GraphQLObjectType<any, ResolverContext>({
+export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
   fields: () => {
@@ -281,7 +265,7 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-const Partner: GraphQLFieldConfig<void, ResolverContext> = {
+export const Partner: GraphQLFieldConfig<void, ResolverContext> = {
   type: PartnerType,
   description: "A Partner",
   args: {

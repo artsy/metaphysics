@@ -1,7 +1,7 @@
 import _ from "lodash"
 import cached from "./fields/cached"
 import Partners from "./partners"
-import CategoryType from "./input_fields/category_type"
+import { PartnerCategoryTypeEnum } from "./input_fields/category_type"
 import { SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLString,
@@ -11,12 +11,12 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
+export const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerCategory",
   fields: () => ({
     ...SlugAndInternalIDFields,
     cached,
-    category_type: CategoryType,
+    category_type: PartnerCategoryTypeEnum,
     name: {
       type: GraphQLString,
     },
@@ -33,7 +33,7 @@ const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-const PartnerCategory: GraphQLFieldConfig<void, ResolverContext> = {
+export const PartnerCategory: GraphQLFieldConfig<void, ResolverContext> = {
   type: PartnerCategoryType,
   description: "A PartnerCategory",
   args: {

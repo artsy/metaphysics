@@ -1,5 +1,5 @@
 import { clone } from "lodash"
-import Partner from "./partner"
+import { PartnerType } from "./partner"
 import PartnerTypeType from "./input_fields/partner_type_type"
 import {
   GraphQLString,
@@ -12,7 +12,7 @@ import {
 import { ResolverContext } from "types/graphql"
 
 const Partners: GraphQLFieldConfig<void, ResolverContext> = {
-  type: new GraphQLList(Partner.type),
+  type: new GraphQLList(PartnerType),
   description: "A list of Partners",
   args: {
     default_profile_public: {
