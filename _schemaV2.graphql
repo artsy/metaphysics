@@ -3247,9 +3247,7 @@ type CitySponsoredContent {
 type Collection implements Node {
   # A globally unique ID.
   id: ID!
-
-  # A slug ID.
-  slug: ID!
+  slug: String!
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
@@ -7933,7 +7931,7 @@ input Near {
 
 # An object with a Globally Unique ID
 interface Node {
-  # The ID of the object.
+  # A globally unique ID.
   id: ID!
 }
 
@@ -9700,9 +9698,9 @@ type Query {
   ): [Gene]
   me: Me
 
-  # Fetches an object given its Globally Unique ID
+  # Fetches an object given its globally unique ID.
   node(
-    # The globally unique ID of the node
+    # The globally unique ID of the node.
     id: ID!
   ): Node
 
@@ -11827,9 +11825,9 @@ type Viewer {
   ): [Gene]
   me: Me
 
-  # Fetches an object given its Globally Unique ID
+  # Fetches an object given its globally unique ID.
   node(
-    # The globally unique ID of the node
+    # The globally unique ID of the node.
     id: ID!
   ): Node
 

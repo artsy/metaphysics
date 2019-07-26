@@ -158,7 +158,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
   description: "A conversation.",
   interfaces: [NodeInterface],
   fields: {
-    __id: GlobalIDField,
+    id: GlobalIDField,
     ...NullableIDField,
     inquiry_id: {
       description: "Gravity inquiry id.",

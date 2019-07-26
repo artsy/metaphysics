@@ -88,7 +88,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
   name: "FilterArtworks",
   interfaces: [NodeInterface],
   fields: () => ({
-    __id: {
+    id: {
       type: new GraphQLNonNull(GraphQLID),
       description: "The ID of the object.",
       resolve: ({ options }) =>

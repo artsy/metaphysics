@@ -84,6 +84,12 @@ export const transformToV2 = (
       return !opt.filterTypes.includes(type.name)
     }),
     new RenameFields((type, field) => {
+      // Only rename ID fields on stitched services.
+      if (
+        !opt.stitchedTypePrefixes.some(prefix => type.name.startsWith(prefix))
+      ) {
+        return undefined
+      }
       if (field.name === "id") {
         if (
           isNullableType(field.type) &&
@@ -91,34 +97,8 @@ export const transformToV2 = (
         ) {
           throw new Error(`Do not add new nullable id fields (${type.name})`)
         } else {
-          if (field.description === SlugAndInternalIDFields.id.description) {
-            return "slug"
-          } else if (
-            field.description === GravityIDFields.id.description ||
-            (field.description === NullableIDField.id.description &&
-              opt.allowedGravityTypesWithNullableIDField.includes(type.name))
-          ) {
-            return "internalID"
-          } else if (
-            field.description === InternalIDFields.id.description ||
-            field.description === SlugAndInternalIDFields.id.description ||
-            (field.description === NullableIDField.id.description &&
-              opt.allowedNonGravityTypesWithNullableIDField.includes(
-                type.name
-              )) ||
-            opt.stitchedTypePrefixes.some(prefix =>
-              type.name.startsWith(prefix)
-            )
-          ) {
-            return "internalID"
-          } else {
-            throw new Error(`Do not add new id fields (${type.name})`)
-          }
+          return "internalID"
         }
-      } else if (field.name === "_id") {
-        return "internalID"
-      } else if (field.name === "__id") {
-        return "id"
       }
       return undefined
     }),

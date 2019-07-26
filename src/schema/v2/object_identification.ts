@@ -108,22 +108,22 @@ function rootValueForChild(rootValue) {
 export const NodeInterface = new GraphQLInterfaceType({
   name: "Node",
   description: "An object with a Globally Unique ID",
-  fields: () => ({
-    __id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: "The ID of the object.",
-    },
-  }),
+  fields: () => {
+    const { resolve, ...id } = GlobalIDField
+    return {
+      id,
+    }
+  },
   resolveType: ({ __type }) => __type,
 })
 
 const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
-  description: "Fetches an object given its Globally Unique ID",
+  description: "Fetches an object given its globally unique ID.",
   type: NodeInterface,
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: "The globally unique ID of the node",
+      description: "The globally unique ID of the node.",
     },
   },
   // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
@@ -162,15 +162,15 @@ export const GlobalIDField: GraphQLFieldConfig<any, ResolverContext> = {
 }
 
 export const NullableIDField: GraphQLFieldConfigMap<any, ResolverContext> = {
-  id: {
+  internalID: {
     description: "An optional type-specific ID.",
     type: GraphQLID,
   },
 }
 
 export const IDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
-  __id: GlobalIDField,
-  id: {
+  id: GlobalIDField,
+  internalID: {
     description: "A type-specific ID.",
     type: new GraphQLNonNull(GraphQLID),
   },
@@ -178,14 +178,14 @@ export const IDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
 
 export const GravityIDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   ...IDFields,
-  _id: {
+  internalID: {
     description: "A type-specific Gravity Mongo Document ID.",
     type: new GraphQLNonNull(GraphQLID),
   },
 }
 
 export const SlugIDField: GraphQLFieldConfigMap<any, ResolverContext> = {
-  id: {
+  slug: {
     description: "A slug ID.",
     type: new GraphQLNonNull(GraphQLID),
   },
@@ -195,20 +195,20 @@ export const SlugAndInternalIDFields: GraphQLFieldConfigMap<
   any,
   ResolverContext
 > = {
-  __id: GlobalIDField,
-  id: {
+  id: GlobalIDField,
+  slug: {
     description: "A slug ID.",
     type: new GraphQLNonNull(GraphQLID),
   },
-  _id: {
+  internalID: {
     description: "A type-specific ID likely used as a database ID.",
     type: new GraphQLNonNull(GraphQLID),
   },
 }
 
 export const InternalIDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
-  __id: GlobalIDField,
-  id: {
+  id: GlobalIDField,
+  internalID: {
     description: "A type-specific ID likely used as a database ID.",
     type: new GraphQLNonNull(GraphQLID),
   },

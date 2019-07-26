@@ -19,8 +19,8 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface, Searchable],
   fields: {
     ...SlugAndInternalIDFields,
-    __id: {
-      ...SlugAndInternalIDFields.__id,
+    id: {
+      ...SlugAndInternalIDFields.id,
       type: new GraphQLNonNull(GraphQLID),
       resolve: item => toGlobalId("SearchableItem", item._id),
     },

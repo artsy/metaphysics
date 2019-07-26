@@ -8,9 +8,9 @@ const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeaturedLink",
   fields: {
     ...InternalIDFields,
-    id: {
+    internalID: {
       type: GraphQLString,
-      description: InternalIDFields.id.description,
+      description: InternalIDFields.internalID.description,
       resolve: ({ href }) =>
         href
           .split("/")
