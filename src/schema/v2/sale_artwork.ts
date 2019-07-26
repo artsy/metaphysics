@@ -9,7 +9,6 @@ import Artwork from "./artwork"
 import Sale from "./sale"
 import {
   GravityIDFields,
-  NullableIDField,
   SlugAndInternalIDFields,
 } from "./object_identification"
 import {

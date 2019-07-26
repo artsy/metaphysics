@@ -1,15 +1,8 @@
 import { GraphQLSchema, isNullableType } from "graphql"
 import { transformSchema, FilterTypes } from "graphql-tools"
-import { RenameArguments } from "./RenameArguments"
 import { shouldBeRemoved } from "lib/deprecation"
 import { FilterFields } from "./FilterFields"
 import { RenameFields } from "./RenameFields"
-import {
-  GravityIDFields,
-  NullableIDField,
-  InternalIDFields,
-  SlugAndInternalIDFields,
-} from "schema/v2/object_identification"
 
 // TODO: Flip this switch before we go public with v2 and update clients. Until
 //       then this gives clients an extra window of opportunity to update.

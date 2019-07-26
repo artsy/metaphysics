@@ -8,7 +8,6 @@ import {
   InternalIDFields,
   IDFields,
   NullableIDField,
-  GlobalIDField,
   SlugAndInternalIDFields,
 } from "schema/v2/object_identification"
 import {

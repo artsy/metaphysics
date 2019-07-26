@@ -7,7 +7,6 @@ import {
   GraphQLNonNull,
 } from "graphql"
 import {
-  GlobalIDField,
   NodeInterface,
   InternalIDFields,
 } from "schema/v2/object_identification"
