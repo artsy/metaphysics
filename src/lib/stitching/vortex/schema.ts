@@ -34,6 +34,9 @@ export const executableVortexSchema = ({
         ]
       : []),
     new RenameTypes(name => {
+      if (name === "Show") {
+        name = "PartnerShow"
+      }
       return `Analytics${name}`
     }),
     new RenameRootFields(
