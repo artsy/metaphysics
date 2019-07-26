@@ -8,7 +8,8 @@ import cors from "cors"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
-import { schema, schemaV2 } from "./schema/v1"
+import { schema as schemaV1 } from "./schema/v1"
+import { schema as schemaV2 } from "./schema/v2"
 import moment from "moment"
 import morgan from "artsy-morgan"
 import raven from "raven"
@@ -230,7 +231,7 @@ let appV2: express.Express
 app.all("/", (req, res, next) => {
   if (!appV1) {
     appV1 = express()
-    appV1.use("/", startApp(schema, "/"))
+    appV1.use("/", startApp(schemaV1, "/"))
   }
   appV1(req, res, next)
 })
