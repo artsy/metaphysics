@@ -20,7 +20,7 @@ const NotificationsFeedItemType = new GraphQLObjectType<any, ResolverContext>({
   name: "NotificationsFeedItem",
   interfaces: [NodeInterface],
   fields: () => ({
-    __id: GlobalIDField,
+    id: GlobalIDField,
     artists: {
       type: GraphQLString,
       resolve: ({ actors }) => actors,

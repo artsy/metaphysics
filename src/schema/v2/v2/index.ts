@@ -1,15 +1,8 @@
 import { GraphQLSchema, isNullableType } from "graphql"
 import { transformSchema, FilterTypes } from "graphql-tools"
-import { RenameArguments } from "./RenameArguments"
 import { shouldBeRemoved } from "lib/deprecation"
 import { FilterFields } from "./FilterFields"
 import { RenameFields } from "./RenameFields"
-import {
-  GravityIDFields,
-  NullableIDField,
-  InternalIDFields,
-  SlugAndInternalIDFields,
-} from "schema/v2/object_identification"
 
 // TODO: Flip this switch before we go public with v2 and update clients. Until
 //       then this gives clients an extra window of opportunity to update.
@@ -26,9 +19,6 @@ const FilterTypeNames = [
       ]
     : []),
 ]
-
-// Omit this id field entirely from the v2 schema, as it's a no-op
-const FilterIDFieldFromTypeNames = ["SaleArtworkHighestBid"]
 
 // TODO: These types should have their id fields renamed to internalID upstream,
 //       but that requires us to do some transformation work _back_ on the v1
@@ -76,7 +66,6 @@ export const transformToV2 = (
     allowedNonGravityTypesWithNullableIDField: KnownNonGravityTypesWithNullableIDFields,
     stitchedTypePrefixes: StitchedTypePrefixes,
     filterTypes: FilterTypeNames,
-    filterIDFieldFromTypes: FilterIDFieldFromTypeNames,
     ...options,
   }
   const allowedTypesWithNullableIDField = [
@@ -87,11 +76,13 @@ export const transformToV2 = (
     new FilterTypes(type => {
       return !opt.filterTypes.includes(type.name)
     }),
-    new FilterFields(
-      (type, field) =>
-        field.name !== "id" || !opt.filterIDFieldFromTypes.includes(type.name)
-    ),
     new RenameFields((type, field) => {
+      // Only rename ID fields on stitched services.
+      if (
+        !opt.stitchedTypePrefixes.some(prefix => type.name.startsWith(prefix))
+      ) {
+        return undefined
+      }
       if (field.name === "id") {
         if (
           isNullableType(field.type) &&
@@ -99,34 +90,8 @@ export const transformToV2 = (
         ) {
           throw new Error(`Do not add new nullable id fields (${type.name})`)
         } else {
-          if (field.description === SlugAndInternalIDFields.id.description) {
-            return "slug"
-          } else if (
-            field.description === GravityIDFields.id.description ||
-            (field.description === NullableIDField.id.description &&
-              opt.allowedGravityTypesWithNullableIDField.includes(type.name))
-          ) {
-            return "internalID"
-          } else if (
-            field.description === InternalIDFields.id.description ||
-            field.description === SlugAndInternalIDFields.id.description ||
-            (field.description === NullableIDField.id.description &&
-              opt.allowedNonGravityTypesWithNullableIDField.includes(
-                type.name
-              )) ||
-            opt.stitchedTypePrefixes.some(prefix =>
-              type.name.startsWith(prefix)
-            )
-          ) {
-            return "internalID"
-          } else {
-            throw new Error(`Do not add new id fields (${type.name})`)
-          }
+          return "internalID"
         }
-      } else if (field.name === "_id") {
-        return "internalID"
-      } else if (field.name === "__id") {
-        return "id"
       }
       return undefined
     }),
@@ -135,7 +100,6 @@ export const transformToV2 = (
         return field.name.substring(3)
       }
     }),
-    new RenameArguments((_field, arg) => (arg.name === "__id" ? "id" : null)),
     ...(FILTER_DEPRECATIONS
       ? [
           new FilterFields(

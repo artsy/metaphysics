@@ -32,6 +32,7 @@ import {
   GraphQLID,
   GraphQLInterfaceType,
   GraphQLFieldConfig,
+  GraphQLFieldConfigMap,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -107,27 +108,27 @@ function rootValueForChild(rootValue) {
 export const NodeInterface = new GraphQLInterfaceType({
   name: "Node",
   description: "An object with a Globally Unique ID",
-  fields: () => ({
-    __id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: "The ID of the object.",
-    },
-  }),
+  fields: () => {
+    const { resolve, ...id } = GlobalIDField
+    return {
+      id,
+    }
+  },
   resolveType: ({ __type }) => __type,
 })
 
 const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
-  description: "Fetches an object given its Globally Unique ID",
+  description: "Fetches an object given its globally unique ID.",
   type: NodeInterface,
   args: {
-    __id: {
+    id: {
       type: new GraphQLNonNull(GraphQLID),
-      description: "The ID of the object",
+      description: "The globally unique ID of the node.",
     },
   },
   // Re-uses (slightly abuses) the existing GraphQL `resolve` function.
-  resolve: (_root, { __id }, context, rootValue) => {
-    const { type: typeName, id } = fromGlobalId(__id)
+  resolve: (_root, { id: globalID }, context, rootValue) => {
+    const { type: typeName, id } = fromGlobalId(globalID)
     if (isSupportedType(typeName)) {
       let exported = SupportedTypes.typeModules[typeName]
       if (typeof exported === "function") {
@@ -150,64 +151,74 @@ const NodeField: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
-export const GlobalIDField = {
-  name: "__id",
+export const GlobalIDField: GraphQLFieldConfig<any, ResolverContext> = {
   description: "A globally unique ID.",
   type: new GraphQLNonNull(GraphQLID),
-  // Ensure we never encode a null `id`, as it would silently work. Instead return `null`, so that
-  // e.g. Relay will complain about the result not matching the type specified in the schema.
+  // Ensure we never encode a null `id`, as it would silently work. Instead
+  // return `null`, so that graphql-js will complain about the result not
+  // matching the type specified in the schema.
   resolve: (obj, _args, _request, info) => {
     return obj.id && toGlobalId(info.parentType.name, obj.id)
   },
 }
 
-export const NullableIDField = {
-  id: {
+export const NullableIDField: GraphQLFieldConfigMap<any, ResolverContext> = {
+  internalID: {
     description: "An optional type-specific ID.",
     type: GraphQLID,
+    resolve: ({ id }) => id,
   },
 }
 
-export const IDFields = {
-  __id: GlobalIDField,
-  id: {
+export const IDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
+  id: GlobalIDField,
+  internalID: {
     description: "A type-specific ID.",
     type: new GraphQLNonNull(GraphQLID),
+    resolve: ({ id }) => id,
   },
 }
 
-export const GravityIDFields = {
+export const GravityIDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   ...IDFields,
-  _id: {
+  internalID: {
     description: "A type-specific Gravity Mongo Document ID.",
     type: new GraphQLNonNull(GraphQLID),
+    resolve: ({ _id }) => _id,
   },
 }
 
-export const SlugIDField = {
-  id: {
+export const SlugIDField: GraphQLFieldConfigMap<any, ResolverContext> = {
+  slug: {
     description: "A slug ID.",
     type: new GraphQLNonNull(GraphQLID),
+    resolve: ({ id }) => id,
   },
 }
 
-export const SlugAndInternalIDFields = {
-  __id: GlobalIDField,
-  id: {
+export const SlugAndInternalIDFields: GraphQLFieldConfigMap<
+  any,
+  ResolverContext
+> = {
+  id: GlobalIDField,
+  slug: {
     description: "A slug ID.",
     type: new GraphQLNonNull(GraphQLID),
+    resolve: ({ id }) => id,
   },
-  _id: {
+  internalID: {
     description: "A type-specific ID likely used as a database ID.",
     type: new GraphQLNonNull(GraphQLID),
+    resolve: ({ _id }) => _id,
   },
 }
 
-export const InternalIDFields = {
-  __id: GlobalIDField,
-  id: {
+export const InternalIDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
+  id: GlobalIDField,
+  internalID: {
     description: "A type-specific ID likely used as a database ID.",
     type: new GraphQLNonNull(GraphQLID),
+    resolve: ({ _id }) => _id,
   },
 }
 

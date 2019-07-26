@@ -79,9 +79,6 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
     private: {
       type: new GraphQLNonNull(GraphQLBoolean),
     },
-    slug: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
   },
 })
 

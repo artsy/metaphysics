@@ -104,7 +104,7 @@ describe("Filter Artworks", () => {
 
       const query = `
         {
-          node(__id: "${generatedId}") {
+          node(id: "${generatedId}") {
             __id
           }
         }

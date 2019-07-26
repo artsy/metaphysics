@@ -68,7 +68,7 @@ export const HomePageArtistModuleType = new GraphQLObjectType<
   name: "HomePageArtistModule",
   interfaces: [NodeInterface],
   fields: {
-    __id: {
+    id: {
       type: new GraphQLNonNull(GraphQLID),
       description: "A globally unique ID.",
       resolve: ({ key }) => {

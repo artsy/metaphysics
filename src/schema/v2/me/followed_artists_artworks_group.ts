@@ -24,7 +24,7 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType<
   name: "FollowedArtistsArtworksGroup",
   interfaces: [NodeInterface],
   fields: () => ({
-    __id: GlobalIDField,
+    id: GlobalIDField,
     href: {
       type: GraphQLString,
       resolve: ({ artistSlug }) => `/artist/${artistSlug}`,
