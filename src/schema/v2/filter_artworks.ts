@@ -78,10 +78,8 @@ export const FilterArtworksCounts = {
   resolve: data => data,
 }
 
-export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
-  name: "FilterArtworks",
-  interfaces: [NodeInterface],
-  fields: () => ({
+export const FilterArtworksFields = () => {
+  return {
     id: {
       type: new GraphQLNonNull(GraphQLID),
       description: "The ID of the object.",
@@ -182,7 +180,13 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
         return null
       },
     },
-  }),
+  }
+}
+
+export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
+  name: "FilterArtworks",
+  interfaces: [NodeInterface],
+  fields: FilterArtworksFields,
 })
 
 export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
@@ -355,7 +359,6 @@ const filterArtworksTypeFactory = (
       keyword_match_exact: keywordMatchExact,
       ..._options,
     }
-
     const { include_artworks_by_followed_artists, aggregations } = options
     const requestedPersonalizedAggregation = aggregations.includes(
       "followed_artists"

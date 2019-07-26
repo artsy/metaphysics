@@ -29,3 +29,13 @@ patch-package
    });
  
    var firstEdge = edges[0];
+--- a/node_modules/graphql-relay/lib/connection/connection.js
++++ b/node_modules/graphql-relay/lib/connection/connection.js
+@@ -88,6 +88,7 @@ function connectionDefinitions(config) {
+   var connectionType = new _graphql.GraphQLObjectType({
+     name: name + 'Connection',
+     description: 'A connection to a list of items.',
++    interfaces: config.interfaces,
+     fields: function fields() {
+       return _extends({
+         pageInfo: {
