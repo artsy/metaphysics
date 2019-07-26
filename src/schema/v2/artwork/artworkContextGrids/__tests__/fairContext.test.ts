@@ -16,7 +16,7 @@ describe("Show Context", () => {
           artworks(first: 2) {
             edges {
               node {
-                id
+                slug
                 title
               }
             }
@@ -43,21 +43,21 @@ describe("Show Context", () => {
     })
 
     const artistArtworks = [
-      { id: "artwork1", title: "Artwork 1" },
-      { id: "artwork2", title: "Artwork 2" },
-      { id: "artwork3", title: "Artwork 3" },
+      { slug: "artwork1", title: "Artwork 1" },
+      { slug: "artwork2", title: "Artwork 2" },
+      { slug: "artwork3", title: "Artwork 3" },
     ]
 
     const partnerArtworks = [
-      { id: "partnerArtwork1", title: "Partner Artwork 1" },
-      { id: "partnerArtwork2", title: "Partner Artwork 2" },
-      { id: "partnerArtwork3", title: "Partner Artwork 3" },
+      { slug: "partnerArtwork1", title: "Partner Artwork 1" },
+      { slug: "partnerArtwork2", title: "Partner Artwork 2" },
+      { slug: "partnerArtwork3", title: "Partner Artwork 3" },
     ]
 
     const showArtworks = [
-      { id: "showArtwork1", title: "Show Artwork 1" },
-      { id: "showArtwork2", title: "Show Artwork 2" },
-      { id: "showArtwork3", title: "Show Artwork 3" },
+      { slug: "showArtwork1", title: "Show Artwork 1" },
+      { slug: "showArtwork2", title: "Show Artwork 2" },
+      { slug: "showArtwork3", title: "Show Artwork 3" },
     ]
 
     context = {
@@ -122,9 +122,9 @@ describe("Show Context", () => {
     context.relatedLayersLoader = () => Promise.resolve([{ id: "main" }])
     context.relatedLayerArtworksLoader = () =>
       Promise.resolve([
-        { id: "relatedArtwork1", title: "Related Artwork 1" },
-        { id: "relatedArtwork2", title: "Related Artwork 2" },
-        { id: "relatedArtwork3", title: "Related Artwork 3" },
+        { slug: "relatedArtwork1", title: "Related Artwork 1" },
+        { slug: "relatedArtwork2", title: "Related Artwork 2" },
+        { slug: "relatedArtwork3", title: "Related Artwork 3" },
       ])
 
     return runAuthenticatedQuery(query, context).then(data => {
@@ -142,7 +142,7 @@ describe("Show Context", () => {
       expect(showTitle).toEqual("Other works from Cool Show")
       expect(showCtaTitle).toEqual("View all works from the booth")
       expect(showctaHref).toEqual("/show/cool-show")
-      expect(showArtworks.edges.map(({ node }) => node.id)).toEqual([
+      expect(showArtworks.edges.map(({ node }) => node.slug)).toEqual([
         "showArtwork1",
         "showArtwork2",
       ])
@@ -158,7 +158,7 @@ describe("Show Context", () => {
       expect(artistTitle).toEqual("Other works by Andy Warhol")
       expect(artistCtaTitle).toEqual("View all works by Andy Warhol")
       expect(artistctaHref).toEqual("/artist/andy-warhol")
-      expect(artistArtworks.edges.map(({ node }) => node.id)).toEqual([
+      expect(artistArtworks.edges.map(({ node }) => node.slug)).toEqual([
         "artwork1",
         "artwork2",
       ])
@@ -174,7 +174,7 @@ describe("Show Context", () => {
       expect(relatedTitle).toEqual("Related works")
       expect(relatedCtaTitle).toEqual(null)
       expect(relatedctaHref).toEqual(null)
-      expect(relatedArtworks.edges.map(({ node }) => node.id)).toEqual([
+      expect(relatedArtworks.edges.map(({ node }) => node.slug)).toEqual([
         "relatedArtwork1",
         "relatedArtwork2",
       ])

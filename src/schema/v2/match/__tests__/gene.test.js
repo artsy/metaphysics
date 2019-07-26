@@ -6,21 +6,21 @@ describe("MatchGene", () => {
     const query = `
       {
         match_gene(term: "pop") {
-          id
+          slug
           name
-          _id
+          internalID
         }
       }
     `
     const response = [
       {
         family: {
-          _id: "575ac46debad644c13000005",
-          id: "styles-and-movements",
+          internalID: "575ac46debad644c13000005",
+          slug: "styles-and-movements",
           name: "Styles and Movements",
         },
-        _id: "123456",
-        id: "pop-art",
+        internalID: "123456",
+        slug: "pop-art",
         name: "Pop Art",
         image_urls: {
           big_and_tall:
@@ -40,7 +40,9 @@ describe("MatchGene", () => {
 
     return runQuery(query, { matchGeneLoader }).then(data => {
       expect(data).toEqual({
-        match_gene: [{ id: "pop-art", name: "Pop Art", _id: "123456" }],
+        match_gene: [
+          { slug: "pop-art", name: "Pop Art", internalID: "123456" },
+        ],
       })
     })
   })
