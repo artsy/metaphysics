@@ -1,9 +1,8 @@
 import { GraphQLNonNull, GraphQLString, GraphQLBoolean } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { formatGravityError } from "lib/gravityErrorHandler"
-import { CreditCard, CreditCardMutationType } from "../credit_card"
+import { CreditCardMutationType } from "../credit_card"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({
   name: "CreditCard",

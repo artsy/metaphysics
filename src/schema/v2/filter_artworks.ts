@@ -32,7 +32,6 @@ import {
 
 import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 import {
   includesFieldsOtherThanSelectionSet,
   parseConnectionArgsFromConnection,

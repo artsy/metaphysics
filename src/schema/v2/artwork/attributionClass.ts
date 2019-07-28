@@ -1,7 +1,6 @@
 import { GraphQLObjectType, GraphQLString } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "schema/v2/object_identification"
-import { deprecate } from "lib/deprecation"
 
 const AttributionClass = new GraphQLObjectType<any, ResolverContext>({
   name: "AttributionClass",

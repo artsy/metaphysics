@@ -13,7 +13,6 @@ import { capitalizeFirstCharacter } from "lib/helpers"
 import { Sellable } from "./sellable"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "./fields/listPrice"
-import { deprecate } from "lib/deprecation"
 
 export const EditionSetSorts = {
   type: new GraphQLEnumType({

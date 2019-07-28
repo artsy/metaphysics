@@ -15,7 +15,6 @@ import { DeliveryType } from "./delivery"
 import { InvoiceType } from "./invoice"
 import { isExisty } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 const MessageInitiatorType = new GraphQLObjectType<any, ResolverContext>({
   name: "MessageInitiator",

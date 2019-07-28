@@ -1,6 +1,6 @@
 import moment from "moment"
 import "moment-timezone"
-import { GraphQLString, GraphQLBoolean, GraphQLFieldConfig } from "graphql"
+import { GraphQLString, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 export function date(rawDate, format, timezone) {

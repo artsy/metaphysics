@@ -1,5 +1,4 @@
 import { GraphQLBoolean, GraphQLInterfaceType, GraphQLString } from "graphql"
-import { deprecate } from "lib/deprecation"
 
 import Dimensions from "./dimensions"
 

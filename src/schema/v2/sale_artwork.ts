@@ -24,7 +24,6 @@ import {
 import config from "config"
 import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
-import { deprecate } from "lib/deprecation"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 

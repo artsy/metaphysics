@@ -11,7 +11,6 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
   name: "BidderPosition",

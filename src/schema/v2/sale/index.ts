@@ -33,7 +33,6 @@ import {
 
 import config from "config"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 const { PREDICTION_ENDPOINT } = config
 

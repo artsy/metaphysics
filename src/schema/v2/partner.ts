@@ -23,7 +23,6 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "Category",

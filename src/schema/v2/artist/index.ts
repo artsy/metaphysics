@@ -19,7 +19,6 @@ import Article, { articleConnection } from "schema/v2/article"
 import Artwork, { artworkConnection } from "schema/v2/artwork"
 import PartnerArtist from "schema/v2/partner_artist"
 import Meta from "./meta"
-import PartnerShow from "schema/v2/partner_show"
 import {
   PartnerArtistConnection,
   partnersForArtist,
@@ -67,7 +66,6 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.

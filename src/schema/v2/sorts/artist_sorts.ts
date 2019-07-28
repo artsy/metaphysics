@@ -1,5 +1,4 @@
 import { GraphQLEnumType } from "graphql"
-import { deprecate } from "lib/deprecation"
 
 const ArtistSorts = {
   type: new GraphQLEnumType({

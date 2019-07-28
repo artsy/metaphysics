@@ -25,7 +25,6 @@ import {
 } from "schema/v2/object_identification"
 import { MessageType } from "./message"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",

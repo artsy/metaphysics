@@ -15,7 +15,6 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 let possibleArgs
 

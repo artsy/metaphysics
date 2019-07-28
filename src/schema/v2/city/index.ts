@@ -30,7 +30,6 @@ import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
-import { deprecate } from "lib/deprecation"
 
 const PartnerShowPartnerType = new GraphQLEnumType({
   name: "PartnerShowPartnerType",

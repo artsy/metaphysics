@@ -30,7 +30,6 @@ import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
-import { deprecate } from "lib/deprecation"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",

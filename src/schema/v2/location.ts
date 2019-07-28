@@ -12,7 +12,6 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
   name: "LatLng",

@@ -34,7 +34,7 @@ import { allViaLoader } from "lib/all"
 import { totalViaLoader } from "lib/total"
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { deprecate, deprecateType } from "lib/deprecation"
+import { deprecateType } from "lib/deprecation"
 
 const kind = ({ artists, fair }) => {
   if (isExisty(fair)) return "fair"

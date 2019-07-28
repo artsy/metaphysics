@@ -12,7 +12,6 @@ import {
 } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import { SearchableItemPresenter } from "./SearchableItemPresenter"
-import { deprecate } from "lib/deprecation"
 
 export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
   name: "SearchableItem",

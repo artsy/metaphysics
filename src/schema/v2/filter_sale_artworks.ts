@@ -16,7 +16,6 @@ import {
   SaleArtworksAggregation,
 } from "./aggregations/filter_sale_artworks_aggregation"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 /**
  * NOTE: This type has been deprecated in favor of `SaleArtworks`.

@@ -7,7 +7,6 @@ import {
 } from "graphql-relay"
 import {
   isExisty,
-  exclude,
   existyValue,
   convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
@@ -21,7 +20,7 @@ import Artist from "./artist"
 import Partner from "./partner"
 import ExternalPartner from "./external_partner"
 import Fair from "./fair"
-import Artwork, { artworkConnection } from "./artwork"
+import { artworkConnection } from "./artwork"
 import Location from "./location"
 import Image, { getDefault, normalizeImageData } from "./image"
 import PartnerShowEventType from "./partner_show_event"
@@ -39,7 +38,6 @@ import {
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
-import { allViaLoader } from "lib/all"
 import { totalViaLoader } from "lib/total"
 import { find, flatten } from "lodash"
 
@@ -48,7 +46,6 @@ import EventStatus from "./input_fields/event_status"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
-import { deprecate } from "lib/deprecation"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
