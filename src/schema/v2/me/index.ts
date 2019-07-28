@@ -32,7 +32,6 @@ import FollowedFairs from "./followed_fairs"
 import Invoice from "./conversation/invoice"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
-import Notifications from "./notifications"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import SaleRegistrations from "./sale_registrations"
 import SavedArtworks from "./saved_artworks"
@@ -111,7 +110,6 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     initials: initials("name"),
-    notifications_connection: Notifications,
     paddle_number: {
       type: GraphQLString,
     },

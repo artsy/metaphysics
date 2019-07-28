@@ -44,6 +44,460 @@ type AggregationCount {
   sortable_id: String
 }
 
+type AnalyticsArtist {
+  entityId: String!
+}
+
+type AnalyticsArtwork {
+  entityId: String!
+}
+
+# Publish artwork Series Stats
+type AnalyticsArtworksPublishedStats {
+  percentageChanged: Int!
+  period: AnalyticsQueryPeriodEnum!
+  timeSeries: [AnalyticsPartnerTimeSeriesStats!]!
+  totalCount: Int!
+}
+
+# An ISO 8601 datetime
+scalar AnalyticsDateTime
+
+# Visitor countries, device, referals and session page
+type AnalyticsGroupedStats {
+  groupedEntity: AnalyticsGroupedStatsUnion!
+  period: AnalyticsQueryPeriodEnum!
+}
+
+# The connection type for GroupedStats.
+type AnalyticsGroupedStatsConnection {
+  # A list of edges.
+  edges: [AnalyticsGroupedStatsEdge]
+
+  # A list of nodes.
+  nodes: [AnalyticsGroupedStats]
+
+  # Information to aid in pagination.
+  pageInfo: AnalyticsPageInfo!
+}
+
+# An edge in a connection.
+type AnalyticsGroupedStatsEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: AnalyticsGroupedStats
+}
+
+enum AnalyticsGroupedStatsMetricEnum {
+  # visitor_by_device
+  VISITOR_BY_DEVICE
+
+  # visitor_by_landing_page
+  VISITOR_BY_LANDING_PAGE
+
+  # visitor_by_location
+  VISITOR_BY_LOCATION
+
+  # visitor_by_referral
+  VISITOR_BY_REFERRAL
+}
+
+enum AnalyticsGroupedStatsObjectTypeEnum {
+  # country
+  COUNTRY
+
+  # device type
+  DEVICE
+
+  # landing page
+  LANDING_PAGE
+
+  # referral
+  REFERRAL
+}
+
+# A grouped stat item: country or device etc.
+union AnalyticsGroupedStatsUnion =
+    AnalyticsVisitorsByCountry
+  | AnalyticsVisitorsByDevice
+  | AnalyticsVisitorsByLandingPage
+  | AnalyticsVisitorsByReferral
+
+# A histogram bin
+type AnalyticsHistogramBin {
+  maxPriceCents: Int!
+  minPriceCents: Int!
+  numArtworks: Int!
+  minPrice(
+    decimal: String = "."
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  maxPrice(
+    decimal: String = "."
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+}
+
+# Information about pagination in a connection.
+type AnalyticsPageInfo {
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
+
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+}
+
+# Stats for pageviews of partner content
+type AnalyticsPageviewStats {
+  artworkViews: Int
+  galleryViews: Int
+  percentageChanged: Int!
+  period: AnalyticsQueryPeriodEnum!
+  showViews: Int
+  timeSeries: [AnalyticsPartnerTimeSeriesStats!]!
+  totalCount: Int!
+  uniqueVisitors: Int
+}
+
+# Audience stats of a partner
+type AnalyticsPartnerAudienceStats {
+  commercialVisitors: Int!
+  partnerId: String!
+  period: AnalyticsQueryPeriodEnum!
+  uniqueVisitors: Int!
+}
+
+# Inquiry count time series data of a partner
+type AnalyticsPartnerInquiryCountTimeSeriesStats {
+  count: Int
+  endTime: AnalyticsDateTime
+  startTime: AnalyticsDateTime
+}
+
+# Inquiry stats of a partner
+type AnalyticsPartnerInquiryStats {
+  inquiryCount: Int!
+  inquiryResponseTime: Int
+  partnerId: String!
+  period: AnalyticsQueryPeriodEnum!
+
+  # Partner inquiry count time series
+  timeSeries(
+    cumulative: Boolean = false
+  ): [AnalyticsPartnerInquiryCountTimeSeriesStats!]
+}
+
+# Sales stats of a partner
+type AnalyticsPartnerSalesStats {
+  orderCount: Int!
+  orderResponseTime: Int
+  partnerId: String!
+  period: AnalyticsQueryPeriodEnum!
+
+  # Partner sales time series
+  timeSeries(
+    cumulative: Boolean = false
+  ): [AnalyticsPartnerSalesTimeSeriesStats!]
+  totalCents: Int!
+  total(
+    decimal: String = "."
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+}
+
+# Sales time series data of a partner
+type AnalyticsPartnerSalesTimeSeriesStats {
+  count: Int
+  endTime: AnalyticsDateTime
+  startTime: AnalyticsDateTime
+  totalCents: Int!
+  total(
+    decimal: String = "."
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+}
+
+# Partner Stats
+type AnalyticsPartnerStats {
+  # Time series data on number of artworks published
+  artworksPublished(
+    period: AnalyticsQueryPeriodEnum!
+  ): AnalyticsArtworksPublishedStats
+
+  # Audience stats
+  audience(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerAudienceStats
+
+  # Visitor countries, device, referals and session page
+  groupedStats(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    metric: AnalyticsGroupedStatsMetricEnum!
+    objectType: AnalyticsGroupedStatsObjectTypeEnum!
+    period: AnalyticsQueryPeriodEnum!
+  ): AnalyticsGroupedStatsConnection
+
+  # Inquiry stats
+  inquiry(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerInquiryStats
+
+  # Different types of partner pageviews
+  pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
+  partnerId: String!
+
+  # Artworks, shows, or artists ranked by views. Capped at 20 by the underlying sql query.
+  rankedStats(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    objectType: AnalyticsRankedStatsObjectTypeEnum!
+    period: AnalyticsQueryPeriodEnum!
+  ): AnalyticsRankedStatsConnection
+
+  # Sales stats
+  sales(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerSalesStats
+
+  # Top artworks ranked by views
+  topArtworks(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): AnalyticsRankedStatsConnection
+    @deprecated(reason: "Use rankedStats(objectType: ) instead")
+
+  # Number of unique visitors
+  uniqueVisitors(period: AnalyticsQueryPeriodEnum!): Int
+    @deprecated(reason: "Use audience() { uniqueVisitors } instead")
+}
+
+# Partner Time Series Stats
+type AnalyticsPartnerTimeSeriesStats {
+  count: Int
+  endTime: AnalyticsDateTime
+  startTime: AnalyticsDateTime
+}
+
+# Price Context Filter Type
+type AnalyticsPriceContextFilterType {
+  category: AnalyticsPricingContextCategoryEnum
+  dimension: AnalyticsPricingContextDimensionEnum
+}
+
+# Pricing Context Histogram
+type AnalyticsPricingContext {
+  appliedFilters: AnalyticsPriceContextFilterType!
+  bins: [AnalyticsHistogramBin!]!
+  appliedFiltersDisplay: String
+}
+
+enum AnalyticsPricingContextCategoryEnum {
+  # Architecture
+  ARCHITECTURE
+
+  # Books and Portfolios
+  BOOKS_AND_PORTFOLIOS
+
+  # Design/Decorative Art
+  DESIGN_DECORATIVE_ART
+
+  # Drawing, Collage or other Work on Paper
+  DRAWING_COLLAGE_OTHER_WORK_ON_PAPER
+
+  # Fashion Design and Wearable Art
+  FASHION
+
+  # Installation
+  INSTALLATION
+
+  # Jewelry
+  JEWELRY
+
+  # Mixed Media
+  MIXED_MEDIA
+
+  # Other
+  OTHER
+
+  # Painting
+  PAINTING
+
+  # Performance Art
+  PERFORMANCE
+
+  # Photography
+  PHOTOGRAPHY
+
+  # Posters
+  POSTERS
+
+  # Print
+  PRINT
+
+  # Sculpture
+  SCULPTURE
+
+  # Sound
+  SOUND
+
+  # Textile Arts
+  TEXTILE
+
+  # Video/Film/Animation
+  VIDEO_FILM_ANIMATION
+
+  # Work on Paper
+  WORK_ON_PAPER
+}
+
+enum AnalyticsPricingContextDimensionEnum {
+  # Large
+  LARGE
+
+  # Medium
+  MEDIUM
+
+  # Small
+  SMALL
+}
+
+enum AnalyticsQueryPeriodEnum {
+  # Four weeks
+  FOUR_WEEKS
+
+  # One year
+  ONE_YEAR
+
+  # Sixteen weeks
+  SIXTEEN_WEEKS
+}
+
+union AnalyticsRankedEntityUnion = Artwork | Show | Artist
+
+# Top artworks, shows, or artists from a partner
+type AnalyticsRankedStats {
+  period: AnalyticsQueryPeriodEnum!
+  rankedEntity: AnalyticsRankedStatsUnion!
+  value: Int!
+  entity: AnalyticsRankedEntityUnion
+}
+
+# The connection type for RankedStats.
+type AnalyticsRankedStatsConnection {
+  # A list of edges.
+  edges: [AnalyticsRankedStatsEdge]
+
+  # A list of nodes.
+  nodes: [AnalyticsRankedStats]
+
+  # Information to aid in pagination.
+  pageInfo: AnalyticsPageInfo!
+}
+
+# An edge in a connection.
+type AnalyticsRankedStatsEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: AnalyticsRankedStats
+}
+
+enum AnalyticsRankedStatsObjectTypeEnum {
+  # Artist
+  ARTIST
+
+  # Artwork
+  ARTWORK
+
+  # Show
+  SHOW
+}
+
+# An artwork, artist, or show
+union AnalyticsRankedStatsUnion =
+    AnalyticsArtist
+  | AnalyticsArtwork
+  | AnalyticsShow
+
+type AnalyticsShow {
+  entityId: String!
+}
+
+type AnalyticsVisitorsByCountry {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
+}
+
+type AnalyticsVisitorsByDevice {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
+}
+
+type AnalyticsVisitorsByLandingPage {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
+}
+
+type AnalyticsVisitorsByReferral {
+  metric: String!
+  name: String!
+  percent: Float!
+  type: String!
+  value: Int!
+}
+
 input ApproveOrderInput {
   # Order ID
   orderId: String!
@@ -329,6 +783,7 @@ type Artist implements Node & Searchable {
   statuses: ArtistStatuses
   highlights: ArtistHighlights
   years: String
+  marketingCollections(size: Int): [MarketingCollection]
 }
 
 type ArtistArtworkGrid implements ArtworkContextGrid {
@@ -884,6 +1339,7 @@ type Artwork implements Node & Searchable & Sellable {
 
   # score assigned to an artwork based on its dimensions
   sizeScore: Float
+  pricingContext: AnalyticsPricingContext
 }
 
 enum ArtworkAggregation {
@@ -2573,6 +3029,1251 @@ type CollectorProfileType {
     timezone: String
   ): String
   intents: [String]
+}
+
+# Autogenerated input type of AddInitialOfferToOrder
+input CommerceAddInitialOfferToOrderInput {
+  amountCents: Int!
+
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  note: String
+  orderId: ID!
+}
+
+# Autogenerated return type of AddInitialOfferToOrder
+type CommerceAddInitialOfferToOrderPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# An generic error type for mutations
+type CommerceApplicationError {
+  # Code of this error
+  code: String!
+
+  # What caused the error
+  data: String
+
+  # Type of this error
+  type: String!
+}
+
+# Autogenerated input type of ApproveOrder
+input CommerceApproveOrderInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  id: ID!
+}
+
+# Autogenerated return type of ApproveOrder
+type CommerceApproveOrderPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of BuyerAcceptOffer
+input CommerceBuyerAcceptOfferInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  offerId: ID!
+}
+
+# Autogenerated return type of BuyerAcceptOffer
+type CommerceBuyerAcceptOfferPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of BuyerCounterOffer
+input CommerceBuyerCounterOfferInput {
+  amountCents: Int!
+
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  note: String
+  offerId: ID!
+}
+
+# Autogenerated return type of BuyerCounterOffer
+type CommerceBuyerCounterOfferPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of BuyerRejectOffer
+input CommerceBuyerRejectOfferInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  offerId: ID!
+  rejectReason: CommerceCancelReasonTypeEnum
+}
+
+# Autogenerated return type of BuyerRejectOffer
+type CommerceBuyerRejectOfferPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+type CommerceBuyOrder implements CommerceOrder {
+  buyer: CommerceOrderPartyUnion!
+  buyerPhoneNumber: String
+  buyerTotalCents: Int
+  code: String!
+  commissionFeeCents: Int
+  commissionRate: Float
+  createdAt: String!
+  creditCardId: String
+  currencyCode: String!
+  displayCommissionRate: String
+  internalID: ID!
+
+  # Item total in cents, for Offer Orders this field reflects current offer
+  itemsTotalCents: Int
+  lastApprovedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  lastSubmittedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  lastTransactionFailed: Boolean
+  lineItems(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): CommerceLineItemConnection
+  mode: CommerceOrderModeEnum
+  requestedFulfillment: CommerceRequestedFulfillmentUnion
+  seller: CommerceOrderPartyUnion!
+  sellerTotalCents: Int
+  shippingTotalCents: Int
+  state: CommerceOrderStateEnum!
+  stateExpiresAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  stateReason: String
+  stateUpdatedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  taxTotalCents: Int
+  totalListPriceCents: Int!
+  transactionFeeCents: Int
+  updatedAt: String!
+  buyerDetails: OrderParty
+  sellerDetails: OrderParty
+  itemsTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  sellerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  commissionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  totalListPrice(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  buyerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  taxTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  shippingTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  transactionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+}
+
+enum CommerceCancelReasonTypeEnum {
+  # cancelation reason is: buyer_lapsed
+  BUYER_LAPSED
+
+  # cancelation reason is: buyer_rejected
+  BUYER_REJECTED
+
+  # cancelation reason is: seller_lapsed
+  SELLER_LAPSED
+
+  # cancelation reason is: seller_rejected
+  SELLER_REJECTED
+
+  # cancelation reason is: seller_rejected_artwork_unavailable
+  SELLER_REJECTED_ARTWORK_UNAVAILABLE
+
+  # cancelation reason is: seller_rejected_offer_too_low
+  SELLER_REJECTED_OFFER_TOO_LOW
+
+  # cancelation reason is: seller_rejected_other
+  SELLER_REJECTED_OTHER
+
+  # cancelation reason is: seller_rejected_shipping_unavailable
+  SELLER_REJECTED_SHIPPING_UNAVAILABLE
+}
+
+# Autogenerated input type of ConfirmPickup
+input CommerceConfirmPickupInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  id: ID!
+}
+
+# Autogenerated return type of ConfirmPickup
+type CommerceConfirmPickupPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of CreateOfferOrderWithArtwork
+input CommerceCreateOfferOrderWithArtworkInput {
+  # Artwork Id
+  artworkId: String!
+
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # EditionSet Id
+  editionSetId: String
+
+  # When set to false, we will create a new order. Otherwise if current user has
+  # pending/submitted orders on same artwork/edition with same quantity, we will return that
+  findActiveOrCreate: Boolean = true
+
+  # Number of items in the line item, default is 1
+  quantity: Int
+}
+
+# Autogenerated return type of CreateOfferOrderWithArtwork
+type CommerceCreateOfferOrderWithArtworkPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure. If find_active_or_create is not false, it will
+  # return existing pending/submitted order for current user if exists, otherwise
+  # it will return newly created order
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of CreateOrderWithArtwork
+input CommerceCreateOrderWithArtworkInput {
+  # Artwork Id
+  artworkId: String!
+
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # EditionSet Id
+  editionSetId: String
+
+  # Number of items in the line item
+  quantity: Int
+}
+
+# Autogenerated return type of CreateOrderWithArtwork
+type CommerceCreateOrderWithArtworkPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+scalar CommerceDate
+
+scalar CommerceDateTime
+
+# Autogenerated input type of FixFailedPayment
+input CommerceFixFailedPaymentInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  creditCardId: String!
+  offerId: ID!
+}
+
+# Autogenerated return type of FixFailedPayment
+type CommerceFixFailedPaymentPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of FulfillAtOnce
+input CommerceFulfillAtOnceInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  fulfillment: CommerceFulfillmentAttributes!
+  id: ID!
+}
+
+# Autogenerated return type of FulfillAtOnce
+type CommerceFulfillAtOncePayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# A Fulfillment for an order
+type CommerceFulfillment {
+  courier: String!
+  createdAt: CommerceDateTime!
+  estimatedDelivery: CommerceDate
+  internalID: ID!
+  notes: String
+  trackingId: String
+  updatedAt: CommerceDateTime!
+}
+
+# Attributes of a Fulfillment
+input CommerceFulfillmentAttributes {
+  courier: String!
+  estimatedDelivery: CommerceDate
+  notes: String
+  trackingId: String
+}
+
+# The connection type for Fulfillment.
+type CommerceFulfillmentConnection {
+  # A list of edges.
+  edges: [CommerceFulfillmentEdge]
+
+  # A list of nodes.
+  nodes: [CommerceFulfillment]
+
+  # Information to aid in pagination.
+  pageInfo: CommercePageInfo!
+}
+
+# An edge in a connection.
+type CommerceFulfillmentEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: CommerceFulfillment
+}
+
+# A Line Item
+type CommerceLineItem {
+  artworkId: String!
+  artworkVersionId: String!
+  commissionFeeCents: Int
+  createdAt: CommerceDateTime!
+  editionSetId: String
+  fulfillments(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): CommerceFulfillmentConnection
+  internalID: ID!
+  listPriceCents: Int!
+  order: CommerceOrder!
+  priceCents: Int! @deprecated(reason: "switch to use listPriceCents")
+  quantity: Int!
+  shippingTotalCents: Int
+  updatedAt: CommerceDateTime!
+  artwork: Artwork
+  artworkVersion: ArtworkVersion
+  shippingTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  listPrice(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  commissionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+}
+
+# The connection type for LineItem.
+type CommerceLineItemConnection {
+  # A list of edges.
+  edges: [CommerceLineItemEdge]
+
+  # A list of nodes.
+  nodes: [CommerceLineItem]
+
+  # Information to aid in pagination.
+  pageInfo: CommercePageInfo!
+}
+
+# An edge in a connection.
+type CommerceLineItemEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: CommerceLineItem
+}
+
+# An Offer
+type CommerceOffer {
+  amountCents: Int!
+  buyerTotalCents: Int
+  createdAt: String!
+  creatorId: String!
+  from: CommerceOrderPartyUnion!
+  fromParticipant: CommerceOrderParticipantEnum
+  internalID: ID!
+  note: String
+  order: CommerceOrder!
+  respondsTo: CommerceOffer
+  shippingTotalCents: Int
+  submittedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  taxTotalCents: Int
+  fromDetails: OrderParty
+  amount(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  taxTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  shippingTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  buyerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+}
+
+# The connection type for Offer.
+type CommerceOfferConnection {
+  # A list of edges.
+  edges: [CommerceOfferEdge]
+
+  # A list of nodes.
+  nodes: [CommerceOffer]
+
+  # Information to aid in pagination.
+  pageInfo: CommercePageInfo!
+}
+
+# An edge in a connection.
+type CommerceOfferEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: CommerceOffer
+}
+
+type CommerceOfferOrder implements CommerceOrder {
+  awaitingResponseFrom: CommerceOrderParticipantEnum
+  buyer: CommerceOrderPartyUnion!
+  buyerPhoneNumber: String
+  buyerTotalCents: Int
+  code: String!
+  commissionFeeCents: Int
+  commissionRate: Float
+  createdAt: String!
+  creditCardId: String
+  currencyCode: String!
+  displayCommissionRate: String
+  internalID: ID!
+
+  # Item total in cents, for Offer Orders this field reflects current offer
+  itemsTotalCents: Int
+  lastApprovedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+
+  # Last submitted offer
+  lastOffer: CommerceOffer
+  lastSubmittedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  lastTransactionFailed: Boolean
+  lineItems(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): CommerceLineItemConnection
+  mode: CommerceOrderModeEnum
+  myLastOffer: CommerceOffer
+  offers(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+    fromId: String
+    fromType: String
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): CommerceOfferConnection
+  requestedFulfillment: CommerceRequestedFulfillmentUnion
+  seller: CommerceOrderPartyUnion!
+  sellerTotalCents: Int
+  shippingTotalCents: Int
+  state: CommerceOrderStateEnum!
+  stateExpiresAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  stateReason: String
+  stateUpdatedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  taxTotalCents: Int
+  totalListPriceCents: Int!
+  transactionFeeCents: Int
+  updatedAt: String!
+  buyerDetails: OrderParty
+  sellerDetails: OrderParty
+  itemsTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  sellerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  commissionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  totalListPrice(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  buyerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  taxTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  shippingTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  transactionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  offerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+}
+
+# Order
+interface CommerceOrder {
+  buyer: CommerceOrderPartyUnion!
+  buyerPhoneNumber: String
+  buyerTotalCents: Int
+  code: String!
+  commissionFeeCents: Int
+  commissionRate: Float
+  createdAt: String!
+  creditCardId: String
+  currencyCode: String!
+  displayCommissionRate: String
+  internalID: ID!
+
+  # Item total in cents, for Offer Orders this field reflects current offer
+  itemsTotalCents: Int
+  lastApprovedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  lastSubmittedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  lastTransactionFailed: Boolean
+  lineItems(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+  ): CommerceLineItemConnection
+  mode: CommerceOrderModeEnum
+  requestedFulfillment: CommerceRequestedFulfillmentUnion
+  seller: CommerceOrderPartyUnion!
+  sellerTotalCents: Int
+  shippingTotalCents: Int
+  state: CommerceOrderStateEnum!
+  stateExpiresAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  stateReason: String
+  stateUpdatedAt(
+    # This arg is deprecated, use timezone instead
+    convert_to_utc: Boolean
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  taxTotalCents: Int
+  totalListPriceCents: Int!
+  transactionFeeCents: Int
+  updatedAt: String!
+  buyerDetails: OrderParty
+  sellerDetails: OrderParty
+  itemsTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  sellerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  commissionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  totalListPrice(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  buyerTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  taxTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  shippingTotal(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+  transactionFee(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+}
+
+# Fields to sort by
+enum CommerceOrderConnectionSortEnum {
+  # Sort by the timestamp the state of the order expires at in ascending order
+  STATE_EXPIRES_AT_ASC
+
+  # Sort by the timestamp the state of the order expires at in descending order
+  STATE_EXPIRES_AT_DESC
+
+  # Sort by the timestamp the state of order was last updated in ascending order
+  STATE_UPDATED_AT_ASC
+
+  # Sort by the timestamp the state of order was last updated in descending order
+  STATE_UPDATED_AT_DESC
+
+  # Sort by the timestamp the order was last updated in ascending order
+  UPDATED_AT_ASC
+
+  # Sort by the timestamp the order was last updated in descending order
+  UPDATED_AT_DESC
+}
+
+# The connection type for Order.
+type CommerceOrderConnectionWithTotalCount {
+  # A list of edges.
+  edges: [CommerceOrderEdge]
+
+  # A list of nodes.
+  nodes: [CommerceOrder]
+  pageCursors: CommercePageCursors
+
+  # Information to aid in pagination.
+  pageInfo: CommercePageInfo!
+  totalCount: Int
+  totalPages: Int
+}
+
+# An edge in a connection.
+type CommerceOrderEdge {
+  # A cursor for use in pagination.
+  cursor: String!
+
+  # The item at the end of the edge.
+  node: CommerceOrder
+}
+
+enum CommerceOrderFulfillmentTypeEnum {
+  # fulfillment type is: pickup
+  PICKUP
+
+  # fulfillment type is: ship
+  SHIP
+}
+
+enum CommerceOrderModeEnum {
+  # Buy Order
+  BUY
+
+  # Offer Order
+  OFFER
+}
+
+# Represents either a resolved Order or a potential failure
+union CommerceOrderOrFailureUnion =
+    CommerceOrderWithMutationFailure
+  | CommerceOrderWithMutationSuccess
+
+enum CommerceOrderParticipantEnum {
+  # Participant on the buyer side
+  BUYER
+
+  # Participant on the seller side
+  SELLER
+}
+
+# Represents either a partner or a user
+union CommerceOrderPartyUnion = CommercePartner | CommerceUser
+
+enum CommerceOrderStateEnum {
+  # order is abandoned by buyer and never submitted
+  ABANDONED
+
+  # order is approved by seller
+  APPROVED
+
+  # order is canceled
+  CANCELED
+
+  # order is fulfilled by seller
+  FULFILLED
+
+  # order is still pending submission by buyer
+  PENDING
+
+  # order is refunded after being approved or fulfilled
+  REFUNDED
+
+  # order is submitted by buyer
+  SUBMITTED
+}
+
+# An error response for changes to an order
+type CommerceOrderWithMutationFailure {
+  error: CommerceApplicationError!
+}
+
+# A successfully returned order type
+type CommerceOrderWithMutationSuccess {
+  order: CommerceOrder!
+}
+
+type CommercePageCursor {
+  # first cursor on the page
+  cursor: String!
+
+  # is this the current page?
+  isCurrent: Boolean!
+
+  # page number out of totalPages
+  page: Int!
+}
+
+type CommercePageCursors {
+  around: [CommercePageCursor!]!
+
+  # optional, may be included in field around
+  first: CommercePageCursor
+
+  # optional, may be included in field around
+  last: CommercePageCursor
+  previous: CommercePageCursor
+}
+
+# Information about pagination in a connection.
+type CommercePageInfo {
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
+
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+}
+
+type CommercePartner {
+  internalID: String!
+  type: String!
+}
+
+type CommercePickup {
+  fulfillmentType: String!
+}
+
+# Autogenerated input type of RejectOrder
+input CommerceRejectOrderInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  id: ID!
+}
+
+# Autogenerated return type of RejectOrder
+type CommerceRejectOrderPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Represents either a shipping information or pickup
+union CommerceRequestedFulfillmentUnion = CommercePickup | CommerceShip
+
+# Autogenerated input type of SellerAcceptOffer
+input CommerceSellerAcceptOfferInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  offerId: ID!
+}
+
+# Autogenerated return type of SellerAcceptOffer
+type CommerceSellerAcceptOfferPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of SellerCounterOffer
+input CommerceSellerCounterOfferInput {
+  amountCents: Int!
+
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  note: String
+  offerId: ID!
+}
+
+# Autogenerated return type of SellerCounterOffer
+type CommerceSellerCounterOfferPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of SellerRejectOffer
+input CommerceSellerRejectOfferInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  offerId: ID!
+  rejectReason: CommerceCancelReasonTypeEnum
+}
+
+# Autogenerated return type of SellerRejectOffer
+type CommerceSellerRejectOfferPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of SetPayment
+input CommerceSetPaymentInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  creditCardId: String!
+  id: ID!
+}
+
+# Autogenerated return type of SetPayment
+type CommerceSetPaymentPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of SetShipping
+input CommerceSetShippingInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  fulfillmentType: CommerceOrderFulfillmentTypeEnum!
+  id: ID!
+  shipping: CommerceShippingAttributes
+}
+
+# Autogenerated return type of SetShipping
+type CommerceSetShippingPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+type CommerceShip {
+  addressLine1: String
+  addressLine2: String
+  city: String
+  country: String
+  name: String
+  phoneNumber: String
+  postalCode: String
+  region: String
+}
+
+# Shipping information
+input CommerceShippingAttributes {
+  addressLine1: String
+  addressLine2: String
+  city: String
+  country: String
+  name: String
+  phoneNumber: String!
+  postalCode: String
+  region: String
+}
+
+# Autogenerated input type of SubmitOrder
+input CommerceSubmitOrderInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  id: ID!
+}
+
+# Autogenerated return type of SubmitOrder
+type CommerceSubmitOrderPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of SubmitOrderWithOffer
+input CommerceSubmitOrderWithOfferInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  offerId: ID!
+}
+
+# Autogenerated return type of SubmitOrderWithOffer
+type CommerceSubmitOrderWithOfferPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+# Autogenerated input type of SubmitPendingOffer
+input CommerceSubmitPendingOfferInput {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+  offerId: ID!
+}
+
+# Autogenerated return type of SubmitPendingOffer
+type CommerceSubmitPendingOfferPayload {
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+
+  # A union of success/failure
+  orderOrError: CommerceOrderOrFailureUnion!
+}
+
+type CommerceUser {
+  internalID: String!
 }
 
 input ConfirmPickupInput {
@@ -5129,6 +6830,149 @@ type LotStanding {
   sale_artwork: SaleArtwork
 }
 
+# Object representing a collection page
+type MarketingCollection {
+  internalID: ID!
+
+  # slug version of title, used for pretty URLs (e.g. `kaws-prints` for Kaws Prints
+  slug: String!
+
+  # Name of the collection
+  title: String!
+
+  # Description of the collection which can include links to other collections
+  description: String
+
+  # Background image for the header of the collection page
+  headerImage: String
+
+  # URL for Thumbnail image to be used when this collection is displayed.
+  thumbnail: String
+
+  # Set of keywords used for SEO purposes
+  keywords: String!
+
+  # Image credit for the header image
+  credit: String
+
+  # Category of the collection
+  category: String!
+
+  # Structured object used to build filtered artworks query
+  query: MarketingCollectionQuery!
+  createdAt: MarketingDateTime!
+  updatedAt: MarketingDateTime!
+
+  # Suggested average price for included works
+  price_guidance: Float
+
+  # Collection can be surfaced on editorial pages
+  show_on_editorial: Boolean!
+
+  # Collection has prioritized connection to artist
+  is_featured_artist_content: Boolean!
+
+  # CollectionGroups of this collection
+  linkedCollections: [MarketingCollectionGroup!]!
+  relatedCollections: [MarketingCollection!]!
+  artworks(
+    acquireable: Boolean
+    offerable: Boolean
+    aggregation_partner_cities: [String]
+    aggregations: [ArtworkAggregation]
+    artist_id: String
+    artist_ids: [String]
+    at_auction: Boolean
+    attribution_class: [String]
+    color: String
+    dimension_range: String
+    extra_aggregation_gene_ids: [String]
+    include_artworks_by_followed_artists: Boolean
+    include_medium_filter_in_aggregation: Boolean
+    inquireable_only: Boolean
+    for_sale: Boolean
+    gene_id: String
+    gene_ids: [String]
+    height: String
+    width: String
+
+    # A string from the list of allocations, or * to denote all mediums
+    medium: String
+    period: String
+    periods: [String]
+    major_periods: [String]
+    partner_id: ID
+    partner_cities: [String]
+    price_range: String
+    page: Int
+    sale_id: ID
+    size: Int
+    sort: String
+    tag_id: String
+    keyword: String
+  ): FilterArtworks
+}
+
+type MarketingCollectionCategory {
+  name: String!
+  collections: [MarketingCollection!]!
+}
+
+type MarketingCollectionGroup {
+  groupType: MarketingGroupTypes!
+  name: String!
+  members: [MarketingCollection!]!
+}
+
+type MarketingCollectionQuery {
+  internalID: ID
+  acquireable: Boolean
+  aggregations: [String!]
+  artist_ids: [String!]
+  artist_id: String
+  at_auction: Boolean
+  color: String
+  dimension_range: String
+  extra_aggregation_gene_ids: [String!]
+  include_artworks_by_followed_artists: Boolean
+  include_medium_filter_in_aggregation: Boolean
+  inquireable_only: Boolean
+  for_sale: Boolean
+  gene_id: String
+  gene_ids: [String!]
+  height: String
+  width: String
+  medium: String
+  period: String
+  periods: [String!]
+  major_periods: [String!]
+  partner_id: ID
+  partner_cities: [String!]
+  price_range: String
+  page: Int
+  sale_id: ID
+  size: Int
+  sort: String
+  tag_id: String
+  keyword: String
+}
+
+scalar MarketingDateTime
+
+# Available types of CollectionGroup
+enum MarketingGroupTypes {
+  ArtistSeries
+  FeaturedCollections
+  OtherCollections
+}
+
+type MarketingImage {
+  internalID: ID!
+  small: String!
+  medium: String!
+  large: String!
+}
+
 type Me implements Node {
   # A globally unique ID.
   id: ID!
@@ -5264,7 +7108,6 @@ type Me implements Node {
   ): [LotStanding]
   name: String
   initials(length: Int = 3): String
-  notifications_connection: undefined
   paddle_number: String
   recentlyViewedArtworkIds: [String]!
 
@@ -5579,6 +7422,64 @@ type Mutation {
 
   # Submits an order
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
+  recordArtworkView(input: RecordArtworkViewInput!): RecordArtworkViewPayload
+  commerceAddInitialOfferToOrder(
+    input: CommerceAddInitialOfferToOrderInput!
+  ): CommerceAddInitialOfferToOrderPayload
+  commerceApproveOrder(
+    input: CommerceApproveOrderInput!
+  ): CommerceApproveOrderPayload
+  commerceBuyerAcceptOffer(
+    input: CommerceBuyerAcceptOfferInput!
+  ): CommerceBuyerAcceptOfferPayload
+  commerceBuyerCounterOffer(
+    input: CommerceBuyerCounterOfferInput!
+  ): CommerceBuyerCounterOfferPayload
+  commerceBuyerRejectOffer(
+    input: CommerceBuyerRejectOfferInput!
+  ): CommerceBuyerRejectOfferPayload
+  commerceConfirmPickup(
+    input: CommerceConfirmPickupInput!
+  ): CommerceConfirmPickupPayload
+  commerceCreateOfferOrderWithArtwork(
+    input: CommerceCreateOfferOrderWithArtworkInput!
+  ): CommerceCreateOfferOrderWithArtworkPayload
+  commerceCreateOrderWithArtwork(
+    input: CommerceCreateOrderWithArtworkInput!
+  ): CommerceCreateOrderWithArtworkPayload
+  commerceFixFailedPayment(
+    input: CommerceFixFailedPaymentInput!
+  ): CommerceFixFailedPaymentPayload
+
+  # Fulfill an order with one Fulfillment, it sets this fulfillment to each line item in order
+  commerceFulfillAtOnce(
+    input: CommerceFulfillAtOnceInput!
+  ): CommerceFulfillAtOncePayload
+  commerceRejectOrder(
+    input: CommerceRejectOrderInput!
+  ): CommerceRejectOrderPayload
+  commerceSellerAcceptOffer(
+    input: CommerceSellerAcceptOfferInput!
+  ): CommerceSellerAcceptOfferPayload
+  commerceSellerCounterOffer(
+    input: CommerceSellerCounterOfferInput!
+  ): CommerceSellerCounterOfferPayload
+  commerceSellerRejectOffer(
+    input: CommerceSellerRejectOfferInput!
+  ): CommerceSellerRejectOfferPayload
+  commerceSetPayment(input: CommerceSetPaymentInput!): CommerceSetPaymentPayload
+  commerceSetShipping(
+    input: CommerceSetShippingInput!
+  ): CommerceSetShippingPayload
+  commerceSubmitOrder(
+    input: CommerceSubmitOrderInput!
+  ): CommerceSubmitOrderPayload
+  commerceSubmitOrderWithOffer(
+    input: CommerceSubmitOrderWithOfferInput!
+  ): CommerceSubmitOrderWithOfferPayload
+  commerceSubmitPendingOffer(
+    input: CommerceSubmitPendingOfferInput!
+  ): CommerceSubmitPendingOfferPayload
 }
 
 input Near {
@@ -6366,6 +8267,9 @@ type PageCursors {
 
 # Information about pagination in a connection.
 type PageInfo {
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
+
   # When paginating forwards, are there more items?
   hasNextPage: Boolean!
 
@@ -6374,9 +8278,6 @@ type PageInfo {
 
   # When paginating backwards, the cursor to continue.
   startCursor: String
-
-  # When paginating forwards, the cursor to continue.
-  endCursor: String
 }
 
 type Partner implements Node {
@@ -6439,6 +8340,7 @@ type Partner implements Node {
 
   # The gallery partner's web address
   website: String
+  analytics: AnalyticsPartnerStats
 }
 
 type PartnerArtist {
@@ -7134,7 +9036,6 @@ type Query {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-  filter_sale_artworks: undefined
   gene(
     # The slug or ID of the Gene
     id: String!
@@ -7466,6 +9367,97 @@ type Query {
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
+
+  # Find list of competing orders
+  commerceCompetingOrders(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    orderId: ID!
+  ): CommerceOrderConnectionWithTotalCount
+  commerceLineItems(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+    artworkId: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+    editionSetId: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    orderStates: [CommerceOrderStateEnum!]
+  ): CommerceLineItemConnection
+
+  # Find an order by ID
+  commerceOrder(code: String, id: ID): CommerceOrder
+
+  # Find list of orders
+  commerceOrders(
+    # Returns the elements in the list that come after the specified cursor.
+    after: String
+
+    # Returns the elements in the list that come before the specified cursor.
+    before: String
+    buyerId: String
+    buyerType: String
+
+    # Returns the first _n_ elements from the list.
+    first: Int
+
+    # Returns the last _n_ elements from the list.
+    last: Int
+    mode: CommerceOrderModeEnum
+    sellerId: String
+    sellerType: String
+    sort: CommerceOrderConnectionSortEnum
+    state: CommerceOrderStateEnum
+  ): CommerceOrderConnectionWithTotalCount
+
+  # Find PartnerStats
+  analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
+  marketingCollections(
+    category: String
+    randomizationSeed: String
+    size: Int
+    isFeaturedArtistContent: Boolean
+    showOnEditorial: Boolean
+    artistID: String
+  ): [MarketingCollection!]!
+  marketingCategories: [MarketingCollectionCategory!]!
+  marketingCollection(slug: String!): MarketingCollection
+  marketingHubCollections: [MarketingCollection!]!
+}
+
+# Autogenerated input type of RecordArtworkView
+input RecordArtworkViewInput {
+  artwork_id: String!
+
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
+}
+
+# Autogenerated return type of RecordArtworkView
+type RecordArtworkViewPayload {
+  # Id of viewed artwork
+  artworkId: String!
+
+  # Id of viewed artwork
+  artwork_id: String! @deprecated(reason: "Use artworkId")
+
+  # A unique identifier for the client performing the mutation.
+  clientMutationId: String
 }
 
 input RejectOrderInput {
@@ -9073,7 +11065,6 @@ type Viewer {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-  filter_sale_artworks: undefined
   gene(
     # The slug or ID of the Gene
     id: String!
