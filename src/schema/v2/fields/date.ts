@@ -26,10 +26,6 @@ export interface DateSource {
 const dateField: GraphQLFieldConfig<DateSource, ResolverContext> = {
   type: GraphQLString,
   args: {
-    convert_to_utc: {
-      type: GraphQLBoolean,
-      description: "This arg is deprecated, use timezone instead",
-    },
     format: {
       type: GraphQLString,
     },

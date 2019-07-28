@@ -44,460 +44,6 @@ type AggregationCount {
   sortable_id: String
 }
 
-type AnalyticsArtist {
-  entityId: String!
-}
-
-type AnalyticsArtwork {
-  entityId: String!
-}
-
-# Publish artwork Series Stats
-type AnalyticsArtworksPublishedStats {
-  percentageChanged: Int!
-  period: AnalyticsQueryPeriodEnum!
-  timeSeries: [AnalyticsPartnerTimeSeriesStats!]!
-  totalCount: Int!
-}
-
-# An ISO 8601 datetime
-scalar AnalyticsDateTime
-
-# Visitor countries, device, referals and session page
-type AnalyticsGroupedStats {
-  groupedEntity: AnalyticsGroupedStatsUnion!
-  period: AnalyticsQueryPeriodEnum!
-}
-
-# The connection type for GroupedStats.
-type AnalyticsGroupedStatsConnection {
-  # A list of edges.
-  edges: [AnalyticsGroupedStatsEdge]
-
-  # A list of nodes.
-  nodes: [AnalyticsGroupedStats]
-
-  # Information to aid in pagination.
-  pageInfo: AnalyticsPageInfo!
-}
-
-# An edge in a connection.
-type AnalyticsGroupedStatsEdge {
-  # A cursor for use in pagination.
-  cursor: String!
-
-  # The item at the end of the edge.
-  node: AnalyticsGroupedStats
-}
-
-enum AnalyticsGroupedStatsMetricEnum {
-  # visitor_by_device
-  VISITOR_BY_DEVICE
-
-  # visitor_by_landing_page
-  VISITOR_BY_LANDING_PAGE
-
-  # visitor_by_location
-  VISITOR_BY_LOCATION
-
-  # visitor_by_referral
-  VISITOR_BY_REFERRAL
-}
-
-enum AnalyticsGroupedStatsObjectTypeEnum {
-  # country
-  COUNTRY
-
-  # device type
-  DEVICE
-
-  # landing page
-  LANDING_PAGE
-
-  # referral
-  REFERRAL
-}
-
-# A grouped stat item: country or device etc.
-union AnalyticsGroupedStatsUnion =
-    AnalyticsVisitorsByCountry
-  | AnalyticsVisitorsByDevice
-  | AnalyticsVisitorsByLandingPage
-  | AnalyticsVisitorsByReferral
-
-# A histogram bin
-type AnalyticsHistogramBin {
-  maxPriceCents: Int!
-  minPriceCents: Int!
-  numArtworks: Int!
-  minPrice(
-    decimal: String = "."
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  maxPrice(
-    decimal: String = "."
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-}
-
-# Information about pagination in a connection.
-type AnalyticsPageInfo {
-  # When paginating forwards, the cursor to continue.
-  endCursor: String
-
-  # When paginating forwards, are there more items?
-  hasNextPage: Boolean!
-
-  # When paginating backwards, are there more items?
-  hasPreviousPage: Boolean!
-
-  # When paginating backwards, the cursor to continue.
-  startCursor: String
-}
-
-# Stats for pageviews of partner content
-type AnalyticsPageviewStats {
-  artworkViews: Int
-  galleryViews: Int
-  percentageChanged: Int!
-  period: AnalyticsQueryPeriodEnum!
-  showViews: Int
-  timeSeries: [AnalyticsPartnerTimeSeriesStats!]!
-  totalCount: Int!
-  uniqueVisitors: Int
-}
-
-# Audience stats of a partner
-type AnalyticsPartnerAudienceStats {
-  commercialVisitors: Int!
-  partnerId: String!
-  period: AnalyticsQueryPeriodEnum!
-  uniqueVisitors: Int!
-}
-
-# Inquiry count time series data of a partner
-type AnalyticsPartnerInquiryCountTimeSeriesStats {
-  count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
-}
-
-# Inquiry stats of a partner
-type AnalyticsPartnerInquiryStats {
-  inquiryCount: Int!
-  inquiryResponseTime: Int
-  partnerId: String!
-  period: AnalyticsQueryPeriodEnum!
-
-  # Partner inquiry count time series
-  timeSeries(
-    cumulative: Boolean = false
-  ): [AnalyticsPartnerInquiryCountTimeSeriesStats!]
-}
-
-# Sales stats of a partner
-type AnalyticsPartnerSalesStats {
-  orderCount: Int!
-  orderResponseTime: Int
-  partnerId: String!
-  period: AnalyticsQueryPeriodEnum!
-
-  # Partner sales time series
-  timeSeries(
-    cumulative: Boolean = false
-  ): [AnalyticsPartnerSalesTimeSeriesStats!]
-  totalCents: Int!
-  total(
-    decimal: String = "."
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-}
-
-# Sales time series data of a partner
-type AnalyticsPartnerSalesTimeSeriesStats {
-  count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
-  totalCents: Int!
-  total(
-    decimal: String = "."
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-}
-
-# Partner Stats
-type AnalyticsPartnerStats {
-  # Time series data on number of artworks published
-  artworksPublished(
-    period: AnalyticsQueryPeriodEnum!
-  ): AnalyticsArtworksPublishedStats
-
-  # Audience stats
-  audience(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerAudienceStats
-
-  # Visitor countries, device, referals and session page
-  groupedStats(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-    metric: AnalyticsGroupedStatsMetricEnum!
-    objectType: AnalyticsGroupedStatsObjectTypeEnum!
-    period: AnalyticsQueryPeriodEnum!
-  ): AnalyticsGroupedStatsConnection
-
-  # Inquiry stats
-  inquiry(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerInquiryStats
-
-  # Different types of partner pageviews
-  pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
-  partnerId: String!
-
-  # Artworks, shows, or artists ranked by views. Capped at 20 by the underlying sql query.
-  rankedStats(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-    objectType: AnalyticsRankedStatsObjectTypeEnum!
-    period: AnalyticsQueryPeriodEnum!
-  ): AnalyticsRankedStatsConnection
-
-  # Sales stats
-  sales(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerSalesStats
-
-  # Top artworks ranked by views
-  topArtworks(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): AnalyticsRankedStatsConnection
-    @deprecated(reason: "Use rankedStats(objectType: ) instead")
-
-  # Number of unique visitors
-  uniqueVisitors(period: AnalyticsQueryPeriodEnum!): Int
-    @deprecated(reason: "Use audience() { uniqueVisitors } instead")
-}
-
-# Partner Time Series Stats
-type AnalyticsPartnerTimeSeriesStats {
-  count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
-}
-
-# Price Context Filter Type
-type AnalyticsPriceContextFilterType {
-  category: AnalyticsPricingContextCategoryEnum
-  dimension: AnalyticsPricingContextDimensionEnum
-}
-
-# Pricing Context Histogram
-type AnalyticsPricingContext {
-  appliedFilters: AnalyticsPriceContextFilterType!
-  bins: [AnalyticsHistogramBin!]!
-  appliedFiltersDisplay: String
-}
-
-enum AnalyticsPricingContextCategoryEnum {
-  # Architecture
-  ARCHITECTURE
-
-  # Books and Portfolios
-  BOOKS_AND_PORTFOLIOS
-
-  # Design/Decorative Art
-  DESIGN_DECORATIVE_ART
-
-  # Drawing, Collage or other Work on Paper
-  DRAWING_COLLAGE_OTHER_WORK_ON_PAPER
-
-  # Fashion Design and Wearable Art
-  FASHION
-
-  # Installation
-  INSTALLATION
-
-  # Jewelry
-  JEWELRY
-
-  # Mixed Media
-  MIXED_MEDIA
-
-  # Other
-  OTHER
-
-  # Painting
-  PAINTING
-
-  # Performance Art
-  PERFORMANCE
-
-  # Photography
-  PHOTOGRAPHY
-
-  # Posters
-  POSTERS
-
-  # Print
-  PRINT
-
-  # Sculpture
-  SCULPTURE
-
-  # Sound
-  SOUND
-
-  # Textile Arts
-  TEXTILE
-
-  # Video/Film/Animation
-  VIDEO_FILM_ANIMATION
-
-  # Work on Paper
-  WORK_ON_PAPER
-}
-
-enum AnalyticsPricingContextDimensionEnum {
-  # Large
-  LARGE
-
-  # Medium
-  MEDIUM
-
-  # Small
-  SMALL
-}
-
-enum AnalyticsQueryPeriodEnum {
-  # Four weeks
-  FOUR_WEEKS
-
-  # One year
-  ONE_YEAR
-
-  # Sixteen weeks
-  SIXTEEN_WEEKS
-}
-
-union AnalyticsRankedEntityUnion = Artwork | Show | Artist
-
-# Top artworks, shows, or artists from a partner
-type AnalyticsRankedStats {
-  period: AnalyticsQueryPeriodEnum!
-  rankedEntity: AnalyticsRankedStatsUnion!
-  value: Int!
-  entity: AnalyticsRankedEntityUnion
-}
-
-# The connection type for RankedStats.
-type AnalyticsRankedStatsConnection {
-  # A list of edges.
-  edges: [AnalyticsRankedStatsEdge]
-
-  # A list of nodes.
-  nodes: [AnalyticsRankedStats]
-
-  # Information to aid in pagination.
-  pageInfo: AnalyticsPageInfo!
-}
-
-# An edge in a connection.
-type AnalyticsRankedStatsEdge {
-  # A cursor for use in pagination.
-  cursor: String!
-
-  # The item at the end of the edge.
-  node: AnalyticsRankedStats
-}
-
-enum AnalyticsRankedStatsObjectTypeEnum {
-  # Artist
-  ARTIST
-
-  # Artwork
-  ARTWORK
-
-  # Show
-  SHOW
-}
-
-# An artwork, artist, or show
-union AnalyticsRankedStatsUnion =
-    AnalyticsArtist
-  | AnalyticsArtwork
-  | AnalyticsShow
-
-type AnalyticsShow {
-  entityId: String!
-}
-
-type AnalyticsVisitorsByCountry {
-  metric: String!
-  name: String!
-  percent: Float!
-  type: String!
-  value: Int!
-}
-
-type AnalyticsVisitorsByDevice {
-  metric: String!
-  name: String!
-  percent: Float!
-  type: String!
-  value: Int!
-}
-
-type AnalyticsVisitorsByLandingPage {
-  metric: String!
-  name: String!
-  percent: Float!
-  type: String!
-  value: Int!
-}
-
-type AnalyticsVisitorsByReferral {
-  metric: String!
-  name: String!
-  percent: Float!
-  type: String!
-  value: Int!
-}
-
 input ApproveOrderInput {
   # Order ID
   orderId: String!
@@ -521,8 +67,6 @@ type Article implements Node {
   contributing_authors: [Author]
   href: String
   published_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -535,8 +79,6 @@ type Article implements Node {
   tier: Int
   title: String
   updated_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -647,14 +189,10 @@ type Artist implements Node & Searchable {
     size: Int
     exclude_artists_without_artworks: Boolean = true
   ): [Artist]
-  consignable: Boolean
-    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   counts: ArtistCounts
   currentEvent: CurrentEvent
   deathday: String
   disablePriceContext: Boolean
-  display_auction_link: Boolean
-    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
 
   # Custom-sorted list of shows for an artist, in order of significance.
   exhibition_highlights(
@@ -746,22 +284,6 @@ type Artist implements Node & Searchable {
     # The number of PartnerArtists to return
     size: Int
   ): [PartnerArtist]
-  partner_shows(
-    active: Boolean
-    at_a_fair: Boolean
-    is_reference: Boolean
-
-    # The number of PartnerShows to return
-    size: Int
-    solo_show: Boolean
-    status: String
-    top_tier: Boolean
-    visible_to_public: Boolean
-    sort: PartnerShowSorts
-  ): [PartnerShow]
-    @deprecated(reason: "Prefer to use `shows`. [Will be removed in v2]")
-  public: Boolean
-    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   related: ArtistRelatedData
   sales(
     live: Boolean
@@ -807,7 +329,6 @@ type Artist implements Node & Searchable {
   statuses: ArtistStatuses
   highlights: ArtistHighlights
   years: String
-  marketingCollections(size: Int): [MarketingCollection]
 }
 
 type ArtistArtworkGrid implements ArtworkContextGrid {
@@ -1004,14 +525,10 @@ type ArtistItem implements Node & Searchable {
     size: Int
     exclude_artists_without_artworks: Boolean = true
   ): [Artist]
-  consignable: Boolean
-    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   counts: ArtistCounts
   currentEvent: CurrentEvent
   deathday: String
   disablePriceContext: Boolean
-  display_auction_link: Boolean
-    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
 
   # Custom-sorted list of shows for an artist, in order of significance.
   exhibition_highlights(
@@ -1103,22 +620,6 @@ type ArtistItem implements Node & Searchable {
     # The number of PartnerArtists to return
     size: Int
   ): [PartnerArtist]
-  partner_shows(
-    active: Boolean
-    at_a_fair: Boolean
-    is_reference: Boolean
-
-    # The number of PartnerShows to return
-    size: Int
-    solo_show: Boolean
-    status: String
-    top_tier: Boolean
-    visible_to_public: Boolean
-    sort: PartnerShowSorts
-  ): [PartnerShow]
-    @deprecated(reason: "Prefer to use `shows`. [Will be removed in v2]")
-  public: Boolean
-    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   related: ArtistRelatedData
   sales(
     live: Boolean
@@ -1213,18 +714,6 @@ type ArtistRelatedData {
 }
 
 enum ArtistSorts {
-  sortable_id_asc
-    @deprecated(
-      reason: "Prefer to use `SORTABLE_ID_ASC`. [Will be removed in v2]"
-    )
-  sortable_id_desc
-    @deprecated(
-      reason: "Prefer to use `SORTABLE_ID_DESC`. [Will be removed in v2]"
-    )
-  trending_desc
-    @deprecated(
-      reason: "Prefer to use `TRENDING_DESC`. [Will be removed in v2]"
-    )
   SORTABLE_ID_ASC
   SORTABLE_ID_DESC
   TRENDING_DESC
@@ -1266,8 +755,6 @@ type Artwork implements Node & Searchable & Sellable {
   artist_names: String
   articles(size: Int): [Article]
   availability: String
-  can_share_image: Boolean
-    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   category: String
 
   # Attribution class object
@@ -1292,8 +779,6 @@ type Artwork implements Node & Searchable & Sellable {
   edition_sets(sort: EditionSetSorts): [EditionSet]
   exhibition_history(format: Format): String
   fair: Fair
-  height: String
-    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
 
   # Returns the highlighted shows and articles
   highlights: [Highlighted]
@@ -1319,18 +804,8 @@ type Artwork implements Node & Searchable & Sellable {
   # When in an auction, can the work be bought immediately
   is_buy_nowable: Boolean
   is_comparable_with_auction_results: Boolean
-
-  # Are we able to display a contact form on artwork pages?
-  is_contactable: Boolean
-    @deprecated(
-      reason: "Prefer to use `is_inquireable`. [Will be removed in v2]"
-    )
   is_downloadable: Boolean
   is_embeddable_video: Boolean
-  is_ecommerce: Boolean
-    @deprecated(
-      reason: "Should not be used to determine anything UI-level. [Will be removed in v2]"
-    )
   is_for_sale: Boolean
   is_hangable: Boolean
 
@@ -1346,10 +821,6 @@ type Artwork implements Node & Searchable & Sellable {
   is_on_hold: String
   is_price_hidden: Boolean
   is_price_range: Boolean
-  is_purchasable: Boolean
-    @deprecated(
-      reason: "Purchase requests are not supported. Replaced by buy now. [Will be removed in v2]"
-    )
   is_saved: Boolean
   is_shareable: Boolean
   is_sold: Boolean
@@ -1360,25 +831,13 @@ type Artwork implements Node & Searchable & Sellable {
   literature(format: Format): String
   manufacturer(format: Format): String
   medium: String
-  metric: String
-    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
   meta: ArtworkMeta
   myLotStanding(live: Boolean = null): [LotStanding!]
-
-  # [DO NOT USE] Weekly pageview data (static).
-  pageviews: Int
-    @deprecated(
-      reason: "This is for an AB test and will be imminently deprecated. [Will be removed in v2]"
-    )
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): Partner
   pickup_available: Boolean
-  price: String
-    @deprecated(reason: "Prefer to use `sale_message`. [Will be removed in v2]")
-  priceCents: PriceCents
-    @deprecated(reason: "Prefer to use `listPrice`. [Will be removed in v2]")
   listPrice: ListPrice
   price_currency: String
 
@@ -1406,18 +865,12 @@ type Artwork implements Node & Searchable & Sellable {
   shows(size: Int, active: Boolean, at_a_fair: Boolean, sort: ShowSort): [Show]
   signature(format: Format): String
   title: String
-  to_s: String
-    @deprecated(
-      reason: "Unused field named using Ruby idiom. [Will be removed in v2]"
-    )
 
   # Whether this Artwork is Published of not
   published: Boolean!
 
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
-  width: String
-    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
   framed: ArtworkInfoRow
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
@@ -1431,7 +884,6 @@ type Artwork implements Node & Searchable & Sellable {
 
   # score assigned to an artwork based on its dimensions
   sizeScore: Float
-  pricingContext: AnalyticsPricingContext
 }
 
 enum ArtworkAggregation {
@@ -1495,8 +947,6 @@ type ArtworkContextAuction implements Node {
     last: Int
   ): ArtworkConnection
   associated_sale: Sale
-  auction_state: String
-    @deprecated(reason: "Prefer to use `status`. [Will be removed in v2]")
 
   # A bid increment policy that explains minimum bids in ranges.
   bid_increments: [BidIncrement]
@@ -1509,24 +959,18 @@ type ArtworkContextAuction implements Node {
   display_timely_at: String
   eligible_sale_artworks_count: Int
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   event_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   event_end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -1539,8 +983,6 @@ type ArtworkContextAuction implements Node {
   name: String
   initials(length: Int = 3): String
   is_auction: Boolean
-  is_benefit: Boolean
-    @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
   isBenefit: Boolean
   isGalleryAuction: Boolean
   is_auction_promo: Boolean
@@ -1551,8 +993,6 @@ type ArtworkContextAuction implements Node {
   is_registration_closed: Boolean
   is_with_buyers_premium: Boolean
   live_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -1565,8 +1005,6 @@ type ArtworkContextAuction implements Node {
   profile: Profile
   promoted_sale: Sale
   registration_ends_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -1589,8 +1027,6 @@ type ArtworkContextAuction implements Node {
   ): SaleArtworkConnection
   sale_type: String
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -1636,8 +1072,6 @@ type ArtworkContextFair {
   hours: String
   href: String
   image: Image
-  is_active: Boolean
-    @deprecated(reason: "Prefer to use `isActive`. [Will be removed in v2]")
 
   # Are we currently in the fair's active period?
   isActive: Boolean
@@ -1661,32 +1095,24 @@ type ArtworkContextFair {
     last: Int
   ): ShowConnection
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   active_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   organizer: organizer
-  published: Boolean
-    @deprecated(reason: "Prefer to use `is_published`. [Will be removed in v2]")
   tagline: String
   ticketsLink: String
 
@@ -1818,8 +1244,6 @@ type ArtworkContextPartnerShow implements Node {
       reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   created_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -1832,13 +1256,7 @@ type ArtworkContextPartnerShow implements Node {
     @deprecated(
       reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
-  displayable: Boolean
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -1923,8 +1341,6 @@ type ArtworkContextPartnerShow implements Node {
       reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -1981,8 +1397,6 @@ type ArtworkContextSale implements Node {
     last: Int
   ): ArtworkConnection
   associated_sale: Sale
-  auction_state: String
-    @deprecated(reason: "Prefer to use `status`. [Will be removed in v2]")
 
   # A bid increment policy that explains minimum bids in ranges.
   bid_increments: [BidIncrement]
@@ -1995,24 +1409,18 @@ type ArtworkContextSale implements Node {
   display_timely_at: String
   eligible_sale_artworks_count: Int
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   event_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   event_end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -2025,8 +1433,6 @@ type ArtworkContextSale implements Node {
   name: String
   initials(length: Int = 3): String
   is_auction: Boolean
-  is_benefit: Boolean
-    @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
   isBenefit: Boolean
   isGalleryAuction: Boolean
   is_auction_promo: Boolean
@@ -2037,8 +1443,6 @@ type ArtworkContextSale implements Node {
   is_registration_closed: Boolean
   is_with_buyers_premium: Boolean
   live_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -2051,8 +1455,6 @@ type ArtworkContextSale implements Node {
   profile: Profile
   promoted_sale: Sale
   registration_ends_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -2075,8 +1477,6 @@ type ArtworkContextSale implements Node {
   ): SaleArtworkConnection
   sale_type: String
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -2279,8 +1679,6 @@ type ArtworkItem implements Node & Searchable & Sellable {
   artist_names: String
   articles(size: Int): [Article]
   availability: String
-  can_share_image: Boolean
-    @deprecated(reason: "Prefer to use `is_*`. [Will be removed in v2]")
   category: String
 
   # Attribution class object
@@ -2305,8 +1703,6 @@ type ArtworkItem implements Node & Searchable & Sellable {
   edition_sets(sort: EditionSetSorts): [EditionSet]
   exhibition_history(format: Format): String
   fair: Fair
-  height: String
-    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
 
   # Returns the highlighted shows and articles
   highlights: [Highlighted]
@@ -2332,18 +1728,8 @@ type ArtworkItem implements Node & Searchable & Sellable {
   # When in an auction, can the work be bought immediately
   is_buy_nowable: Boolean
   is_comparable_with_auction_results: Boolean
-
-  # Are we able to display a contact form on artwork pages?
-  is_contactable: Boolean
-    @deprecated(
-      reason: "Prefer to use `is_inquireable`. [Will be removed in v2]"
-    )
   is_downloadable: Boolean
   is_embeddable_video: Boolean
-  is_ecommerce: Boolean
-    @deprecated(
-      reason: "Should not be used to determine anything UI-level. [Will be removed in v2]"
-    )
   is_for_sale: Boolean
   is_hangable: Boolean
 
@@ -2359,10 +1745,6 @@ type ArtworkItem implements Node & Searchable & Sellable {
   is_on_hold: String
   is_price_hidden: Boolean
   is_price_range: Boolean
-  is_purchasable: Boolean
-    @deprecated(
-      reason: "Purchase requests are not supported. Replaced by buy now. [Will be removed in v2]"
-    )
   is_saved: Boolean
   is_shareable: Boolean
   is_sold: Boolean
@@ -2373,25 +1755,13 @@ type ArtworkItem implements Node & Searchable & Sellable {
   literature(format: Format): String
   manufacturer(format: Format): String
   medium: String
-  metric: String
-    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
   meta: ArtworkMeta
   myLotStanding(live: Boolean = null): [LotStanding!]
-
-  # [DO NOT USE] Weekly pageview data (static).
-  pageviews: Int
-    @deprecated(
-      reason: "This is for an AB test and will be imminently deprecated. [Will be removed in v2]"
-    )
   partner(
     # Use whatever is in the original response instead of making a request
     shallow: Boolean
   ): Partner
   pickup_available: Boolean
-  price: String
-    @deprecated(reason: "Prefer to use `sale_message`. [Will be removed in v2]")
-  priceCents: PriceCents
-    @deprecated(reason: "Prefer to use `listPrice`. [Will be removed in v2]")
   listPrice: ListPrice
   price_currency: String
 
@@ -2419,18 +1789,12 @@ type ArtworkItem implements Node & Searchable & Sellable {
   shows(size: Int, active: Boolean, at_a_fair: Boolean, sort: ShowSort): [Show]
   signature(format: Format): String
   title: String
-  to_s: String
-    @deprecated(
-      reason: "Unused field named using Ruby idiom. [Will be removed in v2]"
-    )
 
   # Whether this Artwork is Published of not
   published: Boolean!
 
   # If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS
   website: String
-  width: String
-    @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
   framed: ArtworkInfoRow
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
@@ -2481,50 +1845,6 @@ type ArtworksAggregationResults {
 }
 
 enum ArtworkSorts {
-  availability_desc
-    @deprecated(
-      reason: "Prefer to use `AVAILABILITY_DESC`. [Will be removed in v2]"
-    )
-  created_at_asc
-    @deprecated(
-      reason: "Prefer to use `CREATED_AT_ASC`. [Will be removed in v2]"
-    )
-  created_at_desc
-    @deprecated(
-      reason: "Prefer to use `CREATED_AT_DESC`. [Will be removed in v2]"
-    )
-  deleted_at_asc
-    @deprecated(
-      reason: "Prefer to use `DELETED_AT_ASC`. [Will be removed in v2]"
-    )
-  deleted_at_desc
-    @deprecated(
-      reason: "Prefer to use `DELETED_AT_DESC`. [Will be removed in v2]"
-    )
-  iconicity_desc
-    @deprecated(
-      reason: "Prefer to use `ICONICITY_DESC`. [Will be removed in v2]"
-    )
-  merchandisability_desc
-    @deprecated(
-      reason: "Prefer to use `MERCHANDISABILITY_DESC`. [Will be removed in v2]"
-    )
-  published_at_asc
-    @deprecated(
-      reason: "Prefer to use `PUBLISHED_AT_ASC`. [Will be removed in v2]"
-    )
-  published_at_desc
-    @deprecated(
-      reason: "Prefer to use `PUBLISHED_AT_DESC`. [Will be removed in v2]"
-    )
-  partner_updated_at_desc
-    @deprecated(
-      reason: "Prefer to use `PARTNER_UPDATED_AT_DESC`. [Will be removed in v2]"
-    )
-  title_asc
-    @deprecated(reason: "Prefer to use `TITLE_ASC`. [Will be removed in v2]")
-  title_desc
-    @deprecated(reason: "Prefer to use `TITLE_DESC`. [Will be removed in v2]")
   AVAILABILITY_DESC
   CREATED_AT_ASC
   CREATED_AT_DESC
@@ -2611,18 +1931,6 @@ type AttributionClass {
   info: String
 
   # Longer version of attribution class display
-  short_description: String
-    @deprecated(
-      reason: "Prefer to use `shortDescription`. [Will be removed in v2]"
-    )
-
-  # Long descriptive phrase used as companion for short_description
-  long_description: String
-    @deprecated(
-      reason: "Prefer to use `longDescription`. [Will be removed in v2]"
-    )
-
-  # Longer version of attribution class display
   shortDescription: String
 
   # Long descriptive phrase used as companion for short_description
@@ -2668,8 +1976,6 @@ type AuctionResult implements Node {
   title: String
   artist_id: String!
   date(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -2682,8 +1988,6 @@ type AuctionResult implements Node {
   dimensions: AuctionLotDimensions
   organization: String
   sale_date(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -2741,10 +2045,6 @@ type Author {
   # A type-specific ID.
   internalID: ID!
   name: String
-  href: String
-    @deprecated(
-      reason: "Profiles have been removed and thus author hrefs don't exist anymore. [Will be removed in v2]"
-    )
   profile_handle: String
 }
 
@@ -2755,8 +2055,6 @@ type Bidder {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   created_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -2774,49 +2072,31 @@ type BidderPosition {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   created_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   updated_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   processed_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
-  display_max_bid_amount_dollars: String
-    @deprecated(reason: "Prefer to use `max_bid`. [Will be removed in v2]")
-  display_suggested_next_bid_dollars: String
-    @deprecated(
-      reason: "Prefer to use `suggested_next_bid`. [Will be removed in v2]"
-    )
   highest_bid: HighestBid
   is_active: Boolean
   is_retracted: Boolean
   is_with_bid_max: Boolean
   is_winning: Boolean
   max_bid: BidderPositionMaxBid
-  max_bid_amount_cents: Int
-    @deprecated(reason: "Prefer to use `max_bid`. [Will be removed in v2]")
   sale_artwork: SaleArtwork
   suggested_next_bid: BidderPositionSuggestedNextBid
-  suggested_next_bid_cents: Int
-    @deprecated(
-      reason: "Prefer to use `suggested_next_bid`. [Will be removed in v2]"
-    )
 }
 
 input BidderPositionInput {
@@ -3111,48 +2391,36 @@ type BuyOrder implements Order {
   # Whether or not the last attempt to charge the buyer failed
   lastTransactionFailed: Boolean
   lastApprovedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   lastSubmittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   updatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   createdAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   stateUpdatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   stateExpiresAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -3211,9 +2479,6 @@ type City {
 
     # Whether to include local discovery stubs
     includeStubShows: Boolean
-
-    # Whether to include stub shows or not
-    discoverable: Boolean
     after: String
     first: Int
     before: String
@@ -3282,8 +2547,6 @@ type CollectorProfileType {
   email: String
   name: String
   confirmed_buyer_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -3292,1275 +2555,24 @@ type CollectorProfileType {
   collector_level: Int
   self_reported_purchases: String
   loyalty_applicant_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   professional_buyer_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   professional_buyer_applied_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   intents: [String]
-}
-
-# Autogenerated input type of AddInitialOfferToOrder
-input CommerceAddInitialOfferToOrderInput {
-  amountCents: Int!
-
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  note: String
-  orderId: ID!
-}
-
-# Autogenerated return type of AddInitialOfferToOrder
-type CommerceAddInitialOfferToOrderPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# An generic error type for mutations
-type CommerceApplicationError {
-  # Code of this error
-  code: String!
-
-  # What caused the error
-  data: String
-
-  # Type of this error
-  type: String!
-}
-
-# Autogenerated input type of ApproveOrder
-input CommerceApproveOrderInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  id: ID!
-}
-
-# Autogenerated return type of ApproveOrder
-type CommerceApproveOrderPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of BuyerAcceptOffer
-input CommerceBuyerAcceptOfferInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  offerId: ID!
-}
-
-# Autogenerated return type of BuyerAcceptOffer
-type CommerceBuyerAcceptOfferPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of BuyerCounterOffer
-input CommerceBuyerCounterOfferInput {
-  amountCents: Int!
-
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  note: String
-  offerId: ID!
-}
-
-# Autogenerated return type of BuyerCounterOffer
-type CommerceBuyerCounterOfferPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of BuyerRejectOffer
-input CommerceBuyerRejectOfferInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  offerId: ID!
-  rejectReason: CommerceCancelReasonTypeEnum
-}
-
-# Autogenerated return type of BuyerRejectOffer
-type CommerceBuyerRejectOfferPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-type CommerceBuyOrder implements CommerceOrder {
-  buyer: CommerceOrderPartyUnion!
-  buyerPhoneNumber: String
-  buyerTotalCents: Int
-  code: String!
-  commissionFeeCents: Int
-  commissionRate: Float
-  createdAt: String!
-  creditCardId: String
-  currencyCode: String!
-  displayCommissionRate: String
-  internalID: ID!
-
-  # Item total in cents, for Offer Orders this field reflects current offer
-  itemsTotalCents: Int
-  lastApprovedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  lastSubmittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  lastTransactionFailed: Boolean
-  lineItems(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): CommerceLineItemConnection
-  mode: CommerceOrderModeEnum
-  requestedFulfillment: CommerceRequestedFulfillmentUnion
-  seller: CommerceOrderPartyUnion!
-  sellerTotalCents: Int
-  shippingTotalCents: Int
-  state: CommerceOrderStateEnum!
-  stateExpiresAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  stateReason: String
-  stateUpdatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  taxTotalCents: Int
-  totalListPriceCents: Int!
-  transactionFeeCents: Int
-  updatedAt: String!
-  buyerDetails: OrderParty
-  sellerDetails: OrderParty
-  itemsTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  sellerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  commissionFee(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  totalListPrice(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  buyerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  taxTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  shippingTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  transactionFee(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-}
-
-enum CommerceCancelReasonTypeEnum {
-  # cancelation reason is: buyer_lapsed
-  BUYER_LAPSED
-
-  # cancelation reason is: buyer_rejected
-  BUYER_REJECTED
-
-  # cancelation reason is: seller_lapsed
-  SELLER_LAPSED
-
-  # cancelation reason is: seller_rejected
-  SELLER_REJECTED
-
-  # cancelation reason is: seller_rejected_artwork_unavailable
-  SELLER_REJECTED_ARTWORK_UNAVAILABLE
-
-  # cancelation reason is: seller_rejected_offer_too_low
-  SELLER_REJECTED_OFFER_TOO_LOW
-
-  # cancelation reason is: seller_rejected_other
-  SELLER_REJECTED_OTHER
-
-  # cancelation reason is: seller_rejected_shipping_unavailable
-  SELLER_REJECTED_SHIPPING_UNAVAILABLE
-}
-
-# Autogenerated input type of ConfirmPickup
-input CommerceConfirmPickupInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  id: ID!
-}
-
-# Autogenerated return type of ConfirmPickup
-type CommerceConfirmPickupPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of CreateOfferOrderWithArtwork
-input CommerceCreateOfferOrderWithArtworkInput {
-  # Artwork Id
-  artworkId: String!
-
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # EditionSet Id
-  editionSetId: String
-
-  # When set to false, we will create a new order. Otherwise if current user has
-  # pending/submitted orders on same artwork/edition with same quantity, we will return that
-  findActiveOrCreate: Boolean = true
-
-  # Number of items in the line item, default is 1
-  quantity: Int
-}
-
-# Autogenerated return type of CreateOfferOrderWithArtwork
-type CommerceCreateOfferOrderWithArtworkPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure. If find_active_or_create is not false, it will
-  # return existing pending/submitted order for current user if exists, otherwise
-  # it will return newly created order
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of CreateOrderWithArtwork
-input CommerceCreateOrderWithArtworkInput {
-  # Artwork Id
-  artworkId: String!
-
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # EditionSet Id
-  editionSetId: String
-
-  # Number of items in the line item
-  quantity: Int
-}
-
-# Autogenerated return type of CreateOrderWithArtwork
-type CommerceCreateOrderWithArtworkPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-scalar CommerceDate
-
-scalar CommerceDateTime
-
-# Autogenerated input type of FixFailedPayment
-input CommerceFixFailedPaymentInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  creditCardId: String!
-  offerId: ID!
-}
-
-# Autogenerated return type of FixFailedPayment
-type CommerceFixFailedPaymentPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of FulfillAtOnce
-input CommerceFulfillAtOnceInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  fulfillment: CommerceFulfillmentAttributes!
-  id: ID!
-}
-
-# Autogenerated return type of FulfillAtOnce
-type CommerceFulfillAtOncePayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# A Fulfillment for an order
-type CommerceFulfillment {
-  courier: String!
-  createdAt: CommerceDateTime!
-  estimatedDelivery: CommerceDate
-  internalID: ID!
-  notes: String
-  trackingId: String
-  updatedAt: CommerceDateTime!
-}
-
-# Attributes of a Fulfillment
-input CommerceFulfillmentAttributes {
-  courier: String!
-  estimatedDelivery: CommerceDate
-  notes: String
-  trackingId: String
-}
-
-# The connection type for Fulfillment.
-type CommerceFulfillmentConnection {
-  # A list of edges.
-  edges: [CommerceFulfillmentEdge]
-
-  # A list of nodes.
-  nodes: [CommerceFulfillment]
-
-  # Information to aid in pagination.
-  pageInfo: CommercePageInfo!
-}
-
-# An edge in a connection.
-type CommerceFulfillmentEdge {
-  # A cursor for use in pagination.
-  cursor: String!
-
-  # The item at the end of the edge.
-  node: CommerceFulfillment
-}
-
-# A Line Item
-type CommerceLineItem {
-  artworkId: String!
-  artworkVersionId: String!
-  commissionFeeCents: Int
-  createdAt: CommerceDateTime!
-  editionSetId: String
-  fulfillments(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): CommerceFulfillmentConnection
-  internalID: ID!
-  listPriceCents: Int!
-  order: CommerceOrder!
-  priceCents: Int! @deprecated(reason: "switch to use listPriceCents")
-  quantity: Int!
-  shippingTotalCents: Int
-  updatedAt: CommerceDateTime!
-  artwork: Artwork
-  artworkVersion: ArtworkVersion
-  shippingTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  listPrice(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  commissionFee(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-}
-
-# The connection type for LineItem.
-type CommerceLineItemConnection {
-  # A list of edges.
-  edges: [CommerceLineItemEdge]
-
-  # A list of nodes.
-  nodes: [CommerceLineItem]
-
-  # Information to aid in pagination.
-  pageInfo: CommercePageInfo!
-}
-
-# An edge in a connection.
-type CommerceLineItemEdge {
-  # A cursor for use in pagination.
-  cursor: String!
-
-  # The item at the end of the edge.
-  node: CommerceLineItem
-}
-
-# An Offer
-type CommerceOffer {
-  amountCents: Int!
-  buyerTotalCents: Int
-  createdAt: String!
-  creatorId: String!
-  from: CommerceOrderPartyUnion!
-  fromParticipant: CommerceOrderParticipantEnum
-  internalID: ID!
-  note: String
-  order: CommerceOrder!
-  respondsTo: CommerceOffer
-  shippingTotalCents: Int
-  submittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  taxTotalCents: Int
-  fromDetails: OrderParty
-  amount(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  taxTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  shippingTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  buyerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-}
-
-# The connection type for Offer.
-type CommerceOfferConnection {
-  # A list of edges.
-  edges: [CommerceOfferEdge]
-
-  # A list of nodes.
-  nodes: [CommerceOffer]
-
-  # Information to aid in pagination.
-  pageInfo: CommercePageInfo!
-}
-
-# An edge in a connection.
-type CommerceOfferEdge {
-  # A cursor for use in pagination.
-  cursor: String!
-
-  # The item at the end of the edge.
-  node: CommerceOffer
-}
-
-type CommerceOfferOrder implements CommerceOrder {
-  awaitingResponseFrom: CommerceOrderParticipantEnum
-  buyer: CommerceOrderPartyUnion!
-  buyerPhoneNumber: String
-  buyerTotalCents: Int
-  code: String!
-  commissionFeeCents: Int
-  commissionRate: Float
-  createdAt: String!
-  creditCardId: String
-  currencyCode: String!
-  displayCommissionRate: String
-  internalID: ID!
-
-  # Item total in cents, for Offer Orders this field reflects current offer
-  itemsTotalCents: Int
-  lastApprovedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-
-  # Last submitted offer
-  lastOffer: CommerceOffer
-  lastSubmittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  lastTransactionFailed: Boolean
-  lineItems(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): CommerceLineItemConnection
-  mode: CommerceOrderModeEnum
-  myLastOffer: CommerceOffer
-  offers(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-    fromId: String
-    fromType: String
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): CommerceOfferConnection
-  requestedFulfillment: CommerceRequestedFulfillmentUnion
-  seller: CommerceOrderPartyUnion!
-  sellerTotalCents: Int
-  shippingTotalCents: Int
-  state: CommerceOrderStateEnum!
-  stateExpiresAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  stateReason: String
-  stateUpdatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  taxTotalCents: Int
-  totalListPriceCents: Int!
-  transactionFeeCents: Int
-  updatedAt: String!
-  buyerDetails: OrderParty
-  sellerDetails: OrderParty
-  itemsTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  sellerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  commissionFee(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  totalListPrice(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  buyerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  taxTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  shippingTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  transactionFee(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  offerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-}
-
-# Order
-interface CommerceOrder {
-  buyer: CommerceOrderPartyUnion!
-  buyerPhoneNumber: String
-  buyerTotalCents: Int
-  code: String!
-  commissionFeeCents: Int
-  commissionRate: Float
-  createdAt: String!
-  creditCardId: String
-  currencyCode: String!
-  displayCommissionRate: String
-  internalID: ID!
-
-  # Item total in cents, for Offer Orders this field reflects current offer
-  itemsTotalCents: Int
-  lastApprovedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  lastSubmittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  lastTransactionFailed: Boolean
-  lineItems(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-  ): CommerceLineItemConnection
-  mode: CommerceOrderModeEnum
-  requestedFulfillment: CommerceRequestedFulfillmentUnion
-  seller: CommerceOrderPartyUnion!
-  sellerTotalCents: Int
-  shippingTotalCents: Int
-  state: CommerceOrderStateEnum!
-  stateExpiresAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  stateReason: String
-  stateUpdatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  taxTotalCents: Int
-  totalListPriceCents: Int!
-  transactionFeeCents: Int
-  updatedAt: String!
-  buyerDetails: OrderParty
-  sellerDetails: OrderParty
-  itemsTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  sellerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  commissionFee(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  totalListPrice(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  buyerTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  taxTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  shippingTotal(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-  transactionFee(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-}
-
-# Fields to sort by
-enum CommerceOrderConnectionSortEnum {
-  # Sort by the timestamp the state of the order expires at in ascending order
-  STATE_EXPIRES_AT_ASC
-
-  # Sort by the timestamp the state of the order expires at in descending order
-  STATE_EXPIRES_AT_DESC
-
-  # Sort by the timestamp the state of order was last updated in ascending order
-  STATE_UPDATED_AT_ASC
-
-  # Sort by the timestamp the state of order was last updated in descending order
-  STATE_UPDATED_AT_DESC
-
-  # Sort by the timestamp the order was last updated in ascending order
-  UPDATED_AT_ASC
-
-  # Sort by the timestamp the order was last updated in descending order
-  UPDATED_AT_DESC
-}
-
-# The connection type for Order.
-type CommerceOrderConnectionWithTotalCount {
-  # A list of edges.
-  edges: [CommerceOrderEdge]
-
-  # A list of nodes.
-  nodes: [CommerceOrder]
-  pageCursors: CommercePageCursors
-
-  # Information to aid in pagination.
-  pageInfo: CommercePageInfo!
-  totalCount: Int
-  totalPages: Int
-}
-
-# An edge in a connection.
-type CommerceOrderEdge {
-  # A cursor for use in pagination.
-  cursor: String!
-
-  # The item at the end of the edge.
-  node: CommerceOrder
-}
-
-enum CommerceOrderFulfillmentTypeEnum {
-  # fulfillment type is: pickup
-  PICKUP
-
-  # fulfillment type is: ship
-  SHIP
-}
-
-enum CommerceOrderModeEnum {
-  # Buy Order
-  BUY
-
-  # Offer Order
-  OFFER
-}
-
-# Represents either a resolved Order or a potential failure
-union CommerceOrderOrFailureUnion =
-    CommerceOrderWithMutationFailure
-  | CommerceOrderWithMutationSuccess
-
-enum CommerceOrderParticipantEnum {
-  # Participant on the buyer side
-  BUYER
-
-  # Participant on the seller side
-  SELLER
-}
-
-# Represents either a partner or a user
-union CommerceOrderPartyUnion = CommercePartner | CommerceUser
-
-enum CommerceOrderStateEnum {
-  # order is abandoned by buyer and never submitted
-  ABANDONED
-
-  # order is approved by seller
-  APPROVED
-
-  # order is canceled
-  CANCELED
-
-  # order is fulfilled by seller
-  FULFILLED
-
-  # order is still pending submission by buyer
-  PENDING
-
-  # order is refunded after being approved or fulfilled
-  REFUNDED
-
-  # order is submitted by buyer
-  SUBMITTED
-}
-
-# An error response for changes to an order
-type CommerceOrderWithMutationFailure {
-  error: CommerceApplicationError!
-}
-
-# A successfully returned order type
-type CommerceOrderWithMutationSuccess {
-  order: CommerceOrder!
-}
-
-type CommercePageCursor {
-  # first cursor on the page
-  cursor: String!
-
-  # is this the current page?
-  isCurrent: Boolean!
-
-  # page number out of totalPages
-  page: Int!
-}
-
-type CommercePageCursors {
-  around: [CommercePageCursor!]!
-
-  # optional, may be included in field around
-  first: CommercePageCursor
-
-  # optional, may be included in field around
-  last: CommercePageCursor
-  previous: CommercePageCursor
-}
-
-# Information about pagination in a connection.
-type CommercePageInfo {
-  # When paginating forwards, the cursor to continue.
-  endCursor: String
-
-  # When paginating forwards, are there more items?
-  hasNextPage: Boolean!
-
-  # When paginating backwards, are there more items?
-  hasPreviousPage: Boolean!
-
-  # When paginating backwards, the cursor to continue.
-  startCursor: String
-}
-
-type CommercePartner {
-  internalID: String!
-  type: String!
-}
-
-type CommercePickup {
-  fulfillmentType: String!
-}
-
-# Autogenerated input type of RejectOrder
-input CommerceRejectOrderInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  id: ID!
-}
-
-# Autogenerated return type of RejectOrder
-type CommerceRejectOrderPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Represents either a shipping information or pickup
-union CommerceRequestedFulfillmentUnion = CommercePickup | CommerceShip
-
-# Autogenerated input type of SellerAcceptOffer
-input CommerceSellerAcceptOfferInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  offerId: ID!
-}
-
-# Autogenerated return type of SellerAcceptOffer
-type CommerceSellerAcceptOfferPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of SellerCounterOffer
-input CommerceSellerCounterOfferInput {
-  amountCents: Int!
-
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  note: String
-  offerId: ID!
-}
-
-# Autogenerated return type of SellerCounterOffer
-type CommerceSellerCounterOfferPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of SellerRejectOffer
-input CommerceSellerRejectOfferInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  offerId: ID!
-  rejectReason: CommerceCancelReasonTypeEnum
-}
-
-# Autogenerated return type of SellerRejectOffer
-type CommerceSellerRejectOfferPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of SetPayment
-input CommerceSetPaymentInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  creditCardId: String!
-  id: ID!
-}
-
-# Autogenerated return type of SetPayment
-type CommerceSetPaymentPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of SetShipping
-input CommerceSetShippingInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  fulfillmentType: CommerceOrderFulfillmentTypeEnum!
-  id: ID!
-  shipping: CommerceShippingAttributes
-}
-
-# Autogenerated return type of SetShipping
-type CommerceSetShippingPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-type CommerceShip {
-  addressLine1: String
-  addressLine2: String
-  city: String
-  country: String
-  name: String
-  phoneNumber: String
-  postalCode: String
-  region: String
-}
-
-# Shipping information
-input CommerceShippingAttributes {
-  addressLine1: String
-  addressLine2: String
-  city: String
-  country: String
-  name: String
-  phoneNumber: String!
-  postalCode: String
-  region: String
-}
-
-# Autogenerated input type of SubmitOrder
-input CommerceSubmitOrderInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  id: ID!
-}
-
-# Autogenerated return type of SubmitOrder
-type CommerceSubmitOrderPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of SubmitOrderWithOffer
-input CommerceSubmitOrderWithOfferInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  offerId: ID!
-}
-
-# Autogenerated return type of SubmitOrderWithOffer
-type CommerceSubmitOrderWithOfferPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-# Autogenerated input type of SubmitPendingOffer
-input CommerceSubmitPendingOfferInput {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-  offerId: ID!
-}
-
-# Autogenerated return type of SubmitPendingOffer
-type CommerceSubmitPendingOfferPayload {
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-
-  # A union of success/failure
-  orderOrError: CommerceOrderOrFailureUnion!
-}
-
-type CommerceUser {
-  internalID: String!
 }
 
 input ConfirmPickupInput {
@@ -4681,33 +2693,23 @@ type Conversation implements Node {
   to: ConversationResponder!
   buyer_outcome: String
   buyer_outcome_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   created_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
-  purchase_request: Boolean
-    @deprecated(
-      reason: "Purchase requests are not supported. Replaced by buy now. [Will be removed in v2]"
-    )
   from_last_viewed_message_id: String
   initial_message: String!
 
   # This is a snippet of text from the last message.
   last_message: String
   last_message_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -4719,10 +2721,6 @@ type Conversation implements Node {
 
   # True if user/conversation initiator is a recipient.
   is_last_message_to_user: Boolean
-
-  # Timestamp if the user opened the last message, null in all other cases
-  last_message_open: String
-    @deprecated(reason: "Prefer to use `unread`. [Will be removed in v2]")
 
   # Delivery id if the user is a recipient of the last message, null otherwise.
   last_message_delivery_id: String
@@ -5036,10 +3034,6 @@ union CreditCardMutationType =
   | CreditCardMutationFailure
 
 type CreditCardPayload {
-  credit_card: CreditCard
-    @deprecated(
-      reason: "Prefer to use `creditCardOrError`. [Will be removed in v2]"
-    )
   creditCardOrError: CreditCardMutationType
   clientMutationId: String
 }
@@ -5115,32 +3109,24 @@ type Delivery {
   # Masked email w/ display name.
   full_transformed_email: String!
   delivered_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   bounced_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   opened_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   clicked_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -5202,8 +3188,6 @@ type EditionSet implements Sellable {
   is_offerable: Boolean
   is_for_sale: Boolean
   is_sold: Boolean
-  price: String
-    @deprecated(reason: "Prefer to use `sale_message`. [Will be removed in v2]")
   listPrice: ListPrice
 
   # score assigned to an artwork based on its dimensions
@@ -5232,14 +3216,6 @@ type EndSalePayload {
 }
 
 enum EventStatus {
-  closed @deprecated(reason: "Prefer to use `CLOSED`. [Will be removed in v2]")
-  current
-    @deprecated(reason: "Prefer to use `CURRENT`. [Will be removed in v2]")
-  running
-    @deprecated(reason: "Prefer to use `RUNNING`. [Will be removed in v2]")
-  upcoming
-    @deprecated(reason: "Prefer to use `UPCOMING`. [Will be removed in v2]")
-
   # End date is in the past
   CLOSED
 
@@ -5308,8 +3284,6 @@ type Fair {
   hours: String
   href: String
   image: Image
-  is_active: Boolean
-    @deprecated(reason: "Prefer to use `isActive`. [Will be removed in v2]")
 
   # Are we currently in the fair's active period?
   isActive: Boolean
@@ -5333,32 +3307,24 @@ type Fair {
     last: Int
   ): ShowConnection
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   active_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   organizer: organizer
-  published: Boolean
-    @deprecated(reason: "Prefer to use `is_published`. [Will be removed in v2]")
   tagline: String
   ticketsLink: String
 
@@ -5533,18 +3499,12 @@ type FilterArtworks implements Node {
     last: Int
   ): ArtworkConnection
   counts: FilterArtworksCounts
-  followed_artists_total: Int
-    @deprecated(
-      reason: "Prefer to use `counts.followed_artists`. [Will be removed in v2]"
-    )
 
   # Artwork results.
   hits: [Artwork]
 
   # Returns a list of merchandisable artists sorted by merch score.
   merchandisable_artists: [Artist]
-  total: Int
-    @deprecated(reason: "Prefer to use `counts.total`. [Will be removed in v2]")
   facet: ArtworkFilterFacet
 }
 
@@ -5565,15 +3525,6 @@ type FilterPartners {
   aggregations: [PartnersAggregationResults]
   hits: [Partner]
   total: Int
-}
-
-type FilterSaleArtworks {
-  # Returns aggregation counts for the given filter query.
-  aggregations: [SaleArtworksAggregationResults]
-  counts: FilterSaleArtworksCounts
-
-  # Sale Artwork results.
-  hits: [SaleArtwork]
 }
 
 type FilterSaleArtworksCounts {
@@ -5681,8 +3632,6 @@ type FollowedArtistsArtworksGroup implements Node {
   summary: String
   image: Image
   published_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -5849,10 +3798,6 @@ type FollowShowPayload {
 enum Format {
   HTML
   PLAIN
-  markdown
-    @deprecated(
-      reason: "Deprecated when we deprecated lower-case enum entries, but no alternative was provided. Add an alternative to MP if this is still needed. [Will be removed in v2]"
-    )
 }
 
 type FormattedDaySchedules {
@@ -6236,8 +4181,6 @@ type HighestBid {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   created_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -6258,10 +4201,6 @@ type HighestBid {
   ): String
   cents: Int
   display: String
-  amount_cents: Int
-    @deprecated(reason: "Prefer to use `cents`. [Will be removed in v2]")
-  display_amount_dollars: String
-    @deprecated(reason: "Prefer to use `display`. [Will be removed in v2]")
 }
 
 union Highlighted = HighlightedShow | HighlightedArticle
@@ -6278,8 +4217,6 @@ type HighlightedArticle implements Node {
   contributing_authors: [Author]
   href: String
   published_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -6292,8 +4229,6 @@ type HighlightedArticle implements Node {
   tier: Int
   title: String
   updated_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -6314,22 +4249,6 @@ type HighlightedShow implements Node {
 
   # The Artists presenting in this show
   artists: [Artist]
-
-  # The artworks featured in this show
-  artworks(
-    # List of artwork IDs to exclude from the response (irrespective of size)
-    exclude: [String]
-    for_sale: Boolean = false
-    published: Boolean = true
-    all: Boolean
-    page: Int = 1
-
-    # Number of artworks to return
-    size: Int = 25
-  ): [Artwork]
-    @deprecated(
-      reason: "Prefer to use `artworks_connection`. [Will be removed in v2]"
-    )
 
   # The artworks featured in the show
   artworks_connection(
@@ -6360,13 +4279,7 @@ type HighlightedShow implements Node {
 
   # A description of the show
   description: String
-  displayable: Boolean
-    @deprecated(
-      reason: "Prefer to use `is_displayable`. [Will be removed in v2]"
-    )
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -6453,8 +4366,6 @@ type HighlightedShow implements Node {
 
   # Is it a show provided for historical reference?
   is_reference: Boolean
-  is_local_discovery: Boolean
-    @deprecated(reason: "Prefer to use `isStubShow`. [Will be removed in v2]")
 
   # Is it an outsourced local discovery stub show?
   isStubShow: Boolean
@@ -6503,8 +4414,6 @@ type HighlightedShow implements Node {
 
   # When this show starts
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -6604,10 +4513,6 @@ type HomePageArtworkModule implements Node {
   # A globally unique ID.
   id: ID!
   context: HomePageModuleContext
-  display: String
-    @deprecated(
-      reason: "Prefer to use `is_displayable`. [Will be removed in v2]"
-    )
   is_displayable: Boolean
   key: String
   params: HomePageModulesParams
@@ -6724,8 +4629,6 @@ type HomePageModuleContextFair {
   hours: String
   href: String
   image: Image
-  is_active: Boolean
-    @deprecated(reason: "Prefer to use `isActive`. [Will be removed in v2]")
 
   # Are we currently in the fair's active period?
   isActive: Boolean
@@ -6749,32 +4652,24 @@ type HomePageModuleContextFair {
     last: Int
   ): ShowConnection
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   active_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   organizer: organizer
-  published: Boolean
-    @deprecated(reason: "Prefer to use `is_published`. [Will be removed in v2]")
   tagline: String
   ticketsLink: String
 
@@ -6998,8 +4893,6 @@ type HomePageModuleContextSale implements Node {
     last: Int
   ): ArtworkConnection
   associated_sale: Sale
-  auction_state: String
-    @deprecated(reason: "Prefer to use `status`. [Will be removed in v2]")
 
   # A bid increment policy that explains minimum bids in ranges.
   bid_increments: [BidIncrement]
@@ -7012,24 +4905,18 @@ type HomePageModuleContextSale implements Node {
   display_timely_at: String
   eligible_sale_artworks_count: Int
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   event_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   event_end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -7042,8 +4929,6 @@ type HomePageModuleContextSale implements Node {
   name: String
   initials(length: Int = 3): String
   is_auction: Boolean
-  is_benefit: Boolean
-    @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
   isBenefit: Boolean
   isGalleryAuction: Boolean
   is_auction_promo: Boolean
@@ -7054,8 +4939,6 @@ type HomePageModuleContextSale implements Node {
   is_registration_closed: Boolean
   is_with_buyers_premium: Boolean
   live_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -7068,8 +4951,6 @@ type HomePageModuleContextSale implements Node {
   profile: Profile
   promoted_sale: Sale
   registration_ends_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -7092,8 +4973,6 @@ type HomePageModuleContextSale implements Node {
   ): SaleArtworkConnection
   sale_type: String
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -7223,8 +5102,6 @@ type Location {
 
   # Alternate Markdown-supporting free text representation of a location's opening hours
   day_schedule_text: String
-  displayDaySchedules: [FormattedDaySchedules]
-    @deprecated(reason: "Prefer to use `openingHours`. [Will be removed in v2]")
 
   # Union returning opening hours in formatted structure or a string
   openingHours: OpeningHoursUnion
@@ -7250,149 +5127,6 @@ type LotStanding {
   most_recent_bid: BidderPosition
   sale: Sale
   sale_artwork: SaleArtwork
-}
-
-# Object representing a collection page
-type MarketingCollection {
-  internalID: ID!
-
-  # slug version of title, used for pretty URLs (e.g. `kaws-prints` for Kaws Prints
-  slug: String!
-
-  # Name of the collection
-  title: String!
-
-  # Description of the collection which can include links to other collections
-  description: String
-
-  # Background image for the header of the collection page
-  headerImage: String
-
-  # URL for Thumbnail image to be used when this collection is displayed.
-  thumbnail: String
-
-  # Set of keywords used for SEO purposes
-  keywords: String!
-
-  # Image credit for the header image
-  credit: String
-
-  # Category of the collection
-  category: String!
-
-  # Structured object used to build filtered artworks query
-  query: MarketingCollectionQuery!
-  createdAt: MarketingDateTime!
-  updatedAt: MarketingDateTime!
-
-  # Suggested average price for included works
-  price_guidance: Float
-
-  # Collection can be surfaced on editorial pages
-  show_on_editorial: Boolean!
-
-  # Collection has prioritized connection to artist
-  is_featured_artist_content: Boolean!
-
-  # CollectionGroups of this collection
-  linkedCollections: [MarketingCollectionGroup!]!
-  relatedCollections: [MarketingCollection!]!
-  artworks(
-    acquireable: Boolean
-    offerable: Boolean
-    aggregation_partner_cities: [String]
-    aggregations: [ArtworkAggregation]
-    artist_id: String
-    artist_ids: [String]
-    at_auction: Boolean
-    attribution_class: [String]
-    color: String
-    dimension_range: String
-    extra_aggregation_gene_ids: [String]
-    include_artworks_by_followed_artists: Boolean
-    include_medium_filter_in_aggregation: Boolean
-    inquireable_only: Boolean
-    for_sale: Boolean
-    gene_id: String
-    gene_ids: [String]
-    height: String
-    width: String
-
-    # A string from the list of allocations, or * to denote all mediums
-    medium: String
-    period: String
-    periods: [String]
-    major_periods: [String]
-    partner_id: ID
-    partner_cities: [String]
-    price_range: String
-    page: Int
-    sale_id: ID
-    size: Int
-    sort: String
-    tag_id: String
-    keyword: String
-  ): FilterArtworks
-}
-
-type MarketingCollectionCategory {
-  name: String!
-  collections: [MarketingCollection!]!
-}
-
-type MarketingCollectionGroup {
-  groupType: MarketingGroupTypes!
-  name: String!
-  members: [MarketingCollection!]!
-}
-
-type MarketingCollectionQuery {
-  internalID: ID
-  acquireable: Boolean
-  aggregations: [String!]
-  artist_ids: [String!]
-  artist_id: String
-  at_auction: Boolean
-  color: String
-  dimension_range: String
-  extra_aggregation_gene_ids: [String!]
-  include_artworks_by_followed_artists: Boolean
-  include_medium_filter_in_aggregation: Boolean
-  inquireable_only: Boolean
-  for_sale: Boolean
-  gene_id: String
-  gene_ids: [String!]
-  height: String
-  width: String
-  medium: String
-  period: String
-  periods: [String!]
-  major_periods: [String!]
-  partner_id: ID
-  partner_cities: [String!]
-  price_range: String
-  page: Int
-  sale_id: ID
-  size: Int
-  sort: String
-  tag_id: String
-  keyword: String
-}
-
-scalar MarketingDateTime
-
-# Available types of CollectionGroup
-enum MarketingGroupTypes {
-  ArtistSeries
-  FeaturedCollections
-  OtherCollections
-}
-
-type MarketingImage {
-  internalID: ID!
-  small: String!
-  medium: String!
-  large: String!
 }
 
 type Me implements Node {
@@ -7460,8 +5194,6 @@ type Me implements Node {
     last: Int
   ): ConversationConnection
   created_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -7532,17 +5264,7 @@ type Me implements Node {
   ): [LotStanding]
   name: String
   initials(length: Int = 3): String
-
-  # A list of feed items, indicating published artworks (grouped by date and artists).
-  notifications_connection(
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): NotificationsFeedItemConnection
-    @deprecated(
-      reason: "Prefer to use `followsAndSaves`. [Will be removed in v2]"
-    )
+  notifications_connection: undefined
   paddle_number: String
   recentlyViewedArtworkIds: [String]!
 
@@ -7612,13 +5334,7 @@ type Message implements Node {
 
   # True if message is from the user to the partner.
   is_from_user: Boolean
-  from_email_address: String
-    @deprecated(reason: "Prefer to use `from`. [Will be removed in v2]")
   from: MessageInitiator
-
-  # Full unsanitized text.
-  raw_text: String!
-    @deprecated(reason: "Prefer to use `body`. [Will be removed in v2]")
 
   # Unaltered text if possible, otherwise `body`: a parsed/sanitized version from Sendgrid.
   body: String
@@ -7629,8 +5345,6 @@ type Message implements Node {
   # True if message is an invoice message
   is_invoice: Boolean
   created_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -7865,64 +5579,6 @@ type Mutation {
 
   # Submits an order
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
-  recordArtworkView(input: RecordArtworkViewInput!): RecordArtworkViewPayload
-  commerceAddInitialOfferToOrder(
-    input: CommerceAddInitialOfferToOrderInput!
-  ): CommerceAddInitialOfferToOrderPayload
-  commerceApproveOrder(
-    input: CommerceApproveOrderInput!
-  ): CommerceApproveOrderPayload
-  commerceBuyerAcceptOffer(
-    input: CommerceBuyerAcceptOfferInput!
-  ): CommerceBuyerAcceptOfferPayload
-  commerceBuyerCounterOffer(
-    input: CommerceBuyerCounterOfferInput!
-  ): CommerceBuyerCounterOfferPayload
-  commerceBuyerRejectOffer(
-    input: CommerceBuyerRejectOfferInput!
-  ): CommerceBuyerRejectOfferPayload
-  commerceConfirmPickup(
-    input: CommerceConfirmPickupInput!
-  ): CommerceConfirmPickupPayload
-  commerceCreateOfferOrderWithArtwork(
-    input: CommerceCreateOfferOrderWithArtworkInput!
-  ): CommerceCreateOfferOrderWithArtworkPayload
-  commerceCreateOrderWithArtwork(
-    input: CommerceCreateOrderWithArtworkInput!
-  ): CommerceCreateOrderWithArtworkPayload
-  commerceFixFailedPayment(
-    input: CommerceFixFailedPaymentInput!
-  ): CommerceFixFailedPaymentPayload
-
-  # Fulfill an order with one Fulfillment, it sets this fulfillment to each line item in order
-  commerceFulfillAtOnce(
-    input: CommerceFulfillAtOnceInput!
-  ): CommerceFulfillAtOncePayload
-  commerceRejectOrder(
-    input: CommerceRejectOrderInput!
-  ): CommerceRejectOrderPayload
-  commerceSellerAcceptOffer(
-    input: CommerceSellerAcceptOfferInput!
-  ): CommerceSellerAcceptOfferPayload
-  commerceSellerCounterOffer(
-    input: CommerceSellerCounterOfferInput!
-  ): CommerceSellerCounterOfferPayload
-  commerceSellerRejectOffer(
-    input: CommerceSellerRejectOfferInput!
-  ): CommerceSellerRejectOfferPayload
-  commerceSetPayment(input: CommerceSetPaymentInput!): CommerceSetPaymentPayload
-  commerceSetShipping(
-    input: CommerceSetShippingInput!
-  ): CommerceSetShippingPayload
-  commerceSubmitOrder(
-    input: CommerceSubmitOrderInput!
-  ): CommerceSubmitOrderPayload
-  commerceSubmitOrderWithOffer(
-    input: CommerceSubmitOrderWithOfferInput!
-  ): CommerceSubmitOrderWithOfferPayload
-  commerceSubmitPendingOffer(
-    input: CommerceSubmitPendingOfferInput!
-  ): CommerceSubmitPendingOfferPayload
 }
 
 input Near {
@@ -7937,49 +5593,6 @@ interface Node {
   id: ID!
 }
 
-type NotificationsFeedItem implements Node {
-  # A globally unique ID.
-  id: ID!
-  artists: String
-
-  # List of artworks in this notification bundle
-  artworks: [Artwork]
-  date(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  message: String
-  status: NotificationsFeedItemStatus
-  image: Image
-}
-
-# A connection to a list of items.
-type NotificationsFeedItemConnection {
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-
-  # A list of edges.
-  edges: [NotificationsFeedItemEdge]
-}
-
-# An edge in a connection.
-type NotificationsFeedItemEdge {
-  # The item at the end of the edge
-  node: NotificationsFeedItem
-
-  # A cursor for use in pagination
-  cursor: String!
-}
-
-enum NotificationsFeedItemStatus {
-  READ
-  UNREAD
-}
-
 type Offer {
   # A globally unique ID.
   id: ID!
@@ -7987,8 +5600,6 @@ type Offer {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   createdAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -8069,8 +5680,6 @@ type Offer {
   # The order on which the offer was made
   respondsTo: Offer
   submittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -8257,48 +5866,36 @@ type OfferOrder implements Order {
   # Whether or not the last attempt to charge the buyer failed
   lastTransactionFailed: Boolean
   lastApprovedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   lastSubmittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   updatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   createdAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   stateUpdatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   stateExpiresAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -8489,48 +6086,36 @@ interface Order {
   # Whether or not the last attempt to charge the buyer failed
   lastTransactionFailed: Boolean
   lastApprovedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   lastSubmittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   updatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   createdAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   stateUpdatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   stateExpiresAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -8589,8 +6174,6 @@ type OrderFulfillment {
   # Courier's tracking id
   trackingId: String
   estimatedDelivery(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -8637,12 +6220,6 @@ type OrderLineItem {
   # ID of the selected Edition set from the artwork
   editionSetId: String
 
-  # Unit price in cents
-  priceCents: Int
-    @deprecated(
-      reason: "Prefer to use `listPriceCents`. [Will be removed in v2]"
-    )
-
   # A formatted price with various currency formatting options.
   price(
     decimal: String = "."
@@ -8668,16 +6245,12 @@ type OrderLineItem {
     thousand: String = ","
   ): String
   updatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   createdAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -8793,9 +6366,6 @@ type PageCursors {
 
 # Information about pagination in a connection.
 type PageInfo {
-  # When paginating forwards, the cursor to continue.
-  endCursor: String
-
   # When paginating forwards, are there more items?
   hasNextPage: Boolean!
 
@@ -8804,6 +6374,9 @@ type PageInfo {
 
   # When paginating backwards, the cursor to continue.
   startCursor: String
+
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
 }
 
 type Partner implements Node {
@@ -8835,20 +6408,12 @@ type Partner implements Node {
   ): ArtworkConnection
   categories: [Category]
   collecting_institution: String
-  contact_message: String
-    @deprecated(
-      reason: "Prefer to use `Artwork.contact_message`. [Will be removed in v2]"
-    )
   counts: PartnerCounts
   default_profile_id: String
   has_fair_partnership: Boolean
   href: String
   initials(length: Int = 3): String
   is_default_profile_public: Boolean
-  is_limited_fair_partner: Boolean
-    @deprecated(
-      reason: "This field no longer exists, this is for backwards compatibility [Will be removed in v2]"
-    )
   is_linkable: Boolean
   is_pre_qualify: Boolean
   locations(size: Int = 25): [Location]
@@ -8874,7 +6439,6 @@ type Partner implements Node {
 
   # The gallery partner's web address
   website: String
-  analytics: AnalyticsPartnerStats
 }
 
 type PartnerArtist {
@@ -9142,8 +6706,6 @@ type PartnerShow implements Node {
       reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   created_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -9156,13 +6718,7 @@ type PartnerShow implements Node {
     @deprecated(
       reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
-  displayable: Boolean
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -9247,8 +6803,6 @@ type PartnerShow implements Node {
       reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
     )
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -9293,16 +6847,12 @@ type PartnerShowEventType {
   description: String
   title: String
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -9322,36 +6872,6 @@ enum PartnerShowPartnerType {
 }
 
 enum PartnerShowSorts {
-  created_at_asc
-    @deprecated(
-      reason: "Prefer to use `CREATED_AT_ASC`. [Will be removed in v2]"
-    )
-  created_at_desc
-    @deprecated(
-      reason: "Prefer to use `CREATED_AT_DESC`. [Will be removed in v2]"
-    )
-  end_at_asc
-    @deprecated(reason: "Prefer to use `END_AT_ASC`. [Will be removed in v2]")
-  end_at_desc
-    @deprecated(reason: "Prefer to use `END_AT_DESC`. [Will be removed in v2]")
-  name_asc
-    @deprecated(reason: "Prefer to use `NAME_ASC`. [Will be removed in v2]")
-  name_desc
-    @deprecated(reason: "Prefer to use `NAME_DESC`. [Will be removed in v2]")
-  publish_at_asc
-    @deprecated(
-      reason: "Prefer to use `PUBLISH_AT_ASC`. [Will be removed in v2]"
-    )
-  publish_at_desc
-    @deprecated(
-      reason: "Prefer to use `PUBLISH_AT_DESC`. [Will be removed in v2]"
-    )
-  start_at_asc
-    @deprecated(reason: "Prefer to use `START_AT_ASC`. [Will be removed in v2]")
-  start_at_desc
-    @deprecated(
-      reason: "Prefer to use `START_AT_DESC`. [Will be removed in v2]"
-    )
   CREATED_AT_ASC
   CREATED_AT_DESC
   END_AT_ASC
@@ -9385,12 +6905,6 @@ type Pickup {
 
 type PopularArtists {
   artists: [Artist]
-}
-
-type PriceCents {
-  min: Int
-  max: Int
-  exact: Boolean
 }
 
 type PriceRange {
@@ -9620,24 +7134,7 @@ type Query {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-
-  # Sale Artworks Elastic Search results
-  filter_sale_artworks(
-    aggregations: [SaleArtworkAggregation]
-    artist_ids: [String]
-    include_artworks_by_followed_artists: Boolean
-    live_sale: Boolean
-    is_auction: Boolean
-    gene_ids: [String]
-    estimate_range: String
-    page: Int
-    sale_id: ID
-    size: Int
-    sort: String
-  ): FilterSaleArtworks
-    @deprecated(
-      reason: "Prefer to use `sale_artworks`. [Will be removed in v2]"
-    )
+  filter_sale_artworks: undefined
   gene(
     # The slug or ID of the Gene
     id: String!
@@ -9969,97 +7466,6 @@ type Query {
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
-
-  # Find list of competing orders
-  commerceCompetingOrders(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-    orderId: ID!
-  ): CommerceOrderConnectionWithTotalCount
-  commerceLineItems(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-    artworkId: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-    editionSetId: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-    orderStates: [CommerceOrderStateEnum!]
-  ): CommerceLineItemConnection
-
-  # Find an order by ID
-  commerceOrder(code: String, id: ID): CommerceOrder
-
-  # Find list of orders
-  commerceOrders(
-    # Returns the elements in the list that come after the specified cursor.
-    after: String
-
-    # Returns the elements in the list that come before the specified cursor.
-    before: String
-    buyerId: String
-    buyerType: String
-
-    # Returns the first _n_ elements from the list.
-    first: Int
-
-    # Returns the last _n_ elements from the list.
-    last: Int
-    mode: CommerceOrderModeEnum
-    sellerId: String
-    sellerType: String
-    sort: CommerceOrderConnectionSortEnum
-    state: CommerceOrderStateEnum
-  ): CommerceOrderConnectionWithTotalCount
-
-  # Find PartnerStats
-  analyticsPartnerStats(partnerId: String!): AnalyticsPartnerStats
-  marketingCollections(
-    category: String
-    randomizationSeed: String
-    size: Int
-    isFeaturedArtistContent: Boolean
-    showOnEditorial: Boolean
-    artistID: String
-  ): [MarketingCollection!]!
-  marketingCategories: [MarketingCollectionCategory!]!
-  marketingCollection(slug: String!): MarketingCollection
-  marketingHubCollections: [MarketingCollection!]!
-}
-
-# Autogenerated input type of RecordArtworkView
-input RecordArtworkViewInput {
-  artwork_id: String!
-
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
-}
-
-# Autogenerated return type of RecordArtworkView
-type RecordArtworkViewPayload {
-  # Id of viewed artwork
-  artworkId: String!
-
-  # Id of viewed artwork
-  artwork_id: String! @deprecated(reason: "Use artworkId")
-
-  # A unique identifier for the client performing the mutation.
-  clientMutationId: String
 }
 
 input RejectOrderInput {
@@ -10171,8 +7577,6 @@ type Sale implements Node {
     last: Int
   ): ArtworkConnection
   associated_sale: Sale
-  auction_state: String
-    @deprecated(reason: "Prefer to use `status`. [Will be removed in v2]")
 
   # A bid increment policy that explains minimum bids in ranges.
   bid_increments: [BidIncrement]
@@ -10185,24 +7589,18 @@ type Sale implements Node {
   display_timely_at: String
   eligible_sale_artworks_count: Int
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   event_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   event_end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -10215,8 +7613,6 @@ type Sale implements Node {
   name: String
   initials(length: Int = 3): String
   is_auction: Boolean
-  is_benefit: Boolean
-    @deprecated(reason: "Prefer to use `isBenefit`. [Will be removed in v2]")
   isBenefit: Boolean
   isGalleryAuction: Boolean
   is_auction_promo: Boolean
@@ -10227,8 +7623,6 @@ type Sale implements Node {
   is_registration_closed: Boolean
   is_with_buyers_premium: Boolean
   live_start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -10241,8 +7635,6 @@ type Sale implements Node {
   profile: Profile
   promoted_sale: Sale
   registration_ends_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -10265,8 +7657,6 @@ type Sale implements Node {
   ): SaleArtworkConnection
   sale_type: String
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -10288,14 +7678,6 @@ type SaleArtwork {
   internalID: ID!
   cached: Int
   artwork: Artwork
-  bidder_positions_count: Int
-    @deprecated(
-      reason: "Prefer to use `counts.bidder_positions`. [Will be removed in v2]"
-    )
-  bid_increments: [Float]
-    @deprecated(
-      reason: "Prefer to use `increments.cents`. [Will be removed in v2]"
-    )
   counts: SaleArtworkCounts
 
   # Currency abbreviation (e.g. "USD")
@@ -10306,10 +7688,6 @@ type SaleArtwork {
   # Singular estimate field, if specified
   estimate_cents: Int
   high_estimate: SaleArtworkHighEstimate
-  high_estimate_cents: Float
-    @deprecated(
-      reason: "Prefer to use `high_estimate`. [Will be removed in v2]"
-    )
   highest_bid: SaleArtworkHighestBid
   increments(
     # Whether or not to start the increments at the user's latest bid
@@ -10321,19 +7699,9 @@ type SaleArtwork {
   is_biddable: Boolean
   is_with_reserve: Boolean
   lot_label: String
-  lot_number: String
-    @deprecated(reason: "Prefer to use `lot_label`. [Will be removed in v2]")
   low_estimate: SaleArtworkLowEstimate
-  low_estimate_cents: Float
-    @deprecated(reason: "Prefer to use `low_estimate`. [Will be removed in v2]")
   minimum_next_bid: SaleArtworkMinimumNextBid
-  minimum_next_bid_cents: Float
-    @deprecated(
-      reason: "Prefer to use `minimum_next_bid`. [Will be removed in v2]"
-    )
   opening_bid: SaleArtworkOpeningBid
-  opening_bid_cents: Float
-    @deprecated(reason: "Prefer to use `opening_bid`. [Will be removed in v2]")
   position: Float
   reserve: SaleArtworkReserve
   reserve_message: String
@@ -10399,8 +7767,6 @@ type SaleArtworkEdge {
 
 type SaleArtworkHighestBid {
   created_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -10420,8 +7786,6 @@ type SaleArtworkHighestBid {
   ): String
   cents: Int
   display: String
-  amount_cents: Float
-    @deprecated(reason: "Prefer to use `cents`. [Will be removed in v2]")
 }
 
 type SaleArtworkHighEstimate {
@@ -10624,8 +7988,6 @@ type SearchableItem implements Node & Searchable {
   displayLabel: String
   imageUrl: String
   href: String
-  searchableType: String
-    @deprecated(reason: "Prefer to use `displayType`. [Will be removed in v2]")
   displayType: String
 }
 
@@ -10673,8 +8035,6 @@ interface Sellable {
   is_offerable: Boolean
   is_for_sale: Boolean
   is_sold: Boolean
-  price: String
-    @deprecated(reason: "Prefer to use `sale_message`. [Will be removed in v2]")
   sale_message: String
 }
 
@@ -10873,22 +8233,6 @@ type Show implements Node {
   # The Artists presenting in this show
   artists: [Artist]
 
-  # The artworks featured in this show
-  artworks(
-    # List of artwork IDs to exclude from the response (irrespective of size)
-    exclude: [String]
-    for_sale: Boolean = false
-    published: Boolean = true
-    all: Boolean
-    page: Int = 1
-
-    # Number of artworks to return
-    size: Int = 25
-  ): [Artwork]
-    @deprecated(
-      reason: "Prefer to use `artworks_connection`. [Will be removed in v2]"
-    )
-
   # The artworks featured in the show
   artworks_connection(
     # List of artwork IDs to exclude from the response (irrespective of size)
@@ -10918,13 +8262,7 @@ type Show implements Node {
 
   # A description of the show
   description: String
-  displayable: Boolean
-    @deprecated(
-      reason: "Prefer to use `is_displayable`. [Will be removed in v2]"
-    )
   end_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -11011,8 +8349,6 @@ type Show implements Node {
 
   # Is it a show provided for historical reference?
   is_reference: Boolean
-  is_local_discovery: Boolean
-    @deprecated(reason: "Prefer to use `isStubShow`. [Will be removed in v2]")
 
   # Is it an outsourced local discovery stub show?
   isStubShow: Boolean
@@ -11061,8 +8397,6 @@ type Show implements Node {
 
   # When this show starts
   start_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -11376,8 +8710,6 @@ type UpdateCollectorProfilePayload {
   email: String
   name: String
   confirmed_buyer_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -11386,24 +8718,18 @@ type UpdateCollectorProfilePayload {
   collector_level: Int
   self_reported_purchases: String
   loyalty_applicant_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   professional_buyer_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   professional_buyer_applied_at(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -11747,24 +9073,7 @@ type Viewer {
     # When true, will only return exact keyword match
     keyword_match_exact: Boolean
   ): FilterArtworks
-
-  # Sale Artworks Elastic Search results
-  filter_sale_artworks(
-    aggregations: [SaleArtworkAggregation]
-    artist_ids: [String]
-    include_artworks_by_followed_artists: Boolean
-    live_sale: Boolean
-    is_auction: Boolean
-    gene_ids: [String]
-    estimate_range: String
-    page: Int
-    sale_id: ID
-    size: Int
-    sort: String
-  ): FilterSaleArtworks
-    @deprecated(
-      reason: "Prefer to use `sale_artworks`. [Will be removed in v2]"
-    )
+  filter_sale_artworks: undefined
   gene(
     # The slug or ID of the Gene
     id: String!

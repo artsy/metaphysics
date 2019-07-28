@@ -78,14 +78,6 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           type: GraphQLBoolean,
           description: "Whether to include local discovery stubs",
         },
-        discoverable: {
-          type: GraphQLBoolean,
-          description: "Whether to include stub shows or not",
-          deprecationReason: deprecate({
-            inVersion: 2,
-            preferUsageOf: "includeStubShows",
-          }),
-        },
       }),
       resolve: async (city, args, { showsWithHeadersLoader }) =>
         loadData(args, showsWithHeadersLoader, {
