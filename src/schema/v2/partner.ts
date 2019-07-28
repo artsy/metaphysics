@@ -130,25 +130,6 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       collecting_institution: {
         type: GraphQLString,
       },
-      contact_message: {
-        type: GraphQLString,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "Artwork.contact_message",
-        }),
-        resolve: ({ type }) => {
-          if (type === "Auction") {
-            return [
-              "Hello, I am interested in placing a bid on this work.",
-              "Please send me more information.",
-            ].join(" ")
-          }
-          return [
-            "Hi, I’m interested in purchasing this work.",
-            "Could you please provide more information about the piece?",
-          ].join(" ")
-        },
-      },
       counts: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "PartnerCounts",
@@ -205,15 +186,6 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       is_default_profile_public: {
         type: GraphQLBoolean,
         resolve: ({ default_profile_public }) => default_profile_public,
-      },
-      is_limited_fair_partner: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          reason:
-            "This field no longer exists, this is for backwards compatibility",
-        }),
-        resolve: () => false,
       },
       is_linkable: {
         type: GraphQLBoolean,

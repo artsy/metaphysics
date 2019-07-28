@@ -176,18 +176,6 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     image: Image,
-    is_active: {
-      type: GraphQLBoolean,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "isActive",
-      }),
-      resolve: ({ autopublish_artworks_at, end_at }) => {
-        const start = moment.utc(autopublish_artworks_at).subtract(7, "days")
-        const end = moment.utc(end_at).add(14, "days")
-        return moment.utc().isBetween(start, end)
-      },
-    },
     isActive: {
       type: GraphQLBoolean,
       description: "Are we currently in the fair's active period?",
@@ -289,13 +277,6 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     active_start_at: date,
     organizer: {
       type: FairOrganizerType,
-    },
-    published: {
-      type: GraphQLBoolean,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "is_published",
-      }),
     },
     tagline: {
       type: GraphQLString,

@@ -148,14 +148,6 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     counts: FilterArtworksCounts,
-    followed_artists_total: {
-      type: GraphQLInt,
-      resolve: ({ aggregations }) => aggregations.followed_artists.value,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "counts.followed_artists",
-      }),
-    },
     hits: {
       description: "Artwork results.",
       type: new GraphQLList(Artwork.type),
@@ -172,14 +164,6 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
           ids: keys(aggregations.merchandisable_artists),
         })
       },
-    },
-    total: {
-      type: GraphQLInt,
-      resolve: ({ aggregations }) => aggregations.total.value,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "counts.total",
-      }),
     },
     facet: {
       type: ArtworkFilterFacetType,

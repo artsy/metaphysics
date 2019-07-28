@@ -57,27 +57,6 @@ const NotificationsFeedItemType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-const Notifications: GraphQLFieldConfig<void, ResolverContext> = {
-  type: connectionDefinitions({ nodeType: NotificationsFeedItemType })
-    .connectionType,
-  description:
-    "A list of feed items, indicating published artworks (grouped by date and artists).",
-  args: pageable({}),
-  deprecationReason: deprecate({
-    inVersion: 2,
-    preferUsageOf: "followsAndSaves",
-  }),
-  resolve: (_root, options, { notificationsFeedLoader }) => {
-    if (!notificationsFeedLoader) return null
-    const gravityOptions = convertConnectionArgsToGravityArgs(options)
-    return notificationsFeedLoader(omit(gravityOptions, "offset")).then(
-      ({ feed, total }) =>
-        connectionFromArraySlice(feed, options, {
-          arrayLength: total,
-          sliceStart: gravityOptions.offset,
-        })
-    )
-  },
-}
+const Notifications: GraphQLFieldConfig<void, ResolverContext> = {}
 
 export default Notifications

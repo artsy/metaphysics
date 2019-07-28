@@ -213,13 +213,6 @@ const PartnerShowType = deprecateType(
         description: {
           type: GraphQLString,
         },
-        displayable: {
-          type: GraphQLBoolean,
-          deprecationReason: deprecate({
-            inVersion: 2,
-            preferUsageOf: "is_displayable",
-          }),
-        },
         end_at: date,
         events: {
           type: new GraphQLList(PartnerShowEventType),

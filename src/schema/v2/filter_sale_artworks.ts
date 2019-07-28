@@ -101,17 +101,6 @@ export const FilterSaleArtworksType = new GraphQLObjectType<
   }),
 })
 
-const FilterSaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
-  type: FilterSaleArtworksType,
-  description: "Sale Artworks Elastic Search results",
-  deprecationReason: deprecate({
-    inVersion: 2,
-    preferUsageOf: "sale_artworks",
-  }),
-  args: filterSaleArtworksArgs,
-  resolve: (_root, options, { saleArtworksFilterLoader }) => {
-    return saleArtworksFilterLoader(options)
-  },
-}
+const FilterSaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {}
 
 export default FilterSaleArtworks

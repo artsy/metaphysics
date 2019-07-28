@@ -18,16 +18,6 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
     },
   },
   outputFields: {
-    credit_card: {
-      type: CreditCard.type,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "creditCardOrError",
-      }),
-      resolve: result => {
-        return result && result.id ? result : null
-      },
-    },
     creditCardOrError: {
       type: CreditCardMutationType,
       resolve: result => result,

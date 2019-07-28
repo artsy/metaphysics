@@ -59,17 +59,6 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ sold }) => sold,
     },
-    price: {
-      type: GraphQLString,
-      resolve: ({ price, forsale }) => {
-        const fallback = forsale ? "Available" : "Not for Sale"
-        return !isEmpty(price) ? price : fallback
-      },
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "sale_message",
-      }),
-    },
     listPrice,
     sizeScore: {
       description: "score assigned to an artwork based on its dimensions",

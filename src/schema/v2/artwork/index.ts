@@ -113,13 +113,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }).then(({ results }) => results),
       },
       availability: { type: GraphQLString },
-      can_share_image: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "is_*",
-        }),
-      },
       category: { type: GraphQLString },
       attribution_class: {
         type: AttributionClass,
@@ -225,13 +218,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             size: 1,
           }).then(_.first)
         },
-      },
-      height: {
-        type: GraphQLString, // See note on `metric` field.
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "dimensions",
-        }),
       },
       highlights: {
         type: new GraphQLList(Highlight),
@@ -346,44 +332,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return comparables_count > 0 && category !== "Architecture"
         },
       },
-      is_contactable: {
-        type: GraphQLBoolean,
-        description: "Are we able to display a contact form on artwork pages?",
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "is_inquireable",
-        }),
-        resolve: (artwork, _options, { relatedSalesLoader }) => {
-          return relatedSalesLoader({
-            size: 1,
-            active: true,
-            artwork: [artwork.id],
-          })
-            .then(sales => {
-              return (
-                artwork.forsale &&
-                !_.isEmpty(artwork.partner) &&
-                !artwork.acquireable &&
-                !artwork.partner.has_limited_fair_partnership &&
-                !sales.length
-              )
-            })
-            .catch(() => false)
-        },
-      },
       is_downloadable: {
         type: GraphQLBoolean,
         resolve: ({ images }) => !!(_.first(images) && images[0].downloadable),
       },
       is_embeddable_video: { type: GraphQLBoolean, resolve: isEmbeddedVideo },
-      is_ecommerce: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          reason: "Should not be used to determine anything UI-level.",
-        }),
-        resolve: ({ ecommerce }) => ecommerce,
-      },
       is_for_sale: { type: GraphQLBoolean, resolve: ({ forsale }) => forsale },
       is_hangable: {
         type: GraphQLBoolean,
@@ -441,14 +394,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ price, edition_sets }) =>
           has_price_range(price) && !has_multiple_editions(edition_sets),
       },
-      is_purchasable: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          reason: "Purchase requests are not supported. Replaced by buy now.",
-        }),
-        resolve: () => null,
-      },
       is_saved: {
         type: GraphQLBoolean,
         resolve: ({ id }, {}, { savedArtworkLoader }) => {
@@ -481,13 +426,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       ),
       manufacturer: markdown(),
       medium: { type: GraphQLString },
-      metric: {
-        type: GraphQLString, // Used for Eigen compatibility, see conversation at: https://github.com/artsy/metaphysics/pull/1350
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "dimensions",
-        }),
-      },
       meta: Meta,
       myLotStanding: {
         type: new GraphQLList(new GraphQLNonNull(LotStandingType)),
@@ -496,15 +434,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           if (!lotStandingLoader) return null
           return lotStandingLoader({ artwork_id: id, live })
         },
-      },
-      pageviews: {
-        type: GraphQLInt,
-        description: "[DO NOT USE] Weekly pageview data (static).",
-        deprecationReason: deprecate({
-          inVersion: 2,
-          reason: "This is for an AB test and will be imminently deprecated.",
-        }),
-        resolve: ({ _id }) => artworkPageviews[_id],
       },
       partner: {
         type: Partner.type,
@@ -522,44 +451,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       pickup_available: { type: GraphQLBoolean },
-      price: {
-        type: GraphQLString,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "sale_message",
-        }),
-      },
-      priceCents: {
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "listPrice",
-        }),
-        type: new GraphQLObjectType<any, ResolverContext>({
-          name: "PriceCents",
-          fields: {
-            min: {
-              type: GraphQLInt,
-            },
-            max: {
-              type: GraphQLInt,
-            },
-            exact: {
-              type: GraphQLBoolean,
-            },
-          },
-        }),
-        resolve: ({ price_cents }) => {
-          if (!price_cents || price_cents.length === 0) {
-            return null
-          }
-          const isExactPrice = price_cents.length === 1
-          return {
-            exact: isExactPrice,
-            min: price_cents[0],
-            max: isExactPrice ? price_cents[0] : price_cents[1],
-          }
-        },
-      },
       listPrice,
       price_currency: { type: GraphQLString },
       shipsToContinentalUSOnly: {
@@ -779,21 +670,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ title }) => (_.isEmpty(title) ? "Untitled" : title),
       },
-      to_s: {
-        type: GraphQLString,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          reason: "Unused field named using Ruby idiom.",
-        }),
-        resolve: ({ artist, title, date, partner }) => {
-          return _.compact([
-            artist && artist.name,
-            title && `‘${title}’`,
-            date,
-            partner && partner.name,
-          ]).join(", ")
-        },
-      },
       published: {
         type: new GraphQLNonNull(GraphQLBoolean),
         description: "Whether this Artwork is Published of not",
@@ -803,13 +679,6 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description:
           "If the category is video, then it returns the href for the (youtube/vimeo) video, otherwise returns the website from CMS",
         resolve: artwork => (isEmbeddedVideo(artwork) ? null : artwork.website),
-      },
-      width: {
-        type: GraphQLString, // See note on `metric` field.
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "dimensions",
-        }),
       },
       framed: {
         type: ArtworkInfoRowType,

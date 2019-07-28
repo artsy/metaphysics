@@ -11,14 +11,6 @@ const Format = {
       PLAIN: {
         value: "plain",
       },
-      markdown: {
-        value: "markdown",
-        deprecationReason: deprecate({
-          inVersion: 2,
-          reason:
-            "Deprecated when we deprecated lower-case enum entries, but no alternative was provided. Add an alternative to MP if this is still needed.",
-        }),
-      },
     },
   }),
 }

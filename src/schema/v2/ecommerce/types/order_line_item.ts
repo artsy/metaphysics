@@ -39,14 +39,6 @@ export const OrderLineItemType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description: "ID of the selected Edition set from the artwork",
     },
-    priceCents: {
-      type: GraphQLInt,
-      description: "Unit price in cents",
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "listPriceCents",
-      }),
-    },
     price: amount(({ priceCents }) => priceCents),
     listPriceCents: {
       type: GraphQLInt,

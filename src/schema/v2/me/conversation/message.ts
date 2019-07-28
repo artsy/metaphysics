@@ -65,13 +65,6 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
         (userID && from_id === userID) ||
         from_email_address === conversation_from_address,
     },
-    from_email_address: {
-      type: GraphQLString,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "from",
-      }),
-    },
     from: {
       type: MessageInitiatorType,
       resolve: ({ from, from_email_address }) => {
@@ -89,14 +82,6 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
           name,
         }
       },
-    },
-    raw_text: {
-      description: "Full unsanitized text.",
-      type: new GraphQLNonNull(GraphQLString),
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "body",
-      }),
     },
     body: {
       description:

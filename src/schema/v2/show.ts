@@ -105,53 +105,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         return artists
       },
     },
-    artworks: {
-      description: "The artworks featured in this show",
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "artworks_connection",
-      }),
-      type: new GraphQLList(Artwork.type),
-      args: {
-        ...artworksArgs,
-        all: {
-          type: GraphQLBoolean,
-          default: false,
-        },
-        page: {
-          type: GraphQLInt,
-          defaultValue: 1,
-        },
-        size: {
-          type: GraphQLInt,
-          description: "Number of artworks to return",
-          defaultValue: 25,
-        },
-      },
-      resolve: (show, options, { partnerShowArtworksLoader }) => {
-        let fetch: Promise<any>
 
-        if (options.all) {
-          fetch = allViaLoader(partnerShowArtworksLoader, {
-            path: {
-              partner_id: show.partner.id,
-              show_id: show.id,
-            },
-            params: options,
-          })
-        } else {
-          fetch = partnerShowArtworksLoader(
-            {
-              partner_id: show.partner.id,
-              show_id: show.id,
-            },
-            options
-          ).then(({ body }) => body)
-        }
-
-        return fetch.then(exclude(options.exclude, "id"))
-      },
-    },
     artworks_connection: {
       description: "The artworks featured in the show",
       type: artworkConnection,
@@ -356,13 +310,6 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       description: "A description of the show",
       type: GraphQLString,
     },
-    displayable: {
-      type: GraphQLBoolean,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "is_displayable",
-      }),
-    },
     end_at: date,
     events: {
       description: "Events from the partner that runs this show",
@@ -447,13 +394,6 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       description: "Is it a show provided for historical reference?",
       type: GraphQLBoolean,
       resolve: ({ is_reference }) => is_reference,
-    },
-    is_local_discovery: {
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "isStubShow",
-      }),
-      type: GraphQLBoolean,
     },
     isStubShow: {
       description: "Is it an outsourced local discovery stub show?",

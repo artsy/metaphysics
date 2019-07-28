@@ -39,13 +39,6 @@ export const HomePageArtworkModuleType = new GraphQLObjectType<
       },
     },
     context: Context,
-    display: {
-      type: GraphQLString,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "is_displayable",
-      }),
-    },
     is_displayable: {
       type: GraphQLBoolean,
       resolve: ({ display }) => display,

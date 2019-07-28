@@ -405,13 +405,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             })
           ).then(({ body }) => body),
       },
-      consignable: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "is_*",
-        }),
-      },
       counts: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "ArtistCounts",
@@ -467,13 +460,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       disablePriceContext: {
         type: GraphQLBoolean,
         resolve: ({ disable_price_context }) => disable_price_context,
-      },
-      display_auction_link: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "is_*",
-        }),
       },
       exhibition_highlights: {
         args: {
@@ -622,21 +608,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
         resolve: ({ id }, options, { partnerArtistsForArtistLoader }) =>
           partnerArtistsForArtistLoader(id, options),
-      },
-      partner_shows: {
-        ...ShowField,
-        type: new GraphQLList(PartnerShow.type),
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "shows",
-        }),
-      },
-      public: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "is_*",
-        }),
       },
       related: Related,
       sales: {

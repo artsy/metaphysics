@@ -88,15 +88,6 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
 
-    displayDaySchedules: {
-      type: new GraphQLList(FormattedDaySchedules.type),
-      resolve: ({ day_schedules }) =>
-        FormattedDaySchedules.resolve(day_schedules),
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "openingHours",
-      }),
-    },
     openingHours: {
       type: OpeningHoursUnion,
       resolve: ({ day_schedules, day_schedule_text }) =>
