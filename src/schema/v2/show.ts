@@ -7,7 +7,6 @@ import {
 } from "graphql-relay"
 import {
   isExisty,
-  exclude,
   existyValue,
   convertConnectionArgsToGravityArgs,
 } from "lib/helpers"
@@ -21,10 +20,10 @@ import Artist from "./artist"
 import Partner from "./partner"
 import ExternalPartner from "./external_partner"
 import Fair from "./fair"
-import Artwork, { artworkConnection } from "./artwork"
+import { artworkConnection } from "./artwork"
 import Location from "./location"
 import Image, { getDefault, normalizeImageData } from "./image"
-import PartnerShowEventType from "./partner_show_event"
+import ShowEventType from "./show_event"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { filterArtworksWithParams } from "schema/v2/filter_artworks"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
@@ -39,16 +38,14 @@ import {
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
-import { allViaLoader } from "lib/all"
 import { totalViaLoader } from "lib/total"
 import { find, flatten } from "lodash"
 
-import PartnerShowSorts from "./sorts/partner_show_sorts"
+import ShowSorts from "./sorts/show_sorts"
 import EventStatus from "./input_fields/event_status"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
-import { deprecate } from "lib/deprecation"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -105,53 +102,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         return artists
       },
     },
-    artworks: {
-      description: "The artworks featured in this show",
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "artworks_connection",
-      }),
-      type: new GraphQLList(Artwork.type),
-      args: {
-        ...artworksArgs,
-        all: {
-          type: GraphQLBoolean,
-          default: false,
-        },
-        page: {
-          type: GraphQLInt,
-          defaultValue: 1,
-        },
-        size: {
-          type: GraphQLInt,
-          description: "Number of artworks to return",
-          defaultValue: 25,
-        },
-      },
-      resolve: (show, options, { partnerShowArtworksLoader }) => {
-        let fetch: Promise<any>
 
-        if (options.all) {
-          fetch = allViaLoader(partnerShowArtworksLoader, {
-            path: {
-              partner_id: show.partner.id,
-              show_id: show.id,
-            },
-            params: options,
-          })
-        } else {
-          fetch = partnerShowArtworksLoader(
-            {
-              partner_id: show.partner.id,
-              show_id: show.id,
-            },
-            options
-          ).then(({ body }) => body)
-        }
-
-        return fetch.then(exclude(options.exclude, "id"))
-      },
-    },
     artworks_connection: {
       description: "The artworks featured in the show",
       type: artworkConnection,
@@ -356,17 +307,10 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       description: "A description of the show",
       type: GraphQLString,
     },
-    displayable: {
-      type: GraphQLBoolean,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "is_displayable",
-      }),
-    },
     end_at: date,
     events: {
       description: "Events from the partner that runs this show",
-      type: new GraphQLList(PartnerShowEventType),
+      type: new GraphQLList(ShowEventType),
       resolve: ({ partner, id }, _options, { partnerShowLoader }) =>
         partnerShowLoader({
           partner_id: partner.id,
@@ -448,13 +392,6 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ is_reference }) => is_reference,
     },
-    is_local_discovery: {
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "isStubShow",
-      }),
-      type: GraphQLBoolean,
-    },
     isStubShow: {
       description: "Is it an outsourced local discovery stub show?",
       type: GraphQLBoolean,
@@ -525,9 +462,11 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     },
     nearbyShows: {
       description: "Shows that are near (~75km) from this show",
-      type: showConnection,
+      type: ShowsConnection,
       args: pageable({
-        sort: PartnerShowSorts,
+        sort: {
+          type: ShowSorts,
+        },
         status: {
           type: EventStatus.type,
           defaultValue: "CURRENT",
@@ -684,4 +623,4 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default Show
-export const showConnection = connectionWithCursorInfo(ShowType)
+export const ShowsConnection = connectionWithCursorInfo(ShowType)

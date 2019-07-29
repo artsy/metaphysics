@@ -19,13 +19,12 @@ import Article, { articleConnection } from "schema/v2/article"
 import Artwork, { artworkConnection } from "schema/v2/artwork"
 import PartnerArtist from "schema/v2/partner_artist"
 import Meta from "./meta"
-import PartnerShow from "schema/v2/partner_show"
 import {
   PartnerArtistConnection,
   partnersForArtist,
 } from "schema/v2/partner_artist"
 import { GeneType } from "../gene"
-import Show, { showConnection } from "schema/v2/show"
+import Show from "schema/v2/show"
 import Sale from "schema/v2/sale/index"
 import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
 import ArticleSorts from "schema/v2/sorts/article_sorts"
@@ -46,7 +45,7 @@ import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { Related } from "./related"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import {
-  ShowField,
+  ShowsField,
   showsWithBLacklistedPartnersRemoved,
   ShowsConnectionField,
 } from "./shows"
@@ -67,7 +66,6 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { totalViaLoader } from "lib/total"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 // Manually curated list of artist id's who has verified auction lots that can be
 // returned, when queried for via `recordsTrusted: true`.
@@ -405,13 +403,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             })
           ).then(({ body }) => body),
       },
-      consignable: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "is_*",
-        }),
-      },
       counts: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "ArtistCounts",
@@ -467,13 +458,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       disablePriceContext: {
         type: GraphQLBoolean,
         resolve: ({ disable_price_context }) => disable_price_context,
-      },
-      display_auction_link: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "is_*",
-        }),
       },
       exhibition_highlights: {
         args: {
@@ -623,21 +607,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ id }, options, { partnerArtistsForArtistLoader }) =>
           partnerArtistsForArtistLoader(id, options),
       },
-      partner_shows: {
-        ...ShowField,
-        type: new GraphQLList(PartnerShow.type),
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "shows",
-        }),
-      },
-      public: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "is_*",
-        }),
-      },
       related: Related,
       sales: {
         type: new GraphQLList(Sale.type),
@@ -658,8 +627,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             })
           ),
       },
-      shows: { ...ShowField, type: new GraphQLList(Show.type) },
-      showsConnection: { ...ShowsConnectionField, type: showConnection },
+      shows: ShowsField,
+      showsConnection: ShowsConnectionField,
       sortable_id: {
         type: GraphQLString,
         description:

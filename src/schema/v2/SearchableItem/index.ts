@@ -12,7 +12,6 @@ import {
 } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import { SearchableItemPresenter } from "./SearchableItemPresenter"
-import { deprecate } from "lib/deprecation"
 
 export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
   name: "SearchableItem",
@@ -39,14 +38,6 @@ export const SearchableItem = new GraphQLObjectType<any, ResolverContext>({
     href: {
       type: GraphQLString,
       resolve: item => new SearchableItemPresenter(item).href(),
-    },
-    searchableType: {
-      type: GraphQLString,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "displayType",
-      }),
-      resolve: item => new SearchableItemPresenter(item).displayType(),
     },
     displayType: {
       type: GraphQLString,

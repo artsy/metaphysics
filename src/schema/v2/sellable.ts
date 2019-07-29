@@ -1,5 +1,4 @@
 import { GraphQLBoolean, GraphQLInterfaceType, GraphQLString } from "graphql"
-import { deprecate } from "lib/deprecation"
 
 import Dimensions from "./dimensions"
 
@@ -24,13 +23,6 @@ export const Sellable = new GraphQLInterfaceType({
     },
     is_sold: {
       type: GraphQLBoolean,
-    },
-    price: {
-      type: GraphQLString,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "sale_message",
-      }),
     },
     sale_message: {
       type: GraphQLString,

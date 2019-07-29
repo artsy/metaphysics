@@ -24,7 +24,6 @@ import {
 import config from "config"
 import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
-import { deprecate } from "lib/deprecation"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -88,32 +87,6 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
       ...SlugAndInternalIDFields,
       cached,
       artwork: { type: Artwork.type, resolve: ({ artwork }) => artwork },
-      bidder_positions_count: {
-        type: GraphQLInt,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "counts.bidder_positions",
-        }),
-      },
-      bid_increments: {
-        type: new GraphQLList(GraphQLFloat),
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "increments.cents",
-        }),
-        resolve: (
-          { minimum_next_bid_cents, sale_id },
-          _options,
-          { incrementsLoader, saleLoader }
-        ) => {
-          return bid_increments_calculator({
-            sale_id,
-            saleLoader,
-            incrementsLoader,
-            minimum_next_bid_cents,
-          })
-        },
-      },
       counts: {
         resolve: x => x,
         type: new GraphQLObjectType<any, ResolverContext>({
@@ -166,13 +139,6 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           display: display_high_estimate_dollars,
         }),
       }),
-      high_estimate_cents: {
-        type: GraphQLFloat,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "high_estimate",
-        }),
-      },
       highest_bid: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "SaleArtworkHighestBid",
@@ -190,13 +156,6 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
             display: {
               type: GraphQLString,
               resolve: ({ display_amount_dollars }) => display_amount_dollars,
-            },
-            amount_cents: {
-              type: GraphQLFloat,
-              deprecationReason: deprecate({
-                inVersion: 2,
-                preferUsageOf: "cents",
-              }),
             },
           },
         }),
@@ -280,13 +239,6 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ reserve_status }) => reserve_status !== "no_reserve",
       },
       lot_label: { type: GraphQLString },
-      lot_number: {
-        type: GraphQLString,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "lot_label",
-        }),
-      },
       low_estimate: money({
         name: "SaleArtworkLowEstimate",
         resolve: ({ display_low_estimate_dollars, low_estimate_cents }) => ({
@@ -294,13 +246,6 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           display: display_low_estimate_dollars,
         }),
       }),
-      low_estimate_cents: {
-        type: GraphQLFloat,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "low_estimate",
-        }),
-      },
       minimum_next_bid: money({
         name: "SaleArtworkMinimumNextBid",
         resolve: ({
@@ -311,13 +256,6 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           display: display_minimum_next_bid_dollars,
         }),
       }),
-      minimum_next_bid_cents: {
-        type: GraphQLFloat,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "minimum_next_bid",
-        }),
-      },
       opening_bid: money({
         name: "SaleArtworkOpeningBid",
         resolve: ({ display_opening_bid_dollars, opening_bid_cents }) => ({
@@ -325,13 +263,6 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           display: display_opening_bid_dollars,
         }),
       }),
-      opening_bid_cents: {
-        type: GraphQLFloat,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "opening_bid",
-        }),
-      },
       position: { type: GraphQLFloat },
       reserve: money({
         name: "SaleArtworkReserve",

@@ -1,8 +1,4 @@
-import {
-  transformToV2,
-  TransformToV2Options,
-  FILTER_DEPRECATIONS,
-} from "../index"
+import { transformToV2, TransformToV2Options } from "../index"
 import {
   GravityIDFields,
   InternalIDFields,
@@ -22,7 +18,6 @@ import {
 } from "graphql"
 import gql from "lib/gql"
 import { toGlobalId } from "graphql-relay"
-import { deprecate } from "lib/deprecation"
 import { runQueryOrThrow } from "schema/v2/test/utils"
 
 function createSchema({
@@ -59,28 +54,6 @@ describe(transformToV2, () => {
         filterTypes: ["GetRidOfMe"],
       })
       expect(schema.getType("GetRidOfMe")).toBeUndefined()
-    })
-
-    it("removes previously deprecated fields", () => {
-      const schema = createSchema({
-        fields: {
-          deprecatedField: {
-            type: GraphQLString,
-            deprecationReason: deprecate({
-              inVersion: 2,
-              preferUsageOf: "bar",
-            }),
-          },
-        },
-      })
-      const deprecatedField = schema.getQueryType().getFields()[
-        "deprecatedField"
-      ]
-      if (FILTER_DEPRECATIONS) {
-        expect(deprecatedField).toBeUndefined()
-      } else {
-        expect(deprecatedField).not.toBeUndefined()
-      }
     })
   })
 

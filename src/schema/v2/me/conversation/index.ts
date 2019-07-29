@@ -25,7 +25,6 @@ import {
 } from "schema/v2/object_identification"
 import { MessageType } from "./message"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 export const BuyerOutcomeTypes = new GraphQLEnumType({
   name: "BuyerOutcomeTypes",
@@ -193,14 +192,6 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
     },
     buyer_outcome_at: date,
     created_at: date,
-    purchase_request: {
-      type: GraphQLBoolean,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        reason: "Purchase requests are not supported. Replaced by buy now.",
-      }),
-      resolve: () => null,
-    },
     from_last_viewed_message_id: {
       type: GraphQLString,
     },
@@ -232,43 +223,6 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       description: "True if user/conversation initiator is a recipient.",
       resolve: conversation => isLastMessageToUser(conversation),
-    },
-
-    // If the user is a recipient of the last message, return their timestamped
-    // 'read' event, otherwise null.
-    last_message_open: {
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "unread",
-      }),
-      type: GraphQLString,
-      description:
-        "Timestamp if the user opened the last message, null in all other cases",
-      resolve: (conversation, _options, { conversationMessagesLoader }) => {
-        if (!conversationMessagesLoader || !isLastMessageToUser(conversation)) {
-          return null
-        }
-        const radiationMessageId = get(
-          conversation,
-          "_embedded.last_message.radiation_message_id"
-        )
-        return conversationMessagesLoader({
-          conversation_id: conversation.id,
-          radiation_message_id: radiationMessageId,
-          "expand[]": "deliveries",
-        }).then(({ message_details }) => {
-          if (message_details.length === 0) {
-            return null
-          }
-          const relevantDelivery = message_details[0].deliveries.find(
-            d => d.email === conversation.from_email
-          )
-          if (!relevantDelivery) {
-            return null
-          }
-          return relevantDelivery.opened_at
-        })
-      },
     },
 
     // If the user is a recipient of the last message, return the relevant delivery id.

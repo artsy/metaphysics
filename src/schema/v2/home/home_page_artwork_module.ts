@@ -15,7 +15,6 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 let possibleArgs
 
@@ -39,13 +38,6 @@ export const HomePageArtworkModuleType = new GraphQLObjectType<
       },
     },
     context: Context,
-    display: {
-      type: GraphQLString,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "is_displayable",
-      }),
-    },
     is_displayable: {
       type: GraphQLBoolean,
       resolve: ({ display }) => display,
@@ -66,11 +58,6 @@ const HomePageArtworkModule: GraphQLFieldConfig<void, ResolverContext> = {
     followed_artist_id: {
       type: GraphQLString,
       description: "ID of followed artist to target for related artist rails",
-    },
-    generic_gene_id: {
-      type: GraphQLString,
-      description:
-        "[DEPRECATED: Favor more specific `generic_gene_id`] ID of generic gene rail to target",
     },
     id: {
       type: GraphQLString,

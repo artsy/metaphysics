@@ -44,15 +44,12 @@ import Partner from "./partner"
 import Partners from "./partners"
 import FilterPartners from "./filter_partners"
 import filterArtworks from "./filter_artworks"
-import FilterSaleArtworks from "./filter_sale_artworks"
 import FollowArtist from "./me/follow_artist"
 import FollowProfile from "./me/follow_profile"
 import FollowGene from "./me/follow_gene"
 import FollowShow from "./me/follow_show"
 import PartnerCategory from "./partner_category"
 import PartnerCategories from "./partner_categories"
-import PartnerShow from "./partner_show"
-import PartnerShows from "./partner_shows"
 import PopularArtists from "./artists/popular"
 import Sale from "./sale/index"
 import Sales from "./sales"
@@ -129,7 +126,6 @@ const rootFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   // FIXME: Expected 1 arguments, but got 0
   // @ts-ignore
   filter_artworks: filterArtworks(),
-  filter_sale_artworks: FilterSaleArtworks,
   gene: Gene,
   genes: Genes,
   suggested_genes: SuggestedGenes,
@@ -145,8 +141,6 @@ const rootFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   partner: Partner,
   partner_categories: PartnerCategories,
   partner_category: PartnerCategory,
-  partner_show: PartnerShow,
-  partner_shows: PartnerShows,
   partners: Partners,
   profile: Profile,
   sale: Sale,
@@ -212,19 +206,6 @@ stitchedMutations.ecommerceSubmitOrder = SubmitOrderMutation
 stitchedMutations.ecommerceAddInitialOfferToOrder = AddInitialOfferToOrderMutation
 stitchedMutations.ecommerceSubmitOrderWithOffer = SubmitOrderWithOfferMutation
 stitchedMutations.ecommerceFixFailedPayment = FixFailedPaymentMutation
-
-// Deprecated
-stitchedRootFields.order = Order
-stitchedRootFields.orders = Orders
-
-// Deprecated
-stitchedMutations.createOrderWithArtwork = CreateOrderWithArtworkMutation
-stitchedMutations.setOrderShipping = SetOrderShippingMutation
-stitchedMutations.setOrderPayment = SetOrderPaymentMutation
-stitchedMutations.approveOrder = ApproveOrderMutation
-stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
-stitchedMutations.rejectOrder = RejectOrderMutation
-stitchedMutations.submitOrder = SubmitOrderMutation
 
 export default new GraphQLSchema({
   allowedLegacyNames: ["__id"],

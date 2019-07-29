@@ -1,6 +1,6 @@
 import moment from "moment"
 import "moment-timezone"
-import { GraphQLString, GraphQLBoolean, GraphQLFieldConfig } from "graphql"
+import { GraphQLString, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 export function date(rawDate, format, timezone) {
@@ -26,10 +26,6 @@ export interface DateSource {
 const dateField: GraphQLFieldConfig<DateSource, ResolverContext> = {
   type: GraphQLString,
   args: {
-    convert_to_utc: {
-      type: GraphQLBoolean,
-      description: "This arg is deprecated, use timezone instead",
-    },
     format: {
       type: GraphQLString,
     },

@@ -7,7 +7,7 @@ import {
   BREAK,
   GraphQLResolveInfo,
 } from "graphql"
-import { CursorPageable } from "./helpers"
+import { CursorPageable } from "relay-cursor-paging"
 
 const SELECTION_DEPTH_THRESHOLD = 3
 

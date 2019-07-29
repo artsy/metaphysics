@@ -1,18 +1,93 @@
-import { SaleArtworkType } from "./sale_artwork"
-import { convertConnectionArgsToGravityArgs } from "lib/helpers"
-import { pageable } from "relay-cursor-paging"
-import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import { filterSaleArtworksArgs } from "schema/v2/filter_sale_artworks"
 import {
-  SaleArtworkAggregations,
-  SaleArtworkCounts,
-} from "schema/v2/filter_sale_artworks"
-import { GraphQLFieldConfig } from "graphql"
+  GraphQLBoolean,
+  GraphQLFieldConfig,
+  GraphQLFieldConfigArgumentMap,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+} from "graphql"
+import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { map, omit } from "lodash"
+import { pageable } from "relay-cursor-paging"
+
+import numeral from "./fields/numeral"
 import { ResolverContext } from "types/graphql"
+import { SaleArtworkType } from "./sale_artwork"
+import {
+  SaleArtworksAggregation,
+  SaleArtworksAggregationResultsType,
+} from "./aggregations/filter_sale_artworks_aggregation"
 
 const DEFAULTS = {
   aggregations: ["total"],
   first: 10,
+}
+
+const filterSaleArtworksArgs: GraphQLFieldConfigArgumentMap = {
+  aggregations: {
+    type: new GraphQLList(SaleArtworksAggregation),
+  },
+  artist_ids: {
+    type: new GraphQLList(GraphQLString),
+  },
+  include_artworks_by_followed_artists: {
+    type: GraphQLBoolean,
+  },
+  live_sale: {
+    type: GraphQLBoolean,
+  },
+  is_auction: {
+    type: GraphQLBoolean,
+  },
+  gene_ids: {
+    type: new GraphQLList(GraphQLString),
+  },
+  estimate_range: {
+    type: GraphQLString,
+  },
+  page: {
+    type: GraphQLInt,
+  },
+  sale_id: {
+    type: GraphQLID,
+  },
+  size: {
+    type: GraphQLInt,
+  },
+  sort: {
+    type: GraphQLString,
+  },
+}
+
+const SaleArtworkAggregations = {
+  description: "Returns aggregation counts for the given filter query.",
+  type: new GraphQLList(SaleArtworksAggregationResultsType),
+  resolve: ({ aggregations }) => {
+    const allowedAggregations = omit(aggregations, [
+      "total",
+      "followed_artists",
+    ])
+    return map(allowedAggregations, (counts, slice) => ({
+      slice,
+      counts,
+    }))
+  },
+}
+
+const SaleArtworkCounts = {
+  type: new GraphQLObjectType<any, ResolverContext>({
+    name: "FilterSaleArtworksCounts",
+    fields: {
+      total: numeral(({ aggregations }) => aggregations.total.value),
+      followed_artists: numeral(
+        ({ aggregations }) => aggregations.followed_artists.value
+      ),
+    },
+  }),
+  resolve: artist => artist,
 }
 
 const SaleArtworksType = connectionDefinitions({

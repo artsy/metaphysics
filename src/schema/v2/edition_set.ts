@@ -13,7 +13,6 @@ import { capitalizeFirstCharacter } from "lib/helpers"
 import { Sellable } from "./sellable"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "./fields/listPrice"
-import { deprecate } from "lib/deprecation"
 
 export const EditionSetSorts = {
   type: new GraphQLEnumType({
@@ -58,17 +57,6 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
     is_sold: {
       type: GraphQLBoolean,
       resolve: ({ sold }) => sold,
-    },
-    price: {
-      type: GraphQLString,
-      resolve: ({ price, forsale }) => {
-        const fallback = forsale ? "Available" : "Not for Sale"
-        return !isEmpty(price) ? price : fallback
-      },
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "sale_message",
-      }),
     },
     listPrice,
     sizeScore: {

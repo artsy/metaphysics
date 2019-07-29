@@ -1,4 +1,4 @@
-import { assign, flatten, omit } from "lodash"
+import { assign, flatten } from "lodash"
 import { exclude, convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
@@ -23,7 +23,6 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "Category",
@@ -56,9 +55,6 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
   fields: () => {
-    // Prevent circular dependency
-    const PartnerShows = require("./partner_shows").default
-
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -130,25 +126,6 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       collecting_institution: {
         type: GraphQLString,
       },
-      contact_message: {
-        type: GraphQLString,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "Artwork.contact_message",
-        }),
-        resolve: ({ type }) => {
-          if (type === "Auction") {
-            return [
-              "Hello, I am interested in placing a bid on this work.",
-              "Please send me more information.",
-            ].join(" ")
-          }
-          return [
-            "Hi, I’m interested in purchasing this work.",
-            "Could you please provide more information about the piece?",
-          ].join(" ")
-        },
-      },
       counts: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "PartnerCounts",
@@ -206,15 +183,6 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ default_profile_public }) => default_profile_public,
       },
-      is_limited_fair_partner: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          reason:
-            "This field no longer exists, this is for backwards compatibility",
-        }),
-        resolve: () => false,
-      },
       is_linkable: {
         type: GraphQLBoolean,
         resolve: ({ default_profile_id, default_profile_public, type }) =>
@@ -244,18 +212,19 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_id }, _options, { profileLoader }) =>
           profileLoader(default_profile_id).catch(() => null),
       },
-      shows: {
-        type: PartnerShows.type,
-        args: omit(PartnerShows.args, "partner_id"),
-        resolve: ({ _id }, options) => {
-          return PartnerShows.resolve(
-            null,
-            assign({}, options, {
-              partner_id: _id,
-            })
-          )
-        },
-      },
+      // TODO: Create a connection for this
+      // shows: {
+      //   type: PartnerShows.type,
+      //   args: omit(PartnerShows.args, "partner_id"),
+      //   resolve: ({ _id }, options) => {
+      //     return PartnerShows.resolve(
+      //       null,
+      //       assign({}, options, {
+      //         partner_id: _id,
+      //       })
+      //     )
+      //   },
+      // },
       type: {
         type: GraphQLString,
         resolve: ({ name, type }) => {

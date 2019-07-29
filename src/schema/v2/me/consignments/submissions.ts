@@ -13,7 +13,7 @@ const Submissions: GraphQLFieldConfig<void, ResolverContext> = {
 
     completed: {
       type: GraphQLBoolean,
-      default: true,
+      defaultValue: true,
     },
   },
   description: "A list of the current user’s consignment submissions",

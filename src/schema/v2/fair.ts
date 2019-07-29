@@ -12,7 +12,7 @@ import Profile from "./profile"
 import Image from "./image"
 import Artist from "./artist"
 import Partner from "./partner"
-import { showConnection } from "./show"
+import { ShowsConnection } from "./show"
 import Location from "./location"
 import { SlugAndInternalIDFields, SlugIDField } from "./object_identification"
 import filterArtworks from "./filter_artworks"
@@ -25,12 +25,11 @@ import {
   GraphQLList,
   GraphQLFieldConfig,
 } from "graphql"
-import ShowSort from "./sorts/show_sort"
+import ShowSorts from "./sorts/show_sorts"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
-import { deprecate } from "lib/deprecation"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -176,18 +175,6 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     image: Image,
-    is_active: {
-      type: GraphQLBoolean,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "isActive",
-      }),
-      resolve: ({ autopublish_artworks_at, end_at }) => {
-        const start = moment.utc(autopublish_artworks_at).subtract(7, "days")
-        const end = moment.utc(end_at).add(14, "days")
-        return moment.utc().isBetween(start, end)
-      },
-    },
     isActive: {
       type: GraphQLBoolean,
       description: "Are we currently in the fair's active period?",
@@ -243,7 +230,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     shows_connection: {
-      type: showConnection,
+      type: ShowsConnection,
       description:
         "This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.",
       args: pageable({
@@ -252,7 +239,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           description: "Number of artworks to return",
         },
         sort: {
-          type: ShowSort,
+          type: ShowSorts,
           description: "Sorts for shows in a fair",
         },
       }),
@@ -289,13 +276,6 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     active_start_at: date,
     organizer: {
       type: FairOrganizerType,
-    },
-    published: {
-      type: GraphQLBoolean,
-      deprecationReason: deprecate({
-        inVersion: 2,
-        preferUsageOf: "is_published",
-      }),
     },
     tagline: {
       type: GraphQLString,

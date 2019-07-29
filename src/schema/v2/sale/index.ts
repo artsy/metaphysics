@@ -33,7 +33,6 @@ import {
 
 import config from "config"
 import { ResolverContext } from "types/graphql"
-import { deprecate } from "lib/deprecation"
 
 const { PREDICTION_ENDPOINT } = config
 
@@ -159,14 +158,6 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           return null
         },
       },
-      auction_state: {
-        type: GraphQLString,
-        resolve: ({ auction_state }) => auction_state,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "status",
-        }),
-      },
       bid_increments: {
         type: new GraphQLList(BidIncrement),
         description:
@@ -216,13 +207,6 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       name: { type: GraphQLString },
       initials: initials("name"),
       is_auction: { type: GraphQLBoolean },
-      is_benefit: {
-        type: GraphQLBoolean,
-        deprecationReason: deprecate({
-          inVersion: 2,
-          preferUsageOf: "isBenefit",
-        }),
-      },
       isBenefit: {
         type: GraphQLBoolean,
         resolve: ({ is_benefit }) => is_benefit,
@@ -258,6 +242,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ buyers_premium }) => buyers_premium,
       },
       live_start_at: date,
+      // Only fetches the partner info that's already included in the Sale object
       live_url_if_open: {
         type: GraphQLString,
         description:
@@ -267,7 +252,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             return PREDICTION_ENDPOINT + "/" + sale.id
           }
         },
-      }, // Only fetches the partner info that's already included in the Sale object
+      },
       // since we don't (at this time) need to load the full Partner object.
       partner: { type: Partner.type, resolve: ({ partner }) => partner },
       profile: { type: Profile.type, resolve: ({ profile }) => profile },
