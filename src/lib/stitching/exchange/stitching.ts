@@ -1,5 +1,5 @@
 import { GraphQLSchema } from "graphql"
-import { amountSDL, amount } from "schema/fields/money"
+import { amountSDL, amount } from "schema/v1/fields/money"
 import gql from "lib/gql"
 
 const orderTotals = [

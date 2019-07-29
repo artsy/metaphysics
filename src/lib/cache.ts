@@ -3,8 +3,8 @@ import { isArray } from "lodash"
 import config from "config"
 import { error, verbose } from "./loggers"
 import Memcached from "memcached"
-import { cacheTracer } from "./tracer"
-import { statsClient } from "./stats"
+import { createCacheTracer } from "./tracer"
+import { createStatsClient } from "./stats"
 
 const {
   NODE_ENV,
@@ -79,6 +79,12 @@ function createMemcachedClient() {
 }
 
 export const client = isTest ? createMockClient() : createMemcachedClient()
+
+const cacheTracer: ReturnType<typeof createCacheTracer> = isTest
+  ? { get: x => x, set: x => x, delete: x => x }
+  : createCacheTracer()
+
+const statsClient = isTest ? null : createStatsClient()
 
 function _get<T>(key) {
   return new Promise<T>((resolve, reject) => {

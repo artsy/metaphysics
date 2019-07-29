@@ -10,7 +10,6 @@ import { executableKawsSchema } from "lib/stitching/kaws/schema"
 import { kawsStitchingEnvironment } from "lib/stitching/kaws/stitching"
 import config from "config"
 
-import localSchema from "schema/schema"
 import { GraphQLSchema } from "graphql"
 import { exchangeStitchingEnvironment } from "./exchange/stitching"
 import { executableVortexSchema } from "lib/stitching/vortex/schema"
@@ -19,7 +18,7 @@ import { vortexStitchingEnvironment } from "./vortex/stitching"
 /**
  * Incrementally merges in schemas according to `process.env`
  */
-export const incrementalMergeSchemas = (testConfig?: any) => {
+export const incrementalMergeSchemas = (localSchema, testConfig?: any) => {
   const environment = testConfig || config
 
   const {

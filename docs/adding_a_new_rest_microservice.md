@@ -154,7 +154,7 @@ generate a short-term JWT for your app.
    export default ThreeBody
    ```
 
-   Then add a reference to this in `/schema/services/index.js`.
+   Then add a reference to this in `/schema/v1/services/index.js`.
 
 From here you need to handle the usual work of adding mutations for writing
 data, and updating the schema for reading data. Good luck!

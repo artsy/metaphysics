@@ -9,7 +9,8 @@ require("dotenv").config({
 import fs from "fs"
 import { printSchema } from "graphql/utilities"
 import path from "path"
-import { schema as schemaV1, schemaV2 } from "schema"
+import { schema as schemaV1 } from "schema/v1"
+import { schema as schemaV2 } from "schema/v2"
 import prettier from "prettier"
 import { graphql, introspectionQuery } from "graphql"
 

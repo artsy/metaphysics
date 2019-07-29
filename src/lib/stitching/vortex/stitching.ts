@@ -1,5 +1,5 @@
 import { executableVortexSchema } from "./schema"
-import { amount } from "schema/fields/money"
+import { amount } from "schema/v1/fields/money"
 import { GraphQLSchema } from "graphql/type/schema"
 import gql from "lib/gql"
 import { sortBy } from "lodash"

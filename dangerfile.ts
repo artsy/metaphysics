@@ -5,7 +5,7 @@ import * as prettier from "prettier"
 import * as jsdiff from "diff"
 
 // Grab the built schema to skip all the babel path faff
-import schema from "./build/src/schema"
+import schema from "./build/src/schema/v1"
 
 export default async () => {
   // Rule: encourage all new files to be TypeScript

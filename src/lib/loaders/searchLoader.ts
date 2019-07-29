@@ -1,5 +1,8 @@
 import * as url from "url"
-import { DEFAULT_ENTITIES, SUGGEST_ENTITIES } from "schema/search/SearchEntity"
+import {
+  DEFAULT_ENTITIES,
+  SUGGEST_ENTITIES,
+} from "schema/v1/search/SearchEntity"
 
 const modeMap = {
   AUTOSUGGEST: {

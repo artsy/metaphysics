@@ -3234,7 +3234,7 @@ type City {
     # Whether to include local discovery stubs
     includeStubShows: Boolean
 
-    # Whether to include stub shows or not
+    # [DEPRECATED: prefer includeStubShows] Whether to include stub shows or not
     discoverable: Boolean
     after: String
     first: Int
@@ -7444,7 +7444,7 @@ type Me implements Node {
     first: Int
     before: String
     last: Int
-    completed: Boolean
+    completed: Boolean = true
   ): ConsignmentSubmissionConnection
 
   # A list of the current user’s inquiry requests
