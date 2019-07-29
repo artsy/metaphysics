@@ -59,7 +59,8 @@ export const amount = centsResolver => ({
 
     // Some objects return a currencyCode instead of a symbol.
     const symbolFromCurrencyCode = obj.currencyCode
-      ? currencyCodes[obj.currencyCode.toLowerCase()].symbol
+      ? currencyCodes[obj.currencyCode.toLowerCase()] &&
+        currencyCodes[obj.currencyCode.toLowerCase()].symbol
       : null
 
     const symbol = options.symbol || obj.symbol || symbolFromCurrencyCode

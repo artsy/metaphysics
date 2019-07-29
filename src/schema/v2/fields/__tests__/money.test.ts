@@ -55,4 +55,9 @@ describe(amount, () => {
     obj = { symbol: "£", currencyCode: "GBP" }
     expect(getResult()).toMatchInlineSnapshot(`"$12.34"`)
   })
+
+  it("doesn't break when it can't find a currencyCode", () => {
+    obj = { currencyCode: "BLAH" }
+    expect(getResult()).toMatchInlineSnapshot(`"$12.34"`)
+  })
 })
