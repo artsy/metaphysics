@@ -39,6 +39,9 @@ const ShowSorts = new GraphQLEnumType({
     SORTABLE_NAME_DESC: {
       value: "-sortable_name",
     },
+    PARTNER_ASC: {
+      value: "fully_qualified_name",
+    },
   },
 })
 

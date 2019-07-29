@@ -10200,6 +10200,7 @@ enum ShowSorts {
   FEATURED_DESC
   SORTABLE_NAME_ASC
   SORTABLE_NAME_DESC
+  PARTNER_ASC
 }
 
 enum sort {
