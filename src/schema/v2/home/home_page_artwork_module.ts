@@ -59,11 +59,6 @@ const HomePageArtworkModule: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLString,
       description: "ID of followed artist to target for related artist rails",
     },
-    generic_gene_id: {
-      type: GraphQLString,
-      description:
-        "[DEPRECATED: Favor more specific `generic_gene_id`] ID of generic gene rail to target",
-    },
     id: {
       type: GraphQLString,
       description: "ID of generic gene rail to target",

@@ -6162,9 +6162,6 @@ type HomePage {
     # ID of followed artist to target for related artist rails
     followed_artist_id: String
 
-    # [DEPRECATED: Favor more specific `generic_gene_id`] ID of generic gene rail to target
-    generic_gene_id: String
-
     # ID of generic gene rail to target
     id: String
 
