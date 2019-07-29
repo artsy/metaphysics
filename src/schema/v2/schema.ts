@@ -207,19 +207,6 @@ stitchedMutations.ecommerceAddInitialOfferToOrder = AddInitialOfferToOrderMutati
 stitchedMutations.ecommerceSubmitOrderWithOffer = SubmitOrderWithOfferMutation
 stitchedMutations.ecommerceFixFailedPayment = FixFailedPaymentMutation
 
-// Deprecated
-stitchedRootFields.order = Order
-stitchedRootFields.orders = Orders
-
-// Deprecated
-stitchedMutations.createOrderWithArtwork = CreateOrderWithArtworkMutation
-stitchedMutations.setOrderShipping = SetOrderShippingMutation
-stitchedMutations.setOrderPayment = SetOrderPaymentMutation
-stitchedMutations.approveOrder = ApproveOrderMutation
-stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
-stitchedMutations.rejectOrder = RejectOrderMutation
-stitchedMutations.submitOrder = SubmitOrderMutation
-
 export default new GraphQLSchema({
   allowedLegacyNames: ["__id"],
   mutation: new GraphQLObjectType<any, ResolverContext>({

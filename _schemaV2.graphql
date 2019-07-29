@@ -7401,29 +7401,6 @@ type Mutation {
   ecommerceFixFailedPayment(
     input: FixFailedPaymentInput!
   ): FixFailedPaymentPayload
-
-  # Creates an order with an artwork
-  createOrderWithArtwork(
-    input: CreateOrderWithArtworkInput!
-  ): CreateOrderWithArtworkPayload
-
-  # Sets shipping information for an order
-  setOrderShipping(input: SetOrderShippingInput!): SetOrderShippingPayload
-
-  # Sets payment information on an order
-  setOrderPayment(input: SetOrderPaymentInput!): SetOrderPaymentPayload
-
-  # Approves an order with payment
-  approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
-
-  # Fulfills an Order with one fulfillment by setting this fulfillment to all line items of this order
-  fulfillOrderAtOnce(input: FulfillOrderAtOnceInput!): FulfillOrderAtOncePayload
-
-  # Rejects an order
-  rejectOrder(input: RejectOrderInput!): RejectOrderPayload
-
-  # Submits an order
-  submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
   recordArtworkView(input: RecordArtworkViewInput!): RecordArtworkViewPayload
   commerceAddInitialOfferToOrder(
     input: CommerceAddInitialOfferToOrderInput!
@@ -9055,24 +9032,6 @@ type Query {
 
   # Returns list of orders
   ecommerceOrders(
-    buyerId: String
-    buyerType: String
-    sellerId: String
-    sellerType: String
-    mode: OrderModeEnum
-    state: String
-    sort: OrdersSortMethodType
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): OrderConnection
-
-  # Returns a single Order
-  order(id: String!): Order
-
-  # Returns list of orders
-  orders(
     buyerId: String
     buyerType: String
     sellerId: String
