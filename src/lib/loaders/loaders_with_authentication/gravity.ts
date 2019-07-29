@@ -71,6 +71,7 @@ export default (accessToken, userID, opts) => {
     meLoader: gravityLoader("me"),
     mePartnersLoader: gravityLoader("me/partners"),
     notificationsFeedLoader: gravityLoader("me/notifications/feed"),
+    partnerShowLoader: gravityLoader<any, { partner_id: string, show_id: string }>(({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}`),
     popularArtistsLoader: gravityLoader("artists/popular"),
     recordArtworkViewLoader: gravityLoader("me/recently_viewed_artworks", {}, { method: "POST" }),
     saleArtworksAllLoader: gravityLoader("sale_artworks", {}, { headers: true }),

@@ -663,8 +663,19 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
       description: "The slug or ID of the Show",
     },
+    partnerId: {
+      type: GraphQLString,
+      description: "The slug or ID of the Partner",
+    },
   },
-  resolve: (_root, { id }, { showLoader }) => {
+  resolve: (_root, { id, partnerId }, { showLoader, partnerShowLoader }) => {
+    if (id && partnerId) {
+      return partnerShowLoader({ partner_id: partnerId, show_id: id })
+        .then(show => {
+          return show
+        })
+        .catch(() => null)
+    }
     return showLoader(id)
       .then(show => {
         if (

@@ -282,12 +282,15 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               __typename
               ... on AnalyticsArtwork {
                 entityId
+                partnerId
               }
               ... on AnalyticsShow {
                 entityId
+                partnerId
               }
               ... on AnalyticsArtist {
                 entityId
+                partnerId
               }
             }
           }
@@ -297,6 +300,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           const typename = parent.rankedEntity.__typename
           const fieldName = removeVortexPrefix(typename).toLowerCase()
           const id = parent.rankedEntity.entityId
+          const partnerId = parent.rankedEntity.partnerId
           return info.mergeInfo
             .delegateToSchema({
               schema: localSchema,
@@ -304,6 +308,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               fieldName,
               args: {
                 id,
+                partnerId,
               },
               context,
               info,

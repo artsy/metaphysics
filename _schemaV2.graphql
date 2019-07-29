@@ -46,10 +46,12 @@ type AggregationCount {
 
 type AnalyticsArtist {
   entityId: String!
+  partnerId: String!
 }
 
 type AnalyticsArtwork {
   entityId: String!
+  partnerId: String!
 }
 
 # Publish artwork Series Stats
@@ -464,6 +466,7 @@ union AnalyticsRankedStatsUnion =
 
 type AnalyticsShow {
   entityId: String!
+  partnerId: String!
 }
 
 type AnalyticsVisitorsByCountry {
