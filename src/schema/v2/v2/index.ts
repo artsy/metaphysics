@@ -1,24 +1,6 @@
 import { GraphQLSchema, isNullableType } from "graphql"
-import { transformSchema, FilterTypes } from "graphql-tools"
-import { shouldBeRemoved } from "lib/deprecation"
-import { FilterFields } from "./FilterFields"
+import { transformSchema } from "graphql-tools"
 import { RenameFields } from "./RenameFields"
-
-// TODO: Flip this switch before we go public with v2 and update clients. Until
-//       then this gives clients an extra window of opportunity to update.
-export const FILTER_DEPRECATIONS = false
-
-// These should not show up in v2 at all.
-const FilterTypeNames = [
-  "DoNotUseThisPartner",
-  ...(FILTER_DEPRECATIONS
-    ? [
-        // TODO: These are empty after removing all fields from PartnerShow.
-        "PartnerShow",
-        "ArtworkContextPartnerShow",
-      ]
-    : []),
-]
 
 // TODO: These types should have their id fields renamed to internalID upstream,
 //       but that requires us to do some transformation work _back_ on the v1
@@ -27,12 +9,6 @@ const FilterTypeNames = [
 const StitchedTypePrefixes = [
   "Marketing", // KAWS
   "Commerce", // Exchange
-]
-
-// TODO: What shall we do here? Have them conform to our formal description?
-const SkipDeprecatedFieldsOfTypes = [
-  "AnalyticsPartnerStats",
-  "CommerceLineItem",
 ]
 
 // FIXME: ID fields shouldn't be nullable, so figure out what the deal is with
@@ -65,7 +41,6 @@ export const transformToV2 = (
     allowedGravityTypesWithNullableIDField: KnownGravityTypesWithNullableIDFields,
     allowedNonGravityTypesWithNullableIDField: KnownNonGravityTypesWithNullableIDFields,
     stitchedTypePrefixes: StitchedTypePrefixes,
-    filterTypes: FilterTypeNames,
     ...options,
   }
   const allowedTypesWithNullableIDField = [
@@ -73,9 +48,6 @@ export const transformToV2 = (
     ...opt.allowedNonGravityTypesWithNullableIDField,
   ]
   return transformSchema(schema, [
-    new FilterTypes(type => {
-      return !opt.filterTypes.includes(type.name)
-    }),
     new RenameFields((type, field) => {
       // Only rename ID fields on stitched services.
       if (
@@ -100,20 +72,5 @@ export const transformToV2 = (
         return field.name.substring(3)
       }
     }),
-    ...(FILTER_DEPRECATIONS
-      ? [
-          new FilterFields(
-            (type, field) =>
-              !field.deprecationReason ||
-              (!SkipDeprecatedFieldsOfTypes.includes(type.name) &&
-                !shouldBeRemoved({
-                  inVersion: 2,
-                  deprecationReason: field.deprecationReason,
-                  typeName: type.name,
-                  fieldName: field.name,
-                }))
-          ),
-        ]
-      : []),
   ])
 }
