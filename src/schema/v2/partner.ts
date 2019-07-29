@@ -1,4 +1,4 @@
-import { assign, flatten, omit } from "lodash"
+import { assign, flatten } from "lodash"
 import { exclude, convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
@@ -55,9 +55,6 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
   fields: () => {
-    // Prevent circular dependency
-    const PartnerShows = require("./partner_shows").default
-
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -215,18 +212,19 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_id }, _options, { profileLoader }) =>
           profileLoader(default_profile_id).catch(() => null),
       },
-      shows: {
-        type: PartnerShows.type,
-        args: omit(PartnerShows.args, "partner_id"),
-        resolve: ({ _id }, options) => {
-          return PartnerShows.resolve(
-            null,
-            assign({}, options, {
-              partner_id: _id,
-            })
-          )
-        },
-      },
+      // TODO: Create a connection for this
+      // shows: {
+      //   type: PartnerShows.type,
+      //   args: omit(PartnerShows.args, "partner_id"),
+      //   resolve: ({ _id }, options) => {
+      //     return PartnerShows.resolve(
+      //       null,
+      //       assign({}, options, {
+      //         partner_id: _id,
+      //       })
+      //     )
+      //   },
+      // },
       type: {
         type: GraphQLString,
         resolve: ({ name, type }) => {

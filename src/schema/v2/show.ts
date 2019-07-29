@@ -23,7 +23,7 @@ import Fair from "./fair"
 import { artworkConnection } from "./artwork"
 import Location from "./location"
 import Image, { getDefault, normalizeImageData } from "./image"
-import PartnerShowEventType from "./partner_show_event"
+import ShowEventType from "./show_event"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { filterArtworksWithParams } from "schema/v2/filter_artworks"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
@@ -41,7 +41,7 @@ import {
 import { totalViaLoader } from "lib/total"
 import { find, flatten } from "lodash"
 
-import PartnerShowSorts from "./sorts/partner_show_sorts"
+import ShowSorts from "./sorts/show_sorts"
 import EventStatus from "./input_fields/event_status"
 import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
@@ -310,7 +310,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     end_at: date,
     events: {
       description: "Events from the partner that runs this show",
-      type: new GraphQLList(PartnerShowEventType),
+      type: new GraphQLList(ShowEventType),
       resolve: ({ partner, id }, _options, { partnerShowLoader }) =>
         partnerShowLoader({
           partner_id: partner.id,
@@ -462,9 +462,11 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     },
     nearbyShows: {
       description: "Shows that are near (~75km) from this show",
-      type: showConnection,
+      type: ShowsConnection,
       args: pageable({
-        sort: PartnerShowSorts,
+        sort: {
+          type: ShowSorts,
+        },
         status: {
           type: EventStatus.type,
           defaultValue: "CURRENT",
@@ -621,4 +623,4 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default Show
-export const showConnection = connectionWithCursorInfo(ShowType)
+export const ShowsConnection = connectionWithCursorInfo(ShowType)

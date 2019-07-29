@@ -11,8 +11,7 @@ import Fair from "schema/v2/fair"
 import Sale from "schema/v2/sale"
 import SaleArtwork from "schema/v2/sale_artwork"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
-import PartnerShow from "schema/v2/partner_show"
-import PartnerShowSorts from "schema/v2/sorts/partner_show_sorts"
+import ShowSorts from "schema/v2/sorts/show_sorts"
 import Partner from "schema/v2/partner"
 import Context from "./context"
 import Meta, { artistNames } from "./meta"
@@ -46,7 +45,6 @@ import { capitalizeFirstCharacter } from "lib/helpers"
 import { ResolverContext } from "types/graphql"
 import { listPrice } from "schema/v2/fields/listPrice"
 import Show from "schema/v2/show"
-import ShowSort from "schema/v2/sorts/show_sort"
 import { ArtworkContextGrids } from "./artworkContextGrids"
 
 const has_price_range = price => {
@@ -594,12 +592,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       series: markdown(),
       show: {
-        type: PartnerShow.type,
+        type: Show.type,
         args: {
-          size: { type: GraphQLInt },
           active: { type: GraphQLBoolean },
           at_a_fair: { type: GraphQLBoolean },
-          sort: { type: PartnerShowSorts.type },
+          sort: { type: ShowSorts },
         },
         resolve: (
           { id },
@@ -622,7 +619,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           size: { type: GraphQLInt },
           active: { type: GraphQLBoolean },
           at_a_fair: { type: GraphQLBoolean },
-          sort: { type: ShowSort },
+          sort: { type: ShowSorts },
         },
         resolve: (
           { id },
@@ -641,12 +638,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       shows: {
-        type: new GraphQLList(PartnerShow.type),
+        type: new GraphQLList(Show.type),
         args: {
           size: { type: GraphQLInt },
           active: { type: GraphQLBoolean },
           at_a_fair: { type: GraphQLBoolean },
-          sort: { type: PartnerShowSorts.type },
+          sort: { type: ShowSorts },
         },
         resolve: (
           { id },

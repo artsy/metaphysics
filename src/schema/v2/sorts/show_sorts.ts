@@ -1,7 +1,7 @@
 import { GraphQLEnumType } from "graphql"
 
-const ShowSort = new GraphQLEnumType({
-  name: "ShowSort",
+const ShowSorts = new GraphQLEnumType({
+  name: "ShowSorts",
   values: {
     START_AT_ASC: {
       value: "start_at",
@@ -42,4 +42,4 @@ const ShowSort = new GraphQLEnumType({
   },
 })
 
-export default ShowSort
+export default ShowSorts

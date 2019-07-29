@@ -12,7 +12,7 @@ import Profile from "./profile"
 import Image from "./image"
 import Artist from "./artist"
 import Partner from "./partner"
-import { showConnection } from "./show"
+import { ShowsConnection } from "./show"
 import Location from "./location"
 import { SlugAndInternalIDFields, SlugIDField } from "./object_identification"
 import filterArtworks from "./filter_artworks"
@@ -25,7 +25,7 @@ import {
   GraphQLList,
   GraphQLFieldConfig,
 } from "graphql"
-import ShowSort from "./sorts/show_sort"
+import ShowSorts from "./sorts/show_sorts"
 import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
@@ -230,7 +230,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     shows_connection: {
-      type: showConnection,
+      type: ShowsConnection,
       description:
         "This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.",
       args: pageable({
@@ -239,7 +239,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           description: "Number of artworks to return",
         },
         sort: {
-          type: ShowSort,
+          type: ShowSorts,
           description: "Sorts for shows in a fair",
         },
       }),

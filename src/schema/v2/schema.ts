@@ -50,8 +50,6 @@ import FollowGene from "./me/follow_gene"
 import FollowShow from "./me/follow_show"
 import PartnerCategory from "./partner_category"
 import PartnerCategories from "./partner_categories"
-import PartnerShow from "./partner_show"
-import PartnerShows from "./partner_shows"
 import PopularArtists from "./artists/popular"
 import Sale from "./sale/index"
 import Sales from "./sales"
@@ -143,8 +141,6 @@ const rootFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   partner: Partner,
   partner_categories: PartnerCategories,
   partner_category: PartnerCategory,
-  partner_show: PartnerShow,
-  partner_shows: PartnerShows,
   partners: Partners,
   profile: Profile,
   sale: Sale,

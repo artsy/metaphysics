@@ -9,19 +9,19 @@ import {
 } from "graphql"
 
 import { LatLngType } from "../location"
-import { showConnection, ShowType } from "schema/v2/show"
-import PartnerShowSorts from "schema/v2/sorts/partner_show_sorts"
+import { ShowsConnection, ShowType } from "schema/v2/show"
+import ShowSorts from "schema/v2/sorts/show_sorts"
 import { FairType } from "schema/v2/fair"
 import FairSorts from "schema/v2/sorts/fair_sorts"
 import EventStatus from "schema/v2/input_fields/event_status"
 import cityDataSortedByDisplayPreference from "./cityDataSortedByDisplayPreference.json"
-import { pageable } from "relay-cursor-paging"
+import { pageable, CursorPageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import {
   LOCAL_DISCOVERY_RADIUS_KM,
   NEAREST_CITY_THRESHOLD_KM,
 } from "./constants"
-import { convertConnectionArgsToGravityArgs, CursorPageable } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import Near from "schema/v2/input_fields/near"
 import { LatLng, Point, distance } from "lib/geospatial"
 import { ResolverContext } from "types/graphql"
@@ -56,9 +56,11 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
       type: LatLngType,
     },
     shows: {
-      type: showConnection,
+      type: ShowsConnection,
       args: pageable({
-        sort: PartnerShowSorts,
+        sort: {
+          type: ShowSorts,
+        },
         status: {
           type: EventStatus.type,
           defaultValue: "CURRENT",
@@ -132,9 +134,11 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
             },
           },
           shows: {
-            type: showConnection,
+            type: ShowsConnection,
             args: pageable({
-              sort: PartnerShowSorts,
+              sort: {
+                type: ShowSorts,
+              },
               status: EventStatus,
             }),
             resolve: async (

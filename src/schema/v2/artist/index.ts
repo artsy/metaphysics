@@ -24,7 +24,7 @@ import {
   partnersForArtist,
 } from "schema/v2/partner_artist"
 import { GeneType } from "../gene"
-import Show, { showConnection } from "schema/v2/show"
+import Show from "schema/v2/show"
 import Sale from "schema/v2/sale/index"
 import ArtworkSorts from "schema/v2/sorts/artwork_sorts"
 import ArticleSorts from "schema/v2/sorts/article_sorts"
@@ -45,7 +45,7 @@ import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { Related } from "./related"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import {
-  ShowField,
+  ShowsField,
   showsWithBLacklistedPartnersRemoved,
   ShowsConnectionField,
 } from "./shows"
@@ -627,8 +627,8 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             })
           ),
       },
-      shows: { ...ShowField, type: new GraphQLList(Show.type) },
-      showsConnection: { ...ShowsConnectionField, type: showConnection },
+      shows: ShowsField,
+      showsConnection: ShowsConnectionField,
       sortable_id: {
         type: GraphQLString,
         description:

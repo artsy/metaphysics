@@ -16,24 +16,8 @@ import {
 } from "lodash"
 import now from "performance-now"
 import { stringify } from "qs"
-import { getPagingParameters } from "relay-cursor-paging"
+import { getPagingParameters, CursorPageable } from "relay-cursor-paging"
 import { formatMarkdownValue } from "schema/v1/fields/markdown"
-
-// These are copied from the relay-cursor-paging lib
-// https://github.com/darthtrevino/relay-cursor-paging/blob/master/src/interfaces.ts
-export interface PagingParameters {
-  offset: number
-  limit: number
-}
-export interface CursorPageable {
-  // Backward Paging Arguments
-  before?: string
-  last?: number
-
-  // Forward Paging Arguments
-  after?: string
-  first?: number
-}
 
 const loadNs = now()
 const loadMs = Date.now()
@@ -120,9 +104,7 @@ export const queryContainsField = (fieldASTs, soughtField) => {
 export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
   options: T
 ) => {
-  const { limit: size, offset } = getPagingParameters(
-    options
-  ) as PagingParameters
+  const { limit: size, offset } = getPagingParameters(options)
   const page = Math.round((size + offset) / size)
   const gravityArgs = omit(options, ["first", "after", "last", "before"])
   return Object.assign({}, { page, size, offset }, gravityArgs)

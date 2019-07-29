@@ -18,10 +18,7 @@ const isOlderEmissionVersion = (userAgent: string | string[]): boolean => {
   return result
 }
 
-const dateFieldForPartnerShowEvent: GraphQLFieldConfig<
-  DateSource,
-  ResolverContext
-> = {
+const dateFieldForShowEvent: GraphQLFieldConfig<DateSource, ResolverContext> = {
   ...dateField,
   resolve: (
     obj,
@@ -41,8 +38,8 @@ const dateFieldForPartnerShowEvent: GraphQLFieldConfig<
   },
 }
 
-const PartnerShowEventType = new GraphQLObjectType<any, ResolverContext>({
-  name: "PartnerShowEventType",
+const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
+  name: "ShowEventType",
   fields: {
     event_type: {
       type: GraphQLString,
@@ -56,8 +53,8 @@ const PartnerShowEventType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: GraphQLString,
     },
-    start_at: dateFieldForPartnerShowEvent,
-    end_at: dateFieldForPartnerShowEvent,
+    start_at: dateFieldForShowEvent,
+    end_at: dateFieldForShowEvent,
     dateTimeRange: {
       type: GraphQLString,
       description: "A formatted description of the dates with hours",
@@ -72,4 +69,4 @@ const PartnerShowEventType = new GraphQLObjectType<any, ResolverContext>({
   },
 })
 
-export default PartnerShowEventType
+export default ShowEventType

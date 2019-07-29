@@ -15,13 +15,13 @@ import { FairType } from "schema/v1/fair"
 import FairSorts from "schema/v1/sorts/fair_sorts"
 import EventStatus from "schema/v1/input_fields/event_status"
 import cityDataSortedByDisplayPreference from "./cityDataSortedByDisplayPreference.json"
-import { pageable } from "relay-cursor-paging"
+import { pageable, CursorPageable } from "relay-cursor-paging"
 import { connectionFromArraySlice } from "graphql-relay"
 import {
   LOCAL_DISCOVERY_RADIUS_KM,
   NEAREST_CITY_THRESHOLD_KM,
 } from "./constants"
-import { convertConnectionArgsToGravityArgs, CursorPageable } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import Near from "schema/v1/input_fields/near"
 import { LatLng, Point, distance } from "lib/geospatial"
 import { ResolverContext } from "types/graphql"
@@ -30,7 +30,6 @@ import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
 import { sponsoredContentForCity } from "lib/sponsoredContent"
-import { deprecate } from "lib/deprecation"
 
 const PartnerShowPartnerType = new GraphQLEnumType({
   name: "PartnerShowPartnerType",
@@ -80,11 +79,8 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
         },
         discoverable: {
           type: GraphQLBoolean,
-          description: "Whether to include stub shows or not",
-          deprecationReason: deprecate({
-            inVersion: 2,
-            preferUsageOf: "includeStubShows",
-          }),
+          description:
+            "[DEPRECATED: prefer includeStubShows] Whether to include stub shows or not",
         },
       }),
       resolve: async (city, args, { showsWithHeadersLoader }) =>

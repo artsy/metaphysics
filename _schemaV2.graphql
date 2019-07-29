@@ -758,7 +758,7 @@ type Artist implements Node & Searchable {
     status: String
     top_tier: Boolean
     visible_to_public: Boolean
-    sort: PartnerShowSorts
+    sort: ShowSorts
   ): [Show]
   showsConnection(
     active: Boolean
@@ -771,7 +771,7 @@ type Artist implements Node & Searchable {
     status: String
     top_tier: Boolean
     visible_to_public: Boolean
-    sort: PartnerShowSorts
+    sort: ShowSorts
     after: String
     first: Int
     before: String
@@ -1095,7 +1095,7 @@ type ArtistItem implements Node & Searchable {
     status: String
     top_tier: Boolean
     visible_to_public: Boolean
-    sort: PartnerShowSorts
+    sort: ShowSorts
   ): [Show]
   showsConnection(
     active: Boolean
@@ -1108,7 +1108,7 @@ type ArtistItem implements Node & Searchable {
     status: String
     top_tier: Boolean
     visible_to_public: Boolean
-    sort: PartnerShowSorts
+    sort: ShowSorts
     after: String
     first: Int
     before: String
@@ -1311,13 +1311,8 @@ type Artwork implements Node & Searchable & Sellable {
   sale_artwork(sale_id: String = null): SaleArtwork
   sale_message: String
   series(format: Format): String
-  show(
-    size: Int
-    active: Boolean
-    at_a_fair: Boolean
-    sort: PartnerShowSorts
-  ): PartnerShow
-  shows(size: Int, active: Boolean, at_a_fair: Boolean, sort: ShowSort): [Show]
+  show(active: Boolean, at_a_fair: Boolean, sort: ShowSorts): Show
+  shows(size: Int, active: Boolean, at_a_fair: Boolean, sort: ShowSorts): [Show]
   signature(format: Format): String
   title: String
 
@@ -1544,7 +1539,7 @@ type ArtworkContextFair {
     section: String
 
     # Sorts for shows in a fair
-    sort: ShowSort
+    sort: ShowSorts
     after: String
     first: Int
     before: String
@@ -1637,48 +1632,19 @@ interface ArtworkContextGrid {
 type ArtworkContextPartnerShow implements Node {
   # A globally unique ID.
   id: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
 
   # A slug ID.
   slug: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
 
   # A type-specific ID likely used as a database ID.
   internalID: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
   cached: Int
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # The Artists presenting in this show
   artists: [Artist]
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
 
   # The artworks featured in the show
-  artworks(
-    # List of artwork IDs to exclude from the response (irrespective of size)
-    exclude: [String]
-    for_sale: Boolean = false
-    published: Boolean = true
-    all: Boolean
-    page: Int = 1
-
-    # Number of artworks to return
-    size: Int = 25
-  ): [Artwork]
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-
-  # A connection of artworks featured in the show
-  artworksConnection(
+  artworks_connection(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
     for_sale: Boolean = false
@@ -1688,57 +1654,88 @@ type ArtworkContextPartnerShow implements Node {
     before: String
     last: Int
   ): ArtworkConnection
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  counts: PartnerShowCounts
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  cover_image: Image
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  created_at(
-    format: String
 
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+  # Artists inside the show who do not have artworks present
+  artists_without_artworks: [Artist]
+
+  # Artists in the show grouped by last name
+  artists_grouped_by_name: [ArtistGroup]
+
+  # The general city, derived from a fair location, a show location or a potential city
+  city: String
+
+  # The image you should use to represent this show
+  cover_image: Image
+
+  # An object that represents some of the numbers you might want to highlight
+  counts: ShowCounts
+
+  # A description of the show
   description: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
   end_at(
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  events: [PartnerShowEventType]
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Events from the partner that runs this show
+  events: [ShowEventType]
 
   # A formatted description of the start to end dates
   exhibition_period: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # If the show is in a Fair, then that fair
   fair: Fair
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Artworks Elastic Search results
+  filteredArtworks(
+    acquireable: Boolean
+    offerable: Boolean
+    aggregation_partner_cities: [String]
+    aggregations: [ArtworkAggregation]
+    artist_id: String
+    artist_ids: [String]
+    at_auction: Boolean
+    attribution_class: [String]
+    color: String
+    dimension_range: String
+    extra_aggregation_gene_ids: [String]
+    include_artworks_by_followed_artists: Boolean
+    include_medium_filter_in_aggregation: Boolean
+    inquireable_only: Boolean
+    for_sale: Boolean
+    gene_id: String
+    gene_ids: [String]
+    height: String
+    width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
+    # A string from the list of allocations, or * to denote all mediums
+    medium: String
+    period: String
+    periods: [String]
+    major_periods: [String]
+    partner_id: ID
+    partner_cities: [String]
+    price_range: String
+    page: Int
+    sale_id: ID
+    size: Int
+    sort: String
+    tag_id: String
+    keyword: String
+
+    # When true, will only return exact keyword match
+    keyword_match_exact: Boolean
+  ): FilterArtworks
+
+  # A path to the show on Artsy
   href: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Images that represent the show, you may be interested in meta_image or cover_image for a definitive thumbnail
   images(
     # Number of images to return
     size: Int
@@ -1747,81 +1744,94 @@ type ArtworkContextPartnerShow implements Node {
     default: Boolean
     page: Int
   ): [Image]
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
 
   # Flag showing if show has any location.
   has_location: Boolean
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
 
   # Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.
   is_active: Boolean
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Is this something we can display to the front-end?
   is_displayable: Boolean
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Does the show exist as a fair booth?
   is_fair_booth: Boolean
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Is it a show provided for historical reference?
+  is_reference: Boolean
+
+  # Is it an outsourced local discovery stub show?
+  isStubShow: Boolean
+
+  # Whether the show is in a fair, group or solo
   kind: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Where the show is located (Could also be a fair location)
   location: Location
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # An image representing the show, or a sharable image from an artwork in the show
   meta_image: Image
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Is the user following this show
+  is_followed: Boolean
 
   # The exhibition title
   name: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  partner: Partner
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Shows that are near (~75km) from this show
+  nearbyShows(
+    sort: ShowSorts
+
+    # By default show only current shows
+    status: EventStatus = CURRENT
+
+    # Whether to include local discovery stubs as well as displayable shows
+    discoverable: Boolean
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ShowConnection
+
+  # Alternate Markdown-supporting free text representation of the opening reception event’s date/time
+  openingReceptionText: String
+
+  # The partner that represents this show, could be a non-Artsy partner
+  partner: PartnerTypes
+
+  # The press release for this show
   press_release(format: Format): String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Link to the press release for this show
+  pressReleaseUrl: String
+
+  # When this show starts
   start_at(
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Is this show running, upcoming or closed?
   status: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
 
   # A formatted update on upcoming status changes
   status_update(
     # Before this many days no update will be generated
     max_days: Int
   ): String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # Is it a fair booth or a show?
   type: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
+
+  # A Connection of followed artists by current user for this show
+  followedArtists(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ShowFollowArtistConnection
 }
 
 type ArtworkContextSale implements Node {
@@ -2236,13 +2246,8 @@ type ArtworkItem implements Node & Searchable & Sellable {
   sale_artwork(sale_id: String = null): SaleArtwork
   sale_message: String
   series(format: Format): String
-  show(
-    size: Int
-    active: Boolean
-    at_a_fair: Boolean
-    sort: PartnerShowSorts
-  ): PartnerShow
-  shows(size: Int, active: Boolean, at_a_fair: Boolean, sort: ShowSort): [Show]
+  show(active: Boolean, at_a_fair: Boolean, sort: ShowSorts): Show
+  shows(size: Int, active: Boolean, at_a_fair: Boolean, sort: ShowSorts): [Show]
   signature(format: Format): String
   title: String
 
@@ -2922,7 +2927,7 @@ type City {
   name: String
   coordinates: LatLng
   shows(
-    sort: PartnerShowSorts
+    sort: ShowSorts
 
     # Filter shows by chronological event status
     status: EventStatus = CURRENT
@@ -2956,7 +2961,7 @@ type CitySponsoredContent {
   artGuideUrl: String
   featuredShows: [Show]
   shows(
-    sort: PartnerShowSorts
+    sort: ShowSorts
     status: EventStatus
     after: String
     first: Int
@@ -5001,7 +5006,7 @@ type Fair {
     section: String
 
     # Sorts for shows in a fair
-    sort: ShowSort
+    sort: ShowSorts
     after: String
     first: Int
     before: String
@@ -5988,7 +5993,7 @@ type HighlightedShow implements Node {
   ): String
 
   # Events from the partner that runs this show
-  events: [PartnerShowEventType]
+  events: [ShowEventType]
 
   # A formatted description of the start to end dates
   exhibition_period: String
@@ -6088,7 +6093,7 @@ type HighlightedShow implements Node {
 
   # Shows that are near (~75km) from this show
   nearbyShows(
-    sort: PartnerShowSorts
+    sort: ShowSorts
 
     # By default show only current shows
     status: EventStatus = CURRENT
@@ -6346,7 +6351,7 @@ type HomePageModuleContextFair {
     section: String
 
     # Sorts for shows in a fair
-    sort: ShowSort
+    sort: ShowSorts
     after: String
     first: Int
     before: String
@@ -6986,7 +6991,7 @@ type Me implements Node {
     first: Int
     before: String
     last: Int
-    completed: Boolean
+    completed: Boolean = true
   ): ConsignmentSubmissionConnection
 
   # A list of the current user’s inquiry requests
@@ -8320,22 +8325,6 @@ type Partner implements Node {
   locations(size: Int = 25): [Location]
   name: String
   profile: Profile
-  shows(
-    at_a_fair: Boolean
-    displayable: Boolean = true
-    fair_id: String
-    featured: Boolean
-
-    #
-    #         Only return shows matching specified ids.
-    #         Accepts list of ids.
-    #
-    ids: [String]
-    near: Near
-    size: Int
-    sort: PartnerShowSorts
-    status: EventStatus
-  ): [PartnerShow]
   type: String
 
   # The gallery partner's web address
@@ -8542,249 +8531,9 @@ type PartnersAggregationResults {
   slice: PartnersAggregation
 }
 
-type PartnerShow implements Node {
-  # A globally unique ID.
-  id: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-
-  # A slug ID.
-  slug: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  cached: Int
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  artists: [Artist]
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-
-  # The artworks featured in the show
-  artworks(
-    # List of artwork IDs to exclude from the response (irrespective of size)
-    exclude: [String]
-    for_sale: Boolean = false
-    published: Boolean = true
-    all: Boolean
-    page: Int = 1
-
-    # Number of artworks to return
-    size: Int = 25
-  ): [Artwork]
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-
-  # A connection of artworks featured in the show
-  artworksConnection(
-    # List of artwork IDs to exclude from the response (irrespective of size)
-    exclude: [String]
-    for_sale: Boolean = false
-    published: Boolean = true
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): ArtworkConnection
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  counts: PartnerShowCounts
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  cover_image: Image
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  created_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  description: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  end_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  events: [PartnerShowEventType]
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-
-  # A formatted description of the start to end dates
-  exhibition_period: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  fair: Fair
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  href: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  images(
-    # Number of images to return
-    size: Int
-
-    # Pass true/false to include cover or not
-    default: Boolean
-    page: Int
-  ): [Image]
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-
-  # Flag showing if show has any location.
-  has_location: Boolean
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-
-  # Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.
-  is_active: Boolean
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  is_displayable: Boolean
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  is_fair_booth: Boolean
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  kind: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  location: Location
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  meta_image: Image
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-
-  # The exhibition title
-  name: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  partner: Partner
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  press_release(format: Format): String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  start_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  status: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-
-  # A formatted update on upcoming status changes
-  status_update(
-    # Before this many days no update will be generated
-    max_days: Int
-  ): String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-  type: String
-    @deprecated(
-      reason: "The `PartnerShow` type has been deprecated. Prefer to use the `Show` type instead. [Will be removed in v2]"
-    )
-}
-
-type PartnerShowCounts {
-  artworks(
-    # The slug or ID of an artist in the show.
-    artist_id: String
-  ): Int
-  eligible_artworks(
-    # Returns a `String` when format is specified. e.g.`'0,0.0000''`
-    format: String
-    label: String
-  ): FormattedNumber
-}
-
-type PartnerShowEventType {
-  event_type: String
-  description: String
-  title: String
-  start_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-  end_at(
-    format: String
-
-    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
-    timezone: String
-  ): String
-
-  # A formatted description of the dates with hours
-  dateTimeRange: String
-
-  # A formatted description of the start to end dates
-  exhibitionPeriod: String
-}
-
 enum PartnerShowPartnerType {
   GALLERY
   MUSEUM
-}
-
-enum PartnerShowSorts {
-  CREATED_AT_ASC
-  CREATED_AT_DESC
-  END_AT_ASC
-  END_AT_DESC
-  NAME_ASC
-  NAME_DESC
-  PUBLISH_AT_ASC
-  PUBLISH_AT_DESC
-  START_AT_ASC
-  START_AT_DESC
-  PARTNER_ASC
 }
 
 enum PartnersSortType {
@@ -9139,31 +8888,6 @@ type Query {
     # The slug or ID of the PartnerCategory
     id: String!
   ): PartnerCategory
-
-  # A Partner Show
-  partner_show(
-    # The slug or ID of the PartnerShow
-    id: String!
-  ): PartnerShow
-
-  # A list of PartnerShows
-  partner_shows(
-    at_a_fair: Boolean
-    displayable: Boolean = true
-    fair_id: String
-    featured: Boolean
-
-    #
-    #         Only return shows matching specified ids.
-    #         Accepts list of ids.
-    #
-    ids: [String]
-    near: Near
-    partner_id: String
-    size: Int
-    sort: PartnerShowSorts
-    status: EventStatus
-  ): [PartnerShow]
 
   # A list of Partners
   partners(
@@ -10262,7 +9986,7 @@ type Show implements Node {
   ): String
 
   # Events from the partner that runs this show
-  events: [PartnerShowEventType]
+  events: [ShowEventType]
 
   # A formatted description of the start to end dates
   exhibition_period: String
@@ -10362,7 +10086,7 @@ type Show implements Node {
 
   # Shows that are near (~75km) from this show
   nearbyShows(
-    sort: PartnerShowSorts
+    sort: ShowSorts
 
     # By default show only current shows
     status: EventStatus = CURRENT
@@ -10461,6 +10185,30 @@ type ShowEdge {
   cursor: String!
 }
 
+type ShowEventType {
+  event_type: String
+  description: String
+  title: String
+  start_at(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+  end_at(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
+
+  # A formatted description of the dates with hours
+  dateTimeRange: String
+
+  # A formatted description of the start to end dates
+  exhibitionPeriod: String
+}
+
 type ShowFollowArtist {
   artist: Artist
 }
@@ -10483,7 +10231,7 @@ type ShowFollowArtistEdge {
   cursor: String!
 }
 
-enum ShowSort {
+enum ShowSorts {
   START_AT_ASC
   START_AT_DESC
   END_AT_ASC
@@ -11168,31 +10916,6 @@ type Viewer {
     # The slug or ID of the PartnerCategory
     id: String!
   ): PartnerCategory
-
-  # A Partner Show
-  partner_show(
-    # The slug or ID of the PartnerShow
-    id: String!
-  ): PartnerShow
-
-  # A list of PartnerShows
-  partner_shows(
-    at_a_fair: Boolean
-    displayable: Boolean = true
-    fair_id: String
-    featured: Boolean
-
-    #
-    #         Only return shows matching specified ids.
-    #         Accepts list of ids.
-    #
-    ids: [String]
-    near: Near
-    partner_id: String
-    size: Int
-    sort: PartnerShowSorts
-    status: EventStatus
-  ): [PartnerShow]
 
   # A list of Partners
   partners(
