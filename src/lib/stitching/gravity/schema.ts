@@ -3,6 +3,8 @@ import {
   makeRemoteExecutableSchema,
   transformSchema,
   FilterTypes,
+  RenameTypes,
+  RenameRootFields,
 } from "graphql-tools"
 import { readFileSync } from "fs"
 
@@ -24,7 +26,6 @@ export const executableGravitySchema = () => {
     "ArtworkEdge",
     "ArtworkConnection",
     "ArtistConnection",
-    "Partner",
   ]
 
   // Return the new modified schema
@@ -32,6 +33,28 @@ export const executableGravitySchema = () => {
     // Remove types which Metaphysics handles better
     new FilterTypes(type => {
       return !removeTypes.includes(type.name)
+    }),
+    // So, we cannot remove all of the types from a schema is a lesson I have
+    // learned in creating these transformations. This means that there has to
+    // be at least one type still inside the Schema (excluding the Mutation or
+    // the Query)
+    // When Partner was removed, we'd see this error
+    // https://github.com/graphcool/graphql-import/issues/73
+    // but I don't think we're exhibiting the same bug.
+    new RenameTypes(name => {
+      if (name === "Partner") {
+        return "DoNotUseThisPartner"
+      }
+      return name
+    }),
+    // We have the same restrictions for root, so let's prefix
+    // for now
+    new RenameRootFields((type, name, _field) => {
+      if (type === "Query") {
+        return `_unused_gravity_${name}`
+      } else {
+        return name
+      }
     }),
   ])
 }

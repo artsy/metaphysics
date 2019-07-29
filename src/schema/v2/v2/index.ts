@@ -1,6 +1,12 @@
 import { GraphQLSchema, isNullableType } from "graphql"
-import { transformSchema } from "graphql-tools"
+import { transformSchema, FilterTypes } from "graphql-tools"
 import { RenameFields } from "./RenameFields"
+
+// These should not show up in v2 at all.
+//
+// TODO: Move the filtering out of this type to the place where Gravity is
+//       stitched in and thus also apply it to v1.
+const FilterTypeNames = ["DoNotUseThisPartner"]
 
 // TODO: These types should have their id fields renamed to internalID upstream,
 //       but that requires us to do some transformation work _back_ on the v1
@@ -41,6 +47,7 @@ export const transformToV2 = (
     allowedGravityTypesWithNullableIDField: KnownGravityTypesWithNullableIDFields,
     allowedNonGravityTypesWithNullableIDField: KnownNonGravityTypesWithNullableIDFields,
     stitchedTypePrefixes: StitchedTypePrefixes,
+    filterTypes: FilterTypeNames,
     ...options,
   }
   const allowedTypesWithNullableIDField = [
@@ -48,6 +55,9 @@ export const transformToV2 = (
     ...opt.allowedNonGravityTypesWithNullableIDField,
   ]
   return transformSchema(schema, [
+    new FilterTypes(type => {
+      return !opt.filterTypes.includes(type.name)
+    }),
     new RenameFields((type, field) => {
       // Only rename ID fields on stitched services.
       if (
