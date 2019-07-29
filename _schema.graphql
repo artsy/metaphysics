@@ -5176,19 +5176,6 @@ type dimensions {
   cm: String
 }
 
-type DoNotUseThisPartner {
-  displayName: String
-  display_name: String @deprecated(reason: "Use displayName")
-  givenName: String
-  given_name: String @deprecated(reason: "Use givenName")
-  id: ID!
-  relativeSize: Int
-  relative_size: Int @deprecated(reason: "Use relativeSize")
-  slug: String
-  subscriptionState: String
-  subscription_state: String @deprecated(reason: "Use subscriptionState")
-}
-
 type EcommerceError {
   # The error message
   type: String!
@@ -10005,25 +9992,6 @@ type Query {
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
-
-  # Autocomplete resolvers.
-  _unused_gravity_matchPartners(
-    matchType: String
-    page: Int = 1
-    size: Int = 5
-    term: String!
-  ): [DoNotUseThisPartner!]
-
-  # Autocomplete resolvers.
-  _unused_gravity_match_partners(
-    match_type: String
-    page: Int = 1
-    size: Int = 5
-    term: String!
-  ): [DoNotUseThisPartner!] @deprecated(reason: "Use matchPartners")
-
-  # Find partners by IDs
-  _unused_gravity_partners(ids: [ID!]!): [DoNotUseThisPartner!]
 
   # Find list of competing orders
   commerceCompetingOrders(
