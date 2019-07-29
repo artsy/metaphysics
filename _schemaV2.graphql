@@ -2513,7 +2513,7 @@ type Bidder {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID likely used as a database ID.
+  # A type-specific ID.
   internalID: ID!
   created_at(
     format: String
@@ -4665,7 +4665,7 @@ type CreditCard {
   # A globally unique ID.
   id: ID!
 
-  # A type-specific ID likely used as a database ID.
+  # A type-specific ID.
   internalID: ID!
 
   # Brand of credit card
