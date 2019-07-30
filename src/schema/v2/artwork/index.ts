@@ -15,7 +15,7 @@ import ShowSorts from "schema/v2/sorts/show_sorts"
 import Partner from "schema/v2/partner"
 import Context from "./context"
 import Meta, { artistNames } from "./meta"
-import Highlight from "./highlight"
+import { ArtworkHighlightType } from "./highlight"
 import Dimensions from "schema/v2/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
 import { Sellable } from "schema/v2/sellable"
@@ -216,7 +216,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       highlights: {
-        type: new GraphQLList(Highlight),
+        type: new GraphQLList(ArtworkHighlightType),
         description: "Returns the highlighted shows and articles",
         resolve: (
           { id, _id },

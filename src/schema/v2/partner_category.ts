@@ -1,36 +1,42 @@
 import _ from "lodash"
 import cached from "./fields/cached"
-import Partners from "./partners"
-import CategoryType from "./input_fields/category_type"
+import PartnerCategoryTypeEnum from "./input_fields/partner_category_type"
 import { SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLString,
   GraphQLObjectType,
   GraphQLNonNull,
   GraphQLFieldConfig,
+  GraphQLBoolean,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
+export const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
   name: "PartnerCategory",
-  fields: () => ({
-    ...SlugAndInternalIDFields,
-    cached,
-    category_type: CategoryType,
-    name: {
-      type: GraphQLString,
-    },
-    partners: {
-      type: Partners.type,
-      args: Partners.args,
-      resolve: ({ id }, options, { partnersLoader }) =>
-        partnersLoader(
-          _.defaults(options, {
-            partner_categories: [id],
-          })
-        ),
-    },
-  }),
+  fields: () => {
+    const Partners = require("./partners").default
+    return {
+      ...SlugAndInternalIDFields,
+      cached,
+      category_type: PartnerCategoryTypeEnum,
+      name: {
+        type: GraphQLString,
+      },
+      internal: {
+        type: GraphQLBoolean,
+      },
+      partners: {
+        type: Partners.type,
+        args: Partners.args,
+        resolve: ({ id }, options, { partnersLoader }) =>
+          partnersLoader(
+            _.defaults(options, {
+              partner_categories: [id],
+            })
+          ),
+      },
+    }
+  },
 })
 
 const PartnerCategory: GraphQLFieldConfig<void, ResolverContext> = {

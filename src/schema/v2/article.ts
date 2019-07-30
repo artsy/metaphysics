@@ -14,7 +14,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const ArticleType = new GraphQLObjectType<any, ResolverContext>({
+export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
   interfaces: [NodeInterface],
   fields: () => ({

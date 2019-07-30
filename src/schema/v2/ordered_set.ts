@@ -1,5 +1,5 @@
 import cached from "./fields/cached"
-import ItemType from "./item"
+import { OrderedSetItemType } from "./item"
 import { IDFields } from "./object_identification"
 import {
   GraphQLString,
@@ -25,7 +25,7 @@ const OrderedSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     items: {
-      type: new GraphQLList(ItemType),
+      type: new GraphQLList(OrderedSetItemType),
       resolve: ({ id, item_type }, _options, { setItemsLoader }) => {
         return setItemsLoader(id).then(items => {
           return items.map(item => {

@@ -20,10 +20,10 @@ import {
 
 const RESULTS_SIZE = 20
 
-const moduleResults: HomePageArtworkModuleResolvers = {
+const moduleResults: HomePageArtworkModuleResolvers<any> = {
   active_bids: ({ lotStandingLoader }) => activeSaleArtworks(lotStandingLoader),
   current_fairs: ({ fairsLoader, filterArtworksLoader }) => {
-    return featuredFair(fairsLoader).then<any[] | undefined>(fair => {
+    return featuredFair(fairsLoader).then<any[] | null>(fair => {
       if (fair) {
         return filterArtworksLoader({
           fair_id: fair.id,
@@ -33,7 +33,7 @@ const moduleResults: HomePageArtworkModuleResolvers = {
           return slice(shuffle(hits), 0, RESULTS_SIZE)
         })
       } else {
-        return undefined
+        return null
       }
     })
   },

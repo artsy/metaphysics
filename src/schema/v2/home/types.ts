@@ -99,9 +99,9 @@ export function isGenericGeneArtworkModuleParams(
   return !!params && params.hasOwnProperty("gene_id")
 }
 
-export interface HomePageArtworkModuleResolvers {
+export interface HomePageArtworkModuleResolvers<T> {
   [field: string]: (
     context: ResolverContext,
     params: HomePageArtworkModuleDetails["params"]
-  ) => {} | null
+  ) => T | Promise<T | null> | null
 }
