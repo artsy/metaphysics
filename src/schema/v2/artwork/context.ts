@@ -68,8 +68,7 @@ const Context: GraphQLFieldConfig<any, ResolverContext> = {
       .then(first)
       .then(show => {
         if (!show) return null
-        // FIXME: Update this to `Show`?
-        return assign({ context_type: "PartnerShow" }, show)
+        return assign({ context_type: "Show" }, show)
       })
 
     return Promise.all([
