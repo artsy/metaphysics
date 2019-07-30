@@ -526,7 +526,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         deprecationReason: deprecate({
           inVersion: 2,
-          preferUsageOf: "sale_message",
+          preferUsageOf: "listPrice",
         }),
       },
       priceCents: {

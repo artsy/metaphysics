@@ -29,7 +29,7 @@ export const Sellable = new GraphQLInterfaceType({
       type: GraphQLString,
       deprecationReason: deprecate({
         inVersion: 2,
-        preferUsageOf: "sale_message",
+        preferUsageOf: "listPrice",
       }),
     },
     sale_message: {
