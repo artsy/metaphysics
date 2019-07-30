@@ -3028,7 +3028,7 @@ type CommercePageInfo {
 }
 
 type CommercePartner {
-  internalID: String!
+  id: String!
   type: String!
 }
 
@@ -3214,7 +3214,7 @@ type CommerceSubmitPendingOfferPayload {
 }
 
 type CommerceUser {
-  internalID: String!
+  id: String!
 }
 
 input ConfirmPickupInput {

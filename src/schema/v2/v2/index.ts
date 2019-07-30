@@ -1,6 +1,7 @@
 import { GraphQLSchema, isNullableType } from "graphql"
 import { transformSchema, FilterTypes } from "graphql-tools"
 import { RenameFields } from "./RenameFields"
+import { FilterFields } from "./FilterFields"
 
 // These should not show up in v2 at all.
 //
@@ -14,7 +15,6 @@ const FilterTypeNames = ["DoNotUseThisPartner"]
 //       later time.
 const StitchedTypePrefixes = [
   "Marketing", // KAWS
-  "Commerce", // Exchange
 ]
 
 // FIXME: ID fields shouldn't be nullable, so figure out what the deal is with
@@ -58,6 +58,17 @@ export const transformToV2 = (
     new FilterTypes(type => {
       return !opt.filterTypes.includes(type.name)
     }),
+    // Filter out `id` fields from Exchange types
+    new FilterFields(
+      (type, field) =>
+        !type.name.startsWith("Commerce") ||
+        // TODO: These two exchange types are only meant for stitching and
+        //       should simply be filtered out after stitching, but I don't want
+        //       to make such a large sweeping change right now.
+        type.name === "CommercePartner" ||
+        type.name === "CommerceUser" ||
+        field.name !== "id"
+    ),
     new RenameFields((type, field) => {
       // Only rename ID fields on stitched services.
       if (
