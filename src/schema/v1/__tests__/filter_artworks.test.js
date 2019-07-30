@@ -66,14 +66,14 @@ describe("Filter Artworks", () => {
 
     it("returns a connection, and makes one gravity call", () => {
       const query = `
-        {
+        query GeneFilter($count: Int, $cursor: String) {
           gene(id: "500-1000-ce") {
             name
-            filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true){
+            filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true) {
               hits {
                 id
               }
-              artworks_connection(first: 10, after: "") { 
+              artworks_connection(first: $count, after: $cursor) {
                 edges {
                   node {
                     id
@@ -85,7 +85,11 @@ describe("Filter Artworks", () => {
         }
       `
 
-      return runQuery(query, context).then(
+      const variableValues = {
+        count: 10,
+        cursor: "",
+      }
+      return runQuery(query, context, variableValues).then(
         ({
           gene: {
             filtered_artworks: {
