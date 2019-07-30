@@ -1,8 +1,8 @@
-import { map, omit, keys, create, assign } from "lodash"
+import { map, omit, keys } from "lodash"
 import { isExisty } from "lib/helpers"
 import Artwork from "./artwork"
 import Artist from "./artist"
-import Tag from "./tag"
+import { TagType } from "./tag"
 import numeral from "./fields/numeral"
 import {
   computeTotalPages,
@@ -29,27 +29,22 @@ import {
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
-
 import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import {
   includesFieldsOtherThanSelectionSet,
   parseConnectionArgsFromConnection,
 } from "lib/hasFieldSelection"
+import { GeneType } from "./gene"
 
-const ArtworkFilterTagType = create(Tag.type, {
-  name: "ArtworkFilterTag",
-  isTypeOf: ({ context_type }) => context_type === "Tag",
-})
+interface ContextSource {
+  context_type: GraphQLObjectType<any, ResolverContext>
+}
 
-const ArtworkFilterGeneType = create(Tag.type, {
-  name: "ArtworkFilterGene",
-  isTypeOf: ({ context_type }) => context_type === "Gene",
-})
-
-export const ArtworkFilterFacetType = new GraphQLUnionType({
+export const ArtworkFilterFacetType = new GraphQLUnionType<ContextSource>({
   name: "ArtworkFilterFacet",
-  types: [ArtworkFilterTagType, ArtworkFilterGeneType],
+  types: [TagType, GeneType],
+  resolveType: ({ context_type }) => context_type,
 })
 
 export const ArtworkFilterAggregations: GraphQLFieldConfig<
@@ -166,17 +161,23 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
     },
     facet: {
       type: ArtworkFilterFacetType,
-      resolve: ({ options }, _options, { geneLoader, tagLoader }) => {
+      resolve: (
+        { options },
+        _options,
+        { geneLoader, tagLoader }
+      ): Promise<ContextSource> | null => {
         const { tag_id, gene_id } = options
         if (tag_id) {
-          return tagLoader(tag_id).then(tag =>
-            assign({ context_type: "Tag" }, tag)
-          )
+          return tagLoader(tag_id).then(tag => ({
+            ...tag,
+            context_type: TagType,
+          }))
         }
         if (gene_id) {
-          return geneLoader(gene_id).then(gene =>
-            assign({ context_type: "Gene" }, gene)
-          )
+          return geneLoader(gene_id).then(gene => ({
+            ...gene,
+            context_type: GeneType,
+          }))
         }
         return null
       },

@@ -5,11 +5,6 @@ import cached from "./fields/cached"
 import Artwork from "./artwork"
 import Artist, { artistConnection } from "./artist"
 import Image from "./image"
-import filterArtworks, {
-  ArtworkFilterAggregations,
-  filterArtworksArgs,
-  FilterArtworksCounts,
-} from "./filter_artworks"
 import {
   queriedForFieldsOtherThanBlacklisted,
   convertConnectionArgsToGravityArgs,
@@ -42,6 +37,14 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
   name: "Gene",
   interfaces: [NodeInterface],
   fields: () => {
+    // Avoiding a require circle
+    const {
+      default: filterArtworks,
+      ArtworkFilterAggregations,
+      filterArtworksArgs,
+      FilterArtworksCounts,
+    } = require("./filter_artworks")
+
     return {
       ...SlugAndInternalIDFields,
       cached,
