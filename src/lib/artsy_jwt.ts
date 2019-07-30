@@ -3,5 +3,8 @@ import config from "config"
 const { HMAC_SECRET } = config
 
 export const decodeArtsyJWT = token => {
+  if (!token) {
+    return null
+  }
   return jwt.decode(token as string, HMAC_SECRET, true, "HS256")
 }

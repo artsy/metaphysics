@@ -49,7 +49,7 @@ import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 import { deprecate } from "lib/deprecation"
-import { decodeArtsyJWT } from "lib/jwt"
+import { decodeArtsyJWT } from "lib/artsy_jwt"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -667,19 +667,18 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: (_root, { id }, { showLoader, accessToken }) => {
     const decodedJwt = decodeArtsyJWT(accessToken)
-    const partnerIds = decodedJwt.partner_ids
-    const isAdmin = decodedJwt.roles.split(",").includes("admin")
+    const partnerIds: Array<String> = decodedJwt ? decodedJwt.partner_ids : []
+    const isAdmin: boolean =
+      decodedJwt && decodedJwt.roles.split(",").includes("admin")
+    const isDisplayable = show =>
+      show.displayable || isAdmin || partnerIds.includes(show.partner._id)
     return showLoader(id)
       .then(show => {
         if (
-          !partnerIds.includes(show.partner._id) &&
-          !isAdmin &&
-          !(
-            show.displayable ||
-            show.is_local_discovery ||
-            show.is_reference ||
-            isExisty(show.fair)
-          )
+          !isDisplayable(show) &&
+          !show.is_local_discovery &&
+          !show.is_reference &&
+          !isExisty(show.fair)
         ) {
           return new HTTPError("Show Not Found", 404)
         }
