@@ -111,9 +111,10 @@ export const exchangeStitchingEnvironment = (
     reduceToResolvers(
       totalSDLS.map(name => ({
         [name]: {
-          fragment: `fragment ${type}_${name} on ${type} { ${name}Cents }`,
-          resolve: (parent, args, _context, _info) =>
-            amount(_ => parent[name + "Cents"]).resolve({}, args),
+          fragment: `fragment ${type}_${name} on ${type} { ${name}Cents currencyCode }`,
+          resolve: (parent, args, _context, _info) => {
+            return amount(_ => parent[name + "Cents"]).resolve(parent, args)
+          },
         },
       }))
     )

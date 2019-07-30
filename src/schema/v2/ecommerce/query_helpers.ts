@@ -84,6 +84,7 @@ export const OfferFields = gql`
     note
     shippingTotalCents
     taxTotalCents
+    currencyCode
     respondsTo {
       id
       createdAt
