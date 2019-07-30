@@ -10,6 +10,9 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
+// Taken from https://github.com/RubyMoney/money/blob/master/config/currency_iso.json
+import currencyCodes from "lib/currency_codes.json"
+
 export const amountSDL = name => `
   ${name}(
     decimal: String = "."
@@ -53,7 +56,15 @@ export const amount = centsResolver => ({
     if (typeof cents !== "number") {
       return null
     }
-    const symbol = options.symbol || obj.symbol
+
+    // Some objects return a currencyCode instead of a symbol.
+    const symbolFromCurrencyCode = obj.currencyCode
+      ? currencyCodes[obj.currencyCode.toLowerCase()] &&
+        currencyCodes[obj.currencyCode.toLowerCase()].symbol
+      : null
+
+    const symbol = options.symbol || obj.symbol || symbolFromCurrencyCode
+
     return formatMoney(
       cents / 100,
       assign({}, options, {
