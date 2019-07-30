@@ -102,10 +102,19 @@ export const parseConnectionArgsFromConnection = (
                       arg.name.value
                     )
                   ) {
-                    const val =
+                    let val =
                       (arg as any).value.value ||
                       info.variableValues[arg.name.value] ||
                       0
+
+                    // Emission sends back `count` and `cursor` as the
+                    // variables for `first` and `after`.
+                    // TODO: Improve introspection/visiting so we don't need this.
+                    if (arg.name.value === "first" && !val) {
+                      val = info.variableValues["count"]
+                    } else if (arg.name.value === "after" && !val) {
+                      val = info.variableValues["cursor"]
+                    }
 
                     connectionArgs[arg.name.value] = parseInt(val) || val
                   }
