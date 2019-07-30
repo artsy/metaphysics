@@ -6,7 +6,7 @@ import {
   GraphQLUnionType,
   GraphQLFieldConfig,
 } from "graphql"
-import { InternalIDFields } from "schema/v2/object_identification"
+import { IDFields } from "schema/v2/object_identification"
 import { GravityMutationErrorType } from "lib/gravityErrorHandler"
 import {
   connectionDefinitions,
@@ -61,7 +61,7 @@ export const CreditCardMutationType = new GraphQLUnionType({
 const CreditCardType = new GraphQLObjectType<any, ResolverContext>({
   name: "CreditCard",
   fields: () => ({
-    ...InternalIDFields,
+    ...IDFields,
     brand: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Brand of credit card",
