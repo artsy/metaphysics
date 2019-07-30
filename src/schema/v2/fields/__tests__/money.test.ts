@@ -1,63 +1,70 @@
 import { amount } from "../money"
 
 describe(amount, () => {
-  let amountCents: number
-  let args: any
-  let obj: any
-
-  beforeEach(() => {
-    obj = {}
-    args = { symbol: "$" }
-    amountCents = 1234
-  })
-
-  const getResult = () => amount(() => amountCents).resolve(obj, args)
+  const getResult = ({
+    obj = {},
+    args = { symbol: "$" } as object,
+    amountCents = 1234 as any,
+  }) => amount(() => amountCents).resolve(obj, args)
 
   it("formats dollars", () => {
-    expect(getResult()).toMatchInlineSnapshot(`"$12.34"`)
+    expect(getResult({})).toMatchInlineSnapshot(`"$12.34"`)
   })
 
   it("formats euros", () => {
-    args = { symbol: "€" }
-    expect(getResult()).toMatchInlineSnapshot(`"€12.34"`)
+    expect(getResult({ args: { symbol: "€" } })).toMatchInlineSnapshot(
+      `"€12.34"`
+    )
   })
 
   it("formats yen", () => {
-    args = { symbol: "¥" }
-    expect(getResult()).toMatchInlineSnapshot(`"¥12.34"`)
+    expect(getResult({ args: { symbol: "¥" } })).toMatchInlineSnapshot(
+      `"¥12.34"`
+    )
   })
 
   it("handles zeroes", () => {
-    amountCents = 0
-    expect(getResult()).toMatchInlineSnapshot(`"$0.00"`)
+    expect(getResult({ amountCents: 0 })).toMatchInlineSnapshot(`"$0.00"`)
   })
 
   it("handles null/undefined", () => {
-    amountCents = null as any
-    expect(getResult()).toMatchInlineSnapshot(`null`)
-    amountCents = undefined as any
-    expect(getResult()).toMatchInlineSnapshot(`null`)
+    expect(getResult({ amountCents: null })).toMatchInlineSnapshot(`null`)
+
+    // custom handling since undefined won't override a default argument
+    expect(amount(() => undefined).resolve({}, {})).toMatchInlineSnapshot(
+      `null`
+    )
   })
 
   it("formats from a currencyCode if provided", () => {
-    obj = { currencyCode: "GBP" }
-    args = {}
-    expect(getResult()).toMatchInlineSnapshot(`"£12.34"`)
+    expect(
+      getResult({
+        obj: { currencyCode: "GBP" },
+        args: {},
+      })
+    ).toMatchInlineSnapshot(`"£12.34"`)
   })
 
   it("prefers object symbol over currencyCode", () => {
-    obj = { symbol: "$", currencyCode: "GBP" }
-    args = {}
-    expect(getResult()).toMatchInlineSnapshot(`"$12.34"`)
+    expect(
+      getResult({
+        obj: { symbol: "$", currencyCode: "GBP" },
+        args: {},
+      })
+    ).toMatchInlineSnapshot(`"$12.34"`)
   })
 
   it("prefers argument symbol over currencyCode", () => {
-    obj = { symbol: "£", currencyCode: "GBP" }
-    expect(getResult()).toMatchInlineSnapshot(`"$12.34"`)
+    expect(
+      getResult({
+        obj: { symbol: "£", currencyCode: "GBP" },
+      })
+    ).toMatchInlineSnapshot(`"$12.34"`)
   })
 
   it("doesn't break when it can't find a currencyCode", () => {
-    obj = { currencyCode: "BLAH" }
-    expect(getResult()).toMatchInlineSnapshot(`"$12.34"`)
+    expect(getResult({ obj: { currencyCode: "BLAH" } })).toMatchInlineSnapshot(
+      `"$12.34"`
+    )
   })
 })
