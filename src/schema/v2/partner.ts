@@ -1,16 +1,5 @@
 import { assign, flatten } from "lodash"
-import { exclude, convertConnectionArgsToGravityArgs } from "lib/helpers"
-import cached from "./fields/cached"
-import initials from "./fields/initials"
-import Profile from "./profile"
-import Location from "./location"
-import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
-import Artwork, { artworkConnection } from "./artwork"
-import numeral from "./fields/numeral"
-import ArtworkSorts from "./sorts/artwork_sorts"
 import { pageable } from "relay-cursor-paging"
-import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
-
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -22,24 +11,19 @@ import {
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 
-const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
-  name: "Category",
-  description: "Fields of partner category (currently from Gravity).",
-  fields: {
-    ...SlugAndInternalIDFields,
-    category_type: {
-      type: GraphQLString,
-    },
-    internal: {
-      type: GraphQLBoolean,
-    },
-    name: {
-      type: GraphQLString,
-    },
-  },
-})
+import { exclude, convertConnectionArgsToGravityArgs } from "lib/helpers"
+import cached from "./fields/cached"
+import initials from "./fields/initials"
+import Profile from "./profile"
+import Location from "./location"
+import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
+import Artwork, { artworkConnection } from "./artwork"
+import numeral from "./fields/numeral"
+import ArtworkSorts from "./sorts/artwork_sorts"
+import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+import { ResolverContext } from "types/graphql"
+import { PartnerCategoryType } from "./partner_category"
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   for_sale: {

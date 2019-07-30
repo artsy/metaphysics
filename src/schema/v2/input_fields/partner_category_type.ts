@@ -1,8 +1,8 @@
 import { GraphQLEnumType } from "graphql"
 
-const CategoryType = {
+const PartnerCategoryTypeEnum = {
   type: new GraphQLEnumType({
-    name: "CategoryType",
+    name: "PartnerCategoryType",
     values: {
       GALLERY: {
         value: "Gallery",
@@ -14,4 +14,4 @@ const CategoryType = {
   }),
 }
 
-export default CategoryType
+export default PartnerCategoryTypeEnum

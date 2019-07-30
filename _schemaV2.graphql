@@ -2207,26 +2207,6 @@ enum CancelReasonType {
   SELLER_REJECTED_OTHER
 }
 
-# Fields of partner category (currently from Gravity).
-type Category {
-  # A globally unique ID.
-  id: ID!
-
-  # A slug ID.
-  slug: ID!
-
-  # A type-specific ID likely used as a database ID.
-  internalID: ID!
-  category_type: String
-  internal: Boolean
-  name: String
-}
-
-enum CategoryType {
-  GALLERY
-  INSTITUTION
-}
-
 type City {
   slug: String
   name: String
@@ -6969,7 +6949,7 @@ type Partner implements Node {
     before: String
     last: Int
   ): ArtworkConnection
-  categories: [Category]
+  categories: [PartnerCategory]
   collecting_institution: String
   counts: PartnerCounts
   default_profile_id: String
@@ -7072,8 +7052,9 @@ type PartnerCategory {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
-  category_type: CategoryType
+  category_type: PartnerCategoryType
   name: String
+  internal: Boolean
   partners(
     default_profile_public: Boolean
     eligible_for_carousel: Boolean
@@ -7105,6 +7086,11 @@ type PartnerCategory {
     term: String
     type: [PartnerClassification]
   ): [Partner]
+}
+
+enum PartnerCategoryType {
+  GALLERY
+  INSTITUTION
 }
 
 enum PartnerClassification {
@@ -7533,7 +7519,7 @@ type Query {
 
   # A list of PartnerCategories
   partner_categories(
-    category_type: CategoryType
+    category_type: PartnerCategoryType
 
     # Filter by whether category is internal
     internal: Boolean = false
@@ -9544,7 +9530,7 @@ type Viewer {
 
   # A list of PartnerCategories
   partner_categories(
-    category_type: CategoryType
+    category_type: PartnerCategoryType
 
     # Filter by whether category is internal
     internal: Boolean = false
