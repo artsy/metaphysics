@@ -6,8 +6,8 @@ describe("Partners", () => {
     const partnersLoader = ({ id }) => {
       if (id) {
         return Promise.resolve(
-          id.map(_id => ({
-            _id,
+          id.map(internalID => ({
+            internalID,
             has_full_profile: true,
             profile_banner_display: true,
           }))
@@ -19,11 +19,11 @@ describe("Partners", () => {
     const query = gql`
       {
         partners(ids: ["5a958e8e7622dd49f4f4176d"]) {
-          _id
+          internalID
         }
       }
     `
     const { partners } = await runQuery(query, { partnersLoader })
-    expect(partners[0]._id).toEqual("5a958e8e7622dd49f4f4176d")
+    expect(partners[0].internalID).toEqual("5a958e8e7622dd49f4f4176d")
   })
 })
