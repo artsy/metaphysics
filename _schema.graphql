@@ -1292,6 +1292,9 @@ type Artwork implements Node & Searchable & Sellable {
   edition_sets(sort: EditionSetSorts): [EditionSet]
   exhibition_history(format: Format): String
   fair: Fair
+
+  # Formatted artwork metadata, including artist, title, date and partner; e.g., 'Andy Warhol, Truck, 1980, Westward Gallery'.
+  formattedMetadata: String
   height: String
     @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
 
@@ -1417,9 +1420,11 @@ type Artwork implements Node & Searchable & Sellable {
   ): [PartnerShow]
   signature(format: Format): String
   title: String
+
+  # Formatted artwork metadata, including artist, title, date and partner; e.g., 'Andy Warhol, Truck, 1980, Westward Gallery'.
   to_s: String
     @deprecated(
-      reason: "Unused field named using Ruby idiom. [Will be removed in v2]"
+      reason: "Prefer to use `formattedMetadata`. [Will be removed in v2]"
     )
 
   # Whether this Artwork is Published of not
@@ -2316,6 +2321,9 @@ type ArtworkItem implements Node & Searchable & Sellable {
   edition_sets(sort: EditionSetSorts): [EditionSet]
   exhibition_history(format: Format): String
   fair: Fair
+
+  # Formatted artwork metadata, including artist, title, date and partner; e.g., 'Andy Warhol, Truck, 1980, Westward Gallery'.
+  formattedMetadata: String
   height: String
     @deprecated(reason: "Prefer to use `dimensions`. [Will be removed in v2]")
 
@@ -2441,9 +2449,11 @@ type ArtworkItem implements Node & Searchable & Sellable {
   ): [PartnerShow]
   signature(format: Format): String
   title: String
+
+  # Formatted artwork metadata, including artist, title, date and partner; e.g., 'Andy Warhol, Truck, 1980, Westward Gallery'.
   to_s: String
     @deprecated(
-      reason: "Unused field named using Ruby idiom. [Will be removed in v2]"
+      reason: "Prefer to use `formattedMetadata`. [Will be removed in v2]"
     )
 
   # Whether this Artwork is Published of not

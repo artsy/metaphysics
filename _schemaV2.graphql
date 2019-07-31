@@ -1015,6 +1015,9 @@ type Artwork implements Node & Searchable & Sellable {
   exhibition_history(format: Format): String
   fair: Fair
 
+  # Formatted artwork metadata, including artist, title, date and partner; e.g., 'Andy Warhol, Truck, 1980, Westward Gallery'.
+  formattedMetadata: String
+
   # Returns the highlighted shows and articles
   highlights: [ArtworkHighlight]
   href: String
