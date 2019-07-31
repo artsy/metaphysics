@@ -70,7 +70,7 @@ export const FilterArtworksCounts = {
     name: "FilterArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
-      followed_artists: numeral(
+      followedArtists: numeral(
         ({ aggregations }) => aggregations.followed_artists.value
       ),
     },
@@ -92,7 +92,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
         ),
     },
     aggregations: ArtworkFilterAggregations,
-    artworks_connection: {
+    artworksConnection: {
       type: artworkConnection,
       // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
       // has been addressed.
@@ -146,7 +146,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
       description: "Artwork results.",
       type: new GraphQLList(Artwork.type),
     },
-    merchandisable_artists: {
+    merchandisableArtists: {
       type: new GraphQLList(Artist.type),
       description:
         "Returns a list of merchandisable artists sorted by merch score.",
@@ -192,49 +192,49 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   offerable: {
     type: GraphQLBoolean,
   },
-  aggregation_partner_cities: {
+  aggregationPartnerCities: {
     type: new GraphQLList(GraphQLString),
   },
   aggregations: {
     type: new GraphQLList(ArtworksAggregation),
   },
-  artist_id: {
+  artistID: {
     type: GraphQLString,
   },
-  artist_ids: {
+  artistIDs: {
     type: new GraphQLList(GraphQLString),
   },
-  at_auction: {
+  atAuction: {
     type: GraphQLBoolean,
   },
-  attribution_class: {
+  attributionClass: {
     type: new GraphQLList(GraphQLString),
   },
   color: {
     type: GraphQLString,
   },
-  dimension_range: {
+  dimensionRange: {
     type: GraphQLString,
   },
-  extra_aggregation_gene_ids: {
+  extraAggregationGeneIDs: {
     type: new GraphQLList(GraphQLString),
   },
-  include_artworks_by_followed_artists: {
+  includeArtworksByFollowedArtists: {
     type: GraphQLBoolean,
   },
-  include_medium_filter_in_aggregation: {
+  includeMediumFilterInAggregation: {
     type: GraphQLBoolean,
   },
-  inquireable_only: {
+  inquireableOnly: {
     type: GraphQLBoolean,
   },
-  for_sale: {
+  forSale: {
     type: GraphQLBoolean,
   },
-  gene_id: {
+  geneID: {
     type: GraphQLString,
   },
-  gene_ids: {
+  geneIDs: {
     type: new GraphQLList(GraphQLString),
   },
   height: {
@@ -259,22 +259,22 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   periods: {
     type: new GraphQLList(GraphQLString),
   },
-  major_periods: {
+  majorPeriods: {
     type: new GraphQLList(GraphQLString),
   },
-  partner_id: {
+  partnerID: {
     type: GraphQLID,
   },
-  partner_cities: {
+  partnerCities: {
     type: new GraphQLList(GraphQLString),
   },
-  price_range: {
+  priceRange: {
     type: GraphQLString,
   },
   page: {
     type: GraphQLInt,
   },
-  sale_id: {
+  saleID: {
     type: GraphQLID,
   },
   size: {
@@ -283,13 +283,13 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   sort: {
     type: GraphQLString,
   },
-  tag_id: {
+  tagID: {
     type: GraphQLString,
   },
   keyword: {
     type: GraphQLString,
   },
-  keyword_match_exact: {
+  keywordMatchExact: {
     type: GraphQLBoolean,
     description: "When true, will only return exact keyword match",
   },

@@ -79,7 +79,7 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
     description:
       "List of artwork IDs to exclude from the response (irrespective of size)",
   },
-  for_sale: {
+  forSale: {
     type: GraphQLBoolean,
     defaultValue: false,
   },
@@ -103,7 +103,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
 
-    artworks_connection: {
+    artworksConnection: {
       description: "The artworks featured in the show",
       type: artworkConnection,
       args: pageable(artworksArgs),
@@ -143,12 +143,12 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
-    artists_without_artworks: {
+    artistsWithoutArtworks: {
       description: "Artists inside the show who do not have artworks present",
       type: new GraphQLList(Artist.type),
       resolve: ({ artists_without_artworks }) => artists_without_artworks,
     },
-    artists_grouped_by_name: {
+    artistsGroupedByName: {
       description: "Artists in the show grouped by last name",
       type: new GraphQLList(
         new GraphQLObjectType<any, ResolverContext>({
@@ -214,7 +214,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         return existyValue(partner_city)
       },
     },
-    cover_image: {
+    coverImage: {
       description: "The image you should use to represent this show",
       type: Image.type,
       resolve: (
@@ -259,16 +259,19 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           artworks: {
             type: GraphQLInt,
             args: {
-              artist_id: {
+              artistID: {
                 type: GraphQLString,
                 description: "The slug or ID of an artist in the show.",
               },
             },
             resolve: (
               { id, partner },
-              options,
+              { artistID },
               { partnerShowArtworksLoader }
             ) => {
+              const options: any = {
+                artist_id: artistID,
+              }
               return totalViaLoader(
                 partnerShowArtworksLoader,
                 {
@@ -279,7 +282,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
               )
             },
           },
-          eligible_artworks: numeral(
+          eligibleArtworks: numeral(
             ({ eligible_artworks_count }) => eligible_artworks_count
           ),
           artists: {
@@ -307,7 +310,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       description: "A description of the show",
       type: GraphQLString,
     },
-    end_at: date,
+    endAt: date,
     events: {
       description: "Events from the partner that runs this show",
       type: new GraphQLList(ShowEventType),
@@ -317,7 +320,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
           show_id: id,
         }).then(({ events }) => events),
     },
-    exhibition_period: {
+    exhibitionPeriod: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
       resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
@@ -360,14 +363,14 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         return partnerShowImagesLoader(id, options).then(normalizeImageData)
       },
     },
-    has_location: {
+    hasLocation: {
       type: GraphQLBoolean,
       description: "Flag showing if show has any location.",
       resolve: ({ location, fair, partner_city }) => {
         return isExisty(location || fair || partner_city)
       },
     },
-    is_active: {
+    isActive: {
       type: GraphQLBoolean,
       description:
         "Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.",
@@ -377,17 +380,17 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         return moment.utc().isBetween(start, end)
       },
     },
-    is_displayable: {
+    isDisplayable: {
       description: "Is this something we can display to the front-end?",
       type: GraphQLBoolean,
       resolve: ({ displayable }) => displayable,
     },
-    is_fair_booth: {
+    isFairBooth: {
       description: "Does the show exist as a fair booth?",
       type: GraphQLBoolean,
       resolve: ({ fair }) => isExisty(fair),
     },
-    is_reference: {
+    isReference: {
       description: "Is it a show provided for historical reference?",
       type: GraphQLBoolean,
       resolve: ({ is_reference }) => is_reference,
@@ -413,7 +416,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       type: Location.type,
       resolve: ({ location, fair_location }) => location || fair_location,
     },
-    meta_image: {
+    metaImage: {
       description:
         "An image representing the show, or a sharable image from an artwork in the show",
       type: Image.type,
@@ -447,7 +450,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         })
       },
     },
-    is_followed: {
+    isFollowed: {
       type: GraphQLBoolean,
       description: "Is the user following this show",
       resolve: async ({ _id }, _args, { followedShowLoader }) => {
@@ -548,34 +551,40 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
-    press_release: {
+    pressRelease: {
       description: "The press release for this show",
       ...markdown(),
+      resolve: ({ press_release }) => press_release,
     },
     pressReleaseUrl: {
       type: GraphQLString,
       description: "Link to the press release for this show",
       resolve: ({ press_release_url }) => press_release_url,
     },
-    start_at: {
+    startAt: {
       description: "When this show starts",
       ...date,
+      resolve: ({ start_at }) => start_at,
     },
     status: {
       description: "Is this show running, upcoming or closed?",
       type: GraphQLString,
     },
-    status_update: {
+    statusUpdate: {
       type: GraphQLString,
       description: "A formatted update on upcoming status changes",
       args: {
-        max_days: {
+        maxDays: {
           type: GraphQLInt,
           description: "Before this many days no update will be generated",
         },
       },
-      resolve: ({ start_at, end_at }, options) =>
-        exhibitionStatus(start_at, end_at, options.max_days),
+      resolve: ({ start_at, end_at }, { maxDays }) => {
+        const options: any = {
+          max_days: maxDays,
+        }
+        return exhibitionStatus(start_at, end_at, options.max_days)
+      },
     },
     type: {
       description: "Is it a fair booth or a show?",

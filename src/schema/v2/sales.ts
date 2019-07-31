@@ -14,7 +14,7 @@ const Sales: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Sale.type),
   description: "A list of Sales",
   args: {
-    is_auction: {
+    isAuction: {
       description: "Limit by auction.",
       type: GraphQLBoolean,
       defaultValue: true,
@@ -41,7 +41,11 @@ const Sales: GraphQLFieldConfig<void, ResolverContext> = {
     },
     sort: SaleSorts,
   },
-  resolve: (_root, options, { salesLoader }) => {
+  resolve: (_root, { isAuction, ..._options }, { salesLoader }) => {
+    const options: any = {
+      is_auction: isAuction,
+      ..._options,
+    }
     const cleanedOptions = clone(options)
     // Rename ids plural to id to match Gravity
     if (options.ids) {

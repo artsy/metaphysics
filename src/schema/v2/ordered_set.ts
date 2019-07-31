@@ -21,8 +21,9 @@ const OrderedSetType = new GraphQLObjectType<any, ResolverContext>({
     key: {
       type: GraphQLString,
     },
-    item_type: {
+    itemType: {
       type: GraphQLString,
+      resolve: ({ item_type }) => item_type,
     },
     items: {
       type: new GraphQLList(OrderedSetItemType),

@@ -21,16 +21,18 @@ export const CollectorProfileFields: GraphQLFieldConfigMap<
   name: {
     type: GraphQLString,
   },
-  confirmed_buyer_at: date,
-  collector_level: {
+  confirmedBuyerAt: date,
+  collectorLevel: {
     type: GraphQLInt,
+    resolve: ({ collector_level }) => collector_level,
   },
-  self_reported_purchases: {
+  selfReportedPurchases: {
     type: GraphQLString,
+    resolve: ({ self_reported_purchases }) => self_reported_purchases,
   },
-  loyalty_applicant_at: date,
-  professional_buyer_at: date,
-  professional_buyer_applied_at: date,
+  loyaltyApplicantAt: date,
+  professionalBuyerAt: date,
+  professionalBuyerAppliedAt: date,
   intents: {
     type: new GraphQLList(GraphQLString),
   },

@@ -19,8 +19,9 @@ export const AggregationCountType = new GraphQLObjectType<any, ResolverContext>(
       name: {
         type: GraphQLString,
       },
-      sortable_id: {
+      sortableID: {
         type: GraphQLString,
+        resolve: ({ sortable_id }) => sortable_id,
       },
     },
   }

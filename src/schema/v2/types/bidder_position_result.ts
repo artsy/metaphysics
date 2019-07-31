@@ -11,11 +11,13 @@ export const BidderPositionResultType = new GraphQLObjectType<
     status: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    message_header: {
+    messageHeader: {
       type: GraphQLString,
+      resolve: ({ message_header }) => message_header,
     },
-    message_description_md: {
+    messageDescriptionMD: {
       type: GraphQLString,
+      resolve: ({ message_description_md }) => message_description_md,
     },
     position: {
       type: BidderPosition.type,

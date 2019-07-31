@@ -80,13 +80,13 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(HomePageArtworkModuleType),
   description: "Artwork modules to show on the home screen",
   args: {
-    max_followed_gene_rails: {
+    maxFollowedGeneRails: {
       type: GraphQLInt,
       description:
         "Maximum number of followed genes to return, disable with a negative number",
       defaultValue: 1,
     },
-    max_rails: {
+    maxRails: {
       type: GraphQLInt,
       description:
         "Maximum number of modules to return, disable limit with a negative number",
@@ -105,7 +105,12 @@ const HomePageArtworkModules: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: (
     _root,
-    { max_rails, max_followed_gene_rails, order, exclude },
+    {
+      maxRails: max_rails,
+      maxFollowedGeneRails: max_followed_gene_rails,
+      order,
+      exclude,
+    },
     {
       followedGenesLoader,
       homepageModulesLoader,

@@ -44,20 +44,25 @@ export const Related = {
       artists: {
         type: artistConnection,
         args: pageable({
-          exclude_artists_without_artworks: {
+          excludeArtistsWithoutArtworks: {
             type: GraphQLBoolean,
             defaultValue: true,
           },
-          min_forsale_artworks: {
+          minForsaleArtworks: {
             type: GraphQLInt,
           },
           kind: RelatedArtistsKind,
         }),
         resolve: (
           { id },
-          args,
+          { excludeArtistsWithoutArtworks, minForsaleArtworks, ..._args },
           { relatedContemporaryArtistsLoader, relatedMainArtistsLoader }
         ) => {
+          const args: any = {
+            exclude_artists_without_artworks: excludeArtistsWithoutArtworks,
+            min_forsale_artworks: minForsaleArtworks,
+            ..._args,
+          }
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
             args
           )

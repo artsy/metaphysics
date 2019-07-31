@@ -5,6 +5,7 @@ import {
   GraphQLNonNull,
   GraphQLFieldConfig,
   GraphQLInt,
+  GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { pageable } from "relay-cursor-paging"
 
@@ -31,7 +32,7 @@ export const SearchMode = new GraphQLEnumType({
   },
 })
 
-export const searchArgs = pageable({
+export const searchArgs: GraphQLFieldConfigArgumentMap = pageable({
   query: {
     type: new GraphQLNonNull(GraphQLString),
     description: "Search query to perform. Required.",

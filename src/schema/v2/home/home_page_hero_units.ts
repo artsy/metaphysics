@@ -57,7 +57,7 @@ const HomePageHeroUnitType = new GraphQLObjectType<any, ResolverContext>({
         return platform === "desktop" ? name : mobile_title
       },
     },
-    title_image_url: {
+    titleImageURL: {
       args: {
         retina: {
           type: GraphQLBoolean,
@@ -74,13 +74,15 @@ const HomePageHeroUnitType = new GraphQLObjectType<any, ResolverContext>({
         return platform === "desktop" ? description : mobile_description
       },
     },
-    link_text: {
+    linkText: {
       type: GraphQLString,
+      resolve: ({ link_text }) => link_text,
     },
-    credit_line: {
+    creditLine: {
       type: GraphQLString,
+      resolve: ({ credit_line }) => credit_line,
     },
-    background_image_url: {
+    backgroundImageURL: {
       type: GraphQLString,
       description:
         "The image to show, on desktop this defaults to the wide version.",

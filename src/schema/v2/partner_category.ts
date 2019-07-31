@@ -18,7 +18,7 @@ export const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      category_type: PartnerCategoryTypeEnum,
+      categoryType: PartnerCategoryTypeEnum,
       name: {
         type: GraphQLString,
       },

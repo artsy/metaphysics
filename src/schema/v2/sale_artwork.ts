@@ -92,7 +92,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "SaleArtworkCounts",
           fields: {
-            bidder_positions: numeral(
+            bidderPositions: numeral(
               ({ bidder_positions_count }) => bidder_positions_count
             ),
           },
@@ -102,7 +102,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description: `Currency abbreviation (e.g. "USD")`,
       },
-      current_bid: money({
+      currentBid: money({
         name: "SaleArtworkCurrentBid",
         resolve: saleArtwork => ({
           ...GravityIDFields,
@@ -128,23 +128,24 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      estimate_cents: {
+      estimateCents: {
         type: GraphQLInt,
         description: "Singular estimate field, if specified",
+        resolve: ({ estimate_cents }) => estimate_cents,
       },
-      high_estimate: money({
+      highEstimate: money({
         name: "SaleArtworkHighEstimate",
         resolve: ({ display_high_estimate_dollars, high_estimate_cents }) => ({
           cents: high_estimate_cents,
           display: display_high_estimate_dollars,
         }),
       }),
-      highest_bid: {
+      highestBid: {
         type: new GraphQLObjectType<any, ResolverContext>({
           name: "SaleArtworkHighestBid",
           fields: {
-            created_at: date,
-            is_cancelled: {
+            createdAt: date,
+            isCancelled: {
               type: GraphQLBoolean,
               resolve: ({ cancelled }) => cancelled,
             },
@@ -218,11 +219,11 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      is_bid_on: {
+      isBidOn: {
         type: GraphQLBoolean,
         resolve: ({ bidder_positions_count }) => bidder_positions_count !== 0,
       },
-      is_biddable: {
+      isBiddable: {
         type: GraphQLBoolean,
         description: "Can bids be placed on the artwork?",
         resolve: (saleArtwork, _options, { saleLoader }) => {
@@ -234,19 +235,22 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      is_with_reserve: {
+      isWithReserve: {
         type: GraphQLBoolean,
         resolve: ({ reserve_status }) => reserve_status !== "no_reserve",
       },
-      lot_label: { type: GraphQLString },
-      low_estimate: money({
+      lotLabel: {
+        type: GraphQLString,
+        resolve: ({ lot_label }) => lot_label,
+      },
+      lowEstimate: money({
         name: "SaleArtworkLowEstimate",
         resolve: ({ display_low_estimate_dollars, low_estimate_cents }) => ({
           cents: low_estimate_cents,
           display: display_low_estimate_dollars,
         }),
       }),
-      minimum_next_bid: money({
+      minimumNextBid: money({
         name: "SaleArtworkMinimumNextBid",
         resolve: ({
           display_minimum_next_bid_dollars,
@@ -256,7 +260,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           display: display_minimum_next_bid_dollars,
         }),
       }),
-      opening_bid: money({
+      openingBid: money({
         name: "SaleArtworkOpeningBid",
         resolve: ({ display_opening_bid_dollars, opening_bid_cents }) => ({
           cents: opening_bid_cents,
@@ -271,7 +275,7 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           display: display_reserve_dollars,
         }),
       }),
-      reserve_message: {
+      reserveMessage: {
         type: GraphQLString,
         resolve: ({ bidder_positions_count, reserve_status }) => {
           if (reserve_status === "reserve_met") {
@@ -290,8 +294,14 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return null
         },
       },
-      reserve_status: { type: GraphQLString },
-      sale_id: { type: GraphQLString },
+      reserveStatus: {
+        type: GraphQLString,
+        resolve: ({ reserve_status }) => reserve_status,
+      },
+      saleID: {
+        type: GraphQLString,
+        resolve: ({ sale_id }) => sale_id,
+      },
       sale: {
         type: Sale.type,
         resolve: ({ sale, sale_id }, _options, { saleLoader }) => {

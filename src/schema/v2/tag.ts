@@ -33,7 +33,7 @@ export const TagType = new GraphQLObjectType<any, ResolverContext>({
       count: {
         type: GraphQLInt,
       },
-      filtered_artworks: filterArtworks("tag_id"),
+      filteredArtworks: filterArtworks("tag_id"),
     }
   },
 })

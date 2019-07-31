@@ -13,12 +13,13 @@ const BidderType = new GraphQLObjectType<any, ResolverContext>({
   name: "Bidder",
   fields: () => ({
     ...InternalIDFields,
-    created_at: date,
+    createdAt: date,
     pin: {
       type: GraphQLString,
     },
-    qualified_for_bidding: {
+    qualifiedForBidding: {
       type: GraphQLBoolean,
+      resolve: ({ qualified_for_bidding }) => qualified_for_bidding,
     },
     sale: {
       type: Sale.type,

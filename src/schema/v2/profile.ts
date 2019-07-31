@@ -42,14 +42,14 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ cover_image }) => normalizeImageData(cover_image),
     },
     initials: initials("owner.name"),
-    is_followed: {
+    isFollowed: {
       type: GraphQLBoolean,
       resolve: ({ id }, {}, { followedProfileLoader }) => {
         if (!followedProfileLoader) return false
         return followedProfileLoader(id).then(({ is_followed }) => is_followed)
       },
     },
-    is_published: {
+    isPublished: {
       type: GraphQLBoolean,
       resolve: ({ published }) => published,
     },
@@ -57,7 +57,7 @@ export const ProfileType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ owner }) => owner.name,
     },
-    is_publically_visible: {
+    isPublicallyVisible: {
       type: GraphQLBoolean,
       resolve: profile => profile && profile.published && !profile.private,
     },

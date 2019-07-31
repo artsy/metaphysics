@@ -59,7 +59,7 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType<
         )
       },
     },
-    published_at: date,
+    publishedAt: date,
   }),
 })
 
@@ -73,9 +73,17 @@ const FollowedArtistsArtworksGroup: GraphQLFieldConfig<
     "A list of published artworks by followed artists (grouped by date and artists).",
   args: pageable({
     sort: ArtworkSorts,
-    for_sale: { type: GraphQLBoolean },
+    forSale: { type: GraphQLBoolean },
   }),
-  resolve: (_root, options, { followedArtistsArtworksLoader }) => {
+  resolve: (
+    _root,
+    { forSale, ..._options },
+    { followedArtistsArtworksLoader }
+  ) => {
+    const options: any = {
+      for_sale: forSale,
+      ..._options,
+    }
     if (!followedArtistsArtworksLoader) return null
 
     // Convert Relay-style pagination to the supported page/size style for the backend.

@@ -92,10 +92,11 @@ export const ConversationResponderType = new GraphQLObjectType<
     name: {
       type: new GraphQLNonNull(GraphQLString),
     },
-    reply_to_impulse_ids: {
+    replyToImpulseIDs: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
       description:
         "An array of Impulse IDs that correspond to all email addresses that messages should be sent to",
+      resolve: ({ reply_to_impulse_ids }) => reply_to_impulse_ids,
     },
     initials: initials("name"),
   },
@@ -159,9 +160,10 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     id: GlobalIDField,
     ...NullableIDField,
-    inquiry_id: {
+    inquiryID: {
       description: "Gravity inquiry id.",
       type: GraphQLString,
+      resolve: ({ inquiry_id }) => inquiry_id,
     },
     from: {
       description: "The participant who initiated the conversation",
@@ -187,15 +189,17 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
-    buyer_outcome: {
+    buyerOutcome: {
       type: GraphQLString,
+      resolve: ({ buyer_outcome }) => buyer_outcome,
     },
-    buyer_outcome_at: date,
-    created_at: date,
-    from_last_viewed_message_id: {
+    buyerOutcomeAt: date,
+    createdAt: date,
+    fromLastViewedMessageID: {
       type: GraphQLString,
+      resolve: ({ from_last_viewed_message_id }) => from_last_viewed_message_id,
     },
-    initial_message: {
+    initialMessage: {
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ initial_message, from_name }) => {
         const parts = initial_message.split(
@@ -204,14 +208,14 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
         return parts[parts.length - 1]
       },
     },
-    last_message: {
+    lastMessage: {
       type: GraphQLString,
       description: "This is a snippet of text from the last message.",
       resolve: () => null,
     },
-    last_message_at: date,
+    lastMessageAt: date,
 
-    last_message_id: {
+    lastMessageID: {
       type: GraphQLString,
       description: "Impulse id of the last message.",
       resolve: conversation => lastMessageId(conversation),
@@ -219,7 +223,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
 
     // TODO: Currently if the user is not the sender of a message, we assume they are a recipient.
     // That may not be the case, so we should evolve this check to be more accurate.
-    is_last_message_to_user: {
+    isLastMessageToUser: {
       type: GraphQLBoolean,
       description: "True if user/conversation initiator is a recipient.",
       resolve: conversation => isLastMessageToUser(conversation),
@@ -227,7 +231,7 @@ export const ConversationType = new GraphQLObjectType<any, ResolverContext>({
 
     // If the user is a recipient of the last message, return the relevant delivery id.
     // This can be used to mark the message as read, or log other events.
-    last_message_delivery_id: {
+    lastMessageDeliveryID: {
       type: GraphQLString,
       description:
         "Delivery id if the user is a recipient of the last message, null otherwise.",

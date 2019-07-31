@@ -17,13 +17,15 @@ export const S3PolicyConditionsType = new GraphQLObjectType<
       description: "The assigned access control",
       type: new GraphQLNonNull(GraphQLString),
     },
-    gemini_key: {
+    geminiKey: {
       description: "A key which is prefixed on your file",
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ gemini_key }) => gemini_key,
     },
-    success_action_status: {
+    successActionStatus: {
       description: "The returned status code, currently always 201",
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ success_action_status }) => success_action_status,
     },
   },
 })
@@ -61,13 +63,15 @@ export const CredentialsType = new GraphQLObjectType<any, ResolverContext>({
       description: "The key to use with S3.",
       type: new GraphQLNonNull(GraphQLString),
     },
-    policy_encoded: {
+    policyEncoded: {
       description: "A base64 encoded version of the S3 policy",
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ policy_encoded }) => policy_encoded,
     },
-    policy_document: {
+    policyDocument: {
       description: "The s3 policy document for your request",
       type: new GraphQLNonNull(S3PolicyDocumentType),
+      resolve: ({ policy_document }) => policy_document,
     },
     signature: {
       description: "The signature for your asset.",

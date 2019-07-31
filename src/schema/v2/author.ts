@@ -9,8 +9,9 @@ const AuthorType = new GraphQLObjectType<any, ResolverContext>({
     name: {
       type: GraphQLString,
     },
-    profile_handle: {
+    profileHandle: {
       type: GraphQLString,
+      resolve: ({ profile_handle }) => profile_handle,
     },
   },
 })

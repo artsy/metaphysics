@@ -33,13 +33,15 @@ export const InvoiceType = new GraphQLObjectType<any, ResolverContext>({
   interfaces: [NodeInterface],
   fields: {
     ...InternalIDFields,
-    lewitt_invoice_id: {
+    lewittInvoiceID: {
       description: "Lewitt's invoice id.",
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ lewitt_invoice_id }) => lewitt_invoice_id,
     },
-    payment_url: {
+    paymentURL: {
       description: "Link to public checkout page.",
       type: GraphQLString,
+      resolve: ({ payment_url }) => payment_url,
     },
     state: {
       description: "Current state of invoice.",

@@ -13,7 +13,7 @@ const PartnerCategories: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(PartnerCategory.type),
   description: "A list of PartnerCategories",
   args: {
-    category_type: PartnerCategoryTypeEnum,
+    categoryType: PartnerCategoryTypeEnum,
     internal: {
       type: GraphQLBoolean,
       defaultValue: false,
@@ -23,8 +23,17 @@ const PartnerCategories: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLInt,
     },
   },
-  resolve: (_root, options, { partnerCategoriesLoader }) =>
-    partnerCategoriesLoader(options),
+  resolve: (
+    _root,
+    { categoryType, ..._options },
+    { partnerCategoriesLoader }
+  ) => {
+    const options: any = {
+      category_type: categoryType,
+      ..._options,
+    }
+    return partnerCategoriesLoader(options)
+  },
 }
 
 export default PartnerCategories

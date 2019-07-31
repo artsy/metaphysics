@@ -32,7 +32,7 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
       artworks: numeral(
         ({ published_artworks_count }) => published_artworks_count
       ),
-      for_sale_artworks: numeral(
+      forSaleArtworks: numeral(
         ({ published_for_sale_artworks_count }) =>
           published_for_sale_artworks_count
       ),
@@ -52,22 +52,24 @@ const fields: Thunk<
     type: GraphQLString,
   },
   counts,
-  is_display_on_partner_profile: {
+  isDisplayOnPartnerProfile: {
     type: GraphQLBoolean,
     resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
   },
-  is_represented_by: {
+  isRepresentedBy: {
     type: GraphQLBoolean,
     resolve: ({ represented_by }) => represented_by,
   },
-  is_use_default_biography: {
+  isUseDefaultBiography: {
     type: GraphQLBoolean,
+    resolve: ({ is_use_default_biography }) => is_use_default_biography,
   },
   partner: {
     type: Partner.type,
   },
-  sortable_id: {
+  sortableID: {
     type: GraphQLString,
+    resolve: ({ sortable_id }) => sortable_id,
   },
 })
 
@@ -80,17 +82,20 @@ const PartnerArtist: GraphQLFieldConfig<void, ResolverContext> = {
   type: PartnerArtistType,
   description: "A PartnerArtist",
   args: {
-    artist_id: {
+    artistID: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The slug or ID of the Artist",
     },
-    partner_id: {
+    partnerID: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (_root, { partner_id, artist_id }, { partnerArtistLoader }) =>
-    partnerArtistLoader({ artist_id, partner_id }),
+  resolve: (
+    _root,
+    { partnerID: partner_id, artistID: artist_id },
+    { partnerArtistLoader }
+  ) => partnerArtistLoader({ artist_id, partner_id }),
 }
 
 export default PartnerArtist

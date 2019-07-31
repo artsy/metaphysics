@@ -23,11 +23,11 @@ const PopularArtists: GraphQLFieldConfig<void, ResolverContext> = {
   type: PopularArtistsType,
   description: "Popular artists",
   args: {
-    exclude_followed_artists: {
+    excludeFollowedArtists: {
       type: GraphQLBoolean,
       description: "If true, will exclude followed artists for the user",
     },
-    exclude_artist_ids: {
+    excludeArtistIDs: {
       type: new GraphQLList(GraphQLString),
       description:
         "Exclude these ids from results, may result in all artists being excluded.",
@@ -37,8 +37,18 @@ const PopularArtists: GraphQLFieldConfig<void, ResolverContext> = {
       description: "Number of results to return",
     },
   },
-  resolve: (_root, options, { popularArtistsLoader }) =>
-    popularArtistsLoader(options),
+  resolve: (
+    _root,
+    { excludeFollowedArtists, excludeArtistIDs, ..._options },
+    { popularArtistsLoader }
+  ) => {
+    const options: any = {
+      exclude_followed_artists: excludeFollowedArtists,
+      exclude_artist_ids: excludeArtistIDs,
+      ..._options,
+    }
+    return popularArtistsLoader(options)
+  },
 }
 
 export default PopularArtists
