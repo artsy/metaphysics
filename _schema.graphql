@@ -3517,6 +3517,7 @@ type CommerceBuyOrder implements CommerceOrder {
   updatedAt: String!
   buyerDetails: OrderParty
   sellerDetails: OrderParty
+  creditCard: CreditCard
   itemsTotal(
     decimal: String = "."
 
@@ -4033,6 +4034,7 @@ type CommerceOfferOrder implements CommerceOrder {
   updatedAt: String!
   buyerDetails: OrderParty
   sellerDetails: OrderParty
+  creditCard: CreditCard
   itemsTotal(
     decimal: String = "."
 
@@ -4184,6 +4186,7 @@ interface CommerceOrder {
   updatedAt: String!
   buyerDetails: OrderParty
   sellerDetails: OrderParty
+  creditCard: CreditCard
   itemsTotal(
     decimal: String = "."
 
