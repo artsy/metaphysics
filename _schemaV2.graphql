@@ -5758,6 +5758,9 @@ type Offer {
 
   # Offer note
   note: String
+
+  # Currency code of this order
+  currencyCode: String
 }
 
 # A connection to a list of items.
