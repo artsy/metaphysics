@@ -64,7 +64,45 @@ describe("Filter Artworks", () => {
       )
     })
 
-    it("returns a connection, and makes one gravity call", () => {
+    it("returns a connection, and makes one gravity call when args passed inline", () => {
+      const query = `
+        {
+          gene(id: "500-1000-ce") {
+            name
+            filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true) {
+              hits {
+                id
+              }
+              artworks_connection(first: 10, after: "") {
+                edges {
+                  node {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        }
+      `
+
+      return runQuery(query, context).then(
+        ({
+          gene: {
+            filtered_artworks: {
+              hits,
+              artworks_connection: { edges },
+            },
+          },
+        }) => {
+          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+          expect(edges).toEqual([
+            { node: { id: "oseberg-norway-queens-ship" } },
+          ])
+        }
+      )
+    })
+
+    it("returns a connection, and makes one gravity call when using variables", () => {
       const query = `
         query GeneFilter($count: Int, $cursor: String) {
           gene(id: "500-1000-ce") {
