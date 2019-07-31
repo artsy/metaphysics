@@ -3467,16 +3467,12 @@ type CommerceBuyOrder implements CommerceOrder {
   # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int
   lastApprovedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   lastSubmittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -3503,8 +3499,6 @@ type CommerceBuyOrder implements CommerceOrder {
   shippingTotalCents: Int
   state: CommerceOrderStateEnum!
   stateExpiresAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -3512,8 +3506,6 @@ type CommerceBuyOrder implements CommerceOrder {
   ): String
   stateReason: String
   stateUpdatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -3888,8 +3880,6 @@ type CommerceOffer {
   respondsTo: CommerceOffer
   shippingTotalCents: Int
   submittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -3974,8 +3964,6 @@ type CommerceOfferOrder implements CommerceOrder {
   # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int
   lastApprovedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -3985,8 +3973,6 @@ type CommerceOfferOrder implements CommerceOrder {
   # Last submitted offer
   lastOffer: CommerceOffer
   lastSubmittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -4029,8 +4015,6 @@ type CommerceOfferOrder implements CommerceOrder {
   shippingTotalCents: Int
   state: CommerceOrderStateEnum!
   stateExpiresAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -4038,8 +4022,6 @@ type CommerceOfferOrder implements CommerceOrder {
   ): String
   stateReason: String
   stateUpdatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -4152,16 +4134,12 @@ interface CommerceOrder {
   # Item total in cents, for Offer Orders this field reflects current offer
   itemsTotalCents: Int
   lastApprovedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
   lastSubmittedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -4188,8 +4166,6 @@ interface CommerceOrder {
   shippingTotalCents: Int
   state: CommerceOrderStateEnum!
   stateExpiresAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
@@ -4197,8 +4173,6 @@ interface CommerceOrder {
   ): String
   stateReason: String
   stateUpdatedAt(
-    # This arg is deprecated, use timezone instead
-    convert_to_utc: Boolean
     format: String
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
