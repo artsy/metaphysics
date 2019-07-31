@@ -665,14 +665,30 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The slug or ID of the Show",
     },
   },
-  resolve: (_root, { id }, { showLoader, accessToken }) => {
+  resolve: (
+    _root,
+    { id },
+    {
+      unauthenticatedLoaders: { showLoader: loaderWithCache },
+      authenticatedLoaders: { showLoader: loaderWithoutCache },
+      accessToken,
+    }
+  ) => {
     const decodedJwt = decodeArtsyJWT(accessToken as string)
     const partnerIds: Array<String> = decodedJwt ? decodedJwt.partner_ids : []
     const isAdmin: boolean =
       decodedJwt && decodedJwt.roles.split(",").includes("admin")
     const isDisplayable = show =>
       show.displayable || isAdmin || partnerIds.includes(show.partner._id)
-    return showLoader(id)
+
+    let loader
+    if (decodedJwt) {
+      loader = loaderWithoutCache
+    } else {
+      loader = loaderWithCache
+    }
+
+    return loader(id)
       .then(show => {
         if (
           !isDisplayable(show) &&
