@@ -19,6 +19,8 @@ import { BodyAndHeaders } from "lib/loaders"
 
 // TODO: This should move to the gravity loader
 interface PartnerArtistDetails {
+  sortable_id: string
+  is_use_default_biography: boolean
   published_artworks_count: number
   published_for_sale_artworks_count: number
   display_on_partner_profile: boolean

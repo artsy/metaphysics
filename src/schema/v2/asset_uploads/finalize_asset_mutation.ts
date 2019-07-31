@@ -19,9 +19,9 @@ export const GeminiEntryType = new GraphQLObjectType<any, ResolverContext>({
 
 export default mutationWithClientMutationId<
   {
-    template_key: string
-    source_key: string
-    source_bucket: string
+    templateKey: string
+    sourceKey: string
+    sourceBucket: string
     metadata: any
   },
   StaticPathLoader<any> | null,

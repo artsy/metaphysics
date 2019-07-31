@@ -4,7 +4,7 @@ import { SaleType } from "schema/v2/sale/index"
 import { ResolverContext } from "types/graphql"
 
 export const endSaleMutation = mutationWithClientMutationId<
-  { sale_id: string },
+  { saleID: string },
   { sale: any },
   ResolverContext
 >({
@@ -32,10 +32,10 @@ export const endSaleMutation = mutationWithClientMutationId<
       resolve: sale => sale,
     },
   },
-  mutateAndGetPayload: ({ saleID: sale_id }, { endSaleLoader }) => {
+  mutateAndGetPayload: ({ saleID }, { endSaleLoader }) => {
     if (!endSaleLoader) {
       throw new Error("You need to be signed in to perform this action")
     }
-    return endSaleLoader(sale_id)
+    return endSaleLoader(saleID)
   },
 })
