@@ -666,7 +666,7 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { showLoader, accessToken }) => {
-    const decodedJwt = decodeArtsyJWT(accessToken)
+    const decodedJwt = decodeArtsyJWT(accessToken as string)
     const partnerIds: Array<String> = decodedJwt ? decodedJwt.partner_ids : []
     const isAdmin: boolean =
       decodedJwt && decodedJwt.roles.split(",").includes("admin")

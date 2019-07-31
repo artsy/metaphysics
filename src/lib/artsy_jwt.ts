@@ -2,9 +2,9 @@ import jwt from "jwt-simple"
 import config from "config"
 const { HMAC_SECRET } = config
 
-export const decodeArtsyJWT = token => {
+export const decodeArtsyJWT = (token: string) => {
   if (!token) {
     return null
   }
-  return jwt.decode(token as string, HMAC_SECRET, true, "HS256")
+  return jwt.decode(token, HMAC_SECRET, true, "HS256")
 }
