@@ -97,13 +97,15 @@ export const SubmissionType = new GraphQLObjectType<any, ResolverContext>({
   description: "A work to be consigned to the user",
   fields: {
     ...NullableIDField,
-    artist_id: {
+    artistID: {
       description: "The gravity ID for an Artist",
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ artist_id }) => artist_id,
     },
-    authenticity_certificate: {
+    authenticityCertificate: {
       description: "Does the artwork come with an certificate of authenticity?",
       type: GraphQLBoolean,
+      resolve: ({ authenticity_certificate }) => authenticity_certificate,
     },
     category: {
       description: "The set in which to put the work",
@@ -113,37 +115,43 @@ export const SubmissionType = new GraphQLObjectType<any, ResolverContext>({
       description: "The depth of the work",
       type: GraphQLString,
     },
-    dimensions_metric: {
+    dimensionsMetric: {
       description: "A string, either CM or IN",
       type: SubmissionDimensionAggregation,
+      resolve: ({ dimensions_metric }) => dimensions_metric,
     },
     edition: {
       description: "Is the work a part of an edition",
       type: GraphQLBoolean,
     },
-    edition_number: {
+    editionNumber: {
       description: "The number of the individual work if in a set",
       type: GraphQLString,
+      resolve: ({ edition_number }) => edition_number,
     },
-    edition_size: {
+    editionSize: {
       description: "The whole size of the set of works",
       type: GraphQLInt,
+      resolve: ({ edition_size }) => edition_size,
     },
     height: {
       description: "The height of the work",
       type: GraphQLString,
     },
-    location_city: {
+    locationCity: {
       description: "The city where the work currently resides",
       type: GraphQLString,
+      resolve: ({ location_city }) => location_city,
     },
-    location_country: {
+    locationCountry: {
       description: "The country where the work currently resides",
       type: GraphQLString,
+      resolve: ({ location_country }) => location_country,
     },
-    location_state: {
+    locationState: {
       description: "The state where the work currently resides",
       type: GraphQLString,
+      resolve: ({ location_state }) => location_state,
     },
     medium: {
       description: "The materials in which the work is created",
@@ -173,9 +181,10 @@ export const SubmissionType = new GraphQLObjectType<any, ResolverContext>({
       description: "The year the work was created",
       type: GraphQLString,
     },
-    user_id: {
+    userID: {
       description: "The user who submitted the work",
       type: GraphQLID,
+      resolve: ({ user_id }) => user_id,
     },
     artist: {
       type: Artist.type,

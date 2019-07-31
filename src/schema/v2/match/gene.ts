@@ -24,12 +24,18 @@ const GeneMatch: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLInt,
       description: "Page to retrieve. Default: 1.",
     },
-    exclude_ids: {
+    excludeIDs: {
       type: new GraphQLList(GraphQLString),
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (_root, options, { matchGeneLoader }) => matchGeneLoader(options),
+  resolve: (_root, { excludeIDs, ..._options }, { matchGeneLoader }) => {
+    const options: any = {
+      exclude_ids: excludeIDs,
+      ..._options,
+    }
+    return matchGeneLoader(options)
+  },
 }
 
 export default GeneMatch

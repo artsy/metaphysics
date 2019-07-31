@@ -31,9 +31,10 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       description: "The given location of the user as structured data",
       type: LocationType,
     },
-    price_range: {
+    priceRange: {
       description: "The price range the collector has selected",
       type: GraphQLString,
+      resolve: ({ price_range }) => price_range,
     },
     userAlreadyExists: {
       description:

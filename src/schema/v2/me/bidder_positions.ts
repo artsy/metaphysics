@@ -12,7 +12,7 @@ const BidderPositions: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(BidderPosition.type),
   description: "A list of the current user's bidder positions",
   args: {
-    artwork_id: {
+    artworkID: {
       type: GraphQLString,
       description: "Only the bidder positions on a specific artwork",
     },
@@ -20,14 +20,14 @@ const BidderPositions: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLBoolean,
       description: "Only the most recent bidder positions per artwork.",
     },
-    sale_id: {
+    saleID: {
       type: GraphQLString,
       description: "Only the bidder positions for a specific auction",
     },
   },
   resolve: (
     _root,
-    { current, artwork_id, sale_id },
+    { current, artworkID: artwork_id, saleID: sale_id },
     { meBidderPositionsLoader, saleLoader, saleArtworkRootLoader }
   ) => {
     if (!meBidderPositionsLoader) return null

@@ -36,7 +36,7 @@ const ArtistStatusesType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLBoolean,
       resolve: ({ published_artworks_count }) => published_artworks_count > 0,
     },
-    auction_lots: {
+    auctionLots: {
       type: GraphQLBoolean,
       resolve: ({ display_auction_link, hide_auction_link }) => {
         return display_auction_link && !hide_auction_link

@@ -38,26 +38,26 @@ const ShowArgs: GraphQLFieldConfigArgumentMap = {
   active: {
     type: GraphQLBoolean,
   },
-  at_a_fair: {
+  atAFair: {
     type: GraphQLBoolean,
   },
-  is_reference: {
+  isReference: {
     type: GraphQLBoolean,
   },
   size: {
     type: GraphQLInt,
     description: "The number of PartnerShows to return",
   },
-  solo_show: {
+  soloShow: {
     type: GraphQLBoolean,
   },
   status: {
     type: GraphQLString,
   },
-  top_tier: {
+  topTier: {
     type: GraphQLBoolean,
   },
-  visible_to_public: {
+  visibleToPublic: {
     type: GraphQLBoolean,
   },
   sort: {

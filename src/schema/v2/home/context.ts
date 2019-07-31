@@ -36,7 +36,7 @@ export const HomePageRelatedArtistArtworkModuleType = new GraphQLObjectType<
       type: Artist.type,
       resolve: artist => artist,
     },
-    based_on: {
+    basedOn: {
       type: Artist.type,
       resolve: ({ based_on }) => based_on,
     },

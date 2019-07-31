@@ -38,7 +38,7 @@ export const HomePageArtworkModuleType = new GraphQLObjectType<
       },
     },
     context: Context,
-    is_displayable: {
+    isDisplayable: {
       type: GraphQLBoolean,
       resolve: ({ display }) => display,
     },
@@ -55,7 +55,7 @@ const HomePageArtworkModule: GraphQLFieldConfig<void, ResolverContext> = {
   type: HomePageArtworkModuleType,
   description: "Single artwork module to show on the home screen",
   args: {
-    followed_artist_id: {
+    followedArtistID: {
       type: GraphQLString,
       description: "ID of followed artist to target for related artist rails",
     },
@@ -67,14 +67,19 @@ const HomePageArtworkModule: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLString,
       description: "Module key",
     },
-    related_artist_id: {
+    relatedArtistID: {
       type: GraphQLString,
       description: "ID of related artist to target for related artist rails",
     },
   },
   resolve: (
     _root,
-    { key, id, followed_artist_id, related_artist_id },
+    {
+      key,
+      id,
+      followedArtistID: followed_artist_id,
+      relatedArtistID: related_artist_id,
+    },
     { geneLoader }
   ) => {
     // TODO Really not entirely sure what this `display` param is about.

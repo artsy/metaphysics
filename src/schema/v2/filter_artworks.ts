@@ -27,7 +27,6 @@ import {
   GraphQLUnionType,
   GraphQLNonNull,
   GraphQLFieldConfig,
-  GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
@@ -70,7 +69,7 @@ export const FilterArtworksCounts = {
     name: "FilterArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
-      followed_artists: numeral(
+      followedArtists: numeral(
         ({ aggregations }) => aggregations.followed_artists.value
       ),
     },
@@ -92,7 +91,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
         ),
     },
     aggregations: ArtworkFilterAggregations,
-    artworks_connection: {
+    artworksConnection: {
       type: artworkConnection,
       // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
       // has been addressed.
@@ -146,7 +145,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
       description: "Artwork results.",
       type: new GraphQLList(Artwork.type),
     },
-    merchandisable_artists: {
+    merchandisableArtists: {
       type: new GraphQLList(Artist.type),
       description:
         "Returns a list of merchandisable artists sorted by merch score.",
@@ -185,131 +184,175 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
-  acquireable: {
-    type: GraphQLBoolean,
-  },
-  offerable: {
-    type: GraphQLBoolean,
-  },
-  aggregation_partner_cities: {
-    type: new GraphQLList(GraphQLString),
-  },
-  aggregations: {
-    type: new GraphQLList(ArtworksAggregation),
-  },
-  artist_id: {
-    type: GraphQLString,
-  },
-  artist_ids: {
-    type: new GraphQLList(GraphQLString),
-  },
-  at_auction: {
-    type: GraphQLBoolean,
-  },
-  attribution_class: {
-    type: new GraphQLList(GraphQLString),
-  },
-  color: {
-    type: GraphQLString,
-  },
-  dimension_range: {
-    type: GraphQLString,
-  },
-  extra_aggregation_gene_ids: {
-    type: new GraphQLList(GraphQLString),
-  },
-  include_artworks_by_followed_artists: {
-    type: GraphQLBoolean,
-  },
-  include_medium_filter_in_aggregation: {
-    type: GraphQLBoolean,
-  },
-  inquireable_only: {
-    type: GraphQLBoolean,
-  },
-  for_sale: {
-    type: GraphQLBoolean,
-  },
-  gene_id: {
-    type: GraphQLString,
-  },
-  gene_ids: {
-    type: new GraphQLList(GraphQLString),
-  },
-  height: {
-    type: GraphQLString,
-  },
-  width: {
-    type: GraphQLString,
-  },
-  marketable: {
-    type: GraphQLBoolean,
-    description:
-      "When true, will only return `marketable` works (not nude or provocative).",
-  },
-  medium: {
-    type: GraphQLString,
-    description:
-      "A string from the list of allocations, or * to denote all mediums",
-  },
-  period: {
-    type: GraphQLString,
-  },
-  periods: {
-    type: new GraphQLList(GraphQLString),
-  },
-  major_periods: {
-    type: new GraphQLList(GraphQLString),
-  },
-  partner_id: {
-    type: GraphQLID,
-  },
-  partner_cities: {
-    type: new GraphQLList(GraphQLString),
-  },
-  price_range: {
-    type: GraphQLString,
-  },
-  page: {
-    type: GraphQLInt,
-  },
-  sale_id: {
-    type: GraphQLID,
-  },
-  size: {
-    type: GraphQLInt,
-  },
-  sort: {
-    type: GraphQLString,
-  },
-  tag_id: {
-    type: GraphQLString,
-  },
-  keyword: {
-    type: GraphQLString,
-  },
-  keyword_match_exact: {
-    type: GraphQLBoolean,
-    description: "When true, will only return exact keyword match",
-  },
-}
-
 const filterArtworksTypeFactory = (
   mapRootToFilterParams
 ): GraphQLFieldConfig<any, ResolverContext> => ({
   type: FilterArtworksType,
   description: "Artworks Elastic Search results",
-  args: filterArtworksArgs,
+  args: {
+    acquireable: {
+      type: GraphQLBoolean,
+    },
+    offerable: {
+      type: GraphQLBoolean,
+    },
+    aggregationPartnerCities: {
+      type: new GraphQLList(GraphQLString),
+    },
+    aggregations: {
+      type: new GraphQLList(ArtworksAggregation),
+    },
+    artistID: {
+      type: GraphQLString,
+    },
+    artistIDs: {
+      type: new GraphQLList(GraphQLString),
+    },
+    atAuction: {
+      type: GraphQLBoolean,
+    },
+    attributionClass: {
+      type: new GraphQLList(GraphQLString),
+    },
+    color: {
+      type: GraphQLString,
+    },
+    dimensionRange: {
+      type: GraphQLString,
+    },
+    extraAggregationGeneIDs: {
+      type: new GraphQLList(GraphQLString),
+    },
+    includeArtworksByFollowedArtists: {
+      type: GraphQLBoolean,
+    },
+    includeMediumFilterInAggregation: {
+      type: GraphQLBoolean,
+    },
+    inquireableOnly: {
+      type: GraphQLBoolean,
+    },
+    forSale: {
+      type: GraphQLBoolean,
+    },
+    geneID: {
+      type: GraphQLString,
+    },
+    geneIDs: {
+      type: new GraphQLList(GraphQLString),
+    },
+    height: {
+      type: GraphQLString,
+    },
+    width: {
+      type: GraphQLString,
+    },
+    marketable: {
+      type: GraphQLBoolean,
+      description:
+        "When true, will only return `marketable` works (not nude or provocative).",
+    },
+    medium: {
+      type: GraphQLString,
+      description:
+        "A string from the list of allocations, or * to denote all mediums",
+    },
+    period: {
+      type: GraphQLString,
+    },
+    periods: {
+      type: new GraphQLList(GraphQLString),
+    },
+    majorPeriods: {
+      type: new GraphQLList(GraphQLString),
+    },
+    partnerID: {
+      type: GraphQLID,
+    },
+    partnerCities: {
+      type: new GraphQLList(GraphQLString),
+    },
+    priceRange: {
+      type: GraphQLString,
+    },
+    page: {
+      type: GraphQLInt,
+    },
+    saleID: {
+      type: GraphQLID,
+    },
+    size: {
+      type: GraphQLInt,
+    },
+    sort: {
+      type: GraphQLString,
+    },
+    tagID: {
+      type: GraphQLString,
+    },
+    keyword: {
+      type: GraphQLString,
+    },
+    keywordMatchExact: {
+      type: GraphQLBoolean,
+      description: "When true, will only return exact keyword match",
+    },
+  },
   resolve: (
     root,
-    options,
+    {
+      aggregationPartnerCities,
+      artistID,
+      artistIDs,
+      atAuction,
+      attributionClass,
+      dimensionRange,
+      extraAggregationGeneIDs,
+      includeArtworksByFollowedArtists,
+      includeMediumFilterInAggregation,
+      inquireableOnly,
+      forSale,
+      geneID,
+      geneIDs,
+      majorPeriods,
+      partnerID,
+      partnerCities,
+      priceRange,
+      saleID,
+      tagID,
+      keywordMatchExact,
+      ..._options
+    },
     {
       unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
       authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
     },
     info
   ) => {
+    const options: any = {
+      aggregation_partner_cities: aggregationPartnerCities,
+      artist_id: artistID,
+      artist_ids: artistIDs,
+      at_auction: atAuction,
+      attribution_class: attributionClass,
+      dimension_range: dimensionRange,
+      extra_aggregation_gene_ids: extraAggregationGeneIDs,
+      include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
+      include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
+      inquireable_only: inquireableOnly,
+      for_sale: forSale,
+      gene_id: geneID,
+      gene_ids: geneIDs,
+      major_periods: majorPeriods,
+      partner_id: partnerID,
+      partner_cities: partnerCities,
+      price_range: priceRange,
+      sale_id: saleID,
+      tag_id: tagID,
+      keyword_match_exact: keywordMatchExact,
+      ..._options,
+    }
+
     const { include_artworks_by_followed_artists, aggregations } = options
     const requestedPersonalizedAggregation = aggregations.includes(
       "followed_artists"

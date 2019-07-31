@@ -64,8 +64,9 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
     address: {
       type: GraphQLString,
     },
-    address_2: {
+    address2: {
       type: GraphQLString,
+      resolve: ({ address_2 }) => address_2,
     },
     city: {
       type: GraphQLString,
@@ -77,14 +78,15 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
     coordinates: {
       type: LatLngType,
     },
-    day_schedules: {
+    daySchedules: {
       type: new GraphQLList(DayScheduleType),
       resolve: ({ day_schedules }) => day_schedules,
     },
-    day_schedule_text: {
+    dayScheduleText: {
       description:
         "Alternate Markdown-supporting free text representation of a location's opening hours",
       type: GraphQLString,
+      resolve: ({ day_schedule_text }) => day_schedule_text,
     },
 
     openingHours: {
@@ -104,8 +106,9 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ phone }) => existyValue(phone),
     },
-    postal_code: {
+    postalCode: {
       type: GraphQLString,
+      resolve: ({ postal_code }) => postal_code,
     },
     state: {
       type: GraphQLString,

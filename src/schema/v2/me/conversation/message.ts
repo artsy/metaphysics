@@ -42,12 +42,12 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
     // This alias exists specifically because our fork of Relay Classic did not yet properly support using `__id`
     // instead of `id`, which lead to Relay overwriting `id` fields with the `__id` value. Thus using a completely
     // different field name works around this. You should probably not use it.
-    impulse_id: {
+    impulseID: {
       description: "Impulse message id.",
       type: new GraphQLNonNull(GraphQLString),
       resolve: ({ id }) => id,
     },
-    is_from_user: {
+    isFromUser: {
       description: "True if message is from the user to the partner.",
       type: GraphQLBoolean,
       resolve: (
@@ -115,11 +115,11 @@ export const MessageType = new GraphQLObjectType<any, ResolverContext>({
         })
       },
     },
-    is_invoice: {
+    isInvoice: {
       description: "True if message is an invoice message",
       type: GraphQLBoolean,
       resolve: ({ metadata }) => isInvoiceMessage(metadata),
     },
-    created_at: date,
+    createdAt: date,
   },
 })

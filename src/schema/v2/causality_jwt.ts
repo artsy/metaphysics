@@ -24,16 +24,20 @@ const CausalityJWT: GraphQLFieldConfig<void, ResolverContext> = {
       }),
       description: "",
     },
-    sale_id: {
+    saleID: {
       type: new GraphQLNonNull(GraphQLString),
       description: "The id of the auction to participate in",
     },
   },
   resolve: (
     _root,
-    options,
+    { saleID, ..._options },
     { meLoader, meBiddersLoader, mePartnersLoader, saleLoader }
   ) => {
+    const options: any = {
+      sale_id: saleID,
+      ..._options,
+    }
     // Observer role for logged out users
     if (!meLoader || !meBiddersLoader || !mePartnersLoader) {
       return saleLoader(options.sale_id).then(sale =>

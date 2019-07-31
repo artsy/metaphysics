@@ -16,19 +16,19 @@ const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
   name: "BidderPosition",
   fields: () => ({
     ...InternalIDFields,
-    created_at: date,
-    updated_at: date,
-    processed_at: date,
-    highest_bid: {
+    createdAt: date,
+    updatedAt: date,
+    processedAt: date,
+    highestBid: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "HighestBid",
         fields: {
           ...InternalIDFields,
-          created_at: date,
+          createdAt: date,
           number: {
             type: GraphQLInt,
           },
-          is_cancelled: {
+          isCancelled: {
             type: GraphQLBoolean,
             resolve: ({ cancelled }) => cancelled,
           },
@@ -43,20 +43,21 @@ const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
           },
         },
       }),
+      resolve: ({ highest_bid }) => highest_bid,
     },
-    is_active: {
+    isActive: {
       type: GraphQLBoolean,
       resolve: ({ active }) => active,
     },
-    is_retracted: {
+    isRetracted: {
       type: GraphQLBoolean,
       resolve: ({ retracted }) => retracted,
     },
-    is_with_bid_max: {
+    isWithBidMax: {
       type: GraphQLBoolean,
       resolve: ({ bid_max }) => bid_max,
     },
-    is_winning: {
+    isWinning: {
       type: GraphQLBoolean,
       resolve: (position, _options, { saleArtworkRootLoader }) => {
         return saleArtworkRootLoader(position.sale_artwork_id).then(
@@ -66,19 +67,19 @@ const BidderPositionType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
-    max_bid: money({
+    maxBid: money({
       name: "BidderPositionMaxBid",
       resolve: ({ display_max_bid_amount_dollars, max_bid_amount_cents }) => ({
         cents: max_bid_amount_cents,
         display: display_max_bid_amount_dollars,
       }),
     }),
-    sale_artwork: {
+    saleArtwork: {
       type: SaleArtwork.type,
       resolve: ({ sale_artwork_id }, _options, { saleArtworkRootLoader }) =>
         saleArtworkRootLoader(sale_artwork_id),
     },
-    suggested_next_bid: money({
+    suggestedNextBid: money({
       name: "BidderPositionSuggestedNextBid",
       resolve: ({
         display_suggested_next_bid_dollars,

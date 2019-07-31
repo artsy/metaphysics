@@ -56,7 +56,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      artists_connection: {
+      artistsConnection: {
         type: artistConnection,
         args: pageable(),
         resolve: ({ id, counts }, options, { geneArtistsLoader }) => {
@@ -75,7 +75,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      artworks_connection: {
+      artworksConnection: {
         type: connectionDefinitions({
           name: "GeneArtworks",
           nodeType: Artwork.type,
@@ -118,20 +118,21 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
       description: {
         type: GraphQLString,
       },
-      display_name: {
+      displayName: {
         type: GraphQLString,
+        resolve: ({ display_name }) => display_name,
       },
-      filtered_artworks: filterArtworks("gene_id"),
+      filteredArtworks: filterArtworks("gene_id"),
       href: {
         type: GraphQLString,
         resolve: ({ id }) => `/gene/${id}`,
       },
       image: Image,
-      is_published: {
+      isPublished: {
         type: GraphQLBoolean,
         resolve: ({ published }) => published,
       },
-      is_followed: {
+      isFollowed: {
         type: GraphQLBoolean,
         resolve: ({ id }, _args, { followedGeneLoader }) => {
           if (!followedGeneLoader) return false
@@ -152,14 +153,17 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
       similar: {
         type: geneConnection, // eslint-disable-line no-use-before-define
         args: pageable({
-          exclude_gene_ids: {
+          excludeGeneIDs: {
             type: new GraphQLList(GraphQLString),
             description:
               "Array of gene ids (not slugs) to exclude, may result in all genes being excluded.",
           },
         }),
         description: "A list of genes similar to the specified gene",
-        resolve: (gene, options, { similarGenesLoader }) => {
+        resolve: (gene, { excludeGeneIDs }, { similarGenesLoader }) => {
+          const options: any = {
+            exclude_gene_ids: excludeGeneIDs,
+          }
           const { limit: size, offset } = getPagingParameters(options)
           const gravityArgs = {
             size,
@@ -181,7 +185,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      trending_artists: {
+      trendingArtists: {
         type: new GraphQLList(Artist.type),
         args: {
           sample: {

@@ -24,8 +24,9 @@ const getValidCitySlugs = () => Object.keys(location_by_city_slug).join(", ")
 const FollowedShowEdge = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedShowEdge",
   fields: {
-    partner_show: {
+    partnerShow: {
       type: ShowType,
+      resolve: ({ partner_show }) => partner_show,
     },
     ...IDFields,
   },

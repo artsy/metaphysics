@@ -70,17 +70,20 @@ const CreditCardType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description: "Name on the credit card",
     },
-    last_digits: {
+    lastDigits: {
       type: new GraphQLNonNull(GraphQLString),
       description: "Last four digits on the credit card",
+      resolve: ({ last_digits }) => last_digits,
     },
-    expiration_month: {
+    expirationMonth: {
       type: new GraphQLNonNull(GraphQLInt),
       description: "Credit card's expiration month",
+      resolve: ({ expiration_month }) => expiration_month,
     },
-    expiration_year: {
+    expirationYear: {
       type: new GraphQLNonNull(GraphQLInt),
       description: "Credit card's expiration year",
+      resolve: ({ expiration_year }) => expiration_year,
     },
     street1: {
       type: GraphQLString,
@@ -102,9 +105,10 @@ const CreditCardType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString, // TODO: We may make this type more strict by throwing ISO "ALPHA-2 Codes
       description: "Billing address country code",
     },
-    postal_code: {
+    postalCode: {
       type: GraphQLString,
       description: "Billing address postal code",
+      resolve: ({ postal_code }) => postal_code,
     },
   }),
 })

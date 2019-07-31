@@ -19,8 +19,9 @@ export const ArtworkInquiryType = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(Artwork.type),
       resolve: ({ inquireable }) => inquireable,
     },
-    impulse_conversation_id: {
+    impulseConversationID: {
       type: GraphQLString,
+      resolve: ({ impulse_conversation_id }) => impulse_conversation_id,
     },
   }),
 })

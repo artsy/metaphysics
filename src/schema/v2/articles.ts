@@ -12,19 +12,24 @@ const Articles: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Article.type),
   description: "A list of Articles",
   args: {
-    auction_id: {
+    auctionID: {
       type: GraphQLString,
     },
     published: {
       type: GraphQLBoolean,
       defaultValue: true,
     },
-    show_id: {
+    showID: {
       type: GraphQLString,
     },
     sort: ArticleSorts,
   },
-  resolve: (_root, options, { articlesLoader }) => {
+  resolve: (_root, { auctionID, showID, ..._options }, { articlesLoader }) => {
+    const options: any = {
+      auction_id: auctionID,
+      show_id: showID,
+      ..._options,
+    }
     return articlesLoader(options).then(articles => articles.results)
   },
 }

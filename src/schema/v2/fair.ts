@@ -47,8 +47,9 @@ const FairOrganizerType = new GraphQLObjectType<any, ResolverContext>({
   name: "organizer",
   fields: {
     ...SlugAndInternalIDFields,
-    profile_id: {
+    profileID: {
       type: GraphQLID,
+      resolve: ({ profile_id }) => profile_id,
     },
     profile: {
       type: Profile.type,
@@ -69,7 +70,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     about: {
       type: GraphQLString,
     },
-    followed_content: {
+    followedContent: {
       type: FollowedContentType,
       resolve: (
         fair,
@@ -123,8 +124,9 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     cached,
-    banner_size: {
+    bannerSize: {
       type: GraphQLString,
+      resolve: ({ banner_size }) => banner_size,
     },
     counts: {
       type: new GraphQLObjectType<any, ResolverContext>({
@@ -133,14 +135,14 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
           artists: numeral(({ artists_count }) => artists_count),
           artworks: numeral(({ artworks_count }) => artworks_count),
           partners: numeral(({ partners_count }) => partners_count),
-          partner_shows: numeral(
+          partnerShows: numeral(
             ({ partner_shows_count }) => partner_shows_count
           ),
         },
       }),
       resolve: fair => fair,
     },
-    exhibition_period: {
+    exhibitionPeriod: {
       type: GraphQLString,
       description: "A formatted description of the start to end dates",
       resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
@@ -152,17 +154,21 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ start_at, end_at }) =>
         formattedOpeningHours(start_at, end_at, "UTC"),
     },
-    has_full_feature: {
+    hasFullFeature: {
       type: GraphQLBoolean,
+      resolve: ({ has_full_feature }) => has_full_feature,
     },
-    has_homepage_section: {
+    hasHomepageSection: {
       type: GraphQLBoolean,
+      resolve: ({ has_homepage_section }) => has_homepage_section,
     },
-    has_large_banner: {
+    hasLargeBanner: {
       type: GraphQLBoolean,
+      resolve: ({ has_large_banner }) => has_large_banner,
     },
-    has_listing: {
+    hasListing: {
       type: GraphQLBoolean,
+      resolve: ({ has_listing }) => has_listing,
     },
     hours: {
       type: GraphQLString,
@@ -187,14 +193,15 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
     links: {
       type: GraphQLString,
     },
-    mobile_image: {
+    mobileImage: {
       /**
        * cannot use Image normalizer because it will grab other image versions; mobile icon is expected to be correctly
        * sized
        */
       type: Image.type,
+      resolve: ({ mobile_image }) => mobile_image,
     },
-    is_published: {
+    isPublished: {
       type: GraphQLBoolean,
       resolve: ({ published }) => published,
     },
@@ -229,7 +236,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
-    shows_connection: {
+    showsConnection: {
       type: ShowsConnection,
       description:
         "This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.",
@@ -271,9 +278,9 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
-    start_at: date,
-    end_at: date,
-    active_start_at: date,
+    startAt: date,
+    endAt: date,
+    activeStartAt: date,
     organizer: {
       type: FairOrganizerType,
     },
@@ -284,7 +291,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ tickets_link }) => tickets_link,
     },
-    exhibitors_grouped_by_name: {
+    exhibitorsGroupedByName: {
       description: "The exhibitors with booths in this fair with letter.",
       type: new GraphQLList(
         new GraphQLObjectType<any, ResolverContext>({
@@ -305,13 +312,15 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
                       type: GraphQLString,
                       description: "Exhibitor name",
                     },
-                    partner_id: {
+                    partnerID: {
                       type: GraphQLString,
                       description: "Exhibitors _id",
+                      resolve: ({ partner_id }) => partner_id,
                     },
-                    profile_id: {
+                    profileID: {
                       type: GraphQLString,
                       description: "Partner default profile id",
+                      resolve: ({ profile_id }) => profile_id,
                     },
                   },
                 })

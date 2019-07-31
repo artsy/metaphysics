@@ -11,20 +11,24 @@ const HomePageModuleParams = new GraphQLObjectType<any, ResolverContext>({
   name: "HomePageModulesParams",
   fields: {
     ...NullableIDField,
-    followed_artist_id: {
+    followedArtistID: {
       type: GraphQLID,
+      resolve: ({ followed_artist_id }) => followed_artist_id,
     },
-    gene_id: {
+    geneID: {
       type: GraphQLString,
+      resolve: ({ gene_id }) => gene_id,
     },
     medium: {
       type: GraphQLString,
     },
-    price_range: {
+    priceRange: {
       type: GraphQLString,
+      resolve: ({ price_range }) => price_range,
     },
-    related_artist_id: {
+    relatedArtistID: {
       type: GraphQLID,
+      resolve: ({ related_artist_id }) => related_artist_id,
     },
   },
 })
