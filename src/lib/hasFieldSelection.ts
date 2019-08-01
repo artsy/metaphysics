@@ -102,21 +102,21 @@ export const parseConnectionArgsFromConnection = (
                       arg.name.value
                     )
                   ) {
-                    let val =
-                      (arg as any).value.value ||
-                      info.variableValues[arg.name.value] ||
-                      0
+                    let val: string
 
-                    // Emission sends back `count` and `cursor` as the
-                    // variables for `first` and `after`.
-                    // TODO: Improve introspection/visiting so we don't need this.
-                    if (arg.name.value === "first" && !val) {
-                      val = info.variableValues["count"]
-                    } else if (arg.name.value === "after" && !val) {
-                      val = info.variableValues["cursor"]
+                    if (arg.value.kind === "Variable") {
+                      const variableName = arg.value.name.value
+                      val = info.variableValues[variableName]
+                    } else if (
+                      arg.value.kind === "IntValue" ||
+                      arg.value.kind === "StringValue"
+                    ) {
+                      val = arg.value.value
+                    } else {
+                      val = "0"
                     }
 
-                    connectionArgs[arg.name.value] = parseInt(val) || val
+                    connectionArgs[arg.name.value] = parseInt(val, 10) || val
                   }
                 })
               return BREAK
