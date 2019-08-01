@@ -85,7 +85,57 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           },
         }).connectionType,
         args: pageable(filterArtworksArgs),
-        resolve: ({ id }, options, { filterArtworksLoader }) => {
+        resolve: (
+          { id },
+          {
+            aggregationPartnerCities,
+            artistID,
+            artistIDs,
+            atAuction,
+            attributionClass,
+            dimensionRange,
+            extraAggregationGeneIDs,
+            includeArtworksByFollowedArtists,
+            includeMediumFilterInAggregation,
+            inquireableOnly,
+            forSale,
+            geneID,
+            geneIDs,
+            majorPeriods,
+            partnerID,
+            partnerCities,
+            priceRange,
+            saleID,
+            tagID,
+            keywordMatchExact,
+            ..._options
+          },
+          { filterArtworksLoader }
+        ) => {
+          const options: any = {
+            aggregation_partner_cities: aggregationPartnerCities,
+            artist_id: artistID,
+            artist_ids: artistIDs,
+            at_auction: atAuction,
+            attribution_class: attributionClass,
+            dimension_range: dimensionRange,
+            extra_aggregation_gene_ids: extraAggregationGeneIDs,
+            include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
+            include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
+            inquireable_only: inquireableOnly,
+            for_sale: forSale,
+            gene_id: geneID,
+            gene_ids: geneIDs,
+            major_periods: majorPeriods,
+            partner_id: partnerID,
+            partner_cities: partnerCities,
+            price_range: priceRange,
+            sale_id: saleID,
+            tag_id: tagID,
+            keyword_match_exact: keywordMatchExact,
+            ..._options,
+          }
+
           const gravityOptions = convertConnectionArgsToGravityArgs(options)
           // Do some massaging of the options for ElasticSearch
           gravityOptions.aggregations = options.aggregations || []
