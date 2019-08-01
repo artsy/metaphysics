@@ -49,7 +49,7 @@ import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 import { deprecate } from "lib/deprecation"
-import { decodeArtsyJWT } from "lib/artsy_jwt"
+import { decodeArtsyJWT } from "lib/artsyJWT"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -674,7 +674,7 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
       accessToken,
     }
   ) => {
-    const decodedJwt = decodeArtsyJWT(accessToken as string)
+    const decodedJwt = decodeArtsyJWT(accessToken as string, false)
     const partnerIds: Array<String> = decodedJwt ? decodedJwt.partner_ids : []
     const isAdmin: boolean =
       decodedJwt && decodedJwt.roles.split(",").includes("admin")
