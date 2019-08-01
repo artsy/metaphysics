@@ -2059,7 +2059,12 @@ type CommerceBuyOrder implements CommerceOrder {
   code: String!
   commissionFeeCents: Int
   commissionRate: Float
-  createdAt: String!
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
@@ -2115,7 +2120,12 @@ type CommerceBuyOrder implements CommerceOrder {
   taxTotalCents: Int
   totalListPriceCents: Int!
   transactionFeeCents: Int
-  updatedAt: String!
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   buyerDetails: OrderParty
   sellerDetails: OrderParty
   creditCard: CreditCard
@@ -2348,12 +2358,22 @@ type CommerceFulfillAtOncePayload {
 # A Fulfillment for an order
 type CommerceFulfillment {
   courier: String!
-  createdAt: CommerceDateTime!
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   estimatedDelivery: CommerceDate
   internalID: ID!
   notes: String
   trackingId: String
-  updatedAt: CommerceDateTime!
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
 }
 
 # Attributes of a Fulfillment
@@ -2390,7 +2410,12 @@ type CommerceLineItem {
   artworkId: String!
   artworkVersionId: String!
   commissionFeeCents: Int
-  createdAt: CommerceDateTime!
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   editionSetId: String
   fulfillments(
     # Returns the elements in the list that come after the specified cursor.
@@ -2411,7 +2436,12 @@ type CommerceLineItem {
   priceCents: Int! @deprecated(reason: "switch to use listPriceCents")
   quantity: Int!
   shippingTotalCents: Int
-  updatedAt: CommerceDateTime!
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   artwork: Artwork
   artworkVersion: ArtworkVersion
   shippingTotal(
@@ -2468,7 +2498,12 @@ type CommerceLineItemEdge {
 type CommerceOffer {
   amountCents: Int!
   buyerTotalCents: Int
-  createdAt: String!
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   creatorId: String!
   currencyCode: String!
   from: CommerceOrderPartyUnion!
@@ -2553,7 +2588,12 @@ type CommerceOfferOrder implements CommerceOrder {
   code: String!
   commissionFeeCents: Int
   commissionRate: Float
-  createdAt: String!
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
@@ -2628,7 +2668,12 @@ type CommerceOfferOrder implements CommerceOrder {
   taxTotalCents: Int
   totalListPriceCents: Int!
   transactionFeeCents: Int
-  updatedAt: String!
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   buyerDetails: OrderParty
   sellerDetails: OrderParty
   creditCard: CreditCard
@@ -2723,7 +2768,12 @@ interface CommerceOrder {
   code: String!
   commissionFeeCents: Int
   commissionRate: Float
-  createdAt: String!
+  createdAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
@@ -2779,7 +2829,12 @@ interface CommerceOrder {
   taxTotalCents: Int
   totalListPriceCents: Int!
   transactionFeeCents: Int
-  updatedAt: String!
+  updatedAt(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
+  ): String
   buyerDetails: OrderParty
   sellerDetails: OrderParty
   creditCard: CreditCard
