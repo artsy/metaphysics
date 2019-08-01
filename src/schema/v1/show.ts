@@ -681,12 +681,8 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
     const isDisplayable = show =>
       show.displayable || isAdmin || partnerIds.includes(show.partner._id)
 
-    let loader
-    if (decodedJwt) {
-      loader = loaderWithoutCache
-    } else {
-      loader = loaderWithCache
-    }
+    const loader =
+      decodedJwt && loaderWithoutCache ? loaderWithoutCache : loaderWithCache
 
     return loader(id)
       .then(show => {
