@@ -186,113 +186,113 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
 })
 
 export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
-    acquireable: {
-      type: GraphQLBoolean,
-    },
-    offerable: {
-      type: GraphQLBoolean,
-    },
-    aggregationPartnerCities: {
-      type: new GraphQLList(GraphQLString),
-    },
-    aggregations: {
-      type: new GraphQLList(ArtworksAggregation),
-    },
-    artistID: {
-      type: GraphQLString,
-    },
-    artistIDs: {
-      type: new GraphQLList(GraphQLString),
-    },
-    atAuction: {
-      type: GraphQLBoolean,
-    },
-    attributionClass: {
-      type: new GraphQLList(GraphQLString),
-    },
-    color: {
-      type: GraphQLString,
-    },
-    dimensionRange: {
-      type: GraphQLString,
-    },
-    extraAggregationGeneIDs: {
-      type: new GraphQLList(GraphQLString),
-    },
-    includeArtworksByFollowedArtists: {
-      type: GraphQLBoolean,
-    },
-    includeMediumFilterInAggregation: {
-      type: GraphQLBoolean,
-    },
-    inquireableOnly: {
-      type: GraphQLBoolean,
-    },
-    forSale: {
-      type: GraphQLBoolean,
-    },
-    geneID: {
-      type: GraphQLString,
-    },
-    geneIDs: {
-      type: new GraphQLList(GraphQLString),
-    },
-    height: {
-      type: GraphQLString,
-    },
-    width: {
-      type: GraphQLString,
-    },
-    marketable: {
-      type: GraphQLBoolean,
-      description:
-        "When true, will only return `marketable` works (not nude or provocative).",
-    },
-    medium: {
-      type: GraphQLString,
-      description:
-        "A string from the list of allocations, or * to denote all mediums",
-    },
-    period: {
-      type: GraphQLString,
-    },
-    periods: {
-      type: new GraphQLList(GraphQLString),
-    },
-    majorPeriods: {
-      type: new GraphQLList(GraphQLString),
-    },
-    partnerID: {
-      type: GraphQLID,
-    },
-    partnerCities: {
-      type: new GraphQLList(GraphQLString),
-    },
-    priceRange: {
-      type: GraphQLString,
-    },
-    page: {
-      type: GraphQLInt,
-    },
-    saleID: {
-      type: GraphQLID,
-    },
-    size: {
-      type: GraphQLInt,
-    },
-    sort: {
-      type: GraphQLString,
-    },
-    tagID: {
-      type: GraphQLString,
-    },
-    keyword: {
-      type: GraphQLString,
-    },
-    keywordMatchExact: {
-      type: GraphQLBoolean,
-      description: "When true, will only return exact keyword match",
-    },
+  acquireable: {
+    type: GraphQLBoolean,
+  },
+  offerable: {
+    type: GraphQLBoolean,
+  },
+  aggregationPartnerCities: {
+    type: new GraphQLList(GraphQLString),
+  },
+  aggregations: {
+    type: new GraphQLList(ArtworksAggregation),
+  },
+  artistID: {
+    type: GraphQLString,
+  },
+  artistIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
+  atAuction: {
+    type: GraphQLBoolean,
+  },
+  attributionClass: {
+    type: new GraphQLList(GraphQLString),
+  },
+  color: {
+    type: GraphQLString,
+  },
+  dimensionRange: {
+    type: GraphQLString,
+  },
+  extraAggregationGeneIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
+  includeArtworksByFollowedArtists: {
+    type: GraphQLBoolean,
+  },
+  includeMediumFilterInAggregation: {
+    type: GraphQLBoolean,
+  },
+  inquireableOnly: {
+    type: GraphQLBoolean,
+  },
+  forSale: {
+    type: GraphQLBoolean,
+  },
+  geneID: {
+    type: GraphQLString,
+  },
+  geneIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
+  height: {
+    type: GraphQLString,
+  },
+  width: {
+    type: GraphQLString,
+  },
+  marketable: {
+    type: GraphQLBoolean,
+    description:
+      "When true, will only return `marketable` works (not nude or provocative).",
+  },
+  medium: {
+    type: GraphQLString,
+    description:
+      "A string from the list of allocations, or * to denote all mediums",
+  },
+  period: {
+    type: GraphQLString,
+  },
+  periods: {
+    type: new GraphQLList(GraphQLString),
+  },
+  majorPeriods: {
+    type: new GraphQLList(GraphQLString),
+  },
+  partnerID: {
+    type: GraphQLID,
+  },
+  partnerCities: {
+    type: new GraphQLList(GraphQLString),
+  },
+  priceRange: {
+    type: GraphQLString,
+  },
+  page: {
+    type: GraphQLInt,
+  },
+  saleID: {
+    type: GraphQLID,
+  },
+  size: {
+    type: GraphQLInt,
+  },
+  sort: {
+    type: GraphQLString,
+  },
+  tagID: {
+    type: GraphQLString,
+  },
+  keyword: {
+    type: GraphQLString,
+  },
+  keywordMatchExact: {
+    type: GraphQLBoolean,
+    description: "When true, will only return exact keyword match",
+  },
 }
 
 const filterArtworksTypeFactory = (
@@ -394,7 +394,7 @@ const filterArtworksTypeFactory = (
     // from the already fetched data, instead of re-fetching.
     const connectionArgs = parseConnectionArgsFromConnection(
       info,
-      "artworks_connection"
+      "artworksConnection"
     )
 
     let relayOptions: any = {}
