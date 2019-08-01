@@ -105,6 +105,24 @@ export const exchangeStitchingEnvironment = (
     to: "fromDetails",
   })
 
+  const creditCardResolver = {
+    fragment: `fragment CommerceOrderCreditCard on CommerceOrder { creditCardId }`,
+    resolve: (parent, _args, context, info) => {
+      const id = parent.creditCardId
+      return info.mergeInfo.delegateToSchema({
+        schema: localSchema,
+        operation: "query",
+        fieldName: "credit_card",
+        args: {
+          id,
+        },
+        context,
+        info,
+        transforms: exchangeSchema.transforms,
+      })
+    },
+  }
+
   // Map the totals array to a set of resolvers that call the amount function
   // the type param is only used for the fragment name
   const totalsResolvers = (type, totalSDLS) =>
@@ -134,6 +152,7 @@ export const exchangeStitchingEnvironment = (
     extend type CommerceBuyOrder {
       buyerDetails: OrderParty
       sellerDetails: OrderParty
+      creditCard: CreditCard
 
       ${orderTotalsSDL.join("\n")}
     }
@@ -141,6 +160,7 @@ export const exchangeStitchingEnvironment = (
     extend type CommerceOfferOrder {
       buyerDetails: OrderParty
       sellerDetails: OrderParty
+      creditCard: CreditCard
 
       ${orderTotalsSDL.join("\n")}
       ${amountSDL("offerTotal")}
@@ -149,6 +169,7 @@ export const exchangeStitchingEnvironment = (
     extend interface CommerceOrder {
       buyerDetails: OrderParty
       sellerDetails: OrderParty
+      creditCard: CreditCard
 
       ${orderTotalsSDL.join("\n")}
     }
@@ -166,11 +187,13 @@ export const exchangeStitchingEnvironment = (
         ...totalsResolvers("CommerceBuyOrder", orderTotals),
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
+        creditCard: creditCardResolver,
       },
       CommerceOfferOrder: {
         ...totalsResolvers("CommerceOfferOrder", orderTotals),
         buyerDetails: buyerDetailsResolver,
         sellerDetails: sellerDetailsResolver,
+        creditCard: creditCardResolver,
       },
       CommerceLineItem: {
         artwork: {
