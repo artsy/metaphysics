@@ -82,6 +82,7 @@ export const OfferFields = gql`
     creatorId
     amountCents
     note
+    currencyCode
     shippingTotalCents
     taxTotalCents
     respondsTo {

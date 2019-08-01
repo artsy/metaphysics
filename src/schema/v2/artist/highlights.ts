@@ -15,17 +15,26 @@ const ArtistHighlightsType = new GraphQLObjectType<any, ResolverContext>({
     partners: {
       type: PartnerArtistConnection,
       args: pageable({
-        represented_by: {
+        representedBy: {
           type: GraphQLBoolean,
         },
-        partner_category: {
+        partnerCategory: {
           type: new GraphQLList(GraphQLString),
         },
-        display_on_partner_profile: {
+        displayOnPartnerProfile: {
           type: GraphQLBoolean,
         },
       }),
-      resolve: ({ id: artist_id }, options, { partnerArtistsLoader }) => {
+      resolve: (
+        { id: artist_id },
+        { representedBy, partnerCategory, displayOnPartnerProfile },
+        { partnerArtistsLoader }
+      ) => {
+        const options: any = {
+          represented_by: representedBy,
+          partner_category: partnerCategory,
+          display_on_partner_profile: displayOnPartnerProfile,
+        }
         return partnersForArtist(artist_id, options, partnerArtistsLoader)
       },
     },

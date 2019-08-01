@@ -7,17 +7,20 @@ export const AssetType = new GraphQLObjectType<any, ResolverContext>({
   description: "An asset which is assigned to a consignment submission",
   fields: {
     ...InternalIDFields,
-    submission_id: {
+    submissionID: {
       description: "The convection submission ID",
       type: GraphQLString,
+      resolve: ({ submission_id }) => submission_id,
     },
-    gemini_token: {
+    geminiToken: {
       description: "The gemini token for the asset",
       type: GraphQLString,
+      resolve: ({ gemini_token }) => gemini_token,
     },
-    asset_type: {
+    assetType: {
       description: "The type of the asset",
       type: GraphQLString,
+      resolve: ({ asset_type }) => asset_type,
     },
   },
 })

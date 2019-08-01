@@ -7,17 +7,20 @@ export const AttachmentType = new GraphQLObjectType<any, ResolverContext>({
   description: "Fields of an attachment (currently from Radiation)",
   fields: {
     ...InternalIDFields,
-    content_type: {
+    contentType: {
       description: "Content type of file.",
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ content_type }) => content_type,
     },
-    file_name: {
+    fileName: {
       description: "File name.",
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ file_name }) => file_name,
     },
-    download_url: {
+    downloadURL: {
       descrpition: "URL of attachment.",
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ download_url }) => download_url,
     },
   },
 })

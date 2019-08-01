@@ -1,5 +1,5 @@
 import PartnerCategory from "./partner_category"
-import CategoryType from "./input_fields/category_type"
+import PartnerCategoryTypeEnum from "./input_fields/partner_category_type"
 
 import {
   GraphQLList,
@@ -13,7 +13,7 @@ const PartnerCategories: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(PartnerCategory.type),
   description: "A list of PartnerCategories",
   args: {
-    category_type: CategoryType,
+    categoryType: PartnerCategoryTypeEnum,
     internal: {
       type: GraphQLBoolean,
       defaultValue: false,
@@ -23,8 +23,17 @@ const PartnerCategories: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLInt,
     },
   },
-  resolve: (_root, options, { partnerCategoriesLoader }) =>
-    partnerCategoriesLoader(options),
+  resolve: (
+    _root,
+    { categoryType, ..._options },
+    { partnerCategoriesLoader }
+  ) => {
+    const options: any = {
+      category_type: categoryType,
+      ..._options,
+    }
+    return partnerCategoriesLoader(options)
+  },
 }
 
 export default PartnerCategories

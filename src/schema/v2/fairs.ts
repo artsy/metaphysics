@@ -16,16 +16,16 @@ const Fairs: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Fair.type),
   description: "A list of Fairs",
   args: {
-    fair_organizer_id: {
+    fairOrganizerID: {
       type: GraphQLString,
     },
-    has_full_feature: {
+    hasFullFeature: {
       type: GraphQLBoolean,
     },
-    has_homepage_section: {
+    hasHomepageSection: {
       type: GraphQLBoolean,
     },
-    has_listing: {
+    hasListing: {
       type: GraphQLBoolean,
     },
     ids: {
@@ -47,7 +47,24 @@ const Fairs: GraphQLFieldConfig<void, ResolverContext> = {
     sort: FairSorts,
     status: EventStatus,
   },
-  resolve: async (_root, options, { fairsLoader }) => {
+  resolve: async (
+    _root,
+    {
+      fairOrganizerID,
+      hasFullFeature,
+      hasHomepageSection,
+      hasListing,
+      ..._options
+    },
+    { fairsLoader }
+  ) => {
+    const options: any = {
+      fair_organizer_id: fairOrganizerID,
+      has_full_feature: hasFullFeature,
+      has_homepage_section: hasHomepageSection,
+      has_listing: hasListing,
+      ..._options,
+    }
     let gravityOptions = options
     if (options.near) {
       gravityOptions = _.assign(options, {

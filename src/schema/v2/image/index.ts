@@ -30,7 +30,7 @@ const ImageType = new GraphQLObjectType<any, ResolverContext>({
   name: "Image",
   fields: (): any => ({
     ...NullableIDField,
-    aspect_ratio: {
+    aspectRatio: {
       type: new GraphQLNonNull(GraphQLFloat),
       resolve: ({ aspect_ratio }) => {
         return aspect_ratio || 1
@@ -40,7 +40,7 @@ const ImageType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
     },
     cropped: CroppedUrl,
-    deep_zoom: DeepZoom,
+    deepZoom: DeepZoom,
     href: {
       type: GraphQLString,
     },
@@ -48,30 +48,37 @@ const ImageType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLInt,
       resolve: ({ original_height }) => original_height,
     },
-    image_url: {
+    imageURL: {
       type: GraphQLString,
+      resolve: ({ image_url }) => image_url,
     },
-    image_versions: {
+    imageVersions: {
       type: new GraphQLList(GraphQLString),
+      resolve: ({ image_versions }) => image_versions,
     },
-    is_default: {
+    isDefault: {
       type: GraphQLBoolean,
+      resolve: ({ is_default }) => is_default,
     },
-    is_zoomable: {
+    isZoomable: {
       type: GraphQLBoolean,
       resolve: isZoomable,
     },
-    max_tiled_height: {
+    maxTiledHeight: {
       type: GraphQLInt,
+      resolve: ({ max_tiled_height }) => max_tiled_height,
     },
-    max_tiled_width: {
+    maxTiledWidth: {
       type: GraphQLInt,
+      resolve: ({ max_tiled_width }) => max_tiled_width,
     },
-    original_height: {
+    originalHeight: {
       type: GraphQLInt,
+      resolve: ({ original_height }) => original_height,
     },
-    original_width: {
+    originalWidth: {
       type: GraphQLInt,
+      resolve: ({ original_width }) => original_width,
     },
     orientation: {
       type: GraphQLString,
@@ -91,14 +98,17 @@ const ImageType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLInt,
     },
     resized: ResizedUrl,
-    tile_base_url: {
+    tileBaseURL: {
       type: GraphQLString,
+      resolve: ({ tile_base_url }) => tile_base_url,
     },
-    tile_format: {
+    tileFormat: {
       type: GraphQLString,
+      resolve: ({ tile_format }) => tile_format,
     },
-    tile_size: {
+    tileSize: {
       type: GraphQLInt,
+      resolve: ({ tile_size }) => tile_size,
     },
     title: {
       type: GraphQLString,

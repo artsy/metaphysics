@@ -11,12 +11,12 @@ import { ResolverContext } from "types/graphql"
 const HomePageType = new GraphQLObjectType<any, ResolverContext>({
   name: "HomePage",
   fields: {
-    artist_module: HomePageArtistModule,
-    artist_modules: HomePageArtistModules,
-    artwork_module: HomePageArtworkModule,
-    artwork_modules: HomePageArtworkModules,
-    hero_units: HomePageHeroUnits,
-    fairs_module: HomePageFairsModule,
+    artistModule: HomePageArtistModule,
+    artistModules: HomePageArtistModules,
+    artworkModule: HomePageArtworkModule,
+    artworkModules: HomePageArtworkModules,
+    heroUnits: HomePageHeroUnits,
+    fairsModule: HomePageFairsModule,
   },
 })
 

@@ -30,28 +30,28 @@ const filterSaleArtworksArgs: GraphQLFieldConfigArgumentMap = {
   aggregations: {
     type: new GraphQLList(SaleArtworksAggregation),
   },
-  artist_ids: {
+  artistIDs: {
     type: new GraphQLList(GraphQLString),
   },
-  include_artworks_by_followed_artists: {
+  includeArtworksByFollowedArtists: {
     type: GraphQLBoolean,
   },
-  live_sale: {
+  liveSale: {
     type: GraphQLBoolean,
   },
-  is_auction: {
+  isAuction: {
     type: GraphQLBoolean,
   },
-  gene_ids: {
+  geneIDs: {
     type: new GraphQLList(GraphQLString),
   },
-  estimate_range: {
+  estimateRange: {
     type: GraphQLString,
   },
   page: {
     type: GraphQLInt,
   },
-  sale_id: {
+  saleID: {
     type: GraphQLID,
   },
   size: {
@@ -82,7 +82,7 @@ const SaleArtworkCounts = {
     name: "FilterSaleArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
-      followed_artists: numeral(
+      followedArtists: numeral(
         ({ aggregations }) => aggregations.followed_artists.value
       ),
     },

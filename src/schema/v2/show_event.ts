@@ -41,7 +41,7 @@ const dateFieldForShowEvent: GraphQLFieldConfig<DateSource, ResolverContext> = {
 const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowEventType",
   fields: {
-    event_type: {
+    eventType: {
       type: GraphQLString,
       resolve: ({ event_type }) => {
         return event_type === "Other" ? "Event" : event_type
@@ -53,8 +53,8 @@ const ShowEventType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: GraphQLString,
     },
-    start_at: dateFieldForShowEvent,
-    end_at: dateFieldForShowEvent,
+    startAt: dateFieldForShowEvent,
+    endAt: dateFieldForShowEvent,
     dateTimeRange: {
       type: GraphQLString,
       description: "A formatted description of the dates with hours",

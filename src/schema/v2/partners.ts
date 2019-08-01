@@ -15,28 +15,28 @@ const Partners: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(Partner.type),
   description: "A list of Partners",
   args: {
-    default_profile_public: {
+    defaultProfilePublic: {
       type: GraphQLBoolean,
     },
-    eligible_for_carousel: {
+    eligibleForCarousel: {
       type: GraphQLBoolean,
     },
-    eligible_for_listing: {
+    eligibleForListing: {
       type: GraphQLBoolean,
       description: "Indicates an active subscription",
     },
-    eligible_for_primary_bucket: {
+    eligibleForPrimaryBucket: {
       type: GraphQLBoolean,
       description: "Indicates tier 1/2 for gallery, 1 for institution",
     },
-    eligible_for_secondary_bucket: {
+    eligibleForSecondaryBucket: {
       type: GraphQLBoolean,
       description: "Indicates tier 3/4 for gallery, 2 for institution",
     },
     ids: {
       type: new GraphQLList(GraphQLString),
     },
-    has_full_profile: {
+    hasFullProfile: {
       type: GraphQLBoolean,
     },
     near: {
@@ -46,7 +46,7 @@ const Partners: GraphQLFieldConfig<void, ResolverContext> = {
     page: {
       type: GraphQLInt,
     },
-    partner_categories: {
+    partnerCategories: {
       type: new GraphQLList(GraphQLString),
       description: `
         Only return partners of the specified partner categories.
@@ -95,7 +95,30 @@ const Partners: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLList(PartnerTypeType),
     },
   },
-  resolve: (_root, options, { partnersLoader }) => {
+  resolve: (
+    _root,
+    {
+      defaultProfilePublic,
+      eligibleForCarousel,
+      eligibleForListing,
+      eligibleForPrimaryBucket,
+      eligibleForSecondaryBucket,
+      hasFullProfile,
+      partnerCategories,
+      ..._options
+    },
+    { partnersLoader }
+  ) => {
+    const options: any = {
+      default_profile_public: defaultProfilePublic,
+      eligible_for_carousel: eligibleForCarousel,
+      eligible_for_listing: eligibleForListing,
+      eligible_for_primary_bucket: eligibleForPrimaryBucket,
+      eligible_for_secondary_bucket: eligibleForSecondaryBucket,
+      has_full_profile: hasFullProfile,
+      partner_categories: partnerCategories,
+      ..._options,
+    }
     const cleanedOptions = clone(options)
     // make ids singular to match gravity :id
     if (options.ids) {

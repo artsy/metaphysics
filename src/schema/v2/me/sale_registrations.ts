@@ -17,8 +17,9 @@ export const SaleRegistrationType = new GraphQLObjectType<any, ResolverContext>(
       bidder: {
         type: Bidder.type,
       },
-      is_registered: {
+      isRegistered: {
         type: GraphQLBoolean,
+        resolve: ({ is_registered }) => is_registered,
       },
       sale: {
         type: Sale.type,

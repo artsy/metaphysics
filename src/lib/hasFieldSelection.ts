@@ -102,12 +102,21 @@ export const parseConnectionArgsFromConnection = (
                       arg.name.value
                     )
                   ) {
-                    const val =
-                      (arg as any).value.value ||
-                      info.variableValues[arg.name.value] ||
-                      0
+                    let val: string
 
-                    connectionArgs[arg.name.value] = parseInt(val) || val
+                    if (arg.value.kind === "Variable") {
+                      const variableName = arg.value.name.value
+                      val = info.variableValues[variableName]
+                    } else if (
+                      arg.value.kind === "IntValue" ||
+                      arg.value.kind === "StringValue"
+                    ) {
+                      val = arg.value.value
+                    } else {
+                      val = "0"
+                    }
+
+                    connectionArgs[arg.name.value] = parseInt(val, 10) || val
                   }
                 })
               return BREAK

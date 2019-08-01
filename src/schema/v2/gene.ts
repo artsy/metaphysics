@@ -5,11 +5,6 @@ import cached from "./fields/cached"
 import Artwork from "./artwork"
 import Artist, { artistConnection } from "./artist"
 import Image from "./image"
-import filterArtworks, {
-  ArtworkFilterAggregations,
-  filterArtworksArgs,
-  FilterArtworksCounts,
-} from "./filter_artworks"
 import {
   queriedForFieldsOtherThanBlacklisted,
   convertConnectionArgsToGravityArgs,
@@ -42,6 +37,14 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
   name: "Gene",
   interfaces: [NodeInterface],
   fields: () => {
+    // Avoiding a require circle
+    const {
+      default: filterArtworks,
+      ArtworkFilterAggregations,
+      filterArtworksArgs,
+      FilterArtworksCounts,
+    } = require("./filter_artworks")
+
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -53,7 +56,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      artists_connection: {
+      artistsConnection: {
         type: artistConnection,
         args: pageable(),
         resolve: ({ id, counts }, options, { geneArtistsLoader }) => {
@@ -72,7 +75,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      artworks_connection: {
+      artworksConnection: {
         type: connectionDefinitions({
           name: "GeneArtworks",
           nodeType: Artwork.type,
@@ -82,7 +85,57 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           },
         }).connectionType,
         args: pageable(filterArtworksArgs),
-        resolve: ({ id }, options, { filterArtworksLoader }) => {
+        resolve: (
+          { id },
+          {
+            aggregationPartnerCities,
+            artistID,
+            artistIDs,
+            atAuction,
+            attributionClass,
+            dimensionRange,
+            extraAggregationGeneIDs,
+            includeArtworksByFollowedArtists,
+            includeMediumFilterInAggregation,
+            inquireableOnly,
+            forSale,
+            geneID,
+            geneIDs,
+            majorPeriods,
+            partnerID,
+            partnerCities,
+            priceRange,
+            saleID,
+            tagID,
+            keywordMatchExact,
+            ..._options
+          },
+          { filterArtworksLoader }
+        ) => {
+          const options: any = {
+            aggregation_partner_cities: aggregationPartnerCities,
+            artist_id: artistID,
+            artist_ids: artistIDs,
+            at_auction: atAuction,
+            attribution_class: attributionClass,
+            dimension_range: dimensionRange,
+            extra_aggregation_gene_ids: extraAggregationGeneIDs,
+            include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
+            include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
+            inquireable_only: inquireableOnly,
+            for_sale: forSale,
+            gene_id: geneID,
+            gene_ids: geneIDs,
+            major_periods: majorPeriods,
+            partner_id: partnerID,
+            partner_cities: partnerCities,
+            price_range: priceRange,
+            sale_id: saleID,
+            tag_id: tagID,
+            keyword_match_exact: keywordMatchExact,
+            ..._options,
+          }
+
           const gravityOptions = convertConnectionArgsToGravityArgs(options)
           // Do some massaging of the options for ElasticSearch
           gravityOptions.aggregations = options.aggregations || []
@@ -115,20 +168,21 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
       description: {
         type: GraphQLString,
       },
-      display_name: {
+      displayName: {
         type: GraphQLString,
+        resolve: ({ display_name }) => display_name,
       },
-      filtered_artworks: filterArtworks("gene_id"),
+      filteredArtworks: filterArtworks("gene_id"),
       href: {
         type: GraphQLString,
         resolve: ({ id }) => `/gene/${id}`,
       },
       image: Image,
-      is_published: {
+      isPublished: {
         type: GraphQLBoolean,
         resolve: ({ published }) => published,
       },
-      is_followed: {
+      isFollowed: {
         type: GraphQLBoolean,
         resolve: ({ id }, _args, { followedGeneLoader }) => {
           if (!followedGeneLoader) return false
@@ -149,14 +203,17 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
       similar: {
         type: geneConnection, // eslint-disable-line no-use-before-define
         args: pageable({
-          exclude_gene_ids: {
+          excludeGeneIDs: {
             type: new GraphQLList(GraphQLString),
             description:
               "Array of gene ids (not slugs) to exclude, may result in all genes being excluded.",
           },
         }),
         description: "A list of genes similar to the specified gene",
-        resolve: (gene, options, { similarGenesLoader }) => {
+        resolve: (gene, { excludeGeneIDs }, { similarGenesLoader }) => {
+          const options: any = {
+            exclude_gene_ids: excludeGeneIDs,
+          }
           const { limit: size, offset } = getPagingParameters(options)
           const gravityArgs = {
             size,
@@ -178,7 +235,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      trending_artists: {
+      trendingArtists: {
         type: new GraphQLList(Artist.type),
         args: {
           sample: {

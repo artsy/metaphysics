@@ -149,7 +149,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             })
         },
       },
-      associated_sale: {
+      associatedSale: {
         type: SaleType,
         resolve: ({ associated_sale }, _options, { saleLoader }) => {
           if (associated_sale && associated_sale.id) {
@@ -158,7 +158,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           return null
         },
       },
-      bid_increments: {
+      bidIncrements: {
         type: new GraphQLList(BidIncrement),
         description:
           "A bid increment policy that explains minimum bids in ranges.",
@@ -170,7 +170,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      buyers_premium: {
+      buyersPremium: {
         type: new GraphQLList(BuyersPremium),
         description: "Auction's buyer's premium policy.",
         resolve: sale => {
@@ -183,19 +183,23 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           }))
         },
       },
-      cover_image: Image,
+      coverImage: Image,
       currency: { type: GraphQLString },
       description: { type: GraphQLString },
-      display_timely_at: {
+      displayTimelyAt: {
         type: GraphQLString,
         resolve: (sale, _options, { meBiddersLoader }) => {
           return displayTimelyAt({ sale, meBiddersLoader })
         },
       },
-      eligible_sale_artworks_count: { type: GraphQLInt },
-      end_at: date,
-      event_start_at: date,
-      event_end_at: date,
+      eligibleSaleArtworksCount: {
+        type: GraphQLInt,
+        resolve: ({ eligible_sale_artworks_count }) =>
+          eligible_sale_artworks_count,
+      },
+      endAt: date,
+      eventStartAt: date,
+      eventEndAt: date,
       formattedStartDateTime: {
         type: GraphQLString,
         description:
@@ -206,7 +210,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
       name: { type: GraphQLString },
       initials: initials("name"),
-      is_auction: { type: GraphQLBoolean },
+      isAuction: {
+        type: GraphQLBoolean,
+        resolve: ({ is_auction }) => is_auction,
+      },
       isBenefit: {
         type: GraphQLBoolean,
         resolve: ({ is_benefit }) => is_benefit,
@@ -215,35 +222,35 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ is_gallery_auction }) => is_gallery_auction,
       },
-      is_auction_promo: {
+      isAuctionPromo: {
         type: GraphQLBoolean,
         resolve: ({ sale_type }) => sale_type === "auction promo",
       },
-      is_closed: {
+      isClosed: {
         type: GraphQLBoolean,
         resolve: ({ auction_state }) => auction_state === "closed",
       },
-      is_open: {
+      isOpen: {
         type: GraphQLBoolean,
         resolve: ({ auction_state }) => auction_state === "open",
       },
-      is_live_open: { type: GraphQLBoolean, resolve: isLiveOpen },
-      is_preview: {
+      isLiveOpen: { type: GraphQLBoolean, resolve: isLiveOpen },
+      isPreview: {
         type: GraphQLBoolean,
         resolve: ({ auction_state }) => auction_state === "preview",
       },
-      is_registration_closed: {
+      isRegistrationClosed: {
         type: GraphQLBoolean,
         resolve: ({ registration_ends_at }) =>
           moment().isAfter(registration_ends_at),
       },
-      is_with_buyers_premium: {
+      isWithBuyersPremium: {
         type: GraphQLBoolean,
         resolve: ({ buyers_premium }) => buyers_premium,
       },
-      live_start_at: date,
+      liveStartAt: date,
       // Only fetches the partner info that's already included in the Sale object
-      live_url_if_open: {
+      liveURLIfOpen: {
         type: GraphQLString,
         description:
           "Returns a live auctions url if the sale is open and start time is after now",
@@ -256,7 +263,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       // since we don't (at this time) need to load the full Partner object.
       partner: { type: Partner.type, resolve: ({ partner }) => partner },
       profile: { type: Profile.type, resolve: ({ profile }) => profile },
-      promoted_sale: {
+      promotedSale: {
         type: SaleType,
         resolve: ({ promoted_sale }, _options, { saleLoader }) => {
           if (promoted_sale && promoted_sale.id) {
@@ -265,7 +272,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           return null
         },
       },
-      registration_ends_at: date,
+      registrationEndsAt: date,
       registrationStatus: {
         type: Bidder.type,
         description: "A registration for this sale or null",
@@ -274,8 +281,11 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           return meBiddersLoader({ sale_id: id }).then(([bidder]) => bidder)
         },
       },
-      require_bidder_approval: { type: GraphQLBoolean },
-      sale_artworks: {
+      requireBidderApproval: {
+        type: GraphQLBoolean,
+        resolve: ({ require_bidder_approval }) => require_bidder_approval,
+      },
+      saleArtworks: {
         type: new GraphQLList(SaleArtwork.type),
         args: {
           page: { type: GraphQLInt, defaultValue: 1 },
@@ -296,7 +306,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           return fetch
         },
       },
-      sale_artworks_connection: {
+      saleArtworksConnection: {
         type: saleArtworkConnection,
         args: pageable(),
         resolve: (sale, options, { saleArtworksLoader }) => {
@@ -312,13 +322,16 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      sale_type: { type: GraphQLString },
-      start_at: date,
+      saleType: {
+        type: GraphQLString,
+        resolve: ({ sale_type }) => sale_type,
+      },
+      startAt: date,
       status: {
         type: GraphQLString,
         resolve: ({ auction_state }) => auction_state,
       },
-      sale_artwork: {
+      saleArtwork: {
         type: SaleArtwork.type,
         args: { id: { type: new GraphQLNonNull(GraphQLString) } },
         resolve: (sale, { id }, { saleArtworkLoader }) => {

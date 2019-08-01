@@ -20,7 +20,10 @@ const SystemTimeType = new GraphQLObjectType<any, ResolverContext>({
       sec: { type: GraphQLInt },
       dst: { type: GraphQLBoolean },
       unix: { type: GraphQLInt },
-      utc_offset: { type: GraphQLInt },
+      utcOffset: {
+        type: GraphQLInt,
+        resolve: ({ utc_offset }) => utc_offset,
+      },
       zone: { type: GraphQLString },
       iso8601: { type: GraphQLString },
     }

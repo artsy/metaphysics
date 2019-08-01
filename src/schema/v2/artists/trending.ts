@@ -12,7 +12,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const TrendingArtistsType = new GraphQLObjectType<any, ResolverContext>({
+export const TrendingArtistsType = new GraphQLObjectType<any, ResolverContext>({
   name: "TrendingArtists",
   fields: () => ({
     artists: {
@@ -60,7 +60,7 @@ const TrendingArtists: GraphQLFieldConfig<void, ResolverContext> = {
   type: TrendingArtistsType,
   description: "Trending artists",
   args: {
-    double_time_period: {
+    doubleTimePeriod: {
       type: GraphQLBoolean,
       description:
         "Fetch the top artists for each metric within double the base time period",
@@ -83,7 +83,7 @@ const TrendingArtists: GraphQLFieldConfig<void, ResolverContext> = {
   },
   resolve: (
     _root,
-    { method, name, size, double_time_period },
+    { method, name, size, doubleTimePeriod: double_time_period },
     { deltaLoader }
   ) =>
     deltaLoader({

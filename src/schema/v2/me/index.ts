@@ -46,9 +46,7 @@ const { ENABLE_CONVECTION_STITCHING } = config
 const mySubmissions: GraphQLFieldConfigMap<
   void,
   ResolverContext
-> = !!ENABLE_CONVECTION_STITCHING
-  ? {}
-  : { consignment_submissions: Submissions }
+> = !!ENABLE_CONVECTION_STITCHING ? {} : { consignmentSubmissions: Submissions }
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -56,22 +54,22 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     ...IDFields,
     ...mySubmissions,
-    artwork_inquiries_connection: ArtworkInquiries,
+    artworkInquiriesConnection: ArtworkInquiries,
     bidders: Bidders,
-    bidder_status: BidderStatus,
-    bidder_positions: BidderPositions,
-    bidder_position: BidderPosition,
-    collector_profile: CollectorProfile,
+    bidderStatus: BidderStatus,
+    bidderPositions: BidderPositions,
+    bidderPosition: BidderPosition,
+    collectorProfile: CollectorProfile,
     conversation: Conversation,
     conversations: Conversations,
-    created_at: date,
+    createdAt: date,
     creditCards: CreditCards,
     email: {
       type: GraphQLString,
     },
-    follow_artists: FollowArtists,
-    followed_artists_connection: FollowedArtists,
-    followed_genes: FollowedGenes,
+    followArtists: FollowArtists,
+    followedArtistsConnection: FollowedArtists,
+    followedGenes: FollowedGenes,
     followsAndSaves: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "FollowsAndSaves",
@@ -83,7 +81,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       }),
       resolve: () => ({}),
     },
-    has_credit_cards: {
+    hasCreditCards: {
       type: GraphQLBoolean,
       resolve: (_root, _options, { meCreditCardsLoader }) => {
         if (!meCreditCardsLoader) return null
@@ -92,7 +90,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
         })
       },
     },
-    has_qualified_credit_cards: {
+    hasQualifiedCreditCards: {
       type: GraphQLBoolean,
       resolve: (_root, _options, { meCreditCardsLoader }) => {
         if (!meCreditCardsLoader) return null
@@ -104,23 +102,24 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     invoice: Invoice,
-    lot_standing: LotStanding,
-    lot_standings: LotStandings,
+    lotStanding: LotStanding,
+    lotStandings: LotStandings,
     name: {
       type: GraphQLString,
     },
     initials: initials("name"),
-    paddle_number: {
+    paddleNumber: {
       type: GraphQLString,
+      resolve: ({ paddle_number }) => paddle_number,
     },
     recentlyViewedArtworkIds: {
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
       resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
     },
     recentlyViewedArtworks: RecentlyViewedArtworks,
-    sale_registrations: SaleRegistrations,
-    saved_artworks: SavedArtworks,
-    suggested_artists: SuggestedArtists,
+    saleRegistrations: SaleRegistrations,
+    savedArtworks: SavedArtworks,
+    suggestedArtists: SuggestedArtists,
     type: {
       type: GraphQLString,
     },

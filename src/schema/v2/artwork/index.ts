@@ -15,7 +15,7 @@ import ShowSorts from "schema/v2/sorts/show_sorts"
 import Partner from "schema/v2/partner"
 import Context from "./context"
 import Meta, { artistNames } from "./meta"
-import Highlight from "./highlight"
+import { ArtworkHighlightType } from "./highlight"
 import Dimensions from "schema/v2/dimensions"
 import EditionSet, { EditionSetSorts } from "schema/v2/edition_set"
 import { Sellable } from "schema/v2/sellable"
@@ -62,7 +62,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      additional_information: markdown(),
+      additionalInformation: markdown(),
       artist: {
         type: Artist.type,
         args: {
@@ -94,7 +94,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           ).catch(() => [])
         },
       },
-      artist_names: {
+      artistNames: {
         type: GraphQLString,
         resolve: artwork => artistNames(artwork),
       },
@@ -110,7 +110,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       availability: { type: GraphQLString },
       category: { type: GraphQLString },
-      attribution_class: {
+      attributionClass: {
         type: AttributionClass,
         description: "Attribution class object",
         resolve: ({ attribution_class }) => {
@@ -119,18 +119,18 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
-      collecting_institution: {
+      collectingInstitution: {
         type: GraphQLString,
         resolve: ({ collecting_institution }) =>
           existyValue(collecting_institution),
       },
-      contact_label: {
+      contactLabel: {
         type: GraphQLString,
         resolve: ({ partner }) => {
           return partner.type === "Gallery" ? "Gallery" : "Seller"
         },
       },
-      contact_message: {
+      contactMessage: {
         type: GraphQLString,
         description: "Pre-filled inquiry text",
         resolve: ({ partner, availability_hidden, availability }) => {
@@ -159,7 +159,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       },
       context: Context,
       contextGrids: ArtworkContextGrids,
-      cultural_maker: { type: GraphQLString },
+      culturalMaker: {
+        type: GraphQLString,
+        resolve: ({ cultural_maker }) => cultural_maker,
+      },
       date: { type: GraphQLString },
       description: markdown(({ blurb }) => blurb),
       dimensions: Dimensions,
@@ -175,7 +178,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ website }, options: any) =>
           isEmbeddedVideo ? embed(website, options) : null,
       },
-      edition_of: {
+      editionOf: {
         type: GraphQLString,
         resolve: ({ unique, edition_sets }) => {
           if (unique) return "Unique"
@@ -184,7 +187,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
-      edition_sets: {
+      editionSets: {
         type: new GraphQLList(EditionSet.type),
         args: { sort: EditionSetSorts },
         resolve: ({ edition_sets }, { sort }) => {
@@ -205,7 +208,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return edition_sets
         },
       },
-      exhibition_history: markdown(),
+      exhibitionHistory: markdown(),
       fair: {
         type: Fair.type,
         resolve: ({ id }, _options, { relatedFairsLoader }) => {
@@ -215,8 +218,21 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           }).then(_.first)
         },
       },
+      formattedMetadata: {
+        type: GraphQLString,
+        description:
+          "Formatted artwork metadata, including artist, title, date and partner; e.g., 'Andy Warhol, Truck, 1980, Westward Gallery'.",
+        resolve: ({ artist, title, date, partner }) => {
+          return _.compact([
+            artist && artist.name,
+            title && `‘${title}’`,
+            date,
+            partner && partner.name,
+          ]).join(", ")
+        },
+      },
       highlights: {
-        type: new GraphQLList(Highlight),
+        type: new GraphQLList(ArtworkHighlightType),
         description: "Returns the highlighted shows and articles",
         resolve: (
           { id, _id },
@@ -255,8 +271,11 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ images }) => setVersion(getDefault(images), ["square"]),
       },
-      image_rights: { type: GraphQLString },
-      image_title: {
+      imageRights: {
+        type: GraphQLString,
+        resolve: ({ image_rights }) => image_rights,
+      },
+      imageTitle: {
         type: GraphQLString,
         resolve: ({ artist, title, date }) => {
           return _.compact([
@@ -279,17 +298,17 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         description: "Private text field for partner use",
         resolve: ({ inventory_id }) => inventory_id,
       },
-      is_acquireable: {
+      isAcquireable: {
         type: GraphQLBoolean,
         description: "Whether a work can be purchased through e-commerce",
         resolve: ({ acquireable }) => acquireable,
       },
-      is_offerable: {
+      isOfferable: {
         type: GraphQLBoolean,
         description: "Whether a user can make an offer on a work",
         resolve: ({ offerable }) => offerable,
       },
-      is_biddable: {
+      isBiddable: {
         type: GraphQLBoolean,
         description:
           "Is this artwork part of an auction that is currently running?",
@@ -306,7 +325,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return false
         },
       },
-      is_buy_nowable: {
+      isBuyNowable: {
         type: GraphQLBoolean,
         description: "When in an auction, can the work be bought immediately",
         resolve: ({ acquireable, sale_ids }, _options, { salesLoader }) => {
@@ -322,19 +341,19 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return false
         },
       },
-      is_comparable_with_auction_results: {
+      isComparableWithAuctionResults: {
         type: GraphQLBoolean,
         resolve: ({ comparables_count, category }) => {
           return comparables_count > 0 && category !== "Architecture"
         },
       },
-      is_downloadable: {
+      isDownloadable: {
         type: GraphQLBoolean,
         resolve: ({ images }) => !!(_.first(images) && images[0].downloadable),
       },
-      is_embeddable_video: { type: GraphQLBoolean, resolve: isEmbeddedVideo },
-      is_for_sale: { type: GraphQLBoolean, resolve: ({ forsale }) => forsale },
-      is_hangable: {
+      isEmbeddableVideo: { type: GraphQLBoolean, resolve: isEmbeddedVideo },
+      isForSale: { type: GraphQLBoolean, resolve: ({ forsale }) => forsale },
+      isHangable: {
         type: GraphQLBoolean,
         resolve: artwork => {
           const is3D =
@@ -345,12 +364,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return !is3D && isTwoDimensional(artwork) && !isTooBig(artwork)
         },
       },
-      is_inquireable: {
+      isInquireable: {
         type: GraphQLBoolean,
         description: "Do we want to encourage inquiries on this work?",
         resolve: ({ ecommerce, inquireable }) => !ecommerce && inquireable,
       },
-      is_in_auction: {
+      isInAuction: {
         type: GraphQLBoolean,
         description: "Is this artwork part of an auction?",
         resolve: ({ sale_ids }, _options, { salesLoader }) => {
@@ -365,7 +384,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return false
         },
       },
-      is_in_show: {
+      isInShow: {
         type: GraphQLBoolean,
         description: "Is this artwork part of a current show",
         resolve: ({ id }, _options, { relatedShowsLoader }) =>
@@ -373,36 +392,36 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             ({ body: shows }) => shows.length > 0
           ),
       },
-      is_not_for_sale: {
+      isNotForSale: {
         type: GraphQLString,
         resolve: ({ availability }) => availability === "not for sale",
       },
-      is_on_hold: {
+      isOnHold: {
         type: GraphQLString,
         resolve: ({ availability }) => availability === "on hold",
       },
-      is_price_hidden: {
+      isPriceHidden: {
         type: GraphQLBoolean,
         resolve: ({ price_hidden }) => price_hidden,
       },
-      is_price_range: {
+      isPriceRange: {
         type: GraphQLBoolean,
         resolve: ({ price, edition_sets }) =>
           has_price_range(price) && !has_multiple_editions(edition_sets),
       },
-      is_saved: {
+      isSaved: {
         type: GraphQLBoolean,
         resolve: ({ id }, {}, { savedArtworkLoader }) => {
           if (!savedArtworkLoader) return false
           return savedArtworkLoader(id).then(({ is_saved }) => is_saved)
         },
       },
-      is_shareable: {
+      isShareable: {
         type: GraphQLBoolean,
         resolve: ({ can_share_image }) => can_share_image,
       },
-      is_sold: { type: GraphQLBoolean, resolve: ({ sold }) => sold },
-      is_unique: { type: GraphQLBoolean, resolve: ({ unique }) => unique },
+      isSold: { type: GraphQLBoolean, resolve: ({ sold }) => sold },
+      isUnique: { type: GraphQLBoolean, resolve: ({ unique }) => unique },
       displayLabel: { type: GraphQLString, resolve: ({ title }) => title },
       layer: {
         type: ArtworkLayer.type,
@@ -446,9 +465,15 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return partnerLoader(partner.id).catch(() => null)
         },
       },
-      pickup_available: { type: GraphQLBoolean },
+      pickupAvailable: {
+        type: GraphQLBoolean,
+        resolve: ({ pickup_available }) => pickup_available,
+      },
       listPrice,
-      price_currency: { type: GraphQLString },
+      priceCurrency: {
+        type: GraphQLString,
+        resolve: ({ price_currency }) => price_currency,
+      },
       shipsToContinentalUSOnly: {
         type: GraphQLBoolean,
         description:
@@ -538,10 +563,14 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return null
         },
       },
-      sale_artwork: {
+      saleArtwork: {
         type: SaleArtwork.type,
-        args: { sale_id: { type: GraphQLString, defaultValue: null } },
-        resolve: ({ id, sale_ids }, { sale_id }, { saleArtworkLoader }) => {
+        args: { saleID: { type: GraphQLString, defaultValue: null } },
+        resolve: (
+          { id, sale_ids },
+          { saleID: sale_id },
+          { saleArtworkLoader }
+        ) => {
           // Note that we don't even try to call the saleArtworkLoader unless there's
           // at least one element in sale_ids.
           if (sale_ids && sale_ids.length > 0) {
@@ -555,7 +584,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return null
         },
       },
-      sale_message: {
+      saleMessage: {
         type: GraphQLString,
         resolve: ({
           sale_message,
@@ -595,12 +624,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: Show.type,
         args: {
           active: { type: GraphQLBoolean },
-          at_a_fair: { type: GraphQLBoolean },
+          atAFair: { type: GraphQLBoolean },
           sort: { type: ShowSorts },
         },
         resolve: (
           { id },
-          { active, sort, at_a_fair },
+          { active, sort, atAFair: at_a_fair },
           { relatedShowsLoader }
         ) =>
           relatedShowsLoader({
@@ -613,17 +642,17 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             .then(({ body }) => body)
             .then(_.first),
       },
-      v2_shows: {
+      v2Shows: {
         type: new GraphQLList(Show.type),
         args: {
           size: { type: GraphQLInt },
           active: { type: GraphQLBoolean },
-          at_a_fair: { type: GraphQLBoolean },
+          atAFair: { type: GraphQLBoolean },
           sort: { type: ShowSorts },
         },
         resolve: (
           { id },
-          { size, active, sort, at_a_fair },
+          { size, active, sort, atAFair: at_a_fair },
           { relatedShowsLoader }
         ) => {
           return relatedShowsLoader({
@@ -642,12 +671,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         args: {
           size: { type: GraphQLInt },
           active: { type: GraphQLBoolean },
-          at_a_fair: { type: GraphQLBoolean },
+          atAFair: { type: GraphQLBoolean },
           sort: { type: ShowSorts },
         },
         resolve: (
           { id },
-          { size, active, sort, at_a_fair },
+          { size, active, sort, atAFair: at_a_fair },
           { relatedShowsLoader }
         ) =>
           relatedShowsLoader({

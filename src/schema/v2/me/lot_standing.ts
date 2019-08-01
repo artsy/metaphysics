@@ -22,7 +22,7 @@ export const isHighestBidder = lotStanding =>
 export const LotStandingType = new GraphQLObjectType<any, ResolverContext>({
   name: "LotStanding",
   fields: () => ({
-    active_bid: {
+    activeBid: {
       type: BidderPosition.type,
       description: "Your bid if it is currently winning",
       resolve: lotStanding =>
@@ -31,17 +31,17 @@ export const LotStandingType = new GraphQLObjectType<any, ResolverContext>({
     bidder: {
       type: Bidder.type,
     },
-    is_highest_bidder: {
+    isHighestBidder: {
       type: GraphQLBoolean,
       description: "You are winning and reserve is met",
       resolve: isHighestBidder,
     },
-    is_leading_bidder: {
+    isLeadingBidder: {
       type: GraphQLBoolean,
       description: "You are the leading bidder without regard to reserve",
       resolve: isLeadingBidder,
     },
-    most_recent_bid: {
+    mostRecentBid: {
       type: BidderPosition.type,
       description:
         "Your most recent bid—which is not necessarily winning (may be higher or lower)",
@@ -57,8 +57,9 @@ export const LotStandingType = new GraphQLObjectType<any, ResolverContext>({
         return null
       },
     },
-    sale_artwork: {
+    saleArtwork: {
       type: SaleArtwork.type,
+      resolve: ({ sale_artwork }) => sale_artwork,
     },
   }),
 })
@@ -67,19 +68,19 @@ const LotStanding: GraphQLFieldConfig<void, ResolverContext> = {
   type: LotStandingType,
   description: "The current user's status relating to bids on artworks",
   args: {
-    artwork_id: {
+    artworkID: {
       type: GraphQLString,
     },
-    sale_id: {
+    saleID: {
       type: GraphQLString,
     },
-    sale_artwork_id: {
+    saleArtworkID: {
       type: GraphQLString,
     },
   },
   resolve: (
     _root,
-    { sale_id, artwork_id, sale_artwork_id },
+    { saleID: sale_id, artworkID: artwork_id, saleArtworkID: sale_artwork_id },
     { lotStandingLoader }
   ) => {
     if (!lotStandingLoader) return null

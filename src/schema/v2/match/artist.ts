@@ -24,13 +24,18 @@ const ArtistMatch: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLInt,
       description: "Page to retrieve. Default: 1.",
     },
-    exclude_ids: {
+    excludeIDs: {
       type: new GraphQLList(GraphQLString),
       description: "Exclude these MongoDB ids from results",
     },
   },
-  resolve: (_root, options, { matchArtistsLoader }) =>
-    matchArtistsLoader(options),
+  resolve: (_root, { excludeIDs, ..._options }, { matchArtistsLoader }) => {
+    const options: any = {
+      exclude_ids: excludeIDs,
+      ..._options,
+    }
+    return matchArtistsLoader(options)
+  },
 }
 
 export default ArtistMatch

@@ -1,16 +1,5 @@
 import { assign, flatten } from "lodash"
-import { exclude, convertConnectionArgsToGravityArgs } from "lib/helpers"
-import cached from "./fields/cached"
-import initials from "./fields/initials"
-import Profile from "./profile"
-import Location from "./location"
-import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
-import Artwork, { artworkConnection } from "./artwork"
-import numeral from "./fields/numeral"
-import ArtworkSorts from "./sorts/artwork_sorts"
 import { pageable } from "relay-cursor-paging"
-import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
-
 import {
   GraphQLString,
   GraphQLObjectType,
@@ -22,27 +11,22 @@ import {
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-import { ResolverContext } from "types/graphql"
 
-const PartnerCategoryType = new GraphQLObjectType<any, ResolverContext>({
-  name: "Category",
-  description: "Fields of partner category (currently from Gravity).",
-  fields: {
-    ...SlugAndInternalIDFields,
-    category_type: {
-      type: GraphQLString,
-    },
-    internal: {
-      type: GraphQLBoolean,
-    },
-    name: {
-      type: GraphQLString,
-    },
-  },
-})
+import { exclude, convertConnectionArgsToGravityArgs } from "lib/helpers"
+import cached from "./fields/cached"
+import initials from "./fields/initials"
+import Profile from "./profile"
+import Location from "./location"
+import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
+import Artwork, { artworkConnection } from "./artwork"
+import numeral from "./fields/numeral"
+import ArtworkSorts from "./sorts/artwork_sorts"
+import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+import { ResolverContext } from "types/graphql"
+import { PartnerCategoryType } from "./partner_category"
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
-  for_sale: {
+  forSale: {
     type: GraphQLBoolean,
   },
   sort: ArtworkSorts,
@@ -123,8 +107,9 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(PartnerCategoryType),
         resolve: ({ partner_categories }) => partner_categories,
       },
-      collecting_institution: {
+      collectingInstitution: {
         type: GraphQLString,
+        resolve: ({ collecting_institution }) => collecting_institution,
       },
       counts: {
         type: new GraphQLObjectType<any, ResolverContext>({
@@ -132,42 +117,43 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           fields: {
             artworks: numeral(({ artworks_count }) => artworks_count),
             artists: numeral(({ artists_count }) => artists_count),
-            partner_artists: numeral(
+            partnerArtists: numeral(
               ({ partner_artists_count }) => partner_artists_count
             ),
-            eligible_artworks: numeral(
+            eligibleArtworks: numeral(
               ({ eligible_artworks_count }) => eligible_artworks_count
             ),
-            published_for_sale_artworks: numeral(
+            publishedForSaleArtworks: numeral(
               ({ published_for_sale_artworks_count }) =>
                 published_for_sale_artworks_count
             ),
-            published_not_for_sale_artworks: numeral(
+            publishedNotForSaleArtworks: numeral(
               ({ published_not_for_sale_artworks_count }) =>
                 published_not_for_sale_artworks_count
             ),
             shows: numeral(({ shows_count }) => shows_count),
-            displayable_shows: numeral(
+            displayableShows: numeral(
               ({ displayable_shows_count }) => displayable_shows_count
             ),
-            current_displayable_shows: numeral(
+            currentDisplayableShows: numeral(
               ({ current_displayable_shows_count }) =>
                 current_displayable_shows_count
             ),
-            artist_documents: numeral(
+            artistDocuments: numeral(
               ({ artist_documents_count }) => artist_documents_count
             ),
-            partner_show_documents: numeral(
+            partnerShowDocuments: numeral(
               ({ partner_show_documents_count }) => partner_show_documents_count
             ),
           },
         }),
         resolve: artist => artist,
       },
-      default_profile_id: {
+      defaultProfileID: {
         type: GraphQLString,
+        resolve: ({ default_profile_id }) => default_profile_id,
       },
-      has_fair_partnership: {
+      hasFairPartnership: {
         type: GraphQLBoolean,
         resolve: ({ has_fair_partnership }) => has_fair_partnership,
       },
@@ -179,16 +165,16 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             : `/${default_profile_id}`,
       },
       initials: initials("name"),
-      is_default_profile_public: {
+      isDefaultProfilePublic: {
         type: GraphQLBoolean,
         resolve: ({ default_profile_public }) => default_profile_public,
       },
-      is_linkable: {
+      isLinkable: {
         type: GraphQLBoolean,
         resolve: ({ default_profile_id, default_profile_public, type }) =>
           default_profile_id && default_profile_public && type !== "Auction",
       },
-      is_pre_qualify: {
+      isPreQualify: {
         type: GraphQLBoolean,
         resolve: ({ pre_qualify }) => pre_qualify,
       },

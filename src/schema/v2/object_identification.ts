@@ -50,7 +50,6 @@ const SupportedTypes: any = {
     "./me/conversation",
     "./me/conversation/invoice",
     "./partner",
-    "./partner_show",
     "./show",
     "./sale",
     "./collection",
@@ -218,7 +217,7 @@ export const InternalIDFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   internalID: {
     description: "A type-specific ID likely used as a database ID.",
     type: new GraphQLNonNull(GraphQLID),
-    resolve: ({ _id }) => _id,
+    resolve: ({ id }) => id,
   },
 }
 

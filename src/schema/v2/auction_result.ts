@@ -42,21 +42,26 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: GraphQLString,
     },
-    artist_id: {
+    artistID: {
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ artist_id }) => artist_id,
     },
     date,
-    date_text: {
+    dateText: {
       type: GraphQLString,
+      resolve: ({ date_text }) => date_text,
     },
-    medium_text: {
+    mediumText: {
       type: GraphQLString,
+      resolve: ({ medium_text }) => medium_text,
     },
-    category_text: {
+    categoryText: {
       type: GraphQLString,
+      resolve: ({ category_text }) => category_text,
     },
-    dimension_text: {
+    dimensionText: {
       type: GraphQLString,
+      resolve: ({ dimension_text }) => dimension_text,
     },
     dimensions: {
       type: new GraphQLObjectType<any, ResolverContext>({
@@ -85,12 +90,14 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
     organization: {
       type: GraphQLString,
     },
-    sale_date: date,
-    sale_date_text: {
+    saleDate: date,
+    saleDateText: {
       type: GraphQLString,
+      resolve: ({ sale_date_text }) => sale_date_text,
     },
-    sale_title: {
+    saleTitle: {
       type: GraphQLString,
+      resolve: ({ sale_title }) => sale_title,
     },
     currency: {
       type: GraphQLString,
@@ -98,8 +105,9 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
     description: {
       type: GraphQLString,
     },
-    external_url: {
+    externalURL: {
       type: GraphQLString,
+      resolve: ({ external_url }) => external_url,
     },
     images: {
       type: new GraphQLObjectType<any, ResolverContext>({
@@ -176,7 +184,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
       }),
       resolve: lot => lot,
     },
-    price_realized: {
+    priceRealized: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "AuctionResultPriceRealized",
         fields: {
@@ -184,7 +192,7 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLFloat,
             resolve: ({ price_realized_cents }) => price_realized_cents,
           },
-          cents_usd: {
+          centsUSD: {
             type: GraphQLFloat,
             resolve: ({ price_realized_cents_usd }) => price_realized_cents_usd,
           },

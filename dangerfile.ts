@@ -95,4 +95,21 @@ export default async () => {
         fail(`Found a debugger statement left in by accident.`, file)
       }
     })
+
+  // Query map should only ever be appended to.
+  const queryMapDiff = await danger.git.diffForFile(
+    "src/data/complete.queryMap.json"
+  )
+  // 2 because a normal change has two removed lines (the last query, which gets
+  // a comma added to it) and the ending brace bracket.
+  if (queryMapDiff.removed.split("\n").length > 2) {
+    const hashtag = "#allowdestructivequerymap"
+    const skipCheck = danger.github.pr.body.includes(hashtag)
+    if (!skipCheck) {
+      fail(
+        "The `complete.queryMap.json` file appears to have had queries removed from it. " +
+          `This file must only ever be appended to. Include ${hashtag} to PR description to bypass this check.`
+      )
+    }
+  }
 }

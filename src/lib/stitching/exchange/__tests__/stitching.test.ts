@@ -16,6 +16,7 @@ it("extends the Order objects", async () => {
 
     expect(orderableFields).toContain("buyerDetails")
     expect(orderableFields).toContain("sellerDetails")
+    expect(orderableFields).toContain("creditCard")
 
     // Any field inside the CommerceBuyOrder & CommerceOfferOrder which
     // ends in cents should have a version without cents which is a
@@ -101,6 +102,21 @@ it("delegates to the local schema for an LineItem's artwork", async () => {
   expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
     args: { id: "ARTWORK-ID" },
     fieldName: "artwork",
+    operation: "query",
+    ...restOfResolveArgs,
+  })
+})
+
+it("delegates to the local schema for an Order's creditCard", async () => {
+  const { resolvers } = await getExchangeStitchedSchema()
+  const creditCardResolver = resolvers.CommerceBuyOrder.creditCard.resolve
+  const mergeInfo = { delegateToSchema: jest.fn() }
+
+  creditCardResolver({ creditCardId: "CC-1" }, {}, {}, { mergeInfo })
+
+  expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
+    args: { id: "CC-1" },
+    fieldName: "credit_card",
     operation: "query",
     ...restOfResolveArgs,
   })

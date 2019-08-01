@@ -38,23 +38,23 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     ...InternalIDFields,
     dimensions: Dimensions,
-    edition_of: {
+    editionOf: {
       type: GraphQLString,
       resolve: ({ editions }) => editions,
     },
-    is_acquireable: {
+    isAcquireable: {
       type: GraphQLBoolean,
       resolve: ({ acquireable }) => acquireable,
     },
-    is_offerable: {
+    isOfferable: {
       type: GraphQLBoolean,
       resolve: ({ offerable }) => offerable,
     },
-    is_for_sale: {
+    isForSale: {
       type: GraphQLBoolean,
       resolve: ({ forsale }) => forsale,
     },
-    is_sold: {
+    isSold: {
       type: GraphQLBoolean,
       resolve: ({ sold }) => sold,
     },
@@ -64,7 +64,7 @@ const EditionSetType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLFloat,
       resolve: ({ size_score }) => size_score,
     },
-    sale_message: {
+    saleMessage: {
       type: GraphQLString,
       resolve: ({ availability, availability_hidden, price, forsale }) => {
         // Don't display anything if availability is hidden.

@@ -14,7 +14,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const ArticleType = new GraphQLObjectType<any, ResolverContext>({
+export const ArticleType = new GraphQLObjectType<any, ResolverContext>({
   name: "Article",
   interfaces: [NodeInterface],
   fields: () => ({
@@ -24,10 +24,11 @@ const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       type: AuthorType,
       resolve: ({ author }) => author,
     },
-    channel_id: {
+    channelID: {
       type: GraphQLString,
+      resolve: ({ channel_id }) => channel_id,
     },
-    contributing_authors: {
+    contributingAuthors: {
       type: new GraphQLList(AuthorType),
       resolve: ({ contributing_authors }) => contributing_authors,
     },
@@ -35,17 +36,19 @@ const ArticleType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ slug }) => `/article/${slug}`,
     },
-    published_at: date,
+    publishedAt: date,
     slug: {
       type: GraphQLString,
     },
-    thumbnail_title: {
+    thumbnailTitle: {
       type: GraphQLString,
+      resolve: ({ thumbnail_title }) => thumbnail_title,
     },
-    thumbnail_teaser: {
+    thumbnailTeaser: {
       type: GraphQLString,
+      resolve: ({ thumbnail_teaser }) => thumbnail_teaser,
     },
-    thumbnail_image: {
+    thumbnailImage: {
       type: Image.type,
       resolve: ({ thumbnail_image }) => normalizeImageData(thumbnail_image),
     },
@@ -55,7 +58,7 @@ const ArticleType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: GraphQLString,
     },
-    updated_at: date,
+    updatedAt: date,
   }),
 })
 

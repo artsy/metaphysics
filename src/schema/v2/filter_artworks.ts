@@ -1,8 +1,8 @@
-import { map, omit, keys, create, assign } from "lodash"
+import { map, omit, keys } from "lodash"
 import { isExisty } from "lib/helpers"
 import Artwork from "./artwork"
 import Artist from "./artist"
-import Tag from "./tag"
+import { TagType } from "./tag"
 import numeral from "./fields/numeral"
 import {
   computeTotalPages,
@@ -29,27 +29,22 @@ import {
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
-
 import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
 import {
   includesFieldsOtherThanSelectionSet,
   parseConnectionArgsFromConnection,
 } from "lib/hasFieldSelection"
+import { GeneType } from "./gene"
 
-const ArtworkFilterTagType = create(Tag.type, {
-  name: "ArtworkFilterTag",
-  isTypeOf: ({ context_type }) => context_type === "Tag",
-})
+interface ContextSource {
+  context_type: GraphQLObjectType<any, ResolverContext>
+}
 
-const ArtworkFilterGeneType = create(Tag.type, {
-  name: "ArtworkFilterGene",
-  isTypeOf: ({ context_type }) => context_type === "Gene",
-})
-
-export const ArtworkFilterFacetType = new GraphQLUnionType({
+export const ArtworkFilterFacetType = new GraphQLUnionType<ContextSource>({
   name: "ArtworkFilterFacet",
-  types: [ArtworkFilterTagType, ArtworkFilterGeneType],
+  types: [TagType, GeneType],
+  resolveType: ({ context_type }) => context_type,
 })
 
 export const ArtworkFilterAggregations: GraphQLFieldConfig<
@@ -75,7 +70,7 @@ export const FilterArtworksCounts = {
     name: "FilterArtworksCounts",
     fields: {
       total: numeral(({ aggregations }) => aggregations.total.value),
-      followed_artists: numeral(
+      followedArtists: numeral(
         ({ aggregations }) => aggregations.followed_artists.value
       ),
     },
@@ -97,7 +92,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
         ),
     },
     aggregations: ArtworkFilterAggregations,
-    artworks_connection: {
+    artworksConnection: {
       type: artworkConnection,
       // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
       // has been addressed.
@@ -151,7 +146,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
       description: "Artwork results.",
       type: new GraphQLList(Artwork.type),
     },
-    merchandisable_artists: {
+    merchandisableArtists: {
       type: new GraphQLList(Artist.type),
       description:
         "Returns a list of merchandisable artists sorted by merch score.",
@@ -166,17 +161,23 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
     },
     facet: {
       type: ArtworkFilterFacetType,
-      resolve: ({ options }, _options, { geneLoader, tagLoader }) => {
+      resolve: (
+        { options },
+        _options,
+        { geneLoader, tagLoader }
+      ): Promise<ContextSource> | null => {
         const { tag_id, gene_id } = options
         if (tag_id) {
-          return tagLoader(tag_id).then(tag =>
-            assign({ context_type: "Tag" }, tag)
-          )
+          return tagLoader(tag_id).then(tag => ({
+            ...tag,
+            context_type: TagType,
+          }))
         }
         if (gene_id) {
-          return geneLoader(gene_id).then(gene =>
-            assign({ context_type: "Gene" }, gene)
-          )
+          return geneLoader(gene_id).then(gene => ({
+            ...gene,
+            context_type: GeneType,
+          }))
         }
         return null
       },
@@ -191,49 +192,49 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   offerable: {
     type: GraphQLBoolean,
   },
-  aggregation_partner_cities: {
+  aggregationPartnerCities: {
     type: new GraphQLList(GraphQLString),
   },
   aggregations: {
     type: new GraphQLList(ArtworksAggregation),
   },
-  artist_id: {
+  artistID: {
     type: GraphQLString,
   },
-  artist_ids: {
+  artistIDs: {
     type: new GraphQLList(GraphQLString),
   },
-  at_auction: {
+  atAuction: {
     type: GraphQLBoolean,
   },
-  attribution_class: {
+  attributionClass: {
     type: new GraphQLList(GraphQLString),
   },
   color: {
     type: GraphQLString,
   },
-  dimension_range: {
+  dimensionRange: {
     type: GraphQLString,
   },
-  extra_aggregation_gene_ids: {
+  extraAggregationGeneIDs: {
     type: new GraphQLList(GraphQLString),
   },
-  include_artworks_by_followed_artists: {
+  includeArtworksByFollowedArtists: {
     type: GraphQLBoolean,
   },
-  include_medium_filter_in_aggregation: {
+  includeMediumFilterInAggregation: {
     type: GraphQLBoolean,
   },
-  inquireable_only: {
+  inquireableOnly: {
     type: GraphQLBoolean,
   },
-  for_sale: {
+  forSale: {
     type: GraphQLBoolean,
   },
-  gene_id: {
+  geneID: {
     type: GraphQLString,
   },
-  gene_ids: {
+  geneIDs: {
     type: new GraphQLList(GraphQLString),
   },
   height: {
@@ -258,22 +259,22 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   periods: {
     type: new GraphQLList(GraphQLString),
   },
-  major_periods: {
+  majorPeriods: {
     type: new GraphQLList(GraphQLString),
   },
-  partner_id: {
+  partnerID: {
     type: GraphQLID,
   },
-  partner_cities: {
+  partnerCities: {
     type: new GraphQLList(GraphQLString),
   },
-  price_range: {
+  priceRange: {
     type: GraphQLString,
   },
   page: {
     type: GraphQLInt,
   },
-  sale_id: {
+  saleID: {
     type: GraphQLID,
   },
   size: {
@@ -282,13 +283,13 @@ export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
   sort: {
     type: GraphQLString,
   },
-  tag_id: {
+  tagID: {
     type: GraphQLString,
   },
   keyword: {
     type: GraphQLString,
   },
-  keyword_match_exact: {
+  keywordMatchExact: {
     type: GraphQLBoolean,
     description: "When true, will only return exact keyword match",
   },
@@ -302,13 +303,59 @@ const filterArtworksTypeFactory = (
   args: filterArtworksArgs,
   resolve: (
     root,
-    options,
+    {
+      aggregationPartnerCities,
+      artistID,
+      artistIDs,
+      atAuction,
+      attributionClass,
+      dimensionRange,
+      extraAggregationGeneIDs,
+      includeArtworksByFollowedArtists,
+      includeMediumFilterInAggregation,
+      inquireableOnly,
+      forSale,
+      geneID,
+      geneIDs,
+      majorPeriods,
+      partnerID,
+      partnerCities,
+      priceRange,
+      saleID,
+      tagID,
+      keywordMatchExact,
+      ..._options
+    },
     {
       unauthenticatedLoaders: { filterArtworksLoader: loaderWithCache },
       authenticatedLoaders: { filterArtworksLoader: loaderWithoutCache },
     },
     info
   ) => {
+    const options: any = {
+      aggregation_partner_cities: aggregationPartnerCities,
+      artist_id: artistID,
+      artist_ids: artistIDs,
+      at_auction: atAuction,
+      attribution_class: attributionClass,
+      dimension_range: dimensionRange,
+      extra_aggregation_gene_ids: extraAggregationGeneIDs,
+      include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
+      include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
+      inquireable_only: inquireableOnly,
+      for_sale: forSale,
+      gene_id: geneID,
+      gene_ids: geneIDs,
+      major_periods: majorPeriods,
+      partner_id: partnerID,
+      partner_cities: partnerCities,
+      price_range: priceRange,
+      sale_id: saleID,
+      tag_id: tagID,
+      keyword_match_exact: keywordMatchExact,
+      ..._options,
+    }
+
     const { include_artworks_by_followed_artists, aggregations } = options
     const requestedPersonalizedAggregation = aggregations.includes(
       "followed_artists"
@@ -347,7 +394,7 @@ const filterArtworksTypeFactory = (
     // from the already fetched data, instead of re-fetching.
     const connectionArgs = parseConnectionArgsFromConnection(
       info,
-      "artworks_connection"
+      "artworksConnection"
     )
 
     let relayOptions: any = {}

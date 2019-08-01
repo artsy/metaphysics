@@ -71,6 +71,10 @@ export const OfferType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description: "Offer note",
     },
+    currencyCode: {
+      type: GraphQLString,
+      description: "Currency code of this order",
+    },
   }),
 })
 

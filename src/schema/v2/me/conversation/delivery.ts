@@ -8,13 +8,14 @@ export const DeliveryType = new GraphQLObjectType<any, ResolverContext>({
   description: "Fields of a delivery (currently from Radiation)",
   fields: {
     ...InternalIDFields,
-    full_transformed_email: {
+    fullTransformedEmail: {
       description: "Masked email w/ display name.",
       type: new GraphQLNonNull(GraphQLString),
+      resolve: ({ full_transformed_email }) => full_transformed_email,
     },
-    delivered_at: date,
-    bounced_at: date,
-    opened_at: date,
-    clicked_at: date,
+    deliveredAt: date,
+    bouncedAt: date,
+    openedAt: date,
+    clickedAt: date,
   },
 })
