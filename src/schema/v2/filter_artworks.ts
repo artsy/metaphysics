@@ -27,6 +27,7 @@ import {
   GraphQLUnionType,
   GraphQLNonNull,
   GraphQLFieldConfig,
+  GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { NodeInterface } from "schema/v2/object_identification"
 import { ResolverContext } from "types/graphql"
@@ -184,12 +185,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-const filterArtworksTypeFactory = (
-  mapRootToFilterParams
-): GraphQLFieldConfig<any, ResolverContext> => ({
-  type: FilterArtworksType,
-  description: "Artworks Elastic Search results",
-  args: {
+export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
     acquireable: {
       type: GraphQLBoolean,
     },
@@ -297,7 +293,14 @@ const filterArtworksTypeFactory = (
       type: GraphQLBoolean,
       description: "When true, will only return exact keyword match",
     },
-  },
+}
+
+const filterArtworksTypeFactory = (
+  mapRootToFilterParams
+): GraphQLFieldConfig<any, ResolverContext> => ({
+  type: FilterArtworksType,
+  description: "Artworks Elastic Search results",
+  args: filterArtworksArgs,
   resolve: (
     root,
     {
