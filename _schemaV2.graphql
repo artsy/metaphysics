@@ -2064,7 +2064,7 @@ type CommerceBuyOrder implements CommerceOrder {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
-  ): String
+  ): String!
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
@@ -2125,7 +2125,7 @@ type CommerceBuyOrder implements CommerceOrder {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
-  ): String
+  ): String!
   buyerDetails: OrderParty
   sellerDetails: OrderParty
   creditCard: CreditCard
@@ -2363,8 +2363,13 @@ type CommerceFulfillment {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
+  ): String!
+  estimatedDelivery(
+    format: String
+
+    # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
+    timezone: String
   ): String
-  estimatedDelivery: CommerceDate
   internalID: ID!
   notes: String
   trackingId: String
@@ -2373,7 +2378,7 @@ type CommerceFulfillment {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
-  ): String
+  ): String!
 }
 
 # Attributes of a Fulfillment
@@ -2415,7 +2420,7 @@ type CommerceLineItem {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
-  ): String
+  ): String!
   editionSetId: String
   fulfillments(
     # Returns the elements in the list that come after the specified cursor.
@@ -2441,7 +2446,7 @@ type CommerceLineItem {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
-  ): String
+  ): String!
   artwork: Artwork
   artworkVersion: ArtworkVersion
   shippingTotal(
@@ -2503,7 +2508,7 @@ type CommerceOffer {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
-  ): String
+  ): String!
   creatorId: String!
   currencyCode: String!
   from: CommerceOrderPartyUnion!
@@ -2593,7 +2598,7 @@ type CommerceOfferOrder implements CommerceOrder {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
-  ): String
+  ): String!
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
@@ -2673,7 +2678,7 @@ type CommerceOfferOrder implements CommerceOrder {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
-  ): String
+  ): String!
   buyerDetails: OrderParty
   sellerDetails: OrderParty
   creditCard: CreditCard
@@ -2773,7 +2778,7 @@ interface CommerceOrder {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
-  ): String
+  ): String!
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
@@ -2834,7 +2839,7 @@ interface CommerceOrder {
 
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
-  ): String
+  ): String!
   buyerDetails: OrderParty
   sellerDetails: OrderParty
   creditCard: CreditCard
