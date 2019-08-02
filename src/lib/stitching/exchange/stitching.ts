@@ -109,17 +109,21 @@ export const exchangeStitchingEnvironment = (
     fragment: `fragment CommerceOrderCreditCard on CommerceOrder { creditCardId }`,
     resolve: (parent, _args, context, info) => {
       const id = parent.creditCardId
-      return info.mergeInfo.delegateToSchema({
-        schema: localSchema,
-        operation: "query",
-        fieldName: "credit_card",
-        args: {
-          id,
-        },
-        context,
-        info,
-        transforms: exchangeSchema.transforms,
-      })
+      if (!id) {
+        return null
+      } else {
+        return info.mergeInfo.delegateToSchema({
+          schema: localSchema,
+          operation: "query",
+          fieldName: "credit_card",
+          args: {
+            id,
+          },
+          context,
+          info,
+          transforms: exchangeSchema.transforms,
+        })
+      }
     },
   }
 
