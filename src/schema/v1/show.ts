@@ -49,7 +49,7 @@ import { LOCAL_DISCOVERY_RADIUS_KM } from "./city/constants"
 import { ResolverContext } from "types/graphql"
 import followArtistsResolver from "lib/shared_resolvers/followedArtistsResolver"
 import { deprecate } from "lib/deprecation"
-import { decodeArtsyJWT } from "lib/artsyJWT"
+import { decodeUnverifiedJWT } from "lib/decodeUnverifiedJWT"
 
 const FollowArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "ShowFollowArtist",
@@ -674,15 +674,20 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
       accessToken,
     }
   ) => {
-    const decodedJwt = decodeArtsyJWT(accessToken as string, false)
-    const partnerIds: Array<String> = decodedJwt ? decodedJwt.partner_ids : []
+    const decodeUnverifiedJwt = decodeUnverifiedJWT(accessToken as string)
+    const partnerIds: Array<String> = decodeUnverifiedJwt
+      ? decodeUnverifiedJwt.partner_ids
+      : []
     const isAdmin: boolean =
-      decodedJwt && decodedJwt.roles.split(",").includes("admin")
+      decodeUnverifiedJwt &&
+      decodeUnverifiedJwt.roles.split(",").includes("admin")
     const isDisplayable = show =>
       show.displayable || isAdmin || partnerIds.includes(show.partner._id)
 
     const loader =
-      decodedJwt && loaderWithoutCache ? loaderWithoutCache : loaderWithCache
+      decodeUnverifiedJwt && loaderWithoutCache
+        ? loaderWithoutCache
+        : loaderWithCache
 
     return loader(id)
       .then(show => {
