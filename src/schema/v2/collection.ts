@@ -90,7 +90,7 @@ export const collectionResolverFactory = (
     if (!collectionLoader) return null
 
     const id = collection_id || options.id
-    const blacklistedFields = ["artworks_connection", "id", "__id"]
+    const blacklistedFields = ["artworksConnection", "id", "internalID"]
 
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return collectionLoader(id)
