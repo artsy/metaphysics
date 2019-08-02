@@ -232,6 +232,13 @@ export const exchangeStitchingEnvironment = (
         },
         ...totalsResolvers("CommerceLineItem", lineItemTotals),
       },
+      CommerceOrder: {
+        // The money helper resolvers
+        ...totalsResolvers("CommerceOrder", orderTotals),
+        buyerDetails: buyerDetailsResolver,
+        sellerDetails: sellerDetailsResolver,
+        creditCard: creditCardResolver,
+      },
       CommerceOffer: {
         ...totalsResolvers("CommerceOffer", offerAmountFields),
         fromDetails: fromDetailsResolver,

@@ -28,6 +28,18 @@ it("extends the Order objects", async () => {
   }
 })
 
+it("resolves amount fields on CommerceOrder", async () => {
+  const { resolvers } = await getExchangeStitchedSchema()
+  const totalListPriceResolver = resolvers.CommerceOrder.totalListPrice.resolve
+
+  expect(
+    totalListPriceResolver(
+      { currencyCode: "USD", totalListPriceCents: 100 },
+      {}
+    )
+  ).toEqual("$1.00")
+})
+
 // These are used in all delegate calls, and not useful to the test
 const restOfResolveArgs = {
   operation: "query",
