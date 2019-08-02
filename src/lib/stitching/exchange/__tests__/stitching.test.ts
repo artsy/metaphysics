@@ -121,3 +121,18 @@ it("delegates to the local schema for an Order's creditCard", async () => {
     ...restOfResolveArgs,
   })
 })
+
+it("doesn't delegate to the local schema for an Order's creditCard if creditCardId is null", async () => {
+  const { resolvers } = await getExchangeStitchedSchema()
+  const creditCardResolver = resolvers.CommerceBuyOrder.creditCard.resolve
+  const mergeInfo = { delegateToSchema: jest.fn() }
+
+  creditCardResolver({ creditCardId: null }, {}, {}, { mergeInfo })
+
+  expect(mergeInfo.delegateToSchema).not.toHaveBeenCalledWith({
+    args: { id: null },
+    fieldName: "credit_card",
+    operation: "query",
+    ...restOfResolveArgs,
+  })
+})
