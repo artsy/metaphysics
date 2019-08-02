@@ -1,7 +1,6 @@
 import { runQuery } from "schema/v1/test/utils"
 import gql from "lib/gql"
 import moment from "moment"
-// import { ResolverContext } from "types/graphql"
 
 // This time-bomb spec will fail starting at some defined point in the future,
 // indicating that we should consider reverting this behavior of sending
