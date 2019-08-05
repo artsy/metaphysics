@@ -35,9 +35,9 @@ describe("Tag", () => {
       const query = `
         {
           tag(id: "butt") {
-            filtered_artworks(aggregations:[TOTAL]){
+            filteredArtworks(aggregations:[TOTAL]){
               hits {
-                id
+                slug
               }
             }
           }
@@ -47,10 +47,10 @@ describe("Tag", () => {
       return runQuery(query, context).then(
         ({
           tag: {
-            filtered_artworks: { hits },
+            filteredArtworks: { hits },
           },
         }) => {
-          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+          expect(hits).toEqual([{ slug: "oseberg-norway-queens-ship" }])
         }
       )
     })
