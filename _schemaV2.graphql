@@ -4157,6 +4157,7 @@ type FollowShowPayload {
 enum Format {
   HTML
   PLAIN
+  MARKDOWN
 }
 
 type FormattedDaySchedules {

@@ -548,8 +548,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       },
       pressRelease: {
         description: "The press release for this show",
-        ...markdown(),
-        resolve: ({ press_release }) => press_release,
+        ...markdown(({ press_release }) => press_release),
       },
       pressReleaseUrl: {
         type: GraphQLString,
