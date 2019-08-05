@@ -45,11 +45,11 @@ describe("Artist Statuses", () => {
       {
         artist(id: "foo-bar") {
           highlights {
-            partners(first: 1, display_on_partner_profile: true) {
+            partners(first: 1, displayOnPartnerProfile: true) {
               edges {
-                is_represented_by
+                isRepresentedBy
                 node {
-                  id
+                  slug
                   name
                 }
               }
@@ -65,9 +65,9 @@ describe("Artist Statuses", () => {
           partners: {
             edges: [
               {
-                is_represented_by: true,
+                isRepresentedBy: true,
                 node: {
-                  id: "catty-gallery",
+                  slug: "catty-gallery",
                   name: "Catty Gallery",
                 },
               },
