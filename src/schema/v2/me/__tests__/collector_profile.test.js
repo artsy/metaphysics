@@ -7,11 +7,11 @@ describe("Me", () => {
       const query = `
         {
           me {
-            collector_profile {
-              id
+            collectorProfile {
+              internalID
               name
               email
-              self_reported_purchases
+              selfReportedPurchases
               intents
             }
           }
@@ -27,10 +27,10 @@ describe("Me", () => {
       }
 
       const expectedProfileData = {
-        id: "3",
+        internalID: "3",
         name: "Percy",
         email: "percy@cat.com",
-        self_reported_purchases: "treats",
+        selfReportedPurchases: "treats",
         intents: ["buy art & design"],
       }
 
@@ -41,8 +41,8 @@ describe("Me", () => {
       }
 
       return runAuthenticatedQuery(query, context).then(
-        ({ me: { collector_profile } }) => {
-          expect(collector_profile).toEqual(expectedProfileData)
+        ({ me: { collectorProfile } }) => {
+          expect(collectorProfile).toEqual(expectedProfileData)
         }
       )
     })
