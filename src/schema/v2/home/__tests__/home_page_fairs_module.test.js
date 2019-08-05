@@ -39,12 +39,12 @@ describe("HomePageFairsModule", () => {
 
     const query = `
       {
-        home_page {
-          fairs_module {
+        homePage {
+          fairsModule {
             results {
-              id
+              slug
               name
-              is_active
+              isActive
             }
           }
         }
@@ -83,12 +83,12 @@ describe("HomePageFairsModule", () => {
 
     const query = `
       {
-        home_page {
-          fairs_module {
+        homePage {
+          fairsModule {
             results {
-              id
+              slug
               name
-              is_active
+              isActive
             }
           }
         }
@@ -129,12 +129,12 @@ describe("HomePageFairsModule", () => {
 
     const query = `
       {
-        home_page {
-          fairs_module {
+        homePage {
+          fairsModule {
             results {
-              id
+              slug
               name
-              is_active
+              isActive
             }
           }
         }
