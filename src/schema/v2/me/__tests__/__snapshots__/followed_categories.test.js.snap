@@ -3,13 +3,13 @@
 exports[`returns artworks for a collection 1`] = `
 Object {
   "me": Object {
-    "followed_genes": Object {
+    "followedGenes": Object {
       "edges": Array [
         Object {
           "node": Object {
             "gene": Object {
-              "id": "engaged-with-traditional-african-art",
               "name": "Engaged with Traditional African Art",
+              "slug": "engaged-with-traditional-african-art",
             },
           },
         },
