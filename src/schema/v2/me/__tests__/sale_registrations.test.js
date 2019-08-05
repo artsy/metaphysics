@@ -7,8 +7,8 @@ describe("Me", () => {
       const query = `
         {
           me {
-            sale_registrations {
-              is_registered
+            saleRegistrations {
+              isRegistered
               sale {
                 name
               }
@@ -40,10 +40,10 @@ describe("Me", () => {
       }
 
       return runAuthenticatedQuery(query, context).then(
-        ({ me: { sale_registrations } }) => {
-          expect(sale_registrations).toEqual([
-            { is_registered: false, sale: { name: "Foo Sale" } },
-            { is_registered: true, sale: { name: "Bar Sale" } },
+        ({ me: { saleRegistrations } }) => {
+          expect(saleRegistrations).toEqual([
+            { isRegistered: false, sale: { name: "Foo Sale" } },
+            { isRegistered: true, sale: { name: "Bar Sale" } },
           ])
         }
       )
