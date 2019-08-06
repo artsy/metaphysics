@@ -24,12 +24,12 @@ describe("Genes", () => {
     const query = gql`
       {
         genes(slugs: ["futurism"]) {
-          id
+          slug
           name
         }
       }
     `
     const { genes } = await runQuery(query, { geneLoader })
-    expect(genes[0].id).toEqual("futurism")
+    expect(genes[0].slug).toEqual("futurism")
   })
 })
