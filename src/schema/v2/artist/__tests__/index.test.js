@@ -27,15 +27,15 @@ describe("Artist type", () => {
   })
 
   it("returns null for an empty ID string", () => {
-    return runQuery(`{ artist(id: "") { id } }`, context).then(data => {
+    return runQuery(`{ artist(id: "") { slug } }`, context).then(data => {
       expect(data.artist).toBe(null)
     })
   })
 
   it("fetches an artist by ID", () => {
-    return runQuery(`{ artist(id: "foo-bar") { id, name } }`, context).then(
+    return runQuery(`{ artist(id: "foo-bar") { slug, name } }`, context).then(
       data => {
-        expect(data.artist.id).toBe("foo-bar")
+        expect(data.artist.slug).toBe("foo-bar")
         expect(data.artist.name).toBe("Foo Bar")
       }
     )
@@ -46,7 +46,7 @@ describe("Artist type", () => {
       {
         artist(id: "foo-bar") {
           counts {
-            partner_shows
+            partnerShows
           }
         }
       }
@@ -56,7 +56,7 @@ describe("Artist type", () => {
       expect(data).toEqual({
         artist: {
           counts: {
-            partner_shows: 42,
+            partnerShows: 42,
           },
         },
       })
@@ -68,7 +68,7 @@ describe("Artist type", () => {
       {
         artist(id: "foo-bar") {
           counts {
-            related_artists
+            relatedArtists
           }
         }
       }
@@ -78,7 +78,7 @@ describe("Artist type", () => {
       expect(data).toEqual({
         artist: {
           counts: {
-            related_artists: 42,
+            relatedArtists: 42,
           },
         },
       })
@@ -111,7 +111,7 @@ describe("Artist type", () => {
     const query = `
       {
         artist(id: "foo-bar") {
-          has_metadata
+          hasMetadata
         }
       }
     `
@@ -119,7 +119,7 @@ describe("Artist type", () => {
     return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
-          has_metadata: false,
+          hasMetadata: false,
         },
       })
     })
@@ -153,7 +153,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_nationality_and_birthday
+            formattedNationalityAndBirthday
           }
         }
       `
@@ -161,7 +161,7 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_nationality_and_birthday: "b. 2000",
+            formattedNationalityAndBirthday: "b. 2000",
           },
         })
       })
@@ -173,7 +173,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_nationality_and_birthday
+            formattedNationalityAndBirthday
           }
         }
       `
@@ -181,7 +181,7 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_nationality_and_birthday: "b. 2000",
+            formattedNationalityAndBirthday: "b. 2000",
           },
         })
       })
@@ -193,7 +193,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_nationality_and_birthday
+            formattedNationalityAndBirthday
           }
         }
       `
@@ -201,7 +201,7 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_nationality_and_birthday: "Est. 2000",
+            formattedNationalityAndBirthday: "Est. 2000",
           },
         })
       })
@@ -214,7 +214,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_nationality_and_birthday
+            formattedNationalityAndBirthday
           }
         }
       `
@@ -222,7 +222,7 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_nationality_and_birthday: "Martian, b. 2000",
+            formattedNationalityAndBirthday: "Martian, b. 2000",
           },
         })
       })
@@ -234,7 +234,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_nationality_and_birthday
+            formattedNationalityAndBirthday
           }
         }
       `
@@ -242,7 +242,7 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_nationality_and_birthday: "Martian",
+            formattedNationalityAndBirthday: "Martian",
           },
         })
       })
@@ -256,7 +256,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_nationality_and_birthday
+            formattedNationalityAndBirthday
           }
         }
       `
@@ -264,7 +264,7 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_nationality_and_birthday: "Martian, 2000–2012",
+            formattedNationalityAndBirthday: "Martian, 2000–2012",
           },
         })
       })
@@ -273,14 +273,14 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_nationality_and_birthday
+            formattedNationalityAndBirthday
           }
         }
       `
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_nationality_and_birthday: null,
+            formattedNationalityAndBirthday: null,
           },
         })
       })
@@ -290,20 +290,20 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_nationality_and_birthday
+            formattedNationalityAndBirthday
           }
         }
       `
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_nationality_and_birthday: null,
+            formattedNationalityAndBirthday: null,
           },
         })
       })
     })
   })
-  describe("artworks_connection", () => {
+  describe("artworksConnection", () => {
     beforeEach(() => {
       const count = 20
       artist.published_artworks_count = count
@@ -318,7 +318,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            artworks_connection(first: 40) {
+            artworksConnection(first: 40) {
               pageInfo {
                 hasNextPage
               }
@@ -329,7 +329,7 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            artworks_connection: {
+            artworksConnection: {
               pageInfo: {
                 hasNextPage: false,
               },
@@ -342,7 +342,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            artworks_connection(first: 20, filter: IS_FOR_SALE) {
+            artworksConnection(first: 20, filter: IS_FOR_SALE) {
               pageInfo {
                 hasNextPage
               }
@@ -353,7 +353,7 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            artworks_connection: {
+            artworksConnection: {
               pageInfo: {
                 hasNextPage: false,
               },
@@ -366,7 +366,7 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            artworks_connection(first: 10, filter: IS_FOR_SALE) {
+            artworksConnection(first: 10, filter: IS_FOR_SALE) {
               pageInfo {
                 hasNextPage
               }
@@ -377,7 +377,7 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            artworks_connection: {
+            artworksConnection: {
               pageInfo: {
                 hasNextPage: true,
               },
@@ -387,7 +387,7 @@ describe("Artist type", () => {
       })
     })
   })
-  describe("biography_blurb", () => {
+  describe("biographyBlurb", () => {
     it("returns the blurb if present", () => {
       artist.blurb = "catty blurb"
       const query = `
@@ -406,8 +406,8 @@ describe("Artist type", () => {
       })
     })
   })
-  describe("biography_blurb", () => {
-    describe("with partner_bio set to true", () => {
+  describe("biographyBlurb", () => {
+    describe("with partnerBio set to true", () => {
       describe("with a featured partner bio", () => {
         beforeEach(() => {
           const partnerArtists = Promise.resolve([
@@ -428,10 +428,10 @@ describe("Artist type", () => {
           const query = `
             {
               artist(id: "foo-bar") {
-                biography_blurb(partner_bio: true, format: HTML) {
+                biographyBlurb(partnerBio: true, format: HTML) {
                   text
                   credit
-                  partner_id
+                  partnerID
                 }
               }
             }
@@ -439,10 +439,10 @@ describe("Artist type", () => {
           return runQuery(query, context).then(data => {
             expect(data).toEqual({
               artist: {
-                biography_blurb: {
+                biographyBlurb: {
                   text: "<p>new catty bio</p>\n",
                   credit: "Submitted by Catty Partner",
-                  partner_id: "catty-partner",
+                  partnerID: "catty-partner",
                 },
               },
             })
@@ -462,10 +462,10 @@ describe("Artist type", () => {
           const query = `
             {
               artist(id: "foo-bar") {
-                biography_blurb(partner_bio: true) {
+                biographyBlurb(partnerBio: true) {
                   text
                   credit
-                  partner_id
+                  partnerID
                 }
               }
             }
@@ -473,10 +473,10 @@ describe("Artist type", () => {
           return runQuery(query, context).then(data => {
             expect(data).toEqual({
               artist: {
-                biography_blurb: {
+                biographyBlurb: {
                   text: "artsy blurb",
                   credit: null,
-                  partner_id: null,
+                  partnerID: null,
                 },
               },
             })
@@ -489,10 +489,10 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            biography_blurb {
+            biographyBlurb {
               text
               credit
-              partner_id
+              partnerID
             }
           }
         }
@@ -500,10 +500,10 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            biography_blurb: {
+            biographyBlurb: {
               text: "catty blurb",
               credit: null,
-              partner_id: null,
+              partnerID: null,
             },
           },
         })
@@ -526,10 +526,10 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            biography_blurb {
+            biographyBlurb {
               text
               credit
-              partner_id
+              partnerID
             }
           }
         }
@@ -537,10 +537,10 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            biography_blurb: {
+            biographyBlurb: {
               text: "new catty bio",
               credit: "Submitted by Catty Partner",
-              partner_id: "catty-partner",
+              partnerID: "catty-partner",
             },
           },
         })
@@ -594,7 +594,7 @@ describe("Artist type", () => {
         {
           artist(id: "foo-bar") {
             shows {
-              id
+              slug
             }
           }
         }
@@ -604,10 +604,10 @@ describe("Artist type", () => {
           artist: {
             shows: [
               {
-                id: "ok",
+                slug: "ok",
               },
               {
-                id: "galaxy-partner",
+                slug: "galaxy-partner",
               },
             ],
           },
@@ -618,8 +618,8 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            exhibition_highlights {
-              id
+            exhibitionHighlights {
+              slug
             }
           }
         }
@@ -627,12 +627,12 @@ describe("Artist type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            exhibition_highlights: [
+            exhibitionHighlights: [
               {
-                id: "ok",
+                slug: "ok",
               },
               {
-                id: "galaxy-partner",
+                slug: "galaxy-partner",
               },
             ],
           },
@@ -647,14 +647,14 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_artworks_count
+            formattedArtworksCount
           }
         }
       `
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_artworks_count: "42 works, 21 for sale",
+            formattedArtworksCount: "42 works, 21 for sale",
           },
         })
       })
@@ -665,14 +665,14 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_artworks_count
+            formattedArtworksCount
           }
         }
       `
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_artworks_count: "42 works",
+            formattedArtworksCount: "42 works",
           },
         })
       })
@@ -683,14 +683,14 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_artworks_count
+            formattedArtworksCount
           }
         }
       `
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_artworks_count: null,
+            formattedArtworksCount: null,
           },
         })
       })
@@ -701,14 +701,14 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "foo-bar") {
-            formatted_artworks_count
+            formattedArtworksCount
           }
         }
       `
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artist: {
-            formatted_artworks_count: "1 work",
+            formattedArtworksCount: "1 work",
           },
         })
       })
@@ -756,8 +756,8 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "percy") {
-            filtered_artworks(aggregations:[TOTAL], partner_id: null){
-              artworks: artworks_connection(first: 10) {
+            filteredArtworks(aggregations:[TOTAL], partnerID: null){
+              artworks: artworksConnection(first: 10) {
                 pageCursors {
                   first {
                     page
@@ -778,13 +778,13 @@ describe("Artist type", () => {
       return runQuery(query, context).then(
         ({
           artist: {
-            filtered_artworks: {
+            filteredArtworks: {
               artworks: { pageCursors },
             },
           },
         }) => {
           expect(filterArtworksLoader.mock.calls[0][0]).not.toHaveProperty(
-            "partner_id"
+            "partnerID"
           )
           // Check expected page cursors exist in response.
           const { first, around, last } = pageCursors
