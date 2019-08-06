@@ -3,13 +3,13 @@
 exports[`returns artists for a user 1`] = `
 Object {
   "me": Object {
-    "followed_artists_connection": Object {
+    "followedArtistsConnection": Object {
       "edges": Array [
         Object {
           "node": Object {
             "artist": Object {
-              "id": "bradley-theodore",
               "name": "Bradley Theodore",
+              "slug": "bradley-theodore",
             },
           },
         },
