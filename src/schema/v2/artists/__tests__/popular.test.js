@@ -3,12 +3,12 @@ import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
 describe("Popular Artists", () => {
-  it("makes a call for popular artists", () => {
+  it("makes a call for popular artists", async () => {
     const query = gql`
       {
-        popular_artists {
+        popularArtists {
           artists {
-            id
+            slug
           }
         }
       }
@@ -22,8 +22,7 @@ describe("Popular Artists", () => {
         ]),
     }
 
-    expect.assertions(1)
-    return runQuery(query, context).then(data => {
+    await runQuery(query, context).then(data => {
       expect(data).toMatchSnapshot()
     })
   })
