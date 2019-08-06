@@ -2,12 +2,12 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("FollowGene", () => {
-  it("follows a gene", () => {
+  it("follows a gene", async () => {
     const mutation = `
       mutation {
-        followGene(input: { gene_id: "pop-art" }) {
+        followGene(input: { geneID: "pop-art" }) {
           gene {
-            id
+            slug
             name
           }
         }
@@ -39,13 +39,12 @@ describe("FollowGene", () => {
 
     const expectedGeneData = {
       gene: {
-        id: "pop-art",
+        slug: "pop-art",
         name: "Pop Art",
       },
     }
 
-    expect.assertions(1)
-    return runAuthenticatedQuery(mutation, context).then(({ followGene }) => {
+    await runAuthenticatedQuery(mutation, context).then(({ followGene }) => {
       expect(followGene).toEqual(expectedGeneData)
     })
   })
