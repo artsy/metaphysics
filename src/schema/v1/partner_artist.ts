@@ -99,9 +99,8 @@ export default PartnerArtist
 // The edge is the PartnerArtist relationship, with the node being the partner.
 export const PartnerArtistConnection = connectionDefinitions({
   name: "PartnerArtist",
-  // FIXME: 'edgeType' does not exist in type 'ConnectionConfig'
-  // @ts-ignore
-  edgeType: PartnerArtistType,
+  // This never ended up being used in the underlying lib.
+  // edgeType: PartnerArtistType,
   nodeType: Partner.type,
   edgeFields: fields,
 }).connectionType
