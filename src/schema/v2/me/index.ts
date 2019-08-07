@@ -23,7 +23,6 @@ import CollectorProfile from "./collector_profile"
 import Conversation from "./conversation"
 import Conversations from "./conversations"
 import { CreditCards } from "./credit_cards"
-import FollowArtists from "./follow_artists"
 import FollowedArtistsArtworkGroups from "./followed_artists_artworks_group"
 import FollowedArtists from "./followed_artists"
 import FollowedGenes from "./followed_genes"
@@ -34,7 +33,7 @@ import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import SaleRegistrations from "./sale_registrations"
-import SavedArtworks from "./saved_artworks"
+import { SavedArtworks } from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
 import Submissions from "./consignments/submissions"
 import config from "config"
@@ -54,7 +53,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     ...IDFields,
     ...mySubmissions,
-    artworkInquiriesConnection: ArtworkInquiries,
+    artworkInquiries: ArtworkInquiries,
     bidders: Bidders,
     bidderStatus: BidderStatus,
     bidderPositions: BidderPositions,
@@ -67,16 +66,16 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     email: {
       type: GraphQLString,
     },
-    followArtists: FollowArtists,
-    followedArtistsConnection: FollowedArtists,
-    followedGenes: FollowedGenes,
     followsAndSaves: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "FollowsAndSaves",
         fields: {
           bundledArtworksByArtist: FollowedArtistsArtworkGroups,
+          artists: FollowedArtists,
+          artworks: SavedArtworks,
           shows: FollowedShows,
           fairs: FollowedFairs,
+          genes: FollowedGenes,
         },
       }),
       resolve: () => ({}),
@@ -118,7 +117,6 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     },
     recentlyViewedArtworks: RecentlyViewedArtworks,
     saleRegistrations: SaleRegistrations,
-    savedArtworks: SavedArtworks,
     suggestedArtists: SuggestedArtists,
     type: {
       type: GraphQLString,
@@ -135,7 +133,6 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "internalID",
       "creditCards",
       "followArtists",
-      "followedArtistsConnection",
       "followedGenes",
       "hasCreditCards",
       "hasQualifiedCreditCards",
@@ -150,7 +147,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "conversation",
       "conversations",
       "collectorProfile",
-      "artworkInquiriesConnection",
+      "artworkInquiries",
       "consignmentSubmissions",
       "followsAndSaves",
       "savedArtworks",

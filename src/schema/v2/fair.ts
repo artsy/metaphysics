@@ -237,7 +237,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         )
       },
     },
-    showsConnection: {
+    shows: {
       type: ShowsConnection.connectionType,
       description:
         "This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.",

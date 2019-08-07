@@ -1,4 +1,4 @@
-import Artwork, { artworkConnection } from "schema/v2/artwork"
+import { artworkConnection } from "schema/v2/artwork"
 import Bidder from "schema/v2/bidder"
 import Image from "schema/v2/image/index"
 import Profile from "schema/v2/profile"
@@ -16,7 +16,6 @@ import { amount } from "schema/v2/fields/money"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map } from "lodash"
 import { NodeInterface } from "schema/v2/object_identification"
-import { allViaLoader } from "lib/all"
 import { isLiveOpen, displayTimelyAt } from "./display"
 import { flatten } from "lodash"
 
@@ -78,39 +77,6 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       ...SlugAndInternalIDFields,
       cached,
       artworks: {
-        type: new GraphQLList(Artwork.type),
-        args: {
-          page: { type: GraphQLInt, defaultValue: 1 },
-          size: { type: GraphQLInt, defaultValue: 25 },
-          all: { type: GraphQLBoolean, defaultValue: false },
-          exclude: {
-            type: new GraphQLList(GraphQLString),
-            description:
-              "List of artwork IDs to exclude from the response (irrespective of size)",
-          },
-        },
-        resolve: ({ id }, options, { saleArtworksLoader }) => {
-          let fetch: Promise<any>
-
-          if (options.exclude) {
-            options.exclude_ids = flatten([options.exclude])
-            delete options.exclude
-          }
-
-          if (options.all) {
-            fetch = allViaLoader(saleArtworksLoader, {
-              path: id,
-              params: options,
-            })
-          } else {
-            fetch = saleArtworksLoader(id, options).then(({ body }) => body)
-          }
-          // FIXME: Object is possibly 'null'
-          // @ts-ignore
-          return fetch.then(saleArtworks => map(saleArtworks, "artwork"))
-        },
-      },
-      artworksConnection: {
         type: artworkConnection.connectionType,
         description: "Returns a connection of artworks for a sale.",
         args: pageable({
@@ -286,27 +252,6 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ require_bidder_approval }) => require_bidder_approval,
       },
       saleArtworks: {
-        type: new GraphQLList(SaleArtwork.type),
-        args: {
-          page: { type: GraphQLInt, defaultValue: 1 },
-          size: { type: GraphQLInt, defaultValue: 25 },
-          all: { type: GraphQLBoolean, defaultValue: false },
-        },
-        resolve: ({ id }, options, { saleArtworksLoader }) => {
-          let fetch: Promise<any>
-          if (options.all) {
-            fetch = allViaLoader(saleArtworksLoader, {
-              path: id,
-              params: options,
-            })
-          } else {
-            fetch = saleArtworksLoader(id, options).then(({ body }) => body)
-          }
-
-          return fetch
-        },
-      },
-      saleArtworksConnection: {
         type: saleArtworkConnection,
         args: pageable(),
         resolve: (sale, options, { saleArtworksLoader }) => {

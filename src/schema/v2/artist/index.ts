@@ -8,7 +8,6 @@ import {
   includes,
   merge,
 } from "lodash"
-import { exclude } from "lib/helpers"
 import cached from "schema/v2/fields/cached"
 import initials from "schema/v2/fields/initials"
 import { markdown, formatMarkdownValue } from "schema/v2/fields/markdown"
@@ -16,7 +15,7 @@ import numeral from "schema/v2/fields/numeral"
 import Image, { getDefault } from "schema/v2/image"
 import { setVersion } from "schema/v2/image/normalize"
 import Article, { articleConnection } from "schema/v2/article"
-import Artwork, { artworkConnection } from "schema/v2/artwork"
+import { artworkConnection } from "schema/v2/artwork"
 import PartnerArtist from "schema/v2/partner_artist"
 import Meta from "./meta"
 import {
@@ -45,7 +44,6 @@ import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { Related } from "./related"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import {
-  ShowsField,
   showsWithBLacklistedPartnersRemoved,
   ShowsConnectionField,
 } from "./shows"
@@ -95,7 +93,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(GraphQLString),
         resolve: ({ alternate_names }) => alternate_names,
       },
-      articlesConnection: {
+      articles: {
         args: pageable({
           sort: ArticleSorts,
           limit: {
@@ -143,77 +141,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      articles: {
-        args: {
-          sort: ArticleSorts,
-          limit: { type: GraphQLInt },
-          inEditorialFeed: { type: GraphQLBoolean },
-        },
-        type: new GraphQLList(Article.type),
-        resolve: (
-          { _id },
-          { inEditorialFeed, ..._options },
-          { articlesLoader }
-        ) => {
-          const options: any = {
-            in_editorial_feed: inEditorialFeed,
-            ..._options,
-          }
-          return articlesLoader(
-            defaults(options, {
-              artist_id: _id,
-              published: true,
-            })
-          ).then(({ results }) => results)
-        },
-      },
-      artists: {
-        type: new GraphQLList(Artist.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-            description: "The number of Artists to return",
-          },
-          excludeArtistsWithoutArtworks: {
-            type: GraphQLBoolean,
-            defaultValue: true,
-          },
-        },
-        resolve: (
-          { id },
-          { excludeArtistsWithoutArtworks, ..._options },
-          { relatedMainArtistsLoader }
-        ) => {
-          const options: any = {
-            exclude_artists_without_artworks: excludeArtistsWithoutArtworks,
-            ..._options,
-          }
-          return relatedMainArtistsLoader(
-            defaults(options, {
-              artist: [id],
-            })
-          ).then(({ body }) => body)
-        },
-      },
       artworks: {
-        type: new GraphQLList(Artwork.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-            description: "The number of Artworks to return",
-          },
-          page: { type: GraphQLInt },
-          sort: ArtworkSorts,
-          published: { type: GraphQLBoolean, defaultValue: true },
-          filter: { type: new GraphQLList(ArtistArtworksFilters) },
-          exclude: { type: new GraphQLList(GraphQLString) },
-        },
-        resolve: ({ id }, options, { artistArtworksLoader }) =>
-          artistArtworksLoader(id, options).then(
-            exclude(options.exclude, "id")
-          ),
-      },
-      artworksConnection: {
         type: artworkConnection.connectionType,
         args: pageable({
           exclude: {
@@ -682,8 +610,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      shows: ShowsField,
-      showsConnection: ShowsConnectionField,
+      shows: ShowsConnectionField,
       sortableID: {
         type: GraphQLString,
         description:

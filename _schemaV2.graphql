@@ -548,7 +548,7 @@ type Artist implements Node & Searchable {
   internalID: ID!
   cached: Int
   alternateNames: [String]
-  articlesConnection(
+  articles(
     sort: ArticleSorts
     limit: Int
     inEditorialFeed: Boolean
@@ -557,22 +557,7 @@ type Artist implements Node & Searchable {
     before: String
     last: Int
   ): ArticleConnection
-  articles(sort: ArticleSorts, limit: Int, inEditorialFeed: Boolean): [Article]
-  artists(
-    # The number of Artists to return
-    size: Int
-    excludeArtistsWithoutArtworks: Boolean = true
-  ): [Artist]
   artworks(
-    # The number of Artworks to return
-    size: Int
-    page: Int
-    sort: ArtworkSorts
-    published: Boolean = true
-    filter: [ArtistArtworksFilters]
-    exclude: [String]
-  ): [Artwork]
-  artworksConnection(
     # List of artwork IDs to exclude from the response.
     exclude: [String]
     filter: [ArtistArtworksFilters]
@@ -716,19 +701,6 @@ type Artist implements Node & Searchable {
     sort: SaleSorts
   ): [Sale]
   shows(
-    active: Boolean
-    atAFair: Boolean
-    isReference: Boolean
-
-    # The number of PartnerShows to return
-    size: Int
-    soloShow: Boolean
-    status: String
-    topTier: Boolean
-    visibleToPublic: Boolean
-    sort: ShowSorts
-  ): [Show]
-  showsConnection(
     active: Boolean
     atAFair: Boolean
     isReference: Boolean
@@ -1186,10 +1158,9 @@ type ArtworkLayer {
 
   # A type-specific ID.
   internalID: ID!
-  artworks: [Artwork]
 
   # A connection of artworks from a Layer.
-  artworksConnection(
+  artworks(
     after: String
     first: Int
     before: String
@@ -1619,7 +1590,7 @@ type Collection implements Node {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
-  artworksConnection(
+  artworks(
     after: String
     first: Int
     before: String
@@ -3635,7 +3606,7 @@ type Fair {
   profile: Profile
 
   # This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.
-  showsConnection(
+  shows(
     # Number of artworks to return
     section: String
 
@@ -3945,10 +3916,7 @@ type FollowedArtistsArtworksGroup implements Node {
   # A globally unique ID.
   id: ID!
   href: String
-
-  # List of artworks in this group.
-  artworks: [Artwork]
-  artworksConnection(
+  artworks(
     after: String
     first: Int
     before: String
@@ -4084,6 +4052,22 @@ type FollowsAndSaves {
     last: Int
   ): FollowedArtistsArtworksGroupConnection
 
+  # A Connection of followed artists by current user
+  artists(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FollowArtistConnection
+  artworks(
+    after: String
+    first: Int
+    before: String
+    last: Int
+    private: Boolean = false
+    sort: CollectionSorts
+  ): SavedArtworksConnection
+
   # A list of the current user’s currently followed shows
   shows(
     status: EventStatus
@@ -4108,6 +4092,14 @@ type FollowsAndSaves {
     before: String
     last: Int
   ): FollowedFairConnection
+
+  # A list of the current user’s inquiry requests
+  genes(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FollowGeneConnection
 }
 
 input FollowShowInput {
@@ -4151,14 +4143,13 @@ type Gene implements Node {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
-  artists: [Artist]
-  artistsConnection(
+  artists(
     after: String
     first: Int
     before: String
     last: Int
   ): ArtistConnection
-  artworksConnection(
+  artworks(
     acquireable: Boolean
     offerable: Boolean
     aggregationPartnerCities: [String]
@@ -4835,7 +4826,7 @@ type Me implements Node {
   ): ConsignmentSubmissionConnection
 
   # A list of the current user’s inquiry requests
-  artworkInquiriesConnection(
+  artworkInquiries(
     after: String
     first: Int
     before: String
@@ -4897,25 +4888,6 @@ type Me implements Node {
     last: Int
   ): CreditCardConnection
   email: String
-
-  # A list of the current user’s artist follows
-  followArtists(page: Int, size: Int): FollowArtists
-
-  # A Connection of followed artists by current user
-  followedArtistsConnection(
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): FollowArtistConnection
-
-  # A list of the current user’s inquiry requests
-  followedGenes(
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): FollowGeneConnection
   followsAndSaves: FollowsAndSaves
   hasCreditCards: Boolean
   hasQualifiedCreditCards: Boolean
@@ -4981,7 +4953,6 @@ type Me implements Node {
     size: Int
     sort: SaleSorts
   ): [SaleRegistration]
-  savedArtworks: Collection
 
   # A list of the current user’s suggested artists, based on a single artist
   suggestedArtists(
@@ -5311,15 +5282,9 @@ type Partner implements Node {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
-  artworks(
-    forSale: Boolean
-    sort: ArtworkSorts
-    exclude: [String]
-    size: Int
-  ): [Artwork]
 
   # A connection of artworks from a Partner.
-  artworksConnection(
+  artworks(
     forSale: Boolean
     sort: ArtworkSorts
     exclude: [String]
@@ -6242,17 +6207,9 @@ type Sale implements Node {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
-  artworks(
-    page: Int = 1
-    size: Int = 25
-    all: Boolean = false
-
-    # List of artwork IDs to exclude from the response (irrespective of size)
-    exclude: [String]
-  ): [Artwork]
 
   # Returns a connection of artworks for a sale.
-  artworksConnection(
+  artworks(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
     after: String
@@ -6329,11 +6286,6 @@ type Sale implements Node {
   registrationStatus: Bidder
   requireBidderApproval: Boolean
   saleArtworks(
-    page: Int = 1
-    size: Int = 25
-    all: Boolean = false
-  ): [SaleArtwork]
-  saleArtworksConnection(
     after: String
     first: Int
     before: String
@@ -6629,6 +6581,30 @@ type SaveArtworkPayload {
   clientMutationId: String
 }
 
+# A connection to a list of items.
+type SavedArtworksConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [SavedArtworksEdge]
+  pageCursors: PageCursors
+  totalCount: Int
+  description: String!
+  default: Boolean!
+  name: String!
+  private: Boolean!
+}
+
+# An edge in a connection.
+type SavedArtworksEdge {
+  # The item at the end of the edge
+  node: Artwork
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
 # An object that may be searched for
 interface Searchable {
   displayLabel: String
@@ -6793,7 +6769,7 @@ type Show implements Node {
   artists: [Artist]
 
   # The artworks featured in the show
-  artworksConnection(
+  artworks(
     # List of artwork IDs to exclude from the response (irrespective of size)
     exclude: [String]
     forSale: Boolean = false
