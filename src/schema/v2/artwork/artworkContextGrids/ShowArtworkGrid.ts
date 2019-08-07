@@ -35,7 +35,7 @@ export const ShowArtworkGridType = new GraphQLObjectType<
       },
     },
     artworks: {
-      type: artworkConnection,
+      type: artworkConnection.connectionType,
       args: pageable(),
       resolve: ({ artwork, show }, options, { partnerShowArtworksLoader }) => {
         const loaderOptions = {

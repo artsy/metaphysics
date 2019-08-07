@@ -82,7 +82,7 @@ export const ShowsConnectionField: GraphQLFieldConfig<
   { id: string },
   ResolverContext
 > = {
-  type: ShowsConnection,
+  type: ShowsConnection.connectionType,
   args: pageable(ShowArgs),
   resolve: ({ id }, args, { relatedShowsLoader }) => {
     const pageOptions = convertConnectionArgsToGravityArgs(args)

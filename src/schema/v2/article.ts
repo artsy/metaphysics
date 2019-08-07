@@ -75,5 +75,6 @@ const Article: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default Article
-
-export const articleConnection = connectionWithCursorInfo(ArticleType)
+export const articleConnection = connectionWithCursorInfo({
+  nodeType: ArticleType,
+})

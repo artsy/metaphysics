@@ -105,7 +105,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             type: GraphQLBoolean,
           },
         }),
-        type: articleConnection,
+        type: articleConnection.connectionType,
         resolve: (
           { _id },
           { inEditorialFeed, ..._args },
@@ -214,7 +214,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           ),
       },
       artworksConnection: {
-        type: artworkConnection,
+        type: artworkConnection.connectionType,
         args: pageable({
           exclude: {
             type: new GraphQLList(GraphQLString),
@@ -264,7 +264,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       auctionResults: {
-        type: auctionResultConnection,
+        type: auctionResultConnection.connectionType,
         args: pageable({
           sort: AuctionResultSorts,
           recordsTrusted: {
@@ -715,4 +715,6 @@ const Artist: GraphQLFieldConfig<void, ResolverContext> = {
 }
 export default Artist
 
-export const artistConnection = connectionWithCursorInfo(ArtistType)
+export const artistConnection = connectionWithCursorInfo({
+  nodeType: ArtistType,
+})

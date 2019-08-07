@@ -9,7 +9,7 @@ export const RecentlyViewedArtworks: GraphQLFieldConfig<
   { recently_viewed_artwork_ids: string[] },
   ResolverContext
 > = {
-  type: artworkConnection,
+  type: artworkConnection.connectionType,
   args: pageable({}),
   description: "A list of the current user’s recently viewed artworks.",
   resolve: (

@@ -233,6 +233,6 @@ const AuctionResultType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-export const auctionResultConnection = connectionWithCursorInfo(
-  AuctionResultType
-)
+export const auctionResultConnection = connectionWithCursorInfo({
+  nodeType: AuctionResultType,
+})

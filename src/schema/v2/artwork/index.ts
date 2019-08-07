@@ -828,5 +828,6 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default Artwork
-
-export const artworkConnection = connectionWithCursorInfo(ArtworkType)
+export const artworkConnection = connectionWithCursorInfo({
+  nodeType: ArtworkType,
+})

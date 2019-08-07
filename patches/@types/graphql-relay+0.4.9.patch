@@ -1,7 +1,16 @@
 patch-package
 --- a/node_modules/@types/graphql-relay/index.d.ts
 +++ b/node_modules/@types/graphql-relay/index.d.ts
-@@ -211,11 +211,11 @@ export function getOffsetWithDefault(
+@@ -68,6 +68,8 @@ export type ConnectionConfigNodeType =
+ export interface ConnectionConfig {
+     name?: string | null;
+     nodeType: ConnectionConfigNodeType;
++    // TODO: This is an addition we've patched into our copy of the lib.
++    edgeType?: GraphQLObjectType;
+     resolveNode?: GraphQLFieldResolver<any, any> | null;
+     resolveCursor?: GraphQLFieldResolver<any, any> | null;
+     edgeFields?: Thunk<GraphQLFieldConfigMap<any, any>> | null;
+@@ -211,11 +213,11 @@ export function getOffsetWithDefault(
  
  // mutation/mutation.js
  
@@ -17,7 +26,7 @@ patch-package
  
  /**
   * A description of a mutation consumable by mutationWithClientMutationId
-@@ -231,12 +231,12 @@ export type mutationFn = (
+@@ -231,12 +233,12 @@ export type mutationFn = (
   * input field, and it should return an Object with a key for each
   * output field. It may return synchronously, or return a Promise.
   */
@@ -33,7 +42,7 @@ patch-package
      deprecationReason?: string;
  }
  
-@@ -244,8 +244,8 @@ export interface MutationConfig {
+@@ -244,8 +246,8 @@ export interface MutationConfig {
   * Returns a GraphQLFieldConfig for the mutation described by the
   * provided MutationConfig.
   */

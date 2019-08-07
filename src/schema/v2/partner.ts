@@ -63,7 +63,7 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
       },
       artworksConnection: {
         description: "A connection of artworks from a Partner.",
-        type: artworkConnection,
+        type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
         resolve: ({ id }, options, { partnerArtworksLoader }) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(

@@ -111,7 +111,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       artworksConnection: {
-        type: artworkConnection,
+        type: artworkConnection.connectionType,
         description: "Returns a connection of artworks for a sale.",
         args: pageable({
           exclude: {

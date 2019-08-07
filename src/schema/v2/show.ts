@@ -105,7 +105,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
 
     artworksConnection: {
       description: "The artworks featured in the show",
-      type: artworkConnection,
+      type: artworkConnection.connectionType,
       args: pageable(artworksArgs),
       resolve: (show, options, { partnerShowArtworksLoader }) => {
         const loaderOptions = {
@@ -465,7 +465,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
     },
     nearbyShows: {
       description: "Shows that are near (~75km) from this show",
-      type: ShowsConnection,
+      type: ShowsConnection.connectionType,
       args: pageable({
         sort: {
           type: ShowSorts,
@@ -632,4 +632,4 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default Show
-export const ShowsConnection = connectionWithCursorInfo(ShowType)
+export const ShowsConnection = connectionWithCursorInfo({ nodeType: ShowType })

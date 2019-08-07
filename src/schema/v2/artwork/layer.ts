@@ -36,7 +36,7 @@ const ArtworkLayerType = new GraphQLObjectType<any, ResolverContext>({
     // hasNextPage is always false.
     artworksConnection: {
       description: "A connection of artworks from a Layer.",
-      type: artworkConnection,
+      type: artworkConnection.connectionType,
       args: pageable(),
       resolve: (
         { id, type, artwork_id },

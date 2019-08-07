@@ -34,7 +34,7 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType<
       description: "List of artworks in this group.",
     },
     artworksConnection: {
-      type: artworkConnection,
+      type: artworkConnection.connectionType,
       args: pageable({}),
       resolve: ({ artworks }, args) => {
         return connectionFromArraySlice(artworks, args, {
