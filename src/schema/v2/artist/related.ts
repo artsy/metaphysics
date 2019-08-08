@@ -41,8 +41,8 @@ export const Related = {
           })
         },
       },
-      artists: {
-        type: artistConnection,
+      artistsConnection: {
+        type: artistConnection.connectionType,
         args: pageable({
           excludeArtistsWithoutArtworks: {
             type: GraphQLBoolean,
@@ -102,9 +102,8 @@ export const Related = {
           })
         },
       },
-
-      suggested: {
-        type: artistConnection,
+      suggestedConnection: {
+        type: artistConnection.connectionType,
         args: pageable(SuggestedArtistsArgs),
         description:
           "A list of the current user’s suggested artists, based on a single artist",

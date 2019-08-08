@@ -93,7 +93,7 @@ export const FilterArtworksType = new GraphQLObjectType<any, ResolverContext>({
     },
     aggregations: ArtworkFilterAggregations,
     artworksConnection: {
-      type: artworkConnection,
+      type: artworkConnection.connectionType,
       // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
       // has been addressed.
       //deprecationReason:

@@ -48,16 +48,8 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      artists: {
-        type: new GraphQLList(Artist.type),
-        resolve: ({ id }, _options, { geneArtistsLoader }) => {
-          return geneArtistsLoader(id, {
-            exclude_artists_without_artworks: true,
-          })
-        },
-      },
       artistsConnection: {
-        type: artistConnection,
+        type: artistConnection.connectionType,
         args: pageable(),
         resolve: ({ id, counts }, options, { geneArtistsLoader }) => {
           const parsedOptions = _.omit(

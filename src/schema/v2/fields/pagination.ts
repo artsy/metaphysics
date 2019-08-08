@@ -6,7 +6,12 @@ import {
   GraphQLNonNull,
   GraphQLList,
 } from "graphql"
-import { connectionDefinitions, toGlobalId } from "graphql-relay"
+import {
+  connectionDefinitions,
+  toGlobalId,
+  ConnectionConfig,
+  GraphQLConnectionDefinitions,
+} from "graphql-relay"
 import { warn } from "lib/loggers"
 import { ResolverContext } from "types/graphql"
 
@@ -152,9 +157,11 @@ export function createPageCursors(
   return pageCursors
 }
 
-export function connectionWithCursorInfo(type, connectionFields = {}) {
+export function connectionWithCursorInfo(
+  config: ConnectionConfig
+): GraphQLConnectionDefinitions {
   return connectionDefinitions({
-    nodeType: type,
+    ...config,
     connectionFields: {
       pageCursors: {
         type: PageCursorsType,
@@ -164,7 +171,7 @@ export function connectionWithCursorInfo(type, connectionFields = {}) {
         type: GraphQLInt,
         resolve: ({ totalCount }) => totalCount,
       },
-      ...connectionFields,
+      ...config.connectionFields,
     },
-  }).connectionType
+  })
 }

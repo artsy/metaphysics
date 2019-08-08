@@ -65,12 +65,15 @@ export const SearchAggregations: GraphQLFieldConfig<any, ResolverContext> = {
   },
 }
 
-const SearchConnection = connectionWithCursorInfo(Searchable, {
-  aggregations: SearchAggregations,
+const SearchConnection = connectionWithCursorInfo({
+  nodeType: Searchable,
+  connectionFields: {
+    aggregations: SearchAggregations,
+  },
 })
 
 export const Search: GraphQLFieldConfig<void, ResolverContext> = {
-  type: SearchConnection,
+  type: SearchConnection.connectionType,
   description: "Global search",
   args: searchArgs,
   resolve: (_source, args, context, info) => {

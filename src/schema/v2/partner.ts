@@ -1,4 +1,4 @@
-import { assign, flatten } from "lodash"
+import { flatten } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import {
   GraphQLString,
@@ -12,13 +12,13 @@ import {
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
 
-import { exclude, convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import Profile from "./profile"
 import Location from "./location"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
-import Artwork, { artworkConnection } from "./artwork"
+import { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
 import ArtworkSorts from "./sorts/artwork_sorts"
 import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
@@ -42,28 +42,9 @@ const PartnerType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      artworks: {
-        type: new GraphQLList(Artwork.type),
-        args: {
-          ...artworksArgs,
-          size: {
-            type: GraphQLInt,
-          },
-        },
-        resolve: ({ id }, options, { partnerArtworksLoader }) => {
-          return partnerArtworksLoader(
-            id,
-            assign({}, options, {
-              published: true,
-            })
-          )
-            .then(({ body }) => body)
-            .then(exclude(options.exclude, "id"))
-        },
-      },
       artworksConnection: {
         description: "A connection of artworks from a Partner.",
-        type: artworkConnection,
+        type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
         resolve: ({ id }, options, { partnerArtworksLoader }) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(

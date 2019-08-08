@@ -35,8 +35,8 @@ export const PartnerArtworkGridType = new GraphQLObjectType<
         return `/${partner.default_profile_id}`
       },
     },
-    artworks: {
-      type: artworkConnection,
+    artworksConnection: {
+      type: artworkConnection.connectionType,
       args: pageable(),
       resolve: ({ artwork, partner }, options, { partnerArtworksLoader }) => {
         if (!partner) return null

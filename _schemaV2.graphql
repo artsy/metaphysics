@@ -557,21 +557,6 @@ type Artist implements Node & Searchable {
     before: String
     last: Int
   ): ArticleConnection
-  articles(sort: ArticleSorts, limit: Int, inEditorialFeed: Boolean): [Article]
-  artists(
-    # The number of Artists to return
-    size: Int
-    excludeArtistsWithoutArtworks: Boolean = true
-  ): [Artist]
-  artworks(
-    # The number of Artworks to return
-    size: Int
-    page: Int
-    sort: ArtworkSorts
-    published: Boolean = true
-    filter: [ArtistArtworksFilters]
-    exclude: [String]
-  ): [Artwork]
   artworksConnection(
     # List of artwork IDs to exclude from the response.
     exclude: [String]
@@ -583,7 +568,7 @@ type Artist implements Node & Searchable {
     before: String
     last: Int
   ): ArtworkConnection
-  auctionResults(
+  auctionResultsConnection(
     sort: AuctionResultSorts
 
     # When true, will only return records for allowed artists.
@@ -694,7 +679,7 @@ type Artist implements Node & Searchable {
   meta: ArtistMeta
   nationality: String
   name: String
-  partners(
+  partnersConnection(
     representedBy: Boolean
     partnerCategory: [String]
     after: String
@@ -715,19 +700,6 @@ type Artist implements Node & Searchable {
     size: Int
     sort: SaleSorts
   ): [Sale]
-  shows(
-    active: Boolean
-    atAFair: Boolean
-    isReference: Boolean
-
-    # The number of PartnerShows to return
-    size: Int
-    soloShow: Boolean
-    status: String
-    topTier: Boolean
-    visibleToPublic: Boolean
-    sort: ShowSorts
-  ): [Show]
   showsConnection(
     active: Boolean
     atAFair: Boolean
@@ -758,7 +730,7 @@ type ArtistArtworkGrid implements ArtworkContextGrid {
   title: String
   ctaTitle: String
   ctaHref: String
-  artworks(
+  artworksConnection(
     after: String
     first: Int
     before: String
@@ -848,7 +820,7 @@ type ArtistGroup {
 }
 
 type ArtistHighlights {
-  partners(
+  partnersConnection(
     representedBy: Boolean
     partnerCategory: [String]
     displayOnPartnerProfile: Boolean
@@ -877,7 +849,7 @@ type ArtistMeta {
 
 type ArtistRelatedData {
   genes(after: String, first: Int, before: String, last: Int): GeneConnection
-  artists(
+  artistsConnection(
     excludeArtistsWithoutArtworks: Boolean = true
     minForsaleArtworks: Int
     kind: RelatedArtistsKind
@@ -888,7 +860,7 @@ type ArtistRelatedData {
   ): ArtistConnection
 
   # A list of the current user’s suggested artists, based on a single artist
-  suggested(
+  suggestedConnection(
     # The slug or ID of an artist
     artistID: String
 
@@ -1122,7 +1094,7 @@ interface ArtworkContextGrid {
   title: String
   ctaTitle: String
   ctaHref: String
-  artworks(
+  artworksConnection(
     after: String
     first: Int
     before: String
@@ -1186,7 +1158,6 @@ type ArtworkLayer {
 
   # A type-specific ID.
   internalID: ID!
-  artworks: [Artwork]
 
   # A connection of artworks from a Layer.
   artworksConnection(
@@ -1311,7 +1282,7 @@ type AuctionArtworkGrid implements ArtworkContextGrid {
   title: String
   ctaTitle: String
   ctaHref: String
-  artworks(
+  artworksConnection(
     after: String
     first: Int
     before: String
@@ -1565,7 +1536,7 @@ type City {
   slug: String
   name: String
   coordinates: LatLng
-  shows(
+  showsConnection(
     sort: ShowSorts
 
     # Filter shows by chronological event status
@@ -1584,7 +1555,7 @@ type City {
     before: String
     last: Int
   ): ShowConnection
-  fairs(
+  fairsConnection(
     sort: FairSorts
     status: EventStatus
     after: String
@@ -1599,7 +1570,7 @@ type CitySponsoredContent {
   introText: String
   artGuideUrl: String
   featuredShows: [Show]
-  shows(
+  showsConnection(
     sort: ShowSorts
     status: EventStatus
     after: String
@@ -3600,7 +3571,7 @@ type Fair {
   internalID: ID!
   about: String
   followedContent: FollowedContent
-  artists(
+  artistsConnection(
     # Sorts for artists in a fair
     sort: FairArtistSorts
     after: String
@@ -3945,9 +3916,6 @@ type FollowedArtistsArtworksGroup implements Node {
   # A globally unique ID.
   id: ID!
   href: String
-
-  # List of artworks in this group.
-  artworks: [Artwork]
   artworksConnection(
     after: String
     first: Int
@@ -4075,7 +4043,7 @@ type FollowProfilePayload {
 
 type FollowsAndSaves {
   # A list of published artworks by followed artists (grouped by date and artists).
-  bundledArtworksByArtist(
+  bundledArtworksByArtistConnection(
     sort: ArtworkSorts
     forSale: Boolean
     after: String
@@ -4084,8 +4052,24 @@ type FollowsAndSaves {
     last: Int
   ): FollowedArtistsArtworksGroupConnection
 
+  # A Connection of followed artists by current user
+  artistsConnection(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FollowArtistConnection
+  artworksConnection(
+    after: String
+    first: Int
+    before: String
+    last: Int
+    private: Boolean = false
+    sort: CollectionSorts
+  ): SavedArtworksConnection
+
   # A list of the current user’s currently followed shows
-  shows(
+  showsConnection(
     status: EventStatus
 
     # Number of days which will be used to filter upcoming and closing soon shows
@@ -4102,12 +4086,20 @@ type FollowsAndSaves {
   ): FollowedShowConnection
 
   # A list of the current user’s currently followed fair profiles
-  fairs(
+  fairsConnection(
     after: String
     first: Int
     before: String
     last: Int
   ): FollowedFairConnection
+
+  # A list of the current user’s inquiry requests
+  genesConnection(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FollowGeneConnection
 }
 
 input FollowShowInput {
@@ -4151,7 +4143,6 @@ type Gene implements Node {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
-  artists: [Artist]
   artistsConnection(
     after: String
     first: Int
@@ -4826,7 +4817,7 @@ type Me implements Node {
   internalID: ID!
 
   # A list of the current user’s consignment submissions
-  consignmentSubmissions(
+  consignmentSubmissionsConnection(
     after: String
     first: Int
     before: String
@@ -4876,7 +4867,7 @@ type Me implements Node {
   ): Conversation
 
   # Conversations, usually between a user and partner.
-  conversations(
+  conversationsConnection(
     after: String
     first: Int
     before: String
@@ -4897,25 +4888,6 @@ type Me implements Node {
     last: Int
   ): CreditCardConnection
   email: String
-
-  # A list of the current user’s artist follows
-  followArtists(page: Int, size: Int): FollowArtists
-
-  # A Connection of followed artists by current user
-  followedArtistsConnection(
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): FollowArtistConnection
-
-  # A list of the current user’s inquiry requests
-  followedGenes(
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): FollowGeneConnection
   followsAndSaves: FollowsAndSaves
   hasCreditCards: Boolean
   hasQualifiedCreditCards: Boolean
@@ -4957,7 +4929,7 @@ type Me implements Node {
   recentlyViewedArtworkIds: [String]!
 
   # A list of the current user’s recently viewed artworks.
-  recentlyViewedArtworks(
+  recentlyViewedArtworksConnection(
     after: String
     first: Int
     before: String
@@ -4981,7 +4953,6 @@ type Me implements Node {
     size: Int
     sort: SaleSorts
   ): [SaleRegistration]
-  savedArtworks: Collection
 
   # A list of the current user’s suggested artists, based on a single artist
   suggestedArtists(
@@ -5311,12 +5282,6 @@ type Partner implements Node {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
-  artworks(
-    forSale: Boolean
-    sort: ArtworkSorts
-    exclude: [String]
-    size: Int
-  ): [Artwork]
 
   # A connection of artworks from a Partner.
   artworksConnection(
@@ -5413,7 +5378,7 @@ type PartnerArtworkGrid implements ArtworkContextGrid {
   title: String
   ctaTitle: String
   ctaHref: String
-  artworks(
+  artworksConnection(
     after: String
     first: Int
     before: String
@@ -5958,7 +5923,7 @@ type Query {
   ): SaleArtwork
 
   # Sale Artworks search results
-  saleArtworks(
+  saleArtworksConnection(
     aggregations: [SaleArtworkAggregation]
     artistIDs: [String]
     includeArtworksByFollowedArtists: Boolean
@@ -5997,7 +5962,7 @@ type Query {
   ): [Sale]
 
   # Global search
-  search(
+  searchConnection(
     # Search query to perform. Required.
     query: String!
 
@@ -6174,7 +6139,7 @@ type RelatedArtworkGrid implements ArtworkContextGrid {
   title: String
   ctaTitle: String
   ctaHref: String
-  artworks(
+  artworksConnection(
     after: String
     first: Int
     before: String
@@ -6242,14 +6207,6 @@ type Sale implements Node {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
-  artworks(
-    page: Int = 1
-    size: Int = 25
-    all: Boolean = false
-
-    # List of artwork IDs to exclude from the response (irrespective of size)
-    exclude: [String]
-  ): [Artwork]
 
   # Returns a connection of artworks for a sale.
   artworksConnection(
@@ -6328,11 +6285,6 @@ type Sale implements Node {
   # A registration for this sale or null
   registrationStatus: Bidder
   requireBidderApproval: Boolean
-  saleArtworks(
-    page: Int = 1
-    size: Int = 25
-    all: Boolean = false
-  ): [SaleArtwork]
   saleArtworksConnection(
     after: String
     first: Int
@@ -6627,6 +6579,30 @@ input SaveArtworkInput {
 type SaveArtworkPayload {
   artwork: Artwork
   clientMutationId: String
+}
+
+# A connection to a list of items.
+type SavedArtworksConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [SavedArtworksEdge]
+  pageCursors: PageCursors
+  totalCount: Int
+  description: String!
+  default: Boolean!
+  name: String!
+  private: Boolean!
+}
+
+# An edge in a connection.
+type SavedArtworksEdge {
+  # The item at the end of the edge
+  node: Artwork
+
+  # A cursor for use in pagination
+  cursor: String!
 }
 
 # An object that may be searched for
@@ -6928,7 +6904,7 @@ type Show implements Node {
   name: String
 
   # Shows that are near (~75km) from this show
-  nearbyShows(
+  nearbyShowsConnection(
     sort: ShowSorts
 
     # By default show only current shows
@@ -6975,7 +6951,7 @@ type Show implements Node {
   type: String
 
   # A Connection of followed artists by current user for this show
-  followedArtists(
+  followedArtistsConnection(
     after: String
     first: Int
     before: String
@@ -6987,7 +6963,7 @@ type ShowArtworkGrid implements ArtworkContextGrid {
   title: String
   ctaTitle: String
   ctaHref: String
-  artworks(
+  artworksConnection(
     after: String
     first: Int
     before: String
@@ -7780,7 +7756,7 @@ type Viewer {
   ): SaleArtwork
 
   # Sale Artworks search results
-  saleArtworks(
+  saleArtworksConnection(
     aggregations: [SaleArtworkAggregation]
     artistIDs: [String]
     includeArtworksByFollowedArtists: Boolean
@@ -7819,7 +7795,7 @@ type Viewer {
   ): [Sale]
 
   # Global search
-  search(
+  searchConnection(
     # Search query to perform. Required.
     query: String!
 

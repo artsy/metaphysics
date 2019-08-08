@@ -30,6 +30,7 @@ import { allViaLoader } from "lib/all"
 import { FairArtistSortsType } from "./sorts/fairArtistSorts"
 import { ResolverContext } from "types/graphql"
 import { sponsoredContentForFair } from "lib/sponsoredContent"
+import { connectionWithCursorInfo } from "./fields/pagination"
 
 const FollowedContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowedContent",
@@ -93,8 +94,8 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         }
       },
     },
-    artists: {
-      type: artistConnection,
+    artistsConnection: {
+      type: artistConnection.connectionType,
       args: pageable({
         sort: {
           type: FairArtistSortsType,
@@ -237,7 +238,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     showsConnection: {
-      type: ShowsConnection,
+      type: ShowsConnection.connectionType,
       description:
         "This connection only supports forward pagination. We're replacing Relay's default cursor with one from Gravity.",
       args: pageable({
@@ -418,3 +419,5 @@ const Fair: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default Fair
+
+export const fairConnection = connectionWithCursorInfo({ nodeType: FairType })
