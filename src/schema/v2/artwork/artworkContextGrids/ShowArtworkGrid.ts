@@ -34,7 +34,7 @@ export const ShowArtworkGridType = new GraphQLObjectType<
         return `/show/${show.id}`
       },
     },
-    artworks: {
+    artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable(),
       resolve: ({ artwork, show }, options, { partnerShowArtworksLoader }) => {

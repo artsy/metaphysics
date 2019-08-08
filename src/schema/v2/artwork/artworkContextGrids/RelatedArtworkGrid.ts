@@ -32,7 +32,7 @@ export const RelatedArtworkGridType = new GraphQLObjectType<
         return null
       },
     },
-    artworks: {
+    artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable(),
       resolve: async (

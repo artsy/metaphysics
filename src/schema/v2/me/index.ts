@@ -45,7 +45,9 @@ const { ENABLE_CONVECTION_STITCHING } = config
 const mySubmissions: GraphQLFieldConfigMap<
   void,
   ResolverContext
-> = !!ENABLE_CONVECTION_STITCHING ? {} : { consignmentSubmissions: Submissions }
+> = !!ENABLE_CONVECTION_STITCHING
+  ? {}
+  : { consignmentSubmissionsConnection: Submissions }
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -53,14 +55,14 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     ...IDFields,
     ...mySubmissions,
-    artworkInquiries: ArtworkInquiries,
+    artworkInquiriesConnection: ArtworkInquiries,
     bidders: Bidders,
     bidderStatus: BidderStatus,
     bidderPositions: BidderPositions,
     bidderPosition: BidderPosition,
     collectorProfile: CollectorProfile,
     conversation: Conversation,
-    conversations: Conversations,
+    conversationsConnection: Conversations,
     createdAt: date,
     creditCards: CreditCards,
     email: {
@@ -70,12 +72,12 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "FollowsAndSaves",
         fields: {
-          bundledArtworksByArtist: FollowedArtistsArtworkGroups,
-          artists: FollowedArtists,
-          artworks: SavedArtworks,
-          shows: FollowedShows,
-          fairs: FollowedFairs,
-          genes: FollowedGenes,
+          bundledArtworksByArtistConnection: FollowedArtistsArtworkGroups,
+          artistsConnection: FollowedArtists,
+          artworksConnection: SavedArtworks,
+          showsConnection: FollowedShows,
+          fairsConnection: FollowedFairs,
+          genesConnection: FollowedGenes,
         },
       }),
       resolve: () => ({}),
@@ -115,7 +117,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
       resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
     },
-    recentlyViewedArtworks: RecentlyViewedArtworks,
+    recentlyViewedArtworksConnection: RecentlyViewedArtworks,
     saleRegistrations: SaleRegistrations,
     suggestedArtists: SuggestedArtists,
     type: {

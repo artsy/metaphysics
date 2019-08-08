@@ -14,7 +14,7 @@ const ArtworkLayerType = new GraphQLObjectType<any, ResolverContext>({
     // The GraphQL connection spec is observed, but only
     // the number of items to return is respected.
     // hasNextPage is always false.
-    artworks: {
+    artworksConnection: {
       description: "A connection of artworks from a Layer.",
       type: artworkConnection.connectionType,
       args: pageable(),

@@ -93,7 +93,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
         type: new GraphQLList(GraphQLString),
         resolve: ({ alternate_names }) => alternate_names,
       },
-      articles: {
+      articlesConnection: {
         args: pageable({
           sort: ArticleSorts,
           limit: {
@@ -141,7 +141,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      artworks: {
+      artworksConnection: {
         type: artworkConnection.connectionType,
         args: pageable({
           exclude: {
@@ -191,7 +191,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      auctionResults: {
+      auctionResultsConnection: {
         type: auctionResultConnection.connectionType,
         args: pageable({
           sort: AuctionResultSorts,
@@ -548,7 +548,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
       meta: Meta,
       nationality: { type: GraphQLString },
       name: { type: GraphQLString },
-      partners: {
+      partnersConnection: {
         type: PartnerArtistConnection,
         args: pageable({
           representedBy: {
@@ -610,7 +610,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      shows: ShowsConnectionField,
+      showsConnection: ShowsConnectionField,
       sortableID: {
         type: GraphQLString,
         description:

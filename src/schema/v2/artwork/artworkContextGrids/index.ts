@@ -51,7 +51,7 @@ export const ArtworkContextGridType = new GraphQLInterfaceType({
     ctaHref: {
       type: GraphQLString,
     },
-    artworks: {
+    artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable(),
     },

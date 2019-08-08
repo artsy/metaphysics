@@ -102,8 +102,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         return artists
       },
     },
-
-    artworks: {
+    artworksConnection: {
       description: "The artworks featured in the show",
       type: artworkConnection.connectionType,
       args: pageable(artworksArgs),
@@ -463,7 +462,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       description: "The exhibition title",
       resolve: ({ name }) => (isExisty(name) ? name.trim() : name),
     },
-    nearbyShows: {
+    nearbyShowsConnection: {
       description: "Shows that are near (~75km) from this show",
       type: ShowsConnection.connectionType,
       args: pageable({
@@ -591,7 +590,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       resolve: ({ fair }) => (isExisty(fair) ? "Fair Booth" : "Show"),
     },
-    followedArtists: {
+    followedArtistsConnection: {
       type: connectionDefinitions({ nodeType: FollowArtistType })
         .connectionType,
       args: pageable({}),

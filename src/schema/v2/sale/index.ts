@@ -76,7 +76,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      artworks: {
+      artworksConnection: {
         type: artworkConnection.connectionType,
         description: "Returns a connection of artworks for a sale.",
         args: pageable({
@@ -251,7 +251,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ require_bidder_approval }) => require_bidder_approval,
       },
-      saleArtworks: {
+      saleArtworksConnection: {
         type: saleArtworkConnection,
         args: pageable(),
         resolve: (sale, options, { saleArtworksLoader }) => {

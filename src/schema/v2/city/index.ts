@@ -54,7 +54,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
     coordinates: {
       type: LatLngType,
     },
-    shows: {
+    showsConnection: {
       type: ShowsConnection.connectionType,
       args: pageable({
         sort: {
@@ -98,7 +98,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           include_discovery_blocked: false,
         }),
     },
-    fairs: {
+    fairsConnection: {
       type: fairConnection.connectionType,
       args: pageable({
         sort: FairSorts,
@@ -132,7 +132,7 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
               })
             },
           },
-          shows: {
+          showsConnection: {
             type: ShowsConnection.connectionType,
             args: pageable({
               sort: {

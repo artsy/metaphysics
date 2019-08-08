@@ -33,7 +33,7 @@ export const AuctionArtworkGridType = new GraphQLObjectType<
         return `/auction/${sale.id}`
       },
     },
-    artworks: {
+    artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable(),
       resolve: ({ artwork, sale }, options, { saleArtworksLoader }) => {

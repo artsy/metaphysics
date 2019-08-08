@@ -28,7 +28,7 @@ const FollowedArtistsArtworksGroupType = new GraphQLObjectType<
       type: GraphQLString,
       resolve: ({ artistSlug }) => `/artist/${artistSlug}`,
     },
-    artworks: {
+    artworksConnection: {
       type: artworkConnection.connectionType,
       args: pageable({}),
       resolve: ({ artworks }, args) => {

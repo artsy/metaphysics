@@ -30,7 +30,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
   fields: {
     ...SlugAndInternalIDFields,
     cached,
-    artworks: {
+    artworksConnection: {
       type: artworkConnection.connectionType,
       args: {
         ...pageable({}),

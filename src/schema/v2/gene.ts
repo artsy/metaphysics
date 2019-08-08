@@ -48,7 +48,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      artists: {
+      artistsConnection: {
         type: artistConnection.connectionType,
         args: pageable(),
         resolve: ({ id, counts }, options, { geneArtistsLoader }) => {
@@ -67,7 +67,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      artworks: {
+      artworksConnection: {
         type: connectionDefinitions({
           name: "GeneArtworks",
           nodeType: Artwork.type,

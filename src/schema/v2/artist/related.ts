@@ -41,7 +41,7 @@ export const Related = {
           })
         },
       },
-      artists: {
+      artistsConnection: {
         type: artistConnection.connectionType,
         args: pageable({
           excludeArtistsWithoutArtworks: {
@@ -102,8 +102,7 @@ export const Related = {
           })
         },
       },
-
-      suggested: {
+      suggestedConnection: {
         type: artistConnection.connectionType,
         args: pageable(SuggestedArtistsArgs),
         description:
