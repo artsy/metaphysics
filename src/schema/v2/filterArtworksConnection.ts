@@ -1,22 +1,308 @@
-import Artwork from "./artwork"
-import {
-  computeTotalPages,
-  createPageCursors,
-  pageToCursor,
-} from "./fields/pagination"
 import { pageable } from "relay-cursor-paging"
-import { convertConnectionArgsToGravityArgs, removeNulls } from "lib/helpers"
+import {
+  convertConnectionArgsToGravityArgs,
+  removeNulls,
+  isExisty,
+} from "lib/helpers"
 import {
   connectionFromArraySlice,
   connectionDefinitions,
   toGlobalId,
 } from "graphql-relay"
-import { GraphQLFieldConfig, GraphQLNonNull, GraphQLID } from "graphql"
+import {
+  GraphQLFieldConfig,
+  GraphQLNonNull,
+  GraphQLID,
+  GraphQLFieldConfigArgumentMap,
+  GraphQLBoolean,
+  GraphQLList,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLUnionType,
+  GraphQLObjectType,
+  GraphQLInterfaceType,
+} from "graphql"
 
 import { ResolverContext } from "types/graphql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
-import { FilterArtworksFields, filterArtworksArgs } from "./filter_artworks"
-import { NodeInterface } from "./object_identification"
+import {
+  computeTotalPages,
+  createPageCursors,
+  pageToCursor,
+} from "./fields/pagination"
+
+import Artwork, {
+  artworkConnection,
+  ArtworkConnectionInterface,
+  ArtworkEdgeInterface,
+} from "./artwork"
+import { NodeInterface, GlobalIDField } from "./object_identification"
+import {
+  ArtworksAggregation,
+  ArtworksAggregationResultsType,
+} from "./aggregations/filter_artworks_aggregation"
+import { omit, keys, map } from "lodash"
+import Artist from "./artist"
+import { TagType } from "./tag"
+import { GeneType } from "./gene"
+import numeral from "./fields/numeral"
+import { ArtworkType } from "./artwork"
+
+interface ContextSource {
+  context_type: GraphQLObjectType<any, ResolverContext>
+}
+
+export const ArtworkFilterAggregations: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
+  description: "Returns aggregation counts for the given filter query.",
+  type: new GraphQLList(ArtworksAggregationResultsType),
+  resolve: ({ aggregations }) => {
+    const allowedAggregations = omit(aggregations, [
+      "total",
+      "followed_artists",
+    ])
+    return map(allowedAggregations, (counts, slice) => ({
+      slice,
+      counts,
+    }))
+  },
+}
+
+export const ArtworkFilterFacetType = new GraphQLUnionType<ContextSource>({
+  name: "ArtworkFilterFacet",
+  types: [TagType, GeneType],
+  resolveType: ({ context_type }) => context_type,
+})
+
+export const FilterArtworksCounts = {
+  type: new GraphQLObjectType<any, ResolverContext>({
+    name: "FilterArtworksCounts",
+    fields: {
+      total: numeral(({ aggregations }) => aggregations.total.value),
+      followedArtists: numeral(
+        ({ aggregations }) => aggregations.followed_artists.value
+      ),
+    },
+  }),
+  resolve: data => data,
+}
+
+export const filterArtworksArgs: GraphQLFieldConfigArgumentMap = {
+  acquireable: {
+    type: GraphQLBoolean,
+  },
+  offerable: {
+    type: GraphQLBoolean,
+  },
+  aggregationPartnerCities: {
+    type: new GraphQLList(GraphQLString),
+  },
+  aggregations: {
+    type: new GraphQLList(ArtworksAggregation),
+  },
+  artistID: {
+    type: GraphQLString,
+  },
+  artistIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
+  atAuction: {
+    type: GraphQLBoolean,
+  },
+  attributionClass: {
+    type: new GraphQLList(GraphQLString),
+  },
+  color: {
+    type: GraphQLString,
+  },
+  dimensionRange: {
+    type: GraphQLString,
+  },
+  extraAggregationGeneIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
+  includeArtworksByFollowedArtists: {
+    type: GraphQLBoolean,
+  },
+  includeMediumFilterInAggregation: {
+    type: GraphQLBoolean,
+  },
+  inquireableOnly: {
+    type: GraphQLBoolean,
+  },
+  forSale: {
+    type: GraphQLBoolean,
+  },
+  geneID: {
+    type: GraphQLString,
+  },
+  geneIDs: {
+    type: new GraphQLList(GraphQLString),
+  },
+  height: {
+    type: GraphQLString,
+  },
+  width: {
+    type: GraphQLString,
+  },
+  marketable: {
+    type: GraphQLBoolean,
+    description:
+      "When true, will only return `marketable` works (not nude or provocative).",
+  },
+  medium: {
+    type: GraphQLString,
+    description:
+      "A string from the list of allocations, or * to denote all mediums",
+  },
+  period: {
+    type: GraphQLString,
+  },
+  periods: {
+    type: new GraphQLList(GraphQLString),
+  },
+  majorPeriods: {
+    type: new GraphQLList(GraphQLString),
+  },
+  partnerID: {
+    type: GraphQLID,
+  },
+  partnerCities: {
+    type: new GraphQLList(GraphQLString),
+  },
+  priceRange: {
+    type: GraphQLString,
+  },
+  page: {
+    type: GraphQLInt,
+  },
+  saleID: {
+    type: GraphQLID,
+  },
+  size: {
+    type: GraphQLInt,
+  },
+  sort: {
+    type: GraphQLString,
+  },
+  tagID: {
+    type: GraphQLString,
+  },
+  keyword: {
+    type: GraphQLString,
+  },
+  keywordMatchExact: {
+    type: GraphQLBoolean,
+    description: "When true, will only return exact keyword match",
+  },
+}
+
+export const FilterArtworksFields = () => {
+  return {
+    id: {
+      type: new GraphQLNonNull(GraphQLID),
+      description: "The ID of the object.",
+      resolve: ({ options }) =>
+        toGlobalId(
+          "FilterArtworks",
+          JSON.stringify(omit(options, "page", "size", "offset"))
+        ),
+    },
+    aggregations: ArtworkFilterAggregations,
+    artworksConnection: {
+      type: artworkConnection.connectionType,
+      // FIXME: Uncomment deprecationReason once https://github.com/apollographql/apollo-tooling/issues/805
+      // has been addressed.
+      //deprecationReason:
+      //  "Use only for filtering over ElasticSearch-backed fields, otherwise favor artwork connections that take filter arguments.",
+      args: pageable({
+        sort: {
+          type: GraphQLString,
+        },
+      }),
+      resolve: (
+        { options: gravityOptions, aggregations, hits },
+        args,
+        _context
+      ) => {
+        if (!aggregations || !aggregations.total) {
+          throw new Error("This query must contain the total aggregation")
+        }
+
+        const totalPages = computeTotalPages(
+          aggregations.total.value,
+          gravityOptions.size
+        )
+
+        const connection = connectionFromArraySlice(hits, args, {
+          arrayLength: Math.min(
+            aggregations.total.value,
+            totalPages * gravityOptions.size
+          ),
+          sliceStart: gravityOptions.offset,
+        })
+
+        connection.pageInfo.endCursor = pageToCursor(
+          gravityOptions.page + 1,
+          gravityOptions.size
+        )
+
+        return Object.assign(
+          {
+            pageCursors: createPageCursors(
+              gravityOptions,
+              aggregations.total.value
+            ),
+          },
+          connection
+        )
+      },
+    },
+    counts: FilterArtworksCounts,
+    hits: {
+      description: "Artwork results.",
+      type: new GraphQLList(Artwork.type),
+    },
+    merchandisableArtists: {
+      type: new GraphQLList(Artist.type),
+      description:
+        "Returns a list of merchandisable artists sorted by merch score.",
+      resolve: ({ aggregations }, _options, { artistsLoader }) => {
+        if (!isExisty(aggregations.merchandisable_artists)) {
+          return null
+        }
+        return artistsLoader({
+          ids: keys(aggregations.merchandisable_artists),
+        })
+      },
+    },
+    facet: {
+      type: ArtworkFilterFacetType,
+      resolve: (
+        { options },
+        _options,
+        { geneLoader, tagLoader }
+      ): Promise<ContextSource> | null => {
+        const { tag_id, gene_id } = options
+        if (tag_id) {
+          return tagLoader(tag_id).then(tag => ({
+            ...tag,
+            context_type: TagType,
+          }))
+        }
+        if (gene_id) {
+          return geneLoader(gene_id).then(gene => ({
+            ...gene,
+            context_type: GeneType,
+          }))
+        }
+        return null
+      },
+    },
+  }
+}
 
 // The connection fields here match the original implementation's,
 // except without `artworksConnection`.
@@ -27,7 +313,7 @@ const connectionFields = () => {
 
 const filterArtworksConnectionType = connectionDefinitions({
   name: "FilterArtworks",
-  nodeType: Artwork.type,
+  nodeType: ArtworkType,
   connectionFields: {
     ...connectionFields(),
     id: {
@@ -42,7 +328,8 @@ const filterArtworksConnectionType = connectionDefinitions({
       },
     },
   },
-  interfaces: [NodeInterface],
+  connectionInterfaces: [NodeInterface, ArtworkConnectionInterface],
+  edgeInterfaces: [ArtworkEdgeInterface],
 }).connectionType
 
 const filterArtworksConnectionTypeFactory = (
@@ -187,7 +474,7 @@ const filterArtworksConnectionTypeFactory = (
 // value out of the parent payload and moves it into
 // the query itself
 
-export default function filterArtworksConnection(primaryKey?: string) {
+export function filterArtworksConnection(primaryKey?: string) {
   return filterArtworksConnectionTypeFactory(
     primaryKey ? ({ id }) => ({ [primaryKey]: id }) : () => ({})
   )
@@ -196,3 +483,16 @@ export default function filterArtworksConnection(primaryKey?: string) {
 export function filterArtworksConnectionWithParams(mapRootToFilterParams) {
   return filterArtworksConnectionTypeFactory(mapRootToFilterParams)
 }
+
+export const EntityWithFilterArtworksConnectionInterface = new GraphQLInterfaceType(
+  {
+    name: "EntityWithFilterArtworksConnectionInterface",
+    fields: {
+      id: GlobalIDField,
+      filterArtworksConnection: {
+        type: filterArtworksConnectionType,
+        args: pageable(filterArtworksArgs),
+      },
+    },
+  }
+)

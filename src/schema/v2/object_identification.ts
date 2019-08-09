@@ -43,7 +43,6 @@ const SupportedTypes: any = {
     "./artist",
     "./artwork",
     "./gene",
-    "./filter_artworks",
     "./filterArtworksConnection",
     "./home/home_page_artwork_module",
     "./home/home_page_artist_module",

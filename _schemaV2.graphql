@@ -607,50 +607,6 @@ type Artist implements Node & Searchable {
     size: Int = 5
   ): [Show]
 
-  # Artworks Elastic Search results
-  filteredArtworks(
-    acquireable: Boolean
-    offerable: Boolean
-    aggregationPartnerCities: [String]
-    aggregations: [ArtworkAggregation]
-    artistID: String
-    artistIDs: [String]
-    atAuction: Boolean
-    attributionClass: [String]
-    color: String
-    dimensionRange: String
-    extraAggregationGeneIDs: [String]
-    includeArtworksByFollowedArtists: Boolean
-    includeMediumFilterInAggregation: Boolean
-    inquireableOnly: Boolean
-    forSale: Boolean
-    geneID: String
-    geneIDs: [String]
-    height: String
-    width: String
-
-    # When true, will only return `marketable` works (not nude or provocative).
-    marketable: Boolean
-
-    # A string from the list of allocations, or * to denote all mediums
-    medium: String
-    period: String
-    periods: [String]
-    majorPeriods: [String]
-    partnerID: ID
-    partnerCities: [String]
-    priceRange: String
-    page: Int
-    saleID: ID
-    size: Int
-    sort: String
-    tagID: String
-    keyword: String
-
-    # When true, will only return exact keyword match
-    keywordMatchExact: Boolean
-  ): FilterArtworks
-
   # A string showing the total number of works and those for sale
   formattedArtworksCount: String
 
@@ -723,7 +679,6 @@ type Artist implements Node & Searchable {
   statuses: ArtistStatuses
   highlights: ArtistHighlights
   years: String
-  marketingCollections(size: Int): [MarketingCollection]
 }
 
 type ArtistArtworkGrid implements ArtworkContextGrid {
@@ -1077,7 +1032,7 @@ enum ArtworkAggregation {
 }
 
 # A connection to a list of items.
-type ArtworkConnection {
+type ArtworkConnection implements ArtworkConnectionInterface {
   # Information to aid in pagination.
   pageInfo: PageInfo!
 
@@ -1085,6 +1040,11 @@ type ArtworkConnection {
   edges: [ArtworkEdge]
   pageCursors: PageCursors
   totalCount: Int
+}
+
+interface ArtworkConnectionInterface {
+  pageInfo: PageInfo!
+  edges: [ArtworkEdgeInterface]
 }
 
 union ArtworkContext = Fair | Sale | Show
@@ -1103,11 +1063,16 @@ interface ArtworkContextGrid {
 }
 
 # An edge in a connection.
-type ArtworkEdge {
+type ArtworkEdge implements ArtworkEdgeInterface {
   # The item at the end of the edge
   node: Artwork
 
   # A cursor for use in pagination
+  cursor: String!
+}
+
+interface ArtworkEdgeInterface {
+  node: Artwork
   cursor: String!
 }
 
@@ -3526,6 +3491,57 @@ type EndSalePayload {
   clientMutationId: String
 }
 
+interface EntityWithFilterArtworksConnectionInterface {
+  # A globally unique ID.
+  id: ID!
+  filterArtworksConnection(
+    acquireable: Boolean
+    offerable: Boolean
+    aggregationPartnerCities: [String]
+    aggregations: [ArtworkAggregation]
+    artistID: String
+    artistIDs: [String]
+    atAuction: Boolean
+    attributionClass: [String]
+    color: String
+    dimensionRange: String
+    extraAggregationGeneIDs: [String]
+    includeArtworksByFollowedArtists: Boolean
+    includeMediumFilterInAggregation: Boolean
+    inquireableOnly: Boolean
+    forSale: Boolean
+    geneID: String
+    geneIDs: [String]
+    height: String
+    width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
+    # A string from the list of allocations, or * to denote all mediums
+    medium: String
+    period: String
+    periods: [String]
+    majorPeriods: [String]
+    partnerID: ID
+    partnerCities: [String]
+    priceRange: String
+    page: Int
+    saleID: ID
+    size: Int
+    sort: String
+    tagID: String
+    keyword: String
+
+    # When true, will only return exact keyword match
+    keywordMatchExact: Boolean
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FilterArtworksConnection
+}
+
 enum EventStatus {
   # End date is in the past
   CLOSED
@@ -3560,7 +3576,7 @@ type ExternalPartner {
   name: String
 }
 
-type Fair {
+type Fair implements EntityWithFilterArtworksConnectionInterface {
   # A globally unique ID.
   id: ID!
 
@@ -3643,7 +3659,7 @@ type Fair {
   exhibitorsGroupedByName: [FairExhibitorsGroup]
 
   # Artworks Elastic Search results
-  filteredArtworks(
+  filterArtworksConnection(
     acquireable: Boolean
     offerable: Boolean
     aggregationPartnerCities: [String]
@@ -3684,7 +3700,11 @@ type Fair {
 
     # When true, will only return exact keyword match
     keywordMatchExact: Boolean
-  ): FilterArtworks
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FilterArtworksConnection
   sponsoredContent: FairSponsoredContent
 }
 
@@ -3796,31 +3816,8 @@ type Feedback {
   message: String!
 }
 
-type FilterArtworks implements Node {
-  # The ID of the object.
-  id: ID!
-
-  # Returns aggregation counts for the given filter query.
-  aggregations: [ArtworksAggregationResults]
-  artworksConnection(
-    sort: String
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): ArtworkConnection
-  counts: FilterArtworksCounts
-
-  # Artwork results.
-  hits: [Artwork]
-
-  # Returns a list of merchandisable artists sorted by merch score.
-  merchandisableArtists: [Artist]
-  facet: ArtworkFilterFacet
-}
-
 # A connection to a list of items.
-type FilterArtworksConnection implements Node {
+type FilterArtworksConnection implements Node & ArtworkConnectionInterface {
   # Information to aid in pagination.
   pageInfo: PageInfo!
 
@@ -3856,7 +3853,7 @@ type FilterArtworksCounts {
 }
 
 # An edge in a connection.
-type FilterArtworksEdge {
+type FilterArtworksEdge implements ArtworkEdgeInterface {
   # The item at the end of the edge
   node: Artwork
 
@@ -4181,7 +4178,9 @@ type Gene implements Node {
     before: String
     last: Int
   ): ArtistConnection
-  artworksConnection(
+
+  # Artworks Elastic Search results
+  filterArtworksConnection(
     acquireable: Boolean
     offerable: Boolean
     aggregationPartnerCities: [String]
@@ -4226,53 +4225,9 @@ type Gene implements Node {
     first: Int
     before: String
     last: Int
-  ): GeneArtworksConnection
+  ): FilterArtworksConnection
   description: String
   displayName: String
-
-  # Artworks Elastic Search results
-  filteredArtworks(
-    acquireable: Boolean
-    offerable: Boolean
-    aggregationPartnerCities: [String]
-    aggregations: [ArtworkAggregation]
-    artistID: String
-    artistIDs: [String]
-    atAuction: Boolean
-    attributionClass: [String]
-    color: String
-    dimensionRange: String
-    extraAggregationGeneIDs: [String]
-    includeArtworksByFollowedArtists: Boolean
-    includeMediumFilterInAggregation: Boolean
-    inquireableOnly: Boolean
-    forSale: Boolean
-    geneID: String
-    geneIDs: [String]
-    height: String
-    width: String
-
-    # When true, will only return `marketable` works (not nude or provocative).
-    marketable: Boolean
-
-    # A string from the list of allocations, or * to denote all mediums
-    medium: String
-    period: String
-    periods: [String]
-    majorPeriods: [String]
-    partnerID: ID
-    partnerCities: [String]
-    priceRange: String
-    page: Int
-    saleID: ID
-    size: Int
-    sort: String
-    tagID: String
-    keyword: String
-
-    # When true, will only return exact keyword match
-    keywordMatchExact: Boolean
-  ): FilterArtworks
   href: String
   image: Image
   isPublished: Boolean
@@ -4290,28 +4245,6 @@ type Gene implements Node {
     last: Int
   ): GeneConnection
   trendingArtists(sample: Int): [Artist]
-}
-
-# A connection to a list of items.
-type GeneArtworksConnection {
-  # Information to aid in pagination.
-  pageInfo: PageInfo!
-
-  # A list of edges.
-  edges: [GeneArtworksEdge]
-
-  # Returns aggregation counts for the given filter query.
-  aggregations: [ArtworksAggregationResults]
-  counts: FilterArtworksCounts
-}
-
-# An edge in a connection.
-type GeneArtworksEdge {
-  # The item at the end of the edge
-  node: Artwork
-
-  # A cursor for use in pagination
-  cursor: String!
 }
 
 # A connection to a list of items.
@@ -4743,42 +4676,6 @@ type MarketingCollection {
   # CollectionGroups of this collection
   linkedCollections: [MarketingCollectionGroup!]!
   relatedCollections: [MarketingCollection!]!
-  artworks(
-    acquireable: Boolean
-    offerable: Boolean
-    aggregation_partner_cities: [String]
-    aggregations: [ArtworkAggregation]
-    artist_id: String
-    artist_ids: [String]
-    at_auction: Boolean
-    attribution_class: [String]
-    color: String
-    dimension_range: String
-    extra_aggregation_gene_ids: [String]
-    include_artworks_by_followed_artists: Boolean
-    include_medium_filter_in_aggregation: Boolean
-    inquireable_only: Boolean
-    for_sale: Boolean
-    gene_id: String
-    gene_ids: [String]
-    height: String
-    width: String
-
-    # A string from the list of allocations, or * to denote all mediums
-    medium: String
-    period: String
-    periods: [String]
-    major_periods: [String]
-    partner_id: ID
-    partner_cities: [String]
-    price_range: String
-    page: Int
-    sale_id: ID
-    size: Int
-    sort: String
-    tag_id: String
-    keyword: String
-  ): FilterArtworks
 }
 
 type MarketingCollectionCategory {
@@ -5755,50 +5652,6 @@ type Query {
     type: [PartnerClassification]
     aggregations: [PartnersAggregation]!
   ): FilterPartners
-
-  # Artworks Elastic Search results
-  filterArtworks(
-    acquireable: Boolean
-    offerable: Boolean
-    aggregationPartnerCities: [String]
-    aggregations: [ArtworkAggregation]
-    artistID: String
-    artistIDs: [String]
-    atAuction: Boolean
-    attributionClass: [String]
-    color: String
-    dimensionRange: String
-    extraAggregationGeneIDs: [String]
-    includeArtworksByFollowedArtists: Boolean
-    includeMediumFilterInAggregation: Boolean
-    inquireableOnly: Boolean
-    forSale: Boolean
-    geneID: String
-    geneIDs: [String]
-    height: String
-    width: String
-
-    # When true, will only return `marketable` works (not nude or provocative).
-    marketable: Boolean
-
-    # A string from the list of allocations, or * to denote all mediums
-    medium: String
-    period: String
-    periods: [String]
-    majorPeriods: [String]
-    partnerID: ID
-    partnerCities: [String]
-    priceRange: String
-    page: Int
-    saleID: ID
-    size: Int
-    sort: String
-    tagID: String
-    keyword: String
-
-    # When true, will only return exact keyword match
-    keywordMatchExact: Boolean
-  ): FilterArtworks
 
   # Artworks Elastic Search results
   filterArtworksConnection(
@@ -6834,7 +6687,7 @@ type Services {
   metaphysics: Metaphysics!
 }
 
-type Show implements Node {
+type Show implements Node & EntityWithFilterArtworksConnectionInterface {
   # A globally unique ID.
   id: ID!
 
@@ -6894,7 +6747,7 @@ type Show implements Node {
   fair: Fair
 
   # Artworks Elastic Search results
-  filteredArtworks(
+  filterArtworksConnection(
     acquireable: Boolean
     offerable: Boolean
     aggregationPartnerCities: [String]
@@ -6935,7 +6788,11 @@ type Show implements Node {
 
     # When true, will only return exact keyword match
     keywordMatchExact: Boolean
-  ): FilterArtworks
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FilterArtworksConnection
 
   # A path to the show on Artsy
   href: String
@@ -7228,50 +7085,6 @@ type Tag implements Node {
   href: String
   image: Image
   count: Int
-
-  # Artworks Elastic Search results
-  filteredArtworks(
-    acquireable: Boolean
-    offerable: Boolean
-    aggregationPartnerCities: [String]
-    aggregations: [ArtworkAggregation]
-    artistID: String
-    artistIDs: [String]
-    atAuction: Boolean
-    attributionClass: [String]
-    color: String
-    dimensionRange: String
-    extraAggregationGeneIDs: [String]
-    includeArtworksByFollowedArtists: Boolean
-    includeMediumFilterInAggregation: Boolean
-    inquireableOnly: Boolean
-    forSale: Boolean
-    geneID: String
-    geneIDs: [String]
-    height: String
-    width: String
-
-    # When true, will only return `marketable` works (not nude or provocative).
-    marketable: Boolean
-
-    # A string from the list of allocations, or * to denote all mediums
-    medium: String
-    period: String
-    periods: [String]
-    majorPeriods: [String]
-    partnerID: ID
-    partnerCities: [String]
-    priceRange: String
-    page: Int
-    saleID: ID
-    size: Int
-    sort: String
-    tagID: String
-    keyword: String
-
-    # When true, will only return exact keyword match
-    keywordMatchExact: Boolean
-  ): FilterArtworks
 }
 
 type TrendingArtists {
@@ -7636,50 +7449,6 @@ type Viewer {
     type: [PartnerClassification]
     aggregations: [PartnersAggregation]!
   ): FilterPartners
-
-  # Artworks Elastic Search results
-  filterArtworks(
-    acquireable: Boolean
-    offerable: Boolean
-    aggregationPartnerCities: [String]
-    aggregations: [ArtworkAggregation]
-    artistID: String
-    artistIDs: [String]
-    atAuction: Boolean
-    attributionClass: [String]
-    color: String
-    dimensionRange: String
-    extraAggregationGeneIDs: [String]
-    includeArtworksByFollowedArtists: Boolean
-    includeMediumFilterInAggregation: Boolean
-    inquireableOnly: Boolean
-    forSale: Boolean
-    geneID: String
-    geneIDs: [String]
-    height: String
-    width: String
-
-    # When true, will only return `marketable` works (not nude or provocative).
-    marketable: Boolean
-
-    # A string from the list of allocations, or * to denote all mediums
-    medium: String
-    period: String
-    periods: [String]
-    majorPeriods: [String]
-    partnerID: ID
-    partnerCities: [String]
-    priceRange: String
-    page: Int
-    saleID: ID
-    size: Int
-    sort: String
-    tagID: String
-    keyword: String
-
-    # When true, will only return exact keyword match
-    keywordMatchExact: Boolean
-  ): FilterArtworks
 
   # Artworks Elastic Search results
   filterArtworksConnection(

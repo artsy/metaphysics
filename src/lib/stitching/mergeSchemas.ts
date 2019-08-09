@@ -18,7 +18,11 @@ import { vortexStitchingEnvironment } from "./vortex/stitching"
 /**
  * Incrementally merges in schemas according to `process.env`
  */
-export const incrementalMergeSchemas = (localSchema, testConfig?: any) => {
+export const incrementalMergeSchemas = (
+  localSchema,
+  version: 1 | 2,
+  testConfig?: any
+) => {
   const environment = testConfig || config
 
   const {
@@ -69,7 +73,11 @@ export const incrementalMergeSchemas = (localSchema, testConfig?: any) => {
   const kawsSchema = executableKawsSchema()
   schemas.push(kawsSchema)
 
-  useStitchingEnvironment(kawsStitchingEnvironment(localSchema, kawsSchema))
+  // TODO: In v2 we dropped the legacy style filter artworks, so this needs to
+  //       be redone with the new connection.
+  if (version === 1) {
+    useStitchingEnvironment(kawsStitchingEnvironment(localSchema, kawsSchema))
+  }
 
   // The order should only matter in that extension schemas come after the
   // objects that they are expected to build upon

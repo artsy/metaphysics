@@ -35,6 +35,7 @@ import {
   GraphQLInt,
   GraphQLFieldConfig,
   GraphQLFloat,
+  GraphQLInterfaceType,
 } from "graphql"
 import AttributionClass from "schema/v2/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
@@ -46,6 +47,7 @@ import { ResolverContext } from "types/graphql"
 import { listPrice } from "schema/v2/fields/listPrice"
 import Show from "schema/v2/show"
 import { ArtworkContextGrids } from "./artworkContextGrids"
+import { PageInfoType } from "graphql-relay"
 
 const has_price_range = price => {
   return new RegExp(/\-/).test(price)
@@ -827,7 +829,30 @@ const Artwork: GraphQLFieldConfig<void, ResolverContext> = {
   },
 }
 
-export default Artwork
+export const ArtworkEdgeInterface = new GraphQLInterfaceType({
+  name: "ArtworkEdgeInterface",
+  fields: {
+    node: {
+      type: ArtworkType,
+    },
+    cursor: {
+      type: new GraphQLNonNull(GraphQLString),
+    },
+  },
+})
+
+export const ArtworkConnectionInterface = new GraphQLInterfaceType({
+  name: "ArtworkConnectionInterface",
+  fields: {
+    pageInfo: { type: new GraphQLNonNull(PageInfoType) },
+    edges: { type: new GraphQLList(ArtworkEdgeInterface) },
+  },
+})
+
 export const artworkConnection = connectionWithCursorInfo({
   nodeType: ArtworkType,
+  connectionInterfaces: [ArtworkConnectionInterface],
+  edgeInterfaces: [ArtworkEdgeInterface],
 })
+
+export default Artwork

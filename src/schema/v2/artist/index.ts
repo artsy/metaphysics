@@ -39,7 +39,6 @@ import {
 } from "schema/v2/auction_result"
 import ArtistArtworksFilters from "./artwork_filters"
 import { Searchable } from "schema/v2/searchable"
-import filterArtworks from "schema/v2/filter_artworks"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { Related } from "./related"
 import { createPageCursors } from "schema/v2/fields/pagination"
@@ -449,7 +448,6 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
-      filteredArtworks: filterArtworks("artist_id"),
       formattedArtworksCount: {
         type: GraphQLString,
         description:

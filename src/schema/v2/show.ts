@@ -25,7 +25,6 @@ import Location from "./location"
 import Image, { getDefault, normalizeImageData } from "./image"
 import ShowEventType from "./show_event"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
-import { filterArtworksWithParams } from "schema/v2/filter_artworks"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -91,515 +90,513 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
 
 export const ShowType = new GraphQLObjectType<any, ResolverContext>({
   name: "Show",
-  interfaces: [NodeInterface],
-  fields: () => ({
-    ...SlugAndInternalIDFields,
-    cached,
-    artists: {
-      description: "The Artists presenting in this show",
-      type: new GraphQLList(Artist.type),
-      resolve: ({ artists }) => {
-        return artists
+  interfaces: () => {
+    const {
+      EntityWithFilterArtworksConnectionInterface,
+    } = require("./filterArtworksConnection")
+    return [NodeInterface, EntityWithFilterArtworksConnectionInterface]
+  },
+  fields: () => {
+    const {
+      filterArtworksConnectionWithParams,
+    } = require("./filterArtworksConnection")
+    return {
+      ...SlugAndInternalIDFields,
+      cached,
+      artists: {
+        description: "The Artists presenting in this show",
+        type: new GraphQLList(Artist.type),
+        resolve: ({ artists }) => {
+          return artists
+        },
       },
-    },
-    artworksConnection: {
-      description: "The artworks featured in the show",
-      type: artworkConnection.connectionType,
-      args: pageable(artworksArgs),
-      resolve: (show, options, { partnerShowArtworksLoader }) => {
-        const loaderOptions = {
-          partner_id: show.partner.id,
-          show_id: show.id,
-        }
-        const { page, size, offset } = convertConnectionArgsToGravityArgs(
-          options
-        )
-
-        interface GravityArgs {
-          exclude_ids?: string[]
-          page: number
-          size: number
-          total_count: boolean
-        }
-
-        const gravityArgs: GravityArgs = {
-          page,
-          size,
-          total_count: true,
-        }
-
-        if (options.exclude) {
-          gravityArgs.exclude_ids = flatten([options.exclude])
-        }
-
-        return partnerShowArtworksLoader(loaderOptions, gravityArgs).then(
-          ({ body, headers }) => {
-            return connectionFromArraySlice(body, options, {
-              arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-              sliceStart: offset,
-            })
+      artworksConnection: {
+        description: "The artworks featured in the show",
+        type: artworkConnection.connectionType,
+        args: pageable(artworksArgs),
+        resolve: (show, options, { partnerShowArtworksLoader }) => {
+          const loaderOptions = {
+            partner_id: show.partner.id,
+            show_id: show.id,
           }
-        )
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            options
+          )
+          interface GravityArgs {
+            exclude_ids?: string[]
+            page: number
+            size: number
+            total_count: boolean
+          }
+          const gravityArgs: GravityArgs = {
+            page,
+            size,
+            total_count: true,
+          }
+          if (options.exclude) {
+            gravityArgs.exclude_ids = flatten([options.exclude])
+          }
+          return partnerShowArtworksLoader(loaderOptions, gravityArgs).then(
+            ({ body, headers }) => {
+              return connectionFromArraySlice(body, options, {
+                arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+                sliceStart: offset,
+              })
+            }
+          )
+        },
       },
-    },
-    artistsWithoutArtworks: {
-      description: "Artists inside the show who do not have artworks present",
-      type: new GraphQLList(Artist.type),
-      resolve: ({ artists_without_artworks }) => artists_without_artworks,
-    },
-    artistsGroupedByName: {
-      description: "Artists in the show grouped by last name",
-      type: new GraphQLList(
-        new GraphQLObjectType<any, ResolverContext>({
-          name: "ArtistGroup",
-          fields: {
-            letter: {
-              type: GraphQLString,
-              description: "Letter artists group belongs to",
+      artistsWithoutArtworks: {
+        description: "Artists inside the show who do not have artworks present",
+        type: new GraphQLList(Artist.type),
+        resolve: ({ artists_without_artworks }) => artists_without_artworks,
+      },
+      artistsGroupedByName: {
+        description: "Artists in the show grouped by last name",
+        type: new GraphQLList(
+          new GraphQLObjectType<any, ResolverContext>({
+            name: "ArtistGroup",
+            fields: {
+              letter: {
+                type: GraphQLString,
+                description: "Letter artists group belongs to",
+              },
+              items: {
+                type: new GraphQLList(Artist.type),
+                description: "Artists sorted by last name",
+              },
             },
-            items: {
-              type: new GraphQLList(Artist.type),
-              description: "Artists sorted by last name",
-            },
-          },
-        })
-      ),
-      resolve: ({ artists }) => {
-        const groups: {
-          [letter: string]: { letter: string; items: [String] }
-        } = {}
-
-        const sortedArtists = artists.sort((a, b) => {
-          const aNames = a.name.split(" ")
-          const bNames = b.name.split(" ")
-          const aLastName = aNames[aNames.length - 1]
-          const bLastName = bNames[bNames.length - 1]
-
-          if (aLastName < bLastName) return -1
-          if (aLastName > bLastName) return 1
-
-          return 0
-        })
-
-        for (let artist of sortedArtists) {
-          const names = artist.name.split(" ")
-          const lastName = names[names.length - 1]
-          const letter = lastName.substring(0, 1).toUpperCase()
-
-          if (groups[letter] !== undefined) {
-            groups[letter].items.push(artist)
-          } else {
-            groups[letter] = {
-              letter,
-              items: [artist],
+          })
+        ),
+        resolve: ({ artists }) => {
+          const groups: {
+            [letter: string]: {
+              letter: string
+              items: [String]
+            }
+          } = {}
+          const sortedArtists = artists.sort((a, b) => {
+            const aNames = a.name.split(" ")
+            const bNames = b.name.split(" ")
+            const aLastName = aNames[aNames.length - 1]
+            const bLastName = bNames[bNames.length - 1]
+            if (aLastName < bLastName) return -1
+            if (aLastName > bLastName) return 1
+            return 0
+          })
+          for (let artist of sortedArtists) {
+            const names = artist.name.split(" ")
+            const lastName = names[names.length - 1]
+            const letter = lastName.substring(0, 1).toUpperCase()
+            if (groups[letter] !== undefined) {
+              groups[letter].items.push(artist)
+            } else {
+              groups[letter] = {
+                letter,
+                items: [artist],
+              }
             }
           }
-        }
-
-        return Object.values(groups)
+          return Object.values(groups)
+        },
       },
-    },
-    city: {
-      description:
-        "The general city, derived from a fair location, a show location or a potential city",
-      type: GraphQLString,
-      resolve: ({ fair, location, partner_city }) => {
-        if (fair && fair.location && fair.location.city) {
-          return fair.location.city
-        }
-        if (location && isExisty(location.city)) {
-          return location.city
-        }
-        return existyValue(partner_city)
+      city: {
+        description:
+          "The general city, derived from a fair location, a show location or a potential city",
+        type: GraphQLString,
+        resolve: ({ fair, location, partner_city }) => {
+          if (fair && fair.location && fair.location.city) {
+            return fair.location.city
+          }
+          if (location && isExisty(location.city)) {
+            return location.city
+          }
+          return existyValue(partner_city)
+        },
       },
-    },
-    coverImage: {
-      description: "The image you should use to represent this show",
-      type: Image.type,
-      resolve: (
-        { id, partner, image_versions, image_url },
-        _options,
-        { partnerShowArtworksLoader }
-      ) => {
-        if (image_versions && image_versions.length && image_url) {
-          return normalizeImageData({
-            image_versions,
-            image_url,
-          })
-        }
-
-        if (partner) {
+      coverImage: {
+        description: "The image you should use to represent this show",
+        type: Image.type,
+        resolve: (
+          { id, partner, image_versions, image_url },
+          _options,
+          { partnerShowArtworksLoader }
+        ) => {
+          if (image_versions && image_versions.length && image_url) {
+            return normalizeImageData({
+              image_versions,
+              image_url,
+            })
+          }
+          if (partner) {
+            return partnerShowArtworksLoader(
+              {
+                partner_id: partner.id,
+                show_id: id,
+              },
+              {
+                size: 1,
+                published: true,
+              }
+            )
+              .then(({ body }) => {
+                const artwork = body[0]
+                return artwork && normalizeImageData(getDefault(artwork.images))
+              })
+              .catch(() => null)
+          }
+          return null
+        },
+      },
+      counts: {
+        description:
+          "An object that represents some of the numbers you might want to highlight",
+        type: new GraphQLObjectType<any, ResolverContext>({
+          name: "ShowCounts",
+          fields: {
+            artworks: {
+              type: GraphQLInt,
+              args: {
+                artistID: {
+                  type: GraphQLString,
+                  description: "The slug or ID of an artist in the show.",
+                },
+              },
+              resolve: (
+                { id, partner },
+                { artistID },
+                { partnerShowArtworksLoader }
+              ) => {
+                const options: any = {
+                  artist_id: artistID,
+                }
+                return totalViaLoader(
+                  partnerShowArtworksLoader,
+                  {
+                    partner_id: partner.id,
+                    show_id: id,
+                  },
+                  options
+                )
+              },
+            },
+            eligibleArtworks: numeral(
+              ({ eligible_artworks_count }) => eligible_artworks_count
+            ),
+            artists: {
+              type: GraphQLInt,
+              resolve: (
+                { id, partner },
+                options,
+                { partnerShowArtistsLoader }
+              ) => {
+                return totalViaLoader(
+                  partnerShowArtistsLoader,
+                  {
+                    partner_id: partner.id,
+                    show_id: id,
+                  },
+                  options
+                )
+              },
+            },
+          },
+        }),
+        resolve: partner_show => partner_show,
+      },
+      description: {
+        description: "A description of the show",
+        type: GraphQLString,
+      },
+      endAt: date,
+      events: {
+        description: "Events from the partner that runs this show",
+        type: new GraphQLList(ShowEventType),
+        resolve: ({ partner, id }, _options, { partnerShowLoader }) =>
+          partnerShowLoader({
+            partner_id: partner.id,
+            show_id: id,
+          }).then(({ events }) => events),
+      },
+      exhibitionPeriod: {
+        type: GraphQLString,
+        description: "A formatted description of the start to end dates",
+        resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
+      },
+      fair: {
+        description: "If the show is in a Fair, then that fair",
+        type: Fair.type,
+        resolve: ({ fair }) => fair,
+      },
+      filterArtworksConnection: filterArtworksConnectionWithParams(
+        ({ _id, partner }) => ({
+          partner_show_id: _id,
+          partner_id: partner.id,
+        })
+      ),
+      href: {
+        description: "A path to the show on Artsy",
+        type: GraphQLString,
+        resolve: ({ id, is_reference, displayable }) => {
+          if (is_reference || !displayable) return null
+          return `/show/${id}`
+        },
+      },
+      images: {
+        description:
+          "Images that represent the show, you may be interested in meta_image or cover_image for a definitive thumbnail",
+        type: new GraphQLList(Image.type),
+        args: {
+          size: {
+            type: GraphQLInt,
+            description: "Number of images to return",
+          },
+          default: {
+            type: GraphQLBoolean,
+            description: "Pass true/false to include cover or not",
+          },
+          page: {
+            type: GraphQLInt,
+          },
+        },
+        resolve: ({ id }, options, { partnerShowImagesLoader }) => {
+          return partnerShowImagesLoader(id, options).then(normalizeImageData)
+        },
+      },
+      hasLocation: {
+        type: GraphQLBoolean,
+        description: "Flag showing if show has any location.",
+        resolve: ({ location, fair, partner_city }) => {
+          return isExisty(location || fair || partner_city)
+        },
+      },
+      isActive: {
+        type: GraphQLBoolean,
+        description:
+          "Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.",
+        resolve: ({ start_at, end_at }) => {
+          const start = moment.utc(start_at).subtract(7, "days")
+          const end = moment.utc(end_at).add(7, "days")
+          return moment.utc().isBetween(start, end)
+        },
+      },
+      isDisplayable: {
+        description: "Is this something we can display to the front-end?",
+        type: GraphQLBoolean,
+        resolve: ({ displayable }) => displayable,
+      },
+      isFairBooth: {
+        description: "Does the show exist as a fair booth?",
+        type: GraphQLBoolean,
+        resolve: ({ fair }) => isExisty(fair),
+      },
+      isReference: {
+        description: "Is it a show provided for historical reference?",
+        type: GraphQLBoolean,
+        resolve: ({ is_reference }) => is_reference,
+      },
+      isStubShow: {
+        description: "Is it an outsourced local discovery stub show?",
+        type: GraphQLBoolean,
+        resolve: ({ is_local_discovery }) => is_local_discovery,
+      },
+      kind: {
+        description: "Whether the show is in a fair, group or solo",
+        type: GraphQLString,
+        resolve: (show, _options, { partnerShowLoader }) => {
+          if (show.artists || show.artists_without_artworks) return kind(show)
+          return partnerShowLoader({
+            partner_id: show.partner.id,
+            show_id: show.id,
+          }).then(kind)
+        },
+      },
+      location: {
+        description:
+          "Where the show is located (Could also be a fair location)",
+        type: Location.type,
+        resolve: ({ location, fair_location }) => location || fair_location,
+      },
+      metaImage: {
+        description:
+          "An image representing the show, or a sharable image from an artwork in the show",
+        type: Image.type,
+        resolve: (
+          { id, partner, image_versions, image_url },
+          _options,
+          { partnerShowArtworksLoader }
+        ) => {
+          if (image_versions && image_versions.length && image_url) {
+            return normalizeImageData({
+              image_versions,
+              image_url,
+            })
+          }
           return partnerShowArtworksLoader(
             {
               partner_id: partner.id,
               show_id: id,
             },
             {
-              size: 1,
               published: true,
             }
-          )
-            .then(({ body }) => {
-              const artwork = body[0]
-              return artwork && normalizeImageData(getDefault(artwork.images))
-            })
-            .catch(() => null)
-        }
-
-        return null
-      },
-    },
-    counts: {
-      description:
-        "An object that represents some of the numbers you might want to highlight",
-      type: new GraphQLObjectType<any, ResolverContext>({
-        name: "ShowCounts",
-        fields: {
-          artworks: {
-            type: GraphQLInt,
-            args: {
-              artistID: {
-                type: GraphQLString,
-                description: "The slug or ID of an artist in the show.",
-              },
-            },
-            resolve: (
-              { id, partner },
-              { artistID },
-              { partnerShowArtworksLoader }
-            ) => {
-              const options: any = {
-                artist_id: artistID,
-              }
-              return totalViaLoader(
-                partnerShowArtworksLoader,
-                {
-                  partner_id: partner.id,
-                  show_id: id,
-                },
-                options
+          ).then(({ body }) => {
+            return normalizeImageData(
+              getDefault(
+                find(body, {
+                  can_share_image: true,
+                })
               )
-            },
-          },
-          eligibleArtworks: numeral(
-            ({ eligible_artworks_count }) => eligible_artworks_count
-          ),
-          artists: {
-            type: GraphQLInt,
-            resolve: (
-              { id, partner },
-              options,
-              { partnerShowArtistsLoader }
-            ) => {
-              return totalViaLoader(
-                partnerShowArtistsLoader,
-                {
-                  partner_id: partner.id,
-                  show_id: id,
-                },
-                options
-              )
-            },
-          },
-        },
-      }),
-      resolve: partner_show => partner_show,
-    },
-    description: {
-      description: "A description of the show",
-      type: GraphQLString,
-    },
-    endAt: date,
-    events: {
-      description: "Events from the partner that runs this show",
-      type: new GraphQLList(ShowEventType),
-      resolve: ({ partner, id }, _options, { partnerShowLoader }) =>
-        partnerShowLoader({
-          partner_id: partner.id,
-          show_id: id,
-        }).then(({ events }) => events),
-    },
-    exhibitionPeriod: {
-      type: GraphQLString,
-      description: "A formatted description of the start to end dates",
-      resolve: ({ start_at, end_at }) => dateRange(start_at, end_at, "UTC"),
-    },
-    fair: {
-      description: "If the show is in a Fair, then that fair",
-      type: Fair.type,
-      resolve: ({ fair }) => fair,
-    },
-    filteredArtworks: filterArtworksWithParams(({ _id, partner }) => ({
-      partner_show_id: _id,
-      partner_id: partner.id,
-    })),
-    href: {
-      description: "A path to the show on Artsy",
-      type: GraphQLString,
-      resolve: ({ id, is_reference, displayable }) => {
-        if (is_reference || !displayable) return null
-        return `/show/${id}`
-      },
-    },
-    images: {
-      description:
-        "Images that represent the show, you may be interested in meta_image or cover_image for a definitive thumbnail",
-      type: new GraphQLList(Image.type),
-      args: {
-        size: {
-          type: GraphQLInt,
-          description: "Number of images to return",
-        },
-        default: {
-          type: GraphQLBoolean,
-          description: "Pass true/false to include cover or not",
-        },
-        page: {
-          type: GraphQLInt,
-        },
-      },
-      resolve: ({ id }, options, { partnerShowImagesLoader }) => {
-        return partnerShowImagesLoader(id, options).then(normalizeImageData)
-      },
-    },
-    hasLocation: {
-      type: GraphQLBoolean,
-      description: "Flag showing if show has any location.",
-      resolve: ({ location, fair, partner_city }) => {
-        return isExisty(location || fair || partner_city)
-      },
-    },
-    isActive: {
-      type: GraphQLBoolean,
-      description:
-        "Gravity doesn’t expose the `active` flag. Temporarily re-state its logic.",
-      resolve: ({ start_at, end_at }) => {
-        const start = moment.utc(start_at).subtract(7, "days")
-        const end = moment.utc(end_at).add(7, "days")
-        return moment.utc().isBetween(start, end)
-      },
-    },
-    isDisplayable: {
-      description: "Is this something we can display to the front-end?",
-      type: GraphQLBoolean,
-      resolve: ({ displayable }) => displayable,
-    },
-    isFairBooth: {
-      description: "Does the show exist as a fair booth?",
-      type: GraphQLBoolean,
-      resolve: ({ fair }) => isExisty(fair),
-    },
-    isReference: {
-      description: "Is it a show provided for historical reference?",
-      type: GraphQLBoolean,
-      resolve: ({ is_reference }) => is_reference,
-    },
-    isStubShow: {
-      description: "Is it an outsourced local discovery stub show?",
-      type: GraphQLBoolean,
-      resolve: ({ is_local_discovery }) => is_local_discovery,
-    },
-    kind: {
-      description: "Whether the show is in a fair, group or solo",
-      type: GraphQLString,
-      resolve: (show, _options, { partnerShowLoader }) => {
-        if (show.artists || show.artists_without_artworks) return kind(show)
-        return partnerShowLoader({
-          partner_id: show.partner.id,
-          show_id: show.id,
-        }).then(kind)
-      },
-    },
-    location: {
-      description: "Where the show is located (Could also be a fair location)",
-      type: Location.type,
-      resolve: ({ location, fair_location }) => location || fair_location,
-    },
-    metaImage: {
-      description:
-        "An image representing the show, or a sharable image from an artwork in the show",
-      type: Image.type,
-      resolve: (
-        { id, partner, image_versions, image_url },
-        _options,
-        { partnerShowArtworksLoader }
-      ) => {
-        if (image_versions && image_versions.length && image_url) {
-          return normalizeImageData({
-            image_versions,
-            image_url,
-          })
-        }
-        return partnerShowArtworksLoader(
-          {
-            partner_id: partner.id,
-            show_id: id,
-          },
-          {
-            published: true,
-          }
-        ).then(({ body }) => {
-          return normalizeImageData(
-            getDefault(
-              find(body, {
-                can_share_image: true,
-              })
             )
-          )
-        })
-      },
-    },
-    isFollowed: {
-      type: GraphQLBoolean,
-      description: "Is the user following this show",
-      resolve: async ({ _id }, _args, { followedShowLoader }) => {
-        if (!followedShowLoader) return null
-        return followedShowLoader(_id).then(({ is_followed }) => is_followed)
-      },
-    },
-    name: {
-      type: GraphQLString,
-      description: "The exhibition title",
-      resolve: ({ name }) => (isExisty(name) ? name.trim() : name),
-    },
-    nearbyShowsConnection: {
-      description: "Shows that are near (~75km) from this show",
-      type: ShowsConnection.connectionType,
-      args: pageable({
-        sort: {
-          type: ShowSorts,
+          })
         },
-        status: {
-          type: EventStatus.type,
-          defaultValue: "CURRENT",
-          description: "By default show only current shows",
-        },
-        discoverable: {
-          type: GraphQLBoolean,
-          description:
-            "Whether to include local discovery stubs as well as displayable shows",
-        },
-      }),
-      resolve: async (show, args, { showsWithHeadersLoader }) => {
-        // Bail with an empty array if we can't get the lat/long for this show
-        if (!show.location || !show.location.coordinates) {
-          return connectionFromArray([], args)
-        }
-
-        // Manually toLowerCase to handle issue with resolving Enum default value
-        args.status = args.status.toLowerCase()
-        const coordinates = show.location.coordinates
-        const gravityOptions = {
-          ...convertConnectionArgsToGravityArgs(args),
-          displayable: true,
-          near: `${coordinates.lat},${coordinates.lng}`,
-
-          max_distance: LOCAL_DISCOVERY_RADIUS_KM,
-          has_location: true,
-          total_count: true,
-        }
-        delete gravityOptions.page
-
-        if (args.discoverable) {
-          delete gravityOptions.displayable
-        }
-
-        const response = await showsWithHeadersLoader(gravityOptions)
-        const { headers, body: cities } = response
-
-        const results = connectionFromArraySlice(cities, args, {
-          arrayLength: parseInt(headers["x-total-count"] || "0", 10),
-          sliceStart: gravityOptions.offset,
-        })
-
-        // This is in our schema, so might as well fill it
-        // @ts-ignore
-        results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
-        return results
       },
-    },
-    openingReceptionText: {
-      type: GraphQLString,
-      description:
-        "Alternate Markdown-supporting free text representation of the opening reception event’s date/time",
-      resolve: ({ opening_reception_text }) => opening_reception_text,
-    },
-    partner: {
-      description:
-        "The partner that represents this show, could be a non-Artsy partner",
-      type: new GraphQLUnionType({
-        name: "PartnerTypes",
-        types: [Partner.type, ExternalPartner.type],
-        resolveType: value => {
-          if (value._links) {
-            return ExternalPartner.type
+      isFollowed: {
+        type: GraphQLBoolean,
+        description: "Is the user following this show",
+        resolve: async ({ _id }, _args, { followedShowLoader }) => {
+          if (!followedShowLoader) return null
+          return followedShowLoader(_id).then(({ is_followed }) => is_followed)
+        },
+      },
+      name: {
+        type: GraphQLString,
+        description: "The exhibition title",
+        resolve: ({ name }) => (isExisty(name) ? name.trim() : name),
+      },
+      nearbyShowsConnection: {
+        description: "Shows that are near (~75km) from this show",
+        type: ShowsConnection.connectionType,
+        args: pageable({
+          sort: {
+            type: ShowSorts,
+          },
+          status: {
+            type: EventStatus.type,
+            defaultValue: "CURRENT",
+            description: "By default show only current shows",
+          },
+          discoverable: {
+            type: GraphQLBoolean,
+            description:
+              "Whether to include local discovery stubs as well as displayable shows",
+          },
+        }),
+        resolve: async (show, args, { showsWithHeadersLoader }) => {
+          // Bail with an empty array if we can't get the lat/long for this show
+          if (!show.location || !show.location.coordinates) {
+            return connectionFromArray([], args)
           }
-          return Partner.type
-        },
-      }),
-      resolve: (
-        { partner, galaxy_partner_id },
-        _options,
-        { galaxyGalleriesLoader }
-      ) => {
-        if (partner) {
-          return partner
-        }
-        if (galaxy_partner_id) {
-          return galaxyGalleriesLoader(galaxy_partner_id)
-        }
-      },
-    },
-    pressRelease: {
-      description: "The press release for this show",
-      ...markdown(),
-      resolve: ({ press_release }) => press_release,
-    },
-    pressReleaseUrl: {
-      type: GraphQLString,
-      description: "Link to the press release for this show",
-      resolve: ({ press_release_url }) => press_release_url,
-    },
-    startAt: {
-      description: "When this show starts",
-      ...date,
-      resolve: ({ start_at }) => start_at,
-    },
-    status: {
-      description: "Is this show running, upcoming or closed?",
-      type: GraphQLString,
-    },
-    statusUpdate: {
-      type: GraphQLString,
-      description: "A formatted update on upcoming status changes",
-      args: {
-        maxDays: {
-          type: GraphQLInt,
-          description: "Before this many days no update will be generated",
+          // Manually toLowerCase to handle issue with resolving Enum default value
+          args.status = args.status.toLowerCase()
+          const coordinates = show.location.coordinates
+          const gravityOptions = {
+            ...convertConnectionArgsToGravityArgs(args),
+            displayable: true,
+            near: `${coordinates.lat},${coordinates.lng}`,
+            max_distance: LOCAL_DISCOVERY_RADIUS_KM,
+            has_location: true,
+            total_count: true,
+          }
+          delete gravityOptions.page
+          if (args.discoverable) {
+            delete gravityOptions.displayable
+          }
+          const response = await showsWithHeadersLoader(gravityOptions)
+          const { headers, body: cities } = response
+          const results = connectionFromArraySlice(cities, args, {
+            arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+            sliceStart: gravityOptions.offset,
+          })
+          // This is in our schema, so might as well fill it
+          // @ts-ignore
+          results.totalCount = parseInt(headers["x-total-count"] || "0", 10)
+          return results
         },
       },
-      resolve: ({ start_at, end_at }, { maxDays }) => {
-        const options: any = {
-          max_days: maxDays,
-        }
-        return exhibitionStatus(start_at, end_at, options.max_days)
+      openingReceptionText: {
+        type: GraphQLString,
+        description:
+          "Alternate Markdown-supporting free text representation of the opening reception event’s date/time",
+        resolve: ({ opening_reception_text }) => opening_reception_text,
       },
-    },
-    type: {
-      description: "Is it a fair booth or a show?",
-      type: GraphQLString,
-      resolve: ({ fair }) => (isExisty(fair) ? "Fair Booth" : "Show"),
-    },
-    followedArtistsConnection: {
-      type: connectionDefinitions({ nodeType: FollowArtistType })
-        .connectionType,
-      args: pageable({}),
-      description:
-        "A Connection of followed artists by current user for this show",
-      resolve: (show, args, context) =>
-        followArtistsResolver({ show_id: show.id }, args, context),
-    },
-  }),
+      partner: {
+        description:
+          "The partner that represents this show, could be a non-Artsy partner",
+        type: new GraphQLUnionType({
+          name: "PartnerTypes",
+          types: [Partner.type, ExternalPartner.type],
+          resolveType: value => {
+            if (value._links) {
+              return ExternalPartner.type
+            }
+            return Partner.type
+          },
+        }),
+        resolve: (
+          { partner, galaxy_partner_id },
+          _options,
+          { galaxyGalleriesLoader }
+        ) => {
+          if (partner) {
+            return partner
+          }
+          if (galaxy_partner_id) {
+            return galaxyGalleriesLoader(galaxy_partner_id)
+          }
+        },
+      },
+      pressRelease: {
+        description: "The press release for this show",
+        ...markdown(),
+        resolve: ({ press_release }) => press_release,
+      },
+      pressReleaseUrl: {
+        type: GraphQLString,
+        description: "Link to the press release for this show",
+        resolve: ({ press_release_url }) => press_release_url,
+      },
+      startAt: {
+        description: "When this show starts",
+        ...date,
+        resolve: ({ start_at }) => start_at,
+      },
+      status: {
+        description: "Is this show running, upcoming or closed?",
+        type: GraphQLString,
+      },
+      statusUpdate: {
+        type: GraphQLString,
+        description: "A formatted update on upcoming status changes",
+        args: {
+          maxDays: {
+            type: GraphQLInt,
+            description: "Before this many days no update will be generated",
+          },
+        },
+        resolve: ({ start_at, end_at }, { maxDays }) => {
+          const options: any = {
+            max_days: maxDays,
+          }
+          return exhibitionStatus(start_at, end_at, options.max_days)
+        },
+      },
+      type: {
+        description: "Is it a fair booth or a show?",
+        type: GraphQLString,
+        resolve: ({ fair }) => (isExisty(fair) ? "Fair Booth" : "Show"),
+      },
+      followedArtistsConnection: {
+        type: connectionDefinitions({ nodeType: FollowArtistType })
+          .connectionType,
+        args: pageable({}),
+        description:
+          "A Connection of followed artists by current user for this show",
+        resolve: (show, args, context) =>
+          followArtistsResolver({ show_id: show.id }, args, context),
+      },
+    }
+  },
 })
 
 const Show: GraphQLFieldConfig<void, ResolverContext> = {
@@ -612,6 +609,7 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { showLoader }) => {
+    // TODO: blacklist filterArtworksConnection
     return showLoader(id)
       .then(show => {
         if (
