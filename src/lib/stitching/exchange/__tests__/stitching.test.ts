@@ -28,6 +28,18 @@ it("extends the Order objects", async () => {
   }
 })
 
+it("resolves amount fields on CommerceOrder", async () => {
+  const { resolvers } = await getExchangeStitchedSchema()
+  const totalListPriceResolver = resolvers.CommerceOrder.totalListPrice.resolve
+
+  expect(
+    totalListPriceResolver(
+      { currencyCode: "USD", totalListPriceCents: 100 },
+      {}
+    )
+  ).toEqual("$1.00")
+})
+
 // These are used in all delegate calls, and not useful to the test
 const restOfResolveArgs = {
   operation: "query",
@@ -116,6 +128,21 @@ it("delegates to the local schema for an Order's creditCard", async () => {
 
   expect(mergeInfo.delegateToSchema).toHaveBeenCalledWith({
     args: { id: "CC-1" },
+    fieldName: "credit_card",
+    operation: "query",
+    ...restOfResolveArgs,
+  })
+})
+
+it("doesn't delegate to the local schema for an Order's creditCard if creditCardId is null", async () => {
+  const { resolvers } = await getExchangeStitchedSchema()
+  const creditCardResolver = resolvers.CommerceBuyOrder.creditCard.resolve
+  const mergeInfo = { delegateToSchema: jest.fn() }
+
+  creditCardResolver({ creditCardId: null }, {}, {}, { mergeInfo })
+
+  expect(mergeInfo.delegateToSchema).not.toHaveBeenCalledWith({
+    args: { id: null },
     fieldName: "credit_card",
     operation: "query",
     ...restOfResolveArgs,

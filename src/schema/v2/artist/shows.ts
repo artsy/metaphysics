@@ -5,7 +5,6 @@ import {
   GraphQLBoolean,
   GraphQLFieldConfig,
   GraphQLFieldConfigArgumentMap,
-  GraphQLList,
 } from "graphql"
 import ShowSorts from "schema/v2/sorts/show_sorts"
 import { merge, defaults, reject, includes, omit } from "lodash"
@@ -13,7 +12,7 @@ import { createPageCursors } from "schema/v2/fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
-import Show, { ShowsConnection } from "../show"
+import { ShowsConnection } from "../show"
 
 // TODO: Fix upstream, for now we remove shows from certain Partner types
 const blacklistedPartnerTypes = [
@@ -65,24 +64,11 @@ const ShowArgs: GraphQLFieldConfigArgumentMap = {
   },
 }
 
-export const ShowsField: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
-  type: new GraphQLList(Show.type),
-  args: ShowArgs,
-  resolve: ({ id }, options, { relatedShowsLoader }) => {
-    return relatedShowsLoader(
-      defaults(options, {
-        artist_id: id,
-        sort: "-end_at",
-      })
-    ).then(({ body: shows }) => showsWithBLacklistedPartnersRemoved(shows))
-  },
-}
-
 export const ShowsConnectionField: GraphQLFieldConfig<
   { id: string },
   ResolverContext
 > = {
-  type: ShowsConnection,
+  type: ShowsConnection.connectionType,
   args: pageable(ShowArgs),
   resolve: ({ id }, args, { relatedShowsLoader }) => {
     const pageOptions = convertConnectionArgsToGravityArgs(args)

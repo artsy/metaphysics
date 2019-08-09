@@ -2,7 +2,6 @@ import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
 import cached from "./fields/cached"
-import Artwork from "./artwork"
 import Artist, { artistConnection } from "./artist"
 import Image from "./image"
 import {
@@ -37,27 +36,12 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
   name: "Gene",
   interfaces: [NodeInterface],
   fields: () => {
-    // Avoiding a require circle
-    const {
-      default: filterArtworks,
-      ArtworkFilterAggregations,
-      filterArtworksArgs,
-      FilterArtworksCounts,
-    } = require("./filter_artworks")
-
+    const { filterArtworksConnection } = require("./filterArtworksConnection")
     return {
       ...SlugAndInternalIDFields,
       cached,
-      artists: {
-        type: new GraphQLList(Artist.type),
-        resolve: ({ id }, _options, { geneArtistsLoader }) => {
-          return geneArtistsLoader(id, {
-            exclude_artists_without_artworks: true,
-          })
-        },
-      },
       artistsConnection: {
-        type: artistConnection,
+        type: artistConnection.connectionType,
         args: pageable(),
         resolve: ({ id, counts }, options, { geneArtistsLoader }) => {
           const parsedOptions = _.omit(
@@ -75,96 +59,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
           })
         },
       },
-      artworksConnection: {
-        type: connectionDefinitions({
-          name: "GeneArtworks",
-          nodeType: Artwork.type,
-          connectionFields: {
-            aggregations: ArtworkFilterAggregations,
-            counts: FilterArtworksCounts,
-          },
-        }).connectionType,
-        args: pageable(filterArtworksArgs),
-        resolve: (
-          { id },
-          {
-            aggregationPartnerCities,
-            artistID,
-            artistIDs,
-            atAuction,
-            attributionClass,
-            dimensionRange,
-            extraAggregationGeneIDs,
-            includeArtworksByFollowedArtists,
-            includeMediumFilterInAggregation,
-            inquireableOnly,
-            forSale,
-            geneID,
-            geneIDs,
-            majorPeriods,
-            partnerID,
-            partnerCities,
-            priceRange,
-            saleID,
-            tagID,
-            keywordMatchExact,
-            ..._options
-          },
-          { filterArtworksLoader }
-        ) => {
-          const options: any = {
-            aggregation_partner_cities: aggregationPartnerCities,
-            artist_id: artistID,
-            artist_ids: artistIDs,
-            at_auction: atAuction,
-            attribution_class: attributionClass,
-            dimension_range: dimensionRange,
-            extra_aggregation_gene_ids: extraAggregationGeneIDs,
-            include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
-            include_medium_filter_in_aggregation: includeMediumFilterInAggregation,
-            inquireable_only: inquireableOnly,
-            for_sale: forSale,
-            gene_id: geneID,
-            gene_ids: geneIDs,
-            major_periods: majorPeriods,
-            partner_id: partnerID,
-            partner_cities: partnerCities,
-            price_range: priceRange,
-            sale_id: saleID,
-            tag_id: tagID,
-            keyword_match_exact: keywordMatchExact,
-            ..._options,
-          }
-
-          const gravityOptions = convertConnectionArgsToGravityArgs(options)
-          // Do some massaging of the options for ElasticSearch
-          gravityOptions.aggregations = options.aggregations || []
-          gravityOptions.aggregations.push("total")
-          // Remove medium if we are trying to get all mediums
-          if (gravityOptions.medium === "*" || !gravityOptions.medium) {
-            delete gravityOptions.medium
-          }
-          // Manually set the gene_id to the current id
-          gravityOptions.gene_id = id
-          /**
-           * FIXME: There’s no need for this loader to be authenticated (and not cache data), unless the
-           *        `include_artworks_by_followed_artists` argument is given. Perhaps we can have specialized loaders
-           *        that compose authenticated and unauthenticated loaders based on the request?
-           *        Here’s an example of such a setup https://gist.github.com/alloy/69bb274039ecd552de76c3f1739c519e
-           */
-          return filterArtworksLoader(gravityOptions).then(
-            ({ aggregations, hits }) => {
-              return Object.assign(
-                { aggregations }, // Add data to connection so the `aggregations` connection field can resolve it
-                connectionFromArraySlice(hits, options, {
-                  arrayLength: aggregations.total.value,
-                  sliceStart: gravityOptions.offset,
-                })
-              )
-            }
-          )
-        },
-      },
+      filterArtworksConnection: filterArtworksConnection("gene_id"),
       description: {
         type: GraphQLString,
       },
@@ -172,7 +67,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ display_name }) => display_name,
       },
-      filteredArtworks: filterArtworks("gene_id"),
+      // filteredArtworks: filterArtworks("gene_id"),
       href: {
         type: GraphQLString,
         resolve: ({ id }) => `/gene/${id}`,
@@ -268,7 +163,7 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: (_root, { id }, { geneLoader }, { fieldNodes }) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
-    const blacklistedFields = ["filtered_artworks", "id", "__id"]
+    const blacklistedFields = ["filteredArtworks", "id", "internalID"]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return geneLoader(id)
     }

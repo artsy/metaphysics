@@ -23,7 +23,6 @@ import CollectorProfile from "./collector_profile"
 import Conversation from "./conversation"
 import Conversations from "./conversations"
 import { CreditCards } from "./credit_cards"
-import FollowArtists from "./follow_artists"
 import FollowedArtistsArtworkGroups from "./followed_artists_artworks_group"
 import FollowedArtists from "./followed_artists"
 import FollowedGenes from "./followed_genes"
@@ -34,7 +33,7 @@ import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import SaleRegistrations from "./sale_registrations"
-import SavedArtworks from "./saved_artworks"
+import { SavedArtworks } from "./saved_artworks"
 import SuggestedArtists from "./suggested_artists"
 import Submissions from "./consignments/submissions"
 import config from "config"
@@ -46,7 +45,9 @@ const { ENABLE_CONVECTION_STITCHING } = config
 const mySubmissions: GraphQLFieldConfigMap<
   void,
   ResolverContext
-> = !!ENABLE_CONVECTION_STITCHING ? {} : { consignmentSubmissions: Submissions }
+> = !!ENABLE_CONVECTION_STITCHING
+  ? {}
+  : { consignmentSubmissionsConnection: Submissions }
 
 const Me = new GraphQLObjectType<any, ResolverContext>({
   name: "Me",
@@ -61,22 +62,22 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     bidderPosition: BidderPosition,
     collectorProfile: CollectorProfile,
     conversation: Conversation,
-    conversations: Conversations,
+    conversationsConnection: Conversations,
     createdAt: date,
     creditCards: CreditCards,
     email: {
       type: GraphQLString,
     },
-    followArtists: FollowArtists,
-    followedArtistsConnection: FollowedArtists,
-    followedGenes: FollowedGenes,
     followsAndSaves: {
       type: new GraphQLObjectType<any, ResolverContext>({
         name: "FollowsAndSaves",
         fields: {
-          bundledArtworksByArtist: FollowedArtistsArtworkGroups,
-          shows: FollowedShows,
-          fairs: FollowedFairs,
+          bundledArtworksByArtistConnection: FollowedArtistsArtworkGroups,
+          artistsConnection: FollowedArtists,
+          artworksConnection: SavedArtworks,
+          showsConnection: FollowedShows,
+          fairsConnection: FollowedFairs,
+          genesConnection: FollowedGenes,
         },
       }),
       resolve: () => ({}),
@@ -116,9 +117,8 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       type: new GraphQLNonNull(new GraphQLList(GraphQLString)),
       resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
     },
-    recentlyViewedArtworks: RecentlyViewedArtworks,
+    recentlyViewedArtworksConnection: RecentlyViewedArtworks,
     saleRegistrations: SaleRegistrations,
-    savedArtworks: SavedArtworks,
     suggestedArtists: SuggestedArtists,
     type: {
       type: GraphQLString,
@@ -132,29 +132,27 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
     if (!meLoader) return null
     const blacklistedFields = [
       "id",
-      "__id",
+      "internalID",
       "creditCards",
-      "follow_artists",
-      "followed_artists_connection",
-      "followed_genes",
-      "has_credit_cards",
-      "has_qualified_credit_cards",
-      "suggested_artists",
+      "followArtists",
+      "followedGenes",
+      "hasCreditCards",
+      "hasQualifiedCreditCards",
+      "suggestedArtists",
       "bidders",
-      "bidder_positions",
-      "bidder_position",
-      "bidder_status",
-      "lot_standing",
-      "lot_standings",
-      "sale_registrations",
+      "bidderPositions",
+      "bidderPosition",
+      "bidderStatus",
+      "lotStanding",
+      "lotStandings",
+      "saleRegistrations",
       "conversation",
       "conversations",
-      "collector_profile",
-      "artwork_inquiries_connection",
-      "notifications_connection",
-      "consignment_submissions",
+      "collectorProfile",
+      "artworkInquiries",
+      "consignmentSubmissions",
       "followsAndSaves",
-      "saved_artworks",
+      "savedArtworks",
     ]
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return meLoader().catch(() => null)

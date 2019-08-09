@@ -4,6 +4,9 @@ import {
   GraphQLObjectType,
   GraphQLInterfaceType,
   GraphQLFieldConfigMap,
+  GraphQLNonNull,
+  GraphQLString,
+  getNamedType,
 } from "graphql"
 import {
   visitSchema,
@@ -63,7 +66,10 @@ export class ReplaceCommerceDateTimeType implements Transform {
     const fields = type.getFields()
     const newFields: GraphQLFieldConfigMap<any, any> = {}
     const resolveType = createResolveType((_name, type) => {
-      if (type.name === "CommerceDateTime") {
+      if (
+        type.name === "CommerceDateTime" ||
+        (type.ofType && type.ofType.name === "CommerceDateTime")
+      ) {
         return dateField.type
       }
       return type
@@ -72,14 +78,27 @@ export class ReplaceCommerceDateTimeType implements Transform {
     Object.entries(fields).forEach(([fieldName, fieldDefinition]) => {
       const fieldConfig = fieldToFieldConfig(fieldDefinition, resolveType, true)
       // If it's not a type we want to replace, just skip it
-      if (fieldDefinition.type.name !== "CommerceDateTime") {
-        newFields[fieldName] = fieldConfig
-      } else {
+      if (
+        ["CommerceDateTime", "CommerceDate"].includes(fieldDefinition.type.name)
+      ) {
         madeChanges = true
         newFields[fieldName] = {
           ...fieldConfig,
           ...dateField,
         }
+      } else if (
+        ["CommerceDateTime!", "CommerceDate!"].includes(
+          getNamedType(fieldDefinition).type.toString()
+        )
+      ) {
+        madeChanges = true
+        newFields[fieldName] = {
+          ...fieldConfig,
+          ...dateField,
+          type: new GraphQLNonNull(GraphQLString),
+        }
+      } else {
+        newFields[fieldName] = fieldConfig
       }
     })
 

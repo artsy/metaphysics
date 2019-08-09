@@ -11,7 +11,7 @@ import {
 import { LatLngType } from "../location"
 import { ShowsConnection, ShowType } from "schema/v2/show"
 import ShowSorts from "schema/v2/sorts/show_sorts"
-import { FairType } from "schema/v2/fair"
+import { fairConnection } from "schema/v2/fair"
 import FairSorts from "schema/v2/sorts/fair_sorts"
 import EventStatus from "schema/v2/input_fields/event_status"
 import cityDataSortedByDisplayPreference from "./cityDataSortedByDisplayPreference.json"
@@ -25,7 +25,6 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import Near from "schema/v2/input_fields/near"
 import { LatLng, Point, distance } from "lib/geospatial"
 import { ResolverContext } from "types/graphql"
-import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { allViaLoader, MAX_GRAPHQL_INT } from "lib/all"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
 import { BodyAndHeaders } from "lib/loaders"
@@ -55,8 +54,8 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
     coordinates: {
       type: LatLngType,
     },
-    shows: {
-      type: ShowsConnection,
+    showsConnection: {
+      type: ShowsConnection.connectionType,
       args: pageable({
         sort: {
           type: ShowSorts,
@@ -99,8 +98,8 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
           include_discovery_blocked: false,
         }),
     },
-    fairs: {
-      type: connectionWithCursorInfo(FairType),
+    fairsConnection: {
+      type: fairConnection.connectionType,
       args: pageable({
         sort: FairSorts,
         status: EventStatus,
@@ -133,8 +132,8 @@ const CityType = new GraphQLObjectType<any, ResolverContext>({
               })
             },
           },
-          shows: {
-            type: ShowsConnection,
+          showsConnection: {
+            type: ShowsConnection.connectionType,
             args: pageable({
               sort: {
                 type: ShowSorts,

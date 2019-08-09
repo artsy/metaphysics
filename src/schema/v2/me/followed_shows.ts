@@ -1,14 +1,8 @@
 import { ShowType } from "schema/v2/show"
-import { IDFields } from "schema/v2/object_identification"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
-import {
-  GraphQLObjectType,
-  GraphQLFieldConfig,
-  GraphQLString,
-  GraphQLInt,
-} from "graphql"
+import { GraphQLFieldConfig, GraphQLString, GraphQLInt } from "graphql"
 import { ResolverContext } from "types/graphql"
 import EventStatus from "schema/v2/input_fields/event_status"
 import cityData from "../city/cityDataSortedByDisplayPreference.json"
@@ -21,22 +15,8 @@ const location_by_city_slug = cityData.reduce((acc, val) => {
 
 const getValidCitySlugs = () => Object.keys(location_by_city_slug).join(", ")
 
-const FollowedShowEdge = new GraphQLObjectType<any, ResolverContext>({
-  name: "FollowedShowEdge",
-  fields: {
-    partnerShow: {
-      type: ShowType,
-      resolve: ({ partner_show }) => partner_show,
-    },
-    ...IDFields,
-  },
-})
-
 export const FollowedShowConnection = connectionDefinitions({
   name: "FollowedShow",
-  // FIXME: 'edgeType' does not exist in type 'ConnectionConfig'
-  // @ts-ignore
-  edgeType: FollowedShowEdge,
   nodeType: ShowType,
 })
 

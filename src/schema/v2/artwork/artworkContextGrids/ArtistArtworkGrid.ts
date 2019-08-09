@@ -36,8 +36,8 @@ export const ArtistArtworkGridType = new GraphQLObjectType<
         return `/artist/${artist.id}`
       },
     },
-    artworks: {
-      type: artworkConnection,
+    artworksConnection: {
+      type: artworkConnection.connectionType,
       args: pageable(),
       resolve: ({ artist, artwork }, options, { artistArtworksLoader }) => {
         if (!artist) return null

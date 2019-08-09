@@ -2,6 +2,7 @@ import moment from "moment"
 import "moment-timezone"
 import { GraphQLString, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { snakeCase } from "lodash"
 
 export function date(rawDate, format, timezone) {
   if (timezone) {
@@ -38,7 +39,7 @@ const dateField: GraphQLFieldConfig<DateSource, ResolverContext> = {
     },
   },
   resolve: (obj, { format, timezone }, { defaultTimezone }, { fieldName }) => {
-    const rawDate = obj[fieldName]
+    const rawDate = obj[fieldName] || obj[snakeCase(fieldName)]
     if (!rawDate) {
       return null
     }

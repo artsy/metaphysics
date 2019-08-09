@@ -12,7 +12,7 @@ import { ResolverContext } from "types/graphql"
 const ArtistHighlightsType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtistHighlights",
   fields: {
-    partners: {
+    partnersConnection: {
       type: PartnerArtistConnection,
       args: pageable({
         representedBy: {

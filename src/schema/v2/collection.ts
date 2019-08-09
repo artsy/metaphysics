@@ -23,6 +23,7 @@ import { ResolverContext } from "types/graphql"
 // of all artwork saves, so you will need to add some each week in order to have data
 // to work with.
 
+// TODO: Is the root collection field really used and do we still need this?
 export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
   name: "Collection",
   interfaces: [NodeInterface],
@@ -30,7 +31,7 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
     ...SlugAndInternalIDFields,
     cached,
     artworksConnection: {
-      type: artworkConnection,
+      type: artworkConnection.connectionType,
       args: {
         ...pageable({}),
         private: {
@@ -90,7 +91,7 @@ export const collectionResolverFactory = (
     if (!collectionLoader) return null
 
     const id = collection_id || options.id
-    const blacklistedFields = ["artworks_connection", "id", "__id"]
+    const blacklistedFields = ["artworks", "id", "internalID"]
 
     if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
       return collectionLoader(id)
