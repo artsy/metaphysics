@@ -2,11 +2,11 @@
 import { runQuery } from "schema/v2/test/utils"
 import { toGlobalId } from "graphql-relay"
 
-describe("Filter Artworks", () => {
+describe("filterArtworksConnection", () => {
   let context = null
-  describe(`Does not pass along the medium param if it is "*"`, () => {
+  describe(`Provides filter results`, () => {
     beforeEach(() => {
-      const gene = { id: "500-1000-ce", browseable: true, family: "" }
+      const gene = { id: "500-1000-ce" }
 
       context = {
         authenticatedLoaders: {},
@@ -35,50 +35,16 @@ describe("Filter Artworks", () => {
               })
             ),
         },
-        geneLoader: sinon.stub().returns(Promise.resolve(gene)),
       }
-    })
-
-    it("returns filtered artworks, and makes a gravity call", () => {
-      const query = `
-        {
-          gene(id: "500-1000-ce") {
-            name
-            filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true){
-              hits {
-                id
-              }
-            }
-          }
-        }
-      `
-
-      return runQuery(query, context).then(
-        ({
-          gene: {
-            filtered_artworks: { hits },
-          },
-        }) => {
-          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
-        }
-      )
     })
 
     it("returns a connection, and makes one gravity call when args passed inline", () => {
       const query = `
         {
-          gene(id: "500-1000-ce") {
-            name
-            filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true) {
-              hits {
-                id
-              }
-              artworks_connection(first: 10, after: "") {
-                edges {
-                  node {
-                    id
-                  }
-                }
+          filterArtworksConnection(geneID: "500-1000-ce", first: 10, after: "", aggregations:[TOTAL], medium: "*", forSale: true) {
+            edges {
+              node {
+                slug
               }
             }
           }
@@ -86,17 +52,9 @@ describe("Filter Artworks", () => {
       `
 
       return runQuery(query, context).then(
-        ({
-          gene: {
-            filtered_artworks: {
-              hits,
-              artworks_connection: { edges },
-            },
-          },
-        }) => {
-          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+        ({ filterArtworksConnection: { edges } }) => {
           expect(edges).toEqual([
-            { node: { id: "oseberg-norway-queens-ship" } },
+            { node: { slug: "oseberg-norway-queens-ship" } },
           ])
         }
       )
@@ -105,18 +63,10 @@ describe("Filter Artworks", () => {
     it("returns a connection, and makes one gravity call when using variables", () => {
       const query = `
         query GeneFilter($count: Int, $cursor: String) {
-          gene(id: "500-1000-ce") {
-            name
-            filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true) {
-              hits {
-                id
-              }
-              artworks_connection(first: $count, after: $cursor) {
-                edges {
-                  node {
-                    id
-                  }
-                }
+          filterArtworksConnection(geneID: "500-1000-ce", first: $count, after: $cursor, aggregations:[TOTAL], medium: "*", forSale: true) {
+            edges {
+              node {
+                slug
               }
             }
           }
@@ -128,17 +78,9 @@ describe("Filter Artworks", () => {
         cursor: "",
       }
       return runQuery(query, context, variableValues).then(
-        ({
-          gene: {
-            filtered_artworks: {
-              hits,
-              artworks_connection: { edges },
-            },
-          },
-        }) => {
-          expect(hits).toEqual([{ id: "oseberg-norway-queens-ship" }])
+        ({ filterArtworksConnection: { edges } }) => {
           expect(edges).toEqual([
-            { node: { id: "oseberg-norway-queens-ship" } },
+            { node: { slug: "oseberg-norway-queens-ship" } },
           ])
         }
       )
@@ -147,11 +89,8 @@ describe("Filter Artworks", () => {
     it("implements the NodeInterface", () => {
       const query = `
         {
-          gene(id: "500-1000-ce") {
-            name
-            filtered_artworks(for_sale: true, aggregations:[TOTAL], medium: "*"){
-              __id
-            }
+          filterArtworksConnection(first: 10, geneID: "500-1000-ce", forSale: true, aggregations:[TOTAL], medium: "*"){
+            id
           }
         }
       `
@@ -159,18 +98,16 @@ describe("Filter Artworks", () => {
         aggregations: ["total"],
         for_sale: true,
         gene_id: "500-1000-ce",
+        page: 1,
+        size: 10,
       }
       const expectedId = toGlobalId(
-        "FilterArtworks",
+        "filterArtworksConnection",
         JSON.stringify(filterOptions)
       )
       return runQuery(query, context).then(
-        ({
-          gene: {
-            filtered_artworks: { __id },
-          },
-        }) => {
-          expect(__id).toEqual(expectedId)
+        ({ filterArtworksConnection: { id } }) => {
+          expect(id).toEqual(expectedId)
         }
       )
     })
@@ -180,21 +117,23 @@ describe("Filter Artworks", () => {
         aggregations: ["total"],
         for_sale: true,
         gene_id: "500-1000-ce",
+        page: 1,
+        size: 10,
       }
       const generatedId = toGlobalId(
-        "FilterArtworks",
+        "filterArtworksConnection",
         JSON.stringify(filterOptions)
       )
 
       const query = `
         {
           node(id: "${generatedId}") {
-            __id
+            id
           }
         }
       `
-      return runQuery(query, context).then(({ node: { __id } }) => {
-        expect(__id).toEqual(generatedId)
+      return runQuery(query, context).then(({ node: { id } }) => {
+        expect(id).toEqual(generatedId)
       })
     })
   })
@@ -228,25 +167,19 @@ describe("Filter Artworks", () => {
               })
             ),
         },
-        geneLoader: sinon.stub().returns(Promise.resolve(gene)),
       }
     })
 
     it("returns filtered artworks, and makes a gravity call", () => {
       const query = `
         {
-          gene(id: "500-1000-ce") {
-            name
-            filtered_artworks(aggregations:[TOTAL], medium: "*", for_sale: true, page: 20){
-              artworks_connection(first: 30, after: "") {
-                pageInfo {
-                  endCursor
-                }
-                edges {
-                  node {
-                    id
-                  }
-                }
+          filterArtworksConnection(aggregations:[TOTAL], medium: "*", forSale: true, page: 20, first: 30, after: ""){
+            pageInfo {
+              endCursor
+            }
+            edges {
+              node {
+                slug 
               }
             }
           }
@@ -255,17 +188,13 @@ describe("Filter Artworks", () => {
 
       return runQuery(query, context).then(
         ({
-          gene: {
-            filtered_artworks: {
-              artworks_connection: {
-                edges,
-                pageInfo: { endCursor },
-              },
-            },
+          filterArtworksConnection: {
+            edges,
+            pageInfo: { endCursor },
           },
         }) => {
           expect(edges).toEqual([
-            { node: { id: "oseberg-norway-queens-ship" } },
+            { node: { slug: "oseberg-norway-queens-ship" } },
           ])
           // Check that the cursor points to the end of page 20, size 30.
           // Base64 encoded string: `arrayconnection:599`
@@ -317,23 +246,25 @@ describe("Filter Artworks", () => {
     it("caps pagination results to 100", () => {
       const query = `
         {
-          filter_artworks(aggregations:[TOTAL]){
-            artworks_connection(first: 3, after: "${Buffer.from(
-              "artwork:297"
-            ).toString("base64")}"){
-              pageInfo {
-                hasNextPage
-              }
+          filterArtworksConnection(first: 3, after: "${Buffer.from(
+            "artwork:297"
+          ).toString("base64")}", aggregations:[TOTAL]) {
+            pageInfo {
+              hasNextPage
             }
           }
         }
       `
 
-      return runQuery(query, context).then(({ filter_artworks }) => {
-        expect(filter_artworks.artworks_connection.pageInfo).toEqual({
-          hasNextPage: false,
-        })
-      })
+      return runQuery(query, context).then(
+        ({
+          filterArtworksConnection: {
+            pageInfo: { hasNextPage },
+          },
+        }) => {
+          expect(hasNextPage).toBeFalsy()
+        }
+      )
     })
   })
 
@@ -362,25 +293,25 @@ describe("Filter Artworks", () => {
     it("returns results using the personalized loader", () => {
       const query = `
         {
-          filter_artworks(aggregations:[TOTAL], include_artworks_by_followed_artists: true){
-            artworks_connection(first: 1){
-              edges {
-                node {
-                  id
-                }
+          filterArtworksConnection(first: 1, after: "", aggregations:[TOTAL], includeArtworksByFollowedArtists: true){
+            edges {
+              node {
+                slug
               }
             }
           }
         }
       `
 
-      return runQuery(query, context).then(({ filter_artworks }) => {
-        expect(filter_artworks.artworks_connection.edges).toEqual([
-          {
-            node: { id: "oseberg-norway-queens-ship-0" },
-          },
-        ])
-      })
+      return runQuery(query, context).then(
+        ({ filterArtworksConnection: { edges } }) => {
+          expect(edges).toEqual([
+            {
+              node: { slug: "oseberg-norway-queens-ship-0" },
+            },
+          ])
+        }
+      )
     })
   })
 })

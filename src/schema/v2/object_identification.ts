@@ -43,7 +43,7 @@ const SupportedTypes: any = {
     "./artist",
     "./artwork",
     "./gene",
-    "./filter_artworks",
+    "./filterArtworksConnection",
     "./home/home_page_artwork_module",
     "./home/home_page_artist_module",
     "./me",
@@ -56,8 +56,12 @@ const SupportedTypes: any = {
   ],
 }
 
+const typeNames = {
+  "./filterArtworksConnection": "filterArtworksConnection",
+}
+
 SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {
-  const type = _.upperFirst(_.camelCase(basename(file)))
+  const type = typeNames[file] || _.upperFirst(_.camelCase(basename(file)))
   typeMap[type] = file
   return typeMap
 }, {})
@@ -83,9 +87,9 @@ Object.defineProperty(SupportedTypes, "typeModules", {
 const isSupportedType = _.includes.bind(null, SupportedTypes.types)
 
 function argumentsForChild(type, id) {
-  return type === "FilterArtworks" || type.startsWith("HomePage")
-    ? JSON.parse(id)
-    : { id }
+  const isFilterType =
+    type === "FilterArtworks" || type === "filterArtworksConnection"
+  return isFilterType || type.startsWith("HomePage") ? JSON.parse(id) : { id }
 }
 
 function rootValueForChild(rootValue) {

@@ -23,7 +23,7 @@ import Profile from "./profile"
 import Partner from "./partner"
 import Partners from "./partners"
 import FilterPartners from "./filter_partners"
-import filterArtworks from "./filter_artworks"
+import { filterArtworksConnection } from "./filterArtworksConnection"
 import FollowArtist from "./me/follow_artist"
 import FollowProfile from "./me/follow_profile"
 import FollowGene from "./me/follow_gene"
@@ -102,9 +102,7 @@ const rootFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   fair: Fair,
   fairs: Fairs,
   filterPartners: FilterPartners,
-  // FIXME: Expected 1 arguments, but got 0
-  // @ts-ignore
-  filterArtworks: filterArtworks(),
+  filterArtworksConnection: filterArtworksConnection(),
   gene: Gene,
   genes: Genes,
   suggestedGenes: SuggestedGenes,

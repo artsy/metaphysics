@@ -5,7 +5,7 @@ import { addMockFunctionsToSchema } from "graphql-tools"
 import schema from "schema/v1/schema"
 
 it("resolves an Artist on a Consignment Submission", async () => {
-  const allMergedSchemas = await incrementalMergeSchemas(schema, {
+  const allMergedSchemas = await incrementalMergeSchemas(schema, 1, {
     ENABLE_CONSIGNMENTS_STITCHING: true,
   })
 
