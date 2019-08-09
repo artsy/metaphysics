@@ -1,7 +1,7 @@
 import gql from "lib/gql"
 
 export const OrderBuyerFields = gql`
-... on Order {
+... on CommerceOrder {
   id
   mode
   code
@@ -10,7 +10,7 @@ export const OrderBuyerFields = gql`
   stateReason
   buyerPhoneNumber
   requestedFulfillment {
-    ... on Ship {
+    ... on CommerceShip {
       name
       addressLine1
       addressLine2
@@ -20,7 +20,7 @@ export const OrderBuyerFields = gql`
       postalCode
       phoneNumber
     }
-    ... on Pickup {
+    ... on CommercePickup {
       fulfillmentType
     }
   }
@@ -46,7 +46,7 @@ export const OrderBuyerFields = gql`
   stateExpiresAt
   lastApprovedAt
   lastSubmittedAt
-  seller {
+  sellerDetails {
     ...on Partner {
       id
       name
@@ -56,7 +56,7 @@ export const OrderBuyerFields = gql`
       email
     }
   }
-  buyer {
+  buyerDetails {
     ... on User {
       id
       email
@@ -69,7 +69,7 @@ export const OrderBuyerFields = gql`
   creditCard {
     id
     brand
-    last_digits
+    lastDigits
   }
   lineItems {
     edges {
@@ -92,7 +92,7 @@ export const OrderBuyerFields = gql`
       }
     }
   }
-  ... on OfferOrder {
+  ... on CommerceOfferOrder {
     myLastOffer {
       id
       taxTotalCents
@@ -129,7 +129,7 @@ export const OrderBuyerFields = gql`
 `
 
 export const OrderSellerFields = gql`
-... on Order {
+... on CommerceOrder {
   id
   mode
   code
@@ -138,7 +138,7 @@ export const OrderSellerFields = gql`
   stateReason
   buyerPhoneNumber
   requestedFulfillment {
-    ... on Ship {
+    ... on CommerceShip {
       name
       addressLine1
       addressLine2
@@ -148,7 +148,7 @@ export const OrderSellerFields = gql`
       postalCode
       phoneNumber
     }
-    ... on Pickup {
+    ... on CommercePickup {
       fulfillmentType
     }
   }
@@ -174,13 +174,13 @@ export const OrderSellerFields = gql`
   stateExpiresAt
   lastApprovedAt
   lastSubmittedAt
-  seller {
+  sellerDetails {
     ...on Partner {
       id
       name
     }
   }
-  buyer {
+  buyerDetails {
     ... on User {
       id
       email
@@ -189,7 +189,7 @@ export const OrderSellerFields = gql`
   creditCard {
     id
     brand
-    last_digits
+    lastDigits
   }
   lineItems {
     edges {
@@ -212,7 +212,7 @@ export const OrderSellerFields = gql`
       }
     }
   }
-  ... on OfferOrder {
+  ... on CommerceOfferOrder {
     myLastOffer {
       id
       taxTotalCents
