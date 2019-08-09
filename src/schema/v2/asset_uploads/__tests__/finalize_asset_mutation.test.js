@@ -8,9 +8,9 @@ describe("CreateGeminiEntryForAsset", () => {
       mutation {
         createGeminiEntryForAsset(
           input: {
-            template_key: "convection-staging"
-            source_key: "2OSuAo_FAxJGHgGy0H2f-g/Orta2 2.jpg"
-            source_bucket: "artsy-media-uploads"
+            templateKey: "convection-staging"
+            sourceKey: "2OSuAo_FAxJGHgGy0H2f-g/Orta2 2.jpg"
+            sourceBucket: "artsy-media-uploads"
             metadata: { id: 144, _type: "Consignment" }
           }
         ) {
