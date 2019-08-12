@@ -593,21 +593,15 @@ type LineItemEdge {
 }
 
 type Mutation {
-  addInitialOfferToOrder(
-    input: AddInitialOfferToOrderInput!
-  ): AddInitialOfferToOrderPayload
+  addInitialOfferToOrder(input: AddInitialOfferToOrderInput!): AddInitialOfferToOrderPayload
   approveOrder(input: ApproveOrderInput!): ApproveOrderPayload
   buyerAcceptOffer(input: BuyerAcceptOfferInput!): BuyerAcceptOfferPayload
   buyerCounterOffer(input: BuyerCounterOfferInput!): BuyerCounterOfferPayload
   buyerRejectOffer(input: BuyerRejectOfferInput!): BuyerRejectOfferPayload
   confirmFulfillment(input: ConfirmFulfillmentInput!): ConfirmFulfillmentPayload
   confirmPickup(input: ConfirmPickupInput!): ConfirmPickupPayload
-  createOfferOrderWithArtwork(
-    input: CreateOfferOrderWithArtworkInput!
-  ): CreateOfferOrderWithArtworkPayload
-  createOrderWithArtwork(
-    input: CreateOrderWithArtworkInput!
-  ): CreateOrderWithArtworkPayload
+  createOfferOrderWithArtwork(input: CreateOfferOrderWithArtworkInput!): CreateOfferOrderWithArtworkPayload
+  createOrderWithArtwork(input: CreateOrderWithArtworkInput!): CreateOrderWithArtworkPayload
   fixFailedPayment(input: FixFailedPaymentInput!): FixFailedPaymentPayload
 
   """
@@ -621,9 +615,7 @@ type Mutation {
   setPayment(input: SetPaymentInput!): SetPaymentPayload
   setShipping(input: SetShippingInput!): SetShippingPayload
   submitOrder(input: SubmitOrderInput!): SubmitOrderPayload
-  submitOrderWithOffer(
-    input: SubmitOrderWithOfferInput!
-  ): SubmitOrderWithOfferPayload
+  submitOrderWithOffer(input: SubmitOrderWithOfferInput!): SubmitOrderWithOfferPayload
   submitPendingOffer(input: SubmitPendingOfferInput!): SubmitPendingOfferPayload
 }
 
@@ -831,6 +823,13 @@ interface Order {
 }
 
 """
+Order Action data
+"""
+type OrderActionData {
+  clientSecret: String!
+}
+
+"""
 Fields to sort by
 """
 enum OrderConnectionSortEnum {
@@ -930,7 +929,7 @@ enum OrderModeEnum {
 """
 Represents either a resolved Order or a potential failure
 """
-union OrderOrFailureUnion = OrderWithMutationFailure | OrderWithMutationSuccess
+union OrderOrFailureUnion = OrderRequiresAction | OrderWithMutationFailure | OrderWithMutationSuccess
 
 enum OrderParticipantEnum {
   """
@@ -948,6 +947,16 @@ enum OrderParticipantEnum {
 Represents either a partner or a user
 """
 union OrderPartyUnion = Partner | User
+
+"""
+Data reflecting actions required
+"""
+type OrderRequiresAction {
+  """
+  Data related to action needed
+  """
+  actionData: OrderActionData!
+}
 
 enum OrderStateEnum {
   """
