@@ -7,52 +7,52 @@ Object {
       "edges": Array [
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
       ],
@@ -64,59 +64,59 @@ Object {
 }
 `;
 
-exports[`Sale type sale_artworks_connection returns data from gravity 1`] = `
+exports[`Sale type saleArtworksConnection returns data from gravity 1`] = `
 Object {
   "sale": Object {
-    "sale_artworks_connection": Object {
+    "saleArtworksConnection": Object {
       "edges": Array [
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
         Object {
           "node": Object {
-            "id": "some-id",
+            "slug": "some-id",
           },
         },
       ],
