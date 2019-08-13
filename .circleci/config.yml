@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hokusai: artsy/hokusai@0.6.0
+  hokusai: artsy/hokusai@0.7.0
 
 not_staging_or_release: &not_staging_or_release
   filters:
