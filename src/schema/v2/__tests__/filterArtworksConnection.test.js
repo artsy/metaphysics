@@ -326,6 +326,39 @@ describe("filterArtworksConnection", () => {
     })
   })
 
+  describe(`Connection argument validation`, () => {
+    beforeEach(() => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: jest.fn(),
+        },
+      }
+    })
+
+    it("throws an error when `first`, `last` and `size` are missing", () => {
+      const query = `
+        {
+          filterArtworksConnection(aggregations:[TOTAL]) {
+            pageInfo {
+              hasNextPage
+            }
+          }
+        }
+      `
+
+      expect(() => {
+        try {
+          runQuery(query, context)
+        } catch (e) {
+          expect(e.message).toContain(
+            "You must pass either `first`, `last` or `size`"
+          )
+        }
+      })
+    })
+  })
+
   describe(`When requesting personalized arguments`, () => {
     beforeEach(() => {
       context = {
