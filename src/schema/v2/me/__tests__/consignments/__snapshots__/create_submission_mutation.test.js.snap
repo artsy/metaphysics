@@ -4,11 +4,11 @@ exports[`UpdateSubmissionMutation updates a submission and returns its new data 
 Object {
   "createConsignmentSubmission": Object {
     "clientMutationId": "2",
-    "consignment_submission": Object {
-      "artist_id": "andy-warhol",
-      "authenticity_certificate": true,
-      "dimensions_metric": "CM",
-      "id": "106",
+    "consignmentSubmission": Object {
+      "artistID": "andy-warhol",
+      "authenticityCertificate": true,
+      "dimensionsMetric": "CM",
+      "internalID": "106",
     },
   },
 }
