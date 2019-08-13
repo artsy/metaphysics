@@ -9,6 +9,7 @@ import {
   hasFieldSelection,
   hasIntersectionWithSelectionSet,
   includesFieldsOtherThanSelectionSet,
+  isSkipped,
 } from "lib/hasFieldSelection"
 
 const fragments = parse(gql`
@@ -18,6 +19,7 @@ const fragments = parse(gql`
       ...TestFragmentVisitation
     }
     ...TestMergedFieldSelection
+    ...TestSkippedValue
   }
   fragment TestMergedFieldSelection on Artist {
     artwork {
@@ -29,6 +31,9 @@ const fragments = parse(gql`
   }
   fragment TestFragmentVisitation on Artwork {
     edition_of
+  }
+  fragment TestSkippedValue on Artwork {
+    title @skip(if: true)
   }
 `).definitions as FragmentDefinitionNode[]
 
@@ -86,5 +91,16 @@ describe("includesFieldsOtherThanSelectionSet", () => {
         "edition_sets",
       ])
     ).toEqual(false)
+  })
+})
+
+describe("isSkipped", () => {
+  it("returns the value of the skip directive", () => {
+    const directives = fragments[3].selectionSet.selections[0].directives
+    expect(isSkipped({ directives, info })).toEqual(true)
+  })
+  it("returns false without skip directive", () => {
+    const directives = fragments[2].selectionSet.selections[0].directives
+    expect(isSkipped({ directives, info })).toEqual(false)
   })
 })
