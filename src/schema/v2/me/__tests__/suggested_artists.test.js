@@ -4,8 +4,9 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 describe("Me", () => {
   describe("SuggestedArtists", () => {
     const context = {
-      suggestedArtistsLoader: () =>
-        Promise.resolve({
+      suggestedArtistsLoader: () => {
+        console.log("called?")
+        return Promise.resolve({
           body: [
             {
               id: "andy-warhol",
@@ -13,15 +14,16 @@ describe("Me", () => {
               artworks_count: 50,
             },
           ],
-        }),
+        })
+      },
     }
 
     it("returns sanitized messages", () => {
       const query = `
         {
           me {
-            suggested_artists(artist_id: "pablo-picasso") {
-              id
+            suggestedArtists(artistID: "andy-warhol") {
+              slug
               birthday
             }
           }
