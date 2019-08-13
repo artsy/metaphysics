@@ -6,11 +6,11 @@ describe("UpdateCollectorProfile", () => {
     /* eslint-disable max-len */
     const mutation = `
       mutation {
-        updateCollectorProfile(input: { professional_buyer: true, loyalty_applicant: true, self_reported_purchases: "trust me i buy art", intents: [BUY_ART_AND_DESIGN] }) {
-          id
+        updateCollectorProfile(input: { professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art", intents: [BUY_ART_AND_DESIGN] }) {
+          internalID
           name
           email
-          self_reported_purchases
+          selfReportedPurchases
           intents
         }
       }
@@ -29,10 +29,10 @@ describe("UpdateCollectorProfile", () => {
     }
 
     const expectedProfileData = {
-      id: "3",
+      internalID: "3",
       name: "Percy",
       email: "percy@cat.com",
-      self_reported_purchases: "treats",
+      selfReportedPurchases: "treats",
       intents: ["buy art & design"],
     }
 
@@ -48,11 +48,11 @@ describe("UpdateCollectorProfile", () => {
     /* eslint-disable max-len */
     const mutation = `
       mutation {
-        updateCollectorProfile(input: { professional_buyer: true, loyalty_applicant: true, self_reported_purchases: "trust me i buy art" }) {
-          id
+        updateCollectorProfile(input: { professionalBuyer: true, loyaltyApplicant: true, selfReportedPurchases: "trust me i buy art" }) {
+          internalID
           name
           email
-          self_reported_purchases
+          selfReportedPurchases
           intents
         }
       }
