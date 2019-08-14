@@ -3,10 +3,10 @@
 exports[`Trending Artists makes a call for trending artists 1`] = `
 Array [
   Object {
-    "id": "ortina",
+    "slug": "ortina",
   },
   Object {
-    "id": "xtina",
+    "slug": "xtina",
   },
 ]
 `;
