@@ -29,8 +29,12 @@ describe("Layer type", () => {
       {
         artwork(id:"lucio-fontana-concetto-spaziale-attese-139") {
           layers {
-            artworks {
-              slug 
+            artworksConnection {
+              edges {
+                node {
+                  slug
+                }
+              }
             }
           }
         }
@@ -42,10 +46,14 @@ describe("Layer type", () => {
       artwork: {
         layers: [
           {
-            artworks: artworksResponse.map(({ id, ...others }) => ({
-              slug: id,
-              ...others,
-            })),
+            artworksConnection: {
+              edges: artworksResponse.map(({ id, ...others }) => ({
+                node: {
+                  slug: id,
+                  ...others,
+                },
+              })),
+            },
           },
         ],
       },
