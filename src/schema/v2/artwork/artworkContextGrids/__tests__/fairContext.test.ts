@@ -13,7 +13,7 @@ describe("Show Context", () => {
           title
           ctaTitle
           ctaHref
-          artworks(first: 2) {
+          artworksConnection(first: 2) {
             edges {
               node {
                 slug
@@ -43,21 +43,21 @@ describe("Show Context", () => {
     })
 
     const artistArtworks = [
-      { slug: "artwork1", title: "Artwork 1" },
-      { slug: "artwork2", title: "Artwork 2" },
-      { slug: "artwork3", title: "Artwork 3" },
+      { id: "artwork1", title: "Artwork 1" },
+      { id: "artwork2", title: "Artwork 2" },
+      { id: "artwork3", title: "Artwork 3" },
     ]
 
     const partnerArtworks = [
-      { slug: "partnerArtwork1", title: "Partner Artwork 1" },
-      { slug: "partnerArtwork2", title: "Partner Artwork 2" },
-      { slug: "partnerArtwork3", title: "Partner Artwork 3" },
+      { id: "partnerArtwork1", title: "Partner Artwork 1" },
+      { id: "partnerArtwork2", title: "Partner Artwork 2" },
+      { id: "partnerArtwork3", title: "Partner Artwork 3" },
     ]
 
     const showArtworks = [
-      { slug: "showArtwork1", title: "Show Artwork 1" },
-      { slug: "showArtwork2", title: "Show Artwork 2" },
-      { slug: "showArtwork3", title: "Show Artwork 3" },
+      { id: "showArtwork1", title: "Show Artwork 1" },
+      { id: "showArtwork2", title: "Show Artwork 2" },
+      { id: "showArtwork3", title: "Show Artwork 3" },
     ]
 
     context = {
@@ -103,31 +103,29 @@ describe("Show Context", () => {
         title,
         ctaTitle,
         ctaHref,
-        artworks,
+        artworksConnection,
       } = data.artwork.contextGrids[0]
 
       expect(title).toEqual("Other works from Cool Show")
       expect(ctaTitle).toEqual("View all works from the booth")
       expect(ctaHref).toEqual("/show/cool-show")
-      expect(artworks.edges.length).toEqual(2)
+      expect(artworksConnection.edges.length).toEqual(2)
 
       // Related artworks grid should have no artworks
-      expect(data.artwork.contextGrids[1].artworks).toEqual(null)
+      expect(data.artwork.contextGrids[1].artworksConnection).toEqual(null)
     })
   })
 
-  it("Returns the correct values for metadata fields when there is all data", () => {
-    expect.assertions(13)
-
+  it("Returns the correct values for metadata fields when there is all data", async () => {
     context.relatedLayersLoader = () => Promise.resolve([{ id: "main" }])
     context.relatedLayerArtworksLoader = () =>
       Promise.resolve([
-        { slug: "relatedArtwork1", title: "Related Artwork 1" },
-        { slug: "relatedArtwork2", title: "Related Artwork 2" },
-        { slug: "relatedArtwork3", title: "Related Artwork 3" },
+        { id: "relatedArtwork1", title: "Related Artwork 1" },
+        { id: "relatedArtwork2", title: "Related Artwork 2" },
+        { id: "relatedArtwork3", title: "Related Artwork 3" },
       ])
 
-    return runAuthenticatedQuery(query, context).then(data => {
+    await runAuthenticatedQuery(query, context).then(data => {
       // Should have one artist grid and one related grid with 0 works
       expect(data.artwork.contextGrids.length).toEqual(3)
 
@@ -136,7 +134,7 @@ describe("Show Context", () => {
         title: showTitle,
         ctaTitle: showCtaTitle,
         ctaHref: showctaHref,
-        artworks: showArtworks,
+        artworksConnection: showArtworks,
       } = data.artwork.contextGrids[0]
 
       expect(showTitle).toEqual("Other works from Cool Show")
@@ -152,7 +150,7 @@ describe("Show Context", () => {
         title: artistTitle,
         ctaTitle: artistCtaTitle,
         ctaHref: artistctaHref,
-        artworks: artistArtworks,
+        artworksConnection: artistArtworks,
       } = data.artwork.contextGrids[1]
 
       expect(artistTitle).toEqual("Other works by Andy Warhol")
@@ -168,7 +166,7 @@ describe("Show Context", () => {
         title: relatedTitle,
         ctaTitle: relatedCtaTitle,
         ctaHref: relatedctaHref,
-        artworks: relatedArtworks,
+        artworksConnection: relatedArtworks,
       } = data.artwork.contextGrids[2]
 
       expect(relatedTitle).toEqual("Related works")
@@ -179,5 +177,6 @@ describe("Show Context", () => {
         "relatedArtwork2",
       ])
     })
+    expect.assertions(13)
   })
 })
