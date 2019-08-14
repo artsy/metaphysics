@@ -5,7 +5,6 @@ describe("Me", () => {
   describe("SuggestedArtists", () => {
     const context = {
       suggestedArtistsLoader: () => {
-        console.log("called?")
         return Promise.resolve({
           body: [
             {
