@@ -52,23 +52,23 @@ describe("Artist type", () => {
     const query = `
       {
         artist(id: "percy-z") {
-          auctionResults(recordsTrusted: true, first: 1) {
+          auctionResultsConnection(recordsTrusted: true, first: 1) {
             edges {
               node {
-                category_text
+                categoryText
                 images {
                   thumbnail {
-                    image_url
+                    imageURL
                   }
                   larger {
-                    image_url
+                    imageURL
                   }
                 }
                 currency
-                price_realized {
+                priceRealized {
                   display(format: "0a")
                   cents
-                  cents_usd
+                  centsUSD
                 }
                 estimate {
                   display
@@ -83,23 +83,23 @@ describe("Artist type", () => {
     return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
-          auctionResults: {
+          auctionResultsConnection: {
             edges: [
               {
                 node: {
-                  category_text: "an old guitar",
+                  categoryText: "an old guitar",
                   images: {
                     thumbnail: {
-                      image_url: "https://path.to.thumbnail.jpg",
+                      imageURL: "https://path.to.thumbnail.jpg",
                     },
                     larger: {
-                      image_url: "https://path.to.larger.jpg",
+                      imageURL: "https://path.to.larger.jpg",
                     },
                   },
                   currency: "JPY",
-                  price_realized: {
+                  priceRealized: {
                     cents: 420000,
-                    cents_usd: 100000,
+                    centsUSD: 100000,
                     display: "JPY ¥420k",
                   },
                   estimate: {
@@ -118,7 +118,7 @@ describe("Artist type", () => {
     const query = `
       {
         artist(id: "percy-z") {
-          auctionResults(recordsTrusted: true, first: 10) {
+          auctionResultsConnection(recordsTrusted: true, first: 10) {
             pageCursors {
               first {
                 page
@@ -132,7 +132,7 @@ describe("Artist type", () => {
             }
             edges {
               node {
-                id
+                internalID
               }
             }
           }
@@ -143,7 +143,7 @@ describe("Artist type", () => {
     return runQuery(query, context).then(
       ({
         artist: {
-          auctionResults: { pageCursors, edges },
+          auctionResultsConnection: { pageCursors, edges },
         },
       }) => {
         // Check expected page cursors exist in response.
@@ -156,7 +156,7 @@ describe("Artist type", () => {
           expect(around[index].page).toBe(index + 1)
         }
         // Check auction result included in edges.
-        expect(edges[0].node.id).toEqual("1")
+        expect(edges[0].node.internalID).toEqual("1")
       }
     )
   })
@@ -165,7 +165,7 @@ describe("Artist type", () => {
     const query = `
       {
         artist(id: "percy-z") {
-          auctionResults(recordsTrusted: true, first: 10, after: "YXJyYXljb25uZWN0aW9uOjk=") {
+          auctionResultsConnection(recordsTrusted: true, first: 10, after: "YXJyYXljb25uZWN0aW9uOjk=") {
             pageInfo {
               hasNextPage
               hasPreviousPage
@@ -183,7 +183,7 @@ describe("Artist type", () => {
     return runQuery(query, context).then(
       ({
         artist: {
-          auctionResults: {
+          auctionResultsConnection: {
             pageCursors: {
               previous: { page },
             },
@@ -202,7 +202,7 @@ describe("Artist type", () => {
     const query = `
       {
         artist(id: "percy-z") {
-          auctionResults(recordsTrusted: true, first: 10) {
+          auctionResultsConnection(recordsTrusted: true, first: 10) {
             totalCount
           }
         }
@@ -212,7 +212,7 @@ describe("Artist type", () => {
     return runQuery(query, context).then(
       ({
         artist: {
-          auctionResults: { totalCount },
+          auctionResultsConnection: { totalCount },
         },
       }) => {
         expect(totalCount).toBe(35)
@@ -224,13 +224,13 @@ describe("Artist type", () => {
     const query = `
       {
         artist(id: "percy-z") {
-          auctionResults(recordsTrusted: true, first: 1) {
+          auctionResultsConnection(recordsTrusted: true, first: 1) {
             edges {
               node {
-                id
+                internalID
                 images {
                   thumbnail {
-                    image_url
+                    imageURL
                   }
                 }
               }
@@ -249,11 +249,11 @@ describe("Artist type", () => {
     return runQuery(query, context).then(data => {
       expect(data).toEqual({
         artist: {
-          auctionResults: {
+          auctionResultsConnection: {
             edges: [
               {
                 node: {
-                  id: "1",
+                  internalID: "1",
                   images: null,
                 },
               },
