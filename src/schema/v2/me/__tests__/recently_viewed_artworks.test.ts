@@ -26,10 +26,10 @@ describe("RecentlyViewedArtworks", () => {
     const query = gql`
       {
         me {
-          recentlyViewedArtworks(first: 1) {
+          recentlyViewedArtworksConnection(first: 1) {
             edges {
               node {
-                id
+                slug
                 title
               }
             }
@@ -42,13 +42,13 @@ describe("RecentlyViewedArtworks", () => {
     `
 
     const data = await runAuthenticatedQuery(query, context)
-    const recentlyViewedArtworks = data!.me.recentlyViewedArtworks
+    const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
 
     expect(recentlyViewedArtworks).toEqual({
       edges: [
         {
           node: {
-            id: "percy",
+            slug: "percy",
             title: "Percy the Cat",
           },
         },
@@ -63,7 +63,7 @@ describe("RecentlyViewedArtworks", () => {
     const query = gql`
       {
         me {
-          recentlyViewedArtworks(first: 1) {
+          recentlyViewedArtworksConnection(first: 1) {
             edges {
               node {
                 id
@@ -79,10 +79,9 @@ describe("RecentlyViewedArtworks", () => {
     `
     context.meLoader = () =>
       Promise.resolve({ recently_viewed_artwork_ids: [] })
-    expect.assertions(1)
 
     const data = await runAuthenticatedQuery(query, context)
-    const recentlyViewedArtworks = data!.me.recentlyViewedArtworks
+    const recentlyViewedArtworks = data!.me.recentlyViewedArtworksConnection
 
     expect(recentlyViewedArtworks).toEqual({
       edges: [],
@@ -90,6 +89,7 @@ describe("RecentlyViewedArtworks", () => {
         hasNextPage: false,
       },
     })
+    expect.assertions(1)
   })
 
   it("records an artwork view", async () => {
@@ -120,7 +120,7 @@ describe("RecentlyViewedArtworks", () => {
       expect.anything()
     )
 
-    const artwork_id = data!.recordArtworkView.artwork_id
-    expect(artwork_id).toEqual("percy")
+    const artworkID = data!.recordArtworkView.artwork_id
+    expect(artworkID).toEqual("percy")
   })
 })
