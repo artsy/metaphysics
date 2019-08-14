@@ -55,9 +55,8 @@ describe("Partner type", () => {
       {
         partner(id: "catty-partner") {
           name
-          is_limited_fair_partner
           categories {
-            id
+            slug
             name
           }
         }
@@ -68,10 +67,9 @@ describe("Partner type", () => {
       expect(data).toEqual({
         partner: {
           name: "Catty Partner",
-          is_limited_fair_partner: false,
           categories: [
             {
-              id: "blue-chip",
+              slug: "blue-chip",
               name: "Blue Chip",
             },
           ],
@@ -114,7 +112,7 @@ describe("Partner type", () => {
             artworksConnection(first:3) {
               edges {
                 node {
-                  id
+                  slug
                 }
               }
             }
@@ -130,17 +128,17 @@ describe("Partner type", () => {
             edges: [
               {
                 node: {
-                  id: "cara-barer-iceberg",
+                  slug: "cara-barer-iceberg",
                 },
               },
               {
                 node: {
-                  id: "david-leventi-rezzonico",
+                  slug: "david-leventi-rezzonico",
                 },
               },
               {
                 node: {
-                  id: "virginia-mak-hidden-nature-08",
+                  slug: "virginia-mak-hidden-nature-08",
                 },
               },
             ],
