@@ -3,17 +3,17 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("submissions", () => {
-  it("asks for a user's submissions", () => {
+  it("asks for a user's submissions", async () => {
     const mutation = gql`
       {
         me {
-          consignment_submissions(first: 5, completed: true) {
+          consignmentSubmissionsConnection(first: 5, completed: true) {
             edges {
               node {
-                id
-                authenticity_certificate
+                internalID
+                authenticityCertificate
                 title
-                artist_id
+                artistID
                 artist {
                   name
                 }
@@ -25,6 +25,7 @@ describe("submissions", () => {
     `
 
     const context = {
+      meLoader: () => Promise.resolve({}),
       submissionsLoader: () =>
         Promise.resolve([
           {
@@ -42,9 +43,9 @@ describe("submissions", () => {
         }),
     }
 
-    expect.assertions(1)
-    return runAuthenticatedQuery(mutation, context).then(data => {
+    await runAuthenticatedQuery(mutation, context).then(data => {
       expect(data).toMatchSnapshot()
     })
+    expect.assertions(1)
   })
 })
