@@ -44,10 +44,10 @@ describe("CausalityJWT", () => {
 
   it("encodes a bidder JWT for logged in registered users", () => {
     const query = `{
-      causality_jwt(role: PARTICIPANT, sale_id: "foo")
+      causalityJWT(role: PARTICIPANT, saleID: "foo")
     }`
     return runAuthenticatedQuery(query, context).then(data => {
-      expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
+      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "bidder",
         userId: "craig",
@@ -59,10 +59,10 @@ describe("CausalityJWT", () => {
 
   it("works with a sale slug", () => {
     const query = `{
-      causality_jwt(role: PARTICIPANT, sale_id: "slug")
+      causalityJWT(role: PARTICIPANT, saleID: "slug")
     }`
     return runAuthenticatedQuery(query, context).then(data => {
-      expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
+      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "bidder",
         userId: "craig",
@@ -74,10 +74,10 @@ describe("CausalityJWT", () => {
 
   it("allows an anonymous user to be an observer", () => {
     const query = `{
-      causality_jwt(role: PARTICIPANT, sale_id: "slug")
+      causalityJWT(role: PARTICIPANT, saleID: "slug")
     }`
     return runQuery(query, { saleLoader: context.saleLoader }).then(data => {
-      expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
+      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
         userId: null,
@@ -89,11 +89,11 @@ describe("CausalityJWT", () => {
 
   it("falls back to observer if not registered to the sale", () => {
     const query = `{
-      causality_jwt(role: PARTICIPANT, sale_id: "bar")
+      causalityJWT(role: PARTICIPANT, saleID: "bar")
     }`
     context.meBiddersLoader = sinon.stub().returns(Promise.resolve([]))
     return runAuthenticatedQuery(query, context).then(data => {
-      expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
+      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
         userId: "craig",
@@ -105,7 +105,7 @@ describe("CausalityJWT", () => {
 
   it("falls back to observer if disqualified for bidding", () => {
     const query = `{
-      causality_jwt(role: PARTICIPANT, sale_id: "foo")
+      causalityJWT(role: PARTICIPANT, saleID: "foo")
     }`
     context.meBiddersLoader = sinon.stub().returns(
       Promise.resolve([
@@ -117,7 +117,7 @@ describe("CausalityJWT", () => {
       ])
     )
     return runAuthenticatedQuery(query, context).then(data => {
-      expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
+      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "observer",
         userId: "craig",
@@ -131,7 +131,7 @@ describe("CausalityJWT", () => {
     expect.assertions(1)
 
     const query = `{
-      causality_jwt(role: OPERATOR, sale_id: "foo")
+      causalityJWT(role: OPERATOR, saleID: "foo")
     }`
     context.saleLoader = sinon.stub().returns(
       Promise.resolve({
@@ -149,7 +149,7 @@ describe("CausalityJWT", () => {
     expect.assertions(1)
 
     const query = `{
-      causality_jwt(role: OPERATOR, sale_id: "foo")
+      causalityJWT(role: OPERATOR, saleID: "foo")
     }`
 
     context.saleLoader = sinon.stub().returns(
@@ -169,10 +169,10 @@ describe("CausalityJWT", () => {
 
   it("allows a user associated with the sale partner to be an external operator for that sale", () => {
     const query = `{
-      causality_jwt(role: OPERATOR, sale_id: "foo")
+      causalityJWT(role: OPERATOR, saleID: "foo")
     }`
     return runAuthenticatedQuery(query, context).then(data => {
-      expect(omit(jwt.decode(data.causality_jwt, HMAC_SECRET), "iat")).toEqual({
+      expect(omit(jwt.decode(data.causalityJWT, HMAC_SECRET), "iat")).toEqual({
         aud: "auctions",
         role: "externalOperator",
         userId: "craig",
