@@ -69,6 +69,29 @@ export const includesFieldsOtherThanSelectionSet = (
   )
 }
 
+export const isSkipped = ({ directives, info }) => {
+  if (!directives || !directives.length) return false
+
+  let skipped = false
+  directives.forEach(directive => {
+    if (directive.name.value === "skip") {
+      directive.arguments &&
+        directive.arguments.forEach(arg => {
+          if (arg.name.value === "if") {
+            if (arg.value.kind === "Variable") {
+              const variableName = arg.value.name.value
+              skipped = info.variableValues[variableName]
+            } else if (arg.value.kind === "BooleanValue") {
+              skipped = arg.value.value
+            }
+            return
+          }
+        })
+    }
+  })
+  return skipped
+}
+
 // If there's a nested collection being queried, this will return
 // the pagination params. This might be useful in order to de-dupe
 // or better batch requests. For instance, two queries only differing
@@ -95,6 +118,8 @@ export const parseConnectionArgsFromConnection = (
               path.length === SELECTION_DEPTH_THRESHOLD &&
               node.name.value === connectionName
             ) {
+              if (isSkipped({ directives: node.directives, info })) return BREAK
+
               node.arguments &&
                 node.arguments.forEach(arg => {
                   if (

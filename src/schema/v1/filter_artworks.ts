@@ -370,6 +370,8 @@ const filterArtworksTypeFactory = (
     let relayOptions: any = {}
     if (Object.keys(connectionArgs).length) {
       relayOptions = convertConnectionArgsToGravityArgs(connectionArgs)
+    } else {
+      relayOptions.size = 0
     }
 
     if (!!gravityOptions.page) relayOptions.page = gravityOptions.page

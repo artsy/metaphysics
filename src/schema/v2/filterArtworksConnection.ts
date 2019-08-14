@@ -397,9 +397,15 @@ const filterArtworksConnectionTypeFactory = (
       last,
       after,
       before,
+      size,
       include_artworks_by_followed_artists,
       aggregations,
     } = options
+
+    // Check if connection args missing.
+    if (first == null && last == null && size == null)
+      throw new Error("You must pass either `first`, `last` or `size`.")
+
     const requestedPersonalizedAggregation = aggregations.includes(
       "followed_artists"
     )
