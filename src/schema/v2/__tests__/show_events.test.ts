@@ -41,8 +41,8 @@ describe("date resolving", () => {
     {
       show(id: "helwaser-gallery-anton-ginzburg-views") {
         events {
-          start_at
-          end_at
+          startAt
+          endAt
         }
       }
     }
@@ -66,8 +66,8 @@ describe("date resolving", () => {
         show: {
           events: [
             {
-              end_at: "2019-03-28T21:00:00+00:00",
-              start_at: "2019-03-28T18:00:00+00:00",
+              endAt: "2019-03-28T21:00:00+00:00",
+              startAt: "2019-03-28T18:00:00+00:00",
             },
           ],
         },
@@ -85,8 +85,8 @@ describe("date resolving", () => {
         show: {
           events: [
             {
-              end_at: "2019-03-28T21:00:00",
-              start_at: "2019-03-28T18:00:00",
+              endAt: "2019-03-28T21:00:00",
+              startAt: "2019-03-28T18:00:00",
             },
           ],
         },
@@ -104,8 +104,8 @@ describe("date resolving", () => {
         show: {
           events: [
             {
-              end_at: "2019-03-28T21:00:00",
-              start_at: "2019-03-28T18:00:00",
+              endAt: "2019-03-28T21:00:00",
+              startAt: "2019-03-28T18:00:00",
             },
           ],
         },
@@ -123,8 +123,8 @@ describe("date resolving", () => {
         show: {
           events: [
             {
-              end_at: "2019-03-28T21:00:00",
-              start_at: "2019-03-28T18:00:00",
+              endAt: "2019-03-28T21:00:00",
+              startAt: "2019-03-28T18:00:00",
             },
           ],
         },
@@ -143,8 +143,8 @@ describe("date resolving", () => {
         show: {
           events: [
             {
-              end_at: "2019-03-28T21:00:00",
-              start_at: "2019-03-28T18:00:00",
+              endAt: "2019-03-28T21:00:00",
+              startAt: "2019-03-28T18:00:00",
             },
           ],
         },
