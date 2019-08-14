@@ -3,17 +3,17 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
 describe("UpdateMeMutation", () => {
-  it("updates the user profile and returns its new data payload", () => {
+  it("updates the user profile and returns its new data payload", async () => {
     const mutation = gql`
       mutation {
         updateMyUserProfile(
           input: {
-            collector_level: 1
+            collectorLevel: 1
             clientMutationId: "1232"
             phone: "1234890"
             location: { address: "123 my street" }
-            price_range_min: -1
-            price_range_max: 1000000000000
+            priceRangeMin: -1
+            priceRangeMax: 1000000000000
           }
         ) {
           user {
@@ -23,7 +23,7 @@ describe("UpdateMeMutation", () => {
               city
               address
             }
-            price_range
+            priceRange
           }
         }
       }
@@ -42,9 +42,9 @@ describe("UpdateMeMutation", () => {
         }),
     }
 
-    expect.assertions(1)
-    return runAuthenticatedQuery(mutation, context).then(data => {
+    await runAuthenticatedQuery(mutation, context).then(data => {
       expect(data).toMatchSnapshot()
     })
+    expect.assertions(1)
   })
 })
