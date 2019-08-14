@@ -7,10 +7,10 @@ describe("HomePageArtistModule", () => {
   const query = key => {
     return `
       {
-        home_page {
-          artist_module(key: ${key}) {
+        homePage {
+          artistModule(key: ${key}) {
             results {
-              id
+              slug
             }
           }
         }
@@ -55,24 +55,24 @@ describe("HomePageArtistModule", () => {
   describe("when signed-in", () => {
     it("returns trending artists", () => {
       return runAuthenticatedQuery(query("TRENDING"), context).then(
-        ({ home_page }) => {
-          expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
+        ({ homePage }) => {
+          expect(homePage.artistModule.results).toEqual([{ slug: "trending" }])
         }
       )
     })
 
     it("returns trending artists", () => {
       return runAuthenticatedQuery(query("TRENDING"), context).then(
-        ({ home_page }) => {
-          expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
+        ({ homePage }) => {
+          expect(homePage.artistModule.results).toEqual([{ slug: "trending" }])
         }
       )
     })
 
     it("returns suggestions", () => {
       return runAuthenticatedQuery(query("SUGGESTED"), context).then(
-        ({ home_page }) => {
-          expect(home_page.artist_module.results).toEqual([{ id: "suggested" }])
+        ({ homePage }) => {
+          expect(homePage.artistModule.results).toEqual([{ slug: "suggested" }])
         }
       )
     })
@@ -81,23 +81,23 @@ describe("HomePageArtistModule", () => {
   describe("when signed-out", () => {
     it("returns trending artists", () => {
       return runAuthenticatedQuery(query("TRENDING"), context).then(
-        ({ home_page }) => {
-          expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
+        ({ homePage }) => {
+          expect(homePage.artistModule.results).toEqual([{ slug: "trending" }])
         }
       )
     })
 
     it("returns trending artists", () => {
       return runAuthenticatedQuery(query("TRENDING"), context).then(
-        ({ home_page }) => {
-          expect(home_page.artist_module.results).toEqual([{ id: "trending" }])
+        ({ homePage }) => {
+          expect(homePage.artistModule.results).toEqual([{ slug: "trending" }])
         }
       )
     })
 
     it("does not return any suggestions", () => {
       return graphql(schema, query("SUGGESTED")).then(response => {
-        expect(response.data.home_page.artist_module.results).toBe(null)
+        expect(response.data.homePage.artistModule.results).toBe(null)
         expect(response.errors.length).toBeGreaterThan(0)
       })
     })
