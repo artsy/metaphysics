@@ -22,12 +22,14 @@ it("returns artworks for a collection", () => {
   const query = gql`
     {
       me {
-        followedGenes(first: 10) {
-          edges {
-            node {
-              gene {
-                name
-                slug
+        followsAndSaves {
+          genesConnection(first: 10) {
+            edges {
+              node {
+                gene {
+                  name
+                  slug
+                }
               }
             }
           }
