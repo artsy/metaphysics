@@ -20,18 +20,18 @@ describe("CreditCard type", () => {
   it("fetches a credit card ID", () => {
     const query = `
       {
-        credit_card(id: "card123") {
-          id
+        creditCard(id: "card123") {
+          internalID
           brand
-          last_digits
+          lastDigits
         }
       }
     `
 
     return runQuery(query, context).then(data => {
-      expect(data!.credit_card.id).toBe("card123")
-      expect(data!.credit_card.brand).toBe("Visa")
-      expect(data!.credit_card.last_digits).toBe("4242")
+      expect(data!.creditCard.internalID).toBe("card123")
+      expect(data!.creditCard.brand).toBe("Visa")
+      expect(data!.creditCard.lastDigits).toBe("4242")
     })
   })
 })
