@@ -112,7 +112,7 @@ const SaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     const params = convertConnectionArgsToGravityArgs(relayOptions)
     let response
 
-    if (saleArtworksAllLoader && options.live_sale) {
+    if (saleArtworksAllLoader && options.liveSale) {
       delete params.page
       const { body, headers } = await saleArtworksAllLoader({
         ...params,

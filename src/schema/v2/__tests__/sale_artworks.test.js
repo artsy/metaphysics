@@ -21,17 +21,17 @@ describe("Sale Artworks", () => {
     }
     const query = gql`
       {
-        sale_artworks(
-          live_sale: true
-          include_artworks_by_followed_artists: true
-          is_auction: true
+        saleArtworksConnection(
+          liveSale: true
+          includeArtworksByFollowedArtists: true
+          isAuction: true
         ) {
           counts {
             total
           }
           edges {
             node {
-              id
+              slug
             }
           }
         }
@@ -39,7 +39,7 @@ describe("Sale Artworks", () => {
     `
 
     const {
-      sale_artworks: {
+      saleArtworksConnection: {
         counts: { total },
         edges,
       },
@@ -63,20 +63,20 @@ describe("Sale Artworks", () => {
     }
     const query = gql`
       {
-        sale_artworks {
+        saleArtworksConnection {
           counts {
             total
           }
           edges {
             node {
-              id
+              slug
             }
           }
         }
       }
     `
     const {
-      sale_artworks: {
+      saleArtworksConnection: {
         counts: { total },
         edges,
       },
@@ -98,17 +98,17 @@ describe("Sale Artworks", () => {
     }
     const query = gql`
       {
-        sale_artworks(size: 1) {
+        saleArtworksConnection(size: 1) {
           edges {
             node {
-              id
+              slug
             }
           }
         }
       }
     `
     const {
-      sale_artworks: { edges },
+      saleArtworksConnection: { edges },
     } = await execute(gravityResponse, query)
     expect(edges.length).toEqual(size)
   })
@@ -125,7 +125,7 @@ describe("Sale Artworks", () => {
     }
     let query = gql`
       {
-        sale_artworks(first: 5) {
+        saleArtworksConnection(first: 5) {
           pageInfo {
             startCursor
             endCursor
@@ -134,14 +134,14 @@ describe("Sale Artworks", () => {
           edges {
             cursor
             node {
-              id
+              slug
             }
           }
         }
       }
     `
     const {
-      sale_artworks: {
+      saleArtworksConnection: {
         edges,
         pageInfo: { startCursor, endCursor, hasNextPage },
       },
@@ -153,7 +153,7 @@ describe("Sale Artworks", () => {
 
     query = gql`
       {
-        sale_artworks(first: 15, after: "${last.cursor}") {
+        saleArtworksConnection(first: 15, after: "${last.cursor}") {
           pageInfo {
             hasNextPage
           }
@@ -161,7 +161,7 @@ describe("Sale Artworks", () => {
       }
     `
     const {
-      sale_artworks: { pageInfo },
+      saleArtworksConnection: { pageInfo },
     } = await execute(gravityResponse, query)
     expect(pageInfo.hasNextPage).toEqual(false)
   })
@@ -178,7 +178,7 @@ describe("Sale Artworks", () => {
     }
     const query = gql`
       {
-        sale_artworks {
+        saleArtworksConnection {
           counts {
             total
           }
@@ -186,7 +186,7 @@ describe("Sale Artworks", () => {
       }
     `
     const {
-      sale_artworks: {
+      saleArtworksConnection: {
         counts: { total },
       },
     } = await execute(gravityResponse, query)
@@ -233,7 +233,9 @@ describe("Sale Artworks", () => {
 
     const query = gql`
       {
-        sale_artworks(aggregations: [TOTAL, MEDIUM, FOLLOWED_ARTISTS]) {
+        saleArtworksConnection(
+          aggregations: [TOTAL, MEDIUM, FOLLOWED_ARTISTS]
+        ) {
           aggregations {
             counts {
               id
@@ -243,7 +245,7 @@ describe("Sale Artworks", () => {
       }
     `
     const {
-      sale_artworks: { aggregations },
+      saleArtworksConnection: { aggregations },
     } = await execute(gravityResponse, query)
 
     expect(aggregations.length).toBeGreaterThan(0)
