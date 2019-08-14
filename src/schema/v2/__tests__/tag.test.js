@@ -2,7 +2,8 @@
 import { runQuery } from "schema/v2/test/utils"
 
 describe("Tag", () => {
-  describe("For just querying the tag artworks", () => {
+  // FIXME: Tag no longer has a direct connection to filtered artworks
+  describe.skip("For just querying the tag artworks", () => {
     // If this test fails because it's making a gravity request to /tag/x, it's
     // because the AST checks to find out which nodes we're requesting
     // is not working correctly. This test is to make sure we don't
@@ -35,7 +36,7 @@ describe("Tag", () => {
       const query = `
         {
           tag(id: "butt") {
-            filteredArtworks(aggregations:[TOTAL]){
+            filteredArtworksConnection(aggregations:[TOTAL]){
               hits {
                 slug
               }
