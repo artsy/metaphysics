@@ -497,6 +497,8 @@ export function filterArtworksConnection(primaryKey?: string) {
   )
 }
 
+export default filterArtworksConnection
+
 export function filterArtworksConnectionWithParams(mapRootToFilterParams) {
   return filterArtworksConnectionTypeFactory(mapRootToFilterParams)
 }
