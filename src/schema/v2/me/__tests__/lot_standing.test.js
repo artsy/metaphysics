@@ -42,12 +42,12 @@ describe("LotStanding type", () => {
     const query = `
       {
         me {
-          lot_standing(artwork_id: "untitled", sale_id: "active-auction") {
-            is_highest_bidder
-            most_recent_bid {
+          lotStanding(artworkID: "untitled", saleID: "active-auction") {
+            isHighestBidder
+            mostRecentBid {
               id
             }
-            active_bid {
+            activeBid {
               id
             }
           }
@@ -59,10 +59,10 @@ describe("LotStanding type", () => {
       lotStandingLoader: () => Promise.resolve(lotStandings),
     }).then(({ me }) => {
       expect(me).toEqual({
-        lot_standing: {
-          is_highest_bidder: true,
-          most_recent_bid: { id: "0" },
-          active_bid: { id: "0" },
+        lotStanding: {
+          isHighestBidder: true,
+          mostRecentBid: { id: "0" },
+          activeBid: { id: "0" },
         },
       })
     })
@@ -87,13 +87,13 @@ describe("LotStanding type", () => {
     const query = `
       {
         me {
-          lot_standing(artwork_id: "untitled", sale_id: "active-auction") {
-            is_highest_bidder
-            is_leading_bidder
-            most_recent_bid {
+          lotStanding(artworkID: "untitled", saleID: "active-auction") {
+            isHighestBidder
+            isLeadingBidder
+            mostRecentBid {
               id
             }
-            active_bid {
+            activeBid {
               id
             }
           }
@@ -105,11 +105,11 @@ describe("LotStanding type", () => {
       lotStandingLoader: () => Promise.resolve(lotStanding),
     }).then(({ me }) => {
       expect(me).toEqual({
-        lot_standing: {
-          is_highest_bidder: false,
-          is_leading_bidder: false,
-          most_recent_bid: { id: "0" },
-          active_bid: null,
+        lotStanding: {
+          isHighestBidder: false,
+          isLeadingBidder: false,
+          mostRecentBid: { id: "0" },
+          activeBid: null,
         },
       })
     })
@@ -138,13 +138,13 @@ describe("LotStanding type", () => {
     const query = `
       {
         me {
-          lot_standing(artwork_id: "untitled", sale_id: "active-auction") {
-            is_highest_bidder
-            is_leading_bidder
-            most_recent_bid {
+          lotStanding(artworkID: "untitled", saleID: "active-auction") {
+            isHighestBidder
+            isLeadingBidder
+            mostRecentBid {
               id
             }
-            active_bid {
+            activeBid {
               id
             }
           }
@@ -156,11 +156,11 @@ describe("LotStanding type", () => {
       lotStandingLoader: () => Promise.resolve(lotStanding),
     }).then(({ me }) => {
       expect(me).toEqual({
-        lot_standing: {
-          is_highest_bidder: false,
-          is_leading_bidder: true,
-          most_recent_bid: { id: "0" },
-          active_bid: null,
+        lotStanding: {
+          isHighestBidder: false,
+          isLeadingBidder: true,
+          mostRecentBid: { id: "0" },
+          activeBid: null,
         },
       })
     })
@@ -170,9 +170,9 @@ describe("LotStanding type", () => {
     const query = `
       {
         me {
-          lot_standing(artwork_id: "untitled", sale_id: "active-auction") {
+          lotStanding(artworkID: "untitled", saleID: "active-auction") {
             sale {
-              is_live_open
+              isLiveOpen
             }
           }
         }
@@ -205,8 +205,8 @@ describe("LotStanding type", () => {
       saleLoader: () => Promise.resolve(liveOpenSale),
     }).then(({ me }) => {
       expect(me).toEqual({
-        lot_standing: {
-          sale: { is_live_open: true },
+        lotStanding: {
+          sale: { isLiveOpen: true },
         },
       })
     })
@@ -216,9 +216,9 @@ describe("LotStanding type", () => {
     const query = `
       {
         me {
-          lot_standing(artwork_id: "untitled", sale_id: "active-auction") {
+          lotStanding(artworkID: "untitled", saleID: "active-auction") {
             sale {
-              is_live_open
+              isLiveOpen
             }
           }
         }
@@ -251,8 +251,8 @@ describe("LotStanding type", () => {
       saleLoader: () => Promise.resolve(notALiveOpenSale),
     }).then(({ me }) => {
       expect(me).toEqual({
-        lot_standing: {
-          sale: { is_live_open: false },
+        lotStanding: {
+          sale: { isLiveOpen: false },
         },
       })
     })
