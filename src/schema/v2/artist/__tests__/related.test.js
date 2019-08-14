@@ -36,7 +36,7 @@ describe("Artist type", () => {
       {
         artist(id: "percy-z") {
           related {
-            artists(kind: CONTEMPORARY, first: 10) {
+            artistsConnection(kind: CONTEMPORARY, first: 10) {
               pageCursors {
                 first {
                   page
@@ -50,7 +50,7 @@ describe("Artist type", () => {
               }
               edges {
                 node {
-                  id
+                  slug
                 }
               }
             }
@@ -63,7 +63,7 @@ describe("Artist type", () => {
       ({
         artist: {
           related: {
-            artists: { pageCursors, edges },
+            artistsConnection: { pageCursors, edges },
           },
         },
       }) => {
@@ -77,7 +77,7 @@ describe("Artist type", () => {
           expect(around[index].page).toBe(index + 1)
         }
         // Check auction result included in edges.
-        expect(edges[0].node.id).toEqual("contemporary-percy-z")
+        expect(edges[0].node.slug).toEqual("contemporary-percy-z")
       }
     )
   })
@@ -87,7 +87,7 @@ describe("Artist type", () => {
       {
         artist(id: "percy-z") {
           related {
-            artists(kind: MAIN, first: 10) {
+            artistsConnection(kind: MAIN, first: 10) {
               pageCursors {
                 first {
                   page
@@ -101,7 +101,7 @@ describe("Artist type", () => {
               }
               edges {
                 node {
-                  id
+                  slug
                 }
               }
             }
@@ -114,7 +114,7 @@ describe("Artist type", () => {
       ({
         artist: {
           related: {
-            artists: { pageCursors, edges },
+            artistsConnection: { pageCursors, edges },
           },
         },
       }) => {
@@ -128,7 +128,7 @@ describe("Artist type", () => {
           expect(around[index].page).toBe(index + 1)
         }
         // Check auction result included in edges.
-        expect(edges[0].node.id).toEqual("percy-z")
+        expect(edges[0].node.slug).toEqual("percy-z")
       }
     )
   })
@@ -141,7 +141,7 @@ describe("Artist type", () => {
             genes(first: 10) {
               edges {
                 node {
-                  id
+                  slug
                 }
               }
             }
@@ -158,7 +158,7 @@ describe("Artist type", () => {
           },
         },
       }) => {
-        expect(edges[0].node.id).toEqual("catty-gene")
+        expect(edges[0].node.slug).toEqual("catty-gene")
       }
     )
   })
