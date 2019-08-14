@@ -11,26 +11,13 @@ describe("Credit card mutation", () => {
     expiration_year: 2018,
   }
 
-  const oldQuery = `
-  mutation {
-    createCreditCard(input: {token: "123abc"}) {
-      credit_card {
-        name
-        last_digits
-        expiration_month
-        expiration_year
-      }
-    }
-  }
-  `
-
-  const newQuery = `
+  const query = `
   mutation {
     createCreditCard(input: {token: "tok_foo", oneTimeUse: true}) {
       creditCardOrError {
         ... on CreditCardMutationSuccess {
           creditCard {
-            id
+            internalID
           }
         }
         ... on CreditCardMutationFailure {
@@ -49,20 +36,6 @@ describe("Credit card mutation", () => {
     createCreditCardLoader: () => Promise.resolve(creditCard),
   }
 
-  it("creates a credit card with the old-style query", async () => {
-    const data = await runAuthenticatedQuery(oldQuery, context)
-    expect(data).toEqual({
-      createCreditCard: {
-        credit_card: {
-          name: "Foo User",
-          last_digits: "1234",
-          expiration_month: 3,
-          expiration_year: 2018,
-        },
-      },
-    })
-  })
-
   it("creates a credit card and returns an edge", async () => {
     const edgeQuery = `
     mutation {
@@ -71,11 +44,11 @@ describe("Credit card mutation", () => {
           ... on CreditCardMutationSuccess {
             creditCardEdge {
               node {
-                id
+                internalID
                 name
-                last_digits
-                expiration_month
-                expiration_year
+                lastDigits
+                expirationMonth
+                expirationYear
               }
             }
           }
@@ -96,11 +69,11 @@ describe("Credit card mutation", () => {
         creditCardOrError: {
           creditCardEdge: {
             node: {
-              id: "foo-foo",
+              internalID: "foo-foo",
               name: "Foo User",
-              last_digits: "1234",
-              expiration_month: 3,
-              expiration_year: 2018,
+              lastDigits: "1234",
+              expirationMonth: 3,
+              expirationYear: 2018,
             },
           },
         },
@@ -117,7 +90,7 @@ describe("Credit card mutation", () => {
           )
         ),
     }
-    const data = await runAuthenticatedQuery(newQuery, errorRootValue)
+    const data = await runAuthenticatedQuery(query, errorRootValue)
     expect(data).toEqual({
       createCreditCard: {
         creditCardOrError: {
@@ -137,16 +110,16 @@ describe("Credit card mutation", () => {
         throw new Error("ETIMEOUT service unreachable")
       },
     }
-    runAuthenticatedQuery(newQuery, errorRootValue).catch(error => {
+    runAuthenticatedQuery(query, errorRootValue).catch(error => {
       expect(error.message).toEqual("ETIMEOUT service unreachable")
     })
   })
 
-  it("creates a credit card successfully with the new-style query", async () => {
-    const data = await runAuthenticatedQuery(newQuery, context)
+  it("creates a credit card successfully", async () => {
+    const data = await runAuthenticatedQuery(query, context)
     expect(data).toEqual({
       createCreditCard: {
-        creditCardOrError: { creditCard: { id: "foo-foo" } },
+        creditCardOrError: { creditCard: { internalID: "foo-foo" } },
       },
     })
   })
