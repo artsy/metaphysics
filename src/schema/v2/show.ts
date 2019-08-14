@@ -558,7 +558,6 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       startAt: {
         description: "When this show starts",
         ...date,
-        resolve: ({ start_at }) => start_at,
       },
       status: {
         description: "Is this show running, upcoming or closed?",
