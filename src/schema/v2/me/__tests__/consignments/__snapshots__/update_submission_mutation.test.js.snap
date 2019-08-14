@@ -4,7 +4,7 @@ exports[`UpdateSubmissionMutation updates a submission and returns its new data 
 Object {
   "updateConsignmentSubmission": Object {
     "clientMutationId": "123123",
-    "consignment_submission": Object {
+    "consignmentSubmission": Object {
       "depth": "1000",
     },
   },
