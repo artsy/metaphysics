@@ -29,21 +29,19 @@ describe("HomePageHeroUnits", () => {
 
       const query = `
         {
-          home_page {
-            hero_units(platform: ${platform.toUpperCase()}) {
+          homePage {
+            heroUnits(platform: ${platform.toUpperCase()}) {
               subtitle
             }
           }
         }
       `
 
-      return runQuery(query, context).then(({ home_page: { hero_units } }) => {
+      return runQuery(query, context).then(({ homePage: { heroUnits } }) => {
         if (platform === "desktop") {
-          expect(hero_units[0].subtitle).toEqual(
-            "Discover works on your laptop"
-          )
+          expect(heroUnits[0].subtitle).toEqual("Discover works on your laptop")
         } else {
-          expect(hero_units[0].subtitle).toEqual("Discover works on your phone")
+          expect(heroUnits[0].subtitle).toEqual("Discover works on your phone")
         }
       })
     })
@@ -60,28 +58,28 @@ describe("HomePageHeroUnits", () => {
 
       const query = `
         {
-          home_page {
-            hero_units(platform: ${platform.toUpperCase()}) {
-              _id
-              id
+          homePage {
+            heroUnits(platform: ${platform.toUpperCase()}) {
+              internalID
+              slug
               href
               heading
               title
-              background_image_url
+              backgroundImageURL
             }
           }
         }
       `
 
-      return runQuery(query, context).then(({ home_page: { hero_units } }) => {
-        expect(hero_units).toEqual([
+      return runQuery(query, context).then(({ homePage: { heroUnits } }) => {
+        expect(heroUnits).toEqual([
           {
-            _id: "57e2ec9b8b3b817dc10015f7",
-            id: "artrio-2016-number-3",
+            internalID: "57e2ec9b8b3b817dc10015f7",
+            slug: "artrio-2016-number-3",
             href: "/artrio-2016",
             heading: "Featured Fair",
             title: "ArtRio 2016",
-            background_image_url:
+            backgroundImageURL:
               platform === "desktop" ? "wide.jpg" : "narrow.jpg",
           },
         ])
@@ -96,18 +94,18 @@ describe("HomePageHeroUnits", () => {
 
     const query = `
       {
-        home_page {
-          hero_units(platform: MOBILE) {
-            background_image_url(version: WIDE)
+        homePage {
+          heroUnits(platform: MOBILE) {
+            backgroundImageURL(version: WIDE)
           }
         }
       }
     `
 
-    return runQuery(query, context).then(({ home_page: { hero_units } }) => {
-      expect(hero_units).toEqual([
+    return runQuery(query, context).then(({ homePage: { heroUnits } }) => {
+      expect(heroUnits).toEqual([
         {
-          background_image_url: "wide.jpg",
+          backgroundImageURL: "wide.jpg",
         },
       ])
     })
