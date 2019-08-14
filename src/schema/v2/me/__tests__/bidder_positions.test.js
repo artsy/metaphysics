@@ -101,14 +101,16 @@ describe("Me type", () => {
     const query = gql`
       {
         me {
-          bidder_positions {
-            id
+          bidderPositions {
+            internalID
           }
         }
       }
     `
     return runAuthenticatedQuery(query, context).then(data => {
-      expect(map(data.me.bidder_positions, "id").join("")).toEqual("01234")
+      expect(map(data.me.bidderPositions, "internalID").join("")).toEqual(
+        "01234"
+      )
     })
   })
 
@@ -116,14 +118,14 @@ describe("Me type", () => {
     const query = gql`
       {
         me {
-          bidder_positions(current: true) {
-            id
+          bidderPositions(current: true) {
+            internalID
           }
         }
       }
     `
     return runAuthenticatedQuery(query, context).then(data => {
-      expect(map(data.me.bidder_positions, "id").join("")).toEqual("14")
+      expect(map(data.me.bidderPositions, "internalID").join("")).toEqual("14")
     })
   })
 
@@ -131,8 +133,8 @@ describe("Me type", () => {
     const query = gql`
       {
         me {
-          bidder_positions(current: true) {
-            id
+          bidderPositions(current: true) {
+            internalID
           }
         }
       }
@@ -159,7 +161,7 @@ describe("Me type", () => {
       )
 
     return runAuthenticatedQuery(query, context).then(data => {
-      expect(map(data.me.bidder_positions, "id").join("")).toEqual("1")
+      expect(map(data.me.bidderPositions, "internalID").join("")).toEqual("1")
     })
   })
 
@@ -167,9 +169,9 @@ describe("Me type", () => {
     const query = gql`
       {
         me {
-          bidder_positions {
+          bidderPositions {
             id
-            is_winning
+            isWinning
           }
         }
       }
@@ -192,7 +194,7 @@ describe("Me type", () => {
       .mockReturnValueOnce(Promise.resolve({}))
 
     return runAuthenticatedQuery(query, context).then(data => {
-      expect(data.me.bidder_positions[2].is_winning).toEqual(true)
+      expect(data.me.bidderPositions[2].isWinning).toEqual(true)
     })
   })
 })
