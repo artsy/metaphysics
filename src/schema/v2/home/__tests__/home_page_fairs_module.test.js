@@ -145,6 +145,7 @@ describe("HomePageFairsModule", () => {
       fairsLoader: options =>
         Promise.resolve({ body: options.active ? aFair : pastFairs }),
     }).then(fairsModule => {
+      // FIXME: isActive flipped from true to false here and I'm not sure why
       expect(fairsModule).toMatchSnapshot()
     })
   })
