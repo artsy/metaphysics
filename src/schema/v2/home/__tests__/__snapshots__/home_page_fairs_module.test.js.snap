@@ -16,7 +16,7 @@ Object {
     "fairsModule": Object {
       "results": Array [
         Object {
-          "isActive": true,
+          "isActive": false,
           "name": "Artissima 2017",
           "slug": "artissima-2017",
         },
