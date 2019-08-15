@@ -7,19 +7,19 @@ describe("HomePageArtworkModule", () => {
     it("includes the related artist and artist the suggestion is based on", async () => {
       const query = gql`
         {
-          home_page {
-            artwork_module(
+          homePage {
+            artworkModule(
               key: "related_artists"
-              followed_artist_id: "banksy"
-              related_artist_id: "rob-pruitt"
+              followedArtistID: "banksy"
+              relatedArtistID: "rob-pruitt"
             ) {
               context {
-                ... on HomePageModuleContextRelatedArtist {
+                ... on HomePageRelatedArtistArtworkModule {
                   artist {
-                    id
+                    slug
                   }
-                  based_on {
-                    id
+                  basedOn {
+                    slug
                   }
                 }
               }
@@ -30,24 +30,21 @@ describe("HomePageArtworkModule", () => {
       const data = await runQuery(query, {
         artistLoader: id => Promise.resolve({ id }),
       })
-      expect(data.home_page.artwork_module.context).toEqual({
-        artist: { id: "rob-pruitt" },
-        based_on: { id: "banksy" },
+      expect(data.homePage.artworkModule.context).toEqual({
+        artist: { slug: "rob-pruitt" },
+        basedOn: { slug: "banksy" },
       })
     })
 
     it("includes the followed artist the suggestion is based on", async () => {
       const query = gql`
         {
-          home_page {
-            artwork_module(
-              key: "followed_artist"
-              followed_artist_id: "banksy"
-            ) {
+          homePage {
+            artworkModule(key: "followed_artist", followedArtistID: "banksy") {
               context {
-                ... on HomePageModuleContextFollowedArtist {
+                ... on HomePageFollowedArtistArtworkModule {
                   artist {
-                    id
+                    slug
                   }
                 }
               }
@@ -58,8 +55,8 @@ describe("HomePageArtworkModule", () => {
       const data = await runQuery(query, {
         artistLoader: id => Promise.resolve({ id }),
       })
-      expect(data.home_page.artwork_module.context).toEqual({
-        artist: { id: "banksy" },
+      expect(data.homePage.artworkModule.context).toEqual({
+        artist: { slug: "banksy" },
       })
     })
   })
@@ -68,10 +65,10 @@ describe("HomePageArtworkModule", () => {
     it("fetches the gene and results if an id is provided", async () => {
       const query = gql`
         {
-          home_page {
-            artwork_module(key: "genes", id: "catty-art") {
+          homePage {
+            artworkModule(key: "genes", id: "catty-art") {
               results {
-                id
+                slug
               }
             }
           }
@@ -82,8 +79,8 @@ describe("HomePageArtworkModule", () => {
         filterArtworksLoader: () =>
           Promise.resolve({ hits: [{ id: "catty-art-work" }] }),
       })
-      expect(data.home_page.artwork_module.results).toEqual([
-        { id: "catty-art-work" },
+      expect(data.homePage.artworkModule.results).toEqual([
+        { slug: "catty-art-work" },
       ])
     })
   })
@@ -91,10 +88,10 @@ describe("HomePageArtworkModule", () => {
   it("fetches a followed gene and results without an id", async () => {
     const query = gql`
       {
-        home_page {
-          artwork_module(key: "genes") {
+        homePage {
+          artworkModule(key: "genes") {
             results {
-              id
+              slug
             }
           }
         }
@@ -106,8 +103,8 @@ describe("HomePageArtworkModule", () => {
       filterArtworksLoader: () =>
         Promise.resolve({ hits: [{ id: "catty-art-work" }] }),
     })
-    expect(data.home_page.artwork_module.results).toEqual([
-      { id: "catty-art-work" },
+    expect(data.homePage.artworkModule.results).toEqual([
+      { slug: "catty-art-work" },
     ])
   })
 
@@ -115,18 +112,16 @@ describe("HomePageArtworkModule", () => {
     it("returns the proper title for popular_artists", () => {
       const query = gql`
         {
-          home_page {
-            artwork_module(key: "popular_artists") {
+          homePage {
+            artworkModule(key: "popular_artists") {
               key
               title
             }
           }
         }
       `
-      return runQuery(query).then(({ home_page }) => {
-        expect(home_page.artwork_module.title).toEqual(
-          "Works by popular artists"
-        )
+      return runQuery(query).then(({ homePage }) => {
+        expect(homePage.artworkModule.title).toEqual("Works by popular artists")
       })
     })
   })
