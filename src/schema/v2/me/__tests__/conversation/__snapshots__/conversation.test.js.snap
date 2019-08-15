@@ -5,7 +5,7 @@ Array [
   Object {
     "item": Object {
       "__typename": "Show",
-      "is_reference": true,
+      "isReference": true,
     },
     "title": "Catty Show",
   },
@@ -17,14 +17,14 @@ Array [
   Object {
     "item": Object {
       "__typename": "Artwork",
-      "is_acquireable": true,
+      "isAcquireable": true,
     },
     "title": "Pwetty Cats",
   },
   Object {
     "item": Object {
       "__typename": "Show",
-      "is_reference": true,
+      "isReference": true,
     },
     "title": "Catty Show",
   },
@@ -33,9 +33,9 @@ Array [
 
 exports[`Me Conversation concerning unread indicator returns the right unread status 1`] = `
 Object {
-  "is_last_message_to_user": true,
-  "last_message_delivery_id": "2",
-  "last_message_open": "2020-12-31T12:00:00+00:00",
+  "isLastMessageToUser": true,
+  "lastMessageDeliveryID": "2",
+  "unread": true,
 }
 `;
 
@@ -45,9 +45,9 @@ Object {
     "from": Object {
       "email": "collector@example.com",
     },
-    "id": "420",
-    "initial_message": "Loved some of the works at your fair booth!",
-    "last_message_id": "25",
+    "initialMessage": "Loved some of the works at your fair booth!",
+    "internalID": "420",
+    "lastMessageID": "25",
     "messages": Object {
       "edges": Array [
         Object {
@@ -58,16 +58,16 @@ Object {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
-            "id": "240",
+            "internalID": "240",
             "invoice": Object {
-              "__id": "SW52b2ljZTox",
-              "id": "1",
-              "payment_url": "https://www.adopt-cats.org/adopt-all-the-cats",
+              "id": "SW52b2ljZTox",
+              "internalID": "1",
+              "paymentURL": "https://www.adopt-cats.org/adopt-all-the-cats",
               "state": "UNPAID",
               "total": "$4,200",
             },
-            "is_from_user": true,
-            "is_invoice": true,
+            "isFromUser": true,
+            "isInvoice": true,
           },
         },
         Object {
@@ -78,10 +78,10 @@ Object {
               "email": "postman@posteo.de",
               "name": "Bitty Z",
             },
-            "id": "241",
+            "internalID": "241",
             "invoice": null,
-            "is_from_user": false,
-            "is_invoice": false,
+            "isFromUser": false,
+            "isInvoice": false,
           },
         },
         Object {
@@ -92,10 +92,10 @@ Object {
               "email": "fancy_german_person+wunderbar@posteo.de",
               "name": "Matt Z",
             },
-            "id": "242",
+            "internalID": "242",
             "invoice": null,
-            "is_from_user": true,
-            "is_invoice": false,
+            "isFromUser": true,
+            "isInvoice": false,
           },
         },
         Object {
@@ -103,17 +103,17 @@ Object {
             "body": null,
             "deliveries": Array [
               Object {
-                "opened_at": "2020-12-31T12:00:00+00:00",
+                "openedAt": "2020-12-31T12:00:00+00:00",
               },
             ],
             "from": Object {
               "email": "postman+wunderlich@posteo.de",
               "name": null,
             },
-            "id": "243",
+            "internalID": "243",
             "invoice": null,
-            "is_from_user": false,
-            "is_invoice": false,
+            "isFromUser": false,
+            "isInvoice": false,
           },
         },
       ],
