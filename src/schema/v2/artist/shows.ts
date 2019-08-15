@@ -21,7 +21,7 @@ const blacklistedPartnerTypes = [
   "Private Collector",
   "Auction",
 ]
-export function showsWithBLacklistedPartnersRemoved(shows) {
+export function showsWithBlacklistedPartnersRemoved(shows) {
   return reject(shows, show => {
     if (show.partner) {
       return includes(blacklistedPartnerTypes, show.partner.type)
@@ -81,8 +81,8 @@ export const ShowsConnectionField: GraphQLFieldConfig<
         total_count: true,
       })
     )
-      .then(({ body, headers }) => {
-        const whitelistedShows = showsWithBLacklistedPartnersRemoved(body)
+      .then(({ body, headers = {} }) => {
+        const whitelistedShows = showsWithBlacklistedPartnersRemoved(body)
         return { body: whitelistedShows, headers }
       })
       .then(({ body, headers }) => {

@@ -137,7 +137,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs.exclude_ids = flatten([options.exclude])
           }
           return partnerShowArtworksLoader(loaderOptions, gravityArgs).then(
-            ({ body, headers }) => {
+            ({ body, headers = {} }) => {
               return connectionFromArraySlice(body, options, {
                 arrayLength: parseInt(headers["x-total-count"] || "0", 10),
                 sliceStart: offset,
