@@ -41,14 +41,14 @@ describe("Article type", () => {
     const query = `
       {
         article(id: "foo-bar") {
-          id
+          slug
           title
         }
       }
     `
 
     return runQuery(query, context).then(data => {
-      expect(data.article.id).toBe("foo-bar")
+      expect(data.article.slug).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
     })
   })
@@ -57,10 +57,10 @@ describe("Article type", () => {
     const query = `
       {
         article(id: "foo-bar") {
-          id
+          slug
           title
-          contributing_authors {
-            id
+          contributingAuthors {
+            internalID
             name
           }
         }
@@ -68,11 +68,11 @@ describe("Article type", () => {
     `
 
     return runQuery(query, context).then(data => {
-      expect(data.article.id).toBe("foo-bar")
+      expect(data.article.slug).toBe("foo-bar")
       expect(data.article.title).toBe("My Awesome Article")
-      expect(data.article.contributing_authors).toEqual([
-        { id: "contrib-1", name: "Contributing Author 1" },
-        { id: "contrib-2", name: "Contributing Author 2" },
+      expect(data.article.contributingAuthors).toEqual([
+        { internalID: "contrib-1", name: "Contributing Author 1" },
+        { internalID: "contrib-2", name: "Contributing Author 2" },
       ])
     })
   })
