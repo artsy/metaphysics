@@ -105,7 +105,9 @@ export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
   options: T
 ) => {
   const { limit: size, offset } = getPagingParameters(options)
-  const page = Math.round((size + offset) / size)
+  // If a size of 0 explicitly requested, it doesn't really matter what
+  // the page is.
+  const page = size ? Math.round((size + offset) / size) : 1
   const gravityArgs = omit(options, ["first", "after", "last", "before"])
   return Object.assign({}, { page, size, offset }, gravityArgs)
 }

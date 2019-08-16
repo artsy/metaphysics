@@ -392,7 +392,20 @@ const filterArtworksConnectionTypeFactory = (
       keyword_match_exact: keywordMatchExact,
       ..._options,
     }
-    const { include_artworks_by_followed_artists, aggregations } = options
+    const {
+      first,
+      last,
+      after,
+      before,
+      size,
+      include_artworks_by_followed_artists,
+      aggregations,
+    } = options
+
+    // Check if connection args missing.
+    if (first == null && last == null && size == null)
+      throw new Error("You must pass either `first`, `last` or `size`.")
+
     const requestedPersonalizedAggregation = aggregations.includes(
       "followed_artists"
     )
@@ -439,13 +452,17 @@ const filterArtworksConnectionTypeFactory = (
         gravityOptions.size
       )
 
-      const connection = connectionFromArraySlice(hits, gravityOptions, {
-        arrayLength: Math.min(
-          aggregations.total.value,
-          totalPages * gravityOptions.size
-        ),
-        sliceStart: gravityOptions.offset,
-      })
+      const connection = connectionFromArraySlice(
+        hits,
+        { first, last, after, before },
+        {
+          arrayLength: Math.min(
+            aggregations.total.value,
+            totalPages * gravityOptions.size
+          ),
+          sliceStart: gravityOptions.offset,
+        }
+      )
 
       connection.pageInfo.endCursor = pageToCursor(
         gravityOptions.page + 1,

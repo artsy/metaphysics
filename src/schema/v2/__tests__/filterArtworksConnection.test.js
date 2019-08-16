@@ -268,6 +268,97 @@ describe("filterArtworksConnection", () => {
     })
   })
 
+  describe(`Returns proper pagination information`, () => {
+    beforeEach(() => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: sinon
+            .stub()
+            .withArgs("filter/artworks")
+            .returns(
+              Promise.resolve({
+                hits: [
+                  {
+                    id: "oseberg-norway-queens-ship-0",
+                  },
+                  {
+                    id: "oseberg-norway-queens-ship-1",
+                  },
+                  {
+                    id: "oseberg-norway-queens-ship-2",
+                  },
+                  {
+                    id: "oseberg-norway-queens-ship-3",
+                  },
+                ],
+                aggregations: {
+                  total: {
+                    value: 5,
+                  },
+                },
+              })
+            ),
+        },
+      }
+    })
+
+    it("returns `true` for `hasNextPage` when there is more data", () => {
+      const query = `
+        {
+          filterArtworksConnection(first: 4, after: "", aggregations:[TOTAL]) {
+            pageInfo {
+              hasNextPage
+            }
+          }
+        }
+      `
+
+      return runQuery(query, context).then(
+        ({
+          filterArtworksConnection: {
+            pageInfo: { hasNextPage },
+          },
+        }) => {
+          expect(hasNextPage).toBeTruthy()
+        }
+      )
+    })
+  })
+
+  describe(`Connection argument validation`, () => {
+    beforeEach(() => {
+      context = {
+        authenticatedLoaders: {},
+        unauthenticatedLoaders: {
+          filterArtworksLoader: jest.fn(),
+        },
+      }
+    })
+
+    it("throws an error when `first`, `last` and `size` are missing", () => {
+      const query = `
+        {
+          filterArtworksConnection(aggregations:[TOTAL]) {
+            pageInfo {
+              hasNextPage
+            }
+          }
+        }
+      `
+
+      expect(() => {
+        try {
+          runQuery(query, context)
+        } catch (e) {
+          expect(e.message).toContain(
+            "You must pass either `first`, `last` or `size`"
+          )
+        }
+      })
+    })
+  })
+
   describe(`When requesting personalized arguments`, () => {
     beforeEach(() => {
       context = {

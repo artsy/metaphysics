@@ -60,6 +60,10 @@ const typeNames = {
   "./filterArtworksConnection": "filterArtworksConnection",
 }
 
+const exportNames = {
+  filterArtworksConnection: "filterArtworksConnection",
+}
+
 SupportedTypes.typeMap = SupportedTypes.files.reduce((typeMap, file) => {
   const type = typeNames[file] || _.upperFirst(_.camelCase(basename(file)))
   typeMap[type] = file
@@ -73,7 +77,8 @@ Object.defineProperty(SupportedTypes, "typeModules", {
     if (SupportedTypes._typeModules === undefined) {
       SupportedTypes._typeModules = SupportedTypes.types.reduce(
         (modules, type) => {
-          modules[type] = require(SupportedTypes.typeMap[type]).default
+          const exportType = exportNames[type] || "default"
+          modules[type] = require(SupportedTypes.typeMap[type])[exportType]
           return modules
         },
         {}
