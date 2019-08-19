@@ -21,29 +21,29 @@ describe("Profile type", () => {
     {
       profile(id: "the-armory-show") {
         slug
-        isPublicallyVisible
+        isPubliclyVisible
       }
     }
   `
 
-  it("isPublicallyVisible returns true when profile is published", () => {
+  it("isPubliclyVisible returns true when profile is published", () => {
     return runQuery(query, context).then(data => {
       expect(data).toEqual({
         profile: {
           slug: "the-armory-show",
-          isPublicallyVisible: true,
+          isPubliclyVisible: true,
         },
       })
     })
   })
 
-  it("isPublicallyVisible returns false when profile is private", () => {
+  it("isPubliclyVisible returns false when profile is private", () => {
     profileData.private = true
     return runQuery(query, context).then(data => {
       expect(data).toEqual({
         profile: {
           slug: "the-armory-show",
-          isPublicallyVisible: false,
+          isPubliclyVisible: false,
         },
       })
     })

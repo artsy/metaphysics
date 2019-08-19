@@ -34,7 +34,7 @@ describe("Fair type", () => {
         organizer {
           profileID
           profile {
-            isPublicallyVisible
+            isPubliclyVisible
           }
         }
         mobileImage {
@@ -65,7 +65,7 @@ describe("Fair type", () => {
           organizer: {
             profileID: "the-armory-show",
             profile: {
-              isPublicallyVisible: true,
+              isPubliclyVisible: true,
             },
           },
           mobileImage: {
@@ -93,7 +93,7 @@ describe("Fair type", () => {
           organizer: {
             profileID: "the-armory-show",
             profile: {
-              isPublicallyVisible: false,
+              isPubliclyVisible: false,
             },
           },
           mobileImage: {
@@ -121,7 +121,7 @@ describe("Fair type", () => {
           organizer: {
             profileID: "the-armory-show",
             profile: {
-              isPublicallyVisible: false,
+              isPubliclyVisible: false,
             },
           },
           mobileImage: {
