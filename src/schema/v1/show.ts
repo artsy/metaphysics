@@ -665,15 +665,7 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The slug or ID of the Show",
     },
   },
-  resolve: (
-    _root,
-    { id },
-    {
-      unauthenticatedLoaders: { showLoader: loaderWithCache },
-      authenticatedLoaders: { showLoader: loaderWithoutCache },
-      accessToken,
-    }
-  ) => {
+  resolve: (_root, { id }, { showLoader, accessToken }) => {
     const decodeUnverifiedJwt = decodeUnverifiedJWT(accessToken as string)
     const partnerIds: Array<String> = decodeUnverifiedJwt
       ? decodeUnverifiedJwt.partner_ids
@@ -684,12 +676,7 @@ const Show: GraphQLFieldConfig<void, ResolverContext> = {
     const isDisplayable = show =>
       show.displayable || isAdmin || partnerIds.includes(show.partner._id)
 
-    const loader =
-      decodeUnverifiedJwt && loaderWithoutCache
-        ? loaderWithoutCache
-        : loaderWithCache
-
-    return loader(id)
+    return showLoader(id)
       .then(show => {
         if (
           !isDisplayable(show) &&
