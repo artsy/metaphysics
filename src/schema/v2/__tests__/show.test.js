@@ -58,6 +58,12 @@ describe("Show type", () => {
       ),
       galaxyGalleriesLoader: sinon.stub().returns(Promise.resolve(galaxyData)),
       partnerShowLoader: sinon.stub().returns(Promise.resolve(showData)),
+      unauthenticatedLoaders: {
+        showLoader: sinon.stub().returns(Promise.resolve(showData)),
+      },
+      authenticatedLoaders: {
+        showLoader: sinon.stub().returns(Promise.resolve(showData)),
+      },
     }
   })
 
@@ -982,6 +988,12 @@ describe("Show type", () => {
             },
           }),
         showLoader: () => Promise.resolve(showData),
+        unauthenticatedLoaders: {
+          showLoader: sinon.stub().returns(Promise.resolve(showData)),
+        },
+        authenticatedLoaders: {
+          showLoader: sinon.stub().returns(Promise.resolve(showData)),
+        },
       }
     })
 
@@ -1085,7 +1097,9 @@ describe("Show type", () => {
     it("fetches FilterArtworks using the show id and partner id", async () => {
       context = {
         ...context,
-        authenticatedLoaders: {},
+        authenticatedLoaders: {
+          showLoader: sinon.stub().returns(Promise.resolve(showData)),
+        },
         unauthenticatedLoaders: {
           filterArtworksLoader: jest.fn().mockReturnValue(
             Promise.resolve({
@@ -1106,6 +1120,7 @@ describe("Show type", () => {
               },
             })
           ),
+          showLoader: sinon.stub().returns(Promise.resolve(showData)),
         },
       }
 
