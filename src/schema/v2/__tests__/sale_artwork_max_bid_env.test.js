@@ -41,13 +41,15 @@ describe("SaleArtwork type", () => {
     })
   }
 
-  describe("bid_increments", () => {
+  describe("increments", () => {
     describe("with a max amount set", () => {
       it("does not return increments above the max allowed", async () => {
         const query = `
           {
-            sale_artwork(id: "54c7ed2a7261692bfa910200") {
-              bid_increments
+            saleArtwork(id: "54c7ed2a7261692bfa910200") {
+              increments {
+                cents
+              }
             }
           }
         `
@@ -80,7 +82,9 @@ describe("SaleArtwork type", () => {
         }
 
         const data = await execute(query, saleArtwork, context)
-        expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
+        expect(
+          data.saleArtwork.increments.slice(0, 20).map(i => i.cents)
+        ).toEqual([
           351000,
           355000,
           360000,

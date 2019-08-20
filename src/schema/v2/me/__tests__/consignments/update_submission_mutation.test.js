@@ -14,19 +14,19 @@ describe("UpdateSubmissionMutation", () => {
     expect(Object.keys(mutation.inputFields)).toContain("state")
   })
 
-  it("updates a submission and returns its new data payload", () => {
+  it("updates a submission and returns its new data payload", async () => {
     const mutation = gql`
       mutation {
         updateConsignmentSubmission(
           input: {
             id: "108"
-            artist_id: "andy-warhol"
+            artistID: "andy-warhol"
             depth: "123"
             clientMutationId: "123123"
           }
         ) {
           clientMutationId
-          consignment_submission {
+          consignmentSubmission {
             depth
           }
         }
@@ -43,9 +43,9 @@ describe("UpdateSubmissionMutation", () => {
         }),
     }
 
-    expect.assertions(1)
-    return runAuthenticatedQuery(mutation, context).then(data => {
+    await runAuthenticatedQuery(mutation, context).then(data => {
       expect(data).toMatchSnapshot()
     })
+    expect.assertions(1)
   })
 })

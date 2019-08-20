@@ -2,12 +2,12 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("UpdateConversationMutation", () => {
-  it("sets from_last_viewed_message_id", () => {
+  it("sets from_last_viewed_message_id", async () => {
     const mutation = `
       mutation {
         updateConversation(input: { conversationId: "25", fromLastViewedMessageId: "35" }) {
           conversation {
-            initial_message
+            initialMessage
           }
         }
       }
@@ -21,11 +21,9 @@ describe("UpdateConversationMutation", () => {
         }),
     }
 
+    await runAuthenticatedQuery(mutation, context).then(updatedConversation => {
+      expect(updatedConversation).toMatchSnapshot()
+    })
     expect.assertions(1)
-    return runAuthenticatedQuery(mutation, context).then(
-      updatedConversation => {
-        expect(updatedConversation).toMatchSnapshot()
-      }
-    )
   })
 })

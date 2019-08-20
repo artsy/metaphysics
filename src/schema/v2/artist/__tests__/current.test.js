@@ -54,7 +54,7 @@ describe("Artist type", () => {
             event {
               __typename
               ... on Sale {
-                id
+                slug
               }
             }
           }
@@ -72,7 +72,7 @@ describe("Artist type", () => {
           expect(status).toBe("Currently at auction")
           expect(details).toBe("Live bidding begins Dec 28 7:00 AM EST")
           expect(href).toBe("/auction/catty-sale")
-          expect(event).toEqual({ __typename: "Sale", id: "catty-sale" })
+          expect(event).toEqual({ __typename: "Sale", slug: "catty-sale" })
         }
       )
     })
@@ -89,7 +89,7 @@ describe("Artist type", () => {
             event {
               __typename
               ... on Sale {
-                id
+                slug
               }
             }
           }
@@ -114,7 +114,7 @@ describe("Artist type", () => {
           expect(status).toBe("Currently at auction")
           expect(details).toBe("Bidding ends Dec 31 7:00 AM EST")
           expect(href).toBe("/auction/catty-sale")
-          expect(event).toEqual({ __typename: "Sale", id: "catty-sale" })
+          expect(event).toEqual({ __typename: "Sale", slug: "catty-sale" })
         }
       )
     })
@@ -135,7 +135,7 @@ describe("Artist type", () => {
             event {
               __typename
               ... on Show {
-                id
+                slug
               }
             }
           }
@@ -154,7 +154,7 @@ describe("Artist type", () => {
         expect(href).toBe("/show/catty-show")
         expect(partner).toBe("Catty Partner")
         expect(details).toBe("Quonochontaug, Dec 21 – 31, 2018")
-        expect(event).toEqual({ __typename: "Show", id: "catty-show" })
+        expect(event).toEqual({ __typename: "Show", slug: "catty-show" })
       }
     )
   })

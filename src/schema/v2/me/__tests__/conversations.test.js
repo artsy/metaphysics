@@ -7,12 +7,12 @@ describe("Me", () => {
       const query = `
         {
           me {
-            conversations(first: 10) {
+            conversationsConnection(first: 10) {
               totalUnreadCount
               edges {
                 node {
-                  id
-                  initial_message
+                  internalID
+                  initialMessage
                   from {
                     email
                   }
@@ -39,8 +39,8 @@ describe("Me", () => {
         edges: [
           {
             node: {
-              id: "2",
-              initial_message: "omg im sooo interested",
+              internalID: "2",
+              initialMessage: "omg im sooo interested",
               from: {
                 email: "percy@cat.com",
               },
@@ -48,8 +48,8 @@ describe("Me", () => {
           },
           {
             node: {
-              id: "3",
-              initial_message: "im only a little interested",
+              internalID: "3",
+              initialMessage: "im only a little interested",
               from: {
                 email: "percy@cat.com",
               },
@@ -58,16 +58,21 @@ describe("Me", () => {
         ],
       }
 
-      return runAuthenticatedQuery(query, {
+      const context = {
+        meLoader: () => Promise.resolve({}),
         conversationsLoader: () =>
           Promise.resolve({
             total_unread_count: 1,
             total_count: 2,
             conversations: [conversation1, conversation2],
           }),
-      }).then(({ me: { conversations } }) => {
-        expect(conversations).toEqual(expectedConversationData)
-      })
+      }
+
+      return runAuthenticatedQuery(query, context).then(
+        ({ me: { conversationsConnection } }) => {
+          expect(conversationsConnection).toEqual(expectedConversationData)
+        }
+      )
     })
   })
 })

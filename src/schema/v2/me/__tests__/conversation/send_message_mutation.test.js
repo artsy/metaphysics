@@ -9,17 +9,17 @@ describe("SendConversationMessageMutation", () => {
           input: {
             id: "623",
             from: "pio-dog@example.com",
-            body_text: "Sehr schön!"
-            reply_to_message_id: "221"
+            bodyText: "Sehr schön!"
+            replyToMessageID: "221"
           }
         ) {
             conversation {
-              id
+              internalID
             }
             messageEdge {
               cursor
               node {
-                id
+                internalID
                 body
                 from {
                   email

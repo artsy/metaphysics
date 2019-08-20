@@ -5,9 +5,9 @@ describe("FollowShow", () => {
   it("follows a show", () => {
     const mutation = `
       mutation {
-        followShow(input: { partner_show_id: "pop-art-show" }) {
+        followShow(input: { partnerShowID: "pop-art-show" }) {
           show {
-            id
+            slug
             name
           }
         }
@@ -15,8 +15,10 @@ describe("FollowShow", () => {
     `
     interface Props {
       followShow: {
-        id: String
-        name: String
+        show: {
+          slug: String
+          name: String
+        }
       }
     }
 
@@ -37,7 +39,7 @@ describe("FollowShow", () => {
 
     const expectedShowData = {
       show: {
-        id: "pop-art-show",
+        slug: "pop-art-show",
         name: "Pop Art Show",
       },
     }
@@ -52,9 +54,9 @@ describe("FollowShow", () => {
   it("unfollows a show", () => {
     const setup = `
       mutation {
-        followShow(input: { partner_show_id: "pop-art-show" }) {
+        followShow(input: { partnerShowID: "pop-art-show" }) {
           show {
-            id
+            slug
             name
           }
         }
@@ -63,9 +65,9 @@ describe("FollowShow", () => {
 
     const teardown = `
       mutation {
-        followShow(input: { partner_show_id: "pop-art-show", unfollow: true }) {
+        followShow(input: { partnerShowID: "pop-art-show", unfollow: true }) {
           show {
-            id
+            slug
           }
         }
       }
@@ -76,7 +78,7 @@ describe("FollowShow", () => {
         id: String
         name: String
         show: {
-          id: String
+          slug: String
         }
       }
     }
@@ -115,7 +117,7 @@ describe("FollowShow", () => {
     return runAuthenticatedQuery(setup, context).then(() => {
       return runAuthenticatedQuery(teardown, context).then(value => {
         const { followShow } = value as Props
-        expect(followShow.show.id).toEqual(expectedShowData.show.id)
+        expect(followShow.show.slug).toEqual(expectedShowData.show.id)
       })
     })
   })

@@ -39,23 +39,23 @@ describe("SaleArtwork type", () => {
   it("formats money correctly", async () => {
     const query = `
       {
-        sale_artwork(id: "54c7ed2a7261692bfa910200") {
-          high_estimate {
+        saleArtwork(id: "54c7ed2a7261692bfa910200") {
+          highEstimate {
             cents
             amount(format: "%v EUROS!")
             display
           }
-          low_estimate {
+          lowEstimate {
             cents
             amount
             display
           }
-          highest_bid {
+          highestBid {
             cents
             amount
             display
           }
-          current_bid {
+          currentBid {
             cents
             amount
             display
@@ -65,23 +65,23 @@ describe("SaleArtwork type", () => {
     `
 
     expect(await execute(query)).toEqual({
-      sale_artwork: {
-        high_estimate: {
+      saleArtwork: {
+        highEstimate: {
           cents: 300000,
           amount: "3,000 EUROS!",
           display: "€3,000",
         },
-        low_estimate: {
+        lowEstimate: {
           cents: 200000,
           amount: "€2,000",
           display: "€2,000",
         },
-        highest_bid: {
+        highestBid: {
           cents: 325000,
           amount: "€3,250",
           display: "€3,250",
         },
-        current_bid: {
+        currentBid: {
           cents: 325000,
           amount: "€3,250",
           display: "€3,250",
@@ -94,19 +94,21 @@ describe("SaleArtwork type", () => {
     it("requires an increment strategy in order to retrieve increments", async () => {
       const query = `
         {
-          sale_artwork(id: "54c7ed2a7261692bfa910200") {
-            bid_increments
+          saleArtwork(id: "54c7ed2a7261692bfa910200") {
+            increments {
+              cents
+            } 
           }
         }
       `
 
       const gravityResponse = {
         ...saleArtwork,
-        minimum_next_bid_cents: 2400000000,
+        minimumNextBidCents: 2400000000,
       }
 
       const context = {
-        saleLoader: () => Promise.resolve({ missing_increment_strategy: true }),
+        saleLoader: () => Promise.resolve({ missingIncrementStrategy: true }),
         incrementsLoader: () => Promise.resolve(),
       }
 
@@ -121,8 +123,10 @@ describe("SaleArtwork type", () => {
     it("can return bid increments that are above the size of a GraphQLInt", async () => {
       const query = `
         {
-          sale_artwork(id: "54c7ed2a7261692bfa910200") {
-            bid_increments
+          saleArtwork(id: "54c7ed2a7261692bfa910200") {
+            increments {
+              cents
+            }
           }
         }
       `
@@ -156,7 +160,9 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, gravityResponse, context)
-      expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
+      expect(
+        data.saleArtwork.increments.slice(0, 20).map(i => i.cents)
+      ).toEqual([
         2400000000,
         2400001000,
         2400002000,
@@ -183,8 +189,10 @@ describe("SaleArtwork type", () => {
     it("can return the bid increments, including Grav's asking price, and snap to preset increments", async () => {
       const query = `
         {
-          sale_artwork(id: "54c7ed2a7261692bfa910200") {
-            bid_increments
+          saleArtwork(id: "54c7ed2a7261692bfa910200") {
+            increments {
+              cents
+            }
           }
         }
       `
@@ -217,7 +225,9 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, saleArtwork, context)
-      expect(data.sale_artwork.bid_increments.slice(0, 20)).toEqual([
+      expect(
+        data.saleArtwork.increments.slice(0, 20).map(i => i.cents)
+      ).toEqual([
         351000,
         355000,
         360000,
@@ -244,7 +254,7 @@ describe("SaleArtwork type", () => {
     it("formats bid increments", async () => {
       const query = `
         {
-          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+          saleArtwork(id: "54c7ed2a7261692bfa910200") {
             increments {
               cents
               display
@@ -281,7 +291,7 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, saleArtwork, context)
-      expect(data.sale_artwork.increments.slice(0, 2)).toEqual([
+      expect(data.saleArtwork.increments.slice(0, 2)).toEqual([
         {
           cents: 351000,
           display: "€3,510",
@@ -328,7 +338,7 @@ describe("SaleArtwork type", () => {
 
       query = `
         {
-          sale_artwork(id: "54c7ed2a7261692bfa910200") {
+          saleArtwork(id: "54c7ed2a7261692bfa910200") {
             increments(useMyMaxBid: true) {
               cents
               display
@@ -340,7 +350,7 @@ describe("SaleArtwork type", () => {
 
     it("returns increments from the minimum next bid cents if the user has no lot standings", async () => {
       const data = await runAuthenticatedQuery(query, context)
-      expect(data.sale_artwork.increments.slice(0, 5)).toEqual([
+      expect(data.saleArtwork.increments.slice(0, 5)).toEqual([
         {
           cents: 351000,
           display: "€3,510",
@@ -378,7 +388,7 @@ describe("SaleArtwork type", () => {
         ...context,
         lotStandingLoader: lotStandingLoader,
       })
-      expect(data.sale_artwork.increments.slice(0, 5)).toEqual([
+      expect(data.saleArtwork.increments.slice(0, 5)).toEqual([
         {
           cents: 395000,
           display: "€3,950",
@@ -416,7 +426,7 @@ describe("SaleArtwork type", () => {
         ...context,
         lotStandingLoader: lotStandingLoader,
       })
-      expect(data.sale_artwork.increments.slice(0, 5)).toEqual([
+      expect(data.saleArtwork.increments.slice(0, 5)).toEqual([
         {
           cents: 351000,
           display: "€3,510",

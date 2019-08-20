@@ -8,7 +8,7 @@ describe("Me", () => {
         {
           me {
             bidders {
-              id
+              internalID
             }
           }
         }
@@ -20,7 +20,10 @@ describe("Me", () => {
 
       return runAuthenticatedQuery(query, { meBiddersLoader }).then(
         ({ me: { bidders } }) => {
-          expect(bidders).toEqual([{ id: "Foo ID" }, { id: "Bar ID" }])
+          expect(bidders).toEqual([
+            { internalID: "Foo ID" },
+            { internalID: "Bar ID" },
+          ])
         }
       )
     })
@@ -29,8 +32,8 @@ describe("Me", () => {
       const query = `
         {
           me {
-            bidders(sale_id: "the-fun-sale") {
-              id
+            bidders(saleID: "the-fun-sale") {
+              internalID
             }
           }
         }
@@ -42,7 +45,10 @@ describe("Me", () => {
       return runAuthenticatedQuery(query, { meBiddersLoader }).then(
         ({ me: { bidders } }) => {
           expect(meBiddersLoader).toBeCalledWith({ sale_id: "the-fun-sale" })
-          expect(bidders).toEqual([{ id: "Foo ID" }, { id: "Bar ID" }])
+          expect(bidders).toEqual([
+            { internalID: "Foo ID" },
+            { internalID: "Bar ID" },
+          ])
         }
       )
     })

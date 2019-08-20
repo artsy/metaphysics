@@ -4,12 +4,12 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Me", () => {
   describe("Followed Artists Artwork Groups", () => {
-    it("returns artworks grouped by artist", () => {
+    it("returns artworks grouped by artist", async () => {
       const query = `
         {
           me {
             followsAndSaves {
-              bundledArtworksByArtist(first: 10) {
+              bundledArtworksByArtistConnection(first: 10) {
                 pageInfo {
                   hasNextPage
                 }
@@ -66,11 +66,19 @@ describe("Me", () => {
         body: [artwork1, artwork2],
       }
 
-      return runAuthenticatedQuery(query, {
+      await runAuthenticatedQuery(query, {
         followedArtistsArtworksLoader: () => Promise.resolve(artworkResponse),
-      }).then(({ me: { followsAndSaves: { bundledArtworksByArtist } } }) => {
-        expect(bundledArtworksByArtist).toEqual(expectedConnectionData)
-      })
+      }).then(
+        ({
+          me: {
+            followsAndSaves: { bundledArtworksByArtistConnection },
+          },
+        }) => {
+          expect(bundledArtworksByArtistConnection).toEqual(
+            expectedConnectionData
+          )
+        }
+      )
     })
   })
 })

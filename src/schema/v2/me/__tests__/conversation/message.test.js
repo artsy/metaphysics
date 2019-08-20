@@ -38,8 +38,8 @@ describe("Me", () => {
           {
             me {
               conversation(id: "420") {
-                id
-                initial_message
+                internalID
+                initialMessage
                 from {
                   email
                 }
@@ -47,7 +47,7 @@ describe("Me", () => {
                   edges {
                     node {
                       body
-                      id
+                      internalID
                       from {
                         email
                         name
@@ -72,8 +72,8 @@ describe("Me", () => {
           {
             me {
               conversation(id: "420") {
-                id
-                initial_message
+                internalID
+                initialMessage
                 from {
                   email
                 }
@@ -81,7 +81,7 @@ describe("Me", () => {
                   edges {
                     node {
                       body
-                      id
+                      internalID
                     }
                   }
                 }
@@ -115,8 +115,8 @@ describe("Me", () => {
           {
             me {
               conversation(id: "420") {
-                id
-                initial_message
+                internalID
+                initialMessage
                 from {
                   email
                 }
@@ -124,8 +124,8 @@ describe("Me", () => {
                   edges {
                     node {
                       body
-                      id
-                      is_from_user
+                      internalID
+                      isFromUser
                       from {
                         email
                         name

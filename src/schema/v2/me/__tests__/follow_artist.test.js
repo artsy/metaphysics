@@ -34,14 +34,14 @@ describe("FollowArtist", () => {
     }
   })
 
-  it("follows an artist", () => {
+  it("follows an artist", async () => {
     const mutation = `
       mutation {
-        followArtist(input: { artist_id: "damon-zucconi" }) {
+        followArtist(input: { artistID: "damon-zucconi" }) {
           artist {
             name
           }
-          popular_artists {
+          popularArtists {
             artists {
               name
             }
@@ -50,16 +50,16 @@ describe("FollowArtist", () => {
       }
     `
 
-    expect.assertions(1)
-    return runAuthenticatedQuery(mutation, context).then(({ followArtist }) => {
+    await runAuthenticatedQuery(mutation, context).then(({ followArtist }) => {
       expect(followArtist).toEqual({
         artist: {
           name: "Damon Zucconi",
         },
-        popular_artists: {
+        popularArtists: {
           artists: [{ name: "Antonio Carreno" }, { name: "Benjamin Schmit" }],
         },
       })
     })
+    expect.assertions(1)
   })
 })

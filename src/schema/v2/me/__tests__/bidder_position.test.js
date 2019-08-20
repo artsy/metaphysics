@@ -53,12 +53,12 @@ describe("BidderPosition", () => {
   const query = `
       {
         me {
-          bidder_position(id: "5ae1df168b3b8141bfc32e5d") {
+          bidderPosition(id: "5ae1df168b3b8141bfc32e5d") {
             status
-            message_header
-            message_description_md
+            messageHeader
+            messageDescriptionMD
             position {
-              processed_at
+              processedAt
             }
           }
         }
@@ -67,12 +67,12 @@ describe("BidderPosition", () => {
   it("returns winning when processed and reserve is met and active", () => {
     return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
-        bidder_position: {
+        bidderPosition: {
           status: "WINNING",
-          message_header: null,
-          message_description_md: null,
+          messageHeader: null,
+          messageDescriptionMD: null,
           position: {
-            processed_at: "2018-04-26T14:15:52+00:00",
+            processedAt: "2018-04-26T14:15:52+00:00",
           },
         },
       })
@@ -81,12 +81,12 @@ describe("BidderPosition", () => {
   it("returns pending when not processed yet", () => {
     return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
-        bidder_position: {
+        bidderPosition: {
           status: "PENDING",
-          message_header: null,
-          message_description_md: null,
+          messageHeader: null,
+          messageDescriptionMD: null,
           position: {
-            processed_at: null,
+            processedAt: null,
           },
         },
       })
@@ -95,12 +95,12 @@ describe("BidderPosition", () => {
   it("returns reserve not met when reserve not met", () => {
     return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
-        bidder_position: {
+        bidderPosition: {
           status: "RESERVE_NOT_MET",
-          message_header: "Your bid wasn’t high enough",
-          message_description_md: `Your bid didn’t meet the reserve price\nfor this work.`,
+          messageHeader: "Your bid wasn’t high enough",
+          messageDescriptionMD: `Your bid didn’t meet the reserve price\nfor this work.`,
           position: {
-            processed_at: "2018-04-26T14:15:52+00:00",
+            processedAt: "2018-04-26T14:15:52+00:00",
           },
         },
       })
@@ -109,12 +109,12 @@ describe("BidderPosition", () => {
   it("returns outbid when not active but reserve is met", () => {
     return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
-        bidder_position: {
+        bidderPosition: {
           status: "OUTBID",
-          message_header: "Your bid wasn’t high enough",
-          message_description_md: `Another bidder placed a higher max bid\nor the same max bid before you did.`,
+          messageHeader: "Your bid wasn’t high enough",
+          messageDescriptionMD: `Another bidder placed a higher max bid\nor the same max bid before you did.`,
           position: {
-            processed_at: "2018-04-26T14:15:52+00:00",
+            processedAt: "2018-04-26T14:15:52+00:00",
           },
         },
       })

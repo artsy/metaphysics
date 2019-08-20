@@ -4,17 +4,19 @@ import config from "config"
 const query = `
   mutation {
     createBidderPosition(input: {
-      artwork_id: "daryl-daniels-free-thyself-1"
-      max_bid_amount_cents: 100000
-      sale_id: "sixteen-year-of-resistance-benefit-auction-2032"
+      artworkID: "daryl-daniels-free-thyself-1"
+      maxBidAmountCents: 100000
+      saleID: "sixteen-year-of-resistance-benefit-auction-2032"
     }) {
       result {
         status
         position {
-          suggested_next_bid_cents
+          suggestedNextBid {
+            cents
+          }
         }
-        message_header
-        message_description_md
+        messageHeader
+        messageDescriptionMD
       }
     }
   }
@@ -39,10 +41,10 @@ describe("Bidder position mutation", () => {
 
       const data = await runAuthenticatedQuery(query, context)
       expect(
-        data.createBidderPosition.result.position.suggested_next_bid_cents
+        data.createBidderPosition.result.position.suggestedNextBid.cents
       ).toEqual(110000)
-      expect(data.createBidderPosition.result.message_header).toBeNull()
-      expect(data.createBidderPosition.result.message_description_md).toBeNull()
+      expect(data.createBidderPosition.result.messageHeader).toBeNull()
+      expect(data.createBidderPosition.result.messageDescriptionMD).toBeNull()
     })
   })
 
@@ -62,10 +64,10 @@ describe("Bidder position mutation", () => {
       const data = await runAuthenticatedQuery(query, context)
 
       expect(data.createBidderPosition.result.position).toBeNull()
-      expect(data.createBidderPosition.result.message_header).toEqual(
+      expect(data.createBidderPosition.result.messageHeader).toEqual(
         "Your bid wasn’t high enough"
       )
-      expect(data.createBidderPosition.result.message_description_md).toEqual(
+      expect(data.createBidderPosition.result.messageDescriptionMD).toEqual(
         "Another bidder placed a higher max bid\nor the same max bid before you did."
       )
     })
@@ -84,10 +86,10 @@ describe("Bidder position mutation", () => {
       const data = await runAuthenticatedQuery(query, context)
 
       expect(data.createBidderPosition.result.position).toBeNull()
-      expect(data.createBidderPosition.result.message_header).toEqual(
+      expect(data.createBidderPosition.result.messageHeader).toEqual(
         "Lot closed"
       )
-      expect(data.createBidderPosition.result.message_description_md).toEqual(
+      expect(data.createBidderPosition.result.messageDescriptionMD).toEqual(
         "Sorry, your bid wasn’t received\nbefore the lot closed."
       )
     })
@@ -107,10 +109,10 @@ describe("Bidder position mutation", () => {
     const data = await runAuthenticatedQuery(query, context)
 
     expect(data.createBidderPosition.result.position).toBeNull()
-    expect(data.createBidderPosition.result.message_header).toEqual(
+    expect(data.createBidderPosition.result.messageHeader).toEqual(
       "Live bidding has started"
     )
-    expect(data.createBidderPosition.result.message_description_md).toEqual(
+    expect(data.createBidderPosition.result.messageDescriptionMD).toEqual(
       "Sorry, your bid wasn’t received before\n" +
         "live bidding started. To continue\n" +
         `bidding, please [join the live auction](${
@@ -134,10 +136,10 @@ it("creates correct message when bidder is not qualifdied", async () => {
   const data = await runAuthenticatedQuery(query, context)
 
   expect(data.createBidderPosition.result.position).toBeNull()
-  expect(data.createBidderPosition.result.message_header).toEqual(
+  expect(data.createBidderPosition.result.messageHeader).toEqual(
     "Bid not placed"
   )
-  expect(data.createBidderPosition.result.message_description_md).toEqual(
+  expect(data.createBidderPosition.result.messageDescriptionMD).toEqual(
     "Your bid can’t be placed at this time.\n" +
       "Please contact [support@artsy.net](mailto:support@artsy.net) for\n" +
       "more information."

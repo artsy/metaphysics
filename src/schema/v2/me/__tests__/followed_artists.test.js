@@ -24,12 +24,14 @@ it("returns artists for a user", () => {
   const query = gql`
     {
       me {
-        followed_artists_connection(first: 10) {
-          edges {
-            node {
-              artist {
-                name
-                id
+        followsAndSaves {
+          artistsConnection(first: 10) {
+            edges {
+              node {
+                artist {
+                  name
+                  slug
+                }
               }
             }
           }

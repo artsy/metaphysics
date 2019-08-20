@@ -29,8 +29,12 @@ describe("Layer type", () => {
       {
         artwork(id:"lucio-fontana-concetto-spaziale-attese-139") {
           layers {
-            artworks {
-              id
+            artworksConnection {
+              edges {
+                node {
+                  slug
+                }
+              }
             }
           }
         }
@@ -42,7 +46,14 @@ describe("Layer type", () => {
       artwork: {
         layers: [
           {
-            artworks: artworksResponse,
+            artworksConnection: {
+              edges: artworksResponse.map(({ id, ...others }) => ({
+                node: {
+                  slug: id,
+                  ...others,
+                },
+              })),
+            },
           },
         ],
       },
@@ -58,7 +69,7 @@ describe("Layer type", () => {
               artworksConnection(first:3) {
                 edges {
                   node {
-                    id
+                   slug 
                   }
                 }
               }
@@ -77,17 +88,17 @@ describe("Layer type", () => {
                 edges: [
                   {
                     node: {
-                      id: "leonor-fini-les-aveugles",
+                      slug: "leonor-fini-les-aveugles",
                     },
                   },
                   {
                     node: {
-                      id: "gregorio-vardanega-cereles-metaphorique",
+                      slug: "gregorio-vardanega-cereles-metaphorique",
                     },
                   },
                   {
                     node: {
-                      id: "joaquin-torres-garcia-grafismo-del-hombre-y-barco",
+                      slug: "joaquin-torres-garcia-grafismo-del-hombre-y-barco",
                     },
                   },
                 ],

@@ -4,12 +4,12 @@ import { runQuery } from "schema/v2/test/utils"
 describe("OrderedSets type", () => {
   const query = `
   {
-    ordered_sets(key: "artists:featured-genes", page: 1, size: 5) {
-      id
+    orderedSets(key: "artists:featured-genes", page: 1, size: 5) {
+      internalID
       name
       description
       genes: items {
-        ... on GeneItem {
+        ... on Gene {
           name
         }
       }
@@ -41,9 +41,9 @@ describe("OrderedSets type", () => {
   it("fetches sets by key", () => {
     return runQuery(query, context).then(data => {
       expect(data).toEqual({
-        ordered_sets: [
+        orderedSets: [
           {
-            id: "52dd3c2e4b8480091700027f",
+            internalID: "52dd3c2e4b8480091700027f",
             name: "Featured Genes",
             description: "These Genes are featured",
             genes: [

@@ -7,7 +7,7 @@ describe("me/index", () => {
     const creditCardQuery = gql`
       query {
         me {
-          has_qualified_credit_cards
+          hasQualifiedCreditCards
         }
       }
     `
@@ -36,7 +36,7 @@ describe("me/index", () => {
         meCreditCardsLoader: () =>
           Promise.resolve({ body: creditCardsResponse }),
       }).then(data => {
-        expect(data).toEqual({ me: { has_qualified_credit_cards: true } })
+        expect(data).toEqual({ me: { hasQualifiedCreditCards: true } })
       })
     })
 
@@ -49,7 +49,7 @@ describe("me/index", () => {
       }).then(data => {
         expect(data).toEqual({
           me: {
-            has_qualified_credit_cards: false,
+            hasQualifiedCreditCards: false,
           },
         })
       })
@@ -60,7 +60,7 @@ describe("me/index", () => {
     const creditCardQuery = gql`
       query {
         me {
-          has_credit_cards
+          hasCreditCards
         }
       }
     `
@@ -89,7 +89,7 @@ describe("me/index", () => {
         meCreditCardsLoader: () =>
           Promise.resolve({ body: creditCardsResponse }),
       }).then(data => {
-        expect(data).toEqual({ me: { has_credit_cards: true } })
+        expect(data).toEqual({ me: { hasCreditCards: true } })
       })
     })
 
@@ -100,7 +100,7 @@ describe("me/index", () => {
         meCreditCardsLoader: () =>
           Promise.resolve({ body: creditCardsResponse }),
       }).then(data => {
-        expect(data).toEqual({ me: { has_credit_cards: false } })
+        expect(data).toEqual({ me: { hasCreditCards: false } })
       })
     })
   })

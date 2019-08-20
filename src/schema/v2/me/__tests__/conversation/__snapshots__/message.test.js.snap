@@ -5,8 +5,8 @@ Object {
   "from": Object {
     "email": "collector@example.com",
   },
-  "id": "420",
-  "initial_message": "Loved some of the works at your fair booth!",
+  "initialMessage": "Loved some of the works at your fair booth!",
+  "internalID": "420",
   "messages": Object {
     "edges": Array [],
   },
@@ -19,8 +19,8 @@ Object {
     "from": Object {
       "email": "collector@example.com",
     },
-    "id": "420",
-    "initial_message": "Loved some of the works at your fair booth!",
+    "initialMessage": "Loved some of the works at your fair booth!",
+    "internalID": "420",
     "messages": Object {
       "edges": Array [
         Object {
@@ -30,8 +30,8 @@ Object {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
-            "id": "222",
-            "is_from_user": true,
+            "internalID": "222",
+            "isFromUser": true,
           },
         },
       ],
@@ -46,8 +46,8 @@ Object {
     "from": Object {
       "email": "collector@example.com",
     },
-    "id": "420",
-    "initial_message": "Loved some of the works at your fair booth!",
+    "initialMessage": "Loved some of the works at your fair booth!",
+    "internalID": "420",
     "messages": Object {
       "edges": Array [
         Object {
@@ -57,7 +57,7 @@ Object {
               "email": "fancy_german_person@posteo.de",
               "name": "Percy Z",
             },
-            "id": "222",
+            "internalID": "222",
           },
         },
       ],

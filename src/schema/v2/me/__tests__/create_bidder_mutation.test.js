@@ -32,12 +32,12 @@ describe("Bidder mutation", () => {
 
   const mutation = `
   mutation {
-    createBidder(input: {sale_id: "sale123"}) {
+  createBidder(input: {saleID: "sale123"}) {
       bidder {
-        qualified_for_bidding
+        qualifiedForBidding
         sale {
-          id
-          auction_state
+          slug
+          status
         }
       }
     }
@@ -53,10 +53,10 @@ describe("Bidder mutation", () => {
       expect(data).toEqual({
         createBidder: {
           bidder: {
-            qualified_for_bidding: true,
+            qualifiedForBidding: true,
             sale: {
-              id: "shared-live-mocktion",
-              auction_state: "open",
+              slug: "shared-live-mocktion",
+              status: "open",
             },
           },
         },

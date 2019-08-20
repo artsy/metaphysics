@@ -6,7 +6,7 @@ describe("ArtworkAttributionClasses type", () => {
     const query = `
       {
         artworkAttributionClasses {
-          id
+          internalID
           name
           info
           shortDescription
@@ -16,7 +16,7 @@ describe("ArtworkAttributionClasses type", () => {
     `
 
     return runQuery(query).then(data => {
-      expect(data!.artworkAttributionClasses[0].id).toBe("unique")
+      expect(data!.artworkAttributionClasses[0].internalID).toBe("unique")
       expect(data!.artworkAttributionClasses[0].name).toBe("Unique")
       expect(data!.artworkAttributionClasses[0].shortDescription).toBe(
         "This is a unique work"

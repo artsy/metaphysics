@@ -17,10 +17,10 @@ describe("GeneFamilies", () => {
     const geneFamiliesLoader = () => Promise.resolve(api_data)
     const query = `
       {
-        gene_families {
+        geneFamilies {
           edges {
             node {
-              id
+              slug
               name
             }
           }

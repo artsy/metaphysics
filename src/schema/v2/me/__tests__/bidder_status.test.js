@@ -44,13 +44,13 @@ describe("BidderStatus type", () => {
     const query = `
       {
         me {
-          bidder_status(artwork_id: "untitled", sale_id: "active-auction") {
-            is_highest_bidder
-            most_recent_bid {
-              id
+          bidderStatus(artworkID: "untitled", saleID: "active-auction") {
+            isHighestBidder
+            mostRecentBid {
+              internalID
             }
-            active_bid {
-              id
+            activeBid {
+              internalID
             }
           }
         }
@@ -59,10 +59,10 @@ describe("BidderStatus type", () => {
 
     return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
-        bidder_status: {
-          is_highest_bidder: true,
-          most_recent_bid: { id: "0" },
-          active_bid: { id: "0" },
+        bidderStatus: {
+          isHighestBidder: true,
+          mostRecentBid: { internalID: "0" },
+          activeBid: { internalID: "0" },
         },
       })
     })
@@ -95,13 +95,13 @@ describe("BidderStatus type", () => {
     const query = `
       {
         me {
-          bidder_status(artwork_id: "untitled", sale_id: "active-auction") {
-            is_highest_bidder
-            most_recent_bid {
-              id
+          bidderStatus(artworkID: "untitled", saleID: "active-auction") {
+            isHighestBidder
+            mostRecentBid {
+              internalID
             }
-            active_bid {
-              id
+            activeBid {
+              internalID
             }
           }
         }
@@ -110,10 +110,10 @@ describe("BidderStatus type", () => {
 
     return runAuthenticatedQuery(query, context).then(({ me }) => {
       expect(me).toEqual({
-        bidder_status: {
-          is_highest_bidder: false,
-          most_recent_bid: { id: "0" },
-          active_bid: null,
+        bidderStatus: {
+          isHighestBidder: false,
+          mostRecentBid: { internalID: "0" },
+          activeBid: null,
         },
       })
     })

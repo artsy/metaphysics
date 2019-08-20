@@ -8,15 +8,15 @@ describe("addAssetToConsignmentSubmission", () => {
       mutation {
         addAssetToConsignmentSubmission(
           input: {
-            asset_type: "image"
-            gemini_token: "12345"
-            submission_id: "123"
+            assetType: "image"
+            geminiToken: "12345"
+            submissionID: "123"
             clientMutationId: "123"
           }
         ) {
           asset {
-            submission_id
-            gemini_token
+            submissionID
+            geminiToken
           }
         }
       }

@@ -124,33 +124,33 @@ describe("Me", () => {
         {
           me {
             conversation(id: "420") {
-              id
-              initial_message
+              internalID
+              initialMessage
               from {
                 email
               }
-              last_message_id
+              lastMessageID
               unread
               messages(first: 10) {
                 edges {
                   node {
-                    id
-                    is_invoice
+                    internalID
+                    isInvoice
                     invoice {
-                      __id
                       id
-                      payment_url
+                      internalID
+                      paymentURL
                       state
                       total
                     }
-                    is_from_user
+                    isFromUser
                     from {
                       name
                       email
                     }
                     body
                     deliveries {
-                      opened_at
+                      openedAt
                     }
                   }
                 }
@@ -173,9 +173,9 @@ describe("Me", () => {
           {
             me {
               conversation(id: "420") {
-                is_last_message_to_user
-                last_message_open
-                last_message_delivery_id
+                isLastMessageToUser
+                unread
+                lastMessageDeliveryID
               }
             }
           }
@@ -217,10 +217,10 @@ describe("Me", () => {
                 item {
                   __typename
                   ... on Artwork {
-                    is_acquireable
+                    isAcquireable
                   }
                   ... on Show {
-                    is_reference
+                    isReference
                   }
                 }
               }
@@ -275,8 +275,8 @@ describe("Me", () => {
                 messages(first: 10, sort: ${sort}) {
                   edges {
                     node {
-                      id
-                      is_from_user
+                      internalID
+                      isFromUser
                     }
                   }
                 }
@@ -296,7 +296,7 @@ describe("Me", () => {
             },
           }) => {
             expect(messages.edges.length).toEqual(4)
-            expect(messages.edges[0].node.id).toEqual("240")
+            expect(messages.edges[0].node.internalID).toEqual("240")
           }
         )
       })
@@ -311,7 +311,7 @@ describe("Me", () => {
             },
           }) => {
             expect(messages.edges.length).toEqual(4)
-            expect(messages.edges[0].node.id).toEqual("243")
+            expect(messages.edges[0].node.internalID).toEqual("243")
           }
         )
       })
@@ -325,10 +325,10 @@ describe("Me", () => {
             },
           }) => {
             expect(messages.edges.length).toEqual(4)
-            expect(messages.edges[0].node.is_from_user).toEqual(true)
-            expect(messages.edges[1].node.is_from_user).toEqual(false)
-            expect(messages.edges[2].node.is_from_user).toEqual(true)
-            expect(messages.edges[3].node.is_from_user).toEqual(false)
+            expect(messages.edges[0].node.isFromUser).toEqual(true)
+            expect(messages.edges[1].node.isFromUser).toEqual(false)
+            expect(messages.edges[2].node.isFromUser).toEqual(true)
+            expect(messages.edges[3].node.isFromUser).toEqual(false)
           }
         )
       })

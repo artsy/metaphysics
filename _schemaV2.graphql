@@ -4157,6 +4157,7 @@ type FollowShowPayload {
 enum Format {
   HTML
   PLAIN
+  MARKDOWN
 }
 
 type FormattedDaySchedules {
@@ -5505,7 +5506,7 @@ type Profile {
   isFollowed: Boolean
   isPublished: Boolean
   name: String
-  isPublicallyVisible: Boolean
+  isPubliclyVisible: Boolean
 }
 
 type ProfileCounts {
