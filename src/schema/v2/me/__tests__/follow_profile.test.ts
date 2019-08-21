@@ -17,7 +17,7 @@ describe("FollowProfile", () => {
   it("follows a profile", () => {
     const mutation = `
       mutation {
-        followProfile(input: { profile_id: "casey-kaplan" }) {
+        followProfile(input: { profileID: "casey-kaplan" }) {
           profile {
             name
           }

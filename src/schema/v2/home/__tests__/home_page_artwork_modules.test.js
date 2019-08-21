@@ -49,20 +49,20 @@ describe("HomePageArtworkModules", () => {
   it("shows all modules that should be returned", () => {
     const query = `
       {
-        home_page {
-          artwork_modules {
+        homePage {
+          artworkModules {
             key
             params {
-              related_artist_id
-              followed_artist_id
+              relatedArtistID
+              followedArtistID
             }
           }
         }
       }
     `
 
-    return runAuthenticatedQuery(query, context).then(({ home_page }) => {
-      const keys = map(home_page.artwork_modules, "key")
+    return runAuthenticatedQuery(query, context).then(({ homePage }) => {
+      const keys = map(homePage.artworkModules, "key")
 
       // the default module response is 8 keys
       expect(keys).toEqual([
@@ -77,14 +77,14 @@ describe("HomePageArtworkModules", () => {
         "generic_gene",
       ])
 
-      const relatedArtistsModule = find(home_page.artwork_modules, {
+      const relatedArtistsModule = find(homePage.artworkModules, {
         key: "related_artists",
       })
 
-      const relatedArtistId = relatedArtistsModule.params.related_artist_id
+      const relatedArtistId = relatedArtistsModule.params.relatedArtistID
       expect(["charles-broskoski", "margaret-lee"]).toContain(relatedArtistId)
 
-      const followedArtistId = relatedArtistsModule.params.followed_artist_id
+      const followedArtistId = relatedArtistsModule.params.followedArtistID
       expect(["pablo-picasso", "ann-craven"]).toContain(followedArtistId)
     })
   })
@@ -103,20 +103,20 @@ describe("HomePageArtworkModules", () => {
 
     const query = `
       {
-        home_page {
-          artwork_modules {
+        homePage {
+          artworkModules {
             key
             params {
-              related_artist_id
-              followed_artist_id
+              relatedArtistID
+              followedArtistID
             }
           }
         }
       }
     `
 
-    return runAuthenticatedQuery(query, context).then(({ home_page }) => {
-      const keys = map(home_page.artwork_modules, "key")
+    return runAuthenticatedQuery(query, context).then(({ homePage }) => {
+      const keys = map(homePage.artworkModules, "key")
 
       // the default module response is 8 keys
       expect(keys).toEqual([
@@ -130,12 +130,12 @@ describe("HomePageArtworkModules", () => {
         "generic_gene",
       ])
 
-      const relatedArtistsModule = find(home_page.artwork_modules, {
+      const relatedArtistsModule = find(homePage.artworkModules, {
         key: "related_artists",
       })
       expect(relatedArtistsModule.params).toEqual({
-        related_artist_id: "charles-broskoski",
-        followed_artist_id: "pablo-picasso",
+        relatedArtistID: "charles-broskoski",
+        followedArtistID: "pablo-picasso",
       })
     })
   })
@@ -144,20 +144,20 @@ describe("HomePageArtworkModules", () => {
     context.suggestedSimilarArtistsLoader = () => Promise.resolve([])
     const query = `
       {
-        home_page {
-          artwork_modules {
+        homePage {
+          artworkModules {
             key
             params {
-              related_artist_id
-              followed_artist_id
+              relatedArtistID
+              followedArtistID
             }
           }
         }
       }
     `
 
-    return runAuthenticatedQuery(query, context).then(({ home_page }) => {
-      const keys = map(home_page.artwork_modules, "key")
+    return runAuthenticatedQuery(query, context).then(({ homePage }) => {
+      const keys = map(homePage.artworkModules, "key")
       expect(keys).toEqual([
         "followed_galleries",
         "saved_works",
@@ -173,20 +173,20 @@ describe("HomePageArtworkModules", () => {
   it("returns works similar to recently viewed", () => {
     const query = `
       {
-        home_page {
-          artwork_module(
+        homePage {
+          artworkModule(
             key: "similar_to_recently_viewed"
           ) {
-            results { id }
+            results { slug }
           }
         }
       }
     `
 
     const expectedResults = {
-      home_page: {
-        artwork_module: {
-          results: [{ id: "artwork-foo" }, { id: "artwork-bar" }],
+      homePage: {
+        artworkModule: {
+          results: [{ slug: "artwork-foo" }, { slug: "artwork-bar" }],
         },
       },
     }
@@ -209,20 +209,20 @@ describe("HomePageArtworkModules", () => {
   it("returns works similar to saved works", () => {
     const query = `
       {
-        home_page {
-          artwork_module(
+        homePage {
+          artworkModule(
             key: "similar_to_saved_works"
           ) {
-            results { id }
+            results { slug }
           }
         }
       }
     `
 
     const expectedResults = {
-      home_page: {
-        artwork_module: {
-          results: [{ id: "artwork-foo" }, { id: "artwork-bar" }],
+      homePage: {
+        artworkModule: {
+          results: [{ slug: "artwork-foo" }, { slug: "artwork-bar" }],
         },
       },
     }
@@ -246,8 +246,8 @@ describe("HomePageArtworkModules", () => {
   it("takes a preferred order of modules", () => {
     const query = `
     {
-      home_page {
-        artwork_modules(order: [RECOMMENDED_WORKS, FOLLOWED_ARTISTS, GENERIC_GENES]) {
+      homePage {
+        artworkModules(order: [RECOMMENDED_WORKS, FOLLOWED_ARTISTS, GENERIC_GENES]) {
           key
         }
       }
@@ -255,11 +255,11 @@ describe("HomePageArtworkModules", () => {
     `
 
     return runAuthenticatedQuery(query, context).then(
-      ({ home_page: { artwork_modules } }) => {
+      ({ homePage: { artworkModules } }) => {
         // The order of rails not included in the preferred order list is left as-is from Gravity’s
         // modules endpoint response. Rails in the preferred order list that aren’t even included in
         // Gravity’s response do not lead to an error (the FOLLOWED_ARTISTS rail).
-        expect(map(artwork_modules, "key")).toEqual([
+        expect(map(artworkModules, "key")).toEqual([
           "recommended_works",
           "generic_gene",
           "generic_gene",
@@ -277,16 +277,16 @@ describe("HomePageArtworkModules", () => {
   it("excludes modules upon request", () => {
     const query = `
     {
-      home_page {
-        artwork_modules(exclude: [RECOMMENDED_WORKS]) {
+      homePage {
+        artworkModules(exclude: [RECOMMENDED_WORKS]) {
           key
         }
       }
     }
     `
 
-    return runAuthenticatedQuery(query, context).then(({ home_page }) => {
-      const keys = map(home_page.artwork_modules, "key")
+    return runAuthenticatedQuery(query, context).then(({ homePage }) => {
+      const keys = map(homePage.artworkModules, "key")
       expect(keys).not.toContain("recommended_works")
     })
   })

@@ -2,6 +2,7 @@ import dateField, { date, DateSource } from "./fields/date"
 import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { dateRange, dateTimeRange } from "lib/date"
+import { snakeCase } from "lodash"
 
 const hasOldEmissionUserAgentString = (userAgent: string | string[]): boolean =>
   userAgent!.indexOf("Artsy-Mobile/4.4") > 0 ||
@@ -26,7 +27,7 @@ const dateFieldForShowEvent: GraphQLFieldConfig<DateSource, ResolverContext> = {
     { defaultTimezone, userAgent },
     { fieldName }
   ) => {
-    const rawDate = obj[fieldName]
+    const rawDate = obj[snakeCase(fieldName)]
 
     if (userAgent && isOlderEmissionVersion(userAgent)) {
       const dateWithoutOffset = rawDate.replace(/[-+]\d\d:\d\d$/, "")

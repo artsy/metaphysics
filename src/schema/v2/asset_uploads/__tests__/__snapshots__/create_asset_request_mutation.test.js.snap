@@ -5,7 +5,7 @@ Object {
   "requestCredentialsForAssetUpload": Object {
     "asset": Object {
       "credentials": "AKIA123456789",
-      "policy_encoded": "12345==",
+      "policyEncoded": "12345==",
       "signature": "12345=",
     },
   },

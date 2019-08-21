@@ -5,9 +5,9 @@ describe("Trending Artists", () => {
   it("makes a call for trending artists", async () => {
     const query = gql`
       {
-        trending_artists(name: ARTIST_FAIR) {
+        trendingArtists(name: ARTIST_FAIR) {
           artists {
-            id
+            slug
           }
         }
       }
@@ -26,7 +26,7 @@ describe("Trending Artists", () => {
     }
 
     const {
-      trending_artists: { artists },
+      trendingArtists: { artists },
     } = await runQuery(query, context)
     expect(artists).toMatchSnapshot()
   })

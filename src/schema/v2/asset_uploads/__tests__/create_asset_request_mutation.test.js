@@ -2,7 +2,7 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("addAssetToConsignmentSubmission", () => {
-  it("creates a submission and returns its new data payload", () => {
+  it("creates a submission and returns its new data payload", async () => {
     const mutation = `
       mutation {
         requestCredentialsForAssetUpload(
@@ -11,7 +11,7 @@ describe("addAssetToConsignmentSubmission", () => {
           asset {
             signature
             credentials
-            policy_encoded
+            policyEncoded
           }
         }
       }
@@ -44,9 +44,9 @@ describe("addAssetToConsignmentSubmission", () => {
         }),
     }
 
-    expect.assertions(1)
-    return runAuthenticatedQuery(mutation, context).then(data => {
+    await runAuthenticatedQuery(mutation, context).then(data => {
       expect(data).toMatchSnapshot()
     })
+    expect.assertions(1)
   })
 })

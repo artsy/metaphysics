@@ -54,7 +54,7 @@ describe("Image type", () => {
     const query = `{
       artwork(id: "richard-prince-untitled-portrait") {
         image {
-          aspect_ratio
+          aspectRatio
         }
       }
     }`
@@ -62,14 +62,14 @@ describe("Image type", () => {
     it("returns original aspect_ratio when available", () => {
       assign(image, { aspect_ratio: 1.5 })
       return runQuery(query, context).then(data => {
-        expect(data.artwork.image.aspect_ratio).toBe(1.5)
+        expect(data.artwork.image.aspectRatio).toBe(1.5)
       })
     })
 
     it("defaults to 1 when original aspect ratio is not available", () => {
       assign(image, { aspect_ratio: null })
       return runQuery(query, context).then(data => {
-        expect(data.artwork.image.aspect_ratio).toBe(1)
+        expect(data.artwork.image.aspectRatio).toBe(1)
       })
     })
   })

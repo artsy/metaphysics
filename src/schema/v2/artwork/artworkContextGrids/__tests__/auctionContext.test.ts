@@ -13,10 +13,10 @@ describe("Default Context", () => {
           title
           ctaTitle
           ctaHref
-          artworks(first: 2) {
+          artworksConnection(first: 2) {
             edges {
               node {
-                id
+                slug
                 title
               }
             }
@@ -91,7 +91,7 @@ describe("Default Context", () => {
     }
   })
 
-  it("Does not return auction-related grids for a non-auction sale", () => {
+  it("Does not return auction-related grids for a non-auction sale", async () => {
     expect.assertions(1)
     context.saleLoader = () =>
       Promise.resolve({
@@ -100,35 +100,31 @@ describe("Default Context", () => {
         auction_state: "closed",
       })
 
-    return runAuthenticatedQuery(query, context).then(data => {
+    await runAuthenticatedQuery(query, context).then(data => {
       // Returns the default grid
       expect(data.artwork.contextGrids.length).toEqual(3)
     })
   })
 
-  it("Returns the correct values for metadata fields for an open auction", () => {
-    expect.assertions(5)
-
-    return runAuthenticatedQuery(query, context).then(data => {
+  it("Returns the correct values for metadata fields for an open auction", async () => {
+    await runAuthenticatedQuery(query, context).then(data => {
       // Should have one artist grid and one related grid with 0 works
       expect(data.artwork.contextGrids.length).toEqual(1)
       const {
         title,
         ctaTitle,
         ctaHref,
-        artworks,
+        artworksConnection,
       } = data.artwork.contextGrids[0]
 
       expect(title).toEqual("Other works from Phillips Auction")
       expect(ctaTitle).toEqual("View all works from the auction")
       expect(ctaHref).toEqual("/auction/phillips-auction")
-      expect(artworks.edges.length).toEqual(2)
+      expect(artworksConnection.edges.length).toEqual(2)
     })
   })
 
-  it("Returns the correct values for metadata fields for a closed auction", () => {
-    expect.assertions(6)
-
+  it("Returns the correct values for metadata fields for a closed auction", async () => {
     context.saleLoader = () =>
       Promise.resolve({
         id: "phillips-auction",
@@ -136,26 +132,26 @@ describe("Default Context", () => {
         auction_state: "closed",
       })
 
-    return runAuthenticatedQuery(query, context).then(data => {
+    await runAuthenticatedQuery(query, context).then(data => {
       // Should have one partner grid and one related grid with 0 works
       expect(data.artwork.contextGrids.length).toEqual(2)
       const {
         title,
         ctaTitle,
         ctaHref,
-        artworks,
+        artworksConnection,
       } = data.artwork.contextGrids[0]
 
       expect(title).toEqual("Other works by Andy Warhol")
       expect(ctaTitle).toEqual("View all works by Andy Warhol")
       expect(ctaHref).toEqual("/artist/andy-warhol")
-      expect(artworks.edges.map(({ node }) => node.id)).toEqual([
+      expect(artworksConnection.edges.map(({ node }) => node.slug)).toEqual([
         "artwork1",
         "artwork2",
       ])
 
       // Related artworks grid should have no artworks
-      expect(data.artwork.contextGrids[1].artworks).toEqual(null)
+      expect(data.artwork.contextGrids[1].artworksConnection).toEqual(null)
     })
   })
 })

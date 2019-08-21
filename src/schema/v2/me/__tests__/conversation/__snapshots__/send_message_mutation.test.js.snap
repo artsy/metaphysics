@@ -3,7 +3,7 @@
 exports[`SendConversationMessageMutation creates a message and returns its new data payload 1`] = `
 Object {
   "conversation": Object {
-    "id": "420",
+    "internalID": "420",
   },
   "messageEdge": Object {
     "cursor": "YXJyYXljb25uZWN0aW9uOjA=",
@@ -13,7 +13,7 @@ Object {
         "email": "pio-dog@example.com",
         "name": null,
       },
-      "id": "222",
+      "internalID": "222",
     },
   },
 }

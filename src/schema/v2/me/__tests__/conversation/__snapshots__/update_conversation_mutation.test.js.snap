@@ -4,7 +4,7 @@ exports[`UpdateConversationMutation sets from_last_viewed_message_id 1`] = `
 Object {
   "updateConversation": Object {
     "conversation": Object {
-      "initial_message": "Howdy",
+      "initialMessage": "Howdy",
     },
   },
 }

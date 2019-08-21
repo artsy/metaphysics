@@ -29,16 +29,16 @@ describe("Fair type", () => {
   let query = gql`
     {
       fair(id: "the-armory-show-2017") {
-        id
+        slug
         name
         organizer {
-          profile_id
+          profileID
           profile {
-            is_publically_visible
+            isPubliclyVisible
           }
         }
-        mobile_image {
-          image_url
+        mobileImage {
+          imageURL
         }
       }
     }
@@ -60,16 +60,16 @@ describe("Fair type", () => {
     return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
-          id: "the-armory-show-2017",
+          slug: "the-armory-show-2017",
           name: "The Armory Show 2017",
           organizer: {
-            profile_id: "the-armory-show",
+            profileID: "the-armory-show",
             profile: {
-              is_publically_visible: true,
+              isPubliclyVisible: true,
             },
           },
-          mobile_image: {
-            image_url: "circle-image.jpg",
+          mobileImage: {
+            imageURL: "circle-image.jpg",
           },
         },
       })
@@ -88,16 +88,16 @@ describe("Fair type", () => {
     return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
-          id: "the-armory-show-2017",
+          slug: "the-armory-show-2017",
           name: "The Armory Show 2017",
           organizer: {
-            profile_id: "the-armory-show",
+            profileID: "the-armory-show",
             profile: {
-              is_publically_visible: false,
+              isPubliclyVisible: false,
             },
           },
-          mobile_image: {
-            image_url: "circle-image.jpg",
+          mobileImage: {
+            imageURL: "circle-image.jpg",
           },
         },
       })
@@ -116,16 +116,16 @@ describe("Fair type", () => {
     return runQuery(query, context).then(data => {
       expect(data).toEqual({
         fair: {
-          id: "the-armory-show-2017",
+          slug: "the-armory-show-2017",
           name: "The Armory Show 2017",
           organizer: {
-            profile_id: "the-armory-show",
+            profileID: "the-armory-show",
             profile: {
-              is_publically_visible: false,
+              isPubliclyVisible: false,
             },
           },
-          mobile_image: {
-            image_url: "circle-image.jpg",
+          mobileImage: {
+            imageURL: "circle-image.jpg",
           },
         },
       })
@@ -189,7 +189,7 @@ describe("Fair", () => {
         Promise.resolve({
           body: [
             {
-              id: "1",
+              id: "foo-artist",
               name: "Foo Artist",
             },
           ],
@@ -214,7 +214,7 @@ describe("Fair", () => {
         Promise.resolve([
           {
             name: "Foo Artist",
-            id: "1",
+            id: "foo-artist",
           },
         ])
       ),
@@ -238,15 +238,15 @@ describe("Fair", () => {
     const query = gql`
       {
         fair(id: "aqua-art-miami-2018") {
-          id
+          slug
           name
-          exhibitors_grouped_by_name {
+          exhibitorsGroupedByName {
             letter
             exhibitors {
               name
-              id
-              partner_id
-              profile_id
+              slug
+              partnerID
+              profileID
             }
           }
         }
@@ -257,17 +257,17 @@ describe("Fair", () => {
 
     expect(data).toEqual({
       fair: {
-        id: "aqua-art-miami-2018",
+        slug: "aqua-art-miami-2018",
         name: "Aqua Art Miami 2018",
-        exhibitors_grouped_by_name: [
+        exhibitorsGroupedByName: [
           {
             letter: "A",
             exhibitors: [
               {
                 name: "ArtHelix Gallery",
-                id: "arthelix-gallery",
-                partner_id: "1234567890",
-                profile_id: "arthelix-gallery",
+                slug: "arthelix-gallery",
+                partnerID: "1234567890",
+                profileID: "arthelix-gallery",
               },
             ],
           },
@@ -280,7 +280,7 @@ describe("Fair", () => {
     const query = gql`
       {
         fair(id: "aqua-art-miami-2018") {
-          shows: shows_connection(first: 0, after: "") {
+          shows: showsConnection(first: 0, after: "") {
             pageInfo {
               hasNextPage
               endCursor
@@ -307,7 +307,7 @@ describe("Fair", () => {
     const query = gql`
       {
         fair(id: "aqua-art-miami-2018") {
-          exhibition_period
+          exhibitionPeriod
         }
       }
     `
@@ -315,7 +315,7 @@ describe("Fair", () => {
     const data = await runQuery(query, context)
     expect(data).toEqual({
       fair: {
-        exhibition_period: "Feb 15 – 17",
+        exhibitionPeriod: "Feb 15 – 17",
       },
     })
   })
@@ -324,10 +324,10 @@ describe("Fair", () => {
     const query = gql`
       {
         fair(id: "aqua-art-miami-2018") {
-          artists(first: 1) {
+          artistsConnection(first: 1) {
             edges {
               node {
-                id
+                slug
                 name
               }
             }
@@ -340,11 +340,11 @@ describe("Fair", () => {
 
     expect(data).toEqual({
       fair: {
-        artists: {
+        artistsConnection: {
           edges: [
             {
               node: {
-                id: "1",
+                slug: "foo-artist",
                 name: "Foo Artist",
               },
             },
@@ -575,7 +575,7 @@ describe("Fair", () => {
             counts {
               artists
               artworks
-              partner_shows
+              partnerShows
               partners
             }
           }
@@ -606,7 +606,7 @@ describe("Fair", () => {
 
     it("includes the total number of partner_shows", () => {
       expect(counts).toMatchObject({
-        partner_shows: 4,
+        partnerShows: 4,
       })
     })
   })

@@ -137,7 +137,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
             gravityArgs.exclude_ids = flatten([options.exclude])
           }
           return partnerShowArtworksLoader(loaderOptions, gravityArgs).then(
-            ({ body, headers }) => {
+            ({ body, headers = {} }) => {
               return connectionFromArraySlice(body, options, {
                 arrayLength: parseInt(headers["x-total-count"] || "0", 10),
                 sliceStart: offset,
@@ -548,8 +548,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       },
       pressRelease: {
         description: "The press release for this show",
-        ...markdown(),
-        resolve: ({ press_release }) => press_release,
+        ...markdown(({ press_release }) => press_release),
       },
       pressReleaseUrl: {
         type: GraphQLString,
@@ -559,7 +558,6 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       startAt: {
         description: "When this show starts",
         ...date,
-        resolve: ({ start_at }) => start_at,
       },
       status: {
         description: "Is this show running, upcoming or closed?",

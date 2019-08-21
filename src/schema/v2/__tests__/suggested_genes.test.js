@@ -20,9 +20,9 @@ describe("SuggestedGenes type", () => {
 
     const query = `
       {
-        suggested_genes {
-          id
-          _id
+        suggestedGenes {
+          slug
+          internalID
           name
           image {
             url
@@ -33,7 +33,7 @@ describe("SuggestedGenes type", () => {
 
     const data = await runQuery(query, {})
 
-    expect(data.suggested_genes[0]._id).toBe("123456")
-    expect(data.suggested_genes[0].image.url).toBe("photography.jpg")
+    expect(data.suggestedGenes[0].internalID).toBe("123456")
+    expect(data.suggestedGenes[0].image.url).toBe("photography.jpg")
   })
 })

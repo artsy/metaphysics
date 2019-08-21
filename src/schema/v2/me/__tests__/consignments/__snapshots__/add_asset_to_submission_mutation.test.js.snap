@@ -4,8 +4,8 @@ exports[`addAssetToConsignmentSubmission creates a submission and returns its ne
 Object {
   "addAssetToConsignmentSubmission": Object {
     "asset": Object {
-      "gemini_token": "12345",
-      "submission_id": "123",
+      "geminiToken": "12345",
+      "submissionID": "123",
     },
   },
 }

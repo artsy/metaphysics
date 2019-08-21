@@ -22,7 +22,7 @@ describe("CreditCards", () => {
           creditCards(first: 1) {
             edges {
               node {
-                id
+                internalID
                 brand
               }
             }
@@ -40,7 +40,7 @@ describe("CreditCards", () => {
         edges: [
           {
             node: {
-              id: "12345",
+              internalID: "12345",
               brand: "Visa",
             },
           },

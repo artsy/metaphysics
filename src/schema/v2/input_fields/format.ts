@@ -10,6 +10,9 @@ const Format = {
       PLAIN: {
         value: "plain",
       },
+      MARKDOWN: {
+        value: "markdown",
+      },
     },
   }),
 }

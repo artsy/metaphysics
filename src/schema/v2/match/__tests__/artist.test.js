@@ -5,8 +5,8 @@ describe("MatchArtist", () => {
   it("queries match/artist for the term 'ok'", () => {
     const query = `
       {
-        match_artist(term: "ok") {
-          id
+        matchArtist(term: "ok") {
+          slug
           name
           birthday
         }
@@ -24,8 +24,8 @@ describe("MatchArtist", () => {
 
     return runQuery(query, { matchArtistsLoader }).then(data => {
       expect(data).toEqual({
-        match_artist: [
-          { birthday: "1958", id: "han-myung-ok", name: "Han Myung-Ok" },
+        matchArtist: [
+          { birthday: "1958", slug: "han-myung-ok", name: "Han Myung-Ok" },
         ],
       })
     })

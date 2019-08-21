@@ -10,7 +10,7 @@ Object {
       },
       "name": "andy-warhol",
       "phone": "1234890",
-      "price_range": "-1:1000000000000",
+      "priceRange": "-1:1000000000000",
     },
   },
 }

@@ -38,10 +38,10 @@ describe("Collections", () => {
       const query = gql`
         {
           collection(id: "saved-artwork") {
-            artworks_connection(first: 10) {
+            artworksConnection(first: 10) {
               edges {
                 node {
-                  id
+                  slug
                   title
                 }
               }
@@ -58,6 +58,7 @@ describe("Collections", () => {
       )
       const artworks = JSON.parse(readFileSync(artworksPath, "utf8"))
       const context = {
+        collectionLoader: () => Promise.resolve(gravityData),
         collectionArtworksLoader: (id, params) => {
           if (
             id === "saved-artwork" &&
@@ -84,7 +85,7 @@ describe("Collections", () => {
       const query = gql`
         {
           collection(id: "saved-artwork") {
-            artworks_connection(first: 10) {
+            artworksConnection(first: 10) {
               edges {
                 node {
                   id
@@ -96,12 +97,13 @@ describe("Collections", () => {
         }
       `
       const context = {
+        collectionLoader: () => Promise.resolve(gravityData),
         collectionArtworksLoader: () =>
           Promise.reject(new Error("Collection Not Found")),
       }
       const {
         collection: {
-          artworks_connection: { edges },
+          artworksConnection: { edges },
         },
       } = await runAuthenticatedQuery(query, context)
       expect(edges).toEqual([])

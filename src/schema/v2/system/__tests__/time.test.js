@@ -14,7 +14,7 @@ describe("SystemTime type", () => {
     sec: 58,
     dst: false,
     unix: 1530565138,
-    utc_offset: 0,
+    utcOffset: 0,
     zone: "UTC",
     iso8601: "2018-07-02T20:58:58Z",
   }
@@ -37,7 +37,7 @@ describe("SystemTime type", () => {
             sec
             dst
             unix
-            utc_offset
+            utcOffset
             zone
             iso8601
           }

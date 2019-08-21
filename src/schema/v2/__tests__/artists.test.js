@@ -38,12 +38,12 @@ describe("Artists", () => {
     const query = gql`
       {
         artists(ids: ["52c721e5b202a3edf1000072"]) {
-          _id
+          internalID
         }
       }
     `
     const { artists } = await runQuery(query, { artistsLoader })
-    expect(artists[0]._id).toEqual("52c721e5b202a3edf1000072")
+    expect(artists[0].internalID).toEqual("52c721e5b202a3edf1000072")
   })
 
   it("returns a list of artists matching array of slugs", async () => {
@@ -67,13 +67,13 @@ describe("Artists", () => {
     const query = gql`
       {
         artists(slugs: ["andy-warhol", "pablo-picasso"]) {
-          id
+          slug
           name
         }
       }
     `
 
     const { artists } = await runQuery(query, { artistLoader })
-    expect(artists[0].id).toEqual("andy-warhol")
+    expect(artists[0].slug).toEqual("andy-warhol")
   })
 })

@@ -5,13 +5,13 @@ describe("OrderedSet type", () => {
   it("fetches set by id", () => {
     const query = `
       {
-        ordered_set(id: "52dd3c2e4b8480091700027f") {
-          id
+        orderedSet(id: "52dd3c2e4b8480091700027f") {
+          internalID
           name
           key
           description
           artworks: items {
-            ... on ArtworkItem {
+            ... on Artwork {
               title
             }
           }
@@ -43,8 +43,8 @@ describe("OrderedSet type", () => {
 
     return runQuery(query, context).then(data => {
       expect(data).toEqual({
-        ordered_set: {
-          id: "52dd3c2e4b8480091700027f",
+        orderedSet: {
+          internalID: "52dd3c2e4b8480091700027f",
           name: "Featured Artworks",
           description: "",
           key: "artworks:featured-artworks",

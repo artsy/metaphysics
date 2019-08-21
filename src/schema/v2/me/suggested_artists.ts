@@ -10,7 +10,7 @@ const SuggestedArtists: GraphQLFieldConfig<void, ResolverContext> = {
   args: SuggestedArtistsArgs,
   resolve: (_root, options, { suggestedArtistsLoader }) => {
     if (!suggestedArtistsLoader) return null
-    if (!options.artist_id) return null
+    if (!options.artistID) return null
     return suggestedArtistsLoader(options).then(({ body }) => body)
   },
 }

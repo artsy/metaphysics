@@ -96,7 +96,7 @@ describe("Search", () => {
   it("returns search results for a query", () => {
     const query = `
       {
-        search(query: "David Bowie", first: 10) {
+        searchConnection(query: "David Bowie", first: 10) {
           edges {
             node {
               __typename
@@ -105,9 +105,9 @@ describe("Search", () => {
               imageUrl
 
               ... on SearchableItem {
-                searchableType
-                id
-                _id
+                displayType 
+                internalID
+                slug
               }
             }
           }
@@ -117,22 +117,22 @@ describe("Search", () => {
 
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
     return runQuery(query, context).then(data => {
-      const artistSearchableItemNode = data!.search.edges[0].node
+      const artistSearchableItemNode = data!.searchConnection.edges[0].node
 
       expect(artistSearchableItemNode.__typename).toBe("SearchableItem")
-      expect(artistSearchableItemNode.searchableType).toBe("Artist")
+      expect(artistSearchableItemNode.displayType).toBe("Artist")
       expect(artistSearchableItemNode.displayLabel).toBe("David Bowie")
       expect(artistSearchableItemNode.imageUrl).toBe(
         "https://example.com/artist.jpg"
       )
       expect(artistSearchableItemNode.href).toBe("/artist/david-bowie")
-      expect(artistSearchableItemNode.id).toBe("david-bowie")
-      expect(artistSearchableItemNode._id).toBe("artistId")
+      expect(artistSearchableItemNode.slug).toBe("david-bowie")
+      expect(artistSearchableItemNode.internalID).toBe("artistId")
 
-      const artworkSearchableItemNode = data!.search.edges[1].node
+      const artworkSearchableItemNode = data!.searchConnection.edges[1].node
 
       expect(artworkSearchableItemNode.__typename).toBe("SearchableItem")
-      expect(artworkSearchableItemNode.searchableType).toBe("Artwork")
+      expect(artworkSearchableItemNode.displayType).toBe("Artwork")
       expect(artworkSearchableItemNode.displayLabel).toBe("Self Portrait")
       expect(artworkSearchableItemNode.imageUrl).toBe(
         "https://example.com/artwork.jpg"
@@ -141,30 +141,30 @@ describe("Search", () => {
         "/artwork/david-bowie-self-portrait"
       )
 
-      expect(artworkSearchableItemNode.id).toBe("david-bowie-self-portrait")
-      expect(artworkSearchableItemNode._id).toBe("artworkId")
+      expect(artworkSearchableItemNode.slug).toBe("david-bowie-self-portrait")
+      expect(artworkSearchableItemNode.internalID).toBe("artworkId")
 
-      const gallerySearchableItemNode = data!.search.edges[2].node
-      expect(gallerySearchableItemNode.searchableType).toBe("Gallery")
+      const gallerySearchableItemNode = data!.searchConnection.edges[2].node
+      expect(gallerySearchableItemNode.displayType).toBe("Gallery")
       expect(gallerySearchableItemNode.href).toBe("/catty-gallery")
 
-      const museumSearchableItemNode = data!.search.edges[3].node
-      expect(museumSearchableItemNode.searchableType).toBe("Institution")
+      const museumSearchableItemNode = data!.searchConnection.edges[3].node
+      expect(museumSearchableItemNode.displayType).toBe("Institution")
       expect(museumSearchableItemNode.href).toBe("/catty-museum")
 
-      const fairSearchableItemNode = data!.search.edges[4].node
-      expect(fairSearchableItemNode.searchableType).toBe("Fair")
+      const fairSearchableItemNode = data!.searchConnection.edges[4].node
+      expect(fairSearchableItemNode.displayType).toBe("Fair")
 
-      const geneSearchableItemNode = data!.search.edges[5].node
-      expect(geneSearchableItemNode.searchableType).toBe("Category")
+      const geneSearchableItemNode = data!.searchConnection.edges[5].node
+      expect(geneSearchableItemNode.displayType).toBe("Category")
       expect(geneSearchableItemNode.href).toBe("/gene/catty-gene")
 
-      const auctionSearchableItemNode = data!.search.edges[6].node
-      expect(auctionSearchableItemNode.searchableType).toBe("Auction")
+      const auctionSearchableItemNode = data!.searchConnection.edges[6].node
+      expect(auctionSearchableItemNode.displayType).toBe("Auction")
       expect(auctionSearchableItemNode.href).toBe("/auction/catty-auction")
 
-      const collectionSearchableItemNode = data!.search.edges[7].node
-      expect(collectionSearchableItemNode.searchableType).toBe("Collection")
+      const collectionSearchableItemNode = data!.searchConnection.edges[7].node
+      expect(collectionSearchableItemNode.displayType).toBe("Collection")
       expect(collectionSearchableItemNode.href).toBe(
         "/collection/catty-collection"
       )
@@ -174,7 +174,7 @@ describe("Search", () => {
   it("returns `hasNextPage`", () => {
     const query = `
       {
-        search(query: "David Bowie", first: 10) {
+        searchConnection(query: "David Bowie", first: 10) {
           pageInfo {
             hasNextPage
           }
@@ -184,14 +184,14 @@ describe("Search", () => {
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
     return runQuery(query, context).then(data => {
-      expect(data!.search.pageInfo.hasNextPage).toBeTruthy()
+      expect(data!.searchConnection.pageInfo.hasNextPage).toBeTruthy()
     })
   })
 
   it("passes an incoming page param and correctly computes the cursor", () => {
     const query = `
       {
-        search(query: "David Bowie", first: 20, page: 30, after: "") {
+        searchConnection(query: "David Bowie", first: 20, page: 30, after: "") {
           pageInfo {
             endCursor
           }
@@ -206,7 +206,7 @@ describe("Search", () => {
       expect(size).toEqual(20)
       // Check that the cursor points to the end of page 20, size 30.
       // Base64 encoded string: `arrayconnection:599`
-      expect(data!.search.pageInfo.endCursor).toEqual(
+      expect(data!.searchConnection.pageInfo.endCursor).toEqual(
         "YXJyYXljb25uZWN0aW9uOjU5OQ=="
       )
     })
@@ -215,7 +215,7 @@ describe("Search", () => {
   it("can return aggregations", () => {
     const query = `
       {
-        search(query: "David Bowie", first: 10, aggregations: [TYPE]) {
+        searchConnection(query: "David Bowie", first: 10, aggregations: [TYPE]) {
           aggregations {
             slice
             counts {
@@ -235,7 +235,7 @@ describe("Search", () => {
       .mockImplementation(() => Promise.resolve(searchResponseWithAggregations))
 
     return runQuery(query, context).then(data => {
-      const typeAggregation = data!.search.aggregations.find(
+      const typeAggregation = data!.searchConnection.aggregations.find(
         agg => agg.slice === "TYPE"
       ).counts
 
@@ -251,7 +251,7 @@ describe("Search", () => {
   it("fetches artist if Artist-specific attributes are requested", () => {
     const query = `
       {
-        search(query: "David Bowie", first: 10) {
+        searchConnection(query: "David Bowie", first: 10) {
           edges {
             node {
               __typename
@@ -267,7 +267,7 @@ describe("Search", () => {
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
     return runQuery(query, context).then(data => {
-      const artistNode = data!.search.edges[0].node
+      const artistNode = data!.searchConnection.edges[0].node
 
       expect(artistNode.__typename).toBe("Artist")
       expect(artistNode.hometown).toBe("London, UK")
@@ -277,7 +277,7 @@ describe("Search", () => {
   it("fetches artwork if Artwork-specific attributes are requested", () => {
     const query = `
       {
-        search(query: "David Bowie", first: 10) {
+        searchConnection(query: "David Bowie", first: 10) {
           edges {
             node {
               __typename
@@ -293,7 +293,7 @@ describe("Search", () => {
     context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
 
     return runQuery(query, context).then(data => {
-      const artworkNode = data!.search.edges[1].node
+      const artworkNode = data!.searchConnection.edges[1].node
 
       expect(artworkNode.__typename).toBe("Artwork")
       expect(artworkNode.title).toBe("Self Portrait")

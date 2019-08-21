@@ -33,8 +33,8 @@ describe("HomePageArtistModules", () => {
   describe("concerning display", () => {
     const query = `
       {
-        home_page {
-          artist_modules {
+        homePage {
+          artistModules {
             key
           }
         }
@@ -43,8 +43,8 @@ describe("HomePageArtistModules", () => {
 
     describe("when signed-in", () => {
       it("shows all modules if there are any suggestions", () => {
-        return runAuthenticatedQuery(query, context).then(({ home_page }) => {
-          const keys = map(home_page.artist_modules, "key")
+        return runAuthenticatedQuery(query, context).then(({ homePage }) => {
+          const keys = map(homePage.artistModules, "key")
           expect(keys).toEqual(["SUGGESTED", "TRENDING", "POPULAR"])
         })
       })
@@ -52,8 +52,8 @@ describe("HomePageArtistModules", () => {
       it("only shows the trending and popular artists modules if there are no suggestions", () => {
         context.suggestedSimilarArtistsLoader = () =>
           Promise.resolve(artistResultsWithoutData)
-        return runAuthenticatedQuery(query, context).then(({ home_page }) => {
-          const keys = map(home_page.artist_modules, "key")
+        return runAuthenticatedQuery(query, context).then(({ homePage }) => {
+          const keys = map(homePage.artistModules, "key")
           expect(keys).toEqual(["TRENDING", "POPULAR"])
         })
       })
@@ -62,8 +62,8 @@ describe("HomePageArtistModules", () => {
     describe("when signed-out", () => {
       it("only shows the trending and popular artists modules", () => {
         delete context.suggestedSimilarArtistsLoader
-        return runQuery(query, context).then(({ home_page }) => {
-          const keys = map(home_page.artist_modules, "key")
+        return runQuery(query, context).then(({ homePage }) => {
+          const keys = map(homePage.artistModules, "key")
           expect(keys).toEqual(["TRENDING", "POPULAR"])
         })
       })

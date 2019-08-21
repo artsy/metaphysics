@@ -3,16 +3,16 @@
 exports[`submissions asks for a user's submissions 1`] = `
 Object {
   "me": Object {
-    "consignment_submissions": Object {
+    "consignmentSubmissionsConnection": Object {
       "edges": Array [
         Object {
           "node": Object {
             "artist": Object {
               "name": "Larissa Croft",
             },
-            "artist_id": "123",
-            "authenticity_certificate": true,
-            "id": "106",
+            "artistID": "123",
+            "authenticityCertificate": true,
+            "internalID": "106",
             "title": "The best photo yet",
           },
         },

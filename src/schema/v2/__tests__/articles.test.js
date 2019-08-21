@@ -26,14 +26,14 @@ describe("Articles type", () => {
     const query = `
       {
         articles {
-          id
+          slug
           title
         }
       }
     `
 
     return runQuery(query, context).then(data => {
-      expect(data.articles[0].id).toBe("foo-bar")
+      expect(data.articles[0].slug).toBe("foo-bar")
       expect(data.articles[0].title).toBe("My Awesome Article")
     })
   })

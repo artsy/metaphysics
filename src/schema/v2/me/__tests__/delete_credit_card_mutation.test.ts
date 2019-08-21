@@ -3,8 +3,7 @@ import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Delete card mutation", () => {
   const creditCard = {
-    id: "foo-foo",
-    _id: "123",
+    id: "123",
     name: "Foo User",
     last_digits: "1234",
     expiration_month: 3,
@@ -17,7 +16,7 @@ describe("Delete card mutation", () => {
       creditCardOrError {
         ... on CreditCardMutationSuccess {
           creditCard {
-            id
+            internalID
           }
         }
         ... on CreditCardMutationFailure {
@@ -74,7 +73,7 @@ describe("Delete card mutation", () => {
     const data = await runAuthenticatedQuery(query, context)
     expect(data).toEqual({
       deleteCreditCard: {
-        creditCardOrError: { creditCard: { id: "foo-foo" } },
+        creditCardOrError: { creditCard: { internalID: "123" } },
       },
     })
   })

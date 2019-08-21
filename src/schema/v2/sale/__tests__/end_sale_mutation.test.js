@@ -12,9 +12,9 @@ describe("End sale mutation", () => {
 
   const query = `
   mutation {
-    endSale(input: {sale_id: "123"}) {
+    endSale(input: {saleID: "123"}) {
       sale {
-        id
+        slug
       }
     }
   }
@@ -29,7 +29,7 @@ describe("End sale mutation", () => {
       expect(data).toEqual({
         endSale: {
           sale: {
-            id: "foo-foo",
+            slug: "foo-foo",
           },
         },
       })

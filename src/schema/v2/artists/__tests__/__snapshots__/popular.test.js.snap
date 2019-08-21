@@ -2,13 +2,13 @@
 
 exports[`Popular Artists makes a call for popular artists 1`] = `
 Object {
-  "popular_artists": Object {
+  "popularArtists": Object {
     "artists": Array [
       Object {
-        "id": "ortina",
+        "slug": "ortina",
       },
       Object {
-        "id": "xtina",
+        "slug": "xtina",
       },
     ],
   },

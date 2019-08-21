@@ -11,7 +11,7 @@ const generate_query = (params = `(first: 10)`) =>
     {
       me {
         followsAndSaves {
-          shows${params} {
+          showsConnection${params} {
             edges {
               node {
                 id

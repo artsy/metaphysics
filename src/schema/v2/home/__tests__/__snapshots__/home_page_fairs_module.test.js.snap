@@ -2,8 +2,8 @@
 
 exports[`HomePageFairsModule does not request past fairs if it has 8 running ones 1`] = `
 Object {
-  "home_page": Object {
-    "fairs_module": Object {
+  "homePage": Object {
+    "fairsModule": Object {
       "results": Array [],
     },
   },
@@ -12,18 +12,18 @@ Object {
 
 exports[`HomePageFairsModule does not return fairs that do not have mobile images 1`] = `
 Object {
-  "home_page": Object {
-    "fairs_module": Object {
+  "homePage": Object {
+    "fairsModule": Object {
       "results": Array [
         Object {
-          "id": "artissima-2017",
-          "is_active": true,
+          "isActive": false,
           "name": "Artissima 2017",
+          "slug": "artissima-2017",
         },
         Object {
-          "id": "zonamaco-foto-and-sal-n-del-anticuario-2017",
-          "is_active": true,
+          "isActive": false,
           "name": "Zâ“ˆONAMACO FOTO & SALÃ“N DEL ANTICUARIO 2017",
+          "slug": "zonamaco-foto-and-sal-n-del-anticuario-2017",
         },
       ],
     },
@@ -33,8 +33,8 @@ Object {
 
 exports[`HomePageFairsModule works 1`] = `
 Object {
-  "home_page": Object {
-    "fairs_module": Object {
+  "homePage": Object {
+    "fairsModule": Object {
       "results": Array [],
     },
   },
