@@ -476,6 +476,10 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         resolve: ({ price_currency }) => price_currency,
       },
+      priceIncludesTax: {
+        type: GraphQLBoolean,
+        resolve: ({ price_includes_tax }) => price_includes_tax,
+      },
       shipsToContinentalUSOnly: {
         type: GraphQLBoolean,
         description:

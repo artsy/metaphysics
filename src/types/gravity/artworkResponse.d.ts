@@ -34,6 +34,7 @@ export interface GravityArtwork {
   published: boolean
   private: boolean
   price_currency: string
+  price_includes_tax: boolean
   sale_message: null | string
   inquireable: boolean
   acquireable: boolean

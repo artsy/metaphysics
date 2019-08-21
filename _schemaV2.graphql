@@ -973,6 +973,7 @@ type Artwork implements Node & Searchable & Sellable {
   pickupAvailable: Boolean
   listPrice: ListPrice
   priceCurrency: String
+  priceIncludesTax: Boolean
 
   # Is this work available for shipping only within the Contenental US?
   shipsToContinentalUSOnly: Boolean
