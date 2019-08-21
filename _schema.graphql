@@ -1384,6 +1384,7 @@ type Artwork implements Node & Searchable & Sellable {
     @deprecated(reason: "Prefer to use `listPrice`. [Will be removed in v2]")
   listPrice: ListPrice
   price_currency: String
+  priceIncludesTax: Boolean
 
   # Is this work available for shipping only within the Contenental US?
   shipsToContinentalUSOnly: Boolean
@@ -2413,6 +2414,7 @@ type ArtworkItem implements Node & Searchable & Sellable {
     @deprecated(reason: "Prefer to use `listPrice`. [Will be removed in v2]")
   listPrice: ListPrice
   price_currency: String
+  priceIncludesTax: Boolean
 
   # Is this work available for shipping only within the Contenental US?
   shipsToContinentalUSOnly: Boolean
