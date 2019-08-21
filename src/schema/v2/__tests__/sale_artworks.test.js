@@ -238,7 +238,7 @@ describe("Sale Artworks", () => {
         ) {
           aggregations {
             counts {
-              id
+              value
             }
           }
         }

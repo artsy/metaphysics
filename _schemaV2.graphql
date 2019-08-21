@@ -17,14 +17,9 @@ type AddAssetToConsignmentSubmissionPayload {
 
 # One item in an aggregation
 type AggregationCount {
-  # A globally unique ID.
-  id: ID!
-
-  # A type-specific ID.
-  internalID: ID!
-  count: Int
-  name: String
-  sortableID: String
+  value: String!
+  count: Int!
+  name: String!
 }
 
 type AnalyticsArtist {
