@@ -5,6 +5,7 @@ import {
 import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
 import { HTTPError } from "lib/HTTPError"
 import { GraphQLError } from "graphql"
+import config from "config"
 
 describe("graphqlErrorHandler", () => {
   describe(shouldReportError, () => {
@@ -58,6 +59,22 @@ describe("graphqlErrorHandler", () => {
   })
 
   describe(formattedGraphQLError, () => {
+    describe("stack traces", () => {
+      it("are not present in production", () => {
+        config.PRODUCTION_ENV = true
+        expect(
+          Object.keys(formattedGraphQLError(new GraphQLError("something")))
+        ).not.toContain("stack")
+        config.PRODUCTION_ENV = false
+      })
+
+      it("are present in a non-production environment", () => {
+        expect(
+          Object.keys(formattedGraphQLError(new GraphQLError("something")))
+        ).toContain("stack")
+      })
+    })
+
     describe("concerning upstream HTTP status codes", () => {
       it("does not include a HTTP status code for non HTTP errors", () => {
         expect(

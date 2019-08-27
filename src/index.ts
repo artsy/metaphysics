@@ -26,7 +26,7 @@ import {
 import { middleware as requestIDsAdder } from "./lib/requestIDs"
 import { nameOldEigenQueries } from "./lib/modifyOldEigenQueries"
 import { rateLimiter } from "./lib/rateLimiter"
-// import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
+import { graphqlErrorHandler } from "./lib/graphqlErrorHandler"
 
 import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
@@ -156,7 +156,7 @@ function startApp(appSchema, path: string) {
   } else {
     const graphqlHTTP = require("express-graphql")
     app.use(
-      graphqlHTTP((req, res /*, params */) => {
+      graphqlHTTP((req, res, params) => {
         console.log("Request from", path)
         const accessToken = req.headers["x-access-token"] as string | undefined
         const userID = req.headers["x-user-id"] as string | undefined
@@ -199,12 +199,12 @@ function startApp(appSchema, path: string) {
           context,
           rootValue: {},
           // FIXME: This needs to be updated as per the release notes of graphql-js v14
-          // formatError: graphqlErrorHandler(enableSentry, {
-          //   req,
-          //   // Why the checking on params? Do we reach this code if params is falsy?
-          //   variables: params && params.variables,
-          //   query: (params && params.query)!,
-          // }),
+          formatError: graphqlErrorHandler(enableSentry, {
+            req,
+            // Why the checking on params? Do we reach this code if params is falsy?
+            variables: params && params.variables,
+            query: (params && params.query)!,
+          }),
           validationRules: QUERY_DEPTH_LIMIT
             ? [depthLimit(QUERY_DEPTH_LIMIT)]
             : null,

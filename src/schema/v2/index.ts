@@ -13,11 +13,11 @@ const enableSchemaStitching = !DISABLE_SCHEMA_STITCHING
 if (enableSchemaStitching) {
   try {
     if (typeof jest == "undefined") {
-      console.warn("[FEATURE] Enabling Schema Stitching")
+      console.warn("[V2] [FEATURE] Enabling Schema Stitching")
     }
     exportedSchema = incrementalMergeSchemas(exportedSchema, 2)
   } catch (err) {
-    console.log("Error merging schemas:", err)
+    console.log("[V2] Error merging schemas:", err)
   }
 }
 export const schema = transformToV2(exportedSchema)
