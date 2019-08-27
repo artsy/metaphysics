@@ -136,18 +136,6 @@ const rootFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   popularArtists: PopularArtists,
 }
 
-const ViewerType = new GraphQLObjectType<any, ResolverContext>({
-  name: "Viewer",
-  description: "A wildcard used to support complex root queries in Relay",
-  fields: rootFields,
-})
-
-const Viewer = {
-  type: ViewerType,
-  description: "A wildcard used to support complex root queries in Relay",
-  resolve: x => x,
-}
-
 // A set of fields which are overridden when coming in from stitching
 const stitchedRootFields: any = {}
 
@@ -190,7 +178,6 @@ export default new GraphQLSchema({
     fields: {
       ...rootFields,
       ...stitchedRootFields,
-      viewer: Viewer,
     },
   }),
   // These are for orphaned types which are types which should be in the schema,
