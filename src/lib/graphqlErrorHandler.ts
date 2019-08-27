@@ -97,9 +97,13 @@ export const formattedGraphQLError = (
   if (topLevelError.locations) {
     result.locations = topLevelError.locations
   }
-  // Question: Should this be a flag on Sentry enabled, or on being in the production env?
-  if (config.PRODUCTION_ENV) {
+
+  if (topLevelError.path) {
     result.path = topLevelError.path
+  }
+
+  const includeStackTrace = !config.PRODUCTION_ENV
+  if (includeStackTrace) {
     result.stack = topLevelError.stack
   }
 
