@@ -6,6 +6,7 @@ const { spawn } = require("child_process")
 const schemaV1Path = path.join(process.cwd(), "src/schema/v1")
 const schemaV2Path = path.join(process.cwd(), "src/schema/v2")
 
+/** Represents the git status of a file */
 enum FileStatus {
   Deleted = "deleted",
   Modified = "modified",
@@ -16,6 +17,10 @@ enum FileStatus {
 
 type DeltaFileMap = { [filePath: string]: FileStatus }
 
+/**
+ * Converts git status short codes to their `FileStatus` equivalent.
+ * @param change Single character shorthand git file state
+ */
 const GitChangeToFileStatus = (change: string) => {
   switch (change) {
     case "M":
@@ -36,6 +41,9 @@ interface BranchState {
   commitsBehind: number
 }
 
+/**
+ * Gives status information on the current branch as compared to origin/master
+ */
 const getBranchDrift = (): Promise<BranchState> =>
   new Promise((resolve, reject) => {
     let output = ""
@@ -220,21 +228,26 @@ class Directory {
 
 const isFromSchemaV1 = (filePath: string) => filePath.includes("/schema/v1/")
 
+/** Convert an absolute file path to a partial path that starts after `/v1/` or `/v2/` */
 const fromSchemaRoot = (filePath: string) =>
   isFromSchemaV1(filePath)
     ? filePath.split("/schema/v1/")[1]
     : filePath.split("/schema/v2/")[1]
 
+/** Updates a path from `/v1/` to `/v2/` or vice versa */
 const switchSchemaPath = (filePath: string) =>
   isFromSchemaV1(filePath)
     ? filePath.replace("/schema/v1/", "/schema/v2/")
     : filePath.replace("/schema/v2/", "/schema/v1/")
 
+/**
+ * @param directoryMapper Used to establish a common path between files of the two directories
+ */
 const diffDirectories = (
   directory1: Directory,
   directory2: Directory,
   directoryMapper = p => p
-) => {
+): [string[], string[], string[]] => {
   const fileList1 = directory1.listFiles().map(directoryMapper)
   const fileList2 = directory2.listFiles().map(directoryMapper)
 
