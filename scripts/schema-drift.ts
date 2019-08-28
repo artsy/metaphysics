@@ -167,7 +167,7 @@ class Directory {
     this.fileMap = fileMap
   }
 
-  static async create(fullPath: string, deltaFileMap: DeltaFileMap = {}) {
+  static async create(fullPath: string, _deltaFileMap: DeltaFileMap = {}) {
     const [children, childMap] = await this.getChildren(fullPath)
     return new Directory(fullPath, children, childMap)
   }
@@ -275,7 +275,7 @@ const diffDirectories = (
   const [
     filesUniqueToSchemaV1,
     filesInBothSchemas,
-    filesUniqueToSchemaV2,
+    // filesUniqueToSchemaV2,
   ] = diffDirectories(schemaV1, schemaV2, fromSchemaRoot)
 
   const unknownChanges = fileChanges
@@ -290,13 +290,13 @@ const diffDirectories = (
     .filter(([, status]) => status === FileStatus.Added)
     .map(([file]) => file)
 
-  const deletedFiles = fileChanges
-    .filter(([, status]) => status === FileStatus.Deleted)
-    .map(([file]) => file)
+  // const deletedFiles = fileChanges
+  //   .filter(([, status]) => status === FileStatus.Deleted)
+  //   .map(([file]) => file)
 
-  const renamedFiles = fileChanges
-    .filter(([, status]) => status === FileStatus.Renamed)
-    .map(([file]) => file)
+  // const renamedFiles = fileChanges
+  //   .filter(([, status]) => status === FileStatus.Renamed)
+  //   .map(([file]) => file)
 
   if (unknownChanges.length > 0) {
     console.log(
