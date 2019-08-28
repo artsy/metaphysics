@@ -24,6 +24,7 @@
     "lint:fix": "eslint . --fix --ext ts",
     "prepare": "patch-package",
     "prettier-project": "prettier --write 'src/**/*.{js,ts,tsx,md,graphql}'",
+    "schema-drift": "babel-node --no-warnings --extensions '.ts,.js' ./scripts/schema-drift.ts",
     "start": "yarn run dev",
     "test:validQueries": "babel-node --extensions '.ts,.js' src/integration/__tests__/runStoredQueryTests.ts",
     "test": "yarn type-check && yarn lint && jest",
