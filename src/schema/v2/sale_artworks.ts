@@ -105,14 +105,34 @@ const SaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
   type: SaleArtworksType,
   resolve: async (
     _root,
-    options,
+    {
+      artistIDs,
+      includeArtworksByFollowedArtists,
+      liveSale,
+      isAuction,
+      geneIDs,
+      estimateRange,
+      saleID,
+      ..._args
+    },
     { saleArtworksFilterLoader, saleArtworksAllLoader }
   ) => {
-    const relayOptions = { ...DEFAULTS, ...options }
-    const params = convertConnectionArgsToGravityArgs(relayOptions)
+    const args = {
+      artist_ids: artistIDs,
+      include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
+      live_sale: liveSale,
+      is_auction: isAuction,
+      gene_ids: geneIDs,
+      estimate_range: estimateRange,
+      sale_id: saleID,
+      ..._args,
+    }
+
+    const connectionOptions = { ...DEFAULTS, ...args }
+    const params = convertConnectionArgsToGravityArgs(connectionOptions)
     let response
 
-    if (saleArtworksAllLoader && options.liveSale) {
+    if (saleArtworksAllLoader && args.live_sale) {
       delete params.page
       const { body, headers } = await saleArtworksAllLoader({
         ...params,
@@ -136,7 +156,7 @@ const SaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
 
     const data = {
       ...response,
-      ...connectionFromArraySlice(response.hits, relayOptions, {
+      ...connectionFromArraySlice(response.hits, connectionOptions, {
         arrayLength: response.aggregations.total.value,
         sliceStart: params.offset,
       }),
