@@ -68,6 +68,7 @@
     "graphql": "0.13.2",
     "graphql-depth-limit": "1.1.0",
     "graphql-extensions": "0.5.7",
+    "graphql-list-fields": "^2.0.2",
     "graphql-middleware": "1.2.6",
     "graphql-relay": "0.5.4",
     "graphql-tools": "4.0.4",

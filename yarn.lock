@@ -4253,6 +4253,11 @@ graphql-language-service-utils@0.0.17:
     graphql "^0.10.1"
     graphql-language-service-types "0.0.21"
 
+graphql-list-fields@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/graphql-list-fields/-/graphql-list-fields-2.0.2.tgz#a4ade3cfa2028a2ac32d3f2870f5f8c5b5d5b466"
+  integrity sha512-9TSAwcVA3KWw7JWYep5NCk2aw3wl1ayLtbMpmG7l26vh1FZ+gZexNPP+XJfUFyJa71UU0zcKSgtgpsrsA3Xv9Q==
+
 graphql-middleware@1.2.6:
   version "1.2.6"
   resolved "https://registry.yarnpkg.com/graphql-middleware/-/graphql-middleware-1.2.6.tgz#11392687aaa2ef7cc90d46b8ac883d60b526b56d"
