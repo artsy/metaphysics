@@ -89,13 +89,13 @@ export const CollectionType = new GraphQLObjectType<any, ResolverContext>({
 export const collectionResolverFactory = (
   collection_id
 ): GraphQLFieldResolver<void, ResolverContext> => {
-  return (_root, options, { collectionLoader }, { fieldNodes }) => {
+  return (_root, options, { collectionLoader }, info) => {
     if (!collectionLoader) return null
 
     const id = collection_id || options.id
     const blacklistedFields = ["artworks_connection", "id", "__id"]
 
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    if (queriedForFieldsOtherThanBlacklisted(info, blacklistedFields)) {
       return collectionLoader(id)
     }
 

@@ -208,11 +208,11 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, { geneLoader }, { fieldNodes }) => {
+  resolve: (_root, { id }, { geneLoader }, info) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
     const blacklistedFields = ["filtered_artworks", "id", "__id"]
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    if (queriedForFieldsOtherThanBlacklisted(info, blacklistedFields)) {
       return geneLoader(id)
     }
 

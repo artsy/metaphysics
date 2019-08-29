@@ -128,7 +128,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
 
 const MeField: GraphQLFieldConfig<void, ResolverContext> = {
   type: Me,
-  resolve: (_root, _options, { userID, meLoader }, { fieldNodes }) => {
+  resolve: (_root, _options, { userID, meLoader }, info) => {
     if (!meLoader) return null
     const blacklistedFields = [
       "id",
@@ -154,7 +154,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "followsAndSaves",
       "savedArtworks",
     ]
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    if (queriedForFieldsOtherThanBlacklisted(info, blacklistedFields)) {
       return meLoader().catch(() => null)
     }
     // The email and is_collector are here so that the type system's `isTypeOf`

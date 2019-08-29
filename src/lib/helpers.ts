@@ -2,14 +2,11 @@ import {
   assign,
   camelCase,
   compact,
-  difference,
-  flatMap,
   flow,
   includes,
   isEmpty,
   isObject,
   isString,
-  map,
   omit,
   reject,
   trim,
@@ -18,6 +15,8 @@ import now from "performance-now"
 import { stringify } from "qs"
 import { getPagingParameters, CursorPageable } from "relay-cursor-paging"
 import { formatMarkdownValue } from "schema/v1/fields/markdown"
+import { includesFieldsOtherThanSelectionSet } from "./hasFieldSelection"
+import { GraphQLResolveInfo } from "graphql"
 
 const loadNs = now()
 const loadMs = Date.now()
@@ -85,20 +84,13 @@ export const stripTags = (str?: string) => {
 export const markdownToText = str => {
   return stripTags(formatMarkdownValue(str, "html"))
 }
-export const parseFieldASTsIntoArray = fieldASTs => {
-  // TODO: when fieldASTs[*].selectionSet.selections.kind === "InlineFragment" recursively go deeper
-  return map(flatMap(fieldASTs, "selectionSet.selections"), "name.value")
-}
+
 export const queriedForFieldsOtherThanBlacklisted = (
-  fieldASTs,
+  info: GraphQLResolveInfo,
   blacklistedFields
 ) => {
-  if (!fieldASTs) return true
-  const queriedFields = parseFieldASTsIntoArray(fieldASTs)
-  return difference(queriedFields, blacklistedFields).length > 0
-}
-export const queryContainsField = (fieldASTs, soughtField) => {
-  return parseFieldASTsIntoArray(fieldASTs).includes(soughtField)
+  if (!info) return true
+  return includesFieldsOtherThanSelectionSet(info, blacklistedFields)
 }
 
 export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(

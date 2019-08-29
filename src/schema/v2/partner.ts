@@ -226,14 +226,14 @@ const Partner: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (_root, { id }, { partnerLoader }, { fieldNodes }) => {
+  resolve: (_root, { id }, { partnerLoader }, info) => {
     const blacklistedFields = ["analytics"]
     const isSlug = !/[0-9a-f]{24}/.test(id)
     // vortex can only load analytics data by id so if id passed by client is slug load
     // partner from gravity
     if (
       isSlug ||
-      queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)
+      queriedForFieldsOtherThanBlacklisted(info, blacklistedFields)
     ) {
       return partnerLoader(id)
     }
