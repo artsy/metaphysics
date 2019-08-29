@@ -1,4 +1,5 @@
 import raven from "raven"
+import { get } from "lodash"
 import { error as log } from "lib/loggers"
 import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
 import { Request } from "../../node_modules/@types/express"
@@ -108,11 +109,18 @@ export const formattedGraphQLError = (
   }
 
   const httpStatusCodes: number[] = []
-  ;(flattenedErrors || flattenErrors(topLevelError)).forEach(
-    e =>
-      e.originalError instanceof HTTPError &&
-      httpStatusCodes.push(e.originalError.statusCode)
-  )
+  ;(flattenedErrors || flattenErrors(topLevelError)).forEach(e => {
+    // Check for server-side errors during stitching downstream.
+    // `e.originalError` is of `ServerError` type.
+    // https://github.com/apollographql/apollo-link/blob/480df382cf7db486ae76c56ac2522134d77e36fa/packages/apollo-link-http-common/src/index.ts#L15
+    const stitchedStatusCode = get(e, "originalError.response.status")
+    const statusCode =
+      stitchedStatusCode ||
+      (e.originalError instanceof HTTPError && e.originalError.statusCode)
+    if (statusCode) {
+      httpStatusCodes.push(statusCode)
+    }
+  })
   if (httpStatusCodes.length > 0) {
     result.extensions = { httpStatusCodes }
   }
