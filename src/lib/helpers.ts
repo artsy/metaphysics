@@ -3,21 +3,21 @@ import {
   camelCase,
   compact,
   difference,
-  flatMap,
   flow,
   includes,
   isEmpty,
   isObject,
   isString,
-  map,
   omit,
   reject,
   trim,
+  uniq,
 } from "lodash"
 import now from "performance-now"
 import { stringify } from "qs"
 import { getPagingParameters, CursorPageable } from "relay-cursor-paging"
 import { formatMarkdownValue } from "schema/v1/fields/markdown"
+import getFieldNames from "graphql-list-fields"
 
 const loadNs = now()
 const loadMs = Date.now()
@@ -86,9 +86,13 @@ export const markdownToText = str => {
   return stripTags(formatMarkdownValue(str, "html"))
 }
 export const parseFieldASTsIntoArray = fieldASTs => {
-  // TODO: when fieldASTs[*].selectionSet.selections.kind === "InlineFragment" recursively go deeper
-  return map(flatMap(fieldASTs, "selectionSet.selections"), "name.value")
+  const fieldNames = getFieldNames({ fieldASTs: fieldASTs })
+  return filterTopLevelFieldNames(fieldNames)
 }
+
+const filterTopLevelFieldNames = dottedFieldNameArray =>
+  uniq(dottedFieldNameArray.map(name => name.split(".")[0]))
+
 export const queriedForFieldsOtherThanBlacklisted = (
   fieldASTs,
   blacklistedFields
