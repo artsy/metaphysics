@@ -21,17 +21,17 @@ describe("AnalyticsRankedStats type", () => {
       _id: "artist-id",
     })
   )
-  // TODO: after fixing parseFieldASTsIntoArray partnerLoader is not required
-  // unless the query is run with slug, or other partner fields TODO: add tests for both cases
-  const partnerLoader = jest.fn(() => Promise.resolve({ _id: "lol" }))
+  const partnerLoader = jest.fn(() =>
+    Promise.resolve({ _id: "5a323ece7b13bfbb07a0caf7" })
+  )
   const context: Partial<ResolverContext> = {
     artworkLoader,
     artistLoader,
     partnerLoader,
   }
   const query = gql`
-    query {
-      partner(id: "lol") {
+    query($id: String!) {
+      partner(id: $id) {
         analytics {
           topArtworks: rankedStats(
             first: 1
@@ -53,26 +53,69 @@ describe("AnalyticsRankedStats type", () => {
     }
   `
 
-  it("is accessible through the partner type", async () => {
-    const result = await runQuery(query, context)
-    expect(result).toMatchInlineSnapshot(`
-      Object {
-        "partner": Object {
-          "analytics": Object {
-            "topArtworks": Object {
-              "edges": Array [
-                Object {
-                  "node": Object {
-                    "entity": Object {
-                      "title": "Lona Misa",
+  describe("when partner queries with partner id", () => {
+    let result
+    beforeAll(async () => {
+      result = await runQuery(query, context, {
+        id: "5a323ece7b13bfbb07a0caf7",
+      })
+    })
+    it("won't query gravity loader", () => {
+      expect(partnerLoader).not.toHaveBeenCalled()
+    })
+    it("is accessible through the partner type", () => {
+      expect(result).toMatchInlineSnapshot(`
+        Object {
+          "partner": Object {
+            "analytics": Object {
+              "topArtworks": Object {
+                "edges": Array [
+                  Object {
+                    "node": Object {
+                      "entity": Object {
+                        "title": "Lona Misa",
+                      },
                     },
                   },
-                },
-              ],
+                ],
+              },
             },
           },
-        },
-      }
-    `)
+        }
+      `)
+    })
+  })
+
+  describe("when partner queries with partner slug", () => {
+    let result
+    beforeAll(async () => {
+      result = await runQuery(query, context, {
+        id: "partner-slug",
+      })
+    })
+    it("will query gravity loader to get partner id", () => {
+      expect(partnerLoader).toHaveBeenCalledWith("partner-slug")
+    })
+    it("is accessible through the partner type", () => {
+      expect(result).toMatchInlineSnapshot(`
+        Object {
+          "partner": Object {
+            "analytics": Object {
+              "topArtworks": Object {
+                "edges": Array [
+                  Object {
+                    "node": Object {
+                      "entity": Object {
+                        "title": "Lona Misa",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        }
+      `)
+    })
   })
 })
