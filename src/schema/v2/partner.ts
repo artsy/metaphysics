@@ -227,7 +227,7 @@ const Partner: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { partnerLoader }, info) => {
-    const fieldsNotRequireLoader = ["analytics"]
+    const fieldsNotRequireLoader = ["internalID"]
     const isSlug = !/[0-9a-f]{24}/.test(id)
     // vortex can only load analytics data by id so if id passed by client is slug load
     // partner from gravity
