@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 
-describe("MatchGene", () => {
+xdescribe("MatchGene", () => {
   it("queries match/genes for the term 'pop'", () => {
     const query = `
       {

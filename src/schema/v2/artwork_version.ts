@@ -9,7 +9,7 @@ import Image from "./image"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 
-export const ArtworkVersion = new GraphQLObjectType<any, ResolverContext>({
+export const ArtworkVersionType = new GraphQLObjectType<any, ResolverContext>({
   name: "ArtworkVersion",
   fields: () => ({
     ...InternalIDFields,
@@ -57,7 +57,7 @@ export const ArtworkVersionResolver: GraphQLFieldConfig<
   any,
   ResolverContext
 > = {
-  type: ArtworkVersion,
+  type: ArtworkVersionType,
   description: "A subset of the metadata for an artwork at a specific time",
   args: {
     id: {

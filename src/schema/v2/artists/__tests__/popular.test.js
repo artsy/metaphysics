@@ -2,7 +2,7 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
-describe("Popular Artists", () => {
+xdescribe("Popular Artists", () => {
   it("makes a call for popular artists", async () => {
     const query = gql`
       {

@@ -2,7 +2,7 @@ import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import { find } from "lodash"
 
-describe("Artists", () => {
+xdescribe("Artists", () => {
   it("returns a list of artists", async () => {
     const query = gql`
       {

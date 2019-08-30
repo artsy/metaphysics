@@ -1,7 +1,7 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("User", () => {
+xdescribe("User", () => {
   it("returns true if a user exist", async () => {
     const foundUser = {
       id: "123456",
