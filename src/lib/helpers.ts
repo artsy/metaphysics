@@ -15,8 +15,6 @@ import now from "performance-now"
 import { stringify } from "qs"
 import { getPagingParameters, CursorPageable } from "relay-cursor-paging"
 import { formatMarkdownValue } from "schema/v1/fields/markdown"
-import { includesFieldsOtherThanSelectionSet } from "./hasFieldSelection"
-import { GraphQLResolveInfo } from "graphql"
 
 const loadNs = now()
 const loadMs = Date.now()
@@ -83,14 +81,6 @@ export const stripTags = (str?: string) => {
 }
 export const markdownToText = str => {
   return stripTags(formatMarkdownValue(str, "html"))
-}
-
-export const queriedForFieldsOtherThanBlacklisted = (
-  info: GraphQLResolveInfo,
-  blacklistedFields
-) => {
-  if (!info) return true
-  return includesFieldsOtherThanSelectionSet(info, blacklistedFields)
 }
 
 export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(

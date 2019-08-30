@@ -21,7 +21,7 @@ import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
 import ArtworkSorts from "./sorts/artwork_sorts"
-import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import { ResolverContext } from "types/graphql"
 import { PartnerCategoryType } from "./partner_category"
 
@@ -227,13 +227,13 @@ const Partner: GraphQLFieldConfig<void, ResolverContext> = {
     },
   },
   resolve: (_root, { id }, { partnerLoader }, info) => {
-    const blacklistedFields = ["analytics"]
+    const fieldsNotRequireLoader = ["analytics"]
     const isSlug = !/[0-9a-f]{24}/.test(id)
     // vortex can only load analytics data by id so if id passed by client is slug load
     // partner from gravity
     if (
       isSlug ||
-      queriedForFieldsOtherThanBlacklisted(info, blacklistedFields)
+      includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)
     ) {
       return partnerLoader(id)
     }
