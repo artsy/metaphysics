@@ -6,6 +6,7 @@ import { GraphQLTimeoutError } from "lib/graphqlTimeoutMiddleware"
 import { HTTPError } from "lib/HTTPError"
 import { GraphQLError } from "graphql"
 import config from "config"
+import { ServerError } from "apollo-link-http-common"
 
 describe("graphqlErrorHandler", () => {
   describe(shouldReportError, () => {
@@ -80,6 +81,27 @@ describe("graphqlErrorHandler", () => {
         expect(
           Object.keys(formattedGraphQLError(new GraphQLError("something")))
         ).not.toContain("extensions")
+      })
+
+      it("does include a HTTP status code when a response is present", () => {
+        const originalError: ServerError = {
+          message: "underlying",
+          response: { status: 404 },
+          name: "ServerError",
+          result: [],
+          statusCode: 200,
+        }
+        const error = new GraphQLError(
+          "not found",
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          originalError
+        )
+        expect(formattedGraphQLError(error).extensions).toEqual({
+          httpStatusCodes: [404],
+        })
       })
 
       it("does include a HTTP status code for HTTP errors", () => {
