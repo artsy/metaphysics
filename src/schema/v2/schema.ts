@@ -19,6 +19,7 @@ import { Search } from "./search"
 import Show from "./show"
 import Me from "./me"
 import MatchArtist from "./match/artist"
+import System from "./system"
 
 // import Status from "./status"
 // import Artworks from "./artworks"
@@ -40,9 +41,7 @@ import MatchArtist from "./match/artist"
 // import PartnerCategory from "./partner_category"
 // import PartnerCategories from "./partner_categories"
 // import PopularArtists from "./artists/popular"
-// import Services from "./services"
 // import SuggestedGenes from "./suggested_genes"
-// import System from "./system"
 // import Tag from "./tag"
 // import TrendingArtists from "./artists/trending"
 // import Users from "./users"
@@ -158,10 +157,10 @@ export default new GraphQLSchema({
       saleArtworksConnection: SaleArtworks,
       sales: Sales, // TODO: Make a connection
       searchConnection: Search,
-      // services: Services,
       show: Show,
       // status: Status,
-      // system: System,
+      system: System,
+
       // tag: Tag,
       // trendingArtists: TrendingArtists,
       // user: User,
