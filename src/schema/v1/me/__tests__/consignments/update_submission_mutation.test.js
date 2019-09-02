@@ -22,6 +22,7 @@ describe("UpdateSubmissionMutation", () => {
             id: "108"
             artist_id: "andy-warhol"
             depth: "123"
+            edition_size: "100"
             clientMutationId: "123123"
           }
         ) {

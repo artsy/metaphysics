@@ -10,7 +10,6 @@ import {
   GraphQLNonNull,
   GraphQLString,
   GraphQLBoolean,
-  GraphQLInt,
   GraphQLID,
 } from "graphql"
 
@@ -48,7 +47,7 @@ export const config: MutationConfig<any, any, ResolverContext> = {
     },
     edition_size: {
       description: "The whole size of the set of works",
-      type: GraphQLInt,
+      type: GraphQLString,
     },
     height: {
       description: "The height of the work",

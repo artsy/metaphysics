@@ -4,7 +4,6 @@ import {
   GraphQLNonNull,
   GraphQLBoolean,
   GraphQLEnumType,
-  GraphQLInt,
   GraphQLID,
 } from "graphql"
 import { NullableIDField } from "schema/v1/object_identification"
@@ -127,7 +126,7 @@ export const SubmissionType = new GraphQLObjectType<any, ResolverContext>({
     },
     edition_size: {
       description: "The whole size of the set of works",
-      type: GraphQLInt,
+      type: GraphQLString,
     },
     height: {
       description: "The height of the work",
