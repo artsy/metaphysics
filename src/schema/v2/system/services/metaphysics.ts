@@ -31,7 +31,7 @@ const mapEnvStrings = {
 }
 
 const MetaphysicsSchema = new GraphQLObjectType<any, ResolverContext>({
-  name: "Metaphysics",
+  name: "MetaphysicsService",
   fields: () => {
     const fields = {}
     Object.keys(mapEnvBooleans).forEach(key => {
