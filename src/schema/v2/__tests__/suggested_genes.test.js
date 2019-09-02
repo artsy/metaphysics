@@ -3,7 +3,7 @@ import { runQuery } from "schema/v2/test/utils"
 jest.mock("lib/apis/fetch", () => jest.fn())
 import fetch from "lib/apis/fetch"
 
-describe("SuggestedGenes type", () => {
+xdescribe("SuggestedGenes type", () => {
   const suggestedGenesData = {
     body: [
       {

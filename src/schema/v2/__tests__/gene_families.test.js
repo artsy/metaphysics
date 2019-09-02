@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 
-describe("GeneFamilies", () => {
+xdescribe("GeneFamilies", () => {
   const api_data = [
     {
       id: "design-concepts-and-techniques",

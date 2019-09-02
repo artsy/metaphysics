@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 
-describe("OrderedSet type", () => {
+xdescribe("OrderedSet type", () => {
   it("fetches set by id", () => {
     const query = `
       {
