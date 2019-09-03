@@ -4802,30 +4802,6 @@ type Me implements Node {
     size: Int
     sort: SaleSorts
   ): [SaleRegistration]
-
-  # A list of the current user’s suggested artists, based on a single artist
-  suggestedArtists(
-    # The slug or ID of an artist
-    artistID: String
-
-    # Exclude artists without for sale works
-    excludeArtistsWithoutForsaleArtworks: Boolean
-
-    # Exclude artists without any artworks
-    excludeArtistsWithoutArtworks: Boolean
-
-    # Exclude artists the user already follows
-    excludeFollowedArtists: Boolean
-
-    # Exclude these ids from results, may result in all artists being excluded.
-    excludeArtistIDs: [String]
-
-    # Pagination, need I say more?
-    page: Int
-
-    # Amount of artists to return
-    size: Int
-  ): [Artist]
   type: String
 }
 
