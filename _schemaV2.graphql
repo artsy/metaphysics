@@ -5424,12 +5424,6 @@ type Query {
     id: String!
   ): Sale
 
-  # A Sale Artwork
-  saleArtwork(
-    # The slug or ID of the SaleArtwork
-    id: String!
-  ): SaleArtwork
-
   # Sale Artworks search results
   saleArtworksConnection(
     aggregations: [SaleArtworkAggregation]
@@ -5758,7 +5752,7 @@ type Sale implements Node {
   symbol: String
 }
 
-type SaleArtwork {
+type SaleArtwork implements Node {
   # A globally unique ID.
   id: ID!
 

@@ -13,7 +13,6 @@ import FollowGene from "./me/follow_gene"
 import FollowShow from "./me/follow_show"
 import Sale from "./sale/index"
 import Sales from "./sales"
-import SaleArtwork from "./sale_artwork"
 import SaleArtworks from "./sale_artworks"
 import { Search } from "./search"
 import Show from "./show"
@@ -47,6 +46,7 @@ import System from "./system"
 // import { User } from "./user"
 // import MatchGene from "./match/gene"
 // import CausalityJWT from "./causality_jwt"
+// import SaleArtwork from "./sale_artwork"
 // import MatchArtist from "./match/artist"
 
 import UpdateConversationMutation from "./me/conversation/update_conversation_mutation"
@@ -153,7 +153,7 @@ export default new GraphQLSchema({
       // partners: Partners,
       // profile: Profile,
       sale: Sale,
-      saleArtwork: SaleArtwork, // TODO: Remove in favour of using node field
+      // saleArtwork: SaleArtwork,
       saleArtworksConnection: SaleArtworks,
       sales: Sales, // TODO: Make a connection
       searchConnection: Search,

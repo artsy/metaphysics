@@ -24,6 +24,7 @@ import {
 import config from "config"
 import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
+import { NodeInterface } from "schema/v2/object_identification"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -82,6 +83,7 @@ const BidIncrementsFormatted = new GraphQLObjectType<any, ResolverContext>({
 
 export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "SaleArtwork",
+  interfaces: [NodeInterface],
   fields: () => {
     return {
       ...SlugAndInternalIDFields,
