@@ -18,7 +18,6 @@ import SaleArtworks from "./sale_artworks"
 import { Search } from "./search"
 import Show from "./show"
 import Me from "./me"
-import MatchArtist from "./match/artist"
 import System from "./system"
 
 // import Status from "./status"
@@ -48,6 +47,7 @@ import System from "./system"
 // import { User } from "./user"
 // import MatchGene from "./match/gene"
 // import CausalityJWT from "./causality_jwt"
+// import MatchArtist from "./match/artist"
 
 import UpdateConversationMutation from "./me/conversation/update_conversation_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
@@ -141,7 +141,7 @@ export default new GraphQLSchema({
       // geneFamilies: GeneFamilies,
       // geneFamily: GeneFamily,
       homePage: HomePage,
-      matchArtist: MatchArtist, // TODO: Remove in favour of `searchConnection`
+      // matchArtist: MatchArtist,
       // matchGene: MatchGene,
       me: Me,
       node: ObjectIdentification.NodeField,

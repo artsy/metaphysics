@@ -5410,21 +5410,6 @@ type Query {
 
   # Home screen content
   homePage: HomePage
-
-  # A Search for Artists
-  matchArtist(
-    # Your search term
-    term: String!
-
-    # Maximum number of items to retrieve. Default: 5.
-    size: Int
-
-    # Page to retrieve. Default: 1.
-    page: Int
-
-    # Exclude these MongoDB ids from results
-    excludeIDs: [String]
-  ): [Artist]
   me: Me
 
   # Fetches an object given its globally unique ID.
