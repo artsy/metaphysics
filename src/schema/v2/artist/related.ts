@@ -3,9 +3,10 @@ import {
   GraphQLEnumType,
   GraphQLObjectType,
   GraphQLInt,
+  GraphQLString,
+  GraphQLList,
 } from "graphql"
 import { pageable, getPagingParameters } from "relay-cursor-paging"
-import { SuggestedArtistsArgs } from "schema/v2/me/suggested_artists_args"
 import { artistConnection } from "schema/v2/artist"
 import { geneConnection } from "schema/v2/gene"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
@@ -104,22 +105,59 @@ export const Related = {
       },
       suggestedConnection: {
         type: artistConnection.connectionType,
-        args: pageable(SuggestedArtistsArgs),
+        args: pageable({
+          excludeArtistsWithoutForsaleArtworks: {
+            type: GraphQLBoolean,
+            description: "Exclude artists without for sale works",
+          },
+          excludeArtistsWithoutArtworks: {
+            type: GraphQLBoolean,
+            description: "Exclude artists without any artworks",
+          },
+          excludeFollowedArtists: {
+            type: GraphQLBoolean,
+            description: "Exclude artists the user already follows",
+          },
+          excludeArtistIDs: {
+            type: new GraphQLList(GraphQLString),
+            description:
+              "Exclude these ids from results, may result in all artists being excluded.",
+          },
+        }),
         description:
           "A list of the current user’s suggested artists, based on a single artist",
-        resolve: ({ id }, options, { suggestedArtistsLoader }) => {
+        resolve: (
+          { id },
+          {
+            excludeArtistsWithoutForsaleArtworks,
+            excludeArtistsWithoutArtworks,
+            excludeFollowedArtists,
+            excludeArtistIDs,
+            ..._args
+          },
+          { suggestedArtistsLoader }
+        ) => {
           if (!suggestedArtistsLoader) return null
-          const { offset } = getPagingParameters(options)
+
+          const args = {
+            exclude_artists_without_forsale_artworks: excludeArtistsWithoutForsaleArtworks,
+            exclude_artists_without_artworks: excludeArtistsWithoutArtworks,
+            exclude_followed_artists: excludeFollowedArtists,
+            exclude_artist_ids: excludeArtistIDs,
+            ..._args,
+          } as any
+
+          const { offset } = getPagingParameters(args)
           const gravityOptions = assign(
             { artist_id: id, total_count: true },
-            options,
+            args,
             {}
           )
           return suggestedArtistsLoader(gravityOptions).then(
             ({ body, headers }) => {
               const suggestedArtists = body
               const totalCount = parseInt(headers["x-total-count"] || "0", 10)
-              return connectionFromArraySlice(suggestedArtists, options, {
+              return connectionFromArraySlice(suggestedArtists, args, {
                 arrayLength: totalCount,
                 sliceStart: offset,
               })

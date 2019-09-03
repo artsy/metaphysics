@@ -811,9 +811,6 @@ type ArtistRelatedData {
 
   # A list of the current user’s suggested artists, based on a single artist
   suggestedConnection(
-    # The slug or ID of an artist
-    artistID: String
-
     # Exclude artists without for sale works
     excludeArtistsWithoutForsaleArtworks: Boolean
 
@@ -825,12 +822,6 @@ type ArtistRelatedData {
 
     # Exclude these ids from results, may result in all artists being excluded.
     excludeArtistIDs: [String]
-
-    # Pagination, need I say more?
-    page: Int
-
-    # Amount of artists to return
-    size: Int
     after: String
     first: Int
     before: String
