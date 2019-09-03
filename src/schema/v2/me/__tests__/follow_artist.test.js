@@ -1,5 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
+import gql from "lib/gql"
 
 describe("FollowArtist", () => {
   let artist = null
@@ -35,7 +36,7 @@ describe("FollowArtist", () => {
   })
 
   it("follows an artist", async () => {
-    const mutation = `
+    const mutation = gql`
       mutation {
         followArtist(input: { artistID: "damon-zucconi" }) {
           artist {
@@ -50,16 +51,14 @@ describe("FollowArtist", () => {
       }
     `
 
-    await runAuthenticatedQuery(mutation, context).then(({ followArtist }) => {
-      expect(followArtist).toEqual({
-        artist: {
-          name: "Damon Zucconi",
-        },
-        popularArtists: {
-          artists: [{ name: "Antonio Carreno" }, { name: "Benjamin Schmit" }],
-        },
-      })
+    const { followArtist } = await runAuthenticatedQuery(mutation, context)
+    expect(followArtist).toEqual({
+      artist: {
+        name: "Damon Zucconi",
+      },
+      popularArtists: {
+        artists: [{ name: "Antonio Carreno" }, { name: "Benjamin Schmit" }],
+      },
     })
-    expect.assertions(1)
   })
 })

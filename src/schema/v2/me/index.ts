@@ -34,7 +34,6 @@ import LotStandings from "./lot_standings"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
 import SaleRegistrations from "./sale_registrations"
 import { SavedArtworks } from "./saved_artworks"
-import SuggestedArtists from "./suggested_artists"
 import Submissions from "./consignments/submissions"
 import config from "config"
 import { ResolverContext } from "types/graphql"
@@ -119,7 +118,6 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
     },
     recentlyViewedArtworksConnection: RecentlyViewedArtworks,
     saleRegistrations: SaleRegistrations,
-    suggestedArtists: SuggestedArtists,
     type: {
       type: GraphQLString,
     },
