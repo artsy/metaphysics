@@ -9,7 +9,7 @@ import Artwork, { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
 import ArtworkSorts from "./sorts/artwork_sorts"
 import { pageable } from "relay-cursor-paging"
-import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 import {
   GraphQLString,
@@ -290,14 +290,15 @@ const Partner: GraphQLFieldConfig<void, ResolverContext> = {
       description: "The slug or ID of the Partner",
     },
   },
-  resolve: (_root, { id }, { partnerLoader }, { fieldNodes }) => {
-    const blacklistedFields = ["analytics"]
+  resolve: (_root, { id }, { partnerLoader }, info) => {
+    // when the query is partner analytics, vortex stitching fragment only has _id
+    const fieldsNotRequireLoader = ["_id"]
     const isSlug = !/[0-9a-f]{24}/.test(id)
-    // vortex can only load analytics data by id so if id passed by client is slug load
-    // partner from gravity
+    // vortex can only load analytics data by id so if id passed by client is slug,
+    // then partner from gravity
     if (
       isSlug ||
-      queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)
+      includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)
     ) {
       return partnerLoader(id)
     }

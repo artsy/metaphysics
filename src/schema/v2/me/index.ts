@@ -9,7 +9,7 @@ import {
 } from "graphql"
 
 import { IDFields, NodeInterface } from "schema/v2/object_identification"
-import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 import date from "schema/v2/fields/date"
 import initials from "schema/v2/fields/initials"
@@ -126,9 +126,9 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
 
 const MeField: GraphQLFieldConfig<void, ResolverContext> = {
   type: Me,
-  resolve: (_root, _options, { userID, meLoader }, { fieldNodes }) => {
+  resolve: (_root, _options, { userID, meLoader }, info) => {
     if (!meLoader) return null
-    const blacklistedFields = [
+    const fieldsNotRequireLoader = [
       "id",
       "internalID",
       "creditCards",
@@ -152,7 +152,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "followsAndSaves",
       "savedArtworks",
     ]
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader().catch(() => null)
     }
     // The email and is_collector are here so that the type system's `isTypeOf`

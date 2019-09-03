@@ -8,7 +8,7 @@ import {
   GraphQLNonNull,
   GraphQLFieldConfig,
 } from "graphql"
-import { queriedForFieldsOtherThanBlacklisted } from "lib/helpers"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import { ResolverContext } from "types/graphql"
 
 export const TagType = new GraphQLObjectType<any, ResolverContext>({
@@ -44,11 +44,11 @@ const Tag: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, { tagLoader }, { fieldNodes }) => {
+  resolve: (_root, { id }, { tagLoader }, info) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
-    const blacklistedFields = ["filteredArtworks", "id", "internalID"]
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    const fieldsNotRequireLoader = ["filteredArtworks", "id", "internalID"]
+    if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return tagLoader(id).then(tag => {
         return Object.assign(tag, { _type: "Tag" }, {})
       })
