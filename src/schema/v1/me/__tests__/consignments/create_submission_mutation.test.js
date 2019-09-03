@@ -22,6 +22,7 @@ describe("UpdateSubmissionMutation", () => {
           input: {
             artist_id: "andy-warhol"
             clientMutationId: "2"
+            edition_size: "100"
             authenticity_certificate: true
             dimensions_metric: CM
           }

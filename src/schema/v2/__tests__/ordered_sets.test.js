@@ -1,7 +1,7 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
 
-describe("OrderedSets type", () => {
+xdescribe("OrderedSets type", () => {
   const query = `
   {
     orderedSets(key: "artists:featured-genes", page: 1, size: 5) {

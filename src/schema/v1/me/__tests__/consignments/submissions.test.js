@@ -14,6 +14,7 @@ describe("submissions", () => {
                 authenticity_certificate
                 title
                 artist_id
+                edition_size
                 artist {
                   name
                 }
@@ -32,6 +33,7 @@ describe("submissions", () => {
             authenticity_certificate: true,
             artist_id: "123",
             title: "The best photo yet",
+            edition_size: 100, // Edition sizes are stored as Int in Convection
           },
         ]),
       artistLoader: () =>
@@ -39,6 +41,7 @@ describe("submissions", () => {
           name: "Larissa Croft",
           birthday: "April 2011",
           artworks_count: 1,
+          edition_size: "100",
         }),
     }
 

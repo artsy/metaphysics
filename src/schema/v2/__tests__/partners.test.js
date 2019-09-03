@@ -1,7 +1,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-describe("Partners", () => {
+xdescribe("Partners", () => {
   it("returns a list of partners matching array of ids", async () => {
     const partnersLoader = ({ id }) => {
       if (id) {

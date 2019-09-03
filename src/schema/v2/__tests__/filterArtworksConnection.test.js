@@ -2,7 +2,7 @@
 import { runQuery } from "schema/v2/test/utils"
 import { toGlobalId } from "graphql-relay"
 
-describe("filterArtworksConnection", () => {
+xdescribe("filterArtworksConnection", () => {
   let context = null
   describe(`Provides filter results`, () => {
     beforeEach(() => {

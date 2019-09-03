@@ -14,7 +14,7 @@ const gravityData = {
   private: false,
 }
 
-describe("Collections", () => {
+xdescribe("Collections", () => {
   describe("Handles getting collection metadata", () => {
     it("returns collection metadata", async () => {
       const query = `

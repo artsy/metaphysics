@@ -12,6 +12,7 @@ Object {
             },
             "artist_id": "123",
             "authenticity_certificate": true,
+            "edition_size": "100",
             "id": "106",
             "title": "The best photo yet",
           },

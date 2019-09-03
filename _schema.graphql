@@ -4710,7 +4710,7 @@ type ConsignmentSubmission {
   edition_number: String
 
   # The whole size of the set of works
-  edition_size: Int
+  edition_size: String
 
   # The height of the work
   height: String
@@ -5006,7 +5006,7 @@ input CreateSubmissionMutationInput {
   edition_number: String
 
   # The whole size of the set of works
-  edition_size: Int
+  edition_size: String
 
   # The height of the work
   height: String
@@ -11631,7 +11631,7 @@ input UpdateSubmissionMutationInput {
   edition_number: String
 
   # The whole size of the set of works
-  edition_size: Int
+  edition_size: String
 
   # The height of the work
   height: String
