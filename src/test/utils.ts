@@ -49,7 +49,8 @@ export const runQuery = (
   context: Partial<ResolverContext> = {
     accessToken: undefined,
     userID: undefined,
-  }
+  },
+  variableValues: { [variableName: string]: any } = {}
 ) => {
   const schema = require("schema/v1").default
   return runQueryOrThrow({
@@ -63,6 +64,7 @@ export const runQuery = (
       },
       ...context,
     },
+    variableValues,
   })
 }
 

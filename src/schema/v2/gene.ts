@@ -4,10 +4,7 @@ import _ from "lodash"
 import cached from "./fields/cached"
 import Artist, { artistConnection } from "./artist"
 import Image from "./image"
-import {
-  queriedForFieldsOtherThanBlacklisted,
-  convertConnectionArgsToGravityArgs,
-} from "lib/helpers"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -19,6 +16,7 @@ import {
   GraphQLFieldConfig,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -160,11 +158,15 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_root, { id }, { geneLoader }, { fieldNodes }) => {
+  resolve: (_root, { id }, { geneLoader }, info) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
-    const blacklistedFields = ["filterArtworksConnection", "id", "internalID"]
-    if (queriedForFieldsOtherThanBlacklisted(fieldNodes, blacklistedFields)) {
+    const fieldsNotRequireLoader = [
+      "filterArtworksConnection",
+      "id",
+      "internalID",
+    ]
+    if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return geneLoader(id)
     }
 
