@@ -1391,6 +1391,7 @@ input SubmitOrderWithOfferInput {
   A unique identifier for the client performing the mutation.
   """
   clientMutationId: String
+  confirmedSetupIntentId: String
   offerId: ID!
 }
 
