@@ -5,7 +5,6 @@ import { applyMiddleware as applyGraphQLMiddleware } from "graphql-middleware"
 import bodyParser from "body-parser"
 import config from "./config"
 import cors from "cors"
-import { get, isEqual } from "lodash"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
@@ -19,7 +18,6 @@ import {
   fetchLoggerSetup,
   fetchLoggerRequestDone,
 } from "lib/loaders/api/extensionsLogger"
-import { getCanonicalResourceDirectiveForField } from "lib/loaders/getCanonicalResourceDirectiveField"
 import { info } from "./lib/loggers"
 import {
   executableExchangeSchema,
@@ -34,6 +32,7 @@ import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
 import { ErrorExtension } from "./extensions/errorExtension"
 import { LoggingExtension } from "./extensions/loggingExtension"
+import { canonicalResourceExtension } from "./extensions/canonicalResourceExtension"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -200,7 +199,6 @@ function startApp(appSchema, path: string) {
           graphiql: true,
           context,
           rootValue: {},
-          // FIXME: This needs to be updated as per the release notes of graphql-js v14
           formatError: graphqlErrorHandler(enableSentry, {
             req,
             // Why the checking on params? Do we reach this code if params is falsy?
@@ -211,37 +209,16 @@ function startApp(appSchema, path: string) {
             ? [depthLimit(QUERY_DEPTH_LIMIT)]
             : null,
           extensions: ({ document, result }) => {
-            const extensions = {}
-            const canonicalFieldPath = getCanonicalResourceDirectiveForField(
-              document
+            const canonicalExtensions = canonicalResourceExtension(
+              document,
+              result
             )
-
-            if (canonicalFieldPath && result.errors && result.errors.length) {
-              result.errors.forEach(e => {
-                if (isEqual(e.path, canonicalFieldPath)) {
-                  const needsFlattening =
-                    !!e.originalError &&
-                    e.originalError.hasOwnProperty("errors")
-
-                  const errors = needsFlattening ? e.originalError.errors : [e]
-
-                  const httpStatusCode = get(
-                    errors,
-                    "0.originalError.statusCode"
-                  )
-                  if (httpStatusCode) {
-                    extensions["canonicalResource"] = { httpStatusCode }
-                    return
-                  }
-                }
-              })
-            }
 
             const requestLoggerExtensions = enableRequestLogging
               ? fetchLoggerRequestDone(requestID)
               : {}
 
-            return { ...extensions, requestLoggerExtensions }
+            return { ...canonicalExtensions, requestLoggerExtensions }
           },
         }
       })
