@@ -1,3 +1,5 @@
+const { warn, error } = require("danger")
+
 const { promises: fs, createReadStream } = require("fs")
 const path = require("path")
 const { createHash } = require("crypto")
@@ -260,14 +262,13 @@ const diffDirectories = (
 
 // Main work
 ;(async () => {
-  console.log("") // Add some space to stdout for better legibility
-
   const branchState = await getBranchDrift()
 
   // Is there a better way to handle this?
   if (branchState.commitsBehind > 0) {
-    console.log("Branch is currently behind master, please update and rerun\n")
-    return
+    warn(
+      "Branch is currently behind master, might not reflect accurate state\n"
+    )
   }
 
   const fileChanges = Object.entries(await getChangedFiles()).filter(
@@ -312,16 +313,17 @@ const diffDirectories = (
   //   .map(([file]) => file)
 
   if (unknownChanges.length > 0) {
-    console.log(
-      "File changes detect with unknown git status, please verify the following and update the schema drift script"
+    error(
+      "File changes detect with unknown git status, please verify the following and update the schema drift script\n" +
+        unknownChanges.map(file => `- ${file}\n`)
     )
-    unknownChanges.forEach(file => console.log(file))
   }
 
   // Scenarios
   //
   // For files that exist in both places
-  // 1. File A was modified in (v1|v2), should it also be modified in (v2|v1)?
+
+  // File A was modified in (v1|v2), should it also be modified in (v2|v1)?
   modifiedFiles
     .map(filePath => [fromSchemaRoot(filePath), filePath])
     .filter(([file]) => filesInBothSchemas.includes(file))
@@ -333,7 +335,7 @@ const diffDirectories = (
         // Both files are the same now, nothing to do here
         if (schemaV1File.hash === schemaV2File.hash) return
 
-        console.log(
+        warn(
           `${
             schemaV1File.relativePath
           } has been modified, should this update also happen in ${
@@ -347,7 +349,7 @@ const diffDirectories = (
         // The files are the same, skip
         if (schemaV2File.hash === schemaV1File.hash) return
 
-        console.log(
+        warn(
           `${
             schemaV2File.relativePath
           } has been modified, should this update also happen in ${
@@ -357,22 +359,32 @@ const diffDirectories = (
       }
     })
 
-  //
   // For files added during transition
-  // 3. File was added to v1, should it also exist in v2?
+
+  // File was added to v1, should it also exist in v2?
   addedFiles
     .map(filePath => [fromSchemaRoot(filePath), filePath])
     .filter(([file]) => filesUniqueToSchemaV1.includes(file))
     .forEach(([, filePath]) => {
       const file = schemaV1.getFile(filePath)
-      console.log(
+      warn(
         `${file.relativePath} was added to v1, should it also be added to v2?`
       )
     })
-  //
-  // For updates in v1 that don't match to V2
-  // 4. An update was made to a file in v1, but it doesn't exist in V2. Double
-  //    check that there aren't updates required.
 
-  console.log("\n")
+  // For updates in v1 that don't match to V2
+
+  // An update was made to a file in v1, but it doesn't exist in V2. Double
+  // check that there aren't updates required.
+  modifiedFiles
+    .map(filePath => [fromSchemaRoot(filePath), filePath])
+    .filter(([file]) => filesUniqueToSchemaV1.includes(file))
+    .forEach(([, filePath]) => {
+      const file = schemaV1.getFile(filePath)
+      warn(
+        `${
+          file.relativePath
+        } was modified in v1, but doesn't exist in v2. Ensure no v2 changes are required.`
+      )
+    })
 })()
