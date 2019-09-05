@@ -32,7 +32,8 @@ import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
 import { ErrorExtension } from "./extensions/errorExtension"
 import { LoggingExtension } from "./extensions/loggingExtension"
-import { canonicalResourceExtension } from "./extensions/canonicalResourceExtension"
+import { canonicalResourceDirectiveExtension } from "./extensions/canonicalResourceDirectiveExtension"
+import { canonicalResourceDirectiveValidation } from "validations/canonicalResourceDirectiveValidation"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -194,6 +195,10 @@ function startApp(appSchema, path: string) {
           userAgent,
         }
 
+        const validationRules = [canonicalResourceDirectiveValidation]
+        if (QUERY_DEPTH_LIMIT)
+          validationRules.push(depthLimit(QUERY_DEPTH_LIMIT))
+
         return {
           schema: appSchema,
           graphiql: true,
@@ -205,11 +210,9 @@ function startApp(appSchema, path: string) {
             variables: params && params.variables,
             query: (params && params.query)!,
           }),
-          validationRules: QUERY_DEPTH_LIMIT
-            ? [depthLimit(QUERY_DEPTH_LIMIT)]
-            : null,
+          validationRules,
           extensions: ({ document, result }) => {
-            const canonicalExtensions = canonicalResourceExtension(
+            const canonicalExtensions = canonicalResourceDirectiveExtension(
               document,
               result
             )

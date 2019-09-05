@@ -2,7 +2,7 @@ import { getCanonicalResourceDirectiveForField } from "lib/getCanonicalResourceD
 import { isEqual } from "lodash"
 import { flattenErrors, statusCodeForError } from "lib/graphqlErrorHandler"
 
-export const canonicalResourceExtension = (documentAST, result) => {
+export const canonicalResourceDirectiveExtension = (documentAST, result) => {
   const canonicalFieldPath = getCanonicalResourceDirectiveForField(documentAST)
   let canonicalExtensions = {}
   if (canonicalFieldPath.length && result.errors && result.errors.length) {
