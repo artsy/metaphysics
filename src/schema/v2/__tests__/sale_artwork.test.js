@@ -116,7 +116,7 @@ describe("SaleArtwork type", () => {
         execute(query, gravityResponse, context)
       ).rejects.toHaveProperty(
         "message",
-        "schema/sale_artwork - Missing increment strategy"
+        expect.stringContaining("Missing increment strategy")
       )
     })
 
