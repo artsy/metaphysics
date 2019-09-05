@@ -5,7 +5,7 @@ import { applyMiddleware as applyGraphQLMiddleware } from "graphql-middleware"
 import bodyParser from "body-parser"
 import config from "./config"
 import cors from "cors"
-import { get } from "lodash"
+import { get, isEqual } from "lodash"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
@@ -212,16 +212,13 @@ function startApp(appSchema, path: string) {
             : null,
           extensions: ({ document, result }) => {
             const extensions = {}
-            // TODO: Right now this can only correctly work
-            // on canonical fields that are at the root of the query
             const canonicalFieldPath = getCanonicalResourceDirectiveForField(
               document
             )
 
-            if (result.errors && result.errors.length) {
+            if (canonicalFieldPath && result.errors && result.errors.length) {
               result.errors.forEach(e => {
-                const errorPath = get(e, "path.0")
-                if (errorPath === canonicalFieldPath) {
+                if (isEqual(e.path, canonicalFieldPath)) {
                   const needsFlattening =
                     !!e.originalError &&
                     e.originalError.hasOwnProperty("errors")
