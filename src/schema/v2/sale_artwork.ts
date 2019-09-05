@@ -83,12 +83,17 @@ const BidIncrementsFormatted = new GraphQLObjectType<any, ResolverContext>({
 
 export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
   name: "SaleArtwork",
-  interfaces: [NodeInterface],
+  interfaces: () => {
+    const { ArtworkEdgeInterface } = require("./artwork")
+    return [NodeInterface, ArtworkEdgeInterface]
+  },
   fields: () => {
     return {
       ...SlugAndInternalIDFields,
       cached,
       artwork: { type: Artwork.type, resolve: ({ artwork }) => artwork },
+      node: { type: Artwork.type, resolve: ({ artwork }) => artwork },
+      cursor: { type: GraphQLString },
       counts: {
         resolve: x => x,
         type: new GraphQLObjectType<any, ResolverContext>({

@@ -1,9 +1,11 @@
 patch-package
 --- a/node_modules/@types/graphql-relay/index.d.ts
 +++ b/node_modules/@types/graphql-relay/index.d.ts
-@@ -71,7 +71,9 @@ export interface ConnectionConfig {
+@@ -70,8 +70,11 @@ export interface ConnectionConfig {
+     nodeType: ConnectionConfigNodeType;
      resolveNode?: GraphQLFieldResolver<any, any> | null;
      resolveCursor?: GraphQLFieldResolver<any, any> | null;
++    edgeType?: GraphQLObjectType | null,
      edgeFields?: Thunk<GraphQLFieldConfigMap<any, any>> | null;
 +    edgeInterfaces?: GraphQLInterfaceType[];
      connectionFields?: Thunk<GraphQLFieldConfigMap<any, any>> | null;
@@ -11,7 +13,7 @@ patch-package
  }
  
  export interface GraphQLConnectionDefinitions {
-@@ -104,6 +106,8 @@ export interface PageInfo {
+@@ -104,6 +107,8 @@ export interface PageInfo {
      hasNextPage?: boolean | null;
  }
  
@@ -20,7 +22,16 @@ patch-package
  /**
   * A flow type designed to be exposed as a `Connection` over GraphQL.
   */
-@@ -211,11 +215,11 @@ export function getOffsetWithDefault(
+@@ -135,6 +140,8 @@ export interface ConnectionArguments {
+ export interface ArraySliceMetaInfo {
+     sliceStart: number;
+     arrayLength: number;
++    useValueAsEdge?: boolean;
++    resolveNode?: GraphQLFieldResolver<any, any> | null;
+ }
+ 
+ /**
+@@ -211,11 +218,11 @@ export function getOffsetWithDefault(
  
  // mutation/mutation.js
  
@@ -36,7 +47,7 @@ patch-package
  
  /**
   * A description of a mutation consumable by mutationWithClientMutationId
-@@ -231,12 +235,12 @@ export type mutationFn = (
+@@ -231,12 +238,12 @@ export type mutationFn = (
   * input field, and it should return an Object with a key for each
   * output field. It may return synchronously, or return a Promise.
   */
@@ -52,7 +63,7 @@ patch-package
      deprecationReason?: string;
  }
  
-@@ -244,8 +248,8 @@ export interface MutationConfig {
+@@ -244,8 +251,8 @@ export interface MutationConfig {
   * Returns a GraphQLFieldConfig for the mutation described by the
   * provided MutationConfig.
   */
