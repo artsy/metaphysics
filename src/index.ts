@@ -5,6 +5,7 @@ import { applyMiddleware as applyGraphQLMiddleware } from "graphql-middleware"
 import bodyParser from "body-parser"
 import config from "./config"
 import cors from "cors"
+import { get } from "lodash"
 import createLoaders from "./lib/loaders"
 import depthLimit from "graphql-depth-limit"
 import express from "express"
@@ -18,6 +19,7 @@ import {
   fetchLoggerSetup,
   fetchLoggerRequestDone,
 } from "lib/loaders/api/extensionsLogger"
+import { getCanonicalResourceDirectiveForField } from "lib/loaders/getCanonicalResourceDirectiveField"
 import { info } from "./lib/loggers"
 import {
   executableExchangeSchema,
@@ -208,9 +210,42 @@ function startApp(appSchema, path: string) {
           validationRules: QUERY_DEPTH_LIMIT
             ? [depthLimit(QUERY_DEPTH_LIMIT)]
             : null,
-          extensions: enableRequestLogging
-            ? () => fetchLoggerRequestDone(requestID)
-            : undefined,
+          extensions: ({ document, result }) => {
+            const extensions = {}
+            // TODO: Right now this can only correctly work
+            // on canonical fields that are at the root of the query
+            const canonicalFieldPath = getCanonicalResourceDirectiveForField(
+              document
+            )
+
+            if (result.errors && result.errors.length) {
+              result.errors.forEach(e => {
+                const errorPath = get(e, "path.0")
+                if (errorPath === canonicalFieldPath) {
+                  const needsFlattening =
+                    !!e.originalError &&
+                    e.originalError.hasOwnProperty("errors")
+
+                  const errors = needsFlattening ? e.originalError.errors : [e]
+
+                  const httpStatusCode = get(
+                    errors,
+                    "0.originalError.statusCode"
+                  )
+                  if (httpStatusCode) {
+                    extensions["canonicalResource"] = { httpStatusCode }
+                    return
+                  }
+                }
+              })
+            }
+
+            const requestLoggerExtensions = enableRequestLogging
+              ? fetchLoggerRequestDone(requestID)
+              : {}
+
+            return { ...extensions, requestLoggerExtensions }
+          },
         }
       })
     )
