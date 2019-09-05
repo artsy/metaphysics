@@ -1,4 +1,4 @@
-import Partner from "./partner"
+import { PartnerType } from "./partner"
 import Artist from "./artist/index"
 import numeral from "./fields/numeral"
 import { IDFields } from "./object_identification"
@@ -67,7 +67,7 @@ const fields: Thunk<
     resolve: ({ is_use_default_biography }) => is_use_default_biography,
   },
   partner: {
-    type: Partner.type,
+    type: PartnerType,
   },
   sortableID: {
     type: GraphQLString,
@@ -106,7 +106,7 @@ export default PartnerArtist
 // The edge is the PartnerArtist relationship, with the node being the partner.
 export const PartnerArtistConnection = connectionDefinitions({
   name: "PartnerArtist",
-  nodeType: Partner.type,
+  nodeType: PartnerType,
   edgeFields: fields,
 }).connectionType
 

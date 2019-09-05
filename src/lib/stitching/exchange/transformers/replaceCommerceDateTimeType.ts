@@ -7,6 +7,8 @@ import {
   GraphQLNonNull,
   GraphQLString,
   getNamedType,
+  isNamedType,
+  isWrappingType,
 } from "graphql"
 import {
   visitSchema,
@@ -67,8 +69,11 @@ export class ReplaceCommerceDateTimeType implements Transform {
     const newFields: GraphQLFieldConfigMap<any, any> = {}
     const resolveType = createResolveType((_name, type) => {
       if (
-        type.name === "CommerceDateTime" ||
-        (type.ofType && type.ofType.name === "CommerceDateTime")
+        isNamedType(type) &&
+        (type.name === "CommerceDateTime" ||
+          (isWrappingType(type) &&
+            type.ofType &&
+            type.ofType.name === "CommerceDateTime"))
       ) {
         return dateField.type
       }
@@ -77,9 +82,11 @@ export class ReplaceCommerceDateTimeType implements Transform {
 
     Object.entries(fields).forEach(([fieldName, fieldDefinition]) => {
       const fieldConfig = fieldToFieldConfig(fieldDefinition, resolveType, true)
+      const type = fieldDefinition.type
       // If it's not a type we want to replace, just skip it
       if (
-        ["CommerceDateTime", "CommerceDate"].includes(fieldDefinition.type.name)
+        isNamedType(type) &&
+        ["CommerceDateTime", "CommerceDate"].includes(type.name)
       ) {
         madeChanges = true
         newFields[fieldName] = {
@@ -88,7 +95,9 @@ export class ReplaceCommerceDateTimeType implements Transform {
         }
       } else if (
         ["CommerceDateTime!", "CommerceDate!"].includes(
-          getNamedType(fieldDefinition).type.toString()
+          // FIXME: Something is really wrong here, you can't pass a field def
+          //        to getNamedType.
+          (getNamedType(fieldDefinition as any)! as any).type.toString()
         )
       ) {
         madeChanges = true
