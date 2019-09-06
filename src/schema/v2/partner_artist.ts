@@ -137,8 +137,6 @@ export const partnersForArtist = (
     return connectionFromArraySlice(body, options, {
       arrayLength: parseInt(headers["x-total-count"] || "0", 10),
       sliceStart: offset,
-      // Type properly
-      // @ts-ignore
       resolveNode: node => node.partner, // Can also be a promise: `partnerLoader(node.partner.id)`
     })
   })

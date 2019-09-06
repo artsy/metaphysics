@@ -4,6 +4,8 @@ import config from "config"
 config.BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT = 400000
 
 import { runQuery } from "schema/v2/test/utils"
+import gql from "lib/gql"
+import { toGlobalId } from "graphql-relay"
 
 describe("SaleArtwork type", () => {
   const saleArtwork = {
@@ -44,11 +46,16 @@ describe("SaleArtwork type", () => {
   describe("increments", () => {
     describe("with a max amount set", () => {
       it("does not return increments above the max allowed", async () => {
-        const query = `
+        const query = gql`
           {
-            saleArtwork(id: "54c7ed2a7261692bfa910200") {
-              increments {
-                cents
+            node(id: "${toGlobalId(
+              "SaleArtwork",
+              "54c7ed2a7261692bfa910200"
+            )}") {
+              ... on SaleArtwork {
+                increments {
+                  cents
+                }
               }
             }
           }
@@ -82,9 +89,7 @@ describe("SaleArtwork type", () => {
         }
 
         const data = await execute(query, saleArtwork, context)
-        expect(
-          data.saleArtwork.increments.slice(0, 20).map(i => i.cents)
-        ).toEqual([
+        expect(data.node.increments.slice(0, 20).map(i => i.cents)).toEqual([
           351000,
           355000,
           360000,

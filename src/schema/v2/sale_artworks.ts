@@ -1,9 +1,7 @@
 import {
   GraphQLBoolean,
   GraphQLFieldConfig,
-  GraphQLFieldConfigArgumentMap,
   GraphQLID,
-  GraphQLInt,
   GraphQLList,
   GraphQLObjectType,
   GraphQLString,
@@ -20,46 +18,11 @@ import {
   SaleArtworksAggregation,
   SaleArtworksAggregationResultsType,
 } from "./aggregations/filter_sale_artworks_aggregation"
+import { ArtworkType, ArtworkConnectionInterface } from "./artwork"
 
 const DEFAULTS = {
   aggregations: ["total"],
   first: 10,
-}
-
-const filterSaleArtworksArgs: GraphQLFieldConfigArgumentMap = {
-  aggregations: {
-    type: new GraphQLList(SaleArtworksAggregation),
-  },
-  artistIDs: {
-    type: new GraphQLList(GraphQLString),
-  },
-  includeArtworksByFollowedArtists: {
-    type: GraphQLBoolean,
-  },
-  liveSale: {
-    type: GraphQLBoolean,
-  },
-  isAuction: {
-    type: GraphQLBoolean,
-  },
-  geneIDs: {
-    type: new GraphQLList(GraphQLString),
-  },
-  estimateRange: {
-    type: GraphQLString,
-  },
-  page: {
-    type: GraphQLInt,
-  },
-  saleID: {
-    type: GraphQLID,
-  },
-  size: {
-    type: GraphQLInt,
-  },
-  sort: {
-    type: GraphQLString,
-  },
 }
 
 const SaleArtworkAggregations = {
@@ -90,24 +53,68 @@ const SaleArtworkCounts = {
   resolve: artist => artist,
 }
 
-const SaleArtworksType = connectionDefinitions({
+const SaleArtworksConnectionType = connectionDefinitions({
   name: "SaleArtworks",
-  nodeType: SaleArtworkType,
+  nodeType: ArtworkType,
+  edgeType: SaleArtworkType,
   connectionFields: {
     aggregations: SaleArtworkAggregations,
     counts: SaleArtworkCounts,
   },
+  connectionInterfaces: [ArtworkConnectionInterface],
 }).connectionType
 
-const SaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
-  args: pageable(filterSaleArtworksArgs),
+export const SaleArtworksConnectionField: GraphQLFieldConfig<
+  void,
+  ResolverContext
+> = {
+  args: pageable({
+    // TODO: For now this will be the default as it's only being used under `me`
+    //       If this gets used elsewhere in the future, be sure to *not* expose
+    //       these arguments under `me`, as they make no sense there.
+    //
+    // includeArtworksByFollowedArtists: {
+    //   type: GraphQLBoolean,
+    // },
+    // artistIDs: {
+    //   type: new GraphQLList(GraphQLString),
+    // },
+    aggregations: {
+      type: new GraphQLList(SaleArtworksAggregation),
+    },
+    liveSale: {
+      type: GraphQLBoolean,
+    },
+    isAuction: {
+      type: GraphQLBoolean,
+    },
+    geneIDs: {
+      type: new GraphQLList(GraphQLString),
+    },
+    estimateRange: {
+      type: GraphQLString,
+    },
+    saleID: {
+      type: GraphQLID,
+    },
+    sort: {
+      type: GraphQLString,
+    },
+    // TODO: Enable when needed.
+    // page: {
+    //   type: GraphQLInt,
+    // },
+    // size: {
+    //   type: GraphQLInt,
+    // },
+  }),
   description: "Sale Artworks search results",
-  type: SaleArtworksType,
+  type: SaleArtworksConnectionType,
   resolve: async (
     _root,
     {
-      artistIDs,
-      includeArtworksByFollowedArtists,
+      // artistIDs,
+      // includeArtworksByFollowedArtists,
       liveSale,
       isAuction,
       geneIDs,
@@ -118,8 +125,9 @@ const SaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     { saleArtworksFilterLoader, saleArtworksAllLoader }
   ) => {
     const args = {
-      artist_ids: artistIDs,
-      include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
+      // artist_ids: artistIDs,
+      // include_artworks_by_followed_artists: includeArtworksByFollowedArtists,
+      include_artworks_by_followed_artists: true,
       live_sale: liveSale,
       is_auction: isAuction,
       gene_ids: geneIDs,
@@ -157,6 +165,7 @@ const SaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     const data = {
       ...response,
       ...connectionFromArraySlice(response.hits, connectionOptions, {
+        useValueAsEdge: true,
         arrayLength: response.aggregations.total.value,
         sliceStart: params.offset,
       }),
@@ -165,5 +174,3 @@ const SaleArtworks: GraphQLFieldConfig<void, ResolverContext> = {
     return data
   },
 }
-
-export default SaleArtworks

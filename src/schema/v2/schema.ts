@@ -12,13 +12,10 @@ import FollowProfile from "./me/follow_profile"
 import FollowGene from "./me/follow_gene"
 import FollowShow from "./me/follow_show"
 import Sale from "./sale/index"
-import Sales from "./sales"
-import SaleArtwork from "./sale_artwork"
-import SaleArtworks from "./sale_artworks"
+import { SalesConnectionField } from "./sales"
 import { Search } from "./search"
 import Show from "./show"
 import Me from "./me"
-import MatchArtist from "./match/artist"
 import System from "./system"
 
 // import Status from "./status"
@@ -48,6 +45,9 @@ import System from "./system"
 // import { User } from "./user"
 // import MatchGene from "./match/gene"
 // import CausalityJWT from "./causality_jwt"
+// import SaleArtwork from "./sale_artwork"
+// import MatchArtist from "./match/artist"
+// import { SaleArtworksConnectionField } from "./sale_artworks"
 
 import UpdateConversationMutation from "./me/conversation/update_conversation_mutation"
 import SendConversationMessageMutation from "./me/conversation/send_message_mutation"
@@ -141,7 +141,7 @@ export default new GraphQLSchema({
       // geneFamilies: GeneFamilies,
       // geneFamily: GeneFamily,
       homePage: HomePage,
-      matchArtist: MatchArtist, // TODO: Remove in favour of `searchConnection`
+      // matchArtist: MatchArtist,
       // matchGene: MatchGene,
       me: Me,
       node: ObjectIdentification.NodeField,
@@ -153,9 +153,9 @@ export default new GraphQLSchema({
       // partners: Partners,
       // profile: Profile,
       sale: Sale,
-      saleArtwork: SaleArtwork, // TODO: Remove in favour of using node field
-      saleArtworksConnection: SaleArtworks,
-      sales: Sales, // TODO: Make a connection
+      // saleArtwork: SaleArtwork,
+      // saleArtworksConnection: SaleArtworksConnectionField,
+      salesConnection: SalesConnectionField,
       searchConnection: Search,
       show: Show,
       // status: Status,
