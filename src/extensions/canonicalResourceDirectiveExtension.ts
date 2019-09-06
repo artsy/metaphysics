@@ -6,21 +6,20 @@ export const canonicalResourceDirectiveExtension = (documentAST, result) => {
   const canonicalFieldPath = getCanonicalResourceDirectiveForField(documentAST)
   let canonicalExtensions = {}
   if (canonicalFieldPath.length && result.errors && result.errors.length) {
-    result.errors.forEach(e => {
-      if (isEqual(e.path, canonicalFieldPath)) {
-        const errors = flattenErrors(e)
+    const errors = result.errors
+      .filter(e => isEqual(e.path, canonicalFieldPath))
+      .pop()
 
-        errors.forEach(err => {
-          const httpStatusCode = statusCodeForError(err)
+    flattenErrors(errors).some(err => {
+      const httpStatusCode = statusCodeForError(err)
 
-          if (httpStatusCode) {
-            canonicalExtensions["canonicalResource"] = {
-              httpStatusCode,
-            }
-            return
-          }
-        })
+      if (httpStatusCode) {
+        canonicalExtensions["canonicalResource"] = {
+          httpStatusCode,
+        }
+        return true
       }
+      return false
     })
   }
 
