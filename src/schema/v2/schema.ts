@@ -12,7 +12,7 @@ import FollowProfile from "./me/follow_profile"
 import FollowGene from "./me/follow_gene"
 import FollowShow from "./me/follow_show"
 import Sale from "./sale/index"
-import Sales from "./sales"
+import { SalesConnectionField } from "./sales"
 import { Search } from "./search"
 import Show from "./show"
 import Me from "./me"
@@ -155,7 +155,7 @@ export default new GraphQLSchema({
       sale: Sale,
       // saleArtwork: SaleArtwork,
       // saleArtworksConnection: SaleArtworksConnectionField,
-      sales: Sales, // TODO: Make a connection
+      salesConnection: SalesConnectionField,
       searchConnection: Search,
       show: Show,
       // status: Status,

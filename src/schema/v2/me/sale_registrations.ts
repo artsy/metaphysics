@@ -1,6 +1,6 @@
 import { first } from "lodash"
 import Sale from "schema/v2/sale/index"
-import Sales from "schema/v2/sales"
+import { SalesConnectionField } from "schema/v2/sales"
 import Bidder from "schema/v2/bidder"
 import {
   GraphQLList,
@@ -28,9 +28,10 @@ export const SaleRegistrationType = new GraphQLObjectType<any, ResolverContext>(
   }
 )
 
+// TODO: If this is needed by Reaction, it should become a connection
 const SaleRegistration: GraphQLFieldConfig<void, ResolverContext> = {
   type: new GraphQLList(SaleRegistrationType),
-  args: Sales.args,
+  args: SalesConnectionField.args,
   resolve: (_root, options, { meBiddersLoader, salesLoader }) => {
     if (!meBiddersLoader) return null
     return salesLoader(options).then(sales => {

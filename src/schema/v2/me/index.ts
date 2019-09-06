@@ -32,7 +32,7 @@ import Invoice from "./conversation/invoice"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
-import SaleRegistrations from "./sale_registrations"
+// import SaleRegistrations from "./sale_registrations"
 import { SavedArtworks } from "./saved_artworks"
 import Submissions from "./consignments/submissions"
 import config from "config"
@@ -119,7 +119,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
     },
     recentlyViewedArtworksConnection: RecentlyViewedArtworks,
-    saleRegistrations: SaleRegistrations,
+    // saleRegistrations: SaleRegistrations,
     type: {
       type: GraphQLString,
     },
