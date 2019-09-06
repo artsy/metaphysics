@@ -5,7 +5,7 @@ patch-package
      nodeType: ConnectionConfigNodeType;
      resolveNode?: GraphQLFieldResolver<any, any> | null;
      resolveCursor?: GraphQLFieldResolver<any, any> | null;
-+    edgeType?: GraphQLObjectType | null,
++    edgeType?: GraphQLObjectType | null;
      edgeFields?: Thunk<GraphQLFieldConfigMap<any, any>> | null;
 +    edgeInterfaces?: GraphQLInterfaceType[];
      connectionFields?: Thunk<GraphQLFieldConfigMap<any, any>> | null;
