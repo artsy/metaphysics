@@ -83,11 +83,15 @@ patch-package
      return FilterTypes;
 --- a/node_modules/graphql-tools/dist/transforms/visitSchema.js
 +++ b/node_modules/graphql-tools/dist/transforms/visitSchema.js
-@@ -29,7 +29,31 @@ function visitSchema(schema, visitor, stripResolvers) {
+@@ -29,7 +29,35 @@ function visitSchema(schema, visitor, stripResolvers) {
      var mutationType = schema.getMutationType();
      var subscriptionType = schema.getSubscriptionType();
      var typeMap = schema.getTypeMap();
 -    Object.keys(typeMap).map(function (typeName) {
++    var directives = [];
++    schema.getDirectives().forEach(directive => {
++        directives.push(directive)
++    })
 +
 +    // Move interfaces to the front of the list, as the call-site may need to
 +    // transform both interface and object types and thus need to be able to
@@ -116,3 +120,11 @@ patch-package
          var type = typeMap[typeName];
          if (graphql_1.isNamedType(type) && graphql_1.getNamedType(type).name.slice(0, 2) !== '__') {
              var specifiers = getTypeSpecifiers(type, schema);
+@@ -60,6 +88,7 @@ function visitSchema(schema, visitor, stripResolvers) {
+             ? types[subscriptionType.name]
+             : null,
+         types: Object.keys(types).map(function (name) { return types[name]; }),
++        directives: directives.map((directive) => schemaRecreation_1.recreateDirective(directive, resolveType))
+     });
+ }
+ exports.visitSchema = visitSchema;
