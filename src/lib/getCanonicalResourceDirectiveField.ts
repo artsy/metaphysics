@@ -1,5 +1,4 @@
 import { visit, BREAK, DocumentNode } from "graphql"
-import { get } from "lodash"
 
 export const getCanonicalResourceDirectiveForField = (
   documentNode: DocumentNode
@@ -8,7 +7,7 @@ export const getCanonicalResourceDirectiveForField = (
   visit(documentNode, {
     Field: {
       enter(node) {
-        const name = get(node, "alias.value") || node.name.value
+        const name = (node.alias || node.name).value
         path.push(name)
       },
       leave() {

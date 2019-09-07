@@ -40,6 +40,14 @@ function createSchema({
 }
 
 describe(transformToV2, () => {
+  it("includes the canonical resource directive", () => {
+    const schema = require("schema/v2").default
+    const directive = schema
+      .getDirectives()
+      .find(d => d.name === "canonicalResource")
+    expect(directive).toBeTruthy()
+  })
+
   describe("concerning cleanup", () => {
     it("filters out types", () => {
       const schema = createSchema({
