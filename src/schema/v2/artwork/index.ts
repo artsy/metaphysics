@@ -480,6 +480,12 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ price_includes_tax }) => price_includes_tax,
       },
+      priceIncludesTaxDisplay: {
+        type: GraphQLString,
+        resolve: ({ price_includes_tax }) => {
+          return price_includes_tax ? "VAT included in price" : null
+        },
+      },
       shipsToContinentalUSOnly: {
         type: GraphQLBoolean,
         description:

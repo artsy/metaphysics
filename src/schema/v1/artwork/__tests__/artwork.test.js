@@ -379,6 +379,43 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#priceIncludesTaxDisplay", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          id
+          priceIncludesTaxDisplay
+        }
+      }
+    `
+
+    it("returns a string if price_includes_tax is true", () => {
+      artwork.price_includes_tax = true
+
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            priceIncludesTaxDisplay: "VAT included in price",
+          },
+        })
+      })
+    })
+
+    it("returns null if price_includes_tax is false", () => {
+      artwork.price_includes_tax = false
+
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            id: "richard-prince-untitled-portrait",
+            priceIncludesTaxDisplay: null,
+          },
+        })
+      })
+    })
+  })
+
   describe("#images", () => {
     const query = `
       {
