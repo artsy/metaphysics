@@ -515,7 +515,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             artwork.domestic_shipping_fee_cents == null &&
             artwork.international_shipping_fee_cents == null
           )
-            return "Shipping, tax, and service quoted by seller"
+            return "Shipping, tax, and additional fees quoted by seller"
           if (
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents == null

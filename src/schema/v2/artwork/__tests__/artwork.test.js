@@ -1405,7 +1405,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping, tax, and service quoted by seller",
+            shippingInfo: "Shipping, tax, and additional fees quoted by seller",
           },
         })
       })
