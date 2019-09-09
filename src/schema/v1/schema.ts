@@ -96,6 +96,7 @@ import {
   GraphQLFieldConfigMap,
   GraphQLDirective,
   DirectiveLocation,
+  specifiedDirectives,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -280,5 +281,5 @@ export default new GraphQLSchema({
     RelatedArtworkGridType,
     ShowArtworkGridType,
   ],
-  directives: [PrincipalFieldDirective],
+  directives: specifiedDirectives.concat([PrincipalFieldDirective]),
 })
