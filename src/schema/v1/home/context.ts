@@ -4,12 +4,12 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { assign, create } from "lodash"
-import Artist from "schema/v1/artist/index"
-import Trending from "schema/v1/artists/trending"
-import Fair from "schema/v1/fair"
-import Gene from "schema/v1/gene"
-import FollowArtists from "schema/v1/me/follow_artists"
-import Sale from "schema/v1/sale/index"
+import { ArtistType } from "schema/v1/artist/index"
+import { TrendingArtistsType } from "schema/v1/artists/trending"
+import { FairType } from "schema/v1/fair"
+import { GeneType } from "schema/v1/gene"
+import { FollowArtistsType } from "schema/v1/me/follow_artists"
+import { SaleType } from "schema/v1/sale/index"
 import { ResolverContext } from "types/graphql"
 import {
   featuredAuction,
@@ -26,28 +26,28 @@ import {
   HomePageArtworkModuleResolvers,
 } from "./types"
 
-export const HomePageModuleContextFairType = create(Fair.type, {
+export const HomePageModuleContextFairType = create(FairType, {
   name: "HomePageModuleContextFair",
   isTypeOf: ({ context_type }) => context_type === "Fair",
 })
 
-export const HomePageModuleContextSaleType = create(Sale.type, {
+export const HomePageModuleContextSaleType = create(SaleType, {
   name: "HomePageModuleContextSale",
   isTypeOf: ({ context_type }) => context_type === "Sale",
 })
 
-export const HomePageModuleContextGeneType = create(Gene.type, {
+export const HomePageModuleContextGeneType = create(GeneType, {
   name: "HomePageModuleContextGene",
   isTypeOf: ({ context_type }) => context_type === "Gene",
 })
 
-export const HomePageModuleContextTrendingType = create(Trending.type, {
+export const HomePageModuleContextTrendingType = create(TrendingArtistsType, {
   name: "HomePageModuleContextTrending",
   isTypeOf: ({ context_type }) => context_type === "Trending",
 })
 
 export const HomePageModuleContextFollowArtistsType = create(
-  FollowArtists.type,
+  FollowArtistsType,
   {
     name: "HomePageModuleContextFollowArtists",
     isTypeOf: ({ context_type }) => context_type === "FollowArtists",
@@ -61,10 +61,10 @@ export const HomePageModuleContextRelatedArtistType = new GraphQLObjectType<
   name: "HomePageModuleContextRelatedArtist",
   fields: () => ({
     artist: {
-      type: Artist.type,
+      type: ArtistType,
     },
     based_on: {
-      type: Artist.type,
+      type: ArtistType,
     },
   }),
   isTypeOf: ({ context_type }) => context_type === "RelatedArtist",
@@ -77,7 +77,7 @@ export const HomePageModuleContextFollowedArtistType = new GraphQLObjectType<
   name: "HomePageModuleContextFollowedArtist",
   fields: () => ({
     artist: {
-      type: Artist.type,
+      type: ArtistType,
     },
   }),
   isTypeOf: ({ context_type }) => context_type === "FollowedArtist",

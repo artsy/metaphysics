@@ -32,11 +32,12 @@ import Invoice from "./conversation/invoice"
 import LotStanding from "./lot_standing"
 import LotStandings from "./lot_standings"
 import { RecentlyViewedArtworks } from "./recently_viewed_artworks"
-import SaleRegistrations from "./sale_registrations"
+// import SaleRegistrations from "./sale_registrations"
 import { SavedArtworks } from "./saved_artworks"
 import Submissions from "./consignments/submissions"
 import config from "config"
 import { ResolverContext } from "types/graphql"
+import { SaleArtworksConnectionField } from "../sale_artworks"
 
 // @ts-ignore
 const { ENABLE_CONVECTION_STITCHING } = config
@@ -102,6 +103,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       },
     },
     invoice: Invoice,
+    lotsByFollowedArtistsConnection: SaleArtworksConnectionField,
     lotStanding: LotStanding,
     lotStandings: LotStandings,
     name: {
@@ -117,7 +119,7 @@ const Me = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ recently_viewed_artwork_ids }) => recently_viewed_artwork_ids,
     },
     recentlyViewedArtworksConnection: RecentlyViewedArtworks,
-    saleRegistrations: SaleRegistrations,
+    // saleRegistrations: SaleRegistrations,
     type: {
       type: GraphQLString,
     },
@@ -132,11 +134,8 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "id",
       "internalID",
       "creditCards",
-      "followArtists",
-      "followedGenes",
       "hasCreditCards",
       "hasQualifiedCreditCards",
-      "suggestedArtists",
       "bidders",
       "bidderPositions",
       "bidderPosition",
@@ -150,7 +149,7 @@ const MeField: GraphQLFieldConfig<void, ResolverContext> = {
       "artworkInquiries",
       "consignmentSubmissions",
       "followsAndSaves",
-      "savedArtworks",
+      "lotsByFollowedArtistsConnection",
     ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return meLoader().catch(() => null)

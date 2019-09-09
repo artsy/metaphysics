@@ -1,9 +1,10 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
+import gql from "lib/gql"
 
-describe("MatchArtist", () => {
+xdescribe("MatchArtist", () => {
   it("queries match/artist for the term 'ok'", () => {
-    const query = `
+    const query = gql`
       {
         matchArtist(term: "ok") {
           slug

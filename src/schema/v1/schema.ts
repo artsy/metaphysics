@@ -94,6 +94,9 @@ import {
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLFieldConfigMap,
+  GraphQLDirective,
+  DirectiveLocation,
+  specifiedDirectives,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
@@ -226,6 +229,11 @@ stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
 stitchedMutations.rejectOrder = RejectOrderMutation
 stitchedMutations.submitOrder = SubmitOrderMutation
 
+const PrincipalFieldDirective = new GraphQLDirective({
+  name: "principalField",
+  locations: [DirectiveLocation.FIELD],
+})
+
 export default new GraphQLSchema({
   allowedLegacyNames: ["__id"],
   mutation: new GraphQLObjectType<any, ResolverContext>({
@@ -273,4 +281,5 @@ export default new GraphQLSchema({
     RelatedArtworkGridType,
     ShowArtworkGridType,
   ],
+  directives: specifiedDirectives.concat([PrincipalFieldDirective]),
 })

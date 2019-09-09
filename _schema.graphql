@@ -1,3 +1,5 @@
+directive @principalField on FIELD
+
 input AddAssetToConsignmentSubmissionInput {
   # The type of the asset
   asset_type: String!
@@ -4640,6 +4642,7 @@ type CommerceSubmitOrderPayload {
 input CommerceSubmitOrderWithOfferInput {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
+  confirmedSetupIntentId: String
   offerId: ID!
 }
 

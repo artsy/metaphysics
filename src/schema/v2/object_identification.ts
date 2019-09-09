@@ -53,6 +53,7 @@ const SupportedTypes: any = {
     "./show",
     "./sale",
     "./collection",
+    "./sale_artwork",
   ],
 }
 
@@ -166,7 +167,10 @@ export const GlobalIDField: GraphQLFieldConfig<any, ResolverContext> = {
   // return `null`, so that graphql-js will complain about the result not
   // matching the type specified in the schema.
   resolve: (obj, _args, _request, info) => {
-    return obj.id && toGlobalId(info.parentType.name, obj.id)
+    return (
+      (obj._id && toGlobalId(info.parentType.name, obj._id)) ||
+      (obj.id && toGlobalId(info.parentType.name, obj.id))
+    )
   },
 }
 

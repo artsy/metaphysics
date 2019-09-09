@@ -61,7 +61,7 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
 /**
  * This type is deprecated entirely, use Show instead.
  */
-const PartnerShowType = deprecateType(
+export const PartnerShowType = deprecateType(
   { inVersion: 2, preferUsageOf: "Show" },
   new GraphQLObjectType<any, ResolverContext>({
     name: "PartnerShow",

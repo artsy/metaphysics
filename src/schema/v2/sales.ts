@@ -1,30 +1,32 @@
-import { clone } from "lodash"
-import Sale from "./sale/index"
+import { SaleType } from "./sale/index"
 import SaleSorts from "./sale/sorts"
-import {
-  GraphQLList,
-  GraphQLInt,
-  GraphQLBoolean,
-  GraphQLString,
-  GraphQLFieldConfig,
-} from "graphql"
+import { GraphQLBoolean, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { pageable } from "relay-cursor-paging"
+import { connectionWithCursorInfo } from "./fields/pagination"
+import { connectionFromArraySlice } from "graphql-relay"
+import { convertConnectionArgsToGravityArgs } from "lib/helpers"
+import { BodyAndHeaders } from "lib/loaders"
 
-const Sales: GraphQLFieldConfig<void, ResolverContext> = {
-  type: new GraphQLList(Sale.type),
+export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
+  type: connectionWithCursorInfo({ nodeType: SaleType }).connectionType,
   description: "A list of Sales",
-  args: {
+  args: pageable({
+    // TODO: This wasn’t needed by Emission and is a tad awkward of an arg. If
+    //       this was meant for refetching purposes, then we should add a plural
+    //       `nodes` root field and use that instead.
+    //
+    // ids: {
+    //   type: new GraphQLList(GraphQLString),
+    //   description: `
+    //     Only return sales matching specified ids.
+    //     Accepts list of ids.
+    //   `,
+    // },
     isAuction: {
       description: "Limit by auction.",
       type: GraphQLBoolean,
       defaultValue: true,
-    },
-    ids: {
-      type: new GraphQLList(GraphQLString),
-      description: `
-        Only return sales matching specified ids.
-        Accepts list of ids.
-      `,
     },
     live: {
       description: "Limit by live status.",
@@ -36,24 +38,39 @@ const Sales: GraphQLFieldConfig<void, ResolverContext> = {
       type: GraphQLBoolean,
       defaultValue: true,
     },
-    size: {
-      type: GraphQLInt,
-    },
     sort: SaleSorts,
-  },
-  resolve: (_root, { isAuction, ..._options }, { salesLoader }) => {
-    const options: any = {
-      is_auction: isAuction,
-      ..._options,
-    }
-    const cleanedOptions = clone(options)
-    // Rename ids plural to id to match Gravity
-    if (options.ids) {
-      cleanedOptions.id = options.ids
-      delete cleanedOptions.ids
-    }
-    return salesLoader(cleanedOptions)
+  }),
+  resolve: async (
+    _root,
+    { isAuction, live, published, sort, ...paginationArgs },
+    { salesLoader }
+  ) => {
+    const { page, size, offset } = convertConnectionArgsToGravityArgs(
+      paginationArgs
+    )
+
+    // // Rename ids plural to id to match Gravity
+    // if (options.ids) {
+    //   cleanedOptions.id = options.ids
+    //   delete cleanedOptions.ids
+    // }
+
+    const { body: sales, headers } = ((await salesLoader(
+      {
+        is_auction: isAuction,
+        live,
+        published,
+        sort,
+        page,
+        size,
+        total_count: true,
+      },
+      { headers: true }
+    )) as any) as BodyAndHeaders
+
+    return connectionFromArraySlice(sales, paginationArgs, {
+      arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+      sliceStart: offset,
+    })
   },
 }
-
-export default Sales

@@ -2,7 +2,7 @@ import { map, omit, keys, create, assign } from "lodash"
 import { isExisty } from "lib/helpers"
 import Artwork from "./artwork"
 import Artist from "./artist"
-import Tag from "./tag"
+import { TagType } from "./tag"
 import numeral from "./fields/numeral"
 import {
   computeTotalPages,
@@ -38,12 +38,12 @@ import {
   parseConnectionArgsFromConnection,
 } from "lib/hasFieldSelection"
 
-const ArtworkFilterTagType = create(Tag.type, {
+const ArtworkFilterTagType = create(TagType, {
   name: "ArtworkFilterTag",
   isTypeOf: ({ context_type }) => context_type === "Tag",
 })
 
-const ArtworkFilterGeneType = create(Tag.type, {
+const ArtworkFilterGeneType = create(TagType, {
   name: "ArtworkFilterGene",
   isTypeOf: ({ context_type }) => context_type === "Gene",
 })
@@ -371,7 +371,7 @@ const filterArtworksTypeFactory = (
     if (Object.keys(connectionArgs).length) {
       relayOptions = convertConnectionArgsToGravityArgs(connectionArgs)
     } else {
-      relayOptions.size = relayOptions.size || 0
+      relayOptions.size = gravityOptions.size || 0
     }
 
     if (!!gravityOptions.page) relayOptions.page = gravityOptions.page

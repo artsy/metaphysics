@@ -1,10 +1,10 @@
 import _ from "lodash"
 import gql from "lib/gql"
-import { runQuery } from "schema/v2/test/utils"
+import { runAuthenticatedQuery } from "schema/v2/test/utils"
 
 describe("Sale Artworks", () => {
   const execute = async (gravityResponse, query, context = {}) => {
-    return await runQuery(query, {
+    return await runAuthenticatedQuery(query, {
       saleArtworksFilterLoader: () => Promise.resolve(gravityResponse),
       ...context,
     })
@@ -21,17 +21,15 @@ describe("Sale Artworks", () => {
     }
     const query = gql`
       {
-        saleArtworksConnection(
-          liveSale: true
-          includeArtworksByFollowedArtists: true
-          isAuction: true
-        ) {
-          counts {
-            total
-          }
-          edges {
-            node {
-              slug
+        me {
+          lotsByFollowedArtistsConnection(liveSale: true, isAuction: true) {
+            counts {
+              total
+            }
+            edges {
+              node {
+                slug
+              }
             }
           }
         }
@@ -39,9 +37,11 @@ describe("Sale Artworks", () => {
     `
 
     const {
-      saleArtworksConnection: {
-        counts: { total },
-        edges,
+      me: {
+        lotsByFollowedArtistsConnection: {
+          counts: { total },
+          edges,
+        },
       },
     } = await execute(gravityResponse, query, {
       saleArtworksAllLoader: () => Promise.resolve(gravityResponse),
@@ -63,22 +63,26 @@ describe("Sale Artworks", () => {
     }
     const query = gql`
       {
-        saleArtworksConnection {
-          counts {
-            total
-          }
-          edges {
-            node {
-              slug
+        me {
+          lotsByFollowedArtistsConnection {
+            counts {
+              total
+            }
+            edges {
+              node {
+                slug
+              }
             }
           }
         }
       }
     `
     const {
-      saleArtworksConnection: {
-        counts: { total },
-        edges,
+      me: {
+        lotsByFollowedArtistsConnection: {
+          counts: { total },
+          edges,
+        },
       },
     } = await execute(gravityResponse, query)
     expect(total).toEqual(totalCount)
@@ -98,17 +102,21 @@ describe("Sale Artworks", () => {
     }
     const query = gql`
       {
-        saleArtworksConnection(size: 1) {
-          edges {
-            node {
-              slug
+        me {
+          lotsByFollowedArtistsConnection(first: 1) {
+            edges {
+              node {
+                slug
+              }
             }
           }
         }
       }
     `
     const {
-      saleArtworksConnection: { edges },
+      me: {
+        lotsByFollowedArtistsConnection: { edges },
+      },
     } = await execute(gravityResponse, query)
     expect(edges.length).toEqual(size)
   })
@@ -125,25 +133,29 @@ describe("Sale Artworks", () => {
     }
     let query = gql`
       {
-        saleArtworksConnection(first: 5) {
-          pageInfo {
-            startCursor
-            endCursor
-            hasNextPage
-          }
-          edges {
-            cursor
-            node {
-              slug
+        me {
+          lotsByFollowedArtistsConnection(first: 5) {
+            pageInfo {
+              startCursor
+              endCursor
+              hasNextPage
+            }
+            edges {
+              cursor
+              node {
+                slug
+              }
             }
           }
         }
       }
     `
     const {
-      saleArtworksConnection: {
-        edges,
-        pageInfo: { startCursor, endCursor, hasNextPage },
+      me: {
+        lotsByFollowedArtistsConnection: {
+          edges,
+          pageInfo: { startCursor, endCursor, hasNextPage },
+        },
       },
     } = await execute(gravityResponse, query)
     const [first, last] = [_.first(edges), _.last(edges)]
@@ -153,15 +165,19 @@ describe("Sale Artworks", () => {
 
     query = gql`
       {
-        saleArtworksConnection(first: 15, after: "${last.cursor}") {
-          pageInfo {
-            hasNextPage
+        me {
+          lotsByFollowedArtistsConnection(first: 15, after: "${last.cursor}") {
+            pageInfo {
+              hasNextPage
+            }
           }
         }
       }
     `
     const {
-      saleArtworksConnection: { pageInfo },
+      me: {
+        lotsByFollowedArtistsConnection: { pageInfo },
+      },
     } = await execute(gravityResponse, query)
     expect(pageInfo.hasNextPage).toEqual(false)
   })
@@ -178,16 +194,20 @@ describe("Sale Artworks", () => {
     }
     const query = gql`
       {
-        saleArtworksConnection {
-          counts {
-            total
+        me {
+          lotsByFollowedArtistsConnection {
+            counts {
+              total
+            }
           }
         }
       }
     `
     const {
-      saleArtworksConnection: {
-        counts: { total },
+      me: {
+        lotsByFollowedArtistsConnection: {
+          counts: { total },
+        },
       },
     } = await execute(gravityResponse, query)
     expect(total).toEqual(hits.length)
@@ -233,19 +253,23 @@ describe("Sale Artworks", () => {
 
     const query = gql`
       {
-        saleArtworksConnection(
-          aggregations: [TOTAL, MEDIUM, FOLLOWED_ARTISTS]
-        ) {
-          aggregations {
-            counts {
-              value
+        me {
+          lotsByFollowedArtistsConnection(
+            aggregations: [TOTAL, MEDIUM, FOLLOWED_ARTISTS]
+          ) {
+            aggregations {
+              counts {
+                value
+              }
             }
           }
         }
       }
     `
     const {
-      saleArtworksConnection: { aggregations },
+      me: {
+        lotsByFollowedArtistsConnection: { aggregations },
+      },
     } = await execute(gravityResponse, query)
 
     expect(aggregations.length).toBeGreaterThan(0)

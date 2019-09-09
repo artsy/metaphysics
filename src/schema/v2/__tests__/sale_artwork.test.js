@@ -1,4 +1,6 @@
 import { runAuthenticatedQuery, runQuery } from "schema/v2/test/utils"
+import gql from "lib/gql"
+import { toGlobalId } from "graphql-relay"
 
 describe("SaleArtwork type", () => {
   const saleArtwork = {
@@ -37,35 +39,37 @@ describe("SaleArtwork type", () => {
   }
 
   it("formats money correctly", async () => {
-    const query = `
+    const query = gql`
       {
-        saleArtwork(id: "54c7ed2a7261692bfa910200") {
-          highEstimate {
-            cents
-            amount(format: "%v EUROS!")
-            display
-          }
-          lowEstimate {
-            cents
-            amount
-            display
-          }
-          highestBid {
-            cents
-            amount
-            display
-          }
-          currentBid {
-            cents
-            amount
-            display
+        node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+          ... on SaleArtwork {
+            highEstimate {
+              cents
+              amount(format: "%v EUROS!")
+              display
+            }
+            lowEstimate {
+              cents
+              amount
+              display
+            }
+            highestBid {
+              cents
+              amount
+              display
+            }
+            currentBid {
+              cents
+              amount
+              display
+            }
           }
         }
       }
     `
 
     expect(await execute(query)).toEqual({
-      saleArtwork: {
+      node: {
         highEstimate: {
           cents: 300000,
           amount: "3,000 EUROS!",
@@ -92,12 +96,14 @@ describe("SaleArtwork type", () => {
 
   describe("bid_increments", () => {
     it("requires an increment strategy in order to retrieve increments", async () => {
-      const query = `
+      const query = gql`
         {
-          saleArtwork(id: "54c7ed2a7261692bfa910200") {
-            increments {
-              cents
-            } 
+          node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+            ... on SaleArtwork {
+              increments {
+                cents
+              }
+            }
           }
         }
       `
@@ -116,16 +122,18 @@ describe("SaleArtwork type", () => {
         execute(query, gravityResponse, context)
       ).rejects.toHaveProperty(
         "message",
-        "schema/sale_artwork - Missing increment strategy"
+        expect.stringContaining("Missing increment strategy")
       )
     })
 
     it("can return bid increments that are above the size of a GraphQLInt", async () => {
-      const query = `
+      const query = gql`
         {
-          saleArtwork(id: "54c7ed2a7261692bfa910200") {
-            increments {
-              cents
+          node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+            ... on SaleArtwork {
+              increments {
+                cents
+              }
             }
           }
         }
@@ -160,9 +168,7 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, gravityResponse, context)
-      expect(
-        data.saleArtwork.increments.slice(0, 20).map(i => i.cents)
-      ).toEqual([
+      expect(data.node.increments.slice(0, 20).map(i => i.cents)).toEqual([
         2400000000,
         2400001000,
         2400002000,
@@ -187,11 +193,13 @@ describe("SaleArtwork type", () => {
     })
 
     it("can return the bid increments, including Grav's asking price, and snap to preset increments", async () => {
-      const query = `
+      const query = gql`
         {
-          saleArtwork(id: "54c7ed2a7261692bfa910200") {
-            increments {
-              cents
+          node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+            ... on SaleArtwork {
+              increments {
+                cents
+              }
             }
           }
         }
@@ -225,9 +233,7 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, saleArtwork, context)
-      expect(
-        data.saleArtwork.increments.slice(0, 20).map(i => i.cents)
-      ).toEqual([
+      expect(data.node.increments.slice(0, 20).map(i => i.cents)).toEqual([
         351000,
         355000,
         360000,
@@ -252,12 +258,14 @@ describe("SaleArtwork type", () => {
     })
 
     it("formats bid increments", async () => {
-      const query = `
+      const query = gql`
         {
-          saleArtwork(id: "54c7ed2a7261692bfa910200") {
-            increments {
-              cents
-              display
+          node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+            ... on SaleArtwork {
+              increments {
+                cents
+                display
+              }
             }
           }
         }
@@ -291,7 +299,7 @@ describe("SaleArtwork type", () => {
       }
 
       const data = await execute(query, saleArtwork, context)
-      expect(data.saleArtwork.increments.slice(0, 2)).toEqual([
+      expect(data.node.increments.slice(0, 2)).toEqual([
         {
           cents: 351000,
           display: "€3,510",
@@ -306,7 +314,19 @@ describe("SaleArtwork type", () => {
 
   describe("my_increments", () => {
     let context
-    let query
+
+    const query = gql`
+      {
+        node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+          ... on SaleArtwork {
+            increments(useMyMaxBid: true) {
+              cents
+              display
+            }
+          }
+        }
+      }
+    `
 
     beforeEach(() => {
       context = {
@@ -335,22 +355,11 @@ describe("SaleArtwork type", () => {
           ])
         },
       }
-
-      query = `
-        {
-          saleArtwork(id: "54c7ed2a7261692bfa910200") {
-            increments(useMyMaxBid: true) {
-              cents
-              display
-            }
-          }
-        }
-      `
     })
 
     it("returns increments from the minimum next bid cents if the user has no lot standings", async () => {
       const data = await runAuthenticatedQuery(query, context)
-      expect(data.saleArtwork.increments.slice(0, 5)).toEqual([
+      expect(data.node.increments.slice(0, 5)).toEqual([
         {
           cents: 351000,
           display: "€3,510",
@@ -388,7 +397,7 @@ describe("SaleArtwork type", () => {
         ...context,
         lotStandingLoader: lotStandingLoader,
       })
-      expect(data.saleArtwork.increments.slice(0, 5)).toEqual([
+      expect(data.node.increments.slice(0, 5)).toEqual([
         {
           cents: 395000,
           display: "€3,950",
@@ -426,7 +435,7 @@ describe("SaleArtwork type", () => {
         ...context,
         lotStandingLoader: lotStandingLoader,
       })
-      expect(data.saleArtwork.increments.slice(0, 5)).toEqual([
+      expect(data.node.increments.slice(0, 5)).toEqual([
         {
           cents: 351000,
           display: "€3,510",

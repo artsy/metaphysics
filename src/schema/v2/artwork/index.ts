@@ -840,7 +840,7 @@ export const ArtworkEdgeInterface = new GraphQLInterfaceType({
       type: ArtworkType,
     },
     cursor: {
-      type: new GraphQLNonNull(GraphQLString),
+      type: GraphQLString,
     },
   },
 })

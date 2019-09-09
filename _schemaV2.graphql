@@ -1,3 +1,5 @@
+directive @principalField on FIELD
+
 input AddAssetToConsignmentSubmissionInput {
   # The type of the asset
   assetType: String!
@@ -1054,7 +1056,7 @@ type ArtworkEdge implements ArtworkEdgeInterface {
 
 interface ArtworkEdgeInterface {
   node: Artwork
-  cursor: String!
+  cursor: String
 }
 
 union ArtworkFilterFacet = Tag | Gene
@@ -2849,6 +2851,7 @@ type CommerceSubmitOrderPayload {
 input CommerceSubmitOrderWithOfferInput {
   # A unique identifier for the client performing the mutation.
   clientMutationId: String
+  confirmedSetupIntentId: String
   offerId: ID!
 }
 
@@ -4750,6 +4753,21 @@ type Me implements Node {
     invoiceId: String!
   ): Invoice
 
+  # Sale Artworks search results
+  lotsByFollowedArtistsConnection(
+    aggregations: [SaleArtworkAggregation]
+    liveSale: Boolean
+    isAuction: Boolean
+    geneIDs: [String]
+    estimateRange: String
+    saleID: ID
+    sort: String
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): SaleArtworksConnection
+
   # The current user's status relating to bids on artworks
   lotStanding(
     artworkID: String
@@ -4784,24 +4802,6 @@ type Me implements Node {
     before: String
     last: Int
   ): ArtworkConnection
-  saleRegistrations(
-    # Limit by auction.
-    isAuction: Boolean = true
-
-    #
-    #         Only return sales matching specified ids.
-    #         Accepts list of ids.
-    #
-    ids: [String]
-
-    # Limit by live status.
-    live: Boolean = true
-
-    # Limit by published status.
-    published: Boolean = true
-    size: Int
-    sort: SaleSorts
-  ): [SaleRegistration]
   type: String
 }
 
@@ -5409,21 +5409,6 @@ type Query {
 
   # Home screen content
   homePage: HomePage
-
-  # A Search for Artists
-  matchArtist(
-    # Your search term
-    term: String!
-
-    # Maximum number of items to retrieve. Default: 5.
-    size: Int
-
-    # Page to retrieve. Default: 1.
-    page: Int
-
-    # Exclude these MongoDB ids from results
-    excludeIDs: [String]
-  ): [Artist]
   me: Me
 
   # Fetches an object given its globally unique ID.
@@ -5438,50 +5423,22 @@ type Query {
     id: String!
   ): Sale
 
-  # A Sale Artwork
-  saleArtwork(
-    # The slug or ID of the SaleArtwork
-    id: String!
-  ): SaleArtwork
-
-  # Sale Artworks search results
-  saleArtworksConnection(
-    aggregations: [SaleArtworkAggregation]
-    artistIDs: [String]
-    includeArtworksByFollowedArtists: Boolean
-    liveSale: Boolean
-    isAuction: Boolean
-    geneIDs: [String]
-    estimateRange: String
-    page: Int
-    saleID: ID
-    size: Int
-    sort: String
-    after: String
-    first: Int
-    before: String
-    last: Int
-  ): SaleArtworksConnection
-
   # A list of Sales
-  sales(
+  salesConnection(
     # Limit by auction.
     isAuction: Boolean = true
-
-    #
-    #         Only return sales matching specified ids.
-    #         Accepts list of ids.
-    #
-    ids: [String]
 
     # Limit by live status.
     live: Boolean = true
 
     # Limit by published status.
     published: Boolean = true
-    size: Int
     sort: SaleSorts
-  ): [Sale]
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): SaleConnection
 
   # Global search
   searchConnection(
@@ -5772,7 +5729,7 @@ type Sale implements Node {
   symbol: String
 }
 
-type SaleArtwork {
+type SaleArtwork implements Node & ArtworkEdgeInterface {
   # A globally unique ID.
   id: ID!
 
@@ -5783,6 +5740,8 @@ type SaleArtwork {
   internalID: ID!
   cached: Int
   artwork: Artwork
+  node: Artwork
+  cursor: String
   counts: SaleArtworkCounts
 
   # Currency abbreviation (e.g. "USD")
@@ -5995,31 +5954,36 @@ type SaleArtworksAggregationResults {
 }
 
 # A connection to a list of items.
-type SaleArtworksConnection {
+type SaleArtworksConnection implements ArtworkConnectionInterface {
   # Information to aid in pagination.
   pageInfo: PageInfo!
 
   # A list of edges.
-  edges: [SaleArtworksEdge]
+  edges: [SaleArtwork]
 
   # Returns aggregation counts for the given filter query.
   aggregations: [SaleArtworksAggregationResults]
   counts: FilterSaleArtworksCounts
 }
 
+# A connection to a list of items.
+type SaleConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [SaleEdge]
+  pageCursors: PageCursors
+  totalCount: Int
+}
+
 # An edge in a connection.
-type SaleArtworksEdge {
+type SaleEdge {
   # The item at the end of the edge
-  node: SaleArtwork
+  node: Sale
 
   # A cursor for use in pagination
   cursor: String!
-}
-
-type SaleRegistration {
-  bidder: Bidder
-  isRegistered: Boolean
-  sale: Sale
 }
 
 enum SaleSorts {
