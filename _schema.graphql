@@ -1388,6 +1388,12 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Is this work available for shipping only within the Contenental US?
   shipsToContinentalUSOnly: Boolean
+    @deprecated(
+      reason: "Prefer to use `onlyShipsDomestically`. [Will be removed in v2]"
+    )
+
+  # Is this work only available for shipping domestically?
+  onlyShipsDomestically: Boolean
 
   # The string that describes domestic and international shipping.
   shippingInfo: String
@@ -2418,6 +2424,12 @@ type ArtworkItem implements Node & Searchable & Sellable {
 
   # Is this work available for shipping only within the Contenental US?
   shipsToContinentalUSOnly: Boolean
+    @deprecated(
+      reason: "Prefer to use `onlyShipsDomestically`. [Will be removed in v2]"
+    )
+
+  # Is this work only available for shipping domestically?
+  onlyShipsDomestically: Boolean
 
   # The string that describes domestic and international shipping.
   shippingInfo: String
