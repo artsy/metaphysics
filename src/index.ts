@@ -221,7 +221,7 @@ function startApp(appSchema, path: string) {
               ? fetchLoggerRequestDone(requestID)
               : {}
 
-            return { ...principalFieldExtensions, requestLoggerExtensions }
+            return { ...principalFieldExtensions, ...requestLoggerExtensions }
           },
         }
       })
