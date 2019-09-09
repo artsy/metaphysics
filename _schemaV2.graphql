@@ -956,6 +956,7 @@ type Artwork implements Node & Searchable & Sellable {
   listPrice: ListPrice
   priceCurrency: String
   priceIncludesTax: Boolean
+  priceIncludesTaxDisplay: String
 
   # Is this work available for shipping only within the Contenental US?
   shipsToContinentalUSOnly: Boolean
