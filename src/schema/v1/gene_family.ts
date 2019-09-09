@@ -9,7 +9,7 @@ import Gene from "./gene"
 import { ResolverContext } from "types/graphql"
 import { SlugAndInternalIDFields } from "./object_identification"
 
-const GeneFamilyType = new GraphQLObjectType<any, ResolverContext>({
+export const GeneFamilyType = new GraphQLObjectType<any, ResolverContext>({
   name: "GeneFamily",
   fields: {
     ...SlugAndInternalIDFields,

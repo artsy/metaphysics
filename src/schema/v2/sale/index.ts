@@ -3,7 +3,7 @@ import Bidder from "schema/v2/bidder"
 import Image from "schema/v2/image/index"
 import Profile from "schema/v2/profile"
 import Partner from "schema/v2/partner"
-import SaleArtwork from "schema/v2/sale_artwork"
+import { SaleArtworkType } from "schema/v2/sale_artwork"
 import initials from "schema/v2/fields/initials"
 import cached from "schema/v2/fields/cached"
 import date from "schema/v2/fields/date"
@@ -66,7 +66,7 @@ const BuyersPremium = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const saleArtworkConnection = connectionDefinitions({
-  nodeType: SaleArtwork.type,
+  nodeType: SaleArtworkType,
 }).connectionType
 
 export const SaleType = new GraphQLObjectType<any, ResolverContext>({
@@ -277,7 +277,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ auction_state }) => auction_state,
       },
       saleArtwork: {
-        type: SaleArtwork.type,
+        type: SaleArtworkType,
         args: { id: { type: new GraphQLNonNull(GraphQLString) } },
         resolve: (sale, { id }, { saleArtworkLoader }) => {
           return saleArtworkLoader({ saleId: sale.id, saleArtworkId: id })

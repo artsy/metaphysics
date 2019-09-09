@@ -51,8 +51,9 @@ export const graphqlTimeoutMiddleware = (defaultTimeoutInMS: number) => {
   ) => {
     // TODO: Maybe cache if it turns out to take significant time.
     //       Should probably be cached on the schema instance.
-    const timeoutInMS =
-      timeoutForField(fieldFromResolveInfo(info)) || defaultTimeoutInMS
+    // const timeoutInMS =
+    //   timeoutForField(fieldFromResolveInfo(info)) || defaultTimeoutInMS
+    const timeoutInMS = defaultTimeoutInMS
     let timeoutID
     return Promise.race([
       // eslint-disable-next-line promise/param-names
