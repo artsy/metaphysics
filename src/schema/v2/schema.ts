@@ -3,6 +3,7 @@ import {
   GraphQLObjectType,
   GraphQLDirective,
   DirectiveLocation,
+  specifiedDirectives,
 } from "graphql"
 
 import Artwork from "./artwork"
@@ -190,5 +191,5 @@ export default new GraphQLSchema({
     RelatedArtworkGridType,
     ShowArtworkGridType,
   ],
-  directives: [PrincipalFieldDirective],
+  directives: specifiedDirectives.concat([PrincipalFieldDirective]),
 })
