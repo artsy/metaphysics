@@ -32,8 +32,8 @@ import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
 import { ErrorExtension } from "./extensions/errorExtension"
 import { LoggingExtension } from "./extensions/loggingExtension"
-import { canonicalResourceDirectiveExtension } from "./extensions/canonicalResourceDirectiveExtension"
-import { canonicalResourceDirectiveValidation } from "validations/canonicalResourceDirectiveValidation"
+import { principalFieldDirectiveExtension } from "./extensions/principalFieldDirectiveExtension"
+import { principalFieldDirectiveValidation } from "validations/principalFieldDirectiveValidation"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -195,7 +195,7 @@ function startApp(appSchema, path: string) {
           userAgent,
         }
 
-        const validationRules = [canonicalResourceDirectiveValidation]
+        const validationRules = [principalFieldDirectiveValidation]
         if (QUERY_DEPTH_LIMIT)
           validationRules.push(depthLimit(QUERY_DEPTH_LIMIT))
 
@@ -212,7 +212,7 @@ function startApp(appSchema, path: string) {
           }),
           validationRules,
           extensions: ({ document, result }) => {
-            const canonicalExtensions = canonicalResourceDirectiveExtension(
+            const principalFieldExtensions = principalFieldDirectiveExtension(
               document,
               result
             )
@@ -221,7 +221,7 @@ function startApp(appSchema, path: string) {
               ? fetchLoggerRequestDone(requestID)
               : {}
 
-            return { ...canonicalExtensions, requestLoggerExtensions }
+            return { ...principalFieldExtensions, requestLoggerExtensions }
           },
         }
       })

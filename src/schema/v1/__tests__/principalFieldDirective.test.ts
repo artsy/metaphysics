@@ -1,15 +1,15 @@
 import { graphql, parse, Source } from "graphql"
 import { HTTPError } from "lib/HTTPError"
-import { canonicalResourceDirectiveExtension } from "extensions/canonicalResourceDirectiveExtension"
+import { principalFieldDirectiveExtension } from "extensions/principalFieldDirectiveExtension"
 
 const schema = require("schema/v1").default
 const queryToAst = query => parse(new Source(query))
 
-describe(canonicalResourceDirectiveExtension, () => {
+describe(principalFieldDirectiveExtension, () => {
   it("returns the underlying error when occurring on a tagged field", async () => {
     const query = `
       {
-        artwork(id: "test") @canonicalResource {
+        artwork(id: "test") @principalField {
           id
         }
       }
@@ -24,10 +24,10 @@ describe(canonicalResourceDirectiveExtension, () => {
     }
 
     const result = await graphql(args)
-    const extensions = canonicalResourceDirectiveExtension(
+    const extensions = principalFieldDirectiveExtension(
       queryToAst(query),
       result
     )
-    expect(extensions).toEqual({ canonicalResource: { httpStatusCode: 404 } })
+    expect(extensions).toEqual({ principalField: { httpStatusCode: 404 } })
   })
 })

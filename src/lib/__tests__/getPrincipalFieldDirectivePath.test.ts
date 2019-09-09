@@ -1,9 +1,9 @@
-import { getCanonicalResourceDirectiveForField } from "../getCanonicalResourceDirectiveField"
+import { getPrincipalFieldDirectivePath } from "../getPrincipalFieldDirectivePath"
 import { Source, parse } from "graphql"
 
 const queryToAst = query => parse(new Source(query))
 
-describe(getCanonicalResourceDirectiveForField, () => {
+describe(getPrincipalFieldDirectivePath, () => {
   it("returns an empty array when the directive is not used", () => {
     const query = `
       {
@@ -13,7 +13,7 @@ describe(getCanonicalResourceDirectiveForField, () => {
       }
     `
 
-    const path = getCanonicalResourceDirectiveForField(queryToAst(query))
+    const path = getPrincipalFieldDirectivePath(queryToAst(query))
     expect(path.length).toBeFalsy()
   })
 
@@ -21,7 +21,7 @@ describe(getCanonicalResourceDirectiveForField, () => {
     const query = `
       {
         artist(id: "test") {
-          results: auctionResults(first: 1) @canonicalResource {
+          results: auctionResults(first: 1) @principalField {
             edges {
               node {
                 id
@@ -32,7 +32,7 @@ describe(getCanonicalResourceDirectiveForField, () => {
       }
     `
 
-    const path = getCanonicalResourceDirectiveForField(queryToAst(query))
+    const path = getPrincipalFieldDirectivePath(queryToAst(query))
     expect(path).toEqual(["artist", "results"])
   })
 })

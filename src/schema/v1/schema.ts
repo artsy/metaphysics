@@ -228,8 +228,8 @@ stitchedMutations.fulfillOrderAtOnce = FulfillOrderAtOnceMutation
 stitchedMutations.rejectOrder = RejectOrderMutation
 stitchedMutations.submitOrder = SubmitOrderMutation
 
-const CanonicalResourceDirective = new GraphQLDirective({
-  name: "canonicalResource",
+const PrincipalFieldDirective = new GraphQLDirective({
+  name: "principalField",
   locations: [DirectiveLocation.FIELD],
 })
 
@@ -280,5 +280,5 @@ export default new GraphQLSchema({
     RelatedArtworkGridType,
     ShowArtworkGridType,
   ],
-  directives: [CanonicalResourceDirective],
+  directives: [PrincipalFieldDirective],
 })

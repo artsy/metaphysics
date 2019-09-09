@@ -40,11 +40,11 @@ function createSchema({
 }
 
 describe(transformToV2, () => {
-  it("includes the canonical resource directive", () => {
+  it("includes the principal directive directive", () => {
     const schema = require("schema/v2").default
     const directive = schema
       .getDirectives()
-      .find(d => d.name === "canonicalResource")
+      .find(d => d.name === "principalField")
     expect(directive).toBeTruthy()
   })
 

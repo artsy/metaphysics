@@ -1,4 +1,4 @@
-directive @canonicalResource on FIELD
+directive @principalField on FIELD
 
 input AddAssetToConsignmentSubmissionInput {
   # The type of the asset

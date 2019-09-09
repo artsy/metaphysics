@@ -96,8 +96,8 @@ if (!ENABLE_CONSIGNMENTS_STITCHING) {
   stitchedMutations.addAssetToConsignmentSubmission = AddAssetToConsignmentSubmission
 }
 
-const CanonicalResourceDirective = new GraphQLDirective({
-  name: "canonicalResource",
+const PrincipalFieldDirective = new GraphQLDirective({
+  name: "principalField",
   locations: [DirectiveLocation.FIELD],
 })
 
@@ -190,5 +190,5 @@ export default new GraphQLSchema({
     RelatedArtworkGridType,
     ShowArtworkGridType,
   ],
-  directives: [CanonicalResourceDirective],
+  directives: [PrincipalFieldDirective],
 })

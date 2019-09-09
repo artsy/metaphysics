@@ -1,6 +1,6 @@
 import { visit, BREAK, DocumentNode } from "graphql"
 
-export const getCanonicalResourceDirectiveForField = (
+export const getPrincipalFieldDirectivePath = (
   documentNode: DocumentNode
 ): string[] => {
   const path: string[] = []
@@ -15,7 +15,7 @@ export const getCanonicalResourceDirectiveForField = (
       },
     },
     Directive(node) {
-      if (node.name.value === "canonicalResource") {
+      if (node.name.value === "principalField") {
         return BREAK
       }
     },
