@@ -32,6 +32,8 @@ import { ResolverContext } from "types/graphql"
 import { logQueryDetails } from "./lib/logQueryDetails"
 import { ErrorExtension } from "./extensions/errorExtension"
 import { LoggingExtension } from "./extensions/loggingExtension"
+import { principalFieldDirectiveExtension } from "./extensions/principalFieldDirectiveExtension"
+import { principalFieldDirectiveValidation } from "validations/principalFieldDirectiveValidation"
 
 const {
   ENABLE_REQUEST_LOGGING,
@@ -193,24 +195,34 @@ function startApp(appSchema, path: string) {
           userAgent,
         }
 
+        const validationRules = [principalFieldDirectiveValidation]
+        if (QUERY_DEPTH_LIMIT)
+          validationRules.push(depthLimit(QUERY_DEPTH_LIMIT))
+
         return {
           schema: appSchema,
           graphiql: true,
           context,
           rootValue: {},
-          // FIXME: This needs to be updated as per the release notes of graphql-js v14
           formatError: graphqlErrorHandler(enableSentry, {
             req,
             // Why the checking on params? Do we reach this code if params is falsy?
             variables: params && params.variables,
             query: (params && params.query)!,
           }),
-          validationRules: QUERY_DEPTH_LIMIT
-            ? [depthLimit(QUERY_DEPTH_LIMIT)]
-            : null,
-          extensions: enableRequestLogging
-            ? () => fetchLoggerRequestDone(requestID)
-            : undefined,
+          validationRules,
+          extensions: ({ document, result }) => {
+            const principalFieldExtensions = principalFieldDirectiveExtension(
+              document,
+              result
+            )
+
+            const requestLoggerExtensions = enableRequestLogging
+              ? fetchLoggerRequestDone(requestID)
+              : {}
+
+            return { ...principalFieldExtensions, requestLoggerExtensions }
+          },
         }
       })
     )

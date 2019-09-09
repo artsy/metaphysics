@@ -84,6 +84,7 @@ export const incrementalMergeSchemas = (
   const mergedSchema = _mergeSchemas({
     schemas: [...schemas, ...extensionSchemas],
     resolvers: extensionResolvers,
+    mergeDirectives: true,
   })
 
   // Because __allowedLegacyNames isn't in the public API

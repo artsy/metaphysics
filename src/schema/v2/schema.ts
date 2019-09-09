@@ -1,4 +1,9 @@
-import { GraphQLSchema, GraphQLObjectType } from "graphql"
+import {
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLDirective,
+  DirectiveLocation,
+} from "graphql"
 
 import Artwork from "./artwork"
 import ArtworkAttributionClasses from "./artworkAttributionClasses"
@@ -91,6 +96,11 @@ if (!ENABLE_CONSIGNMENTS_STITCHING) {
   stitchedMutations.addAssetToConsignmentSubmission = AddAssetToConsignmentSubmission
 }
 
+const PrincipalFieldDirective = new GraphQLDirective({
+  name: "principalField",
+  locations: [DirectiveLocation.FIELD],
+})
+
 export default new GraphQLSchema({
   mutation: new GraphQLObjectType<any, ResolverContext>({
     name: "Mutation",
@@ -180,4 +190,5 @@ export default new GraphQLSchema({
     RelatedArtworkGridType,
     ShowArtworkGridType,
   ],
+  directives: [PrincipalFieldDirective],
 })

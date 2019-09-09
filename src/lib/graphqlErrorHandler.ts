@@ -18,7 +18,7 @@ const isCombinedError = (
   error?: Error | CombinedError | null
 ): error is CombinedError => !!error && error.hasOwnProperty("errors")
 
-const flattenErrors = (error: GraphQLError) => {
+export const flattenErrors = (error: GraphQLError) => {
   const originalTopLevelError = error.originalError as
     | null
     | undefined
@@ -27,6 +27,17 @@ const flattenErrors = (error: GraphQLError) => {
   return isCombinedError(originalTopLevelError)
     ? originalTopLevelError.errors
     : [error]
+}
+
+export const statusCodeForError = e => {
+  // Check for server-side errors during stitching downstream.
+  // `e.originalError` is of `ServerError` type.
+  // https://github.com/apollographql/apollo-link/blob/480df382cf7db486ae76c56ac2522134d77e36fa/packages/apollo-link-http-common/src/index.ts#L15
+  const stitchedStatusCode = get(e, "originalError.response.status")
+  return (
+    stitchedStatusCode ||
+    (e.originalError instanceof HTTPError && e.originalError.statusCode)
+  )
 }
 
 interface QueryContext {
@@ -115,10 +126,7 @@ export const formattedGraphQLError = (
     // Check for server-side errors during stitching downstream.
     // `e.originalError` is of `ServerError` type.
     // https://github.com/apollographql/apollo-link/blob/480df382cf7db486ae76c56ac2522134d77e36fa/packages/apollo-link-http-common/src/index.ts#L15
-    const stitchedStatusCode = get(e, "originalError.response.status")
-    const statusCode =
-      stitchedStatusCode ||
-      (e.originalError instanceof HTTPError && e.originalError.statusCode)
+    const statusCode = statusCodeForError(e)
     if (statusCode) {
       httpStatusCodes.push(statusCode)
     }
