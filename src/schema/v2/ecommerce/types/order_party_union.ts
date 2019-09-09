@@ -1,9 +1,9 @@
 import { GraphQLUnionType } from "graphql"
-import { PartnerType } from "schema/v2/partner"
+import Partner from "schema/v2/partner"
 import { UserType } from "schema/v2/user"
 
 export const OrderPartyUnionType = new GraphQLUnionType({
   name: "OrderParty",
-  types: [PartnerType, UserType],
-  resolveType: obj => (obj.__typename === "User" ? UserType : PartnerType),
+  types: [Partner.type, UserType],
+  resolveType: obj => (obj.__typename === "User" ? UserType : Partner.type),
 })
