@@ -255,7 +255,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       is_with_buyers_premium: {
         type: GraphQLBoolean,
-        resolve: ({ buyers_premium }) => buyers_premium,
+        resolve: ({ buyers_premium }) => !!buyers_premium,
       },
       live_start_at: date,
       live_url_if_open: {

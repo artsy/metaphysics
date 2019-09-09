@@ -212,7 +212,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       isWithBuyersPremium: {
         type: GraphQLBoolean,
-        resolve: ({ buyers_premium }) => buyers_premium,
+        resolve: ({ buyers_premium }) => !!buyers_premium,
       },
       liveStartAt: date,
       // Only fetches the partner info that's already included in the Sale object
