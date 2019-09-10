@@ -30,7 +30,7 @@ patch-package
        query = params.query;
        variables = params.variables;
 +      const parsedVariables = {}
-+      Object.entries(variables).forEach(([name, value]) => {
++      Object.entries(variables || {}).forEach(([name, value]) => {
 +        parsedVariables[`${name}`] = parseValue(value)
 +      })
        operationName = params.operationName;
