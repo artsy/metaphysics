@@ -520,7 +520,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents == null
           )
-            return "Free domestic shipping"
+            return "Free domestic shipping only"
           if (
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents === 0

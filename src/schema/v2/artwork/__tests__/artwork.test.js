@@ -1417,7 +1417,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Free domestic shipping",
+            shippingInfo: "Free domestic shipping only",
           },
         })
       })
