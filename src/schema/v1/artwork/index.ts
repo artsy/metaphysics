@@ -41,7 +41,7 @@ import AttributionClass from "schema/v1/artwork/attributionClass"
 // Mapping of attribution_class ids to AttributionClass values
 import attributionClasses from "lib/attributionClasses"
 import { LotStandingType } from "../me/lot_standing"
-import { amount } from "schema/v1/fields/money"
+import { symbolFromCurrencyCode, amount } from "schema/v1/fields/money"
 import { capitalizeFirstCharacter } from "lib/helpers"
 import artworkPageviews from "data/weeklyArtworkPageviews.json"
 import { ResolverContext } from "types/graphql"
@@ -591,6 +591,20 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         description:
           "Is this work available for shipping only within the Contenental US?",
+        deprecationReason: deprecate({
+          inVersion: 2,
+          preferUsageOf: "onlyShipsDomestically",
+        }),
+        resolve: artwork => {
+          return Boolean(
+            artwork.domestic_shipping_fee_cents &&
+              artwork.international_shipping_fee_cents == null
+          )
+        },
+      },
+      onlyShipsDomestically: {
+        type: GraphQLBoolean,
+        description: "Is this work only available for shipping domestically?",
         resolve: artwork => {
           return Boolean(
             artwork.domestic_shipping_fee_cents &&
@@ -607,31 +621,39 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             artwork.domestic_shipping_fee_cents == null &&
             artwork.international_shipping_fee_cents == null
           )
-            return "Shipping, tax, and service quoted by seller"
+            return "Shipping, tax, and additional fees quoted by seller"
           if (
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents == null
           )
-            return "Free shipping within continental US only"
+            return "Free domestic shipping only"
           if (
             artwork.domestic_shipping_fee_cents === 0 &&
             artwork.international_shipping_fee_cents === 0
           )
             return "Free shipping worldwide"
+
           var domesticShipping = amount(
             ({ domestic_shipping_fee_cents }) =>
               domestic_shipping_fee_cents || null
-          ).resolve(artwork, { precision: 0 })
+          ).resolve(artwork, {
+            precision: 0,
+            symbol: symbolFromCurrencyCode(artwork.price_currency),
+          })
+
           var internationalShipping = amount(
             ({ international_shipping_fee_cents }) =>
               international_shipping_fee_cents || null
-          ).resolve(artwork, { precision: 0 })
+          ).resolve(artwork, {
+            precision: 0,
+            symbol: symbolFromCurrencyCode(artwork.price_currency),
+          })
 
           if (
             domesticShipping &&
             artwork.international_shipping_fee_cents == null
           )
-            return "Shipping: " + domesticShipping + " continental US only"
+            return "Shipping: " + domesticShipping + " domestic only"
 
           if (artwork.domestic_shipping_fee_cents === 0)
             domesticShipping = "Free"
@@ -641,7 +663,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return (
             "Shipping: " +
             domesticShipping +
-            " continental US, " +
+            " domestic, " +
             internationalShipping +
             " rest of world"
           )
@@ -653,6 +675,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           "Minimal location information describing from where artwork will be shipped.",
         resolve: artwork => {
           return artwork.shipping_origin && artwork.shipping_origin.join(", ")
+        },
+      },
+      shippingCountry: {
+        type: GraphQLString,
+        description: "The country an artwork will be shipped from.",
+        resolve: artwork => {
+          return (
+            artwork.shipping_origin &&
+            artwork.shipping_origin[artwork.shipping_origin.length - 1]
+          )
         },
       },
       provenance: markdown(({ provenance }) =>

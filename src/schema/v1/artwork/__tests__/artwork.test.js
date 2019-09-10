@@ -1506,7 +1506,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping, tax, and service quoted by seller",
+            shippingInfo: "Shipping, tax, and additional fees quoted by seller",
           },
         })
       })
@@ -1518,7 +1518,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Free shipping within continental US only",
+            shippingInfo: "Free domestic shipping only",
           },
         })
       })
@@ -1542,7 +1542,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: $10 continental US only",
+            shippingInfo: "Shipping: $10 domestic only",
           },
         })
       })
@@ -1554,7 +1554,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: $10 continental US, free rest of world",
+            shippingInfo: "Shipping: $10 domestic, free rest of world",
           },
         })
       })
@@ -1566,7 +1566,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: Free continental US, $100 rest of world",
+            shippingInfo: "Shipping: Free domestic, $100 rest of world",
           },
         })
       })
@@ -1578,7 +1578,7 @@ describe("Artwork type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: Free continental US, $100 rest of world",
+            shippingInfo: "Shipping: Free domestic, $100 rest of world",
           },
         })
       })
@@ -1590,7 +1590,20 @@ describe("Artwork type", () => {
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            shippingInfo: "Shipping: $10 continental US, $20 rest of world",
+            shippingInfo: "Shipping: $10 domestic, $20 rest of world",
+          },
+        })
+      })
+    })
+
+    it("shows shipping costs in the same currency as list price", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 2000
+      artwork.price_currency = "GBP"
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingInfo: "Shipping: £10 domestic, £20 rest of world",
           },
         })
       })
@@ -1654,6 +1667,63 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#onlyShipsDomestically", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          onlyShipsDomestically
+        }
+      }
+    `
+    it("is true when domestic_shipping_fee_cents is present and international_shipping_fee_cents is null", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = null
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            onlyShipsDomestically: true,
+          },
+        })
+      })
+    })
+
+    it("is false when work ships free internationally", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 0
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            onlyShipsDomestically: false,
+          },
+        })
+      })
+    })
+
+    it("is false when work ships free worldwide", () => {
+      artwork.domestic_shipping_fee_cents = 0
+      artwork.international_shipping_fee_cents = 0
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            onlyShipsDomestically: false,
+          },
+        })
+      })
+    })
+
+    it("is false when work ships worldwide", () => {
+      artwork.domestic_shipping_fee_cents = 1000
+      artwork.international_shipping_fee_cents = 1000
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            onlyShipsDomestically: false,
+          },
+        })
+      })
+    })
+  })
+
   describe("#shippingOrigin", () => {
     const query = `
       {
@@ -1680,6 +1750,38 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             shippingOrigin: "Kharkov, Ukraine",
+          },
+        })
+      })
+    })
+  })
+
+  describe("#shippingCountry", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          shippingCountry
+        }
+      }
+    `
+
+    it("is null when shipping_origin is null", () => {
+      artwork.shipping_origin = null
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingCountry: null,
+          },
+        })
+      })
+    })
+
+    it("is set to concatinated values from shipping_origin when shipping origin is present", () => {
+      artwork.shipping_origin = ["Kharkov", "Ukraine"]
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingCountry: "Ukraine",
           },
         })
       })
