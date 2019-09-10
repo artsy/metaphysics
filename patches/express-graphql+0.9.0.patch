@@ -13,7 +13,7 @@ patch-package
 +  ) {
 +    parsedValue = Number(value)
 +  } else if (
-+    value !== null &&
++    value !== null && typeof value === "string" &&
 +    (value.toLowerCase() === "true" || value.toLowerCase() === "false")
 +  ) {
 +    parsedValue = value.toLowerCase() === "true"
