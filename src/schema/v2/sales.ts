@@ -43,7 +43,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: async (
     _root,
     { isAuction, live, published, sort, ...paginationArgs },
-    { salesLoader }
+    { salesLoaderWithHeaders }
   ) => {
     const { page, size, offset } = convertConnectionArgsToGravityArgs(
       paginationArgs
@@ -55,7 +55,7 @@ export const SalesConnectionField: GraphQLFieldConfig<void, ResolverContext> = {
     //   delete cleanedOptions.ids
     // }
 
-    const { body: sales, headers } = ((await salesLoader(
+    const { body: sales, headers } = ((await salesLoaderWithHeaders(
       {
         is_auction: isAuction,
         live,
