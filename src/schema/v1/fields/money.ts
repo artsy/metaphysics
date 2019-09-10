@@ -55,7 +55,18 @@ export const amount = centsResolver => ({
     const cents = centsResolver(obj)
     const symbol =
       options.symbol || obj.symbol || symbolFromCurrencyCode(obj.currencyCode)
-    return moneyDisplay(cents, symbol, options)
+
+    if (typeof cents !== "number") {
+      return null
+    }
+
+    // Some objects return a currencyCode instead of a symbol.
+    return formatMoney(
+      cents / 100,
+      assign({}, options, {
+        symbol,
+      })
+    )
   },
 })
 
@@ -64,20 +75,6 @@ export const symbolFromCurrencyCode = currencyCode => {
     ? currencyCodes[currencyCode.toLowerCase()] &&
         currencyCodes[currencyCode.toLowerCase()].symbol
     : null
-}
-
-export const moneyDisplay = (cents, symbol, options) => {
-  if (typeof cents !== "number") {
-    return null
-  }
-
-  // Some objects return a currencyCode instead of a symbol.
-  return formatMoney(
-    cents / 100,
-    assign({}, options, {
-      symbol,
-    })
-  )
 }
 
 const money = ({ name, resolve }) => ({
