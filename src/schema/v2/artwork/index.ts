@@ -571,6 +571,16 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return artwork.shipping_origin && artwork.shipping_origin.join(", ")
         },
       },
+      shippingCountry: {
+        type: GraphQLString,
+        description: "The country an artwork will be shipped from.",
+        resolve: artwork => {
+          return (
+            artwork.shipping_origin &&
+            artwork.shipping_origin[artwork.shipping_origin.length - 1]
+          )
+        },
+      },
       provenance: markdown(({ provenance }) =>
         provenance.replace(/^provenance:\s+/i, "")
       ),

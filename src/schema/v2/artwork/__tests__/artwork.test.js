@@ -1655,6 +1655,38 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#shippingCountry", () => {
+    const query = `
+      {
+        artwork(id: "richard-prince-untitled-portrait") {
+          shippingCountry
+        }
+      }
+    `
+
+    it("is null when shipping_origin is null", () => {
+      artwork.shipping_origin = null
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingCountry: null,
+          },
+        })
+      })
+    })
+
+    it("is set to concatenated values from shipping_origin when shipping origin is present", () => {
+      artwork.shipping_origin = ["New York", "NY", "US"]
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            shippingCountry: "US",
+          },
+        })
+      })
+    })
+  })
+
   describe("#framed", () => {
     const query = `
       {

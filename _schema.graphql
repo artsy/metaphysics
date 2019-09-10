@@ -1400,6 +1400,9 @@ type Artwork implements Node & Searchable & Sellable {
 
   # Minimal location information describing from where artwork will be shipped.
   shippingOrigin: String
+
+  # The country an artwork will be shipped from.
+  shippingCountry: String
   provenance(format: Format): String
   publisher(format: Format): String
   related(size: Int): [Artwork]
@@ -2436,6 +2439,9 @@ type ArtworkItem implements Node & Searchable & Sellable {
 
   # Minimal location information describing from where artwork will be shipped.
   shippingOrigin: String
+
+  # The country an artwork will be shipped from.
+  shippingCountry: String
   provenance(format: Format): String
   publisher(format: Format): String
   related(size: Int): [Artwork]
