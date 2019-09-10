@@ -1,4 +1,4 @@
-import Fair from "schema/v1/fair"
+import { FairType } from "schema/v1/fair"
 
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
@@ -9,7 +9,7 @@ export const FollowedFairConnection = connectionDefinitions({
   name: "FollowedFair",
   // This never ended up being used in the underlying lib.
   // edgeType: FollowedFairEdge,
-  nodeType: Fair.type,
+  nodeType: FairType,
 })
 
 const FollowedFairs: GraphQLFieldConfig<void, ResolverContext> = {
