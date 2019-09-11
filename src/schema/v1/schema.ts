@@ -6,6 +6,7 @@ import { ArtworkVersionResolver } from "./artwork_version"
 import Artworks from "./artworks"
 import Artist from "./artist"
 import Artists from "./artists"
+import Bidder from "./bidder"
 import Collection from "./collection"
 import { CreditCard } from "./credit_card"
 import ExternalPartner from "./external_partner"
@@ -121,6 +122,7 @@ const rootFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   artworks: Artworks,
   artist: Artist,
   artists: Artists,
+  bidder: Bidder,
   causality_jwt: CausalityJWT,
   city: City,
   collection: Collection,
