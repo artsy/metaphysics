@@ -9,6 +9,7 @@ const gql = require("lib/gql").default
 
 beforeEach(() => {
   mockFetch.mockClear()
+  mockFetch.mockReset()
 })
 
 it("It should bail for an unknown GET request", async () => {
@@ -37,6 +38,28 @@ it("can make a request against the schema", async () => {
 
   expect(response.body.data).toEqual({ artist: { name: "Mr Bank" } })
   expect(response.statusCode).toBe(200)
+})
+
+it("assigns x-xapp-token if present", async () => {
+  mockFetch.mockResolvedValueOnce(Promise.resolve({ body: {} }))
+
+  await request(app)
+    .post("/")
+    .set("Accept", "application/json")
+    .set("x-xapp-token", "xapp-token")
+    .send({
+      query: gql`
+        {
+          artist(id: "yayoi-kusama") {
+            name
+          }
+        }
+      `,
+    })
+
+  expect(mockFetch.mock.calls[0][1].headers["X-XAPP-TOKEN"]).toEqual(
+    "xapp-token"
+  )
 })
 
 it("does't include `extensions` by default", async () => {

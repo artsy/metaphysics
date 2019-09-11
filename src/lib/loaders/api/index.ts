@@ -25,6 +25,7 @@ export interface APIOptions {
   }
   userAgent?: string
   headers?: boolean
+  xAppToken?: string
 
   /** This only applies to caching loaders */
   requestThrottleMs?: number
@@ -88,6 +89,7 @@ export default opts => ({
     {
       requestIDs: opts.requestIDs,
       userAgent: opts.userAgent,
+      xAppToken: opts.xAppToken,
     }
   ),
 
