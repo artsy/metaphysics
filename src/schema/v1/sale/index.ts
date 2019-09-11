@@ -3,7 +3,7 @@ import Bidder from "schema/v1/bidder"
 import Image from "schema/v1/image/index"
 import Profile from "schema/v1/profile"
 import Partner from "schema/v1/partner"
-import { SaleArtworkType } from "schema/v1/sale_artwork"
+import SaleArtwork from "schema/v1/sale_artwork"
 import initials from "schema/v1/fields/initials"
 import cached from "schema/v1/fields/cached"
 import date from "schema/v1/fields/date"
@@ -68,7 +68,7 @@ const BuyersPremium = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const saleArtworkConnection = connectionDefinitions({
-  nodeType: SaleArtworkType,
+  nodeType: SaleArtwork.type,
 }).connectionType
 
 export const SaleType = new GraphQLObjectType<any, ResolverContext>({
@@ -291,7 +291,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       require_bidder_approval: { type: GraphQLBoolean },
       sale_artworks: {
-        type: new GraphQLList(SaleArtworkType),
+        type: new GraphQLList(SaleArtwork.type),
         args: {
           page: { type: GraphQLInt, defaultValue: 1 },
           size: { type: GraphQLInt, defaultValue: 25 },
@@ -334,7 +334,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ auction_state }) => auction_state,
       },
       sale_artwork: {
-        type: SaleArtworkType,
+        type: SaleArtwork.type,
         args: { id: { type: new GraphQLNonNull(GraphQLString) } },
         resolve: (sale, { id }, { saleArtworkLoader }) => {
           return saleArtworkLoader({ saleId: sale.id, saleArtworkId: id })
