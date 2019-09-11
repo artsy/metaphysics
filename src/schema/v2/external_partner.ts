@@ -8,7 +8,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-export const ExternalPartnerType = new GraphQLObjectType<any, ResolverContext>({
+const ExternalPartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "ExternalPartner",
   fields: () => {
     return {

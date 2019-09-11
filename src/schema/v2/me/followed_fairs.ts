@@ -1,12 +1,13 @@
+import Fair from "schema/v2/fair"
+
 import { pageable, getPagingParameters } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import { GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { FairType } from "schema/v2/fair"
 
 export const FollowedFairConnection = connectionDefinitions({
   name: "FollowedFair",
-  nodeType: FairType,
+  nodeType: Fair.type,
 })
 
 const FollowedFairs: GraphQLFieldConfig<void, ResolverContext> = {

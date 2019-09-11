@@ -18,8 +18,8 @@ import cached from "./fields/cached"
 import date from "./fields/date"
 import { markdown } from "./fields/markdown"
 import Artist from "./artist"
-import { PartnerType } from "./partner"
-import { ExternalPartnerType } from "./external_partner"
+import Partner from "./partner"
+import ExternalPartner from "./external_partner"
 import Fair from "./fair"
 import Artwork, { artworkConnection } from "./artwork"
 import Location from "./location"
@@ -589,12 +589,12 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
         "The partner that represents this show, could be a non-Artsy partner",
       type: new GraphQLUnionType({
         name: "PartnerTypes",
-        types: [PartnerType, ExternalPartnerType],
+        types: [Partner.type, ExternalPartner.type],
         resolveType: value => {
           if (value._links) {
-            return ExternalPartnerType
+            return ExternalPartner.type
           }
-          return PartnerType
+          return Partner.type
         },
       }),
       resolve: (
