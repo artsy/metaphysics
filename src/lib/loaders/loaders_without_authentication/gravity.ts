@@ -66,6 +66,7 @@ export default opts => {
     saleArtworkLoader: gravityUncachedLoader<any, { saleId: string, saleArtworkId: string }>(({ saleId, saleArtworkId }) => `sale/${saleId}/sale_artwork/${saleArtworkId}`, null),
     saleLoader: batchSaleLoader,
     salesLoader: batchSalesLoader,
+    salesLoaderWithHeaders: gravityLoader('sales', {}, { headers: true }),
     searchLoader: searchLoader(gravityLoader),
     sendFeedbackLoader: gravityLoader("feedback", {}, { method: "POST" }),
     setItemsLoader: gravityLoader(id => `set/${id}/items`),

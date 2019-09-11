@@ -1,14 +1,14 @@
 import { create } from "lodash"
-import { ShowType } from "schema/v1/show"
-import { ArticleType } from "schema/v1/article"
+import Show from "schema/v1/show"
+import Article from "schema/v1/article"
 import { GraphQLUnionType } from "graphql"
 
-export const HighlightedShowType = create(ShowType, {
+export const HighlightedShowType = create(Show.type, {
   name: "HighlightedShow",
   isTypeOf: ({ highlight_type }) => highlight_type === "Show",
 })
 
-export const HighlightedArticleType = create(ArticleType, {
+export const HighlightedArticleType = create(Article.type, {
   name: "HighlightedArticle",
   isTypeOf: ({ highlight_type }) => highlight_type === "Article",
 })

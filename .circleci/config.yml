@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   hokusai: artsy/hokusai@0.7.0
+  yarn: artsy/yarn@2.1.0
 
 not_staging_or_release: &not_staging_or_release
   filters:
@@ -22,9 +23,25 @@ only_release: &only_release
     branches:
       only: release
 
+only_development: &only_development
+  filters:
+    branches:
+      ignore:
+        - staging
+        - release
+        - master
+
 workflows:
   default:
     jobs:
+      # for PRs
+      - yarn/update-cache:
+          <<: *only_development
+      - yarn/run:
+          <<: *only_development
+          name: schema-drift
+          script: danger local -d scripts/schema-drift.ts
+
       # pre-staging
       - hokusai/test:
           name: test
