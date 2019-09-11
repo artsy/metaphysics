@@ -179,5 +179,5 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
 export default Gene
 
 export const geneConnection = connectionDefinitions({
-  nodeType: GeneType,
+  nodeType: Gene.type,
 }).connectionType
