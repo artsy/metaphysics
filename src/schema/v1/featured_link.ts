@@ -4,7 +4,7 @@ import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { InternalIDFields } from "./object_identification"
 
-const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
+export const FeaturedLinkType = new GraphQLObjectType<any, ResolverContext>({
   name: "FeaturedLink",
   fields: {
     ...InternalIDFields,

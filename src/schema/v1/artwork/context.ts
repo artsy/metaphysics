@@ -1,26 +1,26 @@
 import { assign, create, first, flow, compact } from "lodash"
-import Fair from "schema/v1/fair"
-import Sale from "schema/v1/sale/index"
-import PartnerShow from "schema/v1/partner_show"
+import { FairType } from "schema/v1/fair"
+import { SaleType } from "schema/v1/sale/index"
+import { PartnerShowType } from "schema/v1/partner_show"
 import { GraphQLUnionType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-export const ArtworkContextFairType = create(Fair.type, {
+export const ArtworkContextFairType = create(FairType, {
   name: "ArtworkContextFair",
   isTypeOf: ({ context_type }) => context_type === "Fair",
 })
 
-export const ArtworkContextSaleType = create(Sale.type, {
+export const ArtworkContextSaleType = create(SaleType, {
   name: "ArtworkContextSale",
   isTypeOf: ({ context_type }) => context_type === "Sale",
 })
 
-export const ArtworkContextAuctionType = create(Sale.type, {
+export const ArtworkContextAuctionType = create(SaleType, {
   name: "ArtworkContextAuction",
   isTypeOf: ({ context_type }) => context_type === "Auction",
 })
 
-export const ArtworkContextPartnerShowType = create(PartnerShow.type, {
+export const ArtworkContextPartnerShowType = create(PartnerShowType, {
   name: "ArtworkContextPartnerShow",
   isTypeOf: ({ context_type }) => context_type === "PartnerShow",
 })
