@@ -38,3 +38,27 @@ it("can make a request against the schema", async () => {
   expect(response.body.data).toEqual({ artist: { name: "Mr Bank" } })
   expect(response.statusCode).toBe(200)
 })
+
+it("does't include `extensions` by default", async () => {
+  // Mock the fetch for the Artist loader
+  mockFetch.mockResolvedValueOnce(
+    Promise.resolve({ body: { name: "Mr Bank" } })
+  )
+
+  const response = await request(app)
+    .post("/")
+    .set("Accept", "application/json")
+    .send({
+      query: gql`
+        {
+          artist(id: "banksy") {
+            name
+          }
+        }
+      `,
+    })
+
+  expect(response.body.data).toEqual({ artist: { name: "Mr Bank" } })
+  expect(response.statusCode).toBe(200)
+  expect(response.body.extensions).toBeFalsy()
+})
