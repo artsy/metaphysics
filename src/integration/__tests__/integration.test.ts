@@ -39,76 +39,26 @@ it("can make a request against the schema", async () => {
   expect(response.statusCode).toBe(200)
 })
 
-describe("variable parsing and coercion", () => {
-  beforeEach(() => {
-    mockFetch.mockResolvedValueOnce(
-      Promise.resolve({ body: [{ id: "catty-sale" }] })
-    )
-  })
+it("does't include `extensions` by default", async () => {
+  // Mock the fetch for the Artist loader
+  mockFetch.mockResolvedValueOnce(
+    Promise.resolve({ body: { name: "Mr Bank" } })
+  )
 
-  it("converts the string 'true' to a boolean", async () => {
-    const response = await request(app)
-      .post("/")
-      .set("Accept", "application/json")
-      .send({
-        query: gql`
-          query SalesQuery($is_auction: Boolean!) {
-            sales(is_auction: $is_auction) {
-              id
-            }
+  const response = await request(app)
+    .post("/")
+    .set("Accept", "application/json")
+    .send({
+      query: gql`
+        {
+          artist(id: "banksy") {
+            name
           }
-        `,
-        variables: {
-          is_auction: "true",
-        },
-      })
+        }
+      `,
+    })
 
-    // We are checking that this works w/ string variables
-    expect(response.body.data).toEqual({ sales: [{ id: "catty-sale" }] })
-    expect(response.statusCode).toBe(200)
-  })
-
-  it("converts the string 'true' to a boolean", async () => {
-    const response = await request(app)
-      .post("/")
-      .set("Accept", "application/json")
-      .send({
-        query: gql`
-          query SalesQuery($is_auction: Boolean!) {
-            sales(is_auction: $is_auction) {
-              id
-            }
-          }
-        `,
-        variables: {
-          is_auction: "false",
-        },
-      })
-
-    // We are checking that this works w/ string variables
-    expect(response.body.data).toEqual({ sales: [{ id: "catty-sale" }] })
-    expect(response.statusCode).toBe(200)
-  })
-
-  it("converts the integer strings to integers", async () => {
-    const response = await request(app)
-      .post("/")
-      .set("Accept", "application/json")
-      .send({
-        query: gql`
-          query SalesQuery($size: Int!) {
-            sales(size: $size) {
-              id
-            }
-          }
-        `,
-        variables: {
-          size: "1",
-        },
-      })
-
-    // We are checking that this works w/ string variables
-    expect(response.body.data).toEqual({ sales: [{ id: "catty-sale" }] })
-    expect(response.statusCode).toBe(200)
-  })
+  expect(response.body.data).toEqual({ artist: { name: "Mr Bank" } })
+  expect(response.statusCode).toBe(200)
+  expect(response.body.extensions).toBeFalsy()
 })

@@ -67,6 +67,26 @@ function logQueryDetailsIfEnabled() {
   return (_req, _res, next) => next()
 }
 
+function createExtensions(document, result, requestID) {
+  const principalFieldExtensions = principalFieldDirectiveExtension(
+    document,
+    result
+  )
+
+  const requestLoggerExtensions = enableRequestLogging
+    ? fetchLoggerRequestDone(requestID)
+    : {}
+
+  const extensions = {
+    ...principalFieldExtensions,
+    ...requestLoggerExtensions,
+  }
+
+  // Instead of an empty hash, which will include `extensions: {}`
+  // in all responses, make sure to return undefined.
+  return Object.keys(extensions).length ? extensions : undefined
+}
+
 function startApp(appSchema, path: string) {
   const app = express()
 
@@ -211,18 +231,8 @@ function startApp(appSchema, path: string) {
             query: (params && params.query)!,
           }),
           validationRules,
-          extensions: ({ document, result }) => {
-            const principalFieldExtensions = principalFieldDirectiveExtension(
-              document,
-              result
-            )
-
-            const requestLoggerExtensions = enableRequestLogging
-              ? fetchLoggerRequestDone(requestID)
-              : {}
-
-            return { ...principalFieldExtensions, ...requestLoggerExtensions }
-          },
+          extensions: ({ document, result }) =>
+            createExtensions(document, result, requestID),
         }
       })
     )
