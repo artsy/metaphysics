@@ -1,4 +1,4 @@
-import { PartnerType } from "./partner"
+import Partner from "./partner"
 import Artist from "./artist/index"
 import numeral from "./fields/numeral"
 import { IDFields } from "./object_identification"
@@ -64,7 +64,7 @@ const fields: Thunk<
     type: GraphQLBoolean,
   },
   partner: {
-    type: PartnerType,
+    type: Partner.type,
   },
   sortable_id: {
     type: GraphQLString,
@@ -101,7 +101,7 @@ export const PartnerArtistConnection = connectionDefinitions({
   name: "PartnerArtist",
   // This never ended up being used in the underlying lib.
   // edgeType: PartnerArtistType,
-  nodeType: PartnerType,
+  nodeType: Partner.type,
   edgeFields: fields,
 }).connectionType
 

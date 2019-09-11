@@ -62,11 +62,11 @@
     "debug": "2.6.9",
     "express": "4.16.2",
     "express-force-ssl": "0.3.2",
-    "express-graphql": "0.9.0",
+    "express-graphql": "0.6.11",
     "express-ipfilter": "0.3.1",
     "express-rate-limit": "3.2.0",
     "graphiql": "0.11.11",
-    "graphql": "14.5.4",
+    "graphql": "0.13.2",
     "graphql-depth-limit": "1.1.0",
     "graphql-extensions": "0.5.7",
     "graphql-middleware": "1.2.6",
@@ -104,12 +104,15 @@
     "uuid": "3.1.0"
   },
   "resolutions": {
-    "babel-core": "7.0.0-bridge.0"
+    "babel-core": "7.0.0-bridge.0",
+    "@types/graphql": "0.13.4"
   },
   "devDependencies": {
     "@artsy/express-reloadable": "1.4.7",
     "@types/dd-trace": "0.6.0",
+    "@types/express-graphql": "0.6.1",
     "@types/express-rate-limit": "2.9.3",
+    "@types/graphql": "0.13.4",
     "@types/graphql-relay": "0.4.9",
     "@types/invariant": "2.2.29",
     "@types/jest": "23.3.2",

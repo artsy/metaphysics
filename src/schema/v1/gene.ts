@@ -2,7 +2,7 @@ import { getPagingParameters, pageable } from "relay-cursor-paging"
 import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
 import _ from "lodash"
 import cached from "./fields/cached"
-import { ArtworkType } from "./artwork"
+import Artwork from "./artwork"
 import Artist, { artistConnection } from "./artist"
 import Image from "./image"
 import filterArtworks, {
@@ -73,7 +73,7 @@ export const GeneType = new GraphQLObjectType<any, ResolverContext>({
       artworks_connection: {
         type: connectionDefinitions({
           name: "GeneArtworks",
-          nodeType: ArtworkType,
+          nodeType: Artwork.type,
           connectionFields: {
             aggregations: ArtworkFilterAggregations,
             counts: FilterArtworksCounts,
@@ -223,5 +223,5 @@ const Gene: GraphQLFieldConfig<void, ResolverContext> = {
 export default Gene
 
 export const geneConnection = connectionDefinitions({
-  nodeType: GeneType,
+  nodeType: Gene.type,
 }).connectionType

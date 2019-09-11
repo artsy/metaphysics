@@ -59,24 +59,25 @@ export function deprecateType<
       : options
   )
   // TODO: This is the code for newer graphql-js versions.
-  const fields = (type as any)._fields as Thunk<GraphQLFieldMap<any, any>>
-  if (typeof fields === "function") {
-    ;(type as any)._fields = () => deprecateFields(deprecationReason, fields())
-  } else {
-    ;(type as any)._fields = deprecateFields(deprecationReason, fields)
-  }
-  // const fields = (type as any)._typeConfig.fields as Thunk<
-  //   GraphQLFieldMap<any, any>
-  // >
+  // const fields =
+  //   (type as any)._fields as Thunk<GraphQLFieldMap<any, any>>)
   // if (typeof fields === "function") {
-  //   ;(type as any)._typeConfig.fields = () =>
-  //     deprecateFields(deprecationReason, fields())
+  //   ;(type as any)._fields = () => deprecateFields(fields())
   // } else {
-  //   ;(type as any)._typeConfig.fields = deprecateFields(
-  //     deprecationReason,
-  //     fields
-  //   )
+  //   ;(type as any)._fields = deprecateFields(fields)
   // }
+  const fields = (type as any)._typeConfig.fields as Thunk<
+    GraphQLFieldMap<any, any>
+  >
+  if (typeof fields === "function") {
+    ;(type as any)._typeConfig.fields = () =>
+      deprecateFields(deprecationReason, fields())
+  } else {
+    ;(type as any)._typeConfig.fields = deprecateFields(
+      deprecationReason,
+      fields
+    )
+  }
   return type
 }
 

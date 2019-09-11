@@ -80,17 +80,17 @@ describe("graphQLTimeoutMiddleware", () => {
       expect(timeoutForField(timeoutField(null))).toEqual(null)
     })
 
-    xit("returns the specified timeout", () => {
+    it("returns the specified timeout", () => {
       expect(timeoutForField(timeoutField({ ms: 42 }))).toEqual(42)
     })
 
-    xit("throws an error if the directive is specified but no ms argument is given", () => {
+    it("throws an error if the directive is specified but no ms argument is given", () => {
       expect(() => timeoutForField(timeoutField({ sec: 42 }))).toThrowError(
         /argument is required/
       )
     })
 
-    xit("throws an error if the directive is specified but no integer argument is given", () => {
+    it("throws an error if the directive is specified but no integer argument is given", () => {
       expect(() => timeoutForField(timeoutField({ ms: `"42"` }))).toThrowError(
         /Expected.+IntValue.+got.+StringValue/
       )
