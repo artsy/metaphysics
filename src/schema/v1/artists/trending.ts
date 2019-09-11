@@ -12,7 +12,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-export const TrendingArtistsType = new GraphQLObjectType<any, ResolverContext>({
+const TrendingArtistsType = new GraphQLObjectType<any, ResolverContext>({
   name: "TrendingArtists",
   fields: () => ({
     artists: {

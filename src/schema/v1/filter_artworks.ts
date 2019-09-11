@@ -2,7 +2,7 @@ import { map, omit, keys, create, assign } from "lodash"
 import { isExisty } from "lib/helpers"
 import Artwork from "./artwork"
 import Artist from "./artist"
-import { TagType } from "./tag"
+import Tag from "./tag"
 import numeral from "./fields/numeral"
 import {
   computeTotalPages,
@@ -38,12 +38,12 @@ import {
   parseConnectionArgsFromConnection,
 } from "lib/hasFieldSelection"
 
-const ArtworkFilterTagType = create(TagType, {
+const ArtworkFilterTagType = create(Tag.type, {
   name: "ArtworkFilterTag",
   isTypeOf: ({ context_type }) => context_type === "Tag",
 })
 
-const ArtworkFilterGeneType = create(TagType, {
+const ArtworkFilterGeneType = create(Tag.type, {
   name: "ArtworkFilterGene",
   isTypeOf: ({ context_type }) => context_type === "Gene",
 })
