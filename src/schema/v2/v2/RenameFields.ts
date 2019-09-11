@@ -21,9 +21,7 @@ import {
   fieldToFieldConfig,
 } from "graphql-tools/dist/stitching/schemaRecreation"
 
-type TypeWithSelectableFields =
-  | GraphQLObjectType<any, any>
-  | GraphQLInterfaceType
+type TypeWithSelectableFields = GraphQLObjectType | GraphQLInterfaceType
 
 export class RenameFields implements Transform {
   private newSchema?: GraphQLSchema
@@ -164,5 +162,5 @@ function fieldKey(type: TypeWithSelectableFields, fieldName: string) {
 function getTypeWithSelectableFields(
   typeInfo: TypeInfo
 ): TypeWithSelectableFields {
-  return getNamedType(typeInfo.getParentType())
+  return getNamedType(typeInfo.getParentType()!) as any
 }
