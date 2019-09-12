@@ -1,5 +1,6 @@
 /* eslint-disable promise/always-return */
 import { runQuery } from "schema/v2/test/utils"
+import { toGlobalId } from "graphql-relay"
 
 describe("Bidder type", () => {
   let context = null
@@ -30,33 +31,38 @@ describe("Bidder type", () => {
 
   beforeEach(() => {
     context = {
-      bidderLoader: sinon.stub().returns(Promise.resolve(bidder)),
-      userByIDLoader: sinon.stub().returns(Promise.resolve(user)),
-      saleLoader: sinon.stub().returns(Promise.resolve(sale)),
+      bidderLoader: jest.fn(() => Promise.resolve(bidder)),
+      userByIDLoader: jest.fn(() => Promise.resolve(user)),
+      saleLoader: jest.fn(() => Promise.resolve(sale)),
     }
   })
 
   it("fetches a bidder by ID", () => {
     const query = `
-      {
-        bidder(id: "5cdae6b0478dbf000ece64b9") {
-          qualifiedForBidding
-          user {
-            name
-            email
-          }
-          sale {
-            id
-            name
+      query($id: ID!) {
+        node(id: $id) {
+          ... on Bidder {
+            pin
+            user {
+              name
+              email
+            }
+            sale {
+              id
+              name
+            }
           }
         }
       }
     `
+    const variables = {
+      id: toGlobalId("Bidder", "5cdae6b0478dbf000ece64b9"),
+    }
 
-    return runQuery(query, context).then(data => {
-      expect(data.bidder.qualifiedForBidding).toBe(true)
-      expect(data.bidder.user.name).toEqual("Lucille Bluth")
-      expect(data.bidder.sale.name).toEqual("Shared Live Mocktion")
+    return runQuery(query, context, variables).then(data => {
+      expect(data.node.pin).toBe("1234")
+      expect(data.node.user.name).toEqual("Lucille Bluth")
+      expect(data.node.sale.name).toEqual("Shared Live Mocktion")
     })
   })
 })

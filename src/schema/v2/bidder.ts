@@ -7,12 +7,13 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import date from "./fields/date"
-import { InternalIDFields } from "./object_identification"
+import { InternalIDFields, NodeInterface } from "./object_identification"
 import Sale from "./sale/index"
 import { User } from "./user"
 
 const BidderType = new GraphQLObjectType<any, ResolverContext>({
   name: "Bidder",
+  interfaces: [NodeInterface],
   fields: () => ({
     ...InternalIDFields,
     createdAt: date,

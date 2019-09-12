@@ -9637,12 +9637,6 @@ type Query {
     sort: ArtistSorts
   ): [Artist]
 
-  # A Bidder
-  bidder(
-    # The ID of the bidder
-    id: String!
-  ): Bidder
-
   # Creates, and authorizes, a JWT custom for Causality
   causality_jwt(
     role: Role
@@ -11790,12 +11784,6 @@ type Viewer {
     size: Int
     sort: ArtistSorts
   ): [Artist]
-
-  # A Bidder
-  bidder(
-    # The ID of the bidder
-    id: String!
-  ): Bidder
 
   # Creates, and authorizes, a JWT custom for Causality
   causality_jwt(

@@ -1347,7 +1347,7 @@ type Author {
   profileHandle: String
 }
 
-type Bidder {
+type Bidder implements Node {
   # A globally unique ID.
   id: ID!
 
@@ -5398,12 +5398,6 @@ type Query {
     # The slug or ID of the Artist
     id: String!
   ): Artist
-
-  # A Bidder
-  bidder(
-    # The ID of the bidder
-    id: String!
-  ): Bidder
 
   # A city-based entry point for local discovery
   city(

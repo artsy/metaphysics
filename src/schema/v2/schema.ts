@@ -27,7 +27,6 @@ import System from "./system"
 // import Status from "./status"
 // import Artworks from "./artworks"
 // import Artists from "./artists"
-import Bidder from "./bidder"
 // import Collection from "./collection"
 // import { CreditCard } from "./credit_card"
 // import ExternalPartner from "./external_partner"
@@ -137,7 +136,6 @@ export default new GraphQLSchema({
       // artworkVersion: ArtworkVersionResolver,
       // artworks: Artworks,
       artist: Artist,
-      bidder: Bidder,
       // artists: Artists,
       // causalityJWT: CausalityJWT, // TODO: Perhaps this should go into `system` ?
       city: City,
