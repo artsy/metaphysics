@@ -1361,6 +1361,7 @@ type Bidder {
   ): String
   pin: String
   qualifiedForBidding: Boolean
+  user: User
   sale: Sale
 }
 
@@ -5397,6 +5398,12 @@ type Query {
     # The slug or ID of the Artist
     id: String!
   ): Artist
+
+  # A Bidder
+  bidder(
+    # The ID of the bidder
+    id: String!
+  ): Bidder
 
   # A city-based entry point for local discovery
   city(
