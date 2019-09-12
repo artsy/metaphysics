@@ -1,0 +1,4 @@
+# unwanted packages
+node_modules/@types/graphql
+node_modules/apollo-link-context/node_modules/@types/graphql
+node_modules/apollo-link-http-common/node_modules/@types/graphql
