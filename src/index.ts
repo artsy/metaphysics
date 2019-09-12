@@ -144,7 +144,7 @@ function startApp(appSchema, path: string) {
       ],
       context: ({ req, res }) => {
         const accessToken = req.headers["x-access-token"] as string | undefined
-        const xAppToken = req.headers["x-xapp-token"] as string | undefined
+        const appToken = req.headers["x-xapp-token"] as string | undefined
         const userID = req.headers["x-user-id"] as string | undefined
         const timezone = req.headers["x-timezone"] as string | undefined
         const userAgent = req.headers["user-agent"]
@@ -160,7 +160,7 @@ function startApp(appSchema, path: string) {
         const loaders = createLoaders(accessToken, userID, {
           requestIDs,
           userAgent,
-          xAppToken,
+          appToken,
         })
 
         return {
@@ -183,7 +183,7 @@ function startApp(appSchema, path: string) {
       graphqlHTTP((req, res, params) => {
         console.log("Request from", path)
         const accessToken = req.headers["x-access-token"] as string | undefined
-        const xAppToken = req.headers["x-xapp-token"] as string | undefined
+        const appToken = req.headers["x-xapp-token"] as string | undefined
         const userID = req.headers["x-user-id"] as string | undefined
         const timezone = req.headers["x-timezone"] as string | undefined
         const userAgent = req.headers["user-agent"]
@@ -205,7 +205,7 @@ function startApp(appSchema, path: string) {
         const loaders = createLoaders(accessToken, userID, {
           requestIDs,
           userAgent,
-          xAppToken,
+          appToken,
         })
 
         const context: ResolverContext = {

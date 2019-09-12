@@ -13,7 +13,7 @@ const {
 
 export default (path, accessToken, fetchOptions: any = {}) => {
   const headers = {
-    "X-XAPP-TOKEN": fetchOptions.xAppToken || config.GRAVITY_XAPP_TOKEN,
+    "X-XAPP-TOKEN": fetchOptions.appToken || config.GRAVITY_XAPP_TOKEN,
   }
   let fetchParams = fetchOptions
 
