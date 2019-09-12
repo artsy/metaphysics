@@ -63,7 +63,7 @@ const ShowArgs: GraphQLFieldConfigArgumentMap = {
 
 // TODO: Get rid of this when we remove the deprecated PartnerShow in favour of Show.
 export const ShowField: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
-  type: null,
+  type: null as any,
   args: ShowArgs,
   resolve: ({ id }, options, { relatedShowsLoader }) => {
     return relatedShowsLoader(
@@ -79,7 +79,7 @@ export const ShowsConnectionField: GraphQLFieldConfig<
   { id: string },
   ResolverContext
 > = {
-  type: null,
+  type: null as any,
   args: pageable(ShowArgs),
   resolve: ({ id }, args, { relatedShowsLoader }) => {
     const pageOptions = convertConnectionArgsToGravityArgs(args)

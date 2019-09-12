@@ -9,7 +9,7 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const FollowArtistsType = new GraphQLObjectType<any, ResolverContext>({
+export const FollowArtistsType = new GraphQLObjectType<any, ResolverContext>({
   name: "FollowArtists",
   fields: {
     artists: {
