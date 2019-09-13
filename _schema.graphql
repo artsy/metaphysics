@@ -2820,6 +2820,7 @@ type Bidder {
   ): String
   pin: String
   qualified_for_bidding: Boolean
+  user: User
   sale: Sale
 }
 

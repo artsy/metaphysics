@@ -22,6 +22,7 @@ export default opts => {
     artworkImageLoader: gravityLoader<any, { artwork_id: string, image_id: string }>(({ artwork_id, image_id }) => `artwork/${artwork_id}/image/${image_id}`),
     artworkLoader: gravityLoader(id => `artwork/${id}`),
     artworksLoader: gravityLoader("artworks"),
+    bidderLoader: gravityLoader(id => `bidder/${id}`),
     fairArtistsLoader: gravityLoader(id => `fair/${id}/artists`, {}, { headers: true }),
     fairBoothsLoader: gravityLoader(id => `fair/${id}/shows`, {}, { headers: true }),
     fairPartnersLoader: gravityLoader(id => `fair/${id}/partners`, {}, { headers: true }),

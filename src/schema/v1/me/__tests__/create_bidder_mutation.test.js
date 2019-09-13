@@ -2,26 +2,28 @@
 import { runAuthenticatedQuery, runQuery } from "schema/v1/test/utils"
 
 describe("Bidder mutation", () => {
+  const sale = {
+    _id: "sale123",
+    id: "shared-live-mocktion",
+    name: "Shared Live Mocktion",
+    is_auction: true,
+    auction_state: "open",
+    published: true,
+    original_width: null,
+    original_height: null,
+    image_url: null,
+    image_versions: [],
+    image_urls: {},
+    created_at: "2018-05-28T02:50:09+00:00",
+    currency: "CHF",
+    symbol: "CHF",
+    registration_ends_at: null,
+    require_bidder_approval: false,
+    increment_strategy: "default",
+  }
+
   const bidder = {
-    sale: {
-      _id: "sale123",
-      id: "shared-live-mocktion",
-      name: "Shared Live Mocktion",
-      is_auction: true,
-      auction_state: "open",
-      published: true,
-      original_width: null,
-      original_height: null,
-      image_url: null,
-      image_versions: [],
-      image_urls: {},
-      created_at: "2018-05-28T02:50:09+00:00",
-      currency: "CHF",
-      symbol: "CHF",
-      registration_ends_at: null,
-      require_bidder_approval: false,
-      increment_strategy: "default",
-    },
+    sale,
     user: { id: "user123", _id: "user123", name: "Lucille Bluth" },
     id: "bidder123",
     created_by_admin: false,
@@ -46,6 +48,7 @@ describe("Bidder mutation", () => {
 
   const context = {
     createBidderLoader: () => Promise.resolve(bidder),
+    saleLoader: sinon.stub().returns(Promise.resolve(sale)),
   }
 
   it("creates a bidder", async () => {
