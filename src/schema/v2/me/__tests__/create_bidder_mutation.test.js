@@ -47,8 +47,8 @@ describe("Bidder mutation", () => {
   `
 
   const context = {
-    createBidderLoader: () => Promise.resolve(bidder),
-    saleLoader: sinon.stub().returns(Promise.resolve(sale)),
+    createBidderLoader: jest.fn(() => Promise.resolve(bidder)),
+    saleLoader: jest.fn(() => Promise.resolve(sale)),
   }
 
   it("creates a bidder", async () => {
