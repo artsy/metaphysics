@@ -9,6 +9,7 @@ import {
 import Artwork from "./artwork"
 import ArtworkAttributionClasses from "./artworkAttributionClasses"
 import Artist from "./artist"
+import Bidder from "./bidder"
 import Fair from "./fair"
 import Gene from "./gene"
 import HomePage from "./home"
@@ -137,6 +138,7 @@ export default new GraphQLSchema({
       // artworks: Artworks,
       artist: Artist,
       // artists: Artists,
+      bidder: Bidder,
       // causalityJWT: CausalityJWT, // TODO: Perhaps this should go into `system` ?
       city: City,
       // collection: Collection,

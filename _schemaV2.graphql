@@ -5399,6 +5399,12 @@ type Query {
     id: String!
   ): Artist
 
+  # A Bidder
+  bidder(
+    # The ID of the bidder
+    id: String!
+  ): Bidder
+
   # A city-based entry point for local discovery
   city(
     # A slug for the city, conforming to Gravity's city slug naming conventions
