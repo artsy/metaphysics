@@ -5,6 +5,25 @@ const path = require("path")
 const { createHash } = require("crypto")
 const { spawn } = require("child_process")
 
+/**
+ *
+ * @param cmd shell command to be executed
+ * @param args array of arguments to be passed to the command
+ */
+const run = (cmd: string, args: string[] = []): Promise<string> =>
+  new Promise((resolve, reject) => {
+    let output = ""
+    const cmdProcess = spawn(cmd, args)
+
+    cmdProcess.stdout.on("data", data => {
+      output += data
+    })
+
+    cmdProcess.on("close", code => {
+      code === 0 ? resolve(output) : reject(code)
+    })
+  })
+
 const schemaV1Path = path.join(process.cwd(), "src/schema/v1")
 const schemaV2Path = path.join(process.cwd(), "src/schema/v2")
 
@@ -18,6 +37,11 @@ enum FileStatus {
 }
 
 type DeltaFileMap = { [filePath: string]: FileStatus }
+
+interface BranchState {
+  commitsAhead: number
+  commitsBehind: number
+}
 
 /**
  * Converts git status short codes to their `FileStatus` equivalent.
@@ -38,81 +62,59 @@ const GitChangeToFileStatus = (change: string) => {
   }
 }
 
-interface BranchState {
-  commitsAhead: number
-  commitsBehind: number
+const updateMaster = async () => {
+  const remotes = await run("git", ["remote"])
+  if (!remotes.includes("upstream")) {
+    await run("git", [
+      "remote",
+      "add",
+      "upstream",
+      "https://github.com/artsy/metaphysics.git",
+    ])
+  }
+  await run("git", ["fetch", "upstream", "master:master"])
 }
 
 /**
- * Gives status information on the current branch as compared to origin/master
+ * Gives status information on the current branch as compared to master
  */
 const getBranchDrift = (): Promise<BranchState> =>
-  new Promise((resolve, reject) => {
-    let output = ""
-    const delta = spawn("git", [
-      "rev-list",
-      "--left-right",
-      "--count",
-      "origin/master...HEAD",
-    ])
-
-    delta.stdout.on("data", data => {
-      output += data
-    })
-
-    delta.on("close", code => {
-      if (code !== 0) {
-        reject("Failed to get branch drift")
-      } else {
-        const commitChanges = output.match(/(\d+)\s+(\d+)/)
-        if (!commitChanges) {
-          reject("Something was wrong with the branch drift output")
-        }
-
-        let [, commitsBehind, commitsAhead] = Array.from(commitChanges!).map(
-          x => Number(x)
-        )
-        resolve({
-          commitsAhead,
-          commitsBehind,
-        })
+  run("git", ["rev-list", "--left-right", "--count", "master...HEAD"]).then(
+    output => {
+      const commitChanges = output.match(/(\d+)\s+(\d+)/)
+      if (!commitChanges) {
+        throw new Error("Something was wrong with the branch drift output")
       }
-    })
-  })
+
+      let [, commitsBehind, commitsAhead] = Array.from(commitChanges!).map(x =>
+        Number(x)
+      )
+      return {
+        commitsAhead,
+        commitsBehind,
+      }
+    }
+  )
 
 /**
  * Uses git to generate a delta map of files that have changed since master
  */
 const getChangedFiles = (): Promise<DeltaFileMap> =>
-  new Promise((resolve, reject) => {
-    let changedBlob = ""
-    const changed = spawn("git", ["diff", "--name-status", "origin/master"])
-    changed.stdout.on("data", data => {
-      changedBlob += data
-    })
-
-    changed.on("close", code => {
-      if (code !== 0) {
-        reject("Failed to find changed files via git")
-      } else {
-        resolve(
-          changedBlob
-            .split("\n")
-            .map(status => {
-              const match = status.match(/([A-Z])\s+(.+)/)
-              if (match) {
-                const [, status, filePath] = match
-                return {
-                  [path.resolve(filePath)]: GitChangeToFileStatus(status),
-                }
-              }
-              return {} as any
-            })
-            .reduce((a, b) => ({ ...a, ...b }), {})
-        )
-      }
-    })
-  })
+  run("git", ["diff", "--name-status", "master"]).then(output =>
+    output
+      .split("\n")
+      .map(status => {
+        const match = status.match(/([A-Z])\s+(.+)/)
+        if (match) {
+          const [, status, filePath] = match
+          return {
+            [path.resolve(filePath)]: GitChangeToFileStatus(status),
+          }
+        }
+        return {} as any
+      })
+      .reduce((a, b) => ({ ...a, ...b }), {})
+  )
 
 /**
  * Determines if a given path is a directory
@@ -262,6 +264,7 @@ const diffDirectories = (
 
 // Main work
 ;(async () => {
+  await updateMaster()
   const branchState = await getBranchDrift()
 
   // Is there a better way to handle this?
