@@ -35,6 +35,14 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
       description: "The price range the collector has selected",
       type: GraphQLString,
     },
+    pin: {
+      description: "Pin for bidding at an auction",
+      type: GraphQLString,
+    },
+    paddle_number: {
+      description: "The paddle number of the user",
+      type: GraphQLString,
+    },
     userAlreadyExists: {
       description:
         "Check whether a user exists by email address before creating an account.",

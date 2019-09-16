@@ -11,6 +11,7 @@ describe("Sale type", () => {
     _id: "123",
     currency: "$",
     is_auction: true,
+    is_preliminary: false,
     increment_strategy: "default",
   }
 
@@ -30,6 +31,7 @@ describe("Sale type", () => {
           isOpen
           isLiveOpen
           isClosed
+          isPreliminary
           isRegistrationClosed
           status
         }
@@ -45,6 +47,7 @@ describe("Sale type", () => {
           isOpen: false,
           isLiveOpen: false,
           isClosed: true,
+          isPreliminary: false,
           isRegistrationClosed: false,
           status: "closed",
         },
@@ -60,6 +63,7 @@ describe("Sale type", () => {
           isOpen: false,
           isLiveOpen: false,
           isClosed: false,
+          isPreliminary: false,
           isRegistrationClosed: false,
           status: "preview",
         },
@@ -76,6 +80,7 @@ describe("Sale type", () => {
           isOpen: true,
           isLiveOpen: false,
           isClosed: false,
+          isPreliminary: false,
           isRegistrationClosed: false,
           status: "open",
         },
@@ -92,6 +97,7 @@ describe("Sale type", () => {
           isOpen: true,
           isLiveOpen: true,
           isClosed: false,
+          isPreliminary: false,
           isRegistrationClosed: false,
           status: "open",
         },
@@ -108,6 +114,7 @@ describe("Sale type", () => {
           isOpen: true,
           isLiveOpen: true,
           isClosed: false,
+          isPreliminary: false,
           isRegistrationClosed: true,
           status: "open",
         },

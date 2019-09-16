@@ -11,6 +11,7 @@ describe("Sale type", () => {
     _id: "123",
     currency: "$",
     is_auction: true,
+    is_preliminary: false,
     increment_strategy: "default",
   }
 
@@ -30,6 +31,7 @@ describe("Sale type", () => {
           is_open
           is_live_open
           is_closed
+          is_preliminary
           is_registration_closed
           auction_state
           status
@@ -46,6 +48,7 @@ describe("Sale type", () => {
           is_open: false,
           is_live_open: false,
           is_closed: true,
+          is_preliminary: false,
           is_registration_closed: false,
           auction_state: "closed",
           status: "closed",
@@ -62,6 +65,7 @@ describe("Sale type", () => {
           is_open: false,
           is_live_open: false,
           is_closed: false,
+          is_preliminary: false,
           is_registration_closed: false,
           auction_state: "preview",
           status: "preview",
@@ -79,6 +83,7 @@ describe("Sale type", () => {
           is_open: true,
           is_live_open: false,
           is_closed: false,
+          is_preliminary: false,
           is_registration_closed: false,
           auction_state: "open",
           status: "open",
@@ -96,6 +101,7 @@ describe("Sale type", () => {
           is_open: true,
           is_live_open: true,
           is_closed: false,
+          is_preliminary: false,
           is_registration_closed: false,
           auction_state: "open",
           status: "open",
@@ -113,6 +119,7 @@ describe("Sale type", () => {
           is_open: true,
           is_live_open: true,
           is_closed: false,
+          is_preliminary: false,
           is_registration_closed: true,
           auction_state: "open",
           status: "open",

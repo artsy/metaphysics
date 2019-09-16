@@ -205,6 +205,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ auction_state }) => auction_state === "preview",
       },
+      isPreliminary: {
+        type: GraphQLBoolean,
+        resolve: ({ is_preliminary }) => is_preliminary,
+      },
       isRegistrationClosed: {
         type: GraphQLBoolean,
         resolve: ({ registration_ends_at }) =>
