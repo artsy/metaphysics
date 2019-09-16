@@ -7,22 +7,30 @@ xdescribe("User", () => {
       id: "123456",
       _id: "000012345",
       name: "foo bar",
+      pin: "3141",
+      paddle_number: "314159",
     }
+
     const userByEmailLoader = data => {
       if (data) {
         return Promise.resolve(foundUser)
       }
       throw new Error("Unexpected invocation")
     }
+
     const query = gql`
       {
         user(email: "foo@bar.com") {
+          pin
+          paddleNumber
           userAlreadyExists
         }
       }
     `
 
     const { user } = await runAuthenticatedQuery(query, { userByEmailLoader })
+    expect(user.pin).toEqual("3141")
+    expect(user.paddleNumber).toEqual("314159")
     expect(user.userAlreadyExists).toEqual(true)
   })
 
