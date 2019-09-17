@@ -1,4 +1,4 @@
-import GeneFamily from "./gene_family"
+import { GeneFamilyType } from "./gene_family"
 import { pageable } from "relay-cursor-paging"
 import {
   connectionDefinitions,
@@ -9,7 +9,7 @@ import { GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
 
 const { connectionType: GeneFamilyConnection } = connectionDefinitions({
-  nodeType: GeneFamily.type,
+  nodeType: GeneFamilyType,
 })
 
 const GeneFamilies: GraphQLFieldConfig<void, ResolverContext> = {

@@ -1347,7 +1347,7 @@ type Author {
   profileHandle: String
 }
 
-type Bidder {
+type Bidder implements Node {
   # A globally unique ID.
   id: ID!
 
@@ -1361,6 +1361,7 @@ type Bidder {
   ): String
   pin: String
   qualifiedForBidding: Boolean
+  user: User
   sale: Sale
 }
 
@@ -5697,6 +5698,7 @@ type Sale implements Node {
   isOpen: Boolean
   isLiveOpen: Boolean
   isPreview: Boolean
+  isPreliminary: Boolean
   isRegistrationClosed: Boolean
   isWithBuyersPremium: Boolean
   liveStartAt(
@@ -6776,6 +6778,12 @@ type User {
 
   # The price range the collector has selected
   priceRange: String
+
+  # Pin for bidding at an auction
+  pin: String
+
+  # The paddle number of the user
+  paddleNumber: String
 
   # Check whether a user exists by email address before creating an account.
   userAlreadyExists: Boolean

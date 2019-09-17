@@ -1577,6 +1577,7 @@ type ArtworkContextAuction implements Node {
   is_open: Boolean
   is_live_open: Boolean
   is_preview: Boolean
+  is_preliminary: Boolean
   is_registration_closed: Boolean
   is_with_buyers_premium: Boolean
   live_start_at(
@@ -2063,6 +2064,7 @@ type ArtworkContextSale implements Node {
   is_open: Boolean
   is_live_open: Boolean
   is_preview: Boolean
+  is_preliminary: Boolean
   is_registration_closed: Boolean
   is_with_buyers_premium: Boolean
   live_start_at(
@@ -2820,6 +2822,7 @@ type Bidder {
   ): String
   pin: String
   qualified_for_bidding: Boolean
+  user: User
   sale: Sale
 }
 
@@ -7196,6 +7199,7 @@ type HomePageModuleContextSale implements Node {
   is_open: Boolean
   is_live_open: Boolean
   is_preview: Boolean
+  is_preliminary: Boolean
   is_registration_closed: Boolean
   is_with_buyers_premium: Boolean
   live_start_at(
@@ -10394,6 +10398,7 @@ type Sale implements Node {
   is_open: Boolean
   is_live_open: Boolean
   is_preview: Boolean
+  is_preliminary: Boolean
   is_registration_closed: Boolean
   is_with_buyers_premium: Boolean
   live_start_at(
@@ -11721,6 +11726,12 @@ type User {
 
   # The price range the collector has selected
   price_range: String
+
+  # Pin for bidding at an auction
+  pin: String
+
+  # The paddle number of the user
+  paddle_number: String
 
   # Check whether a user exists by email address before creating an account.
   userAlreadyExists: Boolean

@@ -35,7 +35,7 @@ const artworksArgs: GraphQLFieldConfigArgumentMap = {
   },
 }
 
-const PartnerType = new GraphQLObjectType<any, ResolverContext>({
+export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
   fields: () => {

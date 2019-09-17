@@ -3,7 +3,7 @@ import Bidder from "schema/v1/bidder"
 import Image from "schema/v1/image/index"
 import Profile from "schema/v1/profile"
 import Partner from "schema/v1/partner"
-import SaleArtwork from "schema/v1/sale_artwork"
+import { SaleArtworkType } from "schema/v1/sale_artwork"
 import initials from "schema/v1/fields/initials"
 import cached from "schema/v1/fields/cached"
 import date from "schema/v1/fields/date"
@@ -68,7 +68,7 @@ const BuyersPremium = new GraphQLObjectType<any, ResolverContext>({
 })
 
 const saleArtworkConnection = connectionDefinitions({
-  nodeType: SaleArtwork.type,
+  nodeType: SaleArtworkType,
 }).connectionType
 
 export const SaleType = new GraphQLObjectType<any, ResolverContext>({
@@ -248,6 +248,9 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ auction_state }) => auction_state === "preview",
       },
+      is_preliminary: {
+        type: GraphQLBoolean,
+      },
       is_registration_closed: {
         type: GraphQLBoolean,
         resolve: ({ registration_ends_at }) =>
@@ -255,7 +258,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       is_with_buyers_premium: {
         type: GraphQLBoolean,
-        resolve: ({ buyers_premium }) => buyers_premium,
+        resolve: ({ buyers_premium }) => !!buyers_premium,
       },
       live_start_at: date,
       live_url_if_open: {
@@ -291,7 +294,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       require_bidder_approval: { type: GraphQLBoolean },
       sale_artworks: {
-        type: new GraphQLList(SaleArtwork.type),
+        type: new GraphQLList(SaleArtworkType),
         args: {
           page: { type: GraphQLInt, defaultValue: 1 },
           size: { type: GraphQLInt, defaultValue: 25 },
@@ -334,7 +337,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ auction_state }) => auction_state,
       },
       sale_artwork: {
-        type: SaleArtwork.type,
+        type: SaleArtworkType,
         args: { id: { type: new GraphQLNonNull(GraphQLString) } },
         resolve: (sale, { id }, { saleArtworkLoader }) => {
           return saleArtworkLoader({ saleId: sale.id, saleArtworkId: id })

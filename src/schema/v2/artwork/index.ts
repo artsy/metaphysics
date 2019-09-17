@@ -65,7 +65,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
     return {
       ...SlugAndInternalIDFields,
       cached,
-      additionalInformation: markdown(),
+      additionalInformation: markdown(
+        ({ additional_information }) => additional_information
+      ),
       artist: {
         type: Artist.type,
         args: {
