@@ -54,12 +54,11 @@ type AnalyticsArtwork {
   entityId: String!
 }
 
-# Publish artwork Series Stats
-type AnalyticsArtworksPublishedStats {
-  percentageChanged: Int!
-  period: AnalyticsQueryPeriodEnum!
-  timeSeries: [AnalyticsPartnerTimeSeriesStats!]!
-  totalCount: Int!
+# Artworks published time series data of a partner
+type AnalyticsArtworksPublishedTimeSeriesStats {
+  count: Int
+  endTime: AnalyticsDateTime
+  startTime: AnalyticsDateTime
 }
 
 # An ISO 8601 datetime
@@ -164,15 +163,38 @@ type AnalyticsPageInfo {
 }
 
 # Stats for pageviews of partner content
-type AnalyticsPageviewStats {
-  artworkViews: Int
-  galleryViews: Int
+type AnalyticsPageviews {
+  artworkViews: Int!
+  galleryViews: Int!
+  partnerId: String!
   percentageChanged: Int!
   period: AnalyticsQueryPeriodEnum!
-  showViews: Int
-  timeSeries: [AnalyticsPartnerTimeSeriesStats!]!
+  showViews: Int!
+
+  # Pageviews time series
+  timeSeries(cumulative: Boolean = false): [AnalyticsPageviewsTimeSeriesStats!]
   totalCount: Int!
-  uniqueVisitors: Int
+  uniqueVisitors: Int!
+}
+
+# Pageviews time series data of a partner
+type AnalyticsPageviewsTimeSeriesStats {
+  count: Int
+  endTime: AnalyticsDateTime
+  startTime: AnalyticsDateTime
+}
+
+# Publish artwork Series Stats
+type AnalyticsPartnerArtworksPublishedStats {
+  partnerId: String!
+  percentageChanged: Int!
+  period: AnalyticsQueryPeriodEnum!
+
+  # Partner artworks published count time series
+  timeSeries(
+    cumulative: Boolean = false
+  ): [AnalyticsArtworksPublishedTimeSeriesStats!]!
+  totalCount: Int!
 }
 
 # Audience stats of a partner
@@ -193,6 +215,8 @@ type AnalyticsPartnerInquiryCountTimeSeriesStats {
 # Inquiry stats of a partner
 type AnalyticsPartnerInquiryStats {
   inquiryCount: Int!
+
+  # Inquiry response time in seconds
   inquiryResponseTime: Int
   partnerId: String!
   period: AnalyticsQueryPeriodEnum!
@@ -200,12 +224,14 @@ type AnalyticsPartnerInquiryStats {
   # Partner inquiry count time series
   timeSeries(
     cumulative: Boolean = false
-  ): [AnalyticsPartnerInquiryCountTimeSeriesStats!]
+  ): [AnalyticsPartnerInquiryCountTimeSeriesStats!]!
 }
 
 # Sales stats of a partner
 type AnalyticsPartnerSalesStats {
   orderCount: Int!
+
+  # Order response time in seconds
   orderResponseTime: Int
   partnerId: String!
   period: AnalyticsQueryPeriodEnum!
@@ -213,7 +239,7 @@ type AnalyticsPartnerSalesStats {
   # Partner sales time series
   timeSeries(
     cumulative: Boolean = false
-  ): [AnalyticsPartnerSalesTimeSeriesStats!]
+  ): [AnalyticsPartnerSalesTimeSeriesStats!]!
   totalCents: Int!
   total(
     decimal: String = "."
@@ -244,7 +270,7 @@ type AnalyticsPartnerStats {
   # Time series data on number of artworks published
   artworksPublished(
     period: AnalyticsQueryPeriodEnum!
-  ): AnalyticsArtworksPublishedStats
+  ): AnalyticsPartnerArtworksPublishedStats
 
   # Audience stats
   audience(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerAudienceStats
@@ -271,7 +297,7 @@ type AnalyticsPartnerStats {
   inquiry(period: AnalyticsQueryPeriodEnum!): AnalyticsPartnerInquiryStats
 
   # Different types of partner pageviews
-  pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviewStats
+  pageviews(period: AnalyticsQueryPeriodEnum!): AnalyticsPageviews
   partnerId: String!
 
   # Artworks, shows, or artists ranked by views. Capped at 20 by the underlying sql query.
@@ -313,13 +339,6 @@ type AnalyticsPartnerStats {
   # Number of unique visitors
   uniqueVisitors(period: AnalyticsQueryPeriodEnum!): Int
     @deprecated(reason: "Use audience() { uniqueVisitors } instead")
-}
-
-# Partner Time Series Stats
-type AnalyticsPartnerTimeSeriesStats {
-  count: Int
-  endTime: AnalyticsDateTime
-  startTime: AnalyticsDateTime
 }
 
 # Price Context Filter Type

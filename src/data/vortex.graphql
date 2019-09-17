@@ -7,13 +7,12 @@ type Artwork {
 }
 
 """
-Publish artwork Series Stats
+Artworks published time series data of a partner
 """
-type ArtworksPublishedStats {
-  percentageChanged: Int!
-  period: QueryPeriodEnum!
-  timeSeries: [PartnerTimeSeriesStats!]!
-  totalCount: Int!
+type ArtworksPublishedTimeSeriesStats {
+  count: Int
+  endTime: DateTime
+  startTime: DateTime
 }
 
 """
@@ -111,7 +110,11 @@ enum GroupedStatsObjectTypeEnum {
 """
 A grouped stat item: country or device etc.
 """
-union GroupedStatsUnion = VisitorsByCountry | VisitorsByDevice | VisitorsByLandingPage | VisitorsByReferral
+union GroupedStatsUnion =
+    VisitorsByCountry
+  | VisitorsByDevice
+  | VisitorsByLandingPage
+  | VisitorsByReferral
 
 """
 A histogram bin
@@ -150,15 +153,44 @@ type PageInfo {
 """
 Stats for pageviews of partner content
 """
-type PageviewStats {
-  artworkViews: Int
-  galleryViews: Int
+type Pageviews {
+  artworkViews: Int!
+  galleryViews: Int!
+  partnerId: String!
   percentageChanged: Int!
   period: QueryPeriodEnum!
-  showViews: Int
-  timeSeries: [PartnerTimeSeriesStats!]!
+  showViews: Int!
+
+  """
+  Pageviews time series
+  """
+  timeSeries(cumulative: Boolean = false): [PageviewsTimeSeriesStats!]
   totalCount: Int!
-  uniqueVisitors: Int
+  uniqueVisitors: Int!
+}
+
+"""
+Pageviews time series data of a partner
+"""
+type PageviewsTimeSeriesStats {
+  count: Int
+  endTime: DateTime
+  startTime: DateTime
+}
+
+"""
+Publish artwork Series Stats
+"""
+type PartnerArtworksPublishedStats {
+  partnerId: String!
+  percentageChanged: Int!
+  period: QueryPeriodEnum!
+
+  """
+  Partner artworks published count time series
+  """
+  timeSeries(cumulative: Boolean = false): [ArtworksPublishedTimeSeriesStats!]!
+  totalCount: Int!
 }
 
 """
@@ -185,6 +217,10 @@ Inquiry stats of a partner
 """
 type PartnerInquiryStats {
   inquiryCount: Int!
+
+  """
+  Inquiry response time in seconds
+  """
   inquiryResponseTime: Int
   partnerId: String!
   period: QueryPeriodEnum!
@@ -192,7 +228,9 @@ type PartnerInquiryStats {
   """
   Partner inquiry count time series
   """
-  timeSeries(cumulative: Boolean = false): [PartnerInquiryCountTimeSeriesStats!]
+  timeSeries(
+    cumulative: Boolean = false
+  ): [PartnerInquiryCountTimeSeriesStats!]!
 }
 
 """
@@ -200,6 +238,10 @@ Sales stats of a partner
 """
 type PartnerSalesStats {
   orderCount: Int!
+
+  """
+  Order response time in seconds
+  """
   orderResponseTime: Int
   partnerId: String!
   period: QueryPeriodEnum!
@@ -207,7 +249,7 @@ type PartnerSalesStats {
   """
   Partner sales time series
   """
-  timeSeries(cumulative: Boolean = false): [PartnerSalesTimeSeriesStats!]
+  timeSeries(cumulative: Boolean = false): [PartnerSalesTimeSeriesStats!]!
   totalCents: Int!
 }
 
@@ -228,7 +270,7 @@ type PartnerStats {
   """
   Time series data on number of artworks published
   """
-  artworksPublished(period: QueryPeriodEnum!): ArtworksPublishedStats
+  artworksPublished(period: QueryPeriodEnum!): PartnerArtworksPublishedStats
 
   """
   Audience stats
@@ -271,7 +313,7 @@ type PartnerStats {
   """
   Different types of partner pageviews
   """
-  pageviews(period: QueryPeriodEnum!): PageviewStats
+  pageviews(period: QueryPeriodEnum!): Pageviews
   partnerId: String!
 
   """
@@ -329,21 +371,14 @@ type PartnerStats {
     Returns the last _n_ elements from the list.
     """
     last: Int
-  ): RankedStatsConnection @deprecated(reason: "Use rankedStats(objectType: ) instead")
+  ): RankedStatsConnection
+    @deprecated(reason: "Use rankedStats(objectType: ) instead")
 
   """
   Number of unique visitors
   """
-  uniqueVisitors(period: QueryPeriodEnum!): Int @deprecated(reason: "Use audience() { uniqueVisitors } instead")
-}
-
-"""
-Partner Time Series Stats
-"""
-type PartnerTimeSeriesStats {
-  count: Int
-  endTime: DateTime
-  startTime: DateTime
+  uniqueVisitors(period: QueryPeriodEnum!): Int
+    @deprecated(reason: "Use audience() { uniqueVisitors } instead")
 }
 
 """
@@ -485,7 +520,11 @@ type Query {
   """
   Pricing Context Histograms
   """
-  pricingContext(artistId: String!, category: PricingContextCategoryEnum!, sizeScore: Int!): PricingContext
+  pricingContext(
+    artistId: String!
+    category: PricingContextCategoryEnum!
+    sizeScore: Int!
+  ): PricingContext
 }
 
 enum QueryPeriodEnum {
