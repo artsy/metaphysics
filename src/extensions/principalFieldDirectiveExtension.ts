@@ -7,6 +7,7 @@ export const principalFieldDirectiveExtension = (documentAST, result) => {
   let extensions = {}
   if (path.length && result.errors && result.errors.length) {
     const errors = result.errors.find(e => isEqual(e.path, path))
+    if (!errors) return extensions
 
     flattenErrors(errors).some(err => {
       const httpStatusCode = statusCodeForError(err)
