@@ -213,7 +213,9 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return edition_sets
         },
       },
-      exhibitionHistory: markdown(),
+      exhibitionHistory: markdown(
+        ({ exhibition_history }) => exhibition_history
+      ),
       fair: {
         type: Fair.type,
         resolve: ({ id }, _options, { relatedFairsLoader }) => {
