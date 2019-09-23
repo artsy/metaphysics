@@ -30,4 +30,36 @@ describe(principalFieldDirectiveExtension, () => {
     )
     expect(extensions).toEqual({ principalField: { httpStatusCode: 404 } })
   })
+
+  it("doesnt return an error when the error is on a different field", async () => {
+    const query = `
+      {
+        artwork(id: "test") @principalField {
+          id
+          articles(size: 1) {
+            href
+          }
+        }
+      }
+    `
+
+    const args = {
+      schema,
+      source: query,
+      contextValue: {
+        articlesLoader: () => Promise.reject(new HTTPError("not found", 404)),
+        artworkLoader: () => Promise.resolve({ id: "percy-z" }),
+      },
+    }
+
+    const result = await graphql(args)
+    const { data } = result
+    expect(data!.artwork.id).toEqual("percy-z")
+
+    const extensions = principalFieldDirectiveExtension(
+      queryToAst(query),
+      result
+    )
+    expect(extensions).toEqual({})
+  })
 })
