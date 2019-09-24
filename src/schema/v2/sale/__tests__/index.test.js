@@ -30,7 +30,7 @@ describe("Sale type", () => {
       }
     }`
 
-    it("returns the correct value for time_zone", async () => {
+    it("returns the correct value for timeZone", async () => {
       sale.timeZone = "America/Chicago"
       expect(await execute(query)).toEqual({
         sale: {
