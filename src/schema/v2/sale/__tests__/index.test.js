@@ -22,6 +22,24 @@ describe("Sale type", () => {
     })
   }
 
+  describe("sale timeZone", () => {
+    const query = `
+    {
+      sale(id: "foo-foo") {
+        timeZone
+      }
+    }`
+
+    it("returns the correct value for timeZone", async () => {
+      sale.time_zone = "America/Chicago"
+      expect(await execute(query)).toEqual({
+        sale: {
+          timeZone: "America/Chicago",
+        },
+      })
+    })
+  })
+
   describe("auction state", () => {
     const query = `
       {
