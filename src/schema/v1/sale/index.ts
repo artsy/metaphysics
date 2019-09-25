@@ -344,7 +344,10 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       symbol: { type: GraphQLString },
-      timeZone: { type: GraphQLString },
+      timeZone: {
+        type: GraphQLString,
+        resolve: ({ time_zone }) => time_zone,
+      },
     }
   },
 })
