@@ -84,6 +84,7 @@ import ObjectIdentification from "./object_identification"
 import { ResolverContext } from "types/graphql"
 import config from "config"
 import { ArtworkVersionType } from "./artwork_version"
+import { deprecate } from "lib/deprecation"
 
 const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
@@ -101,6 +102,74 @@ const PrincipalFieldDirective = new GraphQLDirective({
   name: "principalField",
   locations: [DirectiveLocation.FIELD],
 })
+
+const rootFields = {
+  artworkAttributionClasses: ArtworkAttributionClasses,
+  // article: Article,
+  // articles: Articles,
+  artwork: Artwork,
+  // artworkVersion: ArtworkVersionResolver,
+  // artworks: Artworks,
+  artist: Artist,
+  // artists: Artists,
+  // causalityJWT: CausalityJWT, // TODO: Perhaps this should go into `system` ?
+  city: City,
+  // collection: Collection,
+  // creditCard: CreditCard,
+  // externalPartner: ExternalPartner,
+  fair: Fair,
+  // fairs: Fairs,
+  // filterPartners: FilterPartners,
+  // filterArtworksConnection: filterArtworksConnection(),
+  gene: Gene,
+  // genes: Genes,
+  // suggestedGenes: SuggestedGenes,
+  // geneFamilies: GeneFamilies,
+  // geneFamily: GeneFamily,
+  homePage: HomePage,
+  // matchArtist: MatchArtist,
+  // matchGene: MatchGene,
+  me: Me,
+  node: ObjectIdentification.NodeField,
+  // orderedSet: OrderedSet,
+  // orderedSets: OrderedSets,
+  // partner: Partner,
+  // partnerCategories: PartnerCategories,
+  // partnerCategory: PartnerCategory,
+  // partners: Partners,
+  // profile: Profile,
+  sale: Sale,
+  // saleArtwork: SaleArtwork,
+  // saleArtworksConnection: SaleArtworksConnectionField,
+  salesConnection: SalesConnectionField,
+  searchConnection: Search,
+  show: Show,
+  // status: Status,
+  system: System,
+
+  // tag: Tag,
+  // trendingArtists: TrendingArtists,
+  // user: User,
+  // users: Users,
+  // popularArtists: PopularArtists,
+}
+
+// FIXME: Remove type once Reaction MPv2 migration is complete
+const ViewerType = new GraphQLObjectType<any, ResolverContext>({
+  name: "Viewer",
+  description: "A wildcard used to support complex root queries in Relay",
+  fields: rootFields,
+})
+
+const Viewer = {
+  type: ViewerType,
+  description: "A wildcard used to support complex root queries in Relay",
+  resolve: x => x,
+  deprecationReason: deprecate({
+    inVersion: 2,
+    reason: "Viewer has been deprecated in V2. Rely on root fields instead.",
+  }),
+}
 
 export default new GraphQLSchema({
   mutation: new GraphQLObjectType<any, ResolverContext>({
@@ -129,54 +198,8 @@ export default new GraphQLSchema({
   query: new GraphQLObjectType<any, ResolverContext>({
     name: "Query",
     fields: {
-      artworkAttributionClasses: ArtworkAttributionClasses,
-      // article: Article,
-      // articles: Articles,
-      artwork: Artwork,
-      // artworkVersion: ArtworkVersionResolver,
-      // artworks: Artworks,
-      artist: Artist,
-      // artists: Artists,
-      // causalityJWT: CausalityJWT, // TODO: Perhaps this should go into `system` ?
-      city: City,
-      // collection: Collection,
-      // creditCard: CreditCard,
-      // externalPartner: ExternalPartner,
-      fair: Fair,
-      // fairs: Fairs,
-      // filterPartners: FilterPartners,
-      // filterArtworksConnection: filterArtworksConnection(),
-      gene: Gene,
-      // genes: Genes,
-      // suggestedGenes: SuggestedGenes,
-      // geneFamilies: GeneFamilies,
-      // geneFamily: GeneFamily,
-      homePage: HomePage,
-      // matchArtist: MatchArtist,
-      // matchGene: MatchGene,
-      me: Me,
-      node: ObjectIdentification.NodeField,
-      // orderedSet: OrderedSet,
-      // orderedSets: OrderedSets,
-      // partner: Partner,
-      // partnerCategories: PartnerCategories,
-      // partnerCategory: PartnerCategory,
-      // partners: Partners,
-      // profile: Profile,
-      sale: Sale,
-      // saleArtwork: SaleArtwork,
-      // saleArtworksConnection: SaleArtworksConnectionField,
-      salesConnection: SalesConnectionField,
-      searchConnection: Search,
-      show: Show,
-      // status: Status,
-      system: System,
-
-      // tag: Tag,
-      // trendingArtists: TrendingArtists,
-      // user: User,
-      // users: Users,
-      // popularArtists: PopularArtists,
+      ...rootFields,
+      viewer: Viewer,
     },
   }),
   // These are for orphaned types which are types which should be in the schema,
