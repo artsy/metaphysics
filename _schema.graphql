@@ -1629,6 +1629,7 @@ type ArtworkContextAuction implements Node {
   status: String
   sale_artwork(id: String!): SaleArtwork
   symbol: String
+  timeZone: String
 }
 
 type ArtworkContextFair {
@@ -2116,6 +2117,7 @@ type ArtworkContextSale implements Node {
   status: String
   sale_artwork(id: String!): SaleArtwork
   symbol: String
+  timeZone: String
 }
 
 # An edge in a connection.
@@ -7251,6 +7253,7 @@ type HomePageModuleContextSale implements Node {
   status: String
   sale_artwork(id: String!): SaleArtwork
   symbol: String
+  timeZone: String
 }
 
 type HomePageModuleContextTrending {
@@ -10450,6 +10453,7 @@ type Sale implements Node {
   status: String
   sale_artwork(id: String!): SaleArtwork
   symbol: String
+  timeZone: String
 }
 
 type SaleArtwork {

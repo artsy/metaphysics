@@ -5739,6 +5739,7 @@ type Sale implements Node {
   status: String
   saleArtwork(id: String!): SaleArtwork
   symbol: String
+  timeZone: String
 }
 
 type SaleArtwork implements Node & ArtworkEdgeInterface {
