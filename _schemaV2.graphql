@@ -5477,6 +5477,12 @@ type Query {
     id: String!
   ): Show
 
+  # Content for a specific page or view
+  staticContent(
+    # The slug or id for the view
+    id: String!
+  ): StaticContent
+
   # Fields related to internal systems.
   system: System
 
@@ -6527,6 +6533,19 @@ enum sort {
   ASC
 }
 
+type StaticContent {
+  # A globally unique ID.
+  id: ID!
+
+  # A slug ID.
+  slug: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  name: String
+  content: String
+}
+
 enum SubmissionCategoryAggregation {
   PAINTING
   SCULPTURE
@@ -6890,6 +6909,12 @@ type Viewer {
     # The slug or ID of the Show
     id: String!
   ): Show
+
+  # Content for a specific page or view
+  staticContent(
+    # The slug or id for the view
+    id: String!
+  ): StaticContent
 
   # Fields related to internal systems.
   system: System

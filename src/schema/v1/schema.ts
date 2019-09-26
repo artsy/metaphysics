@@ -87,6 +87,7 @@ import createCreditCardMutation from "./me/create_credit_card_mutation"
 import { deleteCreditCardMutation } from "./me/delete_credit_card_mutation"
 import { BidderPositionMutation } from "./me/bidder_position_mutation"
 import { sendFeedbackMutation } from "./sendFeedbackMutation"
+import StaticContent from "./static_content"
 
 import CausalityJWT from "./causality_jwt"
 import ObjectIdentification from "./object_identification"
@@ -160,6 +161,7 @@ const rootFields: GraphQLFieldConfigMap<any, ResolverContext> = {
   services: Services,
   show: Show,
   status: Status,
+  staticContent: StaticContent,
   system: System,
   tag: Tag,
   trending_artists: TrendingArtists,

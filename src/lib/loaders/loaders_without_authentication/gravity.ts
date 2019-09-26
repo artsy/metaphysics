@@ -78,6 +78,7 @@ export default opts => {
     showsWithHeadersLoader: gravityLoader("shows", {}, { headers: true }),
     similarArtworksLoader: gravityLoader("related/artworks"),
     similarGenesLoader: gravityLoader(id => `gene/${id}/similar`, {}, { headers: true }),
+    staticContentLoader: gravityLoader(id => `page/${id}`),
     systemTimeLoader: gravityUncachedLoader("system/time", null),
     tagLoader: gravityLoader(id => `tag/${id}`),
     trendingArtistsLoader: gravityLoader("artists/trending"),
