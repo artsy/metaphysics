@@ -5,10 +5,12 @@ import {
   GraphQLString,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { SlugAndInternalIDFields } from "./object_identification"
 
 const StaticContentType = new GraphQLObjectType<any, ResolverContext>({
   name: "StaticContent",
   fields: {
+    ...SlugAndInternalIDFields,
     name: {
       type: GraphQLString,
     },
@@ -24,7 +26,7 @@ const StaticContent: GraphQLFieldConfig<void, ResolverContext> = {
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLString),
-      description: "The slug for the view",
+      description: "The slug or id for the view",
     },
   },
   resolve: (_root, { id }, { staticContentLoader }) => {

@@ -10047,7 +10047,7 @@ type Query {
 
   # Content for a specific page or view
   staticContent(
-    # The slug for the view
+    # The slug or id for the view
     id: String!
   ): StaticContent
 
@@ -11365,6 +11365,14 @@ enum sort {
 }
 
 type StaticContent {
+  # A globally unique ID.
+  __id: ID!
+
+  # A slug ID.
+  id: ID!
+
+  # A type-specific ID likely used as a database ID.
+  _id: ID!
   name: String
   content: String
 }
@@ -12214,7 +12222,7 @@ type Viewer {
 
   # Content for a specific page or view
   staticContent(
-    # The slug for the view
+    # The slug or id for the view
     id: String!
   ): StaticContent
 
