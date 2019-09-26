@@ -12,6 +12,7 @@ import Artist from "./artist"
 import Fair from "./fair"
 import Gene from "./gene"
 import HomePage from "./home"
+import StaticContent from "./static_content"
 import { City } from "./city"
 import FollowArtist from "./me/follow_artist"
 import FollowProfile from "./me/follow_profile"
@@ -144,6 +145,7 @@ const rootFields = {
   salesConnection: SalesConnectionField,
   searchConnection: Search,
   show: Show,
+  staticContent: StaticContent,
   // status: Status,
   system: System,
 

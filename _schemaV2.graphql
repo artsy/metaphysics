@@ -5477,6 +5477,12 @@ type Query {
     id: String!
   ): Show
 
+  # Content for a specific page or view
+  staticContent(
+    # The slug for the view
+    id: String!
+  ): StaticContent
+
   # Fields related to internal systems.
   system: System
 
@@ -6527,6 +6533,11 @@ enum sort {
   ASC
 }
 
+type StaticContent {
+  name: String
+  content: String
+}
+
 enum SubmissionCategoryAggregation {
   PAINTING
   SCULPTURE
@@ -6890,6 +6901,12 @@ type Viewer {
     # The slug or ID of the Show
     id: String!
   ): Show
+
+  # Content for a specific page or view
+  staticContent(
+    # The slug for the view
+    id: String!
+  ): StaticContent
 
   # Fields related to internal systems.
   system: System

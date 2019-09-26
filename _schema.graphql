@@ -10045,6 +10045,12 @@ type Query {
   ): Show
   status: Status
 
+  # Content for a specific page or view
+  staticContent(
+    # The slug for the view
+    id: String!
+  ): StaticContent
+
   # Fields related to internal systems.
   system: System
   tag(
@@ -11358,6 +11364,11 @@ enum sort {
   ASC
 }
 
+type StaticContent {
+  name: String
+  content: String
+}
+
 type Status {
   gravity: StatusGravity
 
@@ -12200,6 +12211,12 @@ type Viewer {
     id: String!
   ): Show
   status: Status
+
+  # Content for a specific page or view
+  staticContent(
+    # The slug for the view
+    id: String!
+  ): StaticContent
 
   # Fields related to internal systems.
   system: System
