@@ -5477,8 +5477,20 @@ type Query {
     id: String!
   ): Show
 
+  # Content for a specific page or view
+  staticContent(
+    # The slug or id for the view
+    id: String!
+  ): StaticContent
+
   # Fields related to internal systems.
   system: System
+
+  # A wildcard used to support complex root queries in Relay
+  viewer: Viewer
+    @deprecated(
+      reason: "Viewer has been deprecated in V2. Rely on root fields instead. [Will be removed in v2]"
+    )
 
   # Find list of competing orders
   commerceCompetingOrders(
@@ -6521,6 +6533,19 @@ enum sort {
   ASC
 }
 
+type StaticContent {
+  # A globally unique ID.
+  id: ID!
+
+  # A slug ID.
+  slug: ID!
+
+  # A type-specific ID likely used as a database ID.
+  internalID: ID!
+  name: String
+  content: String
+}
+
 enum SubmissionCategoryAggregation {
   PAINTING
   SCULPTURE
@@ -6788,4 +6813,109 @@ type User {
 
   # Check whether a user exists by email address before creating an account.
   userAlreadyExists: Boolean
+}
+
+# A wildcard used to support complex root queries in Relay
+type Viewer {
+  # List of all artwork attribution classes
+  artworkAttributionClasses: [AttributionClass]
+
+  # An Artwork
+  artwork(
+    # The slug or ID of the Artwork
+    id: String!
+  ): Artwork
+
+  # An Artist
+  artist(
+    # The slug or ID of the Artist
+    id: String!
+  ): Artist
+
+  # A city-based entry point for local discovery
+  city(
+    # A slug for the city, conforming to Gravity's city slug naming conventions
+    slug: String
+
+    # A point which will be used to locate the nearest local discovery city within a threshold
+    near: Near
+  ): City
+
+  # A Fair
+  fair(
+    # The slug or ID of the Fair
+    id: String!
+  ): Fair
+  gene(
+    # The slug or ID of the Gene
+    id: String!
+  ): Gene
+
+  # Home screen content
+  homePage: HomePage
+  me: Me
+
+  # Fetches an object given its globally unique ID.
+  node(
+    # The globally unique ID of the node.
+    id: ID!
+  ): Node
+
+  # A Sale
+  sale(
+    # The slug or ID of the Sale
+    id: String!
+  ): Sale
+
+  # A list of Sales
+  salesConnection(
+    # Limit by auction.
+    isAuction: Boolean = true
+
+    # Limit by live status.
+    live: Boolean = true
+
+    # Limit by published status.
+    published: Boolean = true
+    sort: SaleSorts
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): SaleConnection
+
+  # Global search
+  searchConnection(
+    # Search query to perform. Required.
+    query: String!
+
+    # Entities to include in search. Default: [ARTIST, ARTWORK].
+    entities: [SearchEntity]
+
+    # Mode of search to execute. Default: SITE.
+    mode: SearchMode
+    aggregations: [SearchAggregation]
+
+    # If present, will be used for pagination instead of cursors.
+    page: Int
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): SearchableConnection
+
+  # A Show
+  show(
+    # The slug or ID of the Show
+    id: String!
+  ): Show
+
+  # Content for a specific page or view
+  staticContent(
+    # The slug or id for the view
+    id: String!
+  ): StaticContent
+
+  # Fields related to internal systems.
+  system: System
 }
