@@ -228,7 +228,7 @@ function startApp(appSchema, path: string) {
           graphiql: true,
           context,
           rootValue: {},
-          formatError: graphqlErrorHandler(enableSentry, {
+          customFormatErrorFn: graphqlErrorHandler(enableSentry, {
             req,
             // Why the checking on params? Do we reach this code if params is falsy?
             variables: params && params.variables,
