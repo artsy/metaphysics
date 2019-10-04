@@ -117,6 +117,15 @@ describe("date formatting", () => {
       )
       expect(period).toBe("Ended Dec 30, 2016")
     })
+
+    it("returns null if endAt is null and the sale has already started", () => {
+      const period = formattedStartDateTime(
+        "2016-12-05T20:00:00+00:00",
+        null,
+        "UTC"
+      )
+      expect(period).toBe(null)
+    })
   })
 
   describe(formattedOpeningHours, () => {

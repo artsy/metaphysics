@@ -262,6 +262,8 @@ export function formattedStartDateTime(startAt, endAt, timezone) {
     return `Starts ${singleDateTime(startAt, timezone)}`
   } else if (thisMoment.isBefore(endMoment)) {
     return `Ends ${singleDateTime(endAt, timezone)}`
+  } else if (endAt === null) {
+    return null
   } else {
     return `Ended ${singleDate(endAt, timezone)}`
   }
