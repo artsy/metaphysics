@@ -257,16 +257,24 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       saleArtworksConnection: {
         type: saleArtworkConnection,
-        args: pageable(),
+        args: pageable({
+          internalIDs: {
+            type: new GraphQLList(GraphQLString),
+            description: "List of sale artwork internal IDs to fetch",
+          },
+        }),
         resolve: (sale, options, { saleArtworksLoader }) => {
           const { limit: size, offset } = getPagingParameters(options)
+          const { internalIDs: ids } = options
+
           return saleArtworksLoader(sale.id, {
             size,
             offset,
+            ids,
           }).then(({ body }) =>
             connectionFromArraySlice(body, options, {
               arrayLength: sale.eligible_sale_artworks_count,
-              sliceStart: offset,
+              sliceStart: offset || 0,
             })
           )
         },

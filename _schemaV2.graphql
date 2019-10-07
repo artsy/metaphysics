@@ -5736,6 +5736,8 @@ type Sale implements Node {
   registrationStatus: Bidder
   requireBidderApproval: Boolean
   saleArtworksConnection(
+    # List of sale artwork internal IDs to fetch
+    internalIDs: [String]
     after: String
     first: Int
     before: String
