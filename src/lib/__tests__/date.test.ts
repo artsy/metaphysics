@@ -95,6 +95,7 @@ describe("date formatting", () => {
       const period = formattedStartDateTime(
         "2045-12-05T20:00:00+00:00",
         "2050-12-30T17:00:00+00:00",
+        null,
         "UTC"
       )
       expect(period).toBe("Starts Dec 5, 2045 at 8:00pm UTC")
@@ -104,6 +105,7 @@ describe("date formatting", () => {
       const period = formattedStartDateTime(
         "2017-12-05T20:00:00+00:00",
         "2045-12-30T17:00:00+00:00",
+        null,
         "UTC"
       )
       expect(period).toBe("Ends Dec 30, 2045 at 5:00pm UTC")
@@ -113,9 +115,44 @@ describe("date formatting", () => {
       const period = formattedStartDateTime(
         "2016-12-05T20:00:00+00:00",
         "2016-12-30T17:00:00+00:00",
+        null,
         "UTC"
       )
       expect(period).toBe("Ended Dec 30, 2016")
+    })
+
+    it("includes 'Starts' when event starts in the future", () => {
+      const period = formattedStartDateTime(
+        "2045-12-05T20:00:00+00:00",
+        "2050-12-30T17:00:00+00:00",
+        null,
+        "UTC"
+      )
+      expect(period).toBe("Starts Dec 5, 2045 at 8:00pm UTC")
+    })
+
+    it("includes 'Live' string when auction has started but live sale has not", () => {
+      const startAt = "2012-12-05T20:00:00+00:00"
+      const liveStartAt = "2045-12-05T20:00:00+00:00"
+      const endAt = "2045-12-05T20:00:00+00:00"
+      const date = formattedStartDateTime(startAt, endAt, liveStartAt, "UTC")
+      expect(date).toEqual("Live Dec 5, 2045 at 8:00pm UTC")
+    })
+
+    it("includes 'In progress' string when auction is live", () => {
+      const startAt = "2012-12-05T20:00:00+00:00"
+      const liveStartAt = "2012-12-05T20:00:00+00:00"
+      const endAt = "2045-12-05T20:00:00+00:00"
+      const date = formattedStartDateTime(startAt, endAt, liveStartAt, "UTC")
+      expect(date).toEqual("In progress")
+    })
+
+    it("is null if endAt is null and startAt and liveStartAt are in the past", () => {
+      const startAt = "2012-12-05T20:00:00+00:00"
+      const liveStartAt = "2012-12-05T20:00:00+00:00"
+      const endAt = null
+      const date = formattedStartDateTime(startAt, endAt, liveStartAt, "UTC")
+      expect(date).toEqual(null)
     })
   })
 
