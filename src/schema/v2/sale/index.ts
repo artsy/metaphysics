@@ -271,12 +271,22 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
             size,
             offset,
             ids,
-          }).then(({ body }) =>
-            connectionFromArraySlice(body, options, {
-              arrayLength: sale.eligible_sale_artworks_count,
-              sliceStart: offset || 0,
-            })
-          )
+          }).then(({ body }) => {
+            let meta
+            if (ids) {
+              meta = {
+                arrayLength: body && body.length,
+                sliceStart: 0,
+              }
+            } else {
+              meta = {
+                arrayLength: sale.eligible_sale_artworks_count,
+                sliceStart: offset,
+              }
+            }
+
+            return connectionFromArraySlice(body, options, meta)
+          })
         },
       },
       saleType: {
