@@ -211,7 +211,11 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "A formatted description of when the auction starts or ends or if it has ended",
-        resolve: ({ start_at, end_at, live_start_at, defaultTimezone }) =>
+        resolve: (
+          { start_at, end_at, live_start_at },
+          _options,
+          { defaultTimezone }
+        ) =>
           formattedStartDateTime(
             start_at,
             end_at,
