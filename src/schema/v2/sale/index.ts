@@ -28,6 +28,7 @@ import {
   GraphQLInt,
   GraphQLFloat,
   GraphQLFieldConfig,
+  GraphQLID,
 } from "graphql"
 
 import config from "config"
@@ -259,7 +260,7 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: saleArtworkConnection,
         args: pageable({
           internalIDs: {
-            type: new GraphQLList(GraphQLString),
+            type: new GraphQLList(GraphQLID),
             description: "List of sale artwork internal IDs to fetch",
           },
         }),
