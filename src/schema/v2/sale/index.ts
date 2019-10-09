@@ -28,6 +28,7 @@ import {
   GraphQLInt,
   GraphQLFloat,
   GraphQLFieldConfig,
+  GraphQLID,
 } from "graphql"
 
 import config from "config"
@@ -264,18 +265,36 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       saleArtworksConnection: {
         type: saleArtworkConnection,
-        args: pageable(),
+        args: pageable({
+          internalIDs: {
+            type: new GraphQLList(GraphQLID),
+            description: "List of sale artwork internal IDs to fetch",
+          },
+        }),
         resolve: (sale, options, { saleArtworksLoader }) => {
           const { limit: size, offset } = getPagingParameters(options)
+          const { internalIDs: ids } = options
+
           return saleArtworksLoader(sale.id, {
             size,
             offset,
-          }).then(({ body }) =>
-            connectionFromArraySlice(body, options, {
-              arrayLength: sale.eligible_sale_artworks_count,
-              sliceStart: offset,
-            })
-          )
+            ids,
+          }).then(({ body }) => {
+            let meta
+            if (ids) {
+              meta = {
+                arrayLength: body && body.length,
+                sliceStart: 0,
+              }
+            } else {
+              meta = {
+                arrayLength: sale.eligible_sale_artworks_count,
+                sliceStart: offset,
+              }
+            }
+
+            return connectionFromArraySlice(body, options, meta)
+          })
         },
       },
       saleType: {
