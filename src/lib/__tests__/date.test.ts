@@ -146,14 +146,6 @@ describe("date formatting", () => {
       const date = formattedStartDateTime(startAt, endAt, liveStartAt, "UTC")
       expect(date).toEqual("In progress")
     })
-
-    it("is null if endAt is null and startAt and liveStartAt are in the past", () => {
-      const startAt = "2012-12-05T20:00:00+00:00"
-      const liveStartAt = "2012-12-05T20:00:00+00:00"
-      const endAt = null
-      const date = formattedStartDateTime(startAt, endAt, liveStartAt, "UTC")
-      expect(date).toEqual(null)
-    })
   })
 
   describe(formattedOpeningHours, () => {
