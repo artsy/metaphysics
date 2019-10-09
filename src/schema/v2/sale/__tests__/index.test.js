@@ -229,6 +229,41 @@ describe("Sale type", () => {
         expect(data).toMatchSnapshot()
       })
     })
+
+    it("accepts the internalIDs argument", () => {
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            saleArtworksConnection(internalIDs: ["sa-id-0", "sa-id-1"]) {
+              edges {
+                node {
+                  slug
+                }
+              }
+            }
+          }
+        }
+      `
+      sale.eligible_sale_artworks_count = 2
+
+      const saleArtworks = [{ id: "sa-slug-0" }, { id: "sa-slug-1" }]
+      const saleArtworksLoaderMock = jest
+        .fn()
+        .mockResolvedValue({ body: saleArtworks })
+      const context = {
+        saleLoader: () => Promise.resolve(sale),
+        saleArtworksLoader: saleArtworksLoaderMock,
+      }
+
+      return runAuthenticatedQuery(query, context).then(data => {
+        expect(saleArtworksLoaderMock.mock.calls[0][1].ids).toEqual([
+          "sa-id-0",
+          "sa-id-1",
+        ])
+
+        expect(data).toMatchSnapshot()
+      })
+    })
   })
 
   describe("saleArtworks", () => {
