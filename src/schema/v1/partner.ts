@@ -277,10 +277,10 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
         },
       },
-      commerceVerified: {
+      isVerifiedSeller: {
         description: "Indicates the partner is a trusted seller on Artsy",
         type: GraphQLBoolean,
-        resolve: ({ commerce_verified }) => commerce_verified,
+        resolve: ({ verified_seller }) => verified_seller,
       },
     }
   },

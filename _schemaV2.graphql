@@ -5132,7 +5132,7 @@ type Partner implements Node {
   website: String
 
   # Indicates the partner is a trusted seller on Artsy
-  commerceVerified: Boolean
+  isVerifiedSeller: Boolean
   analytics: AnalyticsPartnerStats
 }
 
