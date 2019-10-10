@@ -2,6 +2,7 @@ import { stripTags, truncate, markdownToText } from "lib/helpers"
 import { compact } from "lodash"
 import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import { metaTitle } from "schema/v2/artist/meta"
 
 export const metaName = artist => {
   if (artist.name) return stripTags(artist.name)
@@ -30,8 +31,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: GraphQLString,
       resolve: artist => {
-        const count = artist.published_artworks_count
-        return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`
+        return metaTitle(artist)
       },
     },
   },
