@@ -12,12 +12,13 @@ export const metaName = artist => {
 
 export const metaTitle = artist => {
   const count = artist.published_artworks_count
+  const name = metaName(artist)
 
   if (artistBio.test.includes(artist.id)) {
-    return `${artist.name} - Art, Bio, Insights - Artsy`
+    return `${name} - Art, Bio, Insights - Artsy`
   }
   if (artistSale.test.includes(artist.id)) {
-    return `${artist.name} - For Sale on Artsy`
+    return `${name} - For Sale on Artsy`
   }
   return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`
 }
