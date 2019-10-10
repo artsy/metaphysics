@@ -2,10 +2,25 @@ import { stripTags, truncate, markdownToText } from "lib/helpers"
 import { compact } from "lodash"
 import { GraphQLString, GraphQLObjectType, GraphQLFieldConfig } from "graphql"
 import { ResolverContext } from "types/graphql"
+import artistBio from "./seo_test/bio_insight_test_group"
+import artistSale from "./seo_test/for_sale_test_group"
 
 export const metaName = artist => {
   if (artist.name) return stripTags(artist.name)
   return "Unnamed Artist"
+}
+
+export const metaTitle = artist => {
+  const count = artist.published_artworks_count
+  const name = metaName(artist)
+
+  if (artistBio.test.includes(artist.id)) {
+    return `${name} - Art, Bio, Insights - Artsy`
+  }
+  if (artistSale.test.includes(artist.id)) {
+    return `${name} - For Sale on Artsy`
+  }
+  return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`
 }
 
 const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
@@ -30,8 +45,7 @@ const ArtistMetaType = new GraphQLObjectType<any, ResolverContext>({
     title: {
       type: GraphQLString,
       resolve: artist => {
-        const count = artist.published_artworks_count
-        return `${metaName(artist)} - ${count} Artworks, Bio & Shows on Artsy`
+        return metaTitle(artist)
       },
     },
   },
