@@ -9032,6 +9032,9 @@ type Partner implements Node {
 
   # The gallery partner's web address
   website: String
+
+  # Indicates the partner is a trusted seller on Artsy
+  isVerifiedSeller: Boolean
   analytics: AnalyticsPartnerStats
 }
 
