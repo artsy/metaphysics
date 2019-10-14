@@ -997,7 +997,7 @@ type Artwork implements Node & Searchable & Sellable {
   signatureInfo: ArtworkInfoRow
   conditionDescription: ArtworkInfoRow
 
-  # Returns true when artwork has certificate of authenticity
+  # Returns true when artwork has a certificate of authenticity
   hasCertificateOfAuthenticity: Boolean
 
   # Returns the display label and detail for artwork certificate of authenticity

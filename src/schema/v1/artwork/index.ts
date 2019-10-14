@@ -922,7 +922,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
       hasCertificateOfAuthenticity: {
         type: GraphQLBoolean,
         description:
-          "Returns true when artwork has certificate of authenticity",
+          "Returns true when artwork has a certificate of authenticity",
         resolve: ({ certificate_of_authenticity }) =>
           certificate_of_authenticity === true,
       },
