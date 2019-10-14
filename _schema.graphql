@@ -1617,6 +1617,8 @@ type ArtworkContextAuction implements Node {
     all: Boolean = false
   ): [SaleArtwork]
   sale_artworks_connection(
+    # List of sale artwork IDs to fetch
+    ids: [ID]
     after: String
     first: Int
     before: String
@@ -2105,6 +2107,8 @@ type ArtworkContextSale implements Node {
     all: Boolean = false
   ): [SaleArtwork]
   sale_artworks_connection(
+    # List of sale artwork IDs to fetch
+    ids: [ID]
     after: String
     first: Int
     before: String
@@ -7246,6 +7250,8 @@ type HomePageModuleContextSale implements Node {
     all: Boolean = false
   ): [SaleArtwork]
   sale_artworks_connection(
+    # List of sale artwork IDs to fetch
+    ids: [ID]
     after: String
     first: Int
     before: String
@@ -10455,6 +10461,8 @@ type Sale implements Node {
     all: Boolean = false
   ): [SaleArtwork]
   sale_artworks_connection(
+    # List of sale artwork IDs to fetch
+    ids: [ID]
     after: String
     first: Int
     before: String

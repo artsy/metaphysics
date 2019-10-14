@@ -18,7 +18,7 @@ import { map } from "lodash"
 import { NodeInterface } from "schema/v1/object_identification"
 import { allViaLoader } from "lib/all"
 import { isLiveOpen, displayTimelyAt } from "./display"
-import { flatten } from "lodash"
+import { flatten, isEmpty } from "lodash"
 
 import {
   GraphQLString,
@@ -29,6 +29,7 @@ import {
   GraphQLInt,
   GraphQLFloat,
   GraphQLFieldConfig,
+  GraphQLID,
 } from "graphql"
 
 import config from "config"
@@ -316,18 +317,44 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
       },
       sale_artworks_connection: {
         type: saleArtworkConnection,
-        args: pageable(),
+        args: pageable({
+          ids: {
+            type: new GraphQLList(GraphQLID),
+            description: "List of sale artwork IDs to fetch",
+          },
+        }),
         resolve: (sale, options, { saleArtworksLoader }) => {
           const { limit: size, offset } = getPagingParameters(options)
+
+          const { ids } = options
+
+          if (ids !== undefined && isEmpty(ids)) {
+            return connectionFromArraySlice([], options, {
+              arrayLength: 0,
+              sliceStart: 0,
+            })
+          }
+
           return saleArtworksLoader(sale.id, {
             size,
             offset,
-          }).then(({ body }) =>
-            connectionFromArraySlice(body, options, {
-              arrayLength: sale.eligible_sale_artworks_count,
-              sliceStart: offset,
-            })
-          )
+            ids,
+          }).then(({ body }) => {
+            let meta
+            if (ids) {
+              meta = {
+                arrayLength: body && body.length,
+                sliceStart: 0,
+              }
+            } else {
+              meta = {
+                arrayLength: sale.eligible_sale_artworks_count,
+                sliceStart: offset,
+              }
+            }
+
+            return connectionFromArraySlice(body, options, meta)
+          })
         },
       },
       sale_type: { type: GraphQLString },
