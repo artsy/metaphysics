@@ -1995,8 +1995,9 @@ describe("Artwork type", () => {
     const query = `
       {
         artwork(id: "richard-prince-untitled-portrait") {
+          hasCertificateOfAuthenticity
           certificateOfAuthenticity {
-            label,
+            label
             details
           }
         }
@@ -2005,35 +2006,28 @@ describe("Artwork type", () => {
     it("is null when certificate_of_authenticity is null", () => {
       artwork.certificate_of_authenticity = null
       return runQuery(query, context).then(data => {
-        expect(data).toEqual({
-          artwork: { certificateOfAuthenticity: null },
-        })
+        expect(data.artwork.certificateOfAuthenticity).toBe(null)
+        expect(data.artwork.hasCertificateOfAuthenticity).toBe(false)
       })
     })
     it("is set to proper object when certificate_of_authenticity is true", () => {
       artwork.certificate_of_authenticity = true
       return runQuery(query, context).then(data => {
-        expect(data).toEqual({
-          artwork: {
-            certificateOfAuthenticity: {
-              label: "Certificate of authenticity",
-              details: "Included",
-            },
-          },
+        expect(data.artwork.certificateOfAuthenticity).toEqual({
+          label: "Certificate of authenticity",
+          details: "Included",
         })
+        expect(data.artwork.hasCertificateOfAuthenticity).toBe(true)
       })
     })
     it("is set to proper object when certificate_of_authenticity is false", () => {
       artwork.certificate_of_authenticity = false
       return runQuery(query, context).then(data => {
-        expect(data).toEqual({
-          artwork: {
-            certificateOfAuthenticity: {
-              label: "Certificate of authenticity",
-              details: "Not included",
-            },
-          },
+        expect(data.artwork.certificateOfAuthenticity).toEqual({
+          label: "Certificate of authenticity",
+          details: "Not included",
         })
+        expect(data.artwork.hasCertificateOfAuthenticity).toBe(false)
       })
     })
   })
