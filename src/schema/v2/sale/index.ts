@@ -17,7 +17,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map } from "lodash"
 import { NodeInterface } from "schema/v2/object_identification"
 import { isLiveOpen, displayTimelyAt } from "./display"
-import { flatten } from "lodash"
+import { flatten, isEmpty } from "lodash"
 
 import {
   GraphQLString,
@@ -267,6 +267,12 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (sale, options, { saleArtworksLoader }) => {
           const { limit: size, offset } = getPagingParameters(options)
           const { internalIDs: ids } = options
+          if (ids !== undefined && isEmpty(ids)) {
+            return connectionFromArraySlice([], options, {
+              arrayLength: 0,
+              sliceStart: 0,
+            })
+          }
 
           return saleArtworksLoader(sale.id, {
             size,

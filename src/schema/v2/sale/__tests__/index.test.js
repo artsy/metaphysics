@@ -266,6 +266,29 @@ describe("Sale type", () => {
     })
   })
 
+  it("returns and empty array if the internalIDs argument is []", () => {
+    const query = `
+      {
+        sale(id: "foo-foo") {
+          saleArtworksConnection(internalIDs: []) {
+            edges {
+              node {
+                slug
+              }
+            }
+          }
+        }
+      }
+    `
+    const context = {
+      saleLoader: () => Promise.resolve(sale),
+    }
+
+    return runAuthenticatedQuery(query, context).then(data => {
+      expect(data.sale.saleArtworksConnection.edges).toEqual([])
+    })
+  })
+
   describe("saleArtworks", () => {
     const saleArtworks = [
       {
