@@ -254,15 +254,27 @@ export function formattedOpeningHours(startAt, endAt, timezone) {
  * Ends Apr 3 at 12:30pm
  * Ended Apr 3 2017
  */
-export function formattedStartDateTime(startAt, endAt, timezone) {
-  const thisMoment = moment()
+export function formattedStartDateTime(startAt, endAt, liveStartAt, timezone) {
+  const thisMoment = moment.tz(moment(), timezone)
   const startMoment = moment.tz(startAt, timezone)
   const endMoment = moment.tz(endAt, timezone)
+  const liveStartMoment = moment.tz(liveStartAt, timezone)
+
   if (thisMoment.isBefore(startMoment)) {
     return `Starts ${singleDateTime(startAt, timezone)}`
+  } else if (liveStartAt && thisMoment.isBefore(liveStartMoment)) {
+    return `Live ${singleDateTime(liveStartAt, timezone)}`
+  } else if (
+    liveStartAt &&
+    thisMoment.isAfter(liveStartMoment) &&
+    (thisMoment.isBefore(endMoment) || !endAt)
+  ) {
+    return `In progress`
   } else if (thisMoment.isBefore(endMoment)) {
     return `Ends ${singleDateTime(endAt, timezone)}`
-  } else {
+  } else if (thisMoment.isAfter(endMoment)) {
     return `Ended ${singleDate(endAt, timezone)}`
+  } else {
+    return null
   }
 }

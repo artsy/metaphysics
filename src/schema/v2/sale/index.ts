@@ -36,6 +36,8 @@ import { ResolverContext } from "types/graphql"
 
 const { PREDICTION_ENDPOINT } = config
 
+const DEFAULT_TZ = "UTC"
+
 const BidIncrement = new GraphQLObjectType<any, ResolverContext>({
   name: "BidIncrement",
   fields: {
@@ -171,8 +173,18 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "A formatted description of when the auction starts or ends or if it has ended",
-        resolve: ({ start_at, end_at }) =>
-          formattedStartDateTime(start_at, end_at, "UTC"),
+        resolve: (
+          { start_at, end_at, live_start_at },
+          _options,
+          { defaultTimezone }
+        ) => {
+          return formattedStartDateTime(
+            start_at,
+            end_at,
+            live_start_at,
+            defaultTimezone || DEFAULT_TZ
+          )
+        },
       },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
       name: { type: GraphQLString },
