@@ -235,6 +235,64 @@ describe("Sale type", () => {
         expect(data).toMatchSnapshot()
       })
     })
+
+    it("accepts the internalIDs argument", () => {
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            sale_artworks_connection(ids: ["sa-id-0", "sa-id-1"]) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const saleArtworks = [{ id: "sa-slug-0" }, { id: "sa-slug-1" }]
+      const saleArtworksLoaderMock = jest
+        .fn()
+        .mockResolvedValue({ body: saleArtworks })
+      const context = {
+        saleLoader: () => Promise.resolve(sale),
+        saleArtworksLoader: saleArtworksLoaderMock,
+      }
+
+      return runAuthenticatedQuery(query, context).then(data => {
+        expect(saleArtworksLoaderMock.mock.calls[0][1].ids).toEqual([
+          "sa-id-0",
+          "sa-id-1",
+        ])
+
+        expect(data).toMatchSnapshot()
+      })
+    })
+
+    it("returns and empty array if the internalIDs argument is []", () => {
+      const query = `
+        {
+          sale(id: "foo-foo") {
+            sale_artworks_connection(ids: []) {
+              edges {
+                node {
+                  id
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const context = {
+        saleLoader: () => Promise.resolve(sale),
+      }
+
+      return runAuthenticatedQuery(query, context).then(data => {
+        expect(data.sale.sale_artworks_connection.edges).toEqual([])
+      })
+    })
   })
 
   describe("sale_artworks", () => {

@@ -17,7 +17,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map } from "lodash"
 import { NodeInterface } from "schema/v2/object_identification"
 import { isLiveOpen, displayTimelyAt } from "./display"
-import { flatten } from "lodash"
+import { flatten, isEmpty } from "lodash"
 
 import {
   GraphQLString,
@@ -35,6 +35,8 @@ import config from "config"
 import { ResolverContext } from "types/graphql"
 
 const { PREDICTION_ENDPOINT } = config
+
+const DEFAULT_TZ = "UTC"
 
 const BidIncrement = new GraphQLObjectType<any, ResolverContext>({
   name: "BidIncrement",
@@ -171,8 +173,18 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLString,
         description:
           "A formatted description of when the auction starts or ends or if it has ended",
-        resolve: ({ start_at, end_at }) =>
-          formattedStartDateTime(start_at, end_at, "UTC"),
+        resolve: (
+          { start_at, end_at, live_start_at },
+          _options,
+          { defaultTimezone }
+        ) => {
+          return formattedStartDateTime(
+            start_at,
+            end_at,
+            live_start_at,
+            defaultTimezone || DEFAULT_TZ
+          )
+        },
       },
       href: { type: GraphQLString, resolve: ({ id }) => `/auction/${id}` },
       name: { type: GraphQLString },
@@ -267,6 +279,12 @@ export const SaleType = new GraphQLObjectType<any, ResolverContext>({
         resolve: (sale, options, { saleArtworksLoader }) => {
           const { limit: size, offset } = getPagingParameters(options)
           const { internalIDs: ids } = options
+          if (ids !== undefined && isEmpty(ids)) {
+            return connectionFromArraySlice([], options, {
+              arrayLength: 0,
+              sliceStart: 0,
+            })
+          }
 
           return saleArtworksLoader(sale.id, {
             size,

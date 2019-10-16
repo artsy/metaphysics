@@ -64,6 +64,27 @@ Object {
 }
 `;
 
+exports[`Sale type sale_artworks_connection accepts the internalIDs argument 1`] = `
+Object {
+  "sale": Object {
+    "sale_artworks_connection": Object {
+      "edges": Array [
+        Object {
+          "node": Object {
+            "id": "sa-slug-0",
+          },
+        },
+        Object {
+          "node": Object {
+            "id": "sa-slug-1",
+          },
+        },
+      ],
+    },
+  },
+}
+`;
+
 exports[`Sale type sale_artworks_connection returns data from gravity 1`] = `
 Object {
   "sale": Object {
