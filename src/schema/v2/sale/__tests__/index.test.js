@@ -670,6 +670,87 @@ describe("Sale type", () => {
     })
   })
 
+  describe("formattedStartDateTime", () => {
+    const query = `
+      {
+        sale(id: "foo-foo") {
+          formattedStartDateTime
+        }
+      }
+    `
+
+    it("returns Start time when start_at is in the future", async () => {
+      const response = await execute(query, {
+        start_at: moment().add(1, "hours"),
+      })
+      expect(response.sale.formattedStartDateTime).toContain("Start")
+    })
+
+    it("returns End time when end_at is in the past", async () => {
+      const response = await execute(query, {
+        start_at: moment().subtract(2, "hours"),
+        end_at: moment().subtract(1, "hours"),
+      })
+      expect(response.sale.formattedStartDateTime).toContain("Ended")
+    })
+
+    it("returns End time when end_at is in the past", async () => {
+      const response = await execute(query, {
+        start_at: moment().subtract(2, "hours"),
+        end_at: null,
+        ended_at: moment().subtract(1, "hours"),
+      })
+      expect(response.sale.formattedStartDateTime).toContain("Ended")
+    })
+
+    it("returns End time when ended_at is in the past but end_at is in the future", async () => {
+      const response = await execute(query, {
+        start_at: moment().subtract(2, "hours"),
+        end_at: moment().add(1, "hours"),
+        ended_at: moment().subtract(1, "hours"),
+      })
+      expect(response.sale.formattedStartDateTime).toContain("Ended")
+    })
+
+    it("returns Live start time if live_start_at is in the future", async () => {
+      const response = await execute(query, {
+        start_at: moment().subtract(2, "hours"),
+        live_start_at: moment().add(2, "hours"),
+      })
+      expect(response.sale.formattedStartDateTime).toContain("Live")
+    })
+
+    it("returns In Progress when its live and end_at is in the future", async () => {
+      const response = await execute(query, {
+        start_at: moment().subtract(2, "hours"),
+        live_start_at: moment().subtract(1, "hours"),
+        end_at: moment().add(2, "hours"),
+        ended_at: null,
+      })
+      expect(response.sale.formattedStartDateTime).toContain("In progress")
+    })
+
+    it("returns In Progress when its live and ended_at is in the future", async () => {
+      const response = await execute(query, {
+        start_at: moment().subtract(2, "hours"),
+        live_start_at: moment().subtract(1, "hours"),
+        ended_at: moment().add(2, "hours"),
+        end_at: null,
+      })
+      expect(response.sale.formattedStartDateTime).toContain("In progress")
+    })
+
+    it("returns End time", async () => {
+      const response = await execute(query, {
+        start_at: moment().subtract(3, "hours"),
+        live_start_at: null,
+        end_at: moment().add(1, "hours"),
+        ended_at: null,
+      })
+      expect(response.sale.formattedStartDateTime).toContain("Ends")
+    })
+  })
+
   describe("registration status", () => {
     it("returns null if not registered for this sale", async () => {
       const query = gql`
