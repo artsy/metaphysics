@@ -41,7 +41,7 @@
     "@babel/node": "7.4.5",
     "@babel/preset-env": "7.4.5",
     "@babel/preset-typescript": "7.3.3",
-    "@babel/register": "7.4.4",
+    "@babel/register": "7.6.2",
     "@heroku/foreman": "2.0.2",
     "accounting": "0.4.1",
     "apollo-link": "1.2.1",
