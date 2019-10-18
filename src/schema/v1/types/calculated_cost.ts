@@ -5,9 +5,9 @@ import money from "../fields/money"
 export const CalculatedCostType = new GraphQLObjectType<any, ResolverContext>({
   name: "CalculatedCost",
   fields: {
-    buyers_premium: money({
+    buyersPremium: money({
       name: "BuyersPremiumAmount",
-      resolve: ({ buyers_premium }) => buyers_premium,
+      resolve: ({ buyersPremium }) => buyersPremium,
     }),
     subtotal: money({
       name: "SubtotalAmount",

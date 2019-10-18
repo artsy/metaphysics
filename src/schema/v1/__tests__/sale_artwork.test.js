@@ -446,8 +446,8 @@ describe("SaleArtwork type", () => {
       const query = `
         {
           sale_artwork(id: "54c7ed2a7261692bfa910200") {
-            calculated_cost(bid_amount_cents: 1000000) {
-              buyers_premium {
+            calculatedCost(bidAmountCents: 1000000) {
+              buyersPremium {
                 cents
                 display
               }
@@ -466,8 +466,8 @@ describe("SaleArtwork type", () => {
 
       expect(data).toEqual({
         sale_artwork: {
-          calculated_cost: {
-            buyers_premium: {
+          calculatedCost: {
+            buyersPremium: {
               cents: 200000,
               display: "$2,000.00",
             },

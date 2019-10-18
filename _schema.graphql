@@ -3258,7 +3258,7 @@ type BuyOrder implements Order {
 }
 
 type CalculatedCost {
-  buyers_premium: BuyersPremiumAmount
+  buyersPremium: BuyersPremiumAmount
   subtotal: SubtotalAmount
 }
 
@@ -10606,9 +10606,9 @@ type SaleArtwork {
   reserve_status: String
   sale_id: String
   sale: Sale
-  calculated_cost(
+  calculatedCost(
     # Max bid price for the sale artwork
-    bid_amount_cents: Int
+    bidAmountCents: Int
   ): CalculatedCost
 
   # Currency symbol (e.g. "$")

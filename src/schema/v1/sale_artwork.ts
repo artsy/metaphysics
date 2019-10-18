@@ -371,25 +371,25 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
           return saleLoader(sale_id)
         },
       },
-      calculated_cost: {
+      calculatedCost: {
         type: CalculatedCostType,
         args: {
-          bid_amount_cents: {
+          bidAmountCents: {
             type: GraphQLInt,
             description: "Max bid price for the sale artwork",
           },
         },
-        resolve: (_params, { bid_amount_cents }, _loaders) => {
+        resolve: (_params, { bidAmountCents }, _loaders) => {
           return {
-            buyers_premium: {
-              cents: bid_amount_cents * 0.2,
-              display: `$${((bid_amount_cents * 0.2) / 100)
+            buyersPremium: {
+              cents: bidAmountCents * 0.2,
+              display: `$${((bidAmountCents * 0.2) / 100)
                 .toFixed(2)
                 .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`,
             },
             subtotal: {
-              cents: bid_amount_cents * 1.2,
-              display: `$${((bid_amount_cents * 1.2) / 100)
+              cents: bidAmountCents * 1.2,
+              display: `$${((bidAmountCents * 1.2) / 100)
                 .toFixed(2)
                 .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`,
             },
