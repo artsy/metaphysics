@@ -115,7 +115,7 @@
     "@types/jest": "23.3.2",
     "@types/lodash": "4.14.86",
     "@types/moment": "2.13.0",
-    "@types/moment-timezone": "0.5.2",
+    "@types/moment-timezone": "0.5.12",
     "@types/node": "8.0.53",
     "@types/node-fetch": "2.1.7",
     "@types/qs": "6.5.1",
