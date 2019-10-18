@@ -459,4 +459,46 @@ describe("SaleArtwork type", () => {
       ])
     })
   })
+
+  describe("calculatedCost", () => {
+    it("returns calculatedCost", async () => {
+      const query = gql`
+        {
+          node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
+            ... on SaleArtwork {
+              calculatedCost(bidAmountCents: 1000000) {
+                buyersPremium {
+                  cents
+                  display
+                }
+                subtotal {
+                  cents
+                  display
+                }
+              }
+            }
+          }
+        }
+      `
+
+      const data = await execute(query, saleArtwork, {
+        saleArtworkRootLoader: () => Promise.resolve(saleArtwork),
+      })
+
+      expect(data).toEqual({
+        node: {
+          calculatedCost: {
+            buyersPremium: {
+              cents: 200000,
+              display: "$2,000.00",
+            },
+            subtotal: {
+              cents: 1200000,
+              display: "$12,000.00",
+            },
+          },
+        },
+      })
+    })
+  })
 })

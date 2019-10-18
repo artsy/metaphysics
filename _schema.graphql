@@ -3028,6 +3028,25 @@ type BuyersPremium {
   percent: Float
 }
 
+type BuyersPremiumAmount {
+  # A formatted price with various currency formatting options.
+  amount(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # An amount of money expressed in cents.
+  cents: Float
+
+  # A pre-formatted price.
+  display: String
+}
+
 type BuyOrder implements Order {
   # A globally unique ID.
   __id: ID!
@@ -3236,6 +3255,11 @@ type BuyOrder implements Order {
 
   # Buyer phone number
   buyerPhoneNumber: String
+}
+
+type CalculatedCost {
+  buyers_premium: BuyersPremiumAmount
+  subtotal: SubtotalAmount
 }
 
 enum CancelReasonType {
@@ -10582,6 +10606,10 @@ type SaleArtwork {
   reserve_status: String
   sale_id: String
   sale: Sale
+  calculated_cost(
+    # Max bid price for the sale artwork
+    bid_amount_cents: Int
+  ): CalculatedCost
 
   # Currency symbol (e.g. "$")
   symbol: String
@@ -11507,6 +11535,25 @@ input submitPendingOfferInput {
 type submitPendingOfferPayload {
   orderOrError: OrderOrFailureUnionType
   clientMutationId: String
+}
+
+type SubtotalAmount {
+  # A formatted price with various currency formatting options.
+  amount(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # An amount of money expressed in cents.
+  cents: Float
+
+  # A pre-formatted price.
+  display: String
 }
 
 type System {
