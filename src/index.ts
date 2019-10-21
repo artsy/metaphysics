@@ -181,7 +181,6 @@ function startApp(appSchema, path: string) {
     const graphqlHTTP = require("express-graphql")
     app.use(
       graphqlHTTP((req, res, params) => {
-        console.log("Request from", path)
         const accessToken = req.headers["x-access-token"] as string | undefined
         const appToken = req.headers["x-xapp-token"] as string | undefined
         const userID = req.headers["x-user-id"] as string | undefined

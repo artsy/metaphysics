@@ -26,6 +26,7 @@ import config from "config"
 import { ResolverContext } from "types/graphql"
 import { LoadersWithoutAuthentication } from "lib/loaders/loaders_without_authentication"
 import { deprecate } from "lib/deprecation"
+import { CalculatedCostType } from "./types/calculated_cost"
 
 const { BIDDER_POSITION_MAX_BID_AMOUNT_CENTS_LIMIT } = config
 
@@ -368,6 +369,31 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ sale, sale_id }, _options, { saleLoader }) => {
           if (!!sale) return sale
           return saleLoader(sale_id)
+        },
+      },
+      calculatedCost: {
+        type: CalculatedCostType,
+        args: {
+          bidAmountCents: {
+            type: GraphQLInt,
+            description: "Max bid price for the sale artwork",
+          },
+        },
+        resolve: (_params, { bidAmountCents }, _loaders) => {
+          return {
+            buyersPremium: {
+              cents: bidAmountCents * 0.2,
+              display: `$${((bidAmountCents * 0.2) / 100)
+                .toFixed(2)
+                .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`,
+            },
+            subtotal: {
+              cents: bidAmountCents * 1.2,
+              display: `$${((bidAmountCents * 1.2) / 100)
+                .toFixed(2)
+                .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`,
+            },
+          }
         },
       },
       symbol: {
