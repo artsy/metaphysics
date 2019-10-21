@@ -5494,6 +5494,12 @@ type Query {
     id: ID!
   ): Node
 
+  # A Partner
+  partner(
+    # The slug or ID of the Partner
+    id: String!
+  ): Partner
+
   # A Sale
   sale(
     # The slug or ID of the Sale
@@ -6951,6 +6957,12 @@ type Viewer {
     # The globally unique ID of the node.
     id: ID!
   ): Node
+
+  # A Partner
+  partner(
+    # The slug or ID of the Partner
+    id: String!
+  ): Partner
 
   # A Sale
   sale(

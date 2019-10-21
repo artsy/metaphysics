@@ -11,6 +11,7 @@ import ArtworkAttributionClasses from "./artworkAttributionClasses"
 import Artist from "./artist"
 import Fair from "./fair"
 import Gene from "./gene"
+import Partner from "./partner"
 import HomePage from "./home"
 import StaticContent from "./static_content"
 import { City } from "./city"
@@ -134,7 +135,7 @@ const rootFields = {
   node: ObjectIdentification.NodeField,
   // orderedSet: OrderedSet,
   // orderedSets: OrderedSets,
-  // partner: Partner,
+  partner: Partner,
   // partnerCategories: PartnerCategories,
   // partnerCategory: PartnerCategory,
   // partners: Partners,
