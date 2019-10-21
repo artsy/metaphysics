@@ -1496,6 +1496,30 @@ type BuyersPremium {
   percent: Float
 }
 
+type BuyersPremiumAmount {
+  # A formatted price with various currency formatting options.
+  amount(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # An amount of money expressed in cents.
+  cents: Float
+
+  # A pre-formatted price.
+  display: String
+}
+
+type CalculatedCost {
+  buyersPremium: BuyersPremiumAmount
+  subtotal: SubtotalAmount
+}
+
 type City {
   slug: String
   name: String
@@ -5841,6 +5865,10 @@ type SaleArtwork implements Node & ArtworkEdgeInterface {
   reserveStatus: String
   saleID: String
   sale: Sale
+  calculatedCost(
+    # Max bid price for the sale artwork
+    bidAmountCents: Int
+  ): CalculatedCost
 
   # Currency symbol (e.g. "$")
   symbol: String
@@ -6618,6 +6646,25 @@ enum SubmissionStateAggregation {
   SUBMITTED
   APPROVED
   REJECTED
+}
+
+type SubtotalAmount {
+  # A formatted price with various currency formatting options.
+  amount(
+    decimal: String = "."
+
+    # Allows control of symbol position (%v = value, %s = symbol)
+    format: String = "%s%v"
+    precision: Int = 0
+    symbol: String
+    thousand: String = ","
+  ): String
+
+  # An amount of money expressed in cents.
+  cents: Float
+
+  # A pre-formatted price.
+  display: String
 }
 
 type System {
