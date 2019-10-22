@@ -1,9 +1,7 @@
 import {
   GraphQLFieldConfig,
   GraphQLObjectType,
-  GraphQLInt,
   GraphQLUnionType,
-  GraphQLNonNull,
   GraphQLString,
 } from "graphql"
 import { Price } from "./money"
@@ -14,13 +12,10 @@ const PriceRange = new GraphQLObjectType({
     display: {
       type: GraphQLString,
     },
-    minPriceCents: {
-      type: new GraphQLNonNull(GraphQLInt),
-      deprecationReason: "Prefer usage of minPrice",
-    },
     minPrice: {
       type: Price,
       resolve: ({ minPriceCents, price_currency }) => {
+        if (!minPriceCents) return null
         return {
           cents: minPriceCents,
           currency: price_currency,
@@ -30,32 +25,9 @@ const PriceRange = new GraphQLObjectType({
     maxPrice: {
       type: Price,
       resolve: ({ maxPriceCents, price_currency }) => {
+        if (!maxPriceCents) return null
         return {
           cents: maxPriceCents,
-          currency: price_currency,
-        }
-      },
-    },
-    maxPriceCents: {
-      type: new GraphQLNonNull(GraphQLInt),
-      deprecationReason: "Prefer usage of maxPrice",
-    },
-  },
-})
-
-const ExactPrice = new GraphQLObjectType({
-  name: "ExactPrice",
-  fields: {
-    priceCents: {
-      type: new GraphQLNonNull(GraphQLInt),
-      deprecationReason: "Prefer usage of price",
-    },
-    price: {
-      type: Price,
-      resolve: ({ price, price_cents, price_currency }) => {
-        return {
-          cents: price_cents && price_cents[0],
-          display: price,
           currency: price_currency,
         }
       },
@@ -66,7 +38,7 @@ const ExactPrice = new GraphQLObjectType({
 export const listPrice: GraphQLFieldConfig<any, any> = {
   type: new GraphQLUnionType({
     name: "ListPrice",
-    types: [PriceRange, ExactPrice],
+    types: [PriceRange, Price],
   }),
   resolve: ({ price_cents, price, price_currency }) => {
     if (!price_cents || price_cents.length === 0) {
@@ -76,14 +48,10 @@ export const listPrice: GraphQLFieldConfig<any, any> = {
 
     return isExactPrice
       ? {
-          // For deprecated types
-          __typename: ExactPrice.name,
-          priceCents: price_cents[0],
-
-          // For preferred types
-          price_cents,
-          price_currency,
-          price,
+          __typename: Price.name,
+          cents: price_cents[0],
+          display: price,
+          currency: price_currency,
         }
       : {
           // For deprecated types

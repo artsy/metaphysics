@@ -5447,11 +5447,6 @@ enum EventStatus {
   RUNNING_AND_UPCOMING
 }
 
-type ExactPrice {
-  priceCents: Int! @deprecated(reason: "Prefer usage of price")
-  price: Price
-}
-
 type ExternalPartner {
   # A globally unique ID.
   __id: ID!
@@ -7398,7 +7393,7 @@ type LatLng {
   lng: Float
 }
 
-union ListPrice = PriceRange | ExactPrice
+union ListPrice = PriceRange | Price
 
 type Location {
   # A globally unique ID.
@@ -9647,10 +9642,8 @@ type PriceCents {
 
 type PriceRange {
   display: String
-  minPriceCents: Int! @deprecated(reason: "Prefer usage of minPrice")
   minPrice: Price
   maxPrice: Price
-  maxPriceCents: Int! @deprecated(reason: "Prefer usage of maxPrice")
 }
 
 type Profile {
