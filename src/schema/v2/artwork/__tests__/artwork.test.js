@@ -231,24 +231,24 @@ describe("Artwork type", () => {
         artwork(id: "richard-prince-untitled-portrait") {
           listPrice {
             ... on Price {
-              minorUnits
-              majorUnits
+              minor
+              major
               display
-              currency
+              currencyCode
              
             }
             ... on PriceRange {
               display
               minPrice {
-                minorUnits
-                majorUnits
-                currency
+                minor
+                major
+                currencyCode
                 display
               }
               maxPrice {
-                minorUnits
-                majorUnits
-                currency
+                minor
+                major
+                currencyCode
                 display
               }
             }
@@ -266,10 +266,10 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             listPrice: {
-              minorUnits: 42000,
-              majorUnits: 420,
+              minor: 42000,
+              major: 420,
               display: "$420",
-              currency: "USD",
+              currencyCode: "USD",
             },
           },
         })
@@ -288,10 +288,10 @@ describe("Artwork type", () => {
               display: "Under $420",
               minPrice: null,
               maxPrice: {
-                minorUnits: 42000,
-                majorUnits: 420,
+                minor: 42000,
+                major: 420,
                 display: null,
-                currency: "USD",
+                currencyCode: "USD",
               },
             },
           },
@@ -310,10 +310,10 @@ describe("Artwork type", () => {
             listPrice: {
               display: "Starting at $420",
               minPrice: {
-                minorUnits: 42000,
-                majorUnits: 420,
+                minor: 42000,
+                major: 420,
                 display: null,
-                currency: "USD",
+                currencyCode: "USD",
               },
               maxPrice: null,
             },
