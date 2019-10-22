@@ -355,6 +355,105 @@ describe("Artwork type", () => {
     })
   })
 
+  describe("#listPrice", () => {
+    const query = `
+    {
+        artwork(id: "richard-prince-untitled-portrait") {
+          listPrice {
+            ... on Price {
+      
+              cents
+              dollars
+              display
+              currency
+             
+            }
+            ... on PriceRange {
+              display
+              minPrice {
+                cents
+                currency
+                display
+                dollars
+              }
+              maxPrice {
+                cents
+                currency
+                display
+                dollars
+              }
+            }
+          }
+        }
+      }
+    `
+
+    it("returns correct data for an exact priced work", () => {
+      // Exact priced at $420
+      artwork.price_cents = [42000]
+      artwork.price = "$420"
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            listPrice: {
+              cents: 42000,
+              dollars: 420,
+              display: "$420",
+              currency: "USD",
+            },
+          },
+        })
+      })
+    })
+
+    it("returns correct data for an 'Under X' priced work", () => {
+      // Priced at under $420
+      artwork.price_cents = [null, 42000]
+      artwork.price = "Under $420"
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            listPrice: {
+              display: "Under $420",
+              minPrice: null,
+              maxPrice: {
+                cents: 42000,
+                dollars: 420,
+                display: null,
+                currency: "USD",
+              },
+            },
+          },
+        })
+      })
+    })
+
+    it("returns correct data for an 'Starting at X' priced work", () => {
+      // Priced at Starting at $420
+      artwork.price_cents = [42000, null]
+      artwork.price = "Starting at $420"
+      artwork.price_currency = "USD"
+      return runQuery(query, context).then(data => {
+        expect(data).toEqual({
+          artwork: {
+            listPrice: {
+              display: "Starting at $420",
+              minPrice: {
+                cents: 42000,
+                dollars: 420,
+                display: null,
+                currency: "USD",
+              },
+              maxPrice: null,
+            },
+          },
+        })
+      })
+    })
+  })
+
   describe("#pickup_available", () => {
     const query = `
       {
