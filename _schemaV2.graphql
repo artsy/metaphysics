@@ -3615,7 +3615,8 @@ enum EventStatus {
 }
 
 type ExactPrice {
-  priceCents: Int!
+  priceCents: Int! @deprecated(reason: "Prefer usage of price")
+  price: Price
 }
 
 type ExternalPartner {
@@ -5473,9 +5474,26 @@ type PopularArtists {
   artists: [Artist]
 }
 
+type Price {
+  # An amount of money expressed in cents (minor units).
+  cents: Float
+
+  # The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
+  currency: String
+
+  # A pre-formatted price.
+  display: String
+
+  # An amount of money expressed in dollars (major units).
+  dollars: Float
+}
+
 type PriceRange {
-  minPriceCents: Int!
-  maxPriceCents: Int!
+  display: String
+  minPriceCents: Int! @deprecated(reason: "Prefer usage of minPrice")
+  minPrice: Price
+  maxPrice: Price
+  maxPriceCents: Int! @deprecated(reason: "Prefer usage of maxPrice")
 }
 
 type Profile {
