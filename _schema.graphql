@@ -9621,8 +9621,8 @@ type PopularArtists {
 }
 
 type Price {
-  # An amount of money expressed in cents (minor units).
-  cents: Float
+  # An amount of money expressed in minor units (like cents).
+  minorUnits: Float
 
   # The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
   currency: String
@@ -9630,8 +9630,8 @@ type Price {
   # A pre-formatted price.
   display: String
 
-  # An amount of money expressed in dollars (major units).
-  dollars: Float
+  # An amount of money expressed in major units (like dollars).
+  majorUnits: Float
 }
 
 type PriceCents {

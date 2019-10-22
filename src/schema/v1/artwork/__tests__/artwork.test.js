@@ -361,9 +361,8 @@ describe("Artwork type", () => {
         artwork(id: "richard-prince-untitled-portrait") {
           listPrice {
             ... on Price {
-      
-              cents
-              dollars
+              minorUnits 
+              majorUnits
               display
               currency
              
@@ -371,16 +370,16 @@ describe("Artwork type", () => {
             ... on PriceRange {
               display
               minPrice {
-                cents
+                minorUnits
+                majorUnits
                 currency
                 display
-                dollars
               }
               maxPrice {
-                cents
+                minorUnits
+                majorUnits
                 currency
                 display
-                dollars
               }
             }
           }
@@ -397,8 +396,8 @@ describe("Artwork type", () => {
         expect(data).toEqual({
           artwork: {
             listPrice: {
-              cents: 42000,
-              dollars: 420,
+              minorUnits: 42000,
+              majorUnits: 420,
               display: "$420",
               currency: "USD",
             },
@@ -419,8 +418,8 @@ describe("Artwork type", () => {
               display: "Under $420",
               minPrice: null,
               maxPrice: {
-                cents: 42000,
-                dollars: 420,
+                minorUnits: 42000,
+                majorUnits: 420,
                 display: null,
                 currency: "USD",
               },
@@ -441,8 +440,8 @@ describe("Artwork type", () => {
             listPrice: {
               display: "Starting at $420",
               minPrice: {
-                cents: 42000,
-                dollars: 420,
+                minorUnits: 42000,
+                majorUnits: 420,
                 display: null,
                 currency: "USD",
               },

@@ -112,9 +112,10 @@ const money = ({ name, resolve }) => ({
 export const Price = new GraphQLObjectType<any, ResolverContext>({
   name: "Price",
   fields: {
-    cents: {
+    minorUnits: {
       type: GraphQLFloat,
-      description: "An amount of money expressed in cents (minor units).",
+      description: "An amount of money expressed in minor units (like cents).",
+      resolve: ({ cents }) => cents,
     },
     currency: {
       type: GraphQLString,
@@ -125,9 +126,10 @@ export const Price = new GraphQLObjectType<any, ResolverContext>({
       type: GraphQLString,
       description: "A pre-formatted price.",
     },
-    dollars: {
+    majorUnits: {
       type: GraphQLFloat,
-      description: "An amount of money expressed in dollars (major units).",
+      description:
+        "An amount of money expressed in major units (like dollars).",
       resolve: ({ cents, currency }) => {
         const factor = currencyCodes[currency.toLowerCase()].subunit_to_unit
         // TODO: Should we round or used a fixed precision?
