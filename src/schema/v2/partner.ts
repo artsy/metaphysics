@@ -1,4 +1,3 @@
-import { flatten } from "lodash"
 import { pageable } from "relay-cursor-paging"
 import {
   GraphQLString,
@@ -11,7 +10,7 @@ import {
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import { connectionFromArraySlice } from "graphql-relay"
-
+import { flatten } from "lodash"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
@@ -20,10 +19,12 @@ import Location from "./location"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
+import { ShowsConnection } from "./show"
 import ArtworkSorts from "./sorts/artwork_sorts"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import { ResolverContext } from "types/graphql"
 import { PartnerCategoryType } from "./partner_category"
+import ShowSorts from "./sorts/show_sorts"
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   forSale: {
@@ -179,19 +180,43 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ default_profile_id }, _options, { profileLoader }) =>
           profileLoader(default_profile_id).catch(() => null),
       },
-      // TODO: Create a connection for this
-      // shows: {
-      //   type: PartnerShows.type,
-      //   args: omit(PartnerShows.args, "partner_id"),
-      //   resolve: ({ _id }, options) => {
-      //     return PartnerShows.resolve(
-      //       null,
-      //       assign({}, options, {
-      //         partner_id: _id,
-      //       })
-      //     )
-      //   },
-      // },
+      showsConnection: {
+        description: "A connection of shows from a Partner.",
+        type: ShowsConnection.connectionType,
+        args: pageable({
+          sort: {
+            type: ShowSorts,
+          },
+        }),
+        resolve: ({ id }, args, { partnerShowsLoader }) => {
+          const pageOptions = convertConnectionArgsToGravityArgs(args)
+          const { page, size, offset } = pageOptions
+
+          interface GravityArgs {
+            exclude_ids?: string[]
+            page: number
+            published: boolean
+            size: number
+            total_count: boolean
+          }
+
+          const gravityArgs: GravityArgs = {
+            published: true,
+            total_count: true,
+            page,
+            size,
+          }
+
+          return partnerShowsLoader(id, gravityArgs).then(
+            ({ body, headers }) => {
+              return connectionFromArraySlice(body, args, {
+                arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+                sliceStart: offset,
+              })
+            }
+          )
+        },
+      },
       type: {
         type: GraphQLString,
         resolve: ({ name, type }) => {

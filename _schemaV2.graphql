@@ -5189,6 +5189,15 @@ type Partner implements Node {
   locations(size: Int = 25): [Location]
   name: String
   profile: Profile
+
+  # A connection of shows from a Partner.
+  showsConnection(
+    sort: ShowSorts
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ShowConnection
   type: String
 
   # The gallery partner's web address

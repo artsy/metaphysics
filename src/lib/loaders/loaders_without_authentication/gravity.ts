@@ -49,6 +49,7 @@ export default opts => {
     partnerShowImagesLoader: gravityLoader(id => `partner_show/${id}/images`),
     partnerShowArtistsLoader: gravityLoader<any, { partner_id: string, show_id: string }>(({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}/artists`, {}, { headers: true }),
     partnerShowLoader: gravityLoader<any, { partner_id: string, show_id: string }>(({ partner_id, show_id }) => `partner/${partner_id}/show/${show_id}`),
+    partnerShowsLoader: gravityLoader(partner_id => `partner/${partner_id}/shows`, {}, { headers: true }),
     partnersLoader: gravityLoader("partners"),
     popularArtistsLoader: gravityLoader(`artists/popular`),
     profileLoader: gravityLoader(id => `profile/${id}`),

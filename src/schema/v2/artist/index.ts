@@ -43,7 +43,7 @@ import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { Related } from "./related"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import {
-  showsWithBlacklistedPartnersRemoved,
+  showsWithDenyListedPartnersRemoved,
   ShowsConnectionField,
 } from "./shows"
 import {
@@ -444,7 +444,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             has_location: true,
             size: options.size,
           }).then(({ body: shows }) =>
-            showsWithBlacklistedPartnersRemoved(shows)
+            showsWithDenyListedPartnersRemoved(shows)
           )
         },
       },
