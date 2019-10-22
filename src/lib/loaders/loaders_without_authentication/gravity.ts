@@ -39,6 +39,7 @@ export default opts => {
     matchGeneLoader: gravityLoader("match/genes"),
     partnerArtistLoader: gravityLoader<any, { artist_id: string, partner_id: string }>(({ artist_id, partner_id }) => `partner/${partner_id}/artist/${artist_id}`),
     partnerArtistsForArtistLoader: gravityLoader(id => `artist/${id}/partner_artists`),
+    partnerArtistsForPartnerLoader: gravityLoader(id => `partner/${id}/partner_artists`, {}, { headers: true }),
     partnerArtistsLoader: gravityLoader("partner_artists", {}, { headers: true }),
     partnerArtworksLoader: gravityLoader(id => `partner/${id}/artworks`, {}, { headers: true }),
     partnerCategoriesLoader: gravityLoader("partner_categories"),

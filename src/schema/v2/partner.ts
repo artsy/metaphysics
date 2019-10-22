@@ -20,11 +20,15 @@ import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
 import { ShowsConnection } from "./show"
+import { ArtistType } from "./artist"
 import ArtworkSorts from "./sorts/artwork_sorts"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import { ResolverContext } from "types/graphql"
 import { PartnerCategoryType } from "./partner_category"
 import ShowSorts from "./sorts/show_sorts"
+import ArtistSorts from "./sorts/artist_sorts"
+import { fields as partnerArtistFields } from "./partner_artist"
+import { connectionWithCursorInfo } from "./fields/pagination"
 
 const artworksArgs: GraphQLFieldConfigArgumentMap = {
   forSale: {
@@ -40,9 +44,55 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
   fields: () => {
+    const ArtistPartnerConnection = connectionWithCursorInfo({
+      name: "ArtistPartner",
+      nodeType: ArtistType,
+      edgeFields: partnerArtistFields,
+    }).connectionType
+
     return {
       ...SlugAndInternalIDFields,
       cached,
+      artistsConnection: {
+        description: "A connection of artists at a partner.",
+        type: ArtistPartnerConnection,
+        args: pageable({
+          sort: ArtistSorts,
+          representedBy: {
+            type: GraphQLBoolean,
+          },
+        }),
+        resolve: ({ id }, args, { partnerArtistsForPartnerLoader }) => {
+          const pageOptions = convertConnectionArgsToGravityArgs(args)
+          const { page, size, offset } = pageOptions
+
+          interface GravityArgs {
+            page: number
+            size: number
+            total_count: boolean
+            sort: string
+            represented_by: boolean
+          }
+
+          const gravityArgs: GravityArgs = {
+            total_count: true,
+            page,
+            size,
+            sort: args.sort,
+            represented_by: args.representedBy,
+          }
+
+          return partnerArtistsForPartnerLoader(id, gravityArgs).then(
+            ({ body, headers }) => {
+              return connectionFromArraySlice(body, args, {
+                arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+                sliceStart: offset,
+                resolveNode: node => node.artist,
+              })
+            }
+          )
+        },
+      },
       artworksConnection: {
         description: "A connection of artworks from a Partner.",
         type: artworkConnection.connectionType,
@@ -193,7 +243,6 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           const { page, size, offset } = pageOptions
 
           interface GravityArgs {
-            exclude_ids?: string[]
             page: number
             published: boolean
             size: number

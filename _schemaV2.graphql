@@ -799,6 +799,40 @@ type ArtistMeta {
   title: String
 }
 
+# A connection to a list of items.
+type ArtistPartnerConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [ArtistPartnerEdge]
+  pageCursors: PageCursors
+  totalCount: Int
+}
+
+# An edge in a connection.
+type ArtistPartnerEdge {
+  # The item at the end of the edge
+  node: Artist
+
+  # A cursor for use in pagination
+  cursor: String!
+
+  # A globally unique ID.
+  id: ID!
+
+  # A type-specific ID.
+  internalID: ID!
+  artist: Artist
+  biography: String
+  counts: PartnerArtistCounts
+  isDisplayOnPartnerProfile: Boolean
+  isRepresentedBy: Boolean
+  isUseDefaultBiography: Boolean
+  partner: Partner
+  sortableID: String
+}
+
 type ArtistRelatedData {
   genes(after: String, first: Int, before: String, last: Int): GeneConnection
   artistsConnection(
@@ -829,6 +863,12 @@ type ArtistRelatedData {
     before: String
     last: Int
   ): ArtistConnection
+}
+
+enum ArtistSorts {
+  SORTABLE_ID_ASC
+  SORTABLE_ID_DESC
+  TRENDING_DESC
 }
 
 type ArtistStatuses {
@@ -5165,6 +5205,16 @@ type Partner implements Node {
   # A type-specific ID likely used as a database ID.
   internalID: ID!
   cached: Int
+
+  # A connection of artists at a partner.
+  artistsConnection(
+    sort: ArtistSorts
+    representedBy: Boolean
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): ArtistPartnerConnection
 
   # A connection of artworks from a Partner.
   artworksConnection(
