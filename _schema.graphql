@@ -7393,7 +7393,7 @@ type LatLng {
   lng: Float
 }
 
-union ListPrice = PriceRange | Price
+union ListPrice = PriceRange | Money
 
 type Location {
   # A globally unique ID.
@@ -7895,6 +7895,20 @@ type Metaphysics {
   stitchingGravity: Boolean!
   stitchingKaws: Boolean!
   environment: String!
+}
+
+type Money {
+  # An amount of money expressed in minor units (like cents).
+  minor: Int!
+
+  # The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
+  currencyCode: String!
+
+  # A pre-formatted price.
+  display: String
+
+  # An amount of money expressed in major units (like dollars).
+  major: Float!
 }
 
 input MoneyInput {
@@ -9620,20 +9634,6 @@ type PopularArtists {
   artists: [Artist]
 }
 
-type Price {
-  # An amount of money expressed in minor units (like cents).
-  minor: Int!
-
-  # The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
-  currencyCode: String!
-
-  # A pre-formatted price.
-  display: String
-
-  # An amount of money expressed in major units (like dollars).
-  major: Float!
-}
-
 type PriceCents {
   min: Int
   max: Int
@@ -9642,8 +9642,8 @@ type PriceCents {
 
 type PriceRange {
   display: String
-  minPrice: Price
-  maxPrice: Price
+  minPrice: Money
+  maxPrice: Money
 }
 
 type Profile {

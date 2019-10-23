@@ -78,7 +78,7 @@ export const symbolFromCurrencyCode = currencyCode => {
 }
 
 /**
- * @deprecated Don't use this constructor directly. Prefer using the `Price`
+ * @deprecated Don't use this constructor directly. Prefer using the `Money`
  * type instead.
  */
 const money = ({ name, resolve }) => ({
@@ -109,8 +109,8 @@ const money = ({ name, resolve }) => ({
   }),
 })
 
-export const Price = new GraphQLObjectType<any, ResolverContext>({
-  name: "Price",
+export const Money = new GraphQLObjectType<any, ResolverContext>({
+  name: "Money",
   fields: {
     minor: {
       type: new GraphQLNonNull(GraphQLInt),

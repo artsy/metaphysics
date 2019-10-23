@@ -4,7 +4,7 @@ import {
   GraphQLUnionType,
   GraphQLString,
 } from "graphql"
-import { Price } from "./money"
+import { Money } from "./money"
 
 const PriceRange = new GraphQLObjectType({
   name: "PriceRange",
@@ -13,7 +13,7 @@ const PriceRange = new GraphQLObjectType({
       type: GraphQLString,
     },
     minPrice: {
-      type: Price,
+      type: Money,
       resolve: ({ minPriceCents, price_currency }) => {
         if (!minPriceCents) return null
         return {
@@ -23,7 +23,7 @@ const PriceRange = new GraphQLObjectType({
       },
     },
     maxPrice: {
-      type: Price,
+      type: Money,
       resolve: ({ maxPriceCents, price_currency }) => {
         if (!maxPriceCents) return null
         return {
@@ -38,7 +38,7 @@ const PriceRange = new GraphQLObjectType({
 export const listPrice: GraphQLFieldConfig<any, any> = {
   type: new GraphQLUnionType({
     name: "ListPrice",
-    types: [PriceRange, Price],
+    types: [PriceRange, Money],
   }),
   resolve: ({ price_cents, price, price_currency }) => {
     if (!price_cents || price_cents.length === 0) {
@@ -48,7 +48,7 @@ export const listPrice: GraphQLFieldConfig<any, any> = {
 
     return isExactPrice
       ? {
-          __typename: Price.name,
+          __typename: Money.name,
           cents: price_cents[0],
           display: price,
           currency: price_currency,
