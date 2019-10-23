@@ -44,6 +44,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
   name: "Partner",
   interfaces: [NodeInterface],
   fields: () => {
+    // This avoids a circular require
     const ArtistPartnerConnection = connectionWithCursorInfo({
       name: "ArtistPartner",
       nodeType: ArtistType,
@@ -97,15 +98,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         description: "A connection of artworks from a Partner.",
         type: artworkConnection.connectionType,
         args: pageable(artworksArgs),
-        resolve: ({ id }, options, { partnerArtworksLoader }) => {
+        resolve: ({ id }, args, { partnerArtworksLoader }) => {
           const { page, size, offset } = convertConnectionArgsToGravityArgs(
-            options
+            args
           )
 
           interface GravityArgs {
             exclude_ids?: string[]
             page: number
-            published: boolean
             size: number
             total_count: boolean
             sort: string
@@ -113,21 +113,20 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
 
           const gravityArgs: GravityArgs = {
-            published: true,
             total_count: true,
             page,
             size,
-            sort: options.sort,
-            for_sale: options.for_sale,
+            sort: args.sort,
+            for_sale: args.for_sale,
           }
 
-          if (options.exclude) {
-            gravityArgs.exclude_ids = flatten([options.exclude])
+          if (args.exclude) {
+            gravityArgs.exclude_ids = flatten([args.exclude])
           }
 
           return partnerArtworksLoader(id, gravityArgs).then(
             ({ body, headers }) => {
-              return connectionFromArraySlice(body, options, {
+              return connectionFromArraySlice(body, args, {
                 arrayLength: parseInt(headers["x-total-count"] || "0", 10),
                 sliceStart: offset,
               })
