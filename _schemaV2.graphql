@@ -827,7 +827,7 @@ type ArtistPartnerEdge {
   biography: String
   counts: PartnerArtistCounts
   isDisplayOnPartnerProfile: Boolean
-  isRepresentedBy: Boolean
+  representedBy: Boolean
   isUseDefaultBiography: Boolean
   partner: Partner
   sortableID: String
@@ -5268,7 +5268,7 @@ type PartnerArtist {
   biography: String
   counts: PartnerArtistCounts
   isDisplayOnPartnerProfile: Boolean
-  isRepresentedBy: Boolean
+  representedBy: Boolean
   isUseDefaultBiography: Boolean
   partner: Partner
   sortableID: String
@@ -5313,7 +5313,7 @@ type PartnerArtistEdge {
   biography: String
   counts: PartnerArtistCounts
   isDisplayOnPartnerProfile: Boolean
-  isRepresentedBy: Boolean
+  representedBy: Boolean
   isUseDefaultBiography: Boolean
   partner: Partner
   sortableID: String

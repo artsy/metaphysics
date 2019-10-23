@@ -58,7 +58,7 @@ export const fields: Thunk<
     type: GraphQLBoolean,
     resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
   },
-  isRepresentedBy: {
+  representedBy: {
     type: GraphQLBoolean,
     resolve: ({ represented_by }) => represented_by,
   },
