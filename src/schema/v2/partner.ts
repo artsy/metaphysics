@@ -247,12 +247,14 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page: number
             size: number
             total_count: boolean
+            sort: string
           }
 
           const gravityArgs: GravityArgs = {
             total_count: true,
             page,
             size,
+            sort: args.sort,
           }
 
           return partnerShowsLoader(id, gravityArgs).then(
