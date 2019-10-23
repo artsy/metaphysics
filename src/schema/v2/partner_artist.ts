@@ -11,7 +11,7 @@ import {
   GraphQLFieldConfigMap,
   GraphQLFieldConfig,
 } from "graphql"
-import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
@@ -43,7 +43,7 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
   resolve: partner_artist => partner_artist,
 }
 
-const fields: Thunk<
+export const fields: Thunk<
   GraphQLFieldConfigMap<PartnerArtistDetails, ResolverContext>
 > = () => ({
   ...IDFields,
@@ -58,7 +58,7 @@ const fields: Thunk<
     type: GraphQLBoolean,
     resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
   },
-  isRepresentedBy: {
+  representedBy: {
     type: GraphQLBoolean,
     resolve: ({ represented_by }) => represented_by,
   },
@@ -101,14 +101,6 @@ const PartnerArtist: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default PartnerArtist
-
-// The below can be used as the connection from an artist to its partners.
-// The edge is the PartnerArtist relationship, with the node being the partner.
-export const PartnerArtistConnection = connectionDefinitions({
-  name: "PartnerArtist",
-  nodeType: PartnerType,
-  edgeFields: fields,
-}).connectionType
 
 export const partnersForArtist = (
   artist_id,

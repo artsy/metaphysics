@@ -48,7 +48,7 @@ describe("Artist Statuses", () => {
           highlights {
             partnersConnection(first: 1, displayOnPartnerProfile: true) {
               edges {
-                isRepresentedBy
+                representedBy
                 node {
                   slug
                   name
@@ -66,7 +66,7 @@ describe("Artist Statuses", () => {
           partnersConnection: {
             edges: [
               {
-                isRepresentedBy: true,
+                representedBy: true,
                 node: {
                   slug: "catty-gallery",
                   name: "Catty Gallery",
