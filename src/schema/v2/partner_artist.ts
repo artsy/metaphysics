@@ -43,7 +43,7 @@ const counts: GraphQLFieldConfig<PartnerArtistDetails, ResolverContext> = {
   resolve: partner_artist => partner_artist,
 }
 
-const fields: Thunk<
+export const fields: Thunk<
   GraphQLFieldConfigMap<PartnerArtistDetails, ResolverContext>
 > = () => ({
   ...IDFields,
@@ -58,7 +58,7 @@ const fields: Thunk<
     type: GraphQLBoolean,
     resolve: ({ display_on_partner_profile }) => display_on_partner_profile,
   },
-  isRepresentedBy: {
+  representedBy: {
     type: GraphQLBoolean,
     resolve: ({ represented_by }) => represented_by,
   },

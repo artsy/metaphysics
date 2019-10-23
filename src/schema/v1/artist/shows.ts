@@ -14,16 +14,16 @@ import { connectionFromArraySlice } from "graphql-relay"
 import { ResolverContext } from "types/graphql"
 
 // TODO: Fix upstream, for now we remove shows from certain Partner types
-const blacklistedPartnerTypes = [
+const denyListedPartnerTypes = [
   "Private Dealer",
   "Demo",
   "Private Collector",
   "Auction",
 ]
-export function showsWithBLacklistedPartnersRemoved(shows) {
+export function showsWithDenyListedPartnersRemoved(shows) {
   return reject(shows, show => {
     if (show.partner) {
-      return includes(blacklistedPartnerTypes, show.partner.type)
+      return includes(denyListedPartnerTypes, show.partner.type)
     }
     if (show.galaxy_partner_id) {
       return false
@@ -71,7 +71,7 @@ export const ShowField: GraphQLFieldConfig<{ id: string }, ResolverContext> = {
         artist_id: id,
         sort: "-end_at",
       })
-    ).then(({ body: shows }) => showsWithBLacklistedPartnersRemoved(shows))
+    ).then(({ body: shows }) => showsWithDenyListedPartnersRemoved(shows))
   },
 }
 
@@ -93,8 +93,8 @@ export const ShowsConnectionField: GraphQLFieldConfig<
       })
     )
       .then(({ body, headers }) => {
-        const whitelistedShows = showsWithBLacklistedPartnersRemoved(body)
-        return { body: whitelistedShows, headers }
+        const allowListedShows = showsWithDenyListedPartnersRemoved(body)
+        return { body: allowListedShows, headers }
       })
       .then(({ body, headers }) => {
         const totalCount = parseInt(headers["x-total-count"] || "0", 10)
