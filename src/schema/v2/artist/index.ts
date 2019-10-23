@@ -18,10 +18,7 @@ import Article, { articleConnection } from "schema/v2/article"
 import { artworkConnection } from "schema/v2/artwork"
 import PartnerArtist from "schema/v2/partner_artist"
 import Meta from "./meta"
-import {
-  PartnerArtistConnection,
-  partnersForArtist,
-} from "schema/v2/partner_artist"
+import { partnersForArtist } from "schema/v2/partner_artist"
 import { GeneType } from "../gene"
 import Show from "schema/v2/show"
 import Sale from "schema/v2/sale/index"
@@ -85,6 +82,9 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artist",
   interfaces: [NodeInterface, Searchable],
   fields: () => {
+    const {
+      PartnerArtistConnection,
+    } = require("schema/v2/partnerArtistConnection")
     return {
       ...SlugAndInternalIDFields,
       cached,

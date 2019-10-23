@@ -11,7 +11,7 @@ import {
   GraphQLFieldConfigMap,
   GraphQLFieldConfig,
 } from "graphql"
-import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 import { getPagingParameters } from "relay-cursor-paging"
 import { ResolverContext } from "types/graphql"
 import { StaticPathLoader } from "lib/loaders/api/loader_interface"
@@ -101,14 +101,6 @@ const PartnerArtist: GraphQLFieldConfig<void, ResolverContext> = {
 }
 
 export default PartnerArtist
-
-// The below can be used as the connection from an artist to its partners.
-// The edge is the PartnerArtist relationship, with the node being the partner.
-export const PartnerArtistConnection = connectionDefinitions({
-  name: "PartnerArtist",
-  nodeType: PartnerType,
-  edgeFields: fields,
-}).connectionType
 
 export const partnersForArtist = (
   artist_id,
