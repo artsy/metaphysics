@@ -106,6 +106,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           interface GravityArgs {
             exclude_ids?: string[]
             page: number
+            published: boolean
             size: number
             total_count: boolean
             sort: string
@@ -113,6 +114,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           }
 
           const gravityArgs: GravityArgs = {
+            published: true,
             total_count: true,
             page,
             size,
@@ -243,13 +245,11 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
 
           interface GravityArgs {
             page: number
-            published: boolean
             size: number
             total_count: boolean
           }
 
           const gravityArgs: GravityArgs = {
-            published: true,
             total_count: true,
             page,
             size,
