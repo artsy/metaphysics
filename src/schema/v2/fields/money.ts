@@ -113,12 +113,12 @@ export const Price = new GraphQLObjectType<any, ResolverContext>({
   name: "Price",
   fields: {
     minor: {
-      type: GraphQLFloat,
+      type: new GraphQLNonNull(GraphQLInt),
       description: "An amount of money expressed in minor units (like cents).",
       resolve: ({ cents }) => cents,
     },
     currencyCode: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       description:
         "The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217",
       resolve: ({ currency }) => currency,
@@ -128,7 +128,7 @@ export const Price = new GraphQLObjectType<any, ResolverContext>({
       description: "A pre-formatted price.",
     },
     major: {
-      type: GraphQLFloat,
+      type: new GraphQLNonNull(GraphQLFloat),
       description:
         "An amount of money expressed in major units (like dollars).",
       resolve: ({ cents, currency }) => {
