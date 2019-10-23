@@ -5447,10 +5447,6 @@ enum EventStatus {
   RUNNING_AND_UPCOMING
 }
 
-type ExactPrice {
-  priceCents: Int!
-}
-
 type ExternalPartner {
   # A globally unique ID.
   __id: ID!
@@ -7397,7 +7393,7 @@ type LatLng {
   lng: Float
 }
 
-union ListPrice = PriceRange | ExactPrice
+union ListPrice = PriceRange | Money
 
 type Location {
   # A globally unique ID.
@@ -7899,6 +7895,20 @@ type Metaphysics {
   stitchingGravity: Boolean!
   stitchingKaws: Boolean!
   environment: String!
+}
+
+type Money {
+  # An amount of money expressed in minor units (like cents).
+  minor: Int!
+
+  # The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217
+  currencyCode: String!
+
+  # A pre-formatted price.
+  display: String
+
+  # An amount of money expressed in major units (like dollars).
+  major: Float!
 }
 
 input MoneyInput {
@@ -9631,8 +9641,9 @@ type PriceCents {
 }
 
 type PriceRange {
-  minPriceCents: Int!
-  maxPriceCents: Int!
+  display: String
+  minPrice: Money
+  maxPrice: Money
 }
 
 type Profile {

@@ -225,65 +225,97 @@ describe("Artwork type", () => {
     })
   })
 
-  describe("#priceCents", () => {
+  describe("#listPrice", () => {
     const query = `
     {
-      artwork(id: "richard-prince-untitled-portrait") {
-        listPrice {
-          ... on ExactPrice {
-            priceCents
-          }
-          ... on PriceRange {
-            minPriceCents
-            maxPriceCents
+        artwork(id: "richard-prince-untitled-portrait") {
+          listPrice {
+            ... on Price {
+              minor
+              major
+              display
+              currencyCode
+             
+            }
+            ... on PriceRange {
+              display
+              minPrice {
+                minor
+                major
+                currencyCode
+                display
+              }
+              maxPrice {
+                minor
+                major
+                currencyCode
+                display
+              }
+            }
           }
         }
       }
-    }
     `
 
     it("returns correct data for an exact priced work", () => {
       // Exact priced at $420
       artwork.price_cents = [42000]
+      artwork.price = "$420"
+      artwork.price_currency = "USD"
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
             listPrice: {
-              priceCents: 42000,
+              minor: 42000,
+              major: 420,
+              display: "$420",
+              currencyCode: "USD",
             },
           },
         })
       })
     })
 
-    // FIXME: fails with "Did not fetch typename for object, unable to resolve interface"
-    it.skip("returns correct data for an 'Under X' priced work", () => {
-      // Priced at Under $420
+    it("returns correct data for an 'Under X' priced work", () => {
+      // Priced at under $420
       artwork.price_cents = [null, 42000]
+      artwork.price = "Under $420"
+      artwork.price_currency = "USD"
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            priceCents: {
-              min: null,
-              max: 42000,
-              exact: false,
+            listPrice: {
+              display: "Under $420",
+              minPrice: null,
+              maxPrice: {
+                minor: 42000,
+                major: 420,
+                display: null,
+                currencyCode: "USD",
+              },
             },
           },
         })
       })
     })
 
-    // FIXME: fails with "Did not fetch typename for object, unable to resolve interface"
-    it.skip("returns correct data for an 'Starting at X' priced work", () => {
+    it("returns correct data for an 'Starting at X' priced work", () => {
       // Priced at Starting at $420
       artwork.price_cents = [42000, null]
+      artwork.price = "Starting at $420"
+      artwork.price_currency = "USD"
       return runQuery(query, context).then(data => {
         expect(data).toEqual({
           artwork: {
-            priceCents: {
-              min: 42000,
-              max: null,
-              exact: false,
+            listPrice: {
+              display: "Starting at $420",
+              minPrice: {
+                minor: 42000,
+                major: 420,
+                display: null,
+                currencyCode: "USD",
+              },
+              maxPrice: null,
             },
           },
         })
