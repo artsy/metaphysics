@@ -5253,6 +5253,12 @@ type Partner implements Node {
   # A connection of shows from a Partner.
   showsConnection(
     sort: ShowSorts
+
+    # Filter shows by chronological event status
+    status: EventStatus
+
+    # Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows
+    dayThreshold: Int
     after: String
     first: Int
     before: String

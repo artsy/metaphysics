@@ -16,6 +16,7 @@ import cached from "./fields/cached"
 import initials from "./fields/initials"
 import Profile from "./profile"
 import Location from "./location"
+import EventStatus from "schema/v2/input_fields/event_status"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import { artworkConnection } from "./artwork"
 import numeral from "./fields/numeral"
@@ -238,6 +239,16 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           sort: {
             type: ShowSorts,
           },
+          status: {
+            type: EventStatus.type,
+            defaultValue: "current",
+            description: "Filter shows by chronological event status",
+          },
+          dayThreshold: {
+            type: GraphQLInt,
+            description:
+              "Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows",
+          },
         }),
         resolve: ({ id }, args, { partnerShowsLoader }) => {
           const pageOptions = convertConnectionArgsToGravityArgs(args)
@@ -248,6 +259,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             size: number
             total_count: boolean
             sort: string
+            status: string
+            day_threshold: number
           }
 
           const gravityArgs: GravityArgs = {
@@ -255,6 +268,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             sort: args.sort,
+            status: args.status,
+            day_threshold: args.dayThreshold,
           }
 
           return partnerShowsLoader(id, gravityArgs).then(
