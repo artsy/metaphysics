@@ -268,8 +268,8 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             sort: args.sort,
-            ...(args.status && { status: args.status }),
-            ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
+            status: args.status,
+            day_threshold: args.dayThreshold,
           }
 
           return partnerShowsLoader(id, gravityArgs).then(
