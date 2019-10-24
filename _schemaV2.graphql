@@ -5245,7 +5245,7 @@ type Partner implements Node {
     sort: ShowSorts
 
     # Filter shows by chronological event status
-    status: EventStatus = CURRENT
+    status: EventStatus
 
     # Only used when status is CLOSING_SOON or UPCOMING. Number of days used to filter upcoming and closing soon shows
     dayThreshold: Int

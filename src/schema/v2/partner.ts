@@ -241,7 +241,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
           },
           status: {
             type: EventStatus.type,
-            defaultValue: "CURRENT",
+            defaultValue: "current",
             description: "Filter shows by chronological event status",
           },
           dayThreshold: {
@@ -268,10 +268,7 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
             page,
             size,
             sort: args.sort,
-            // default Enum value for status is not properly resolved
-            // so we have to manually resolve it by lowercasing the value
-            // https://github.com/apollographql/graphql-tools/issues/715
-            ...(args.status && { status: args.status.toLowerCase() }),
+            ...(args.status && { status: args.status }),
             ...(args.dayThreshold && { day_threshold: args.dayThreshold }),
           }
 
