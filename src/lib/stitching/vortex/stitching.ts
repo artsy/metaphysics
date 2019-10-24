@@ -120,7 +120,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
                     minor
                   }
                 }
-                ... on Price {
+                ... on Money {
                   minor
                 }
               }
@@ -135,7 +135,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
                   minor
                 }
               }
-              ... on Price {
+              ... on Money {
                 minor
               }
             }
