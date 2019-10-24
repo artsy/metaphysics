@@ -1,28 +1,36 @@
 import {
   GraphQLFieldConfig,
   GraphQLObjectType,
-  GraphQLInt,
   GraphQLUnionType,
-  GraphQLNonNull,
+  GraphQLString,
 } from "graphql"
+import { Money } from "./money"
 
 const PriceRange = new GraphQLObjectType({
   name: "PriceRange",
   fields: {
-    minPriceCents: {
-      type: new GraphQLNonNull(GraphQLInt),
+    display: {
+      type: GraphQLString,
     },
-    maxPriceCents: {
-      type: new GraphQLNonNull(GraphQLInt),
+    minPrice: {
+      type: Money,
+      resolve: ({ minPriceCents, price_currency }) => {
+        if (!minPriceCents) return null
+        return {
+          cents: minPriceCents,
+          currency: price_currency,
+        }
+      },
     },
-  },
-})
-
-const ExactPrice = new GraphQLObjectType({
-  name: "ExactPrice",
-  fields: {
-    priceCents: {
-      type: new GraphQLNonNull(GraphQLInt),
+    maxPrice: {
+      type: Money,
+      resolve: ({ maxPriceCents, price_currency }) => {
+        if (!maxPriceCents) return null
+        return {
+          cents: maxPriceCents,
+          currency: price_currency,
+        }
+      },
     },
   },
 })
@@ -30,9 +38,9 @@ const ExactPrice = new GraphQLObjectType({
 export const listPrice: GraphQLFieldConfig<any, any> = {
   type: new GraphQLUnionType({
     name: "ListPrice",
-    types: [PriceRange, ExactPrice],
+    types: [PriceRange, Money],
   }),
-  resolve: ({ price_cents }) => {
+  resolve: ({ price_cents, price, price_currency }) => {
     if (!price_cents || price_cents.length === 0) {
       return null
     }
@@ -40,13 +48,20 @@ export const listPrice: GraphQLFieldConfig<any, any> = {
 
     return isExactPrice
       ? {
-          __typename: ExactPrice.name,
-          priceCents: price_cents[0],
+          __typename: Money.name,
+          cents: price_cents[0],
+          display: price,
+          currency: price_currency,
         }
       : {
+          // For deprecated types
           __typename: PriceRange.name,
           minPriceCents: price_cents[0],
           maxPriceCents: price_cents[1],
+
+          // For preferred types
+          price_currency,
+          display: price,
         }
   },
 }

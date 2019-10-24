@@ -10,7 +10,7 @@ const getMaxPrice = (thing: { listPrice: any }) => {
   if (!thing.listPrice) {
     return 0
   }
-  return thing.listPrice.priceCents || thing.listPrice.maxPriceCents
+  return thing.listPrice.minor || thing.listPrice.maxPrice.minor
 }
 
 export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
@@ -113,22 +113,30 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               listPrice {
                 __typename
                 ... on PriceRange {
-                  minPriceCents
-                  maxPriceCents
+                  minPrice {
+                    minor
+                  }
+                  maxPrice {
+                    minor
+                  }
                 }
-                ... on ExactPrice {
-                  priceCents
+                ... on Money {
+                  minor
                 }
               }
             }
             listPrice {
               __typename
               ... on PriceRange {
-                minPriceCents
-                maxPriceCents
+                minPrice {
+                  minor
+                }
+                maxPrice {
+                  minor
+                }
               }
-              ... on ExactPrice {
-                priceCents
+              ... on Money {
+                minor
               }
             }
             artist {

@@ -77,6 +77,10 @@ export const symbolFromCurrencyCode = currencyCode => {
     : null
 }
 
+/**
+ * @deprecated Don't use this constructor directly. Prefer using the `Money`
+ * type instead.
+ */
 const money = ({ name, resolve }) => ({
   resolve: x => x,
   type: new GraphQLObjectType<any, ResolverContext>({
@@ -103,6 +107,37 @@ const money = ({ name, resolve }) => ({
       },
     },
   }),
+})
+
+export const Money = new GraphQLObjectType<any, ResolverContext>({
+  name: "Money",
+  fields: {
+    minor: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: "An amount of money expressed in minor units (like cents).",
+      resolve: ({ cents }) => cents,
+    },
+    currencyCode: {
+      type: new GraphQLNonNull(GraphQLString),
+      description:
+        "The ISO-4217 alphabetic currency code, as per https://en.wikipedia.org/wiki/ISO_4217",
+      resolve: ({ currency }) => currency,
+    },
+    display: {
+      type: GraphQLString,
+      description: "A pre-formatted price.",
+    },
+    major: {
+      type: new GraphQLNonNull(GraphQLFloat),
+      description:
+        "An amount of money expressed in major units (like dollars).",
+      resolve: ({ cents, currency }) => {
+        const factor = currencyCodes[currency.toLowerCase()].subunit_to_unit
+        // TODO: Should we round or used a fixed precision?
+        return cents / factor
+      },
+    },
+  },
 })
 
 export const MoneyInput = new GraphQLInputObjectType({

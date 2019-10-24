@@ -47,7 +47,7 @@ import { Related } from "./related"
 import { createPageCursors } from "schema/v1/fields/pagination"
 import {
   ShowField,
-  showsWithBLacklistedPartnersRemoved,
+  showsWithDenyListedPartnersRemoved,
   ShowsConnectionField,
 } from "./shows"
 import {
@@ -495,7 +495,7 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
             has_location: true,
             size: options.size,
           }).then(({ body: shows }) =>
-            showsWithBLacklistedPartnersRemoved(shows)
+            showsWithDenyListedPartnersRemoved(shows)
           )
         },
       },
