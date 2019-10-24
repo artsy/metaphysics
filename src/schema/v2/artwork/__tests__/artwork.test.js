@@ -230,7 +230,7 @@ describe("Artwork type", () => {
     {
         artwork(id: "richard-prince-untitled-portrait") {
           listPrice {
-            ... on Price {
+            ... on Money {
               minor
               major
               display
