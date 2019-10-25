@@ -7,7 +7,7 @@ import { formatMoney } from "accounting"
 import numeral from "./fields/numeral"
 import Artwork from "./artwork"
 import Sale from "./sale"
-import { CalculatedCostType } from "./types/calculated_cost"
+import { CalculatedCost } from "./types/calculated_cost"
 import {
   GravityIDFields,
   SlugAndInternalIDFields,
@@ -318,26 +318,39 @@ export const SaleArtworkType = new GraphQLObjectType<any, ResolverContext>({
         },
       },
       calculatedCost: {
-        type: CalculatedCostType,
+        type: CalculatedCost,
         args: {
-          bidAmountCents: {
-            type: GraphQLInt,
+          bidAmountMinor: {
+            type: new GraphQLNonNull(GraphQLInt),
             description: "Max bid price for the sale artwork",
           },
         },
-        resolve: (_params, { bidAmountCents }, _loaders) => {
+        resolve: async (
+          { id, sale_id },
+          { bidAmountMinor },
+          { saleArtworkCalculatedCostLoader }
+        ) => {
+          const data = await saleArtworkCalculatedCostLoader({
+            saleId: sale_id,
+            saleArtworkId: id,
+            bidAmountMinor,
+          })
+
           return {
             buyersPremium: {
-              cents: bidAmountCents * 0.2,
-              display: `$${((bidAmountCents * 0.2) / 100)
-                .toFixed(2)
-                .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`,
+              cents: data.buyers_premium_cents,
+              display: data.display_buyers_premium,
+              currency: data.currency,
             },
             subtotal: {
-              cents: bidAmountCents * 1.2,
-              display: `$${((bidAmountCents * 1.2) / 100)
-                .toFixed(2)
-                .replace(/\d(?=(\d{3})+\.)/g, "$&,")}`,
+              cents: data.subtotal_cents,
+              display: data.display_subtotal,
+              currency: data.currency,
+            },
+            bidAmount: {
+              cents: data.bid_amount_cents,
+              display: data.display_bid_amount,
+              currency: data.currency,
             },
           }
         },

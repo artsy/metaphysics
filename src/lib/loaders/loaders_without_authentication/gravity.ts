@@ -67,6 +67,10 @@ export default opts => {
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`, {}, { headers: true }),
     saleArtworkLoader: gravityUncachedLoader<any, { saleId: string, saleArtworkId: string }>(({ saleId, saleArtworkId }) => `sale/${saleId}/sale_artwork/${saleArtworkId}`, null),
+    saleArtworkCalculatedCostLoader: gravityLoader<any, { saleId: string, saleArtworkId: string, bidAmountMinor: number }>(
+      ({ saleId, saleArtworkId, bidAmountMinor }) =>
+        `sale/${saleId}/sale_artwork/${saleArtworkId}/calculated_cost?bid_amount_cents=${bidAmountMinor}`
+    ),
     saleLoader: batchSaleLoader,
     salesLoader: batchSalesLoader,
     salesLoaderWithHeaders: gravityLoader('sales', {}, { headers: true }),
