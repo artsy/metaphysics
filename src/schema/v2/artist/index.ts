@@ -35,7 +35,6 @@ import {
   AuctionResultSorts,
 } from "schema/v2/auction_result"
 import ArtistArtworksFilters from "./artwork_filters"
-import { Searchable } from "schema/v2/searchable"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
 import { Related } from "./related"
 import { createPageCursors } from "schema/v2/fields/pagination"
@@ -43,10 +42,7 @@ import {
   showsWithDenyListedPartnersRemoved,
   ShowsConnectionField,
 } from "./shows"
-import {
-  NodeInterface,
-  SlugAndInternalIDFields,
-} from "schema/v2/object_identification"
+import { SlugAndInternalIDFields } from "schema/v2/object_identification"
 import {
   GraphQLObjectType,
   GraphQLBoolean,
@@ -80,11 +76,25 @@ export const artistArtworkArrayLength = (artist, filter) => {
 
 export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artist",
-  interfaces: [NodeInterface, Searchable],
+  interfaces: () => {
+    const {
+      EntityWithFilterArtworksConnectionInterface,
+    } = require("../filterArtworksConnection")
+    const { Searchable } = require("schema/v2/searchable")
+    const { NodeInterface } = require("schema/v2/object_identification")
+    return [
+      NodeInterface,
+      Searchable,
+      EntityWithFilterArtworksConnectionInterface,
+    ]
+  },
   fields: () => {
     const {
       PartnerArtistConnection,
     } = require("schema/v2/partnerArtistConnection")
+    const {
+      filterArtworksConnectionWithParams,
+    } = require("../filterArtworksConnection")
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -448,6 +458,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      filterArtworksConnection: filterArtworksConnectionWithParams(
+        ({ _id }) => ({
+          artist_id: _id,
+        })
+      ),
       formattedArtworksCount: {
         type: GraphQLString,
         description:
