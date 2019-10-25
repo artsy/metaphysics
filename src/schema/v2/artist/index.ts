@@ -80,11 +80,23 @@ export const artistArtworkArrayLength = (artist, filter) => {
 
 export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
   name: "Artist",
-  interfaces: [NodeInterface, Searchable],
+  interfaces: () => {
+    const {
+      EntityWithFilterArtworksConnectionInterface,
+    } = require("../filterArtworksConnection")
+    return [
+      NodeInterface,
+      Searchable,
+      EntityWithFilterArtworksConnectionInterface,
+    ]
+  },
   fields: () => {
     const {
       PartnerArtistConnection,
     } = require("schema/v2/partnerArtistConnection")
+    const {
+      filterArtworksConnectionWithParams,
+    } = require("../filterArtworksConnection")
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -448,6 +460,11 @@ export const ArtistType = new GraphQLObjectType<any, ResolverContext>({
           )
         },
       },
+      filterArtworksConnection: filterArtworksConnectionWithParams(
+        ({ _id }) => ({
+          artist_id: _id,
+        })
+      ),
       formattedArtworksCount: {
         type: GraphQLString,
         description:
