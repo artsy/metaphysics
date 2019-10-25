@@ -466,14 +466,24 @@ describe("SaleArtwork type", () => {
         {
           node(id: "${toGlobalId("SaleArtwork", "54c7ed2a7261692bfa910200")}") {
             ... on SaleArtwork {
-              calculatedCost(bidAmountCents: 1000000) {
-                buyersPremium {
-                  cents
+              calculatedCost(bidAmountMinor: 10000) {
+                bidAmount {
+                  minor
+                  major
                   display
+                  currencyCode
+                }
+                buyersPremium {
+                  minor
+                  major
+                  display
+                  currencyCode
                 }
                 subtotal {
-                  cents
+                  minor
+                  major
                   display
+                  currencyCode
                 }
               }
             }
@@ -481,20 +491,40 @@ describe("SaleArtwork type", () => {
         }
       `
 
+      const calculatedCost = {
+        bid_amount_cents: 10000,
+        display_bid_amount: "$100.00",
+        buyers_premium_cents: 2000,
+        display_buyers_premium: "$20.00",
+        subtotal_cents: 12000,
+        display_subtotal: "$120.00",
+        currency: "USD",
+      }
+
       const data = await execute(query, saleArtwork, {
-        saleArtworkRootLoader: () => Promise.resolve(saleArtwork),
+        saleArtworkCalculatedCostLoader: () => Promise.resolve(calculatedCost),
       })
 
       expect(data).toEqual({
         node: {
           calculatedCost: {
+            bidAmount: {
+              minor: 10000,
+              major: 100.0,
+              display: "$100.00",
+              currencyCode: "USD",
+            },
             buyersPremium: {
-              cents: 200000,
-              display: "$2,000.00",
+              minor: 2000,
+              major: 20.0,
+              display: "$20.00",
+              currencyCode: "USD",
             },
             subtotal: {
-              cents: 1200000,
-              display: "$12,000.00",
+              minor: 12000,
+              major: 120.0,
+              display: "$120.00",
+              currencyCode: "USD",
             },
           },
         },
