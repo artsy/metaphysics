@@ -46,7 +46,7 @@ import System from "./system"
 // import PartnerCategory from "./partner_category"
 // import PartnerCategories from "./partner_categories"
 // import SuggestedGenes from "./suggested_genes"
-// import Tag from "./tag"
+import { TagField } from "./tag"
 // import TrendingArtists from "./artists/trending"
 // import Users from "./users"
 // import { User } from "./user"
@@ -151,7 +151,7 @@ const rootFields = {
   // status: Status,
   system: System,
 
-  // tag: Tag,
+  tag: TagField,
   // trendingArtists: TrendingArtists,
   // user: User,
   // users: Users,
