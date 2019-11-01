@@ -28,12 +28,12 @@ import System from "./system"
 
 // import Status from "./status"
 // import Artworks from "./artworks"
-// import Artists from "./artists"
+import Artists from "./artists"
 // import Collection from "./collection"
 // import { CreditCard } from "./credit_card"
 // import ExternalPartner from "./external_partner"
 // import Fairs from "./fairs"
-// import Genes from "./genes"
+import Genes from "./genes"
 // import GeneFamilies from "./gene_families"
 // import GeneFamily from "./gene_family"
 // import OrderedSet from "./ordered_set"
@@ -113,7 +113,7 @@ const rootFields = {
   // artworkVersion: ArtworkVersionResolver,
   // artworks: Artworks,
   artist: Artist,
-  // artists: Artists,
+  artists: Artists,
   // causalityJWT: CausalityJWT, // TODO: Perhaps this should go into `system` ?
   city: City,
   // collection: Collection,
@@ -124,7 +124,7 @@ const rootFields = {
   // filterPartners: FilterPartners,
   // filterArtworksConnection: filterArtworksConnection(),
   gene: Gene,
-  // genes: Genes,
+  genes: Genes,
   // suggestedGenes: SuggestedGenes,
   // geneFamilies: GeneFamilies,
   // geneFamily: GeneFamily,
