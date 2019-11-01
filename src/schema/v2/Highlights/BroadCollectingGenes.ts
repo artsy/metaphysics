@@ -15,9 +15,13 @@ const suggestedGeneToGene = suggestedGene => ({
 const SUGGESTED_GENES_JSON =
   "https://s3.amazonaws.com/eigen-production/json/eigen_categories.json"
 
-export const SuggestedGenesField: GraphQLFieldConfig<any, ResolverContext> = {
+export const BroadCollectingGenesField: GraphQLFieldConfig<
+  any,
+  ResolverContext
+> = {
   type: new GraphQLList(GeneType),
-  description: "List of curated genes with custom images",
+  description:
+    "List of curated genes that are broad collecting. (Meant for e.g. suggestions in on-boarding.)",
   resolve: () =>
     // FIXME: Cache either at the file level or in the same cache store that
     //        dataloaders store data in.

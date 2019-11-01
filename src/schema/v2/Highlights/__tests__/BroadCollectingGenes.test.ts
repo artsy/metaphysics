@@ -3,8 +3,8 @@ import { runQuery } from "schema/v2/test/utils"
 jest.mock("lib/apis/fetch", () => jest.fn())
 const fetch: jest.Mock = require("lib/apis/fetch")
 
-describe("SuggestedGenes type", () => {
-  const suggestedGenesData = {
+describe("BroadCollectingGenes", () => {
+  const broadCollectingGenesData = {
     body: [
       {
         id: "photography",
@@ -15,13 +15,13 @@ describe("SuggestedGenes type", () => {
     ],
   }
 
-  it("fetches suggested genes", async () => {
-    fetch.mockReturnValueOnce(Promise.resolve(suggestedGenesData))
+  it("fetches the genes", async () => {
+    fetch.mockReturnValueOnce(Promise.resolve(broadCollectingGenesData))
 
     const query = `
       {
         highlights {
-          suggestedGenes {
+          broadCollectingGenes {
             slug
             internalID
             name
@@ -34,7 +34,7 @@ describe("SuggestedGenes type", () => {
     `
 
     const { highlights } = await runQuery(query)
-    expect(highlights.suggestedGenes[0].internalID).toBe("123456")
-    expect(highlights.suggestedGenes[0].image.url).toBe("photography.jpg")
+    expect(highlights.broadCollectingGenes[0].internalID).toBe("123456")
+    expect(highlights.broadCollectingGenes[0].image.url).toBe("photography.jpg")
   })
 })

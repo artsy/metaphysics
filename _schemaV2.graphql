@@ -4392,8 +4392,8 @@ type Highlights {
     size: Int
   ): [Artist]
 
-  # List of curated genes with custom images
-  suggestedGenes: [Gene]
+  # List of curated genes that are broad collecting. (Meant for e.g. suggestions in on-boarding.)
+  broadCollectingGenes: [Gene]
 }
 
 type HomePage {
