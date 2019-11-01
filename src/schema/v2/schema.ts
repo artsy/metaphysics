@@ -45,7 +45,6 @@ import System from "./system"
 // import { filterArtworksConnection } from "./filterArtworksConnection"
 // import PartnerCategory from "./partner_category"
 // import PartnerCategories from "./partner_categories"
-// import PopularArtists from "./artists/popular"
 // import SuggestedGenes from "./suggested_genes"
 // import Tag from "./tag"
 // import TrendingArtists from "./artists/trending"
@@ -87,6 +86,7 @@ import { ResolverContext } from "types/graphql"
 import config from "config"
 import { ArtworkVersionType } from "./artwork_version"
 import { deprecate } from "lib/deprecation"
+import { HighlightsField } from "./Highlights"
 
 const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
@@ -128,6 +128,7 @@ const rootFields = {
   // suggestedGenes: SuggestedGenes,
   // geneFamilies: GeneFamilies,
   // geneFamily: GeneFamily,
+  highlights: HighlightsField,
   homePage: HomePage,
   // matchArtist: MatchArtist,
   // matchGene: MatchGene,

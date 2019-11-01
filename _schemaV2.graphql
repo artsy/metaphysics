@@ -4379,6 +4379,8 @@ type HighestBid {
   display: String
 }
 
+type Highlights
+
 type HomePage {
   # Single artist module to show on the home screen.
   artistModule(
@@ -5607,6 +5609,7 @@ type Query {
     # The slug or ID of the Gene
     id: String!
   ): Gene
+  highlights: Highlights
 
   # Home screen content
   homePage: HomePage
@@ -7071,6 +7074,7 @@ type Viewer {
     # The slug or ID of the Gene
     id: String!
   ): Gene
+  highlights: Highlights
 
   # Home screen content
   homePage: HomePage
