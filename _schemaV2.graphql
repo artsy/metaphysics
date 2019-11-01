@@ -4009,7 +4009,7 @@ type FollowArtistPayload {
 
     # Number of results to return
     size: Int
-  ): PopularArtists
+  ): [Artist]
   clientMutationId: String
 }
 
@@ -4379,7 +4379,19 @@ type HighestBid {
   display: String
 }
 
-type Highlights
+type Highlights {
+  # Popular artists
+  popularArtists(
+    # If true, will exclude followed artists for the user
+    excludeFollowedArtists: Boolean
+
+    # Exclude these ids from results, may result in all artists being excluded.
+    excludeArtistIDs: [String]
+
+    # Number of results to return
+    size: Int
+  ): [Artist]
+}
 
 type HomePage {
   # Single artist module to show on the home screen.
@@ -5534,10 +5546,6 @@ enum PartnersSortType {
 }
 
 union PartnerTypes = Partner | ExternalPartner
-
-type PopularArtists {
-  artists: [Artist]
-}
 
 type PriceRange {
   display: String

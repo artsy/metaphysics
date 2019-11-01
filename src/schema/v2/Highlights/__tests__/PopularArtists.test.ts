@@ -2,12 +2,12 @@
 import gql from "lib/gql"
 import { runQuery } from "schema/v2/test/utils"
 
-xdescribe("Popular Artists", () => {
+describe("PopularArtists", () => {
   it("makes a call for popular artists", async () => {
     const query = gql`
       {
-        popularArtists {
-          artists {
+        highlights {
+          popularArtists {
             slug
           }
         }
@@ -22,8 +22,10 @@ xdescribe("Popular Artists", () => {
         ]),
     }
 
-    await runQuery(query, context).then(data => {
-      expect(data).toMatchSnapshot()
-    })
+    const { highlights } = await runQuery(query, context)
+    expect(highlights.popularArtists).toEqual([
+      { slug: "ortina" },
+      { slug: "xtina" },
+    ])
   })
 })

@@ -1,7 +1,7 @@
 import { GraphQLString, GraphQLBoolean, GraphQLNonNull } from "graphql"
 import { mutationWithClientMutationId } from "graphql-relay"
 import { ArtistType } from "schema/v2/artist/index"
-import PopularArtists from "schema/v2/artists/popular"
+import { PopularArtistsField } from "schema/v2/highlights/PopularArtists"
 import { ResolverContext } from "types/graphql"
 
 export default mutationWithClientMutationId<any, any, ResolverContext>({
@@ -22,7 +22,7 @@ export default mutationWithClientMutationId<any, any, ResolverContext>({
       resolve: ({ artist_id }, _options, { artistLoader }) =>
         artistLoader(artist_id),
     },
-    popularArtists: PopularArtists,
+    popularArtists: PopularArtistsField,
   },
   mutateAndGetPayload: (
     { artistID: artist_id, unfollow },
