@@ -1,9 +1,9 @@
 import { runQuery } from "schema/v2/test/utils"
 
 jest.mock("lib/apis/fetch", () => jest.fn())
-import fetch from "lib/apis/fetch"
+const fetch: jest.Mock = require("lib/apis/fetch")
 
-xdescribe("SuggestedGenes type", () => {
+describe("SuggestedGenes type", () => {
   const suggestedGenesData = {
     body: [
       {
@@ -20,20 +20,21 @@ xdescribe("SuggestedGenes type", () => {
 
     const query = `
       {
-        suggestedGenes {
-          slug
-          internalID
-          name
-          image {
-            url
+        highlights {
+          suggestedGenes {
+            slug
+            internalID
+            name
+            image {
+              url
+            }
           }
         }
       }
     `
 
-    const data = await runQuery(query, {})
-
-    expect(data.suggestedGenes[0].internalID).toBe("123456")
-    expect(data.suggestedGenes[0].image.url).toBe("photography.jpg")
+    const { highlights } = await runQuery(query)
+    expect(highlights.suggestedGenes[0].internalID).toBe("123456")
+    expect(highlights.suggestedGenes[0].image.url).toBe("photography.jpg")
   })
 })

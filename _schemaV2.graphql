@@ -4391,6 +4391,9 @@ type Highlights {
     # Number of results to return
     size: Int
   ): [Artist]
+
+  # List of curated genes with custom images
+  suggestedGenes: [Gene]
 }
 
 type HomePage {
