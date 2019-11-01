@@ -139,7 +139,6 @@ export const kawsStitchingEnvironment = (
             },
             context,
             info,
-            transforms: kawsSchema.transforms,
           })
         },
       },

@@ -742,13 +742,12 @@ describe("Artist type", () => {
   })
 
   describe("filtered artworks", () => {
-    // FIXME: filterArtworksConnection no longer on artist type
-    it.skip("returns filtered artworks", () => {
+    it("returns filtered artworks", () => {
       const filterArtworksLoader = jest.fn().mockReturnValueOnce(
         Promise.resolve({
           hits: [
             {
-              id: "im-a-cat",
+              _id: "im-a-cat",
               title: "I'm a cat",
               artists: ["percy"],
             },
@@ -762,22 +761,11 @@ describe("Artist type", () => {
       const query = `
         {
           artist(id: "percy") {
-            filterArtworksConnection(aggregations:[TOTAL], partnerID: null){
+            filterArtworksConnection(aggregations:[TOTAL], partnerID: null, first: 10){
               edges {
                 node {
-                  artworks: artworksConnection(first: 10) {
-                    pageCursors {
-                      first {
-                        page
-                      }
-                      around {
-                        page
-                      }
-                      last {
-                        page
-                      }
-                    }
-                  }
+                  internalID
+                  title
                 }
               }
             }
@@ -785,27 +773,27 @@ describe("Artist type", () => {
         }
       `
 
-      return runQuery(query, context).then(
-        ({
-          artist: {
-            filteredArtworks: {
-              artworks: { pageCursors },
+      return runQuery(query, context).then(data => {
+        expect(filterArtworksLoader.mock.calls[0][0]).not.toHaveProperty(
+          "partnerID"
+        )
+        expect(data).toMatchInlineSnapshot(`
+          Object {
+            "artist": Object {
+              "filterArtworksConnection": Object {
+                "edges": Array [
+                  Object {
+                    "node": Object {
+                      "internalID": "im-a-cat",
+                      "title": "I'm a cat",
+                    },
+                  },
+                ],
+              },
             },
-          },
-        }) => {
-          expect(filterArtworksLoader.mock.calls[0][0]).not.toHaveProperty(
-            "partnerID"
-          )
-          // Check expected page cursors exist in response.
-          const { first, around, last } = pageCursors
-          expect(first).toEqual(null)
-          expect(last.page).toEqual(8)
-          let index
-          for (index = 0; index < 4; index++) {
-            expect(around[index].page).toBe(index + 1)
           }
-        }
-      )
+        `)
+      })
     })
   })
 

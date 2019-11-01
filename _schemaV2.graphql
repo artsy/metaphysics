@@ -534,7 +534,7 @@ enum ArticleSorts {
   PUBLISHED_AT_DESC
 }
 
-type Artist implements Node & Searchable {
+type Artist implements Node & Searchable & EntityWithFilterArtworksConnectionInterface {
   # A globally unique ID.
   id: ID!
 
@@ -603,6 +603,54 @@ type Artist implements Node & Searchable {
     # The number of Shows to return
     size: Int = 5
   ): [Show]
+
+  # Artworks Elastic Search results
+  filterArtworksConnection(
+    acquireable: Boolean
+    offerable: Boolean
+    aggregationPartnerCities: [String]
+    aggregations: [ArtworkAggregation]
+    artistID: String
+    artistIDs: [String]
+    atAuction: Boolean
+    attributionClass: [String]
+    color: String
+    dimensionRange: String
+    extraAggregationGeneIDs: [String]
+    includeArtworksByFollowedArtists: Boolean
+    includeMediumFilterInAggregation: Boolean
+    inquireableOnly: Boolean
+    forSale: Boolean
+    geneID: String
+    geneIDs: [String]
+    height: String
+    width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
+    # A string from the list of allocations, or * to denote all mediums
+    medium: String
+    period: String
+    periods: [String]
+    majorPeriods: [String]
+    partnerID: ID
+    partnerCities: [String]
+    priceRange: String
+    page: Int
+    saleID: ID
+    size: Int
+    sort: String
+    tagID: String
+    keyword: String
+
+    # When true, will only return exact keyword match
+    keywordMatchExact: Boolean
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FilterArtworksConnection
 
   # A string showing the total number of works and those for sale
   formattedArtworksCount: String

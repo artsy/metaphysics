@@ -30,6 +30,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: NODE_OPTIONS
+              value: "--max_old_space_size=1024"
           envFrom:
             - configMapRef:
                 name: metaphysics-environment
