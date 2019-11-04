@@ -27,13 +27,12 @@ import Me from "./me"
 import System from "./system"
 
 // import Status from "./status"
-// import Artworks from "./artworks"
-// import Artists from "./artists"
+import Artists from "./artists"
 // import Collection from "./collection"
 // import { CreditCard } from "./credit_card"
 // import ExternalPartner from "./external_partner"
 // import Fairs from "./fairs"
-// import Genes from "./genes"
+import Genes from "./genes"
 // import GeneFamilies from "./gene_families"
 // import GeneFamily from "./gene_family"
 // import OrderedSet from "./ordered_set"
@@ -42,12 +41,11 @@ import System from "./system"
 // import Partner from "./partner"
 // import Partners from "./partners"
 // import FilterPartners from "./filter_partners"
-// import { filterArtworksConnection } from "./filterArtworksConnection"
+import { filterArtworksConnection } from "./filterArtworksConnection"
 // import PartnerCategory from "./partner_category"
 // import PartnerCategories from "./partner_categories"
-// import PopularArtists from "./artists/popular"
 // import SuggestedGenes from "./suggested_genes"
-// import Tag from "./tag"
+import { TagField } from "./tag"
 // import TrendingArtists from "./artists/trending"
 // import Users from "./users"
 // import { User } from "./user"
@@ -87,6 +85,7 @@ import { ResolverContext } from "types/graphql"
 import config from "config"
 import { ArtworkVersionType } from "./artwork_version"
 import { deprecate } from "lib/deprecation"
+import { HighlightsField } from "./Highlights"
 
 const { ENABLE_CONSIGNMENTS_STITCHING } = config
 
@@ -111,9 +110,9 @@ const rootFields = {
   // articles: Articles,
   artwork: Artwork,
   // artworkVersion: ArtworkVersionResolver,
-  // artworks: Artworks,
+  artworksConnection: filterArtworksConnection(),
   artist: Artist,
-  // artists: Artists,
+  artists: Artists,
   // causalityJWT: CausalityJWT, // TODO: Perhaps this should go into `system` ?
   city: City,
   // collection: Collection,
@@ -124,10 +123,11 @@ const rootFields = {
   // filterPartners: FilterPartners,
   // filterArtworksConnection: filterArtworksConnection(),
   gene: Gene,
-  // genes: Genes,
+  genes: Genes,
   // suggestedGenes: SuggestedGenes,
   // geneFamilies: GeneFamilies,
   // geneFamily: GeneFamily,
+  highlights: HighlightsField,
   homePage: HomePage,
   // matchArtist: MatchArtist,
   // matchGene: MatchGene,
@@ -150,7 +150,7 @@ const rootFields = {
   // status: Status,
   system: System,
 
-  // tag: Tag,
+  tag: TagField,
   // trendingArtists: TrendingArtists,
   // user: User,
   // users: Users,

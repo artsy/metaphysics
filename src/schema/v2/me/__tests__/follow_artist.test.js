@@ -43,9 +43,7 @@ describe("FollowArtist", () => {
             name
           }
           popularArtists {
-            artists {
-              name
-            }
+            name
           }
         }
       }
@@ -56,9 +54,10 @@ describe("FollowArtist", () => {
       artist: {
         name: "Damon Zucconi",
       },
-      popularArtists: {
-        artists: [{ name: "Antonio Carreno" }, { name: "Benjamin Schmit" }],
-      },
+      popularArtists: [
+        { name: "Antonio Carreno" },
+        { name: "Benjamin Schmit" },
+      ],
     })
   })
 })

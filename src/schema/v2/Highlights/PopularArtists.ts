@@ -1,6 +1,5 @@
-import Artist from "../artist"
+import { ArtistType } from "../artist"
 import {
-  GraphQLObjectType,
   GraphQLList,
   GraphQLInt,
   GraphQLBoolean,
@@ -9,18 +8,8 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 
-const PopularArtistsType = new GraphQLObjectType<any, ResolverContext>({
-  name: "PopularArtists",
-  fields: () => ({
-    artists: {
-      type: new GraphQLList(Artist.type),
-      resolve: results => results,
-    },
-  }),
-})
-
-const PopularArtists: GraphQLFieldConfig<void, ResolverContext> = {
-  type: PopularArtistsType,
+export const PopularArtistsField: GraphQLFieldConfig<void, ResolverContext> = {
+  type: new GraphQLList(ArtistType),
   description: "Popular artists",
   args: {
     excludeFollowedArtists: {
@@ -50,5 +39,3 @@ const PopularArtists: GraphQLFieldConfig<void, ResolverContext> = {
     return popularArtistsLoader(options)
   },
 }
-
-export default PopularArtists

@@ -31,6 +31,8 @@ export const runQueryOrThrow = (args: GraphQLArgs) => {
   })
 }
 
+type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
+
 /**
  * Performs a GraphQL query against our schema.
  *
@@ -45,7 +47,12 @@ export const runQueryOrThrow = (args: GraphQLArgs) => {
  */
 export const runQuery = (
   query,
-  context: Partial<ResolverContext> = {
+  context: Partial<
+    Omit<ResolverContext, "authenticatedLoaders" | "unauthenticatedLoaders"> & {
+      authenticatedLoaders: Partial<ResolverContext["authenticatedLoaders"]>
+      unauthenticatedLoaders: Partial<ResolverContext["unauthenticatedLoaders"]>
+    }
+  > = {
     accessToken: undefined,
     userID: undefined,
   },

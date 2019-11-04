@@ -2,7 +2,7 @@ import { find } from "lodash"
 import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 
-xdescribe("Genes", () => {
+describe("Genes", () => {
   const apiResponse = [
     {
       id: "futurism",

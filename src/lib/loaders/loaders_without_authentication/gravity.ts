@@ -14,6 +14,16 @@ export default opts => {
     multipleLoader: gravityLoader<{ id: string, is_auction: boolean }[]>('sales')
   })
 
+  type GravityCalculatedCostResponse = {
+    display_bid_amount: string
+    bid_amount_cents: number
+    buyers_premium_cents: number
+    display_buyers_premium: string
+    subtotal_cents: number
+    display_subtotal: string
+    currency: string
+  }
+
   return {
     artistArtworksLoader: gravityLoader(id => `artist/${id}/artworks`),
     artistGenesLoader: gravityLoader(id => `artist/${id}/genome/genes`),
@@ -67,6 +77,10 @@ export default opts => {
     saleArtworksFilterLoader: gravityLoader("filter/sale_artworks"),
     saleArtworksLoader: gravityLoader(id => `sale/${id}/sale_artworks`, {}, { headers: true }),
     saleArtworkLoader: gravityUncachedLoader<any, { saleId: string, saleArtworkId: string }>(({ saleId, saleArtworkId }) => `sale/${saleId}/sale_artwork/${saleArtworkId}`, null),
+    saleArtworkCalculatedCostLoader: gravityLoader<GravityCalculatedCostResponse, { saleId: string, saleArtworkId: string, bidAmountMinor: number }>(
+      ({ saleId, saleArtworkId, bidAmountMinor }) =>
+        `sale/${saleId}/sale_artwork/${saleArtworkId}/calculated_cost?bid_amount_cents=${bidAmountMinor}`
+    ),
     saleLoader: batchSaleLoader,
     salesLoader: batchSalesLoader,
     salesLoaderWithHeaders: gravityLoader('sales', {}, { headers: true }),

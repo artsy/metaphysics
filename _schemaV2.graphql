@@ -1584,28 +1584,10 @@ type BuyersPremium {
   percent: Float
 }
 
-type BuyersPremiumAmount {
-  # A formatted price with various currency formatting options.
-  amount(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-
-  # An amount of money expressed in cents.
-  cents: Float
-
-  # A pre-formatted price.
-  display: String
-}
-
 type CalculatedCost {
-  buyersPremium: BuyersPremiumAmount
-  subtotal: SubtotalAmount
+  bidAmount: Money
+  buyersPremium: Money
+  subtotal: Money
 }
 
 type City {
@@ -4009,7 +3991,7 @@ type FollowArtistPayload {
 
     # Number of results to return
     size: Int
-  ): PopularArtists
+  ): [Artist]
   clientMutationId: String
 }
 
@@ -4377,6 +4359,23 @@ type HighestBid {
   ): String
   cents: Int
   display: String
+}
+
+type Highlights {
+  # Popular artists
+  popularArtists(
+    # If true, will exclude followed artists for the user
+    excludeFollowedArtists: Boolean
+
+    # Exclude these ids from results, may result in all artists being excluded.
+    excludeArtistIDs: [String]
+
+    # Number of results to return
+    size: Int
+  ): [Artist]
+
+  # List of curated genes that are broad collecting. (Meant for e.g. suggestions in on-boarding.)
+  broadCollectingGenes: [Gene]
 }
 
 type HomePage {
@@ -5533,10 +5532,6 @@ enum PartnersSortType {
 
 union PartnerTypes = Partner | ExternalPartner
 
-type PopularArtists {
-  artists: [Artist]
-}
-
 type PriceRange {
   display: String
   minPrice: Money
@@ -5583,11 +5578,77 @@ type Query {
     id: String!
   ): Artwork
 
+  # Artworks Elastic Search results
+  artworksConnection(
+    acquireable: Boolean
+    offerable: Boolean
+    aggregationPartnerCities: [String]
+    aggregations: [ArtworkAggregation]
+    artistID: String
+    artistIDs: [String]
+    atAuction: Boolean
+    attributionClass: [String]
+    color: String
+    dimensionRange: String
+    extraAggregationGeneIDs: [String]
+    includeArtworksByFollowedArtists: Boolean
+    includeMediumFilterInAggregation: Boolean
+    inquireableOnly: Boolean
+    forSale: Boolean
+    geneID: String
+    geneIDs: [String]
+    height: String
+    width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
+    # A string from the list of allocations, or * to denote all mediums
+    medium: String
+    period: String
+    periods: [String]
+    majorPeriods: [String]
+    partnerID: ID
+    partnerCities: [String]
+    priceRange: String
+    page: Int
+    saleID: ID
+    size: Int
+    sort: String
+    tagID: String
+    keyword: String
+
+    # When true, will only return exact keyword match
+    keywordMatchExact: Boolean
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FilterArtworksConnection
+
   # An Artist
   artist(
     # The slug or ID of the Artist
     id: String!
   ): Artist
+
+  # A list of Artists
+  artists(
+    #
+    #         Only return artists matching specified ids.
+    #         Accepts list of ids.
+    #
+    ids: [String]
+
+    #
+    #         Only return artists matching specified slugs.
+    #         Accepts list of slugs. (e.g. 'andy-warhol', 'banksy')
+    #
+    slugs: [String]
+    page: Int = 1
+    size: Int
+    sort: ArtistSorts
+  ): [Artist]
 
   # A city-based entry point for local discovery
   city(
@@ -5607,6 +5668,18 @@ type Query {
     # The slug or ID of the Gene
     id: String!
   ): Gene
+
+  # A list of Genes
+  genes(
+    size: Int
+
+    #
+    #         Only return genes matching specified slugs.
+    #         Accepts list of slugs.
+    #
+    slugs: [String]
+  ): [Gene]
+  highlights: Highlights
 
   # Home screen content
   homePage: HomePage
@@ -5681,6 +5754,10 @@ type Query {
 
   # Fields related to internal systems.
   system: System
+  tag(
+    # The slug or ID of the Tag
+    id: String!
+  ): Tag
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
@@ -5997,7 +6074,7 @@ type SaleArtwork implements Node & ArtworkEdgeInterface {
   sale: Sale
   calculatedCost(
     # Max bid price for the sale artwork
-    bidAmountCents: Int
+    bidAmountMinor: Int!
   ): CalculatedCost
 
   # Currency symbol (e.g. "$")
@@ -6778,25 +6855,6 @@ enum SubmissionStateAggregation {
   REJECTED
 }
 
-type SubtotalAmount {
-  # A formatted price with various currency formatting options.
-  amount(
-    decimal: String = "."
-
-    # Allows control of symbol position (%v = value, %s = symbol)
-    format: String = "%s%v"
-    precision: Int = 0
-    symbol: String
-    thousand: String = ","
-  ): String
-
-  # An amount of money expressed in cents.
-  cents: Float
-
-  # A pre-formatted price.
-  display: String
-}
-
 type System {
   # The schema for difference micro-service settings
   services: Services
@@ -6835,6 +6893,54 @@ type Tag implements Node {
   href: String
   image: Image
   count: Int
+
+  # Artworks Elastic Search results
+  filterArtworksConnection(
+    acquireable: Boolean
+    offerable: Boolean
+    aggregationPartnerCities: [String]
+    aggregations: [ArtworkAggregation]
+    artistID: String
+    artistIDs: [String]
+    atAuction: Boolean
+    attributionClass: [String]
+    color: String
+    dimensionRange: String
+    extraAggregationGeneIDs: [String]
+    includeArtworksByFollowedArtists: Boolean
+    includeMediumFilterInAggregation: Boolean
+    inquireableOnly: Boolean
+    forSale: Boolean
+    geneID: String
+    geneIDs: [String]
+    height: String
+    width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
+    # A string from the list of allocations, or * to denote all mediums
+    medium: String
+    period: String
+    periods: [String]
+    majorPeriods: [String]
+    partnerID: ID
+    partnerCities: [String]
+    priceRange: String
+    page: Int
+    saleID: ID
+    size: Int
+    sort: String
+    tagID: String
+    keyword: String
+
+    # When true, will only return exact keyword match
+    keywordMatchExact: Boolean
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FilterArtworksConnection
 }
 
 type TrendingArtists {
@@ -7047,11 +7153,77 @@ type Viewer {
     id: String!
   ): Artwork
 
+  # Artworks Elastic Search results
+  artworksConnection(
+    acquireable: Boolean
+    offerable: Boolean
+    aggregationPartnerCities: [String]
+    aggregations: [ArtworkAggregation]
+    artistID: String
+    artistIDs: [String]
+    atAuction: Boolean
+    attributionClass: [String]
+    color: String
+    dimensionRange: String
+    extraAggregationGeneIDs: [String]
+    includeArtworksByFollowedArtists: Boolean
+    includeMediumFilterInAggregation: Boolean
+    inquireableOnly: Boolean
+    forSale: Boolean
+    geneID: String
+    geneIDs: [String]
+    height: String
+    width: String
+
+    # When true, will only return `marketable` works (not nude or provocative).
+    marketable: Boolean
+
+    # A string from the list of allocations, or * to denote all mediums
+    medium: String
+    period: String
+    periods: [String]
+    majorPeriods: [String]
+    partnerID: ID
+    partnerCities: [String]
+    priceRange: String
+    page: Int
+    saleID: ID
+    size: Int
+    sort: String
+    tagID: String
+    keyword: String
+
+    # When true, will only return exact keyword match
+    keywordMatchExact: Boolean
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FilterArtworksConnection
+
   # An Artist
   artist(
     # The slug or ID of the Artist
     id: String!
   ): Artist
+
+  # A list of Artists
+  artists(
+    #
+    #         Only return artists matching specified ids.
+    #         Accepts list of ids.
+    #
+    ids: [String]
+
+    #
+    #         Only return artists matching specified slugs.
+    #         Accepts list of slugs. (e.g. 'andy-warhol', 'banksy')
+    #
+    slugs: [String]
+    page: Int = 1
+    size: Int
+    sort: ArtistSorts
+  ): [Artist]
 
   # A city-based entry point for local discovery
   city(
@@ -7071,6 +7243,18 @@ type Viewer {
     # The slug or ID of the Gene
     id: String!
   ): Gene
+
+  # A list of Genes
+  genes(
+    size: Int
+
+    #
+    #         Only return genes matching specified slugs.
+    #         Accepts list of slugs.
+    #
+    slugs: [String]
+  ): [Gene]
+  highlights: Highlights
 
   # Home screen content
   homePage: HomePage
@@ -7145,4 +7329,8 @@ type Viewer {
 
   # Fields related to internal systems.
   system: System
+  tag(
+    # The slug or ID of the Tag
+    id: String!
+  ): Tag
 }

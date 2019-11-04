@@ -2,7 +2,7 @@ import { runQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
 import { find } from "lodash"
 
-xdescribe("Artists", () => {
+describe("Artists", () => {
   it("returns a list of artists", async () => {
     const query = gql`
       {
@@ -11,7 +11,7 @@ xdescribe("Artists", () => {
         }
       }
     `
-    const artistsLoader = ({ page, size }) => {
+    const artistsLoader = ({ page, size }: any) => {
       if (page === 1 && size === 1) {
         return Promise.resolve([
           {
@@ -29,7 +29,7 @@ xdescribe("Artists", () => {
   })
 
   it("returns a list of artists matching array of ids", async () => {
-    const artistsLoader = ({ ids }) => {
+    const artistsLoader = ({ ids }: any) => {
       if (ids) {
         return Promise.resolve(ids.map(_id => ({ _id })))
       }

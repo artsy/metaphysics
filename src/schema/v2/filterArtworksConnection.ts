@@ -399,21 +399,27 @@ const filterArtworksConnectionTypeFactory = (
       before,
       size,
       include_artworks_by_followed_artists,
-      aggregations,
+      aggregations = [],
     } = options
 
     // Check if connection args missing.
-    if (first == null && last == null && size == null)
+    if (first == null && last == null && size == null) {
       throw new Error("You must pass either `first`, `last` or `size`.")
+    }
 
     const requestedPersonalizedAggregation = aggregations.includes(
       "followed_artists"
     )
-    const gravityOptions = Object.assign(
-      {},
-      convertConnectionArgsToGravityArgs(options),
-      mapRootToFilterParams(root)
-    )
+
+    if (!aggregations.includes("total")) {
+      aggregations.push("total")
+    }
+
+    const gravityOptions = {
+      ...convertConnectionArgsToGravityArgs(options),
+      ...mapRootToFilterParams(root),
+      aggregations,
+    }
 
     // Support queries that show all mediums using the medium param.
     // If you specify "*" it results in metaphysics removing the query option
@@ -444,7 +450,9 @@ const filterArtworksConnectionTypeFactory = (
 
     return loader(gravityOptions).then(({ aggregations, hits }) => {
       if (!aggregations || !aggregations.total) {
-        throw new Error("This query must contain the total aggregation")
+        throw new Error(
+          "Expected filter results to contain a `total` aggregation"
+        )
       }
 
       const totalPages = computeTotalPages(
@@ -493,7 +501,7 @@ const filterArtworksConnectionTypeFactory = (
 
 export function filterArtworksConnection(primaryKey?: string) {
   return filterArtworksConnectionTypeFactory(
-    primaryKey ? ({ id }) => ({ [primaryKey]: id }) : () => ({})
+    primaryKey ? ({ id, _id }) => ({ [primaryKey]: _id || id }) : () => ({})
   )
 }
 
