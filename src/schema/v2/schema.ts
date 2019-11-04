@@ -27,7 +27,6 @@ import Me from "./me"
 import System from "./system"
 
 // import Status from "./status"
-// import Artworks from "./artworks"
 import Artists from "./artists"
 // import Collection from "./collection"
 // import { CreditCard } from "./credit_card"
@@ -42,7 +41,7 @@ import Genes from "./genes"
 // import Partner from "./partner"
 // import Partners from "./partners"
 // import FilterPartners from "./filter_partners"
-// import { filterArtworksConnection } from "./filterArtworksConnection"
+import { filterArtworksConnection } from "./filterArtworksConnection"
 // import PartnerCategory from "./partner_category"
 // import PartnerCategories from "./partner_categories"
 // import SuggestedGenes from "./suggested_genes"
@@ -111,7 +110,7 @@ const rootFields = {
   // articles: Articles,
   artwork: Artwork,
   // artworkVersion: ArtworkVersionResolver,
-  // artworks: Artworks,
+  artworksConnection: filterArtworksConnection(),
   artist: Artist,
   artists: Artists,
   // causalityJWT: CausalityJWT, // TODO: Perhaps this should go into `system` ?
