@@ -10,11 +10,15 @@ import {
 } from "graphql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
 import { ResolverContext } from "types/graphql"
+import * as _filterArtworksConnection from "./filterArtworksConnection"
 
 export const TagType = new GraphQLObjectType<any, ResolverContext>({
   name: "Tag",
   interfaces: [NodeInterface],
   fields: () => {
+    const {
+      filterArtworksConnection,
+    } = require("./filterArtworksConnection") as typeof _filterArtworksConnection
     return {
       ...SlugAndInternalIDFields,
       cached,
@@ -32,11 +36,12 @@ export const TagType = new GraphQLObjectType<any, ResolverContext>({
       count: {
         type: GraphQLInt,
       },
+      filterArtworksConnection: filterArtworksConnection("tag_id"),
     }
   },
 })
 
-const Tag: GraphQLFieldConfig<void, ResolverContext> = {
+export const TagField: GraphQLFieldConfig<void, ResolverContext> = {
   type: TagType,
   args: {
     id: {
@@ -47,7 +52,11 @@ const Tag: GraphQLFieldConfig<void, ResolverContext> = {
   resolve: (_root, { id }, { tagLoader }, info) => {
     // If you are just making an artworks call ( e.g. if paginating )
     // do not make a Gravity call for the gene data.
-    const fieldsNotRequireLoader = ["filteredArtworks", "id", "internalID"]
+    const fieldsNotRequireLoader = [
+      "filterArtworksConnection",
+      "id",
+      "internalID",
+    ]
     if (includesFieldsOtherThanSelectionSet(info, fieldsNotRequireLoader)) {
       return tagLoader(id).then(tag => {
         return Object.assign(tag, { _type: "Tag" }, {})
@@ -59,5 +68,3 @@ const Tag: GraphQLFieldConfig<void, ResolverContext> = {
     return { id, _type: "Tag" }
   },
 }
-
-export default Tag
