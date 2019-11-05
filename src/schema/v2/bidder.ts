@@ -9,7 +9,7 @@ import { ResolverContext } from "types/graphql"
 import date from "./fields/date"
 import { InternalIDFields, NodeInterface } from "./object_identification"
 import Sale from "./sale/index"
-import { User } from "./user"
+import { UserField } from "./user"
 
 const BidderType = new GraphQLObjectType<any, ResolverContext>({
   name: "Bidder",
@@ -25,7 +25,7 @@ const BidderType = new GraphQLObjectType<any, ResolverContext>({
       resolve: ({ qualified_for_bidding }) => qualified_for_bidding,
     },
     user: {
-      type: User.type,
+      type: UserField.type,
       resolve: ({ user }, _, { userByIDLoader }) => userByIDLoader(user.id),
     },
     sale: {

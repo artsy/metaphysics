@@ -59,7 +59,7 @@ export const UserType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-export const User: GraphQLFieldConfig<void, ResolverContext> = {
+export const UserField: GraphQLFieldConfig<void, ResolverContext> = {
   type: UserType,
   args: {
     email: {

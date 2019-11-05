@@ -48,7 +48,7 @@ import { filterArtworksConnection } from "./filterArtworksConnection"
 import { TagField } from "./tag"
 // import TrendingArtists from "./artists/trending"
 // import Users from "./users"
-// import { User } from "./user"
+import { UserField } from "./user"
 // import MatchGene from "./match/gene"
 // import CausalityJWT from "./causality_jwt"
 // import SaleArtwork from "./sale_artwork"
@@ -152,7 +152,7 @@ const rootFields = {
 
   tag: TagField,
   // trendingArtists: TrendingArtists,
-  // user: User,
+  user: UserField,
   // users: Users,
   // popularArtists: PopularArtists,
 }

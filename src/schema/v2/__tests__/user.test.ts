@@ -1,7 +1,8 @@
 import { runAuthenticatedQuery } from "schema/v2/test/utils"
 import gql from "lib/gql"
+import { HTTPError } from "lib/HTTPError"
 
-xdescribe("User", () => {
+describe("User", () => {
   it("returns true if a user exist", async () => {
     const foundUser = {
       id: "123456",
@@ -36,8 +37,7 @@ xdescribe("User", () => {
 
   it("returns false if user is not found by email", async () => {
     const notFoundUser = { error: "User Not Found" }
-    const error = new Error(notFoundUser)
-    error.statusCode = 404
+    const error = new HTTPError(notFoundUser.error, 404)
     const userByEmailLoader = data => {
       if (data) {
         return Promise.resolve(notFoundUser)
