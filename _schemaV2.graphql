@@ -5764,6 +5764,13 @@ type Query {
     # The slug or ID of the Tag
     id: String!
   ): Tag
+  user(
+    # Email to search for user by
+    email: String
+
+    # ID of the user
+    id: String
+  ): User
 
   # A wildcard used to support complex root queries in Relay
   viewer: Viewer
@@ -7341,4 +7348,11 @@ type Viewer {
     # The slug or ID of the Tag
     id: String!
   ): Tag
+  user(
+    # Email to search for user by
+    email: String
+
+    # ID of the user
+    id: String
+  ): User
 }
