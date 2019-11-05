@@ -85,6 +85,7 @@ describe("Search", () => {
     context = {
       artistLoader: () => Promise.resolve({ hometown: "London, UK" }),
       artworkLoader: () => Promise.resolve({ title: "Self Portrait" }),
+      geneLoader: () => Promise.resolve({ name: "Minimalism" }),
     }
 
     searchResponse = Promise.resolve({
@@ -297,6 +298,32 @@ describe("Search", () => {
 
       expect(artworkNode.__typename).toBe("Artwork")
       expect(artworkNode.title).toBe("Self Portrait")
+    })
+  })
+
+  it("fetches gene if Gene-specific attributes are requested", () => {
+    const query = `
+      {
+        searchConnection(query: "minimalism", first: 10) {
+          edges {
+            node {
+              __typename
+
+              ... on Gene {
+                name
+              }
+            }
+          }
+        }
+      }
+    `
+    context.searchLoader = jest.fn().mockImplementation(() => searchResponse)
+
+    return runQuery(query, context).then(data => {
+      const geneNode = data!.searchConnection.edges[5].node
+
+      expect(geneNode.__typename).toBe("Gene")
+      expect(geneNode.name).toBe("Minimalism")
     })
   })
 })

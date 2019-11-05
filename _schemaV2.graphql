@@ -4222,7 +4222,10 @@ type GeminiEntry {
   token: String!
 }
 
-type Gene implements Node {
+type Gene implements Node & Searchable {
+  displayLabel: String
+  imageUrl: String
+
   # A globally unique ID.
   id: ID!
 
