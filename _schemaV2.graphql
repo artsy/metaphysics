@@ -724,6 +724,7 @@ type Artist implements Node & Searchable & EntityWithFilterArtworksConnectionInt
   statuses: ArtistStatuses
   highlights: ArtistHighlights
   years: String
+  marketingCollections(size: Int): [MarketingCollection]
 }
 
 type ArtistArtworkGrid implements ArtworkContextGrid {
@@ -4741,6 +4742,46 @@ type MarketingCollection {
   # IDs of artists that should be excluded from Featured Artists for this collection
   featuredArtistExclusionIds: [String!]
   relatedCollections: [MarketingCollection!]!
+  artworksConnection(
+    acquireable: Boolean
+    offerable: Boolean
+    aggregationPartnerCities: [String]
+    aggregations: [ArtworkAggregation]
+    artistID: String
+    artistIDs: [String]
+    atAuction: Boolean
+    attributionClass: [String]
+    color: String
+    dimensionRange: String
+    extraAggregationGeneIDs: [String]
+    includeArtworksByFollowedArtists: Boolean
+    includeMediumFilterInAggregation: Boolean
+    inquireableOnly: Boolean
+    forSale: Boolean
+    geneID: String
+    geneIDs: [String]
+    height: String
+    width: String
+    marketable: Boolean
+    medium: String
+    period: String
+    periods: [String]
+    majorPeriods: [String]
+    partnerID: ID
+    partnerCities: [String]
+    priceRange: String
+    page: Int
+    saleID: ID
+    size: Int
+    sort: String
+    tagID: String
+    keyword: String
+    keywordMatchExact: Boolean
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): FilterArtworksConnection
 }
 
 type MarketingCollectionCategory {
