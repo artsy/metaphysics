@@ -10,7 +10,10 @@ import { setVersion } from "schema/v2/image/normalize"
 import Fair from "schema/v2/fair"
 import Sale from "schema/v2/sale"
 import SaleArtwork from "schema/v2/sale_artwork"
-import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
+import {
+  connectionWithCursorInfo,
+  PageCursorsType,
+} from "schema/v2/fields/pagination"
 import ShowSorts from "schema/v2/sorts/show_sorts"
 import Partner from "schema/v2/partner"
 import Context from "./context"
@@ -900,6 +903,7 @@ export const ArtworkEdgeInterface = new GraphQLInterfaceType({
 export const ArtworkConnectionInterface = new GraphQLInterfaceType({
   name: "ArtworkConnectionInterface",
   fields: {
+    pageCursors: { type: new GraphQLNonNull(PageCursorsType) },
     pageInfo: { type: new GraphQLNonNull(PageInfoType) },
     edges: { type: new GraphQLList(ArtworkEdgeInterface) },
   },

@@ -29,6 +29,7 @@ import {
   computeTotalPages,
   createPageCursors,
   pageToCursor,
+  PageCursorsType,
 } from "./fields/pagination"
 
 import Artwork, {
@@ -47,6 +48,7 @@ import { TagType } from "./tag"
 import { GeneType } from "./gene"
 import numeral from "./fields/numeral"
 import { ArtworkType } from "./artwork"
+import { deprecate } from "lib/deprecation"
 
 interface ContextSource {
   context_type: GraphQLObjectType<any, ResolverContext>
@@ -261,7 +263,9 @@ export const FilterArtworksFields = () => {
       },
     },
     counts: FilterArtworksCounts,
+    // TODO: Remove after Reaction v2 migration, if unused in Emission.
     hits: {
+      deprecationReason: deprecate({ inVersion: 2, preferUsageOf: "edges" }),
       description: "Artwork results.",
       type: new GraphQLList(Artwork.type),
     },
@@ -326,6 +330,9 @@ const filterArtworksConnectionType = connectionDefinitions({
           JSON.stringify(filterOptions, Object.keys(filterOptions).sort())
         )
       },
+    },
+    pageCursors: {
+      type: new GraphQLNonNull(PageCursorsType),
     },
   },
   connectionInterfaces: [NodeInterface, ArtworkConnectionInterface],

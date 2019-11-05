@@ -164,7 +164,7 @@ export function connectionWithCursorInfo(
     ...config,
     connectionFields: {
       pageCursors: {
-        type: PageCursorsType,
+        type: new GraphQLNonNull(PageCursorsType),
         resolve: ({ pageCursors }) => pageCursors,
       },
       totalCount: {

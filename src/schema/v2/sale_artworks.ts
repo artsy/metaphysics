@@ -6,7 +6,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql"
-import { connectionDefinitions, connectionFromArraySlice } from "graphql-relay"
+import { connectionFromArraySlice } from "graphql-relay"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { map, omit } from "lodash"
 import { pageable } from "relay-cursor-paging"
@@ -19,6 +19,7 @@ import {
   SaleArtworksAggregationResultsType,
 } from "./aggregations/filter_sale_artworks_aggregation"
 import { ArtworkType, ArtworkConnectionInterface } from "./artwork"
+import { connectionWithCursorInfo } from "./fields/pagination"
 
 const DEFAULTS = {
   aggregations: ["total"],
@@ -53,7 +54,7 @@ const SaleArtworkCounts = {
   resolve: artist => artist,
 }
 
-const SaleArtworksConnectionType = connectionDefinitions({
+const SaleArtworksConnectionType = connectionWithCursorInfo({
   name: "SaleArtworks",
   nodeType: ArtworkType,
   edgeType: SaleArtworkType,
