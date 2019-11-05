@@ -17,6 +17,9 @@ import {
 } from "graphql"
 import { ResolverContext } from "types/graphql"
 import { includesFieldsOtherThanSelectionSet } from "lib/hasFieldSelection"
+import { Searchable } from "./searchable"
+import { setVersion } from "./image/normalize"
+import { getDefault } from "./image"
 
 const SUBJECT_MATTER_MATCHES = [
   "content",
@@ -32,10 +35,20 @@ const SUBJECT_MATTER_REGEX = new RegExp(SUBJECT_MATTER_MATCHES.join("|"), "i")
 
 export const GeneType = new GraphQLObjectType<any, ResolverContext>({
   name: "Gene",
-  interfaces: [NodeInterface],
+  interfaces: [NodeInterface, Searchable],
   fields: () => {
     const { filterArtworksConnection } = require("./filterArtworksConnection")
     return {
+      // Searchable
+      displayLabel: {
+        type: GraphQLString,
+        resolve: ({ display_name }) => display_name,
+      },
+      imageUrl: {
+        type: GraphQLString,
+        resolve: ({ images }) => setVersion(getDefault(images), ["square"]),
+      },
+      // Rest
       ...SlugAndInternalIDFields,
       cached,
       artistsConnection: {
