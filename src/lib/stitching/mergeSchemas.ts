@@ -7,7 +7,10 @@ import {
   transformsForExchange,
 } from "lib/stitching/exchange/schema"
 import { executableKawsSchema } from "lib/stitching/kaws/schema"
-import { kawsStitchingEnvironment } from "lib/stitching/kaws/stitching"
+import {
+  kawsStitchingEnvironmentV1,
+  kawsStitchingEnvironmentV2,
+} from "lib/stitching/kaws/stitching"
 import config from "config"
 
 import { GraphQLSchema } from "graphql"
@@ -76,7 +79,9 @@ export const incrementalMergeSchemas = (
   // TODO: In v2 we dropped the legacy style filter artworks, so this needs to
   //       be redone with the new connection.
   if (version === 1) {
-    useStitchingEnvironment(kawsStitchingEnvironment(localSchema, kawsSchema))
+    useStitchingEnvironment(kawsStitchingEnvironmentV1(localSchema, kawsSchema))
+  } else {
+    useStitchingEnvironment(kawsStitchingEnvironmentV2(localSchema, kawsSchema))
   }
 
   // The order should only matter in that extension schemas come after the

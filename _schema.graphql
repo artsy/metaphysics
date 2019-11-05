@@ -7501,8 +7501,7 @@ type MarketingCollection {
     gene_ids: [String]
     height: String
     width: String
-
-    # A string from the list of allocations, or * to denote all mediums
+    marketable: Boolean
     medium: String
     period: String
     periods: [String]
@@ -7516,6 +7515,7 @@ type MarketingCollection {
     sort: String
     tag_id: String
     keyword: String
+    keyword_match_exact: Boolean
   ): FilterArtworks
 }
 
