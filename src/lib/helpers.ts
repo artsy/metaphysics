@@ -93,8 +93,8 @@ export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
   const gravityArgs = omit(options, ["first", "after", "last", "before"])
   return {
     ...gravityArgs,
+    size: Number.isInteger(size) ? size : gravityArgs.size,
     page,
-    size,
     offset,
   } as any
 }
