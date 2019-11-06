@@ -7,7 +7,7 @@ import {
   GraphQLFieldConfigArgumentMap,
 } from "graphql"
 import ShowSorts from "schema/v2/sorts/show_sorts"
-import { merge, defaults, reject, includes, omit } from "lodash"
+import { merge, defaults, reject, includes } from "lodash"
 import { createPageCursors } from "schema/v2/fields/pagination"
 import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import { connectionFromArraySlice } from "graphql-relay"
@@ -72,15 +72,29 @@ export const ShowsConnectionField: GraphQLFieldConfig<
   type: ShowsConnection.connectionType,
   args: pageable(ShowArgs),
   resolve: ({ id }, args, { relatedShowsLoader }) => {
+    const gravityArgs = {
+      active: args.active,
+      at_a_fair: args.atAFair,
+      is_reference: args.isReference,
+      size: args.size,
+      solo_show: args.soloShow,
+      status: args.status,
+      top_tier: args.topTier,
+      visible_to_public: args.visibleToPublic,
+      sort: args.sort,
+    }
     const pageOptions = convertConnectionArgsToGravityArgs(args)
     const { page, size, offset } = pageOptions
-    const gravityArgs = omit(args, ["first", "after", "last", "before"])
     return relatedShowsLoader(
-      defaults(gravityArgs, pageOptions, {
-        artist_id: id,
-        sort: "-end_at",
-        total_count: true,
-      })
+      defaults(
+        gravityArgs,
+        { page, size },
+        {
+          artist_id: id,
+          sort: "-end_at",
+          total_count: true,
+        }
+      )
     )
       .then(({ body, headers = {} }) => {
         const allowListedShows = showsWithDenyListedPartnersRemoved(body)
