@@ -55,7 +55,7 @@ export const incrementalMergeSchemas = (
     schemas.push(exchangeSchema)
 
     useStitchingEnvironment(
-      exchangeStitchingEnvironment(localSchema, exchangeSchema)
+      exchangeStitchingEnvironment({ localSchema, exchangeSchema, version })
     )
   }
 

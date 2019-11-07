@@ -29,7 +29,7 @@ import System from "./system"
 // import Status from "./status"
 import Artists from "./artists"
 // import Collection from "./collection"
-// import { CreditCard } from "./credit_card"
+import { CreditCard } from "./credit_card"
 // import ExternalPartner from "./external_partner"
 // import Fairs from "./fairs"
 import Genes from "./genes"
@@ -116,7 +116,7 @@ const rootFields = {
   // causalityJWT: CausalityJWT, // TODO: Perhaps this should go into `system` ?
   city: City,
   // collection: Collection,
-  // creditCard: CreditCard,
+  creditCard: CreditCard,
   // externalPartner: ExternalPartner,
   fair: Fair,
   // fairs: Fairs,

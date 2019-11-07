@@ -20,10 +20,11 @@ export const getExchangeTransformedSchema = async () => {
 export const getExchangeStitchedSchema = async () => {
   if (!stitchedSchema) {
     const cachedSchema = await getExchangeTransformedSchema()
-    stitchedSchema = await exchangeStitchingEnvironment(
+    stitchedSchema = exchangeStitchingEnvironment({
       localSchema,
-      cachedSchema
-    )
+      exchangeSchema: cachedSchema,
+      version: 1,
+    })
   }
   return stitchedSchema
 }
