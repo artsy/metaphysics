@@ -124,7 +124,7 @@ export const runQueryMerged = async (
   const { incrementalMergeSchemas } = require("lib/stitching/mergeSchemas")
 
   if (!mergedSchema) {
-    mergedSchema = await incrementalMergeSchemas(localSchema, {
+    mergedSchema = await incrementalMergeSchemas(localSchema, 1, {
       ENABLE_COMMERCE_STITCHING: true,
       ENABLE_CONSIGNMENTS_STITCHING: true,
     })

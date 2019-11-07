@@ -85,13 +85,18 @@ export const markdownToText = str => {
 
 export const convertConnectionArgsToGravityArgs = <T extends CursorPageable>(
   options: T
-) => {
+): { page: number; size: number; offset: number } & T => {
   const { limit: size, offset } = getPagingParameters(options)
   // If a size of 0 explicitly requested, it doesn't really matter what
   // the page is.
   const page = size ? Math.round((size + offset) / size) : 1
   const gravityArgs = omit(options, ["first", "after", "last", "before"])
-  return Object.assign({}, { page, size, offset }, gravityArgs)
+  return {
+    ...gravityArgs,
+    size: Number.isInteger(size) ? size : gravityArgs.size,
+    page,
+    offset,
+  } as any
 }
 
 export const removeNulls = object => {

@@ -23,16 +23,23 @@ export class SearchResolver {
   }
 
   fetch(searchResultItem) {
-    const { artistLoader, artworkLoader } = this.context
+    const { artistLoader, artworkLoader, geneLoader } = this.context
     const loaderMapping = {
       Artist: artistLoader,
       Artwork: artworkLoader,
+      Gene: geneLoader,
     }
 
     const loader = loaderMapping[searchResultItem.label]
 
     if (loader) {
       return loader(searchResultItem.id)
+    } else {
+      throw new Error(
+        `[SearchResolver] No loader configured for model type: ${
+          searchResultItem.label
+        }`
+      )
     }
   }
 

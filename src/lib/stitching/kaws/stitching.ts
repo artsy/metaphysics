@@ -1,147 +1,206 @@
-import { GraphQLSchema } from "graphql"
+import {
+  GraphQLSchema,
+  GraphQLFieldConfigArgumentMap,
+  GraphQLType,
+  isScalarType,
+  isEnumType,
+  isListType,
+} from "graphql"
+import { filterArtworksArgs as filterArtworksArgsV1 } from "schema/v1/filter_artworks"
+import { filterArtworksArgs as filterArtworksArgsV2WithoutPageable } from "schema/v2/filterArtworksConnection"
+import { pageable } from "relay-cursor-paging"
 
-export const kawsStitchingEnvironment = (
+export const kawsStitchingEnvironmentV1 = (
   localSchema: GraphQLSchema,
   kawsSchema: GraphQLSchema & { transforms: any }
-) => ({
-  // The SDL used to declare how to stitch an object
-  extensionSchema: `
+) => {
+  return {
+    // The SDL used to declare how to stitch an object
+    extensionSchema: `
     extend type Artist {
       marketingCollections(size: Int): [MarketingCollection]
     }
     extend type MarketingCollection {
-      artworks(
-        acquireable: Boolean
-        offerable: Boolean
-        aggregation_partner_cities: [String]
-        aggregations: [ArtworkAggregation]
-        artist_id: String
-        artist_ids: [String]
-        at_auction: Boolean
-        attribution_class: [String]
-        color: String
-        dimension_range: String
-        extra_aggregation_gene_ids: [String]
-        include_artworks_by_followed_artists: Boolean
-        include_medium_filter_in_aggregation: Boolean
-        inquireable_only: Boolean
-        for_sale: Boolean
-        gene_id: String
-        gene_ids: [String]
-        height: String
-        width: String
-
-        # A string from the list of allocations, or * to denote all mediums
-        medium: String
-        period: String
-        periods: [String]
-        major_periods: [String]
-        partner_id: ID
-        partner_cities: [String]
-        price_range: String
-        page: Int
-        sale_id: ID
-        size: Int
-        sort: String
-        tag_id: String
-        keyword: String
-      ): FilterArtworks
+      artworks(${argsToSDL(filterArtworksArgsV1).join("\n")}): FilterArtworks
     }
   `,
 
-  // Resolvers for the above, this passes in ALL potential parameters
-  // from KAWS into filter_artworks to allow end users to dynamically
-  // modify query filters using an admin tool
-  resolvers: {
-    Artist: {
-      marketingCollections: {
-        fragment: `
+    // Resolvers for the above, this passes in ALL potential parameters
+    // from KAWS into filter_artworks to allow end users to dynamically
+    // modify query filters using an admin tool
+    resolvers: {
+      Artist: {
+        marketingCollections: {
+          fragment: `
           ... on Artist {
             _id
           }
         `,
-        resolve: ({ _id: artistID }, { size }, context, info) => {
-          return info.mergeInfo.delegateToSchema({
-            schema: kawsSchema,
-            operation: "query",
-            fieldName: "marketingCollections",
+          resolve: ({ _id: artistID }, { size }, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: kawsSchema,
+              operation: "query",
+              fieldName: "marketingCollections",
 
-            args: {
-              artistID,
-              size,
-            },
-            context,
-            info,
-          })
+              args: {
+                artistID,
+                size,
+              },
+              context,
+              info,
+            })
+          },
         },
       },
-    },
-    MarketingCollection: {
-      artworks: {
-        fragment: `
+      MarketingCollection: {
+        artworks: {
+          fragment: `
           fragment MarketingCollectionQuery on MarketingCollection {
             query {
-              acquireable
-              offerable
-              aggregations
-              artist_ids
-              artist_id
-              at_auction
-              color
-              dimension_range
-              extra_aggregation_gene_ids
-              include_artworks_by_followed_artists
-              include_medium_filter_in_aggregation
-              inquireable_only
-              for_sale
-              gene_id
-              gene_ids
-              height
-              width
-              medium
-              period
-              periods
-              major_periods
-              partner_id
-              partner_cities
-              price_range
-              page
-              sale_id
-              size
-              sort
-              tag_id
-              keyword
+              ${Object.keys(filterArtworksArgsV1).join("\n")}
             }
           }
         `,
-        resolve: (parent, _args, context, info) => {
-          const query = parent.query
-          const hasKeyword = Boolean(parent.query.keyword)
+          resolve: (parent, _args, context, info) => {
+            const query = parent.query
+            const hasKeyword = Boolean(parent.query.keyword)
 
-          const existingLoader =
-            context.unauthenticatedLoaders.filterArtworksLoader
-          const newLoader = loaderParams => {
-            return existingLoader.call(null, loaderParams, {
-              requestThrottleMs: 1000 * 60 * 60,
+            const existingLoader =
+              context.unauthenticatedLoaders.filterArtworksLoader
+            const newLoader = loaderParams => {
+              return existingLoader.call(null, loaderParams, {
+                requestThrottleMs: 1000 * 60 * 60,
+              })
+            }
+
+            // TODO: Should this really modify the context in place?
+            context.unauthenticatedLoaders.filterArtworksLoader = newLoader
+
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "filter_artworks",
+              args: {
+                ...query,
+                keyword_match_exact: hasKeyword,
+                ..._args,
+              },
+              context,
+              info,
             })
-          }
-
-          context.unauthenticatedLoaders.filterArtworksLoader = newLoader
-
-          return info.mergeInfo.delegateToSchema({
-            schema: localSchema,
-            operation: "query",
-            fieldName: "filter_artworks",
-            args: {
-              ...query,
-              keyword_match_exact: hasKeyword,
-              ..._args,
-            },
-            context,
-            info,
-          })
+          },
         },
       },
     },
-  },
-})
+  }
+}
+
+export const kawsStitchingEnvironmentV2 = (
+  localSchema: GraphQLSchema,
+  kawsSchema: GraphQLSchema & { transforms: any }
+) => {
+  const filterArtworksArgsV2 = pageable(filterArtworksArgsV2WithoutPageable)
+  return {
+    // The SDL used to declare how to stitch an object
+    extensionSchema: `
+    extend type Artist {
+      marketingCollections(size: Int): [MarketingCollection]
+    }
+    extend type MarketingCollection {
+      artworksConnection(${argsToSDL(filterArtworksArgsV2).join(
+        "\n"
+      )}): FilterArtworksConnection
+    }
+  `,
+
+    // Resolvers for the above, this passes in ALL potential parameters
+    // from KAWS into filter_artworks to allow end users to dynamically
+    // modify query filters using an admin tool
+    resolvers: {
+      Artist: {
+        marketingCollections: {
+          fragment: `
+          ... on Artist {
+            _id
+          }
+        `,
+          resolve: ({ _id: artistID }, { size }, context, info) => {
+            return info.mergeInfo.delegateToSchema({
+              schema: kawsSchema,
+              operation: "query",
+              fieldName: "marketingCollections",
+
+              args: {
+                artistID,
+                size,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
+      MarketingCollection: {
+        artworksConnection: {
+          fragment: `
+          fragment MarketingCollectionQuery on MarketingCollection {
+            query {
+              ${Object.keys(filterArtworksArgsV2).join("\n")}
+            }
+          }
+        `,
+          resolve: (parent, _args, context, info) => {
+            const query = parent.query
+            const hasKeyword = Boolean(parent.query.keyword)
+
+            const existingLoader =
+              context.unauthenticatedLoaders.filterArtworksLoader
+            const newLoader = loaderParams => {
+              return existingLoader.call(null, loaderParams, {
+                requestThrottleMs: 1000 * 60 * 60,
+              })
+            }
+
+            // TODO: Should this really modify the context in place?
+            context.unauthenticatedLoaders.filterArtworksLoader = newLoader
+
+            return info.mergeInfo.delegateToSchema({
+              schema: localSchema,
+              operation: "query",
+              fieldName: "artworksConnection",
+              args: {
+                ...query,
+                keywordMatchExact: hasKeyword,
+                ..._args,
+              },
+              context,
+              info,
+            })
+          },
+        },
+      },
+    },
+  }
+}
+
+// Very contrived version of what exists in graphql-js but isn’t exported.
+// https://github.com/graphql/graphql-js/blob/master/src/utilities/schemaPrinter.js
+function argsToSDL(args: GraphQLFieldConfigArgumentMap) {
+  const result: string[] = []
+  Object.keys(args).forEach(argName => {
+    result.push(`${argName}: ${printType(args[argName].type)}`)
+  })
+  return result
+}
+
+function printType(type: GraphQLType): string {
+  if (isScalarType(type)) {
+    return type.name
+  } else if (isListType(type)) {
+    return `[${printType(type.ofType)}]`
+  } else if (isEnumType(type)) {
+    return type.name
+  } else {
+    throw new Error(`Unknown type: ${JSON.stringify(type)}`)
+  }
+}
