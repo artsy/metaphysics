@@ -5706,6 +5706,12 @@ type Query {
     near: Near
   ): City
 
+  # A user's credit card
+  creditCard(
+    # The ID of the Credit Card
+    id: String!
+  ): CreditCard
+
   # A Fair
   fair(
     # The slug or ID of the Fair
@@ -7289,6 +7295,12 @@ type Viewer {
     # A point which will be used to locate the nearest local discovery city within a threshold
     near: Near
   ): City
+
+  # A user's credit card
+  creditCard(
+    # The ID of the Credit Card
+    id: String!
+  ): CreditCard
 
   # A Fair
   fair(
