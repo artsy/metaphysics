@@ -15,7 +15,7 @@ import { convertConnectionArgsToGravityArgs } from "lib/helpers"
 import cached from "./fields/cached"
 import initials from "./fields/initials"
 import Profile from "./profile"
-import Location from "./location"
+import { locationsConnection } from "./location"
 import EventStatus from "schema/v2/input_fields/event_status"
 import { NodeInterface, SlugAndInternalIDFields } from "./object_identification"
 import { artworkConnection } from "./artwork"
@@ -183,6 +183,33 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         }),
         resolve: artist => artist,
       },
+      cities: {
+        description: "A list of the partners unique city locations",
+        type: new GraphQLList(GraphQLString),
+        args: {
+          size: {
+            type: GraphQLInt,
+            defaultValue: 25,
+          },
+        },
+        resolve: ({ id }, options, { partnerLocationsLoader }) => {
+          return partnerLocationsLoader(id, options).then(locations => {
+            const locationCities = locations.body.map(location => {
+              return location.city
+            })
+            const filteredForDuplicatesAndBlanks = locationCities.filter(
+              (city, pos) => {
+                return (
+                  city &&
+                  locationCities.indexOf(city) === pos &&
+                  city.length > 0
+                )
+              }
+            )
+            return filteredForDuplicatesAndBlanks
+          })
+        },
+      },
       defaultProfileID: {
         type: GraphQLString,
         resolve: ({ default_profile_id }) => default_profile_id,
@@ -212,16 +239,31 @@ export const PartnerType = new GraphQLObjectType<any, ResolverContext>({
         type: GraphQLBoolean,
         resolve: ({ pre_qualify }) => pre_qualify,
       },
-      locations: {
-        type: new GraphQLList(Location.type),
-        args: {
-          size: {
-            type: GraphQLInt,
-            defaultValue: 25,
-          },
+      locationsConnection: {
+        description: "A connection of locations from a Partner.",
+        type: locationsConnection.connectionType,
+        args: pageable({}),
+        resolve: ({ id }, args, { partnerLocationsLoader }) => {
+          const { page, size, offset } = convertConnectionArgsToGravityArgs(
+            args
+          )
+
+          const gravityArgs = {
+            published: true,
+            total_count: true,
+            page,
+            size,
+          }
+
+          return partnerLocationsLoader(id, gravityArgs).then(
+            ({ body, headers }) => {
+              return connectionFromArraySlice(body, args, {
+                arrayLength: parseInt(headers["x-total-count"] || "0", 10),
+                sliceStart: offset,
+              })
+            }
+          )
         },
-        resolve: ({ id }, options, { partnerLocationsLoader }) =>
-          partnerLocationsLoader(id, options),
       },
       name: {
         type: GraphQLString,

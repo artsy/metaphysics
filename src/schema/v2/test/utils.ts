@@ -58,7 +58,7 @@ export const runQuery = (
   },
   variableValues: { [variableName: string]: any } = {}
 ) => {
-  const schema = require("schema/v2").default
+  const { schema } = require("schema/v2")
   return runQueryOrThrow({
     schema,
     source: query,

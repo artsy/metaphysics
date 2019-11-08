@@ -19,10 +19,15 @@ const lineItemTotalsSDL = lineItemTotals.map(amountSDL)
 
 const offerAmountFields = ["amount", "taxTotal", "shippingTotal", "buyerTotal"]
 const offerAmountFieldsSDL = offerAmountFields.map(amountSDL)
-export const exchangeStitchingEnvironment = (
-  localSchema: GraphQLSchema,
+export const exchangeStitchingEnvironment = ({
+  version,
+  localSchema,
+  exchangeSchema,
+}: {
+  version: number
+  localSchema: GraphQLSchema
   exchangeSchema: GraphQLSchema & { transforms: any }
-) => {
+}) => {
   type DetailsFactoryInput = { from: string; to: string }
 
   /**
@@ -115,7 +120,7 @@ export const exchangeStitchingEnvironment = (
         return info.mergeInfo.delegateToSchema({
           schema: localSchema,
           operation: "query",
-          fieldName: "credit_card",
+          fieldName: version >= 2 ? "creditCard" : "credit_card",
           args: {
             id,
           },
