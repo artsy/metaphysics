@@ -13,7 +13,7 @@ import Image from "./image"
 import Artist from "./artist"
 import Partner from "./partner"
 import { ShowsConnection } from "./show"
-import Location from "./location"
+import { LocationField } from "./location"
 import { SlugAndInternalIDFields, SlugIDField } from "./object_identification"
 import {
   GraphQLObjectType,
@@ -211,7 +211,7 @@ export const FairType = new GraphQLObjectType<any, ResolverContext>({
         resolve: ({ published }) => published,
       },
       location: {
-        type: Location.type,
+        type: LocationField.type,
         resolve: ({ id, location, published }, options, { fairLoader }) => {
           if (location) {
             return location

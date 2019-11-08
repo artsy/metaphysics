@@ -21,7 +21,7 @@ import { PartnerType } from "./partner"
 import { ExternalPartnerType } from "./external_partner"
 import Fair from "./fair"
 import { artworkConnection } from "./artwork"
-import Location from "./location"
+import { LocationField } from "./location"
 import Image, { getDefault, normalizeImageData } from "./image"
 import ShowEventType from "./show_event"
 import { connectionWithCursorInfo } from "schema/v2/fields/pagination"
@@ -414,7 +414,7 @@ export const ShowType = new GraphQLObjectType<any, ResolverContext>({
       location: {
         description:
           "Where the show is located (Could also be a fair location)",
-        type: Location.type,
+        type: LocationField.type,
         resolve: ({ location, fair_location }) => location || fair_location,
       },
       metaImage: {

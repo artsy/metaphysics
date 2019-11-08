@@ -4685,6 +4685,37 @@ type Location {
   summary: String
 }
 
+# A connection to a list of items.
+type LocationConnection implements LocationsConnectionInterface {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [LocationEdge]
+  pageCursors: PageCursors!
+  totalCount: Int
+}
+
+# An edge in a connection.
+type LocationEdge implements LocationsEdgeInterface {
+  # The item at the end of the edge
+  node: Location
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+interface LocationsConnectionInterface {
+  pageCursors: PageCursors!
+  pageInfo: PageInfo!
+  edges: [LocationsEdgeInterface]
+}
+
+interface LocationsEdgeInterface {
+  node: Location
+  cursor: String
+}
+
 type LotStanding {
   # Your bid if it is currently winning
   activeBid: BidderPosition
@@ -5353,6 +5384,9 @@ type Partner implements Node {
   categories: [PartnerCategory]
   collectingInstitution: String
   counts: PartnerCounts
+
+  # A list of the partners unique city locations
+  cities(size: Int = 25): [String]
   defaultProfileID: String
   hasFairPartnership: Boolean
   href: String
@@ -5360,7 +5394,14 @@ type Partner implements Node {
   isDefaultProfilePublic: Boolean
   isLinkable: Boolean
   isPreQualify: Boolean
-  locations(size: Int = 25): [Location]
+
+  # A connection of locations from a Partner.
+  locationsConnection(
+    after: String
+    first: Int
+    before: String
+    last: Int
+  ): LocationConnection
   name: String
   profile: Profile
 
