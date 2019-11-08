@@ -4686,7 +4686,7 @@ type Location {
 }
 
 # A connection to a list of items.
-type LocationConnection implements LocationsConnectionInterface {
+type LocationConnection {
   # Information to aid in pagination.
   pageInfo: PageInfo!
 
@@ -4697,23 +4697,12 @@ type LocationConnection implements LocationsConnectionInterface {
 }
 
 # An edge in a connection.
-type LocationEdge implements LocationsEdgeInterface {
+type LocationEdge {
   # The item at the end of the edge
   node: Location
 
   # A cursor for use in pagination
   cursor: String!
-}
-
-interface LocationsConnectionInterface {
-  pageCursors: PageCursors!
-  pageInfo: PageInfo!
-  edges: [LocationsEdgeInterface]
-}
-
-interface LocationsEdgeInterface {
-  node: Location
-  cursor: String
 }
 
 type LotStanding {
