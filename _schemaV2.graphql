@@ -1072,7 +1072,6 @@ type Artwork implements Node & Searchable & Sellable {
   saleMessage: String
   series(format: Format): String
   show(active: Boolean, atAFair: Boolean, sort: ShowSorts): Show
-  v2Shows(size: Int, active: Boolean, atAFair: Boolean, sort: ShowSorts): [Show]
   shows(size: Int, active: Boolean, atAFair: Boolean, sort: ShowSorts): [Show]
   signature(format: Format): String
   title: String
@@ -1797,6 +1796,7 @@ type CommerceBuyOrder implements CommerceOrder {
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
+  id: ID!
   internalID: ID!
 
   # Item total in cents, for Offer Orders this field reflects current offer
@@ -2099,6 +2099,7 @@ type CommerceFulfillment {
     # A tz database time zone, otherwise falls back to `X-TIMEZONE` header
     timezone: String
   ): String
+  id: ID!
   internalID: ID!
   notes: String
   trackingId: String
@@ -2164,6 +2165,7 @@ type CommerceLineItem {
     # Returns the last _n_ elements from the list.
     last: Int
   ): CommerceFulfillmentConnection
+  id: ID!
   internalID: ID!
   listPriceCents: Int!
   order: CommerceOrder!
@@ -2242,6 +2244,7 @@ type CommerceOffer {
   currencyCode: String!
   from: CommerceOrderPartyUnion!
   fromParticipant: CommerceOrderParticipantEnum
+  id: ID!
   internalID: ID!
   note: String
   order: CommerceOrder!
@@ -2331,6 +2334,7 @@ type CommerceOfferOrder implements CommerceOrder {
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
+  id: ID!
   internalID: ID!
 
   # Item total in cents, for Offer Orders this field reflects current offer
@@ -2511,6 +2515,7 @@ interface CommerceOrder {
   creditCardId: String
   currencyCode: String!
   displayCommissionRate: String
+  id: ID!
   internalID: ID!
 
   # Item total in cents, for Offer Orders this field reflects current offer
@@ -3508,6 +3513,19 @@ type Delivery {
 type dimensions {
   in: String
   cm: String
+}
+
+type DoNotUseThisPartner {
+  displayName: String
+  display_name: String @deprecated(reason: "Use displayName")
+  givenName: String
+  given_name: String @deprecated(reason: "Use givenName")
+  id: ID!
+  relativeSize: Int
+  relative_size: Int @deprecated(reason: "Use relativeSize")
+  slug: String
+  subscriptionState: String
+  subscription_state: String @deprecated(reason: "Use subscriptionState")
 }
 
 input EditableLocation {
@@ -4686,6 +4704,7 @@ type LotStanding {
 
 # Object representing a collection page
 type MarketingCollection {
+  id: ID!
   internalID: ID!
 
   # slug version of title, used for pretty URLs (e.g. `kaws-prints` for Kaws Prints
@@ -4797,6 +4816,7 @@ type MarketingCollectionGroup {
 }
 
 type MarketingCollectionQuery {
+  id: ID
   internalID: ID
   acquireable: Boolean
   aggregations: [String!]
@@ -4859,7 +4879,7 @@ enum MarketingGroupTypes {
 }
 
 type MarketingImage {
-  internalID: ID!
+  id: ID!
   small: String!
   medium: String!
   large: String!
@@ -5824,6 +5844,25 @@ type Query {
     @deprecated(
       reason: "Viewer has been deprecated in V2. Rely on root fields instead. [Will be removed in v2]"
     )
+
+  # Autocomplete resolvers.
+  _unused_gravity_matchPartners(
+    matchType: String
+    page: Int = 1
+    size: Int = 5
+    term: String!
+  ): [DoNotUseThisPartner!]
+
+  # Autocomplete resolvers.
+  _unused_gravity_match_partners(
+    match_type: String
+    page: Int = 1
+    size: Int = 5
+    term: String!
+  ): [DoNotUseThisPartner!] @deprecated(reason: "Use matchPartners")
+
+  # Find partners by IDs
+  _unused_gravity_partners(ids: [ID!]!): [DoNotUseThisPartner!]
 
   # Find list of competing orders
   commerceCompetingOrders(
