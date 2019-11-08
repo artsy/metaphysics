@@ -77,7 +77,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               category
             }
           }
-          ... on Artwork { artistNames }
+          ... on Artwork { artist_names }
         `,
         resolve: (parent, _args, _context, _info) =>
           filtersDescription(parent.appliedFilters, parent.artistNames),
@@ -108,7 +108,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         fragment: gql`
           ... on Artwork {
             sizeScore
-            editionSets {
+            edition_sets {
               sizeScore
               listPrice {
                 __typename
@@ -140,31 +140,31 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
               }
             }
             artist {
-              internalID
+              _id
               disablePriceContext
             }
             category
-            isForSale
-            isPriceHidden
-            isInAuction
-            priceCurrency
+            is_for_sale
+            is_price_hidden
+            is_in_auction
+            price_currency
             artists {
-              internalID
+              _id
             }
-            artistNames
+            artist_names
           }
         `,
         resolve: async (source, _, context, info) => {
           const {
             artist,
             artists,
-            artistNames,
+            artist_names,
             category,
-            editionSets,
-            isForSale,
-            isInAuction,
-            isPriceHidden,
-            priceCurrency,
+            edition_sets,
+            is_for_sale,
+            is_in_auction,
+            is_price_hidden,
+            price_currency,
             listPrice,
             sizeScore: mainSizeScore,
           } = source
@@ -173,7 +173,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           const edition = sortBy(
             [
               { sizeScore: mainSizeScore, listPrice },
-              ...(editionSets || []),
+              ...(edition_sets || []),
             ].filter(e => e.sizeScore),
             getMaxPrice
           ).pop() as any
@@ -187,11 +187,11 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
 
           // fail if we don't have enough info to request a histogram
           if (
-            isPriceHidden ||
-            isInAuction ||
-            priceCurrency !== "USD" ||
+            is_price_hidden ||
+            is_in_auction ||
+            price_currency !== "USD" ||
             (artists && artists.length > 1) ||
-            !isForSale ||
+            !is_for_sale ||
             !price ||
             !artist ||
             !sizeScore ||
@@ -215,7 +215,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
           }
 
           const args = {
-            artistId: artist.internalID,
+            artistId: artist._id,
             category: vortexSupportedCategory,
             sizeScore: Math.round(sizeScore),
           }
@@ -232,7 +232,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
             // passing it down from Artwork so it can be used in appliedFiltersDisplay
             // as a way to work around the resolver only having access
             // to the data in AnalyticsPricingContext and not Artwork
-            if (vortexContext) vortexContext.artistNames = artistNames
+            if (vortexContext) vortexContext.artistNames = artist_names
 
             return vortexContext
           } catch (e) {
@@ -245,10 +245,10 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     Partner: {
       analytics: {
         fragment: gql`... on Partner {
-          internalID
+          _id
         }`,
         resolve: async (source, _, context, info) => {
-          const args = { partnerId: source.internalID }
+          const args = { partnerId: source._id }
           return await info.mergeInfo.delegateToSchema({
             schema: vortexSchema,
             operation: "query",

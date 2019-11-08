@@ -16,7 +16,8 @@ import config from "config"
 import { GraphQLSchema } from "graphql"
 import { exchangeStitchingEnvironment } from "./exchange/stitching"
 import { executableVortexSchema } from "lib/stitching/vortex/schema"
-import { vortexStitchingEnvironment } from "./vortex/stitching"
+import { vortexStitchingEnvironment as vortexStitchingEnvironmentv1 } from "./vortex/stitchingv1"
+import { vortexStitchingEnvironment as vortexStitchingEnvironmentv2 } from "./vortex/stitching"
 
 /**
  * Incrementally merges in schemas according to `process.env`
@@ -70,7 +71,13 @@ export const incrementalMergeSchemas = (
 
   const vortexSchema = executableVortexSchema()
   schemas.push(vortexSchema)
-  useStitchingEnvironment(vortexStitchingEnvironment(localSchema))
+
+  // TODO: Remove reference to v1 once reaction is migrated and we ensure this works in CMS.
+  if (version === 1) {
+    useStitchingEnvironment(vortexStitchingEnvironmentv1(localSchema))
+  } else {
+    useStitchingEnvironment(vortexStitchingEnvironmentv2(localSchema))
+  }
 
   // Always stitch kaws
   const kawsSchema = executableKawsSchema()

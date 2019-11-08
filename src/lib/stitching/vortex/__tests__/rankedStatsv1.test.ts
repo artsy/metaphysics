@@ -1,4 +1,4 @@
-import { runQuery } from "schema/v2/test/utils"
+import { runQuery } from "test/utils"
 import gql from "lib/gql"
 import { ResolverContext } from "types/graphql"
 
