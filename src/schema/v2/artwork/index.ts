@@ -694,7 +694,7 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             .then(({ body }) => body)
             .then(_.first),
       },
-      v2Shows: {
+      shows: {
         type: new GraphQLList(Show.type),
         args: {
           size: { type: GraphQLInt },
@@ -713,31 +713,8 @@ export const ArtworkType = new GraphQLObjectType<any, ResolverContext>({
             size,
             sort,
             at_a_fair,
-          }).then(({ body }) => {
-            return body
-          })
+          }).then(({ body }) => body)
         },
-      },
-      shows: {
-        type: new GraphQLList(Show.type),
-        args: {
-          size: { type: GraphQLInt },
-          active: { type: GraphQLBoolean },
-          atAFair: { type: GraphQLBoolean },
-          sort: { type: ShowSorts },
-        },
-        resolve: (
-          { id },
-          { size, active, sort, atAFair: at_a_fair },
-          { relatedShowsLoader }
-        ) =>
-          relatedShowsLoader({
-            artwork: [id],
-            active,
-            size,
-            sort,
-            at_a_fair,
-          }).then(({ body }) => body),
       },
       signature: markdown(({ signature }) =>
         signature.replace(/^signature:\s+/i, "")
