@@ -12,7 +12,6 @@ import {
   GraphQLUnionType,
 } from "graphql"
 import { ResolverContext } from "types/graphql"
-import { connectionWithCursorInfo } from "./fields/pagination"
 
 export const LatLngType = new GraphQLObjectType<any, ResolverContext>({
   name: "LatLng",
@@ -120,11 +119,9 @@ export const LocationType = new GraphQLObjectType<any, ResolverContext>({
   }),
 })
 
-export const LocationField: GraphQLFieldConfig<void, ResolverContext> = {
+const Location: GraphQLFieldConfig<void, ResolverContext> = {
   type: LocationType,
   description: "A Location",
 }
 
-export const locationsConnection = connectionWithCursorInfo({
-  nodeType: LocationType,
-})
+export default Location
